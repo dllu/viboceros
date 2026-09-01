@@ -1,4 +1,4 @@
-use std::collections::VecDeque;
+use std::collections::{BTreeSet, VecDeque};
 
 use eframe::egui::{self, Color32, RichText};
 use viboceros_command::CommandRegistry;
@@ -825,6 +825,8 @@ impl VibocerosApp {
         let mut show_clicked = false;
         let mut lock_clicked = false;
         let mut unlock_clicked = false;
+        let mut hide_swap_clicked = false;
+        let mut lock_swap_clicked = false;
         let mut join_clicked = false;
         let mut explode_clicked = false;
         let mut flip_clicked = false;
@@ -847,16 +849,25 @@ impl VibocerosApp {
         let mut rotate_clicked = false;
         let mut mirror_clicked = false;
         let selected = self.document.selected_object_count();
-        let hidden = self
+        let swappable_layers = self
             .document
-            .objects()
-            .filter(|object| !object.attributes().is_visible())
-            .count();
-        let locked = self
-            .document
-            .objects()
-            .filter(|object| object.attributes().is_locked())
-            .count();
+            .layers()
+            .filter(|layer| layer.is_visible() && !layer.is_locked())
+            .map(|layer| layer.id())
+            .collect::<BTreeSet<_>>();
+        let (hidden, locked, hide_swappable, lock_swappable) = self.document.objects().fold(
+            (0, 0, 0, 0),
+            |(hidden, locked, hide_swappable, lock_swappable), object| {
+                let attributes = object.attributes();
+                let layer_is_eligible = swappable_layers.contains(&attributes.layer_id());
+                (
+                    hidden + usize::from(!attributes.is_visible()),
+                    locked + usize::from(attributes.is_locked()),
+                    hide_swappable + usize::from(layer_is_eligible && !attributes.is_locked()),
+                    lock_swappable + usize::from(layer_is_eligible && attributes.is_visible()),
+                )
+            },
+        );
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
                 ui.heading("Viboceros");
@@ -896,6 +907,14 @@ impl VibocerosApp {
                 unlock_clicked = ui
                     .add_enabled(locked > 0, egui::Button::new("Unlock"))
                     .on_hover_text("Unlock all object-level locks")
+                    .clicked();
+                hide_swap_clicked = ui
+                    .add_enabled(hide_swappable > 0, egui::Button::new("Swap Hidden"))
+                    .on_hover_text("Swap normal and hidden objects on visible, unlocked layers")
+                    .clicked();
+                lock_swap_clicked = ui
+                    .add_enabled(lock_swappable > 0, egui::Button::new("Swap Locked"))
+                    .on_hover_text("Swap normal and locked objects on visible, unlocked layers")
                     .clicked();
                 join_clicked = ui
                     .add_enabled(selected > 1, egui::Button::new("Join"))
@@ -1026,6 +1045,10 @@ impl VibocerosApp {
             self.execute_command("Lock");
         } else if unlock_clicked {
             self.execute_command("Unlock");
+        } else if hide_swap_clicked {
+            self.execute_command("HideSwap");
+        } else if lock_swap_clicked {
+            self.execute_command("LockSwap");
         } else if join_clicked {
             self.execute_command("Join");
         } else if explode_clicked {

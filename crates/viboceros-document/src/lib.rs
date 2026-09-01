@@ -724,6 +724,30 @@ impl Document {
         })
     }
 
+    /// Swaps normal and hidden object modes on visible, unlocked layers.
+    /// Locked objects and every object on a hidden or locked layer are left
+    /// unchanged, matching Rhino's `HideSwap` scope.
+    pub fn swap_object_visibility_modes(&mut self) -> Result<usize, DocumentError> {
+        let ids = self.swappable_object_ids(|attributes| !attributes.locked)?;
+        self.change_object_attributes(ids, "Swap object visibility", |attributes| {
+            if !attributes.locked {
+                attributes.visible = !attributes.visible;
+            }
+        })
+    }
+
+    /// Swaps normal and locked object modes on visible, unlocked layers.
+    /// Hidden objects and every object on a hidden or locked layer are left
+    /// unchanged, matching Rhino's `LockSwap` scope.
+    pub fn swap_object_lock_modes(&mut self) -> Result<usize, DocumentError> {
+        let ids = self.swappable_object_ids(|attributes| attributes.visible)?;
+        self.change_object_attributes(ids, "Swap object lock", |attributes| {
+            if attributes.visible {
+                attributes.locked = !attributes.locked;
+            }
+        })
+    }
+
     pub fn transform_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -1177,14 +1201,13 @@ impl Document {
         label: &'static str,
         change: impl Fn(&mut ObjectAttributes),
     ) -> Result<usize, DocumentError> {
-        let ids = ids.into_iter().collect::<BTreeSet<_>>();
-        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
+        let mut remaining = ids.into_iter().collect::<BTreeSet<_>>();
+        if remaining.is_empty() {
+            return Ok(0);
         }
-
-        let mut staged = Vec::with_capacity(ids.len());
+        let mut staged = Vec::with_capacity(remaining.len());
         for (index, object) in self.objects.iter().enumerate() {
-            if !ids.contains(&object.id) {
+            if !remaining.remove(&object.id) {
                 continue;
             }
             let before = object.clone();
@@ -1193,6 +1216,12 @@ impl Document {
             if before != after {
                 staged.push((index, before, after));
             }
+            if remaining.is_empty() {
+                break;
+            }
+        }
+        if let Some(missing) = remaining.first().copied() {
+            return Err(DocumentError::ObjectNotFound(missing));
         }
         if staged.is_empty() {
             return Ok(0);
@@ -1213,6 +1242,28 @@ impl Document {
             self.commit_transaction()?;
         }
         Ok(changed_count)
+    }
+
+    fn swappable_object_ids(
+        &self,
+        include: impl Fn(&ObjectAttributes) -> bool,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let layer_is_eligible = self
+            .layers
+            .iter()
+            .map(|layer| (layer.id, layer.visible && !layer.locked))
+            .collect::<BTreeMap<_, _>>();
+        let mut ids = Vec::with_capacity(self.objects.len());
+        for object in &self.objects {
+            let eligible = layer_is_eligible
+                .get(&object.attributes.layer_id)
+                .copied()
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if eligible && include(&object.attributes) {
+                ids.push(object.id);
+            }
+        }
+        Ok(ids)
     }
 
     fn stage_transformed_objects(
@@ -1850,6 +1901,104 @@ mod tests {
         );
         assert_eq!(document.object(first).unwrap().id(), first);
         assert_eq!(document.group(group).unwrap().members().len(), 2);
+    }
+
+    #[test]
+    fn object_mode_swaps_match_rhino_layer_scope_and_are_reversible() {
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let hidden_layer = document
+            .add_layer("Hidden", ColorRgb::new(1, 2, 3))
+            .unwrap();
+        let locked_layer = document
+            .add_layer("Locked", ColorRgb::new(4, 5, 6))
+            .unwrap();
+        let mut ids = Vec::new();
+        for (layer, x) in [(default, 0.0), (hidden_layer, 10.0), (locked_layer, 20.0)] {
+            for (offset, attributes) in [
+                (0.0, ObjectAttributes::on_layer(layer)),
+                (
+                    1.0,
+                    ObjectAttributes::on_layer(layer).with_visibility(false),
+                ),
+                (2.0, ObjectAttributes::on_layer(layer).with_locked(true)),
+            ] {
+                ids.push(
+                    document
+                        .add_geometry_with_attributes(
+                            Geometry::Point(Point3::try_new(x + offset, 0.0, 0.0).unwrap()),
+                            attributes,
+                        )
+                        .unwrap(),
+                );
+            }
+        }
+        document.set_layer_visibility(hidden_layer, false).unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+        let modes = |document: &Document| {
+            ids.iter()
+                .map(|id| {
+                    let attributes = document.object(*id).unwrap().attributes();
+                    if !attributes.is_visible() {
+                        "hidden"
+                    } else if attributes.is_locked() {
+                        "locked"
+                    } else {
+                        "normal"
+                    }
+                })
+                .collect::<Vec<_>>()
+        };
+        let initial = vec![
+            "normal", "hidden", "locked", "normal", "hidden", "locked", "normal", "hidden",
+            "locked",
+        ];
+        assert_eq!(modes(&document), initial);
+
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.swap_object_visibility_modes().unwrap(), 2);
+        assert_eq!(document.undo_label(), Some("Swap object visibility"));
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(
+            modes(&document),
+            vec![
+                "hidden", "normal", "locked", "normal", "hidden", "locked", "normal", "hidden",
+                "locked",
+            ]
+        );
+        document.undo().unwrap();
+        assert_eq!(modes(&document), initial);
+        document.redo().unwrap();
+        assert_eq!(document.swap_object_visibility_modes().unwrap(), 2);
+        assert_eq!(modes(&document), initial);
+
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.swap_object_lock_modes().unwrap(), 2);
+        assert_eq!(document.undo_label(), Some("Swap object lock"));
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(
+            modes(&document),
+            vec![
+                "locked", "hidden", "normal", "normal", "hidden", "locked", "normal", "hidden",
+                "locked",
+            ]
+        );
+        document.undo().unwrap();
+        assert_eq!(modes(&document), initial);
+        document.redo().unwrap();
+        assert_eq!(document.swap_object_lock_modes().unwrap(), 2);
+        assert_eq!(modes(&document), initial);
+        assert!(!document.layer(hidden_layer).unwrap().is_visible());
+        assert!(document.layer(locked_layer).unwrap().is_locked());
+        assert!(
+            ids.iter()
+                .enumerate()
+                .all(|(index, id)| document.object(*id).unwrap().id() == ids[index])
+        );
     }
 
     #[test]

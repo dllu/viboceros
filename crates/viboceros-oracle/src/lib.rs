@@ -9,7 +9,9 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use thiserror::Error;
-use viboceros_document::{Document, DocumentError, Geometry, ObjectId, SelectionMode};
+use viboceros_document::{
+    ColorRgb, Document, DocumentError, Geometry, ObjectAttributes, ObjectId, SelectionMode,
+};
 use viboceros_geometry::{
     Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
     NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh, UnitVector3, WeightedPoint3,
@@ -61,6 +63,9 @@ pub enum Operation {
         object_count: usize,
         hide_indices: Vec<usize>,
         lock_indices: Vec<usize>,
+    },
+    DocumentObjectSwapCycle {
+        id: String,
     },
     PointDistance {
         id: String,
@@ -211,6 +216,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::DocumentObjectStateCycle { id, .. }
+            | Self::DocumentObjectSwapCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -367,6 +373,7 @@ fn execute(
             lock_indices,
             ..
         } => document_object_state_cycle(iterations, *object_count, hide_indices, lock_indices)?,
+        Operation::DocumentObjectSwapCycle { .. } => document_object_swap_cycle(iterations)?,
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
             let b = point(*b)?;
@@ -923,6 +930,72 @@ fn document_object_state_cycle(
     })
 }
 
+fn document_object_swap_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::default();
+    let default = document.current_layer_id();
+    let hidden_layer = document.add_layer("Oracle Hidden", ColorRgb::new(1, 2, 3))?;
+    let locked_layer = document.add_layer("Oracle Locked", ColorRgb::new(4, 5, 6))?;
+    let mut object_ids = Vec::with_capacity(9);
+    for (layer, x) in [(default, 0.0), (hidden_layer, 10.0), (locked_layer, 20.0)] {
+        for (offset, attributes) in [
+            (0.0, ObjectAttributes::on_layer(layer)),
+            (
+                1.0,
+                ObjectAttributes::on_layer(layer).with_visibility(false),
+            ),
+            (2.0, ObjectAttributes::on_layer(layer).with_locked(true)),
+        ] {
+            object_ids.push(document.add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(x + offset, 0.0, 0.0)?),
+                attributes,
+            )?);
+        }
+    }
+    document.set_layer_visibility(hidden_layer, false)?;
+    document.set_layer_locked(locked_layer, true)?;
+    let labels = [
+        "default-normal",
+        "default-hidden",
+        "default-locked",
+        "hidden-layer-normal",
+        "hidden-layer-hidden",
+        "hidden-layer-locked",
+        "locked-layer-normal",
+        "locked-layer-hidden",
+        "locked-layer-locked",
+    ];
+
+    measure_document(iterations, || {
+        document.clear_selection();
+        document.select_object(object_ids[0], SelectionMode::Replace)?;
+        let hide_count_once = document.swap_object_visibility_modes()?;
+        let hide_once = document_object_modes(&document, &object_ids)?;
+        let selected_after_hide = document.selected_object_count();
+        let hide_count_twice = document.swap_object_visibility_modes()?;
+        let hide_twice = document_object_modes(&document, &object_ids)?;
+
+        document.select_object(object_ids[0], SelectionMode::Replace)?;
+        let lock_count_once = document.swap_object_lock_modes()?;
+        let lock_once = document_object_modes(&document, &object_ids)?;
+        let selected_after_lock = document.selected_object_count();
+        let lock_count_twice = document.swap_object_lock_modes()?;
+        let lock_twice = document_object_modes(&document, &object_ids)?;
+        Ok(json!({
+            "hide_count_once": hide_count_once,
+            "hide_count_twice": hide_count_twice,
+            "hide_once": hide_once,
+            "hide_twice": hide_twice,
+            "labels": labels,
+            "lock_count_once": lock_count_once,
+            "lock_count_twice": lock_count_twice,
+            "lock_once": lock_once,
+            "lock_twice": lock_twice,
+            "selected_after_hide": selected_after_hide,
+            "selected_after_lock": selected_after_lock,
+        }))
+    })
+}
+
 fn state_cycle_ids(
     object_ids: &[ObjectId],
     indices: &[usize],
@@ -1154,6 +1227,50 @@ mod tests {
                 object_count: 2
             }
         ));
+    }
+
+    #[test]
+    fn swaps_document_object_modes_with_rhino_layer_filtering() {
+        let response = run_request(&request(vec![Operation::DocumentObjectSwapCycle {
+            id: "object-swap".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "hide_count_once": 2,
+                "hide_count_twice": 2,
+                "hide_once": [
+                    "hidden", "normal", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "hide_twice": [
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "labels": [
+                    "default-normal", "default-hidden", "default-locked",
+                    "hidden-layer-normal", "hidden-layer-hidden", "hidden-layer-locked",
+                    "locked-layer-normal", "locked-layer-hidden", "locked-layer-locked",
+                ],
+                "lock_count_once": 2,
+                "lock_count_twice": 2,
+                "lock_once": [
+                    "locked", "hidden", "normal",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "lock_twice": [
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "selected_after_hide": 0,
+                "selected_after_lock": 0,
+            })
+        );
     }
 
     #[test]

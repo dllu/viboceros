@@ -72,6 +72,8 @@ Hide
 Show
 Lock
 Unlock
+HideSwap
+LockSwap
 Delete
 Clear
 Undo
@@ -116,6 +118,9 @@ awaits a native point-cloud document type.
 object with the corresponding object-level state. Hidden objects neither render
 nor snap. Locked objects render in gray and remain available to osnap, but
 cannot be selected or edited. Layer visibility and locking remain independent.
+`HideSwap` exchanges normal and hidden object modes, while `LockSwap` exchanges
+normal and locked modes. Like Rhino, both swaps affect only objects on visible,
+unlocked layers and leave the third object mode unchanged.
 Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
 selection. Mesh closure uses exact location-welded edge topology, so indexed

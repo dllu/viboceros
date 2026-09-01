@@ -301,6 +301,147 @@ def _execute(operation, iterations, tolerance):
                 document.Objects.Unlock(object_id, True)
                 document.Objects.Delete(object_id, True)
 
+    if kind == "document_object_swap_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        try:
+            for index in range(3):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document swap-cycle point")
+                object_ids.append(object_id)
+            if not document.Objects.Hide(object_ids[1], True):
+                raise ValueError("could not seed hidden object")
+            if not document.Objects.Lock(object_ids[2], True):
+                raise ValueError("could not seed locked object")
+
+            layer_suffix = str(System.Guid.NewGuid())
+            hidden_layer = Rhino.DocObjects.Layer()
+            hidden_layer.Name = "Viboceros Swap Cycle Hidden " + layer_suffix
+            hidden_layer.IsVisible = False
+            hidden_layer_index = document.Layers.Add(hidden_layer)
+            locked_layer = Rhino.DocObjects.Layer()
+            locked_layer.Name = "Viboceros Swap Cycle Locked " + layer_suffix
+            locked_layer.IsLocked = True
+            locked_layer_index = document.Layers.Add(locked_layer)
+            if hidden_layer_index < 0 or locked_layer_index < 0:
+                raise ValueError("could not add document swap-cycle layers")
+            for layer_index in (hidden_layer_index, locked_layer_index):
+                for mode_index in range(3):
+                    attributes = Rhino.DocObjects.ObjectAttributes()
+                    attributes.LayerIndex = layer_index
+                    object_id = document.Objects.AddPoint(
+                        Rhino.Geometry.Point3d(float(len(object_ids)), 0.0, 0.0),
+                        attributes,
+                    )
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add layered swap-cycle point")
+                    object_ids.append(object_id)
+                    if mode_index == 1 and not document.Objects.Hide(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered hidden object")
+                    if mode_index == 2 and not document.Objects.Lock(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered locked object")
+
+            def swap_modes():
+                result = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object.IsHidden:
+                        result.append("hidden")
+                    elif rhino_object.IsLocked:
+                        result.append("locked")
+                    else:
+                        result.append("normal")
+                return result
+
+            def layer_allows_swap(rhino_object):
+                layer = document.Layers[rhino_object.Attributes.LayerIndex]
+                return bool(layer.IsVisible and not layer.IsLocked)
+
+            def hide_swap():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if not layer_allows_swap(rhino_object):
+                        continue
+                    if rhino_object.IsHidden:
+                        changed += int(document.Objects.Show(object_id, True))
+                    elif not rhino_object.IsLocked:
+                        changed += int(document.Objects.Hide(object_id, True))
+                return changed
+
+            def lock_swap():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if not layer_allows_swap(rhino_object) or rhino_object.IsHidden:
+                        continue
+                    if rhino_object.IsLocked:
+                        changed += int(document.Objects.Unlock(object_id, True))
+                    else:
+                        changed += int(document.Objects.Lock(object_id, True))
+                return changed
+
+            labels = [
+                "default-normal",
+                "default-hidden",
+                "default-locked",
+                "hidden-layer-normal",
+                "hidden-layer-hidden",
+                "hidden-layer-locked",
+                "locked-layer-normal",
+                "locked-layer-hidden",
+                "locked-layer-locked",
+            ]
+
+            def swap_cycle():
+                document.Objects.UnselectAll()
+                if not document.Objects.Select(object_ids[0]):
+                    raise ValueError("could not select object before HideSwap")
+                hide_count_once = hide_swap()
+                hide_once = swap_modes()
+                selected_after_hide = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                hide_count_twice = hide_swap()
+                hide_twice = swap_modes()
+
+                if not document.Objects.Select(object_ids[0]):
+                    raise ValueError("could not select object before LockSwap")
+                lock_count_once = lock_swap()
+                lock_once = swap_modes()
+                selected_after_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                lock_count_twice = lock_swap()
+                return {
+                    "hide_count_once": hide_count_once,
+                    "hide_count_twice": hide_count_twice,
+                    "hide_once": hide_once,
+                    "hide_twice": hide_twice,
+                    "labels": labels,
+                    "lock_count_once": lock_count_once,
+                    "lock_count_twice": lock_count_twice,
+                    "lock_once": lock_once,
+                    "lock_twice": swap_modes(),
+                    "selected_after_hide": selected_after_hide,
+                    "selected_after_lock": selected_after_lock,
+                }
+
+            return _measure(iterations, swap_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
     if kind == "point_distance":
         a = _point(operation["a"])
         b = _point(operation["b"])

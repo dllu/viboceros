@@ -171,6 +171,12 @@ impl CommandRegistry {
             .register(UnlockCommand)
             .expect("unique built-in command");
         registry
+            .register(HideSwapCommand)
+            .expect("unique built-in command");
+        registry
+            .register(LockSwapCommand)
+            .expect("unique built-in command");
+        registry
             .register(JoinCommand)
             .expect("unique built-in command");
         registry
@@ -2090,6 +2096,34 @@ impl Command for UnlockCommand {
     }
 }
 
+struct HideSwapCommand;
+
+impl Command for HideSwapCommand {
+    fn name(&self) -> &'static str {
+        "HideSwap"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "HideSwap")?;
+        let count = document.swap_object_visibility_modes()?;
+        Ok(format!("Swapped hidden state on {count} object(s)"))
+    }
+}
+
+struct LockSwapCommand;
+
+impl Command for LockSwapCommand {
+    fn name(&self) -> &'static str {
+        "LockSwap"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "LockSwap")?;
+        let count = document.swap_object_lock_modes()?;
+        Ok(format!("Swapped lock state on {count} object(s)"))
+    }
+}
+
 struct JoinCommand;
 
 impl Command for JoinCommand {
@@ -3172,7 +3206,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Lock, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unlock, Volume"
         );
     }
 
@@ -5216,6 +5250,75 @@ mod tests {
         ));
         assert_eq!(document.undo_label(), history.as_deref());
         assert_eq!(document.group(group).unwrap().members().len(), 2);
+    }
+
+    #[test]
+    fn hide_swap_and_lock_swap_are_reversible_three_mode_involutions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        registry.execute(&mut document, "Point 2,0,0").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document.set_objects_visibility([ids[1]], false).unwrap();
+        document.set_objects_locked([ids[2]], true).unwrap();
+        let modes = |document: &Document| {
+            ids.iter()
+                .map(|id| {
+                    let attributes = document.object(*id).unwrap().attributes();
+                    if !attributes.is_visible() {
+                        "hidden"
+                    } else if attributes.is_locked() {
+                        "locked"
+                    } else {
+                        "normal"
+                    }
+                })
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(modes(&document), vec!["normal", "hidden", "locked"]);
+
+        assert_eq!(
+            registry.execute(&mut document, "HideSwap").unwrap(),
+            "Swapped hidden state on 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("HideSwap"));
+        assert_eq!(modes(&document), vec!["hidden", "normal", "locked"]);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(modes(&document), vec!["normal", "hidden", "locked"]);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(modes(&document), vec!["hidden", "normal", "locked"]);
+        registry.execute(&mut document, "HideSwap").unwrap();
+        assert_eq!(modes(&document), vec!["normal", "hidden", "locked"]);
+
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "LockSwap").unwrap(),
+            "Swapped lock state on 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("LockSwap"));
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(modes(&document), vec!["locked", "hidden", "normal"]);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(modes(&document), vec!["normal", "hidden", "locked"]);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(modes(&document), vec!["locked", "hidden", "normal"]);
+        registry.execute(&mut document, "LockSwap").unwrap();
+        assert_eq!(modes(&document), vec!["normal", "hidden", "locked"]);
+
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "HideSwap unexpected"),
+            Err(CommandError::Usage("HideSwap"))
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
