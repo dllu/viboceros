@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use eframe::egui::{self, Color32, RichText};
 use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, GroupId, LayerId};
-use viboceros_geometry::Point3;
+use viboceros_geometry::{Point3, Tolerance};
 
 use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
 
@@ -33,9 +33,26 @@ enum SidebarAction {
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     Point,
-    Line { start: Option<Point3> },
-    Move { start: Option<Point3> },
-    Copy { start: Option<Point3> },
+    Line {
+        start: Option<Point3>,
+    },
+    Move {
+        start: Option<Point3>,
+    },
+    Copy {
+        start: Option<Point3>,
+    },
+    Scale {
+        center: Option<Point3>,
+        reference: Option<Point3>,
+    },
+    Rotate {
+        center: Option<Point3>,
+        reference: Option<Point3>,
+    },
+    Mirror {
+        start: Option<Point3>,
+    },
 }
 
 impl InteractiveCommand {
@@ -45,6 +62,9 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
+            Self::Scale { .. } => "Scale",
+            Self::Rotate { .. } => "Rotate",
+            Self::Mirror { .. } => "Mirror",
         }
     }
 
@@ -69,6 +89,32 @@ impl InteractiveCommand {
             Self::Copy { start: Some(_) } => {
                 "Copy: pick the destination point in the viewport (Esc to cancel)"
             }
+            Self::Scale { center: None, .. } => {
+                "Scale: pick the center point in the viewport (Esc to cancel)"
+            }
+            Self::Scale {
+                center: Some(_),
+                reference: None,
+            } => "Scale: pick the reference point in the viewport (Esc to cancel)",
+            Self::Scale {
+                reference: Some(_), ..
+            } => "Scale: pick the target point in the viewport (Esc to cancel)",
+            Self::Rotate { center: None, .. } => {
+                "Rotate: pick the center point in the viewport (Esc to cancel)"
+            }
+            Self::Rotate {
+                center: Some(_),
+                reference: None,
+            } => "Rotate: pick the reference point in the viewport (Esc to cancel)",
+            Self::Rotate {
+                reference: Some(_), ..
+            } => "Rotate: pick the target point in the viewport (Esc to cancel)",
+            Self::Mirror { start: None } => {
+                "Mirror: pick the first axis point in the viewport (Esc to cancel)"
+            }
+            Self::Mirror { start: Some(_) } => {
+                "Mirror: pick the second axis point in the viewport (Esc to cancel)"
+            }
         }
     }
 
@@ -77,8 +123,29 @@ impl InteractiveCommand {
             Self::Point
             | Self::Line { start: None }
             | Self::Move { start: None }
-            | Self::Copy { start: None } => None,
-            Self::Line { start } | Self::Move { start } | Self::Copy { start } => start,
+            | Self::Copy { start: None }
+            | Self::Scale { center: None, .. }
+            | Self::Rotate { center: None, .. }
+            | Self::Mirror { start: None } => None,
+            Self::Line { start }
+            | Self::Move { start }
+            | Self::Copy { start }
+            | Self::Mirror { start } => start,
+            Self::Scale {
+                center: Some(center),
+                ..
+            }
+            | Self::Rotate {
+                center: Some(center),
+                ..
+            } => Some(center),
+        }
+    }
+
+    const fn reference(self) -> Option<Point3> {
+        match self {
+            Self::Scale { reference, .. } | Self::Rotate { reference, .. } => reference,
+            _ => None,
         }
     }
 }
@@ -158,6 +225,15 @@ impl VibocerosApp {
             "line" | "l" => InteractiveCommand::Line { start: None },
             "move" | "m" => InteractiveCommand::Move { start: None },
             "copy" => InteractiveCommand::Copy { start: None },
+            "scale" => InteractiveCommand::Scale {
+                center: None,
+                reference: None,
+            },
+            "rotate" => InteractiveCommand::Rotate {
+                center: None,
+                reference: None,
+            },
+            "mirror" => InteractiveCommand::Mirror { start: None },
             _ => return false,
         };
 
@@ -165,7 +241,11 @@ impl VibocerosApp {
         self.push_log(format!("> {input}"));
         if matches!(
             command,
-            InteractiveCommand::Move { .. } | InteractiveCommand::Copy { .. }
+            InteractiveCommand::Move { .. }
+                | InteractiveCommand::Copy { .. }
+                | InteractiveCommand::Scale { .. }
+                | InteractiveCommand::Rotate { .. }
+                | InteractiveCommand::Mirror { .. }
         ) && self.document.selected_object_count() == 0
         {
             self.push_log("Error: no objects are selected".to_owned());
@@ -248,6 +328,106 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::Scale { center: None, .. } => {
+                let command = InteractiveCommand::Scale {
+                    center: Some(point),
+                    reference: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Scale {
+                center: Some(center),
+                reference: None,
+            } => {
+                if center.is_near(point, self.document.tolerance()) {
+                    self.push_log("Error: scale reference must differ from its center".to_owned());
+                    return;
+                }
+                let command = InteractiveCommand::Scale {
+                    center: Some(center),
+                    reference: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Reference: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Scale {
+                center: Some(center),
+                reference: Some(reference),
+            } => {
+                if center.is_near(point, self.document.tolerance()) {
+                    self.push_log("Error: scale target must differ from its center".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Scale {} {} {}",
+                    format_model_point(center),
+                    format_model_point(reference),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Rotate { center: None, .. } => {
+                let command = InteractiveCommand::Rotate {
+                    center: Some(point),
+                    reference: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Rotate {
+                center: Some(center),
+                reference: None,
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log("Error: rotate reference must differ from its center".to_owned());
+                    return;
+                }
+                let command = InteractiveCommand::Rotate {
+                    center: Some(center),
+                    reference: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Reference: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Rotate {
+                center: Some(center),
+                reference: Some(reference),
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log("Error: rotate target must differ from its center".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Rotate {} {} {}",
+                    format_model_point(center),
+                    format_model_point(reference),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Mirror { start: None } => {
+                let command = InteractiveCommand::Mirror { start: Some(point) };
+                self.active_command = Some(command);
+                self.push_log(format!("Axis start: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Mirror { start: Some(start) } => {
+                if same_top_point(start, point, self.document.tolerance()) {
+                    self.push_log("Error: mirror axis points must differ".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Mirror {} {}",
+                    format_model_point(start),
+                    format_model_point(point)
+                ));
+            }
         }
     }
 
@@ -285,6 +465,9 @@ impl VibocerosApp {
         let mut delete_clicked = false;
         let mut move_clicked = false;
         let mut copy_clicked = false;
+        let mut scale_clicked = false;
+        let mut rotate_clicked = false;
+        let mut mirror_clicked = false;
         let selected = self.document.selected_object_count();
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
@@ -317,6 +500,18 @@ impl VibocerosApp {
                 copy_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Copy"))
                     .on_hover_text("Copy selected objects using two viewport points")
+                    .clicked();
+                scale_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Scale"))
+                    .on_hover_text("Scale selected objects using three viewport points")
+                    .clicked();
+                rotate_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Rotate"))
+                    .on_hover_text("Rotate selected objects using three viewport points")
+                    .clicked();
+                mirror_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Mirror"))
+                    .on_hover_text("Mirror selected objects across a two-point top-view axis")
                     .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
@@ -357,6 +552,12 @@ impl VibocerosApp {
             self.try_start_interactive_command("Move");
         } else if copy_clicked {
             self.try_start_interactive_command("Copy");
+        } else if scale_clicked {
+            self.try_start_interactive_command("Scale");
+        } else if rotate_clicked {
+            self.try_start_interactive_command("Rotate");
+        } else if mirror_clicked {
+            self.try_start_interactive_command("Mirror");
         }
     }
 
@@ -581,6 +782,7 @@ impl eframe::App for VibocerosApp {
             osnap: self.osnap,
             smart_track: self.smart_track,
             anchor: self.active_command.and_then(InteractiveCommand::anchor),
+            reference: self.active_command.and_then(InteractiveCommand::reference),
         };
         let mut viewport_output = ViewportOutput::default();
         egui::CentralPanel::default().show(ui, |ui| {
@@ -598,6 +800,10 @@ impl eframe::App for VibocerosApp {
 
 fn format_model_point(point: Point3) -> String {
     format!("{},{},{}", point.x(), point.y(), point.z())
+}
+
+fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
+    (left.x() - right.x()).hypot(left.y() - right.y()) <= tolerance.absolute()
 }
 
 #[cfg(test)]
@@ -715,9 +921,57 @@ mod tests {
     #[test]
     fn interactive_transforms_require_a_selection() {
         let mut app = test_app();
-        assert!(app.try_start_interactive_command("M"));
-        assert_eq!(app.active_command, None);
-        assert!(app.command_log.back().unwrap().contains("no objects"));
+        for command in ["M", "Copy", "Scale", "Rotate", "Mirror"] {
+            assert!(app.try_start_interactive_command(command));
+            assert_eq!(app.active_command, None);
+            assert!(app.command_log.back().unwrap().contains("no objects"));
+        }
+    }
+
+    #[test]
+    fn interactive_scale_rotate_and_mirror_use_reference_points() {
+        let mut app = test_app();
+        let object = app
+            .document
+            .add_geometry(Geometry::Point(point(2.0, 1.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_object(object, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        let position = |app: &VibocerosApp| match app.document.object(object).unwrap().geometry() {
+            Geometry::Point(point) => *point,
+            _ => panic!("expected a point"),
+        };
+
+        assert!(app.try_start_interactive_command("Scale"));
+        app.accept_drafting_point(point(1.0, 1.0, 0.0));
+        app.accept_drafting_point(point(1.0, 1.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Scale {
+                center: Some(point(1.0, 1.0, 0.0)),
+                reference: None,
+            })
+        );
+        app.accept_drafting_point(point(2.0, 1.0, 0.0));
+        app.accept_drafting_point(point(3.0, 1.0, 0.0));
+        assert_eq!(position(&app), point(3.0, 1.0, 0.0));
+        assert_eq!(app.document.undo_label(), Some("Scale"));
+        app.document.undo().unwrap();
+
+        assert!(app.try_start_interactive_command("Rotate"));
+        app.accept_drafting_point(point(1.0, 1.0, 0.0));
+        app.accept_drafting_point(point(2.0, 1.0, 0.0));
+        app.accept_drafting_point(point(1.0, 2.0, 0.0));
+        assert!(position(&app).is_near(point(1.0, 2.0, 0.0), app.document.tolerance()));
+        assert_eq!(app.document.undo_label(), Some("Rotate"));
+        app.document.undo().unwrap();
+
+        assert!(app.try_start_interactive_command("Mirror"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 1.0, 0.0));
+        assert_eq!(position(&app), point(-2.0, 1.0, 0.0));
+        assert_eq!(app.document.undo_label(), Some("Mirror"));
     }
 
     #[test]

@@ -36,6 +36,7 @@ pub struct DraftingInput {
     pub osnap: bool,
     pub smart_track: bool,
     pub anchor: Option<Point3>,
+    pub reference: Option<Point3>,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
@@ -556,6 +557,27 @@ impl Viewport {
             ));
         }
 
+        if let (Some(anchor), Some(reference)) = (
+            input.anchor.and_then(|point| self.project(point, rect)),
+            input.reference.and_then(|point| self.project(point, rect)),
+        ) {
+            const REFERENCE_COLOR: Color32 = Color32::from_rgb(125, 80, 180);
+            painter.extend(egui::Shape::dashed_line(
+                &[anchor, reference],
+                Stroke::new(1.5, REFERENCE_COLOR),
+                5.0,
+                3.0,
+            ));
+            painter.circle_stroke(reference, 5.0, Stroke::new(1.25, REFERENCE_COLOR));
+            painter.text(
+                reference + Vec2::new(8.0, -8.0),
+                Align2::LEFT_BOTTOM,
+                "Reference",
+                FontId::proportional(11.0),
+                REFERENCE_COLOR,
+            );
+        }
+
         let Some(target) = self.project(cursor.point, rect) else {
             return;
         };
@@ -861,6 +883,7 @@ mod tests {
                     osnap: true,
                     smart_track: true,
                     anchor: Some(point(0.0, 0.0, 8.0)),
+                    reference: None,
                 },
             )
             .unwrap();
@@ -886,6 +909,7 @@ mod tests {
                     osnap: true,
                     smart_track: true,
                     anchor: Some(anchor),
+                    reference: None,
                 },
             )
             .unwrap();
@@ -913,6 +937,7 @@ mod tests {
                     osnap: false,
                     smart_track: false,
                     anchor: None,
+                    reference: None,
                 },
             )
             .unwrap();

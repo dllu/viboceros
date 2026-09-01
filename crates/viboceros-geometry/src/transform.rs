@@ -1,6 +1,6 @@
 use nalgebra::Matrix3;
 
-use crate::{GeometryError, Point3, Real, Vector3, require_finite};
+use crate::{GeometryError, Point3, Real, UnitVector3, Vector3, require_finite};
 
 /// A finite affine map from three-dimensional model space to itself.
 ///
@@ -26,6 +26,56 @@ impl AffineTransform3 {
             linear: Matrix3::identity(),
             translation,
         }
+    }
+
+    pub fn try_uniform_scale(fixed_point: Point3, factor: Real) -> Result<Self, GeometryError> {
+        require_finite([factor], "scale factor")?;
+        Self::try_with_fixed_point(
+            [[factor, 0.0, 0.0], [0.0, factor, 0.0], [0.0, 0.0, factor]],
+            fixed_point,
+        )
+    }
+
+    pub fn try_rotation(
+        fixed_point: Point3,
+        axis: UnitVector3,
+        angle_radians: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([angle_radians], "rotation angle")?;
+        let (sine, cosine) = angle_radians.sin_cos();
+        let one_minus_cosine = 1.0 - cosine;
+        let [x, y, z] = axis.as_vector().to_array();
+        let linear = [
+            [
+                x * x * one_minus_cosine + cosine,
+                x * y * one_minus_cosine - z * sine,
+                x * z * one_minus_cosine + y * sine,
+            ],
+            [
+                y * x * one_minus_cosine + z * sine,
+                y * y * one_minus_cosine + cosine,
+                y * z * one_minus_cosine - x * sine,
+            ],
+            [
+                z * x * one_minus_cosine - y * sine,
+                z * y * one_minus_cosine + x * sine,
+                z * z * one_minus_cosine + cosine,
+            ],
+        ];
+        Self::try_with_fixed_point(linear, fixed_point)
+    }
+
+    pub fn try_reflection(
+        point_on_plane: Point3,
+        plane_normal: UnitVector3,
+    ) -> Result<Self, GeometryError> {
+        let [x, y, z] = plane_normal.as_vector().to_array();
+        let linear = [
+            [1.0 - 2.0 * x * x, -2.0 * x * y, -2.0 * x * z],
+            [-2.0 * y * x, 1.0 - 2.0 * y * y, -2.0 * y * z],
+            [-2.0 * z * x, -2.0 * z * y, 1.0 - 2.0 * z * z],
+        ];
+        Self::try_with_fixed_point(linear, point_on_plane)
     }
 
     pub fn try_new(
@@ -73,6 +123,17 @@ impl AffineTransform3 {
             *coordinate = coefficients.dot(vector)?;
         }
         Ok(coordinates)
+    }
+
+    fn try_with_fixed_point(
+        linear_rows: [[Real; 3]; 3],
+        fixed_point: Point3,
+    ) -> Result<Self, GeometryError> {
+        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
+        let linear_transform = Self::try_new(linear_rows, zero)?;
+        let mapped_fixed_point = linear_transform.transform_point(fixed_point)?;
+        let translation = mapped_fixed_point.vector_to(fixed_point)?;
+        Self::try_new(linear_rows, translation)
     }
 }
 
@@ -159,6 +220,60 @@ mod tests {
             translation
                 .transform_point(point(Real::MAX, 0.0, 0.0))
                 .is_err()
+        );
+    }
+
+    #[test]
+    fn centered_uniform_scale_keeps_its_fixed_point() {
+        let center = point(1.0, 2.0, 3.0);
+        let transform = AffineTransform3::try_uniform_scale(center, 2.0).unwrap();
+        assert_eq!(transform.transform_point(center).unwrap(), center);
+        assert_eq!(
+            transform.transform_point(point(2.0, 4.0, 6.0)).unwrap(),
+            point(3.0, 6.0, 9.0)
+        );
+        assert!(AffineTransform3::try_uniform_scale(center, Real::NAN).is_err());
+    }
+
+    #[test]
+    fn axis_rotation_uses_rodrigues_formula_about_a_fixed_point() {
+        let center = point(1.0, 1.0, 0.0);
+        let axis = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let transform =
+            AffineTransform3::try_rotation(center, axis, std::f64::consts::FRAC_PI_2).unwrap();
+        assert!(
+            transform
+                .transform_point(center)
+                .unwrap()
+                .is_near(center, Tolerance::DEFAULT)
+        );
+        assert!(
+            transform
+                .transform_point(point(2.0, 1.0, 0.0))
+                .unwrap()
+                .is_near(point(1.0, 2.0, 0.0), Tolerance::DEFAULT)
+        );
+        assert!(AffineTransform3::try_rotation(center, axis, Real::INFINITY).is_err());
+    }
+
+    #[test]
+    fn reflection_fixes_its_plane_and_reverses_the_normal_coordinate() {
+        let point_on_plane = point(2.0, -5.0, 7.0);
+        let normal = UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let transform = AffineTransform3::try_reflection(point_on_plane, normal).unwrap();
+        assert_eq!(
+            transform.transform_point(point_on_plane).unwrap(),
+            point_on_plane
+        );
+        assert_eq!(
+            transform.transform_point(point(5.0, 3.0, -1.0)).unwrap(),
+            point(-1.0, 3.0, -1.0)
+        );
+        assert_eq!(
+            transform
+                .transform_vector(Vector3::try_new(1.0, 2.0, 3.0).unwrap())
+                .unwrap(),
+            Vector3::try_new(-1.0, 2.0, 3.0).unwrap()
         );
     }
 }

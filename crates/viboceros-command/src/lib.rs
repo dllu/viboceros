@@ -5,7 +5,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId};
 use viboceros_geometry::{
-    AffineTransform3, GeometryError, LineSegment, NurbsCurve, Point3, Real, TriangleMesh,
+    AffineTransform3, GeometryError, LineSegment, NurbsCurve, Point3, Real, Tolerance,
+    TriangleMesh, UnitVector3, Vector3,
 };
 use viboceros_io::{StlError, StlFormat, read_stl_file, write_stl_file};
 
@@ -68,6 +69,15 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CopyCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ScaleCommand)
+            .expect("unique built-in command");
+        registry
+            .register(RotateCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MirrorCommand)
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -485,10 +495,7 @@ impl Command for MoveCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected: Vec<_> = document.selected_object_ids().collect();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let selected = selected_ids(document)?;
         let offset = parse_translation(arguments, "Move from to")?;
         let count =
             document.transform_objects(selected, AffineTransform3::from_translation(offset))?;
@@ -507,10 +514,7 @@ impl Command for CopyCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected: Vec<_> = document.selected_object_ids().collect();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
+        let selected = selected_ids(document)?;
         let offset = parse_translation(arguments, "Copy from to")?;
         let copies = document
             .copy_objects_transformed(selected, AffineTransform3::from_translation(offset))?;
@@ -519,6 +523,91 @@ impl Command for CopyCommand {
             copies.len(),
             format_vector(offset)
         ))
+    }
+}
+
+struct ScaleCommand;
+
+impl Command for ScaleCommand {
+    fn name(&self) -> &'static str {
+        "Scale"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (center, consumed) = parse_point(arguments)?;
+        let remaining = &arguments[consumed..];
+        let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_nonzero_scale(remaining[0])?
+        } else {
+            let (reference, reference_consumed) = parse_point(remaining)?;
+            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+            require_consumed(
+                remaining,
+                reference_consumed + target_consumed,
+                "Scale center factor | center reference target",
+            )?;
+            scale_factor_from_reference(center, reference, target, document.tolerance())?
+        };
+        let transform = AffineTransform3::try_uniform_scale(center, factor)?;
+        let count = document.transform_objects(selected, transform)?;
+        Ok(format!("Scaled {count} object(s) by {factor:.6}"))
+    }
+}
+
+struct RotateCommand;
+
+impl Command for RotateCommand {
+    fn name(&self) -> &'static str {
+        "Rotate"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (center, consumed) = parse_point(arguments)?;
+        let remaining = &arguments[consumed..];
+        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_finite_real(remaining[0])?.to_radians()
+        } else {
+            let (reference, reference_consumed) = parse_point(remaining)?;
+            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+            require_consumed(
+                remaining,
+                reference_consumed + target_consumed,
+                "Rotate center degrees | center reference target",
+            )?;
+            top_view_angle(center, reference, target, document.tolerance())?
+        };
+        let axis = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
+        let transform = AffineTransform3::try_rotation(center, axis, angle_radians)?;
+        let count = document.transform_objects(selected, transform)?;
+        Ok(format!(
+            "Rotated {count} object(s) by {:.6} degrees",
+            angle_radians.to_degrees()
+        ))
+    }
+}
+
+struct MirrorCommand;
+
+impl Command for MirrorCommand {
+    fn name(&self) -> &'static str {
+        "Mirror"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (axis_start, consumed) = parse_point(arguments)?;
+        let (axis_end, end_consumed) = parse_point(&arguments[consumed..])?;
+        require_consumed(
+            arguments,
+            consumed + end_consumed,
+            "Mirror axisStart axisEnd",
+        )?;
+        let normal = top_view_mirror_normal(axis_start, axis_end, document.tolerance())?;
+        let transform = AffineTransform3::try_reflection(axis_start, normal)?;
+        let count = document.transform_objects(selected, transform)?;
+        Ok(format!("Mirrored {count} object(s)"))
     }
 }
 
@@ -574,6 +663,83 @@ fn parse_translation(
 
 fn format_vector(vector: viboceros_geometry::Vector3) -> String {
     format!("{:.6},{:.6},{:.6}", vector.x(), vector.y(), vector.z())
+}
+
+fn selected_ids(document: &Document) -> Result<Vec<viboceros_document::ObjectId>, CommandError> {
+    let selected: Vec<_> = document.selected_object_ids().collect();
+    if selected.is_empty() {
+        Err(CommandError::NoObjectsSelected)
+    } else {
+        Ok(selected)
+    }
+}
+
+fn parse_finite_real(value: &str) -> Result<Real, CommandError> {
+    let parsed = value
+        .parse::<Real>()
+        .map_err(|_| CommandError::InvalidNumber(value.to_owned()))?;
+    if parsed.is_finite() {
+        Ok(parsed)
+    } else {
+        Err(CommandError::InvalidNumber(value.to_owned()))
+    }
+}
+
+fn parse_nonzero_scale(value: &str) -> Result<Real, CommandError> {
+    let factor = parse_finite_real(value)?;
+    if factor != 0.0 {
+        Ok(factor)
+    } else {
+        Err(CommandError::InvalidScaleFactor(value.to_owned()))
+    }
+}
+
+fn scale_factor_from_reference(
+    center: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    let reference_distance = center.distance_to(reference)?;
+    if reference_distance <= tolerance.absolute() {
+        return Err(GeometryError::Degenerate {
+            context: "scale reference",
+        }
+        .into());
+    }
+    let target_distance = center.distance_to(target)?;
+    let factor = target_distance / reference_distance;
+    if factor.is_finite() && factor > 0.0 {
+        Ok(factor)
+    } else {
+        Err(CommandError::InvalidScaleFactor(format!("{factor}")))
+    }
+}
+
+fn top_view_angle(
+    center: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    let from = top_view_vector(center, reference)?.normalized(tolerance)?;
+    let to = top_view_vector(center, target)?.normalized(tolerance)?;
+    let cosine = from.as_vector().dot(to.as_vector())?.clamp(-1.0, 1.0);
+    let sine = from.as_vector().cross(to.as_vector())?.z();
+    Ok(sine.atan2(cosine))
+}
+
+fn top_view_mirror_normal(
+    axis_start: Point3,
+    axis_end: Point3,
+    tolerance: Tolerance,
+) -> Result<UnitVector3, CommandError> {
+    let axis = top_view_vector(axis_start, axis_end)?;
+    Ok(Vector3::try_new(-axis.y(), axis.x(), 0.0)?.normalized(tolerance)?)
+}
+
+fn top_view_vector(origin: Point3, target: Point3) -> Result<Vector3, GeometryError> {
+    Vector3::try_new(target.x() - origin.x(), target.y() - origin.y(), 0.0)
 }
 
 struct ClearCommand;
@@ -813,6 +979,9 @@ pub enum CommandError {
     #[error("'{0}' is not a valid r,g,b color with components from 0 through 255")]
     InvalidColor(String),
 
+    #[error("'{0}' is not a valid finite, non-zero scale factor")]
+    InvalidScaleFactor(String),
+
     #[error("no layer named '{0}' was found")]
     NamedLayerNotFound(String),
 
@@ -871,7 +1040,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Copy, Delete, ExportStl, Group, ImportStl, Invert, Layer, Line, Move, Point, Redo, SelAll, SelNone, Undo, Ungroup"
+            "Commands: Clear, ControlPointCurve, Copy, Delete, ExportStl, Group, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, Undo, Ungroup"
         );
     }
 
@@ -1134,6 +1303,64 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 1);
         assert!(document.object(original).is_some());
+    }
+
+    #[test]
+    fn scale_rotate_and_mirror_support_numeric_and_reference_forms() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 2,1,0").unwrap();
+        let object = document.objects().next().unwrap().id();
+        document
+            .select_object(object, SelectionMode::Replace)
+            .unwrap();
+        let position = |document: &Document| match document.object(object).unwrap().geometry() {
+            Geometry::Point(point) => *point,
+            _ => panic!("expected a point"),
+        };
+
+        registry.execute(&mut document, "Scale 1,1 -1").unwrap();
+        assert_eq!(position(&document), Point3::try_new(0.0, 1.0, 0.0).unwrap());
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "Scale 1,1 2").unwrap();
+        assert_eq!(position(&document), Point3::try_new(3.0, 1.0, 0.0).unwrap());
+        assert_eq!(document.undo_label(), Some("Scale"));
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Scale 1,1 2,1 3,1")
+            .unwrap();
+        assert_eq!(position(&document), Point3::try_new(3.0, 1.0, 0.0).unwrap());
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "Rotate 1,1 90").unwrap();
+        assert!(position(&document).is_near(
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert_eq!(document.undo_label(), Some("Rotate"));
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Rotate 1,1 2,1 1,2")
+            .unwrap();
+        assert!(position(&document).is_near(
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "Mirror 0,0 0,1").unwrap();
+        assert_eq!(
+            position(&document),
+            Point3::try_new(-2.0, 1.0, 0.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Mirror"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let history_label = document.undo_label().map(str::to_owned);
+        assert!(registry.execute(&mut document, "Scale 1,1 0").is_err());
+        assert!(registry.execute(&mut document, "Mirror 0,0 0,0").is_err());
+        assert_eq!(position(&document), Point3::try_new(2.0, 1.0, 0.0).unwrap());
+        assert_eq!(document.undo_label(), history_label.as_deref());
     }
 
     struct MutateThenFailCommand;

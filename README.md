@@ -22,6 +22,9 @@ SelAll
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
+Scale 0,0 2
+Rotate 0,0 45
+Mirror 0,-5 0,5
 Group Assembly
 Group All Everything
 Ungroup
@@ -38,12 +41,14 @@ Help
 
 Enter `Point` or `Line` without coordinates to pick points in the viewport.
 With objects selected, enter `Move` or `Copy` to pick a base and destination
-point. Osnap captures visible Point, End, and Mid features; SmartTrack captures
-horizontal and vertical alignment from the first picked point. Drag with the
-middle mouse button to pan while a drafting command is active. Outside a
-drafting command, click geometry to select its connected group, Shift-click to
-add, and Ctrl-click or Command-click to toggle. Click empty space or press Esc
-to clear the selection; press Delete to remove selected objects.
+point, `Scale` or `Rotate` to pick center/reference/target points, or `Mirror`
+to pick a two-point axis. Osnap captures visible Point, End, and Mid features;
+SmartTrack captures horizontal and vertical alignment from the first picked
+point. Drag with the middle mouse button to pan while a drafting command is
+active. Outside a drafting command, click geometry to select its connected
+group, Shift-click to add, and Ctrl-click or Command-click to toggle. Click
+empty space or press Esc to clear the selection; press Delete to remove
+selected objects.
 
 ## Build and run
 
