@@ -1,0 +1,767 @@
+use std::collections::BTreeMap;
+use std::ffi::{CStr, CString, c_char, c_double, c_int};
+use std::path::Path;
+use std::ptr::NonNull;
+use std::slice;
+
+use thiserror::Error;
+use viboceros_geometry::{
+    GeometryError, LineSegment, NurbsCurve, Point3, Tolerance, TriangleMesh, WeightedPoint3,
+};
+
+const ERROR_CAPACITY: usize = 4096;
+const OBJECT_POINT: c_int = 1;
+const OBJECT_LINE: c_int = 2;
+const OBJECT_NURBS_CURVE: c_int = 3;
+const OBJECT_TRIANGLE_MESH: c_int = 4;
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ThreeDmLayer {
+    pub name: String,
+    pub color: [u8; 3],
+    pub visible: bool,
+    pub locked: bool,
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum ThreeDmGeometry {
+    Point(Point3),
+    Line(LineSegment),
+    NurbsCurve(NurbsCurve),
+    Mesh(TriangleMesh),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmObject {
+    pub geometry: ThreeDmGeometry,
+    pub layer_index: usize,
+    pub name: Option<String>,
+    pub visible: bool,
+    pub locked: bool,
+}
+
+impl ThreeDmObject {
+    pub fn new(geometry: ThreeDmGeometry, layer_index: usize) -> Self {
+        Self {
+            geometry,
+            layer_index,
+            name: None,
+            visible: true,
+            locked: false,
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+pub struct ThreeDmModel {
+    pub layers: Vec<ThreeDmLayer>,
+    pub objects: Vec<ThreeDmObject>,
+    unsupported_object_count: usize,
+}
+
+impl ThreeDmModel {
+    pub fn new(layers: Vec<ThreeDmLayer>, objects: Vec<ThreeDmObject>) -> Self {
+        Self {
+            layers,
+            objects,
+            unsupported_object_count: 0,
+        }
+    }
+
+    pub const fn unsupported_object_count(&self) -> usize {
+        self.unsupported_object_count
+    }
+}
+
+#[derive(Debug, Error)]
+pub enum ThreeDmError {
+    #[error(transparent)]
+    Io(#[from] std::io::Error),
+
+    #[error(transparent)]
+    Geometry(#[from] GeometryError),
+
+    #[error("3DM path is not valid UTF-8 or contains a nul byte: {0}")]
+    InvalidPath(String),
+
+    #[error("3DM text contains an interior nul byte in {field}")]
+    InteriorNul { field: &'static str },
+
+    #[error("invalid 3DM model: {0}")]
+    InvalidModel(String),
+
+    #[error("malformed data returned by the OpenNURBS bridge: {0}")]
+    MalformedBridge(&'static str),
+
+    #[error("OpenNURBS error: {0}")]
+    Native(String),
+}
+
+pub fn read_3dm_file(
+    path: impl AsRef<Path>,
+    tolerance: Tolerance,
+) -> Result<ThreeDmModel, ThreeDmError> {
+    let path = path_to_c_string(path.as_ref())?;
+    let mut error = [0 as c_char; ERROR_CAPACITY];
+    let mut pointer = std::ptr::null_mut();
+    // SAFETY: `path` and `error` are valid terminated buffers and `pointer`
+    // points to writable storage. The bridge catches all C++ exceptions.
+    let success =
+        unsafe { ffi::vibo_3dm_read(path.as_ptr(), &mut pointer, error.as_mut_ptr(), error.len()) };
+    if success == 0 {
+        return Err(native_error(&error));
+    }
+    let handle = ModelHandle(
+        NonNull::new(pointer).ok_or(ThreeDmError::MalformedBridge("read returned a null model"))?,
+    );
+    decode_model(&handle, tolerance)
+}
+
+pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<(), ThreeDmError> {
+    validate_model(model)?;
+    let destination = path.as_ref();
+    let parent = destination
+        .parent()
+        .filter(|parent| !parent.as_os_str().is_empty())
+        .unwrap_or_else(|| Path::new("."));
+    let staged = tempfile::Builder::new()
+        .prefix(".viboceros-")
+        .suffix(".3dm.tmp")
+        .tempfile_in(parent)?;
+    let native_path = path_to_c_string(staged.path())?;
+    let layer_names = model
+        .layers
+        .iter()
+        .map(|layer| c_string(&layer.name, "layer name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let layers = model
+        .layers
+        .iter()
+        .zip(&layer_names)
+        .map(|(layer, name)| ffi::ViboWriteLayer {
+            name: name.as_ptr(),
+            red: layer.color[0],
+            green: layer.color[1],
+            blue: layer.color[2],
+            visible: u8::from(layer.visible),
+            locked: u8::from(layer.locked),
+        })
+        .collect::<Vec<_>>();
+
+    let object_names = model
+        .objects
+        .iter()
+        .map(|object| {
+            object
+                .name
+                .as_deref()
+                .map(|name| c_string(name, "object name"))
+                .transpose()
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let payloads = model
+        .objects
+        .iter()
+        .map(ObjectPayload::from_object)
+        .collect::<Vec<_>>();
+    let objects = model
+        .objects
+        .iter()
+        .zip(&object_names)
+        .zip(&payloads)
+        .map(|((object, name), payload)| ffi::ViboWriteObject {
+            object_type: payload.object_type,
+            layer_index: object.layer_index,
+            name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
+            visible: u8::from(object.visible),
+            locked: u8::from(object.locked),
+            degree: payload.degree,
+            control_point_count: payload.control_point_count,
+            coordinates: pointer_or_null(&payload.coordinates),
+            coordinate_count: payload.coordinates.len(),
+            knots: pointer_or_null(&payload.knots),
+            knot_count: payload.knots.len(),
+            indices: pointer_or_null(&payload.indices),
+            index_count: payload.indices.len(),
+        })
+        .collect::<Vec<_>>();
+
+    let mut error = [0 as c_char; ERROR_CAPACITY];
+    // SAFETY: all pointers reference immutable vectors and C strings retained
+    // for the duration of this synchronous call. The bridge catches exceptions.
+    let success = unsafe {
+        ffi::vibo_3dm_write(
+            native_path.as_ptr(),
+            pointer_or_null(&layers),
+            layers.len(),
+            pointer_or_null(&objects),
+            objects.len(),
+            error.as_mut_ptr(),
+            error.len(),
+        )
+    };
+    if success == 0 {
+        Err(native_error(&error))
+    } else {
+        staged.as_file().sync_all()?;
+        staged
+            .persist(destination)
+            .map_err(|error| ThreeDmError::Io(error.error))?;
+        Ok(())
+    }
+}
+
+fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmModel, ThreeDmError> {
+    // SAFETY: the handle owns a live bridge model.
+    let layer_count = unsafe { ffi::vibo_3dm_layer_count(handle.0.as_ptr()) };
+    let mut layers = Vec::with_capacity(layer_count.max(1));
+    let mut layer_positions = BTreeMap::new();
+    for index in 0..layer_count {
+        let mut source_index = 0;
+        let mut name = std::ptr::null();
+        let (mut red, mut green, mut blue, mut visible, mut locked) = (0, 0, 0, 0, 0);
+        // SAFETY: all output pointers are valid and the index is in range.
+        let success = unsafe {
+            ffi::vibo_3dm_layer(
+                handle.0.as_ptr(),
+                index,
+                &mut source_index,
+                &mut name,
+                &mut red,
+                &mut green,
+                &mut blue,
+                &mut visible,
+                &mut locked,
+            )
+        };
+        if success == 0 || name.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid layer record"));
+        }
+        if layer_positions.insert(source_index, layers.len()).is_some() {
+            return Err(ThreeDmError::MalformedBridge("duplicate layer index"));
+        }
+        layers.push(ThreeDmLayer {
+            name: c_text(name)?,
+            color: [red, green, blue],
+            visible: visible != 0,
+            locked: locked != 0,
+        });
+    }
+    if layers.is_empty() {
+        layer_positions.insert(0, 0);
+        layers.push(ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        });
+    }
+
+    // SAFETY: the handle owns a live bridge model.
+    let object_count = unsafe { ffi::vibo_3dm_object_count(handle.0.as_ptr()) };
+    let mut objects = Vec::with_capacity(object_count);
+    // SAFETY: the handle owns a live bridge model.
+    let mut unsupported = unsafe { ffi::vibo_3dm_unsupported_object_count(handle.0.as_ptr()) };
+    for index in 0..object_count {
+        match decode_object(handle, index, &layer_positions, tolerance) {
+            Ok(object) => objects.push(object),
+            Err(ThreeDmError::Geometry(_)) => unsupported += 1,
+            Err(error) => return Err(error),
+        }
+    }
+    Ok(ThreeDmModel {
+        layers,
+        objects,
+        unsupported_object_count: unsupported,
+    })
+}
+
+fn decode_object(
+    handle: &ModelHandle,
+    index: usize,
+    layer_positions: &BTreeMap<i32, usize>,
+    tolerance: Tolerance,
+) -> Result<ThreeDmObject, ThreeDmError> {
+    let mut info = ffi::ViboObjectInfo::default();
+    let mut coordinates = std::ptr::null();
+    let mut knots = std::ptr::null();
+    let mut indices = std::ptr::null();
+    // SAFETY: output pointers are valid, the model is live, and index is in range.
+    let success = unsafe {
+        ffi::vibo_3dm_object(
+            handle.0.as_ptr(),
+            index,
+            &mut info,
+            &mut coordinates,
+            &mut knots,
+            &mut indices,
+        )
+    };
+    if success == 0 {
+        return Err(ThreeDmError::MalformedBridge("invalid object record"));
+    }
+    let coordinates = ffi_slice(handle, coordinates, info.coordinate_count)?;
+    let knots = ffi_slice(handle, knots, info.knot_count)?;
+    let indices = ffi_slice(handle, indices, info.index_count)?;
+    let layer_index = layer_positions
+        .get(&info.source_layer_index)
+        .copied()
+        .ok_or_else(|| {
+            ThreeDmError::InvalidModel(format!(
+                "object {index} references unknown layer index {}",
+                info.source_layer_index
+            ))
+        })?;
+    let name = if info.name.is_null() {
+        None
+    } else {
+        let name = c_text(info.name)?;
+        (!name.is_empty()).then_some(name)
+    };
+
+    let geometry = match info.object_type {
+        OBJECT_POINT if coordinates.len() == 3 && knots.is_empty() && indices.is_empty() => {
+            ThreeDmGeometry::Point(point(coordinates)?)
+        }
+        OBJECT_LINE if coordinates.len() == 6 && knots.is_empty() && indices.is_empty() => {
+            ThreeDmGeometry::Line(LineSegment::try_new(
+                point(&coordinates[..3])?,
+                point(&coordinates[3..])?,
+                tolerance,
+            )?)
+        }
+        OBJECT_NURBS_CURVE
+            if info.degree > 0
+                && info.control_point_count
+                    > usize::try_from(info.degree).unwrap_or(usize::MAX)
+                && coordinates.len() == info.control_point_count.saturating_mul(4)
+                && knots.len()
+                    == info
+                        .control_point_count
+                        .saturating_add(info.degree as usize)
+                        .saturating_add(1)
+                && indices.is_empty() =>
+        {
+            let control_points = coordinates
+                .chunks_exact(4)
+                .map(|value| WeightedPoint3::try_new(point(value)?, value[3]))
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            ThreeDmGeometry::NurbsCurve(NurbsCurve::try_new_rational(
+                info.degree as usize,
+                control_points,
+                knots.to_vec(),
+            )?)
+        }
+        OBJECT_TRIANGLE_MESH
+            if !coordinates.is_empty()
+                && coordinates.len() % 3 == 0
+                && !indices.is_empty()
+                && indices.len() % 3 == 0
+                && knots.is_empty() =>
+        {
+            let vertices = coordinates
+                .chunks_exact(3)
+                .map(point)
+                .collect::<Result<Vec<_>, _>>()?;
+            let triangles = indices
+                .chunks_exact(3)
+                .map(|face| [face[0], face[1], face[2]])
+                .collect();
+            ThreeDmGeometry::Mesh(TriangleMesh::try_new(vertices, triangles, tolerance)?)
+        }
+        _ => return Err(ThreeDmError::MalformedBridge("inconsistent object payload")),
+    };
+    Ok(ThreeDmObject {
+        geometry,
+        layer_index,
+        name,
+        visible: info.visible != 0,
+        locked: info.locked != 0,
+    })
+}
+
+fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
+    if model.layers.is_empty() && !model.objects.is_empty() {
+        return Err(ThreeDmError::InvalidModel(
+            "objects require at least one layer".to_owned(),
+        ));
+    }
+    for (index, layer) in model.layers.iter().enumerate() {
+        if layer.name.trim().is_empty() {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "layer {index} has an empty name"
+            )));
+        }
+    }
+    for (index, object) in model.objects.iter().enumerate() {
+        if object.layer_index >= model.layers.len() {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "object {index} references missing layer {}",
+                object.layer_index
+            )));
+        }
+    }
+    Ok(())
+}
+
+struct ObjectPayload {
+    object_type: c_int,
+    degree: u32,
+    control_point_count: usize,
+    coordinates: Vec<c_double>,
+    knots: Vec<c_double>,
+    indices: Vec<u32>,
+}
+
+impl ObjectPayload {
+    fn from_object(object: &ThreeDmObject) -> Self {
+        match &object.geometry {
+            ThreeDmGeometry::Point(point) => Self {
+                object_type: OBJECT_POINT,
+                degree: 0,
+                control_point_count: 0,
+                coordinates: point.to_array().to_vec(),
+                knots: Vec::new(),
+                indices: Vec::new(),
+            },
+            ThreeDmGeometry::Line(line) => Self {
+                object_type: OBJECT_LINE,
+                degree: 0,
+                control_point_count: 0,
+                coordinates: line
+                    .start()
+                    .to_array()
+                    .into_iter()
+                    .chain(line.end().to_array())
+                    .collect(),
+                knots: Vec::new(),
+                indices: Vec::new(),
+            },
+            ThreeDmGeometry::NurbsCurve(curve) => Self {
+                object_type: OBJECT_NURBS_CURVE,
+                degree: curve.degree() as u32,
+                control_point_count: curve.control_points().len(),
+                coordinates: curve
+                    .control_points()
+                    .iter()
+                    .flat_map(|control| {
+                        control
+                            .point()
+                            .to_array()
+                            .into_iter()
+                            .chain([control.weight()])
+                    })
+                    .collect(),
+                knots: curve.knots().to_vec(),
+                indices: Vec::new(),
+            },
+            ThreeDmGeometry::Mesh(mesh) => Self {
+                object_type: OBJECT_TRIANGLE_MESH,
+                degree: 0,
+                control_point_count: 0,
+                coordinates: mesh
+                    .vertices()
+                    .iter()
+                    .flat_map(|point| point.to_array())
+                    .collect(),
+                knots: Vec::new(),
+                indices: mesh.triangles().iter().flatten().copied().collect(),
+            },
+        }
+    }
+}
+
+struct ModelHandle(NonNull<ffi::ViboThreeDmModel>);
+
+impl Drop for ModelHandle {
+    fn drop(&mut self) {
+        // SAFETY: this handle was returned by `vibo_3dm_read` and has not been freed.
+        unsafe { ffi::vibo_3dm_free(self.0.as_ptr()) };
+    }
+}
+
+fn path_to_c_string(path: &Path) -> Result<CString, ThreeDmError> {
+    let text = path
+        .to_str()
+        .ok_or_else(|| ThreeDmError::InvalidPath(path.display().to_string()))?;
+    CString::new(text).map_err(|_| ThreeDmError::InvalidPath(path.display().to_string()))
+}
+
+fn c_string(value: &str, field: &'static str) -> Result<CString, ThreeDmError> {
+    CString::new(value).map_err(|_| ThreeDmError::InteriorNul { field })
+}
+
+fn c_text(pointer: *const c_char) -> Result<String, ThreeDmError> {
+    // SAFETY: bridge string pointers are nul terminated and valid for the model lifetime.
+    unsafe { CStr::from_ptr(pointer) }
+        .to_str()
+        .map(str::to_owned)
+        .map_err(|_| ThreeDmError::MalformedBridge("text is not UTF-8"))
+}
+
+fn native_error(buffer: &[c_char]) -> ThreeDmError {
+    // SAFETY: the bridge always nul terminates a nonempty error buffer.
+    let message = unsafe { CStr::from_ptr(buffer.as_ptr()) }
+        .to_string_lossy()
+        .into_owned();
+    ThreeDmError::Native(if message.is_empty() {
+        "operation failed without a diagnostic".to_owned()
+    } else {
+        message
+    })
+}
+
+fn point(values: &[c_double]) -> Result<Point3, GeometryError> {
+    Point3::try_new(values[0], values[1], values[2])
+}
+
+fn pointer_or_null<T>(values: &[T]) -> *const T {
+    if values.is_empty() {
+        std::ptr::null()
+    } else {
+        values.as_ptr()
+    }
+}
+
+fn ffi_slice<T>(
+    _owner: &ModelHandle,
+    pointer: *const T,
+    length: usize,
+) -> Result<&[T], ThreeDmError> {
+    if length == 0 {
+        return Ok(&[]);
+    }
+    if pointer.is_null() || length > isize::MAX as usize / size_of::<T>() {
+        return Err(ThreeDmError::MalformedBridge("invalid array pointer"));
+    }
+    // SAFETY: the bridge guarantees arrays have `length` initialized elements
+    // and remain valid while the owning model handle is alive.
+    Ok(unsafe { slice::from_raw_parts(pointer, length) })
+}
+
+mod ffi {
+    use super::{c_char, c_double, c_int};
+
+    #[repr(C)]
+    pub struct ViboThreeDmModel {
+        _private: [u8; 0],
+    }
+
+    #[repr(C)]
+    #[derive(Default)]
+    pub struct ViboObjectInfo {
+        pub object_type: c_int,
+        pub source_layer_index: i32,
+        pub name: *const c_char,
+        pub visible: u8,
+        pub locked: u8,
+        pub degree: u32,
+        pub control_point_count: usize,
+        pub coordinate_count: usize,
+        pub knot_count: usize,
+        pub index_count: usize,
+    }
+
+    #[repr(C)]
+    pub struct ViboWriteLayer {
+        pub name: *const c_char,
+        pub red: u8,
+        pub green: u8,
+        pub blue: u8,
+        pub visible: u8,
+        pub locked: u8,
+    }
+
+    #[repr(C)]
+    pub struct ViboWriteObject {
+        pub object_type: c_int,
+        pub layer_index: usize,
+        pub name: *const c_char,
+        pub visible: u8,
+        pub locked: u8,
+        pub degree: u32,
+        pub control_point_count: usize,
+        pub coordinates: *const c_double,
+        pub coordinate_count: usize,
+        pub knots: *const c_double,
+        pub knot_count: usize,
+        pub indices: *const u32,
+        pub index_count: usize,
+    }
+
+    unsafe extern "C" {
+        pub fn vibo_3dm_read(
+            path: *const c_char,
+            output: *mut *mut ViboThreeDmModel,
+            error: *mut c_char,
+            error_capacity: usize,
+        ) -> c_int;
+        pub fn vibo_3dm_free(model: *mut ViboThreeDmModel);
+        pub fn vibo_3dm_layer_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_layer(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            source_index: *mut i32,
+            name: *mut *const c_char,
+            red: *mut u8,
+            green: *mut u8,
+            blue: *mut u8,
+            visible: *mut u8,
+            locked: *mut u8,
+        ) -> c_int;
+        pub fn vibo_3dm_object_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_unsupported_object_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_object(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            info: *mut ViboObjectInfo,
+            coordinates: *mut *const c_double,
+            knots: *mut *const c_double,
+            indices: *mut *const u32,
+        ) -> c_int;
+        pub fn vibo_3dm_write(
+            path: *const c_char,
+            layers: *const ViboWriteLayer,
+            layer_count: usize,
+            objects: *const ViboWriteObject,
+            object_count: usize,
+            error: *mut c_char,
+            error_capacity: usize,
+        ) -> c_int;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::fs;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    use super::*;
+
+    fn sample_model() -> ThreeDmModel {
+        let point = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(-2.0, 0.0, 1.0).unwrap(),
+            Point3::try_new(5.0, 4.0, -1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(2.0, 3.0, 0.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        ThreeDmModel::new(
+            vec![
+                ThreeDmLayer {
+                    name: "Default".to_owned(),
+                    color: [0, 0, 0],
+                    visible: true,
+                    locked: false,
+                },
+                ThreeDmLayer {
+                    name: "Reference 三".to_owned(),
+                    color: [12, 34, 56],
+                    visible: false,
+                    locked: true,
+                },
+            ],
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::Point(point), 0),
+                ThreeDmObject {
+                    geometry: ThreeDmGeometry::Line(line),
+                    layer_index: 1,
+                    name: Some("guide".to_owned()),
+                    visible: true,
+                    locked: true,
+                },
+                ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0),
+            ],
+        )
+    }
+
+    #[test]
+    fn open_nurbs_round_trip_preserves_supported_geometry_and_layers() {
+        let path = temporary_path("roundtrip.3dm");
+        let original = sample_model();
+        fs::write(&path, b"previous valid file remains until replacement").unwrap();
+        write_3dm_file(&path, &original).unwrap();
+        let bytes = fs::read(&path).unwrap();
+        assert!(bytes.starts_with(b"3D Geometry File Format"));
+
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.unsupported_object_count(), 0);
+        assert_eq!(decoded.layers, original.layers);
+        assert_eq!(decoded.objects, original.objects);
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn rejects_invalid_layer_references_before_calling_native_code() {
+        let model = ThreeDmModel::new(
+            Vec::new(),
+            vec![ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )],
+        );
+        assert!(matches!(
+            write_3dm_file(temporary_path("invalid.3dm"), &model),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+    }
+
+    #[test]
+    fn reports_non_3dm_input_as_a_native_error() {
+        let path = temporary_path("not-a-model.3dm");
+        fs::write(&path, b"not a 3dm file").unwrap();
+        assert!(matches!(
+            read_3dm_file(&path, Tolerance::DEFAULT),
+            Err(ThreeDmError::Native(_))
+        ));
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn reads_official_old_archive_fixtures_and_counts_unsupported_surfaces() {
+        let root =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../third_party/opennurbs/example_files");
+        let curves = read_3dm_file(root.join("V2/v2_my_curves.3dm"), Tolerance::DEFAULT).unwrap();
+        assert!(!curves.objects.is_empty());
+        assert!(curves.objects.iter().all(|object| matches!(
+            object.geometry,
+            ThreeDmGeometry::Line(_) | ThreeDmGeometry::NurbsCurve(_)
+        )));
+
+        let surfaces =
+            read_3dm_file(root.join("V7/v7_my_surfaces.3dm"), Tolerance::DEFAULT).unwrap();
+        assert!(surfaces.unsupported_object_count() > 0);
+    }
+
+    fn temporary_path(suffix: &str) -> std::path::PathBuf {
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-{suffix}",
+            std::process::id()
+        ))
+    }
+}

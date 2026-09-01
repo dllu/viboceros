@@ -3,12 +3,15 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
-use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId};
+use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes};
 use viboceros_geometry::{
     AffineTransform3, GeometryError, LineSegment, NurbsCurve, Point3, Real, Tolerance,
     TriangleMesh, UnitVector3, Vector3,
 };
-use viboceros_io::{StlError, StlFormat, read_stl_file, write_stl_file};
+use viboceros_io::{
+    StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel, ThreeDmObject,
+    read_3dm_file, read_stl_file, write_3dm_file, write_stl_file,
+};
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -93,6 +96,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ExportStlCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ImportThreeDmCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExportThreeDmCommand)
             .expect("unique built-in command");
         registry
     }
@@ -856,6 +865,151 @@ impl Command for ExportStlCommand {
     }
 }
 
+struct ImportThreeDmCommand;
+
+impl Command for ImportThreeDmCommand {
+    fn name(&self) -> &'static str {
+        "Import3dm"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("Import3dm path"));
+        }
+        let path = arguments.join(" ");
+        let model = read_3dm_file(&path, document.tolerance())?;
+        let unsupported = model.unsupported_object_count();
+        let layer_count = model.layers.len();
+        let object_count = model.objects.len();
+
+        let mut imported_layers = Vec::with_capacity(layer_count);
+        for layer in &model.layers {
+            let name = unique_import_layer_name(document, &layer.name);
+            let id = document.add_layer(
+                name,
+                ColorRgb::new(layer.color[0], layer.color[1], layer.color[2]),
+            )?;
+            imported_layers.push(id);
+        }
+
+        for object in model.objects {
+            let layer_id = imported_layers[object.layer_index];
+            let mut attributes = ObjectAttributes::on_layer(layer_id)
+                .with_visibility(object.visible)
+                .with_locked(object.locked);
+            if let Some(name) = object.name {
+                attributes = attributes.with_name(name);
+            }
+            document.add_geometry_with_attributes(
+                document_geometry_from_3dm(object.geometry),
+                attributes,
+            )?;
+        }
+
+        for (source, id) in model.layers.iter().zip(imported_layers) {
+            document.set_layer_visibility(id, source.visible)?;
+            document.set_layer_locked(id, source.locked)?;
+        }
+
+        Ok(format!(
+            "Imported {object_count} objects on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped)"
+        ))
+    }
+}
+
+struct ExportThreeDmCommand;
+
+impl Command for ExportThreeDmCommand {
+    fn name(&self) -> &'static str {
+        "Export3dm"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("Export3dm path"));
+        }
+        let path = arguments.join(" ");
+        let model = document_3dm_model(document);
+        let object_count = model.objects.len();
+        let layer_count = model.layers.len();
+        write_3dm_file(&path, &model)?;
+        Ok(format!(
+            "Exported {object_count} objects on {layer_count} layers to '{path}'"
+        ))
+    }
+}
+
+fn document_3dm_model(document: &Document) -> ThreeDmModel {
+    let layers = document
+        .layers()
+        .map(|layer| {
+            let color = layer.color();
+            ThreeDmLayer {
+                name: layer.name().to_owned(),
+                color: [color.red, color.green, color.blue],
+                visible: layer.is_visible(),
+                locked: layer.is_locked(),
+            }
+        })
+        .collect();
+    let layer_indices: BTreeMap<_, _> = document
+        .layers()
+        .enumerate()
+        .map(|(index, layer)| (layer.id(), index))
+        .collect();
+    let objects = document
+        .objects()
+        .map(|object| ThreeDmObject {
+            geometry: geometry_to_3dm(object.geometry()),
+            layer_index: layer_indices[&object.attributes().layer_id()],
+            name: object.attributes().name().map(str::to_owned),
+            visible: object.attributes().is_visible(),
+            locked: object.attributes().is_locked(),
+        })
+        .collect();
+    ThreeDmModel::new(layers, objects)
+}
+
+fn geometry_to_3dm(geometry: &Geometry) -> ThreeDmGeometry {
+    match geometry {
+        Geometry::Point(point) => ThreeDmGeometry::Point(*point),
+        Geometry::Line(line) => ThreeDmGeometry::Line(*line),
+        Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
+        Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
+    }
+}
+
+fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry {
+    match geometry {
+        ThreeDmGeometry::Point(point) => Geometry::Point(point),
+        ThreeDmGeometry::Line(line) => Geometry::Line(line),
+        ThreeDmGeometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve),
+        ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
+    }
+}
+
+fn unique_import_layer_name(document: &Document, source_name: &str) -> String {
+    let base = if source_name.trim().is_empty() {
+        "Imported Layer"
+    } else {
+        source_name.trim()
+    };
+    if document.layer_by_name(base).is_none() {
+        return base.to_owned();
+    }
+    for suffix in 1_u32.. {
+        let candidate = format!("{base} (Imported {suffix})");
+        if document.layer_by_name(&candidate).is_none() {
+            return candidate;
+        }
+    }
+    unreachable!("the finite document cannot contain every numbered layer name")
+}
+
 fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandError> {
     let meshes: Vec<_> = document
         .objects()
@@ -1001,6 +1155,9 @@ pub enum CommandError {
     Stl(#[from] StlError),
 
     #[error(transparent)]
+    ThreeDm(#[from] ThreeDmError),
+
+    #[error(transparent)]
     Document(#[from] DocumentError),
 }
 
@@ -1040,7 +1197,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Copy, Delete, ExportStl, Group, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, Undo, Ungroup"
+            "Commands: Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStl, Group, Import3dm, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, Undo, Ungroup"
         );
     }
 
@@ -1435,5 +1592,63 @@ mod tests {
         assert_eq!(document.objects().len(), 0);
         fs::remove_file(source).unwrap();
         fs::remove_file(output).unwrap();
+    }
+
+    #[test]
+    fn imports_and_exports_3dm_with_layers_as_one_undo_step() {
+        use std::fs;
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-command model.3dm",
+            std::process::id()
+        ));
+
+        let registry = CommandRegistry::with_builtins();
+        let mut source = Document::default();
+        registry
+            .execute(&mut source, "Layer New Reference")
+            .unwrap();
+        registry
+            .execute(&mut source, "Layer Color 12,34,56 Reference")
+            .unwrap();
+        registry.execute(&mut source, "Point 1,2,3").unwrap();
+        registry
+            .execute(&mut source, "Layer Current Default")
+            .unwrap();
+        registry.execute(&mut source, "Line 0,0,0 4,0,0").unwrap();
+        registry
+            .execute(&mut source, "Layer Hide Reference")
+            .unwrap();
+        registry
+            .execute(&mut source, "Layer Lock Reference")
+            .unwrap();
+        registry
+            .execute(&mut source, &format!("Export3dm {}", path.display()))
+            .unwrap();
+
+        let mut imported = Document::default();
+        let message = registry
+            .execute(&mut imported, &format!("Import3dm {}", path.display()))
+            .unwrap();
+        assert!(message.contains("2 objects"));
+        assert!(message.contains("0 unsupported objects skipped"));
+        assert_eq!(imported.objects().len(), 2);
+        assert_eq!(imported.layers().len(), 3);
+        let reference = imported.layer_by_name("Reference").unwrap();
+        assert_eq!(reference.color(), ColorRgb::new(12, 34, 56));
+        assert!(!reference.is_visible());
+        assert!(reference.is_locked());
+        assert!(imported.layer_by_name("Default (Imported 1)").is_some());
+
+        assert_eq!(imported.undo_label(), Some("Import3dm"));
+        registry.execute(&mut imported, "Undo").unwrap();
+        assert_eq!(imported.objects().len(), 0);
+        assert_eq!(imported.layers().len(), 1);
+        fs::remove_file(path).unwrap();
     }
 }

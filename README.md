@@ -36,6 +36,8 @@ Redo
 ImportStl path/to/model.stl
 ExportStl Binary path/to/model.stl
 ExportStl Ascii path/to/model.stl
+Import3dm path/to/model.3dm
+Export3dm path/to/model.3dm
 Help
 ```
 
@@ -52,9 +54,11 @@ selected objects.
 
 ## Build and run
 
-Install a current stable Rust toolchain (Rust 1.95 or newer), then run:
+Install a current stable Rust toolchain (Rust 1.95 or newer), CMake, and a C++17
+compiler. Initialize the pinned OpenNURBS submodule after cloning, then run:
 
 ```sh
+git submodule update --init --recursive
 cargo run
 ```
 
@@ -66,5 +70,8 @@ cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-Both ASCII and binary STL are supported. 3DM, STEP, and production surface and
-solid modelling are not implemented yet.
+Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
+OpenNURBS toolkit and preserves points, lines, NURBS curves, triangle meshes,
+layer state, and object state. Unsupported surface and solid objects are counted
+and reported during import. STEP, 3DM surface/solid interchange, groups in 3DM,
+and production surface and solid modelling are not implemented yet.

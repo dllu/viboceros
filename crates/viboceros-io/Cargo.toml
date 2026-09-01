@@ -6,5 +6,9 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+tempfile = "3.27.0"
 thiserror.workspace = true
 viboceros-geometry.workspace = true
+
+[build-dependencies]
+cmake = "0.1.58"

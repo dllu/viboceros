@@ -113,6 +113,23 @@ impl ObjectAttributes {
         self.name.as_deref()
     }
 
+    pub fn with_name(mut self, name: impl Into<String>) -> Self {
+        let name = name.into();
+        let name = name.trim();
+        self.name = (!name.is_empty()).then(|| name.to_owned());
+        self
+    }
+
+    pub const fn with_visibility(mut self, visible: bool) -> Self {
+        self.visible = visible;
+        self
+    }
+
+    pub const fn with_locked(mut self, locked: bool) -> Self {
+        self.locked = locked;
+        self
+    }
+
     pub const fn layer_id(&self) -> LayerId {
         self.layer_id
     }

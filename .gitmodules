@@ -1,0 +1,5 @@
+[submodule "third_party/opennurbs"]
+	path = third_party/opennurbs
+	url = https://github.com/mcneel/opennurbs.git
+	branch = 8.x
+	shallow = true
