@@ -1,7 +1,7 @@
 use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
 };
-use viboceros_document::{Document, Geometry};
+use viboceros_document::{Document, Geometry, ObjectId, SelectionMode};
 use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
@@ -9,6 +9,9 @@ use viboceros_geometry::{NurbsCurve, Point3, Real, TriangleMesh, UnitVector3};
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
+const PICK_CAPTURE_PIXELS: f32 = 8.0;
+const CURVE_SAMPLES_PER_SPAN: usize = 16;
+const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DisplayMode {
@@ -38,7 +41,14 @@ pub struct DraftingInput {
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub struct ViewportOutput {
     pub picked_point: Option<Point3>,
+    pub selection_click: Option<SelectionClick>,
     pub cancelled: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct SelectionClick {
+    pub object_id: Option<ObjectId>,
+    pub mode: SelectionMode,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -98,6 +108,25 @@ impl Viewport {
         if drafting.active && response.hovered() {
             ui.ctx().set_cursor_icon(CursorIcon::Crosshair);
         }
+        let selection_click = if !drafting.active && response.clicked_by(PointerButton::Primary) {
+            let mode = ui.input(|input| {
+                if input.modifiers.command {
+                    SelectionMode::Toggle
+                } else if input.modifiers.shift {
+                    SelectionMode::Add
+                } else {
+                    SelectionMode::Replace
+                }
+            });
+            Some(SelectionClick {
+                object_id: response
+                    .interact_pointer_pos()
+                    .and_then(|pointer| self.pick_object(pointer, rect, document)),
+                mode,
+            })
+        } else {
+            None
+        };
 
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
@@ -109,9 +138,10 @@ impl Viewport {
             rect.left_top() + Vec2::new(10.0, 8.0),
             Align2::LEFT_TOP,
             format!(
-                "Top · {} · {} object(s)",
+                "Top · {} · {} object(s) · {} selected",
                 self.display_mode.label(),
-                document.objects().len()
+                document.objects().len(),
+                document.selected_object_count(),
             ),
             FontId::proportional(13.0),
             Color32::from_gray(100),
@@ -122,6 +152,7 @@ impl Viewport {
                 .clicked_by(PointerButton::Primary)
                 .then(|| drafting_cursor.map(|cursor| cursor.point))
                 .flatten(),
+            selection_click,
             cancelled: drafting.active && response.clicked_by(PointerButton::Secondary),
         }
     }
@@ -227,6 +258,93 @@ impl Viewport {
         })
     }
 
+    fn pick_object(&self, pointer: Pos2, rect: Rect, document: &Document) -> Option<ObjectId> {
+        let mut nearest: Option<(u8, f32, ObjectId)> = None;
+        for object in document.objects() {
+            if !document.is_object_selectable(object.id()) {
+                continue;
+            }
+            let (priority, distance) = match object.geometry() {
+                Geometry::Point(point) => {
+                    let distance = self
+                        .project(*point, rect)
+                        .map_or(f32::INFINITY, |projected| {
+                            point_segment_distance(pointer, projected, projected)
+                        });
+                    (0, distance)
+                }
+                Geometry::Line(line) => {
+                    let distance = self
+                        .project(line.start(), rect)
+                        .zip(self.project(line.end(), rect))
+                        .map_or(f32::INFINITY, |(start, end)| {
+                            point_segment_distance(pointer, start, end)
+                        });
+                    (1, distance)
+                }
+                Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
+                Geometry::Mesh(mesh) => (2, self.mesh_pick_distance(pointer, rect, mesh)),
+            };
+            if distance > PICK_CAPTURE_PIXELS {
+                continue;
+            }
+            if nearest.is_none_or(|(best_priority, best_distance, _)| {
+                distance < best_distance || (distance == best_distance && priority < best_priority)
+            }) {
+                nearest = Some((priority, distance, object.id()));
+            }
+        }
+        nearest.map(|(_, _, id)| id)
+    }
+
+    fn nurbs_pick_distance(&self, pointer: Pos2, rect: Rect, curve: &NurbsCurve) -> f32 {
+        let domain_end = *curve.domain().end();
+        let mut nearest = f32::INFINITY;
+        for (span_start, span_end) in curve.spans() {
+            let mut previous = None;
+            for sample in 0..=CURVE_SAMPLES_PER_SPAN {
+                let fraction = sample as Real / CURVE_SAMPLES_PER_SPAN as Real;
+                let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
+                if sample == CURVE_SAMPLES_PER_SPAN && span_end < domain_end {
+                    parameter = span_end.next_down().max(span_start);
+                }
+                let projected = curve
+                    .evaluate(parameter)
+                    .ok()
+                    .and_then(|point| self.project(point, rect));
+                if let (Some(start), Some(end)) = (previous, projected) {
+                    nearest = nearest.min(point_segment_distance(pointer, start, end));
+                }
+                previous = projected;
+            }
+        }
+        nearest
+    }
+
+    fn mesh_pick_distance(&self, pointer: Pos2, rect: Rect, mesh: &TriangleMesh) -> f32 {
+        let mut nearest = f32::INFINITY;
+        for triangle_index in 0..mesh.triangles().len() {
+            let Some(points) = mesh.triangle_points(triangle_index) else {
+                continue;
+            };
+            let [Some(first), Some(second), Some(third)] =
+                points.map(|point| self.project(point, rect))
+            else {
+                continue;
+            };
+            if self.display_mode != DisplayMode::Wireframe
+                && point_in_triangle(pointer, first, second, third)
+            {
+                return 0.0;
+            }
+            nearest = nearest
+                .min(point_segment_distance(pointer, first, second))
+                .min(point_segment_distance(pointer, second, third))
+                .min(point_segment_distance(pointer, third, first));
+        }
+        nearest
+    }
+
     fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
         let origin = self.world_origin(rect);
         let spacing = self.pixels_per_unit;
@@ -282,11 +400,18 @@ impl Viewport {
             if self.display_mode == DisplayMode::Ghosted {
                 color = Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 110);
             }
-            let width = match self.display_mode {
+            let selected = document.is_selected(object.id());
+            if selected {
+                color = SELECTED_COLOR;
+            }
+            let mut width = match self.display_mode {
                 DisplayMode::Wireframe => 1.5,
                 DisplayMode::Shaded => 2.25,
                 DisplayMode::Ghosted => 1.25,
             };
+            if selected {
+                width += 1.5;
+            }
 
             match object.geometry() {
                 Geometry::Point(point) => {
@@ -322,18 +447,16 @@ impl Viewport {
         curve: &NurbsCurve,
         stroke: Stroke,
     ) {
-        const SAMPLES_PER_SPAN: usize = 16;
-
         let domain_end = *curve.domain().end();
         for (span_start, span_end) in curve.spans() {
             let mut previous = None;
-            for sample in 0..=SAMPLES_PER_SPAN {
-                let fraction = sample as Real / SAMPLES_PER_SPAN as Real;
+            for sample in 0..=CURVE_SAMPLES_PER_SPAN {
+                let fraction = sample as Real / CURVE_SAMPLES_PER_SPAN as Real;
                 let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
                 // At a fully multiple interior knot, the curve has distinct
                 // left and right limits. Keep this span on its left side and
                 // begin the next polyline separately on the right side.
-                if sample == SAMPLES_PER_SPAN && span_end < domain_end {
+                if sample == CURVE_SAMPLES_PER_SPAN && span_end < domain_end {
                     parameter = span_end.next_down().max(span_start);
                 }
 
@@ -480,6 +603,49 @@ impl Viewport {
     }
 }
 
+fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32 {
+    let start_x = f64::from(start.x);
+    let start_y = f64::from(start.y);
+    let delta_x = f64::from(end.x) - start_x;
+    let delta_y = f64::from(end.y) - start_y;
+    let length_squared = delta_x.mul_add(delta_x, delta_y * delta_y);
+    let parameter = if length_squared > 0.0 && length_squared.is_finite() {
+        ((f64::from(point.x) - start_x).mul_add(delta_x, (f64::from(point.y) - start_y) * delta_y)
+            / length_squared)
+            .clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
+    let closest_x = delta_x.mul_add(parameter, start_x);
+    let closest_y = delta_y.mul_add(parameter, start_y);
+    let distance = (f64::from(point.x) - closest_x).hypot(f64::from(point.y) - closest_y);
+    if distance.is_finite() && distance <= f64::from(f32::MAX) {
+        distance as f32
+    } else {
+        f32::INFINITY
+    }
+}
+
+fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: Pos2) -> bool {
+    let signed_area = |start: Pos2, end: Pos2, target: Pos2| {
+        (f64::from(end.x) - f64::from(start.x)).mul_add(
+            f64::from(target.y) - f64::from(start.y),
+            -(f64::from(end.y) - f64::from(start.y)) * (f64::from(target.x) - f64::from(start.x)),
+        )
+    };
+    let area = signed_area(first, second, third);
+    if !area.is_finite() || area.abs() <= f64::EPSILON {
+        return false;
+    }
+    let tolerance = area.abs().max(1.0) * 1.0e-12;
+    let signs = [
+        signed_area(first, second, point),
+        signed_area(second, third, point),
+        signed_area(third, first, point),
+    ];
+    signs.iter().all(|value| *value >= -tolerance) || signs.iter().all(|value| *value <= tolerance)
+}
+
 fn blend_toward_white(color: Color32, amount: f32) -> Color32 {
     let blend = |component: u8| {
         (f32::from(component) + (255.0 - f32::from(component)) * amount).round() as u8
@@ -500,8 +666,8 @@ fn shaded_color(color: Color32, normal: UnitVector3) -> Color32 {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_document::Geometry;
-    use viboceros_geometry::{LineSegment, Tolerance};
+    use viboceros_document::{ColorRgb, Geometry};
+    use viboceros_geometry::{LineSegment, NurbsCurve, Tolerance, TriangleMesh};
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -543,6 +709,130 @@ mod tests {
         viewport.zoom_by(2.0, Some(screen), rect);
         let after_zoom = viewport.project(model, rect).unwrap();
         assert!((after_zoom - screen).length() <= f32::EPSILON);
+    }
+
+    #[test]
+    fn picking_supports_points_lines_and_nurbs_curves() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let point_id = document
+            .add_geometry(Geometry::Point(point(-4.0, 0.0, 0.0)))
+            .unwrap();
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    point(-1.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(
+                NurbsCurve::try_clamped_uniform(
+                    1,
+                    vec![point(3.0, 0.0, 0.0), point(5.0, 1.0, 0.0)],
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .add_geometry(Geometry::Point(point(0.0, 0.15, 0.0)))
+            .unwrap();
+
+        let near_point = viewport.project(point(-3.9, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(near_point, rect, &document),
+            Some(point_id)
+        );
+        let near_line = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(near_line, rect, &document),
+            Some(line_id)
+        );
+        let on_curve = viewport.project(point(4.0, 0.5, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(on_curve, rect, &document),
+            Some(curve_id)
+        );
+    }
+
+    #[test]
+    fn shaded_meshes_pick_by_face_while_wireframe_picks_edges() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh_id = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(0.0, 2.0, 0.0),
+                    ],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let center = Viewport::default()
+            .project(point(0.0, 0.0, 0.0), rect)
+            .unwrap();
+
+        let wireframe = Viewport::default();
+        assert_eq!(wireframe.pick_object(center, rect, &document), None);
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        assert_eq!(shaded.pick_object(center, rect, &document), Some(mesh_id));
+    }
+
+    #[test]
+    fn picking_ignores_locked_layers_and_prefers_point_features() {
+        let viewport = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(0.0, 2.0, 0.0),
+                    ],
+                    vec![[0, 1, 2]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let locked_layer = document
+            .add_layer("Locked", ColorRgb::new(1, 2, 3))
+            .unwrap();
+        document.set_current_layer(locked_layer).unwrap();
+        document
+            .add_geometry(Geometry::Point(point(4.0, 0.0, 0.0)))
+            .unwrap();
+        let default = document.layer_by_name("Default").unwrap().id();
+        document.set_current_layer(default).unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(center, rect, &document),
+            Some(point_id)
+        );
+        let locked = viewport.project(point(4.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(locked, rect, &document), None);
     }
 
     #[test]

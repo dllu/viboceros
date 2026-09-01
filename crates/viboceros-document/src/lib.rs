@@ -35,6 +35,13 @@ id_type!(LayerId);
 id_type!(GroupId);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SelectionMode {
+    Replace,
+    Add,
+    Toggle,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ColorRgb {
     pub red: u8,
     pub green: u8,
@@ -183,6 +190,7 @@ pub struct Document {
     current_layer: LayerId,
     objects: Vec<Object>,
     groups: Vec<Group>,
+    selection: BTreeSet<ObjectId>,
     history: History,
 }
 
@@ -202,6 +210,7 @@ impl Document {
             current_layer,
             objects: Vec::new(),
             groups: Vec::new(),
+            selection: BTreeSet::new(),
             history: History::default(),
         }
     }
@@ -221,6 +230,7 @@ impl Document {
         self.history.active = Some(PendingTransaction {
             label,
             edits: Vec::new(),
+            selection_before: self.selection.clone(),
         });
         Ok(())
     }
@@ -250,9 +260,14 @@ impl Document {
             .take()
             .ok_or(DocumentError::NoActiveTransaction)?;
         let changed = !transaction.edits.is_empty();
-        for edit in transaction.edits.iter_mut().rev() {
-            edit.undo(self)?;
-        }
+        let result = transaction
+            .edits
+            .iter_mut()
+            .rev()
+            .try_for_each(|edit| edit.undo(self));
+        self.selection = transaction.selection_before;
+        self.prune_selection();
+        result?;
         Ok(changed)
     }
 
@@ -289,6 +304,7 @@ impl Document {
         }
         let label = entry.label.clone();
         self.history.redo.push(entry);
+        self.prune_selection();
         Ok(Some(label))
     }
 
@@ -309,6 +325,7 @@ impl Document {
         }
         let label = entry.label.clone();
         self.push_replayed_undo(entry);
+        self.prune_selection();
         Ok(Some(label))
     }
 
@@ -445,6 +462,7 @@ impl Document {
         let before = self.layers[index].clone();
         self.layers[index].visible = visible;
         self.record_layer_change("Set layer visibility", index, before);
+        self.prune_selection();
         Ok(true)
     }
 
@@ -459,6 +477,7 @@ impl Document {
         let before = self.layers[index].clone();
         self.layers[index].locked = locked;
         self.record_layer_change("Set layer lock", index, before);
+        self.prune_selection();
         Ok(true)
     }
 
@@ -492,6 +511,92 @@ impl Document {
 
     pub fn object(&self, id: ObjectId) -> Option<&Object> {
         self.objects.iter().find(|object| object.id == id)
+    }
+
+    pub fn is_object_selectable(&self, id: ObjectId) -> bool {
+        let Some(object) = self.object(id) else {
+            return false;
+        };
+        let attributes = object.attributes();
+        attributes.visible
+            && !attributes.locked
+            && self
+                .layer(attributes.layer_id)
+                .is_some_and(|layer| layer.visible && !layer.locked)
+    }
+
+    pub fn selected_object_ids(&self) -> impl ExactSizeIterator<Item = ObjectId> + '_ {
+        self.selection.iter().copied()
+    }
+
+    pub fn selected_objects(&self) -> impl Iterator<Item = &Object> {
+        self.selection.iter().filter_map(|id| self.object(*id))
+    }
+
+    pub fn selected_object_count(&self) -> usize {
+        self.selection.len()
+    }
+
+    pub fn is_selected(&self, id: ObjectId) -> bool {
+        self.selection.contains(&id)
+    }
+
+    pub fn clear_selection(&mut self) -> usize {
+        let count = self.selection.len();
+        self.selection.clear();
+        count
+    }
+
+    pub fn select_all(&mut self) -> usize {
+        self.selection = self
+            .objects
+            .iter()
+            .filter(|object| self.is_object_selectable(object.id))
+            .map(|object| object.id)
+            .collect();
+        self.selection.len()
+    }
+
+    pub fn invert_selection(&mut self) -> usize {
+        self.selection = self
+            .objects
+            .iter()
+            .filter(|object| {
+                self.is_object_selectable(object.id) && !self.selection.contains(&object.id)
+            })
+            .map(|object| object.id)
+            .collect();
+        self.selection.len()
+    }
+
+    pub fn select_object(
+        &mut self,
+        id: ObjectId,
+        mode: SelectionMode,
+    ) -> Result<usize, DocumentError> {
+        if self.object(id).is_none() {
+            return Err(DocumentError::ObjectNotFound(id));
+        }
+        if !self.is_object_selectable(id) {
+            return Err(DocumentError::ObjectNotSelectable(id));
+        }
+        let cluster = self.selectable_group_cluster(id);
+        match mode {
+            SelectionMode::Replace => {
+                self.selection = cluster;
+            }
+            SelectionMode::Add => {
+                self.selection.extend(cluster);
+            }
+            SelectionMode::Toggle => {
+                if cluster.iter().all(|member| self.selection.contains(member)) {
+                    self.selection.retain(|member| !cluster.contains(member));
+                } else {
+                    self.selection.extend(cluster);
+                }
+            }
+        }
+        Ok(self.selection.len())
     }
 
     pub fn add_geometry(&mut self, geometry: Geometry) -> Result<ObjectId, DocumentError> {
@@ -584,6 +689,7 @@ impl Document {
             }
         }
         let object = self.objects.remove(index);
+        self.selection.remove(&id);
         self.record_edit(
             "Delete object",
             Edit::ObjectRemoved {
@@ -602,6 +708,7 @@ impl Document {
         }
         let stored_objects = std::mem::take(&mut self.objects);
         let stored_groups = std::mem::take(&mut self.groups);
+        self.selection.clear();
         self.record_edit(
             "Clear objects",
             Edit::ObjectsCleared {
@@ -710,6 +817,35 @@ impl Document {
             .ok_or(DocumentError::LayerNotFound(id))
     }
 
+    fn selectable_group_cluster(&self, id: ObjectId) -> BTreeSet<ObjectId> {
+        let mut connected = BTreeSet::from([id]);
+        loop {
+            let previous_len = connected.len();
+            for group in &self.groups {
+                if group
+                    .members
+                    .iter()
+                    .any(|member| connected.contains(member))
+                {
+                    connected.extend(group.members.iter().copied());
+                }
+            }
+            if connected.len() == previous_len {
+                break;
+            }
+        }
+        connected.retain(|member| self.is_object_selectable(*member));
+        connected
+    }
+
+    fn prune_selection(&mut self) {
+        let selection = std::mem::take(&mut self.selection);
+        self.selection = selection
+            .into_iter()
+            .filter(|id| self.is_object_selectable(*id))
+            .collect();
+    }
+
     fn record_layer_change(&mut self, label: &'static str, index: usize, before: Layer) {
         let after = self.layers[index].clone();
         let id = after.id;
@@ -777,6 +913,9 @@ pub enum DocumentError {
 
     #[error("object {0} was not found")]
     ObjectNotFound(ObjectId),
+
+    #[error("object {0} is hidden or locked and cannot be selected")]
+    ObjectNotSelectable(ObjectId),
 
     #[error("a group must contain at least one object")]
     EmptyGroup,
@@ -956,6 +1095,87 @@ mod tests {
         assert_eq!(document.group(group).unwrap().members().len(), 2);
         document.redo().unwrap();
         assert!(document.group(group).is_none());
+    }
+
+    #[test]
+    fn selection_expands_connected_groups_and_skips_locked_members() {
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let locked_layer = document
+            .add_layer("Locked", ColorRgb::new(10, 20, 30))
+            .unwrap();
+        document.set_current_layer(locked_layer).unwrap();
+        let bridge = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document.set_current_layer(default).unwrap();
+        let last = document
+            .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document.add_group(None, [first, bridge]).unwrap();
+        document.add_group(None, [bridge, last]).unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+
+        assert_eq!(
+            document.select_object(bridge, SelectionMode::Replace),
+            Err(DocumentError::ObjectNotSelectable(bridge))
+        );
+        assert_eq!(
+            document
+                .select_object(first, SelectionMode::Replace)
+                .unwrap(),
+            2
+        );
+        assert!(document.is_selected(first));
+        assert!(!document.is_selected(bridge));
+        assert!(document.is_selected(last));
+
+        assert_eq!(
+            document
+                .select_object(first, SelectionMode::Toggle)
+                .unwrap(),
+            0
+        );
+    }
+
+    #[test]
+    fn selection_is_transient_inverted_and_pruned_by_model_state() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let history_label = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            document
+                .select_object(first, SelectionMode::Replace)
+                .unwrap(),
+            1
+        );
+        assert_eq!(document.invert_selection(), 1);
+        assert!(!document.is_selected(first));
+        assert!(document.is_selected(second));
+        assert_eq!(document.undo_label(), history_label.as_deref());
+
+        document.undo().unwrap();
+        assert!(document.object(second).is_none());
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.select_all(), 1);
+        assert!(document.is_selected(first));
+        document.begin_transaction("Cancelled delete").unwrap();
+        document.delete_object(first).unwrap();
+        assert_eq!(document.selected_object_count(), 0);
+        document.rollback_transaction().unwrap();
+        assert!(document.object(first).is_some());
+        assert!(document.is_selected(first));
+        assert_eq!(document.clear_selection(), 1);
+        assert_eq!(document.clear_selection(), 0);
     }
 
     #[test]

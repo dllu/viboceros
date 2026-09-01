@@ -1,3 +1,5 @@
+use std::collections::BTreeSet;
+
 use super::{Document, DocumentError, Group, GroupId, Layer, LayerId, Object, ObjectId};
 
 pub(super) const HISTORY_LIMIT: usize = 100;
@@ -12,6 +14,7 @@ pub(super) struct HistoryEntry {
 pub(super) struct PendingTransaction {
     pub label: String,
     pub edits: Vec<Edit>,
+    pub selection_before: BTreeSet<ObjectId>,
 }
 
 #[derive(Clone, Debug, Default)]

@@ -18,8 +18,13 @@ Layer New Construction
 Layer Hide Construction
 Layer Show Construction
 Layer Current Default
-Group All Assembly
+SelAll
+Invert
+Group Assembly
+Group All Everything
+Ungroup
 Ungroup Assembly
+Delete
 Clear
 Undo
 Redo
@@ -32,7 +37,10 @@ Help
 Enter `Point` or `Line` without coordinates to pick points in the viewport.
 Osnap captures visible Point, End, and Mid features; SmartTrack captures
 horizontal and vertical alignment from the first line point. Drag with the
-middle mouse button to pan while a drafting command is active.
+middle mouse button to pan while a drafting command is active. Outside a
+drafting command, click geometry to select its connected group, Shift-click to
+add, and Ctrl-click or Command-click to toggle. Click empty space or press Esc
+to clear the selection; press Delete to remove selected objects.
 
 ## Build and run
 

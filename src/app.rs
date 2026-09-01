@@ -5,7 +5,7 @@ use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, GroupId, LayerId};
 use viboceros_geometry::Point3;
 
-use crate::viewport::{DisplayMode, DraftingInput, Viewport, ViewportOutput};
+use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
 
 const MAX_LOG_ENTRIES: usize = 100;
 
@@ -188,6 +188,22 @@ impl VibocerosApp {
         }
     }
 
+    fn apply_selection_click(&mut self, click: SelectionClick) {
+        match click.object_id {
+            Some(id) => match self.document.select_object(id, click.mode) {
+                Ok(count) => self.push_log(format!("Selected {count} object(s)")),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            },
+            None if click.mode == viboceros_document::SelectionMode::Replace => {
+                let count = self.document.clear_selection();
+                if count > 0 {
+                    self.push_log(format!("Deselected {count} object(s)"));
+                }
+            }
+            None => {}
+        }
+    }
+
     fn show_toolbar(&mut self, root: &mut egui::Ui) {
         let can_undo = self.document.can_undo();
         let can_redo = self.document.can_redo();
@@ -201,6 +217,10 @@ impl VibocerosApp {
         );
         let mut undo_clicked = false;
         let mut redo_clicked = false;
+        let mut select_all_clicked = false;
+        let mut select_none_clicked = false;
+        let mut delete_clicked = false;
+        let selected = self.document.selected_object_count();
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal(|ui| {
                 ui.heading("Viboceros");
@@ -213,6 +233,19 @@ impl VibocerosApp {
                     .add_enabled(can_redo, egui::Button::new("Redo"))
                     .on_hover_text(redo_tooltip)
                     .clicked();
+                ui.separator();
+                select_all_clicked = ui
+                    .button("Select All")
+                    .on_hover_text("Select every visible, unlocked object")
+                    .clicked();
+                select_none_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Clear Selection"))
+                    .clicked();
+                delete_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Delete"))
+                    .on_hover_text("Delete selected objects")
+                    .clicked();
+                ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
                 ui.selectable_value(
@@ -241,6 +274,12 @@ impl VibocerosApp {
             self.execute_command("Undo");
         } else if redo_clicked {
             self.execute_command("Redo");
+        } else if select_all_clicked {
+            self.execute_command("SelAll");
+        } else if select_none_clicked {
+            self.execute_command("SelNone");
+        } else if delete_clicked {
+            self.execute_command("Delete");
         }
     }
 
@@ -360,7 +399,7 @@ impl VibocerosApp {
                     });
                 }
                 ui.add_space(8.0);
-                ui.small("Create a group with: Group All [name]");
+                ui.small("Create a group with: Group [name]");
             });
 
         for action in actions {
@@ -441,7 +480,21 @@ impl VibocerosApp {
 impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            self.cancel_interactive_command(true);
+            if self.active_command.is_some() {
+                self.cancel_interactive_command(true);
+            } else {
+                let count = self.document.clear_selection();
+                if count > 0 {
+                    self.push_log(format!("Deselected {count} object(s)"));
+                }
+            }
+        }
+        if self.active_command.is_none()
+            && self.document.selected_object_count() > 0
+            && !ui.ctx().egui_wants_keyboard_input()
+            && ui.input(|input| input.key_pressed(egui::Key::Delete))
+        {
+            self.execute_command("Delete");
         }
         self.show_toolbar(ui);
         self.show_layers(ui);
@@ -460,6 +513,8 @@ impl eframe::App for VibocerosApp {
             self.cancel_interactive_command(true);
         } else if let Some(point) = viewport_output.picked_point {
             self.accept_drafting_point(point);
+        } else if let Some(click) = viewport_output.selection_click {
+            self.apply_selection_click(click);
         }
     }
 }
@@ -538,5 +593,30 @@ mod tests {
             app.document.objects().next().unwrap().geometry(),
             Geometry::Point(point) if *point == Point3::try_new(7.0, 8.0, 9.0).unwrap()
         ));
+    }
+
+    #[test]
+    fn viewport_clicks_select_and_empty_clicks_clear() {
+        let mut app = test_app();
+        let object = app
+            .document
+            .add_geometry(Geometry::Point(point(1.0, 2.0, 0.0)))
+            .unwrap();
+        app.apply_selection_click(SelectionClick {
+            object_id: Some(object),
+            mode: viboceros_document::SelectionMode::Replace,
+        });
+        assert!(app.document.is_selected(object));
+
+        app.apply_selection_click(SelectionClick {
+            object_id: None,
+            mode: viboceros_document::SelectionMode::Add,
+        });
+        assert!(app.document.is_selected(object));
+        app.apply_selection_click(SelectionClick {
+            object_id: None,
+            mode: viboceros_document::SelectionMode::Replace,
+        });
+        assert_eq!(app.document.selected_object_count(), 0);
     }
 }

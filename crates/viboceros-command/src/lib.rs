@@ -44,10 +44,22 @@ impl CommandRegistry {
             .register(LayerCommand)
             .expect("unique built-in command");
         registry
+            .register(SelAllCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SelNoneCommand)
+            .expect("unique built-in command");
+        registry
+            .register(InvertCommand)
+            .expect("unique built-in command");
+        registry
             .register(GroupCommand)
             .expect("unique built-in command");
         registry
             .register(UngroupCommand)
+            .expect("unique built-in command");
+        registry
+            .register(DeleteCommand)
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -313,6 +325,60 @@ impl Command for LayerCommand {
     }
 }
 
+struct SelAllCommand;
+
+impl Command for SelAllCommand {
+    fn name(&self) -> &'static str {
+        "SelAll"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "SelAll")?;
+        let count = document.select_all();
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+struct SelNoneCommand;
+
+impl Command for SelNoneCommand {
+    fn name(&self) -> &'static str {
+        "SelNone"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "SelNone")?;
+        let count = document.clear_selection();
+        Ok(format!("Deselected {count} object(s)"))
+    }
+}
+
+struct InvertCommand;
+
+impl Command for InvertCommand {
+    fn name(&self) -> &'static str {
+        "Invert"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Invert")?;
+        let count = document.invert_selection();
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
 struct GroupCommand;
 
 impl Command for GroupCommand {
@@ -321,25 +387,20 @@ impl Command for GroupCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        if !arguments
+        let all = arguments
             .first()
-            .is_some_and(|argument| argument.eq_ignore_ascii_case("all"))
-        {
-            return Err(CommandError::Usage("Group All [name]"));
-        }
-        let name = (!arguments[1..].is_empty()).then(|| arguments[1..].join(" "));
-        let members: Vec<_> = document
-            .objects()
-            .filter(|object| {
-                let attributes = object.attributes();
-                !attributes.is_locked()
-                    && attributes.is_visible()
-                    && document
-                        .layer(attributes.layer_id())
-                        .is_some_and(|layer| layer.is_visible() && !layer.is_locked())
-            })
-            .map(|object| object.id())
-            .collect();
+            .is_some_and(|argument| argument.eq_ignore_ascii_case("all"));
+        let name_arguments = if all { &arguments[1..] } else { arguments };
+        let name = (!name_arguments.is_empty()).then(|| name_arguments.join(" "));
+        let members: Vec<_> = if all {
+            document
+                .objects()
+                .filter(|object| document.is_object_selectable(object.id()))
+                .map(|object| object.id())
+                .collect()
+        } else {
+            document.selected_object_ids().collect()
+        };
         let member_count = members.len();
         let id = document.add_group(name.clone(), members)?;
         Ok(match name {
@@ -358,7 +419,16 @@ impl Command for UngroupCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         if arguments.is_empty() {
-            return Err(CommandError::Usage("Ungroup All|name"));
+            let selected: BTreeSet<_> = document.selected_object_ids().collect();
+            let groups: Vec<_> = document
+                .groups()
+                .filter(|group| group.members().any(|member| selected.contains(&member)))
+                .map(|group| group.id())
+                .collect();
+            for group in &groups {
+                document.remove_group(*group)?;
+            }
+            return Ok(format!("Removed {} selected group(s)", groups.len()));
         }
         if arguments.len() == 1 && arguments[0].eq_ignore_ascii_case("all") {
             let groups: Vec<_> = document.groups().map(|group| group.id()).collect();
@@ -375,6 +445,23 @@ impl Command for UngroupCommand {
             .ok_or_else(|| CommandError::NamedGroupNotFound(name.clone()))?;
         let members = document.remove_group(id)?;
         Ok(format!("Removed group '{name}' ({members} object(s))"))
+    }
+}
+
+struct DeleteCommand;
+
+impl Command for DeleteCommand {
+    fn name(&self) -> &'static str {
+        "Delete"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Delete")?;
+        let selected: Vec<_> = document.selected_object_ids().collect();
+        for id in &selected {
+            document.delete_object(*id)?;
+        }
+        Ok(format!("Deleted {} object(s)", selected.len()))
     }
 }
 
@@ -677,6 +764,7 @@ pub enum CommandError {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use viboceros_document::SelectionMode;
 
     #[test]
     fn dispatches_case_insensitively_and_accepts_rhino_prefix() {
@@ -709,7 +797,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, ExportStl, Group, ImportStl, Layer, Line, Point, Redo, Undo, Ungroup"
+            "Commands: Clear, ControlPointCurve, Delete, ExportStl, Group, ImportStl, Invert, Layer, Line, Point, Redo, SelAll, SelNone, Undo, Ungroup"
         );
     }
 
@@ -886,6 +974,51 @@ mod tests {
         assert_eq!(document.group_by_name("Pair").unwrap().members().len(), 2);
         registry.execute(&mut document, "Redo").unwrap();
         assert_eq!(document.groups().len(), 0);
+    }
+
+    #[test]
+    fn selection_commands_drive_group_ungroup_and_delete() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        let history_label = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry.execute(&mut document, "SelAll").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelNone").unwrap(),
+            "Deselected 2 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "Invert").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), history_label.as_deref());
+
+        registry.execute(&mut document, "Group Pair").unwrap();
+        assert_eq!(document.group_by_name("Pair").unwrap().members().len(), 2);
+        let first = document.objects().next().unwrap().id();
+        document.clear_selection();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.selected_object_count(), 2);
+
+        registry.execute(&mut document, "Ungroup").unwrap();
+        assert_eq!(document.groups().len(), 0);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.groups().len(), 1);
+
+        registry.execute(&mut document, "Delete").unwrap();
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.undo_label(), Some("Delete"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
     }
 
     struct MutateThenFailCommand;
