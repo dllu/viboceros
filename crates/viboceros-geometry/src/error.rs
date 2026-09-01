@@ -115,4 +115,7 @@ pub enum GeometryError {
 
     #[error("triangle {triangle} is degenerate at the requested tolerance")]
     DegenerateTriangle { triangle: usize },
+
+    #[error("mesh face winding constraints describe a non-orientable surface")]
+    NonOrientableMesh,
 }

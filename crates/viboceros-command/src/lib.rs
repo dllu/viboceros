@@ -124,6 +124,9 @@ impl CommandRegistry {
             .register(FlipCommand)
             .expect("unique built-in command");
         registry
+            .register(UnifyMeshNormalsCommand)
+            .expect("unique built-in command");
+        registry
             .register(GroupCommand)
             .expect("unique built-in command");
         registry
@@ -1289,13 +1292,52 @@ impl Command for FlipCommand {
                     Geometry::Ellipse(ellipse) => Geometry::Ellipse(ellipse.reversed()),
                     Geometry::Polyline(polyline) => Geometry::Polyline(polyline.reversed()),
                     Geometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve.reversed()?),
+                    Geometry::Mesh(mesh) => Geometry::Mesh(mesh.reversed()),
                     _ => return Err(CommandError::UnsupportedFlipGeometry),
                 };
                 Ok((id, reversed))
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
         let count = document.replace_object_geometries(replacements)?;
-        Ok(format!("Flipped {count} curve(s)"))
+        Ok(format!("Flipped {count} object(s)"))
+    }
+}
+
+struct UnifyMeshNormalsCommand;
+
+impl Command for UnifyMeshNormalsCommand {
+    fn name(&self) -> &'static str {
+        "UnifyMeshNormals"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "UnifyMeshNormals")?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mesh_count = selected.len();
+        let mut flipped_face_count = 0;
+        let mut replacements = Vec::new();
+        for (id, geometry) in selected {
+            let Geometry::Mesh(mesh) = geometry else {
+                return Err(CommandError::UnsupportedUnifyMeshNormalsGeometry);
+            };
+            let (unified, flipped) = mesh.unified_face_orientations()?;
+            flipped_face_count += flipped;
+            if flipped > 0 {
+                replacements.push((id, Geometry::Mesh(unified)));
+            }
+        }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Unified {mesh_count} mesh(es): flipped {flipped_face_count} face(s) in {changed_mesh_count} mesh(es); {} already consistent",
+            mesh_count - changed_mesh_count
+        ))
     }
 }
 
@@ -2349,8 +2391,13 @@ pub enum CommandError {
     #[error("the requested division creates no point objects")]
     NoCurveDivisionPoints,
 
-    #[error("Flip supports selected lines, analytic curves, polylines, and NURBS curves only")]
+    #[error(
+        "Flip supports selected lines, analytic curves, polylines, NURBS curves, and meshes only"
+    )]
     UnsupportedFlipGeometry,
+
+    #[error("UnifyMeshNormals supports selected meshes only")]
+    UnsupportedUnifyMeshNormalsGeometry,
 
     #[error(
         "CrvStart and CrvEnd support selected lines, analytic curves, polylines, and NURBS curves only"
@@ -2417,7 +2464,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SrfPt, Undo, Ungroup, UnifyMeshNormals"
         );
     }
 
@@ -2962,7 +3009,7 @@ mod tests {
 
         assert_eq!(
             registry.execute(&mut document, "Rev").unwrap(),
-            "Flipped 2 curve(s)"
+            "Flipped 2 object(s)"
         );
         assert_eq!(document.selected_object_count(), 2);
         assert_eq!(
@@ -3018,6 +3065,95 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "Reverse"),
             Err(CommandError::UnsupportedFlipGeometry)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn unifies_and_flips_mesh_normals_without_changing_identity_or_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Printable")
+            .unwrap();
+        let vertices = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+        ];
+        let oriented_faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]];
+        let mut inconsistent_faces = oriented_faces.clone();
+        inconsistent_faces[1].swap(1, 2);
+        let inconsistent = TriangleMesh::try_new(
+            vertices.clone(),
+            inconsistent_faces.clone(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let oriented =
+            TriangleMesh::try_new(vertices, oriented_faces.clone(), document.tolerance()).unwrap();
+        let first = document.add_geometry(Geometry::Mesh(inconsistent)).unwrap();
+        let second = document
+            .add_geometry(Geometry::Mesh(oriented.clone()))
+            .unwrap();
+        let attributes = document.object(first).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry.execute(&mut document, "Group Shells").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "UnifyMeshNormals").unwrap(),
+            "Unified 2 mesh(es): flipped 1 face(s) in 1 mesh(es); 1 already consistent"
+        );
+        assert_eq!(document.undo_label(), Some("UnifyMeshNormals"));
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.object(first).unwrap().attributes(), &attributes);
+        assert_eq!(
+            document
+                .group_by_name("Shells")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            [first, second].into_iter().collect()
+        );
+        for id in [first, second] {
+            let Geometry::Mesh(mesh) = document.object(id).unwrap().geometry() else {
+                panic!("expected mesh")
+            };
+            assert!(mesh.topology().is_oriented());
+            assert_eq!(mesh.triangles(), oriented_faces);
+        }
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let Geometry::Mesh(restored) = document.object(first).unwrap().geometry() else {
+            panic!("expected restored mesh")
+        };
+        assert_eq!(restored.triangles(), inconsistent_faces);
+        assert!(!restored.topology().is_oriented());
+        registry.execute(&mut document, "Redo").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Flip").unwrap(),
+            "Flipped 2 object(s)"
+        );
+        for id in [first, second] {
+            let Geometry::Mesh(mesh) = document.object(id).unwrap().geometry() else {
+                panic!("expected flipped mesh")
+            };
+            assert_eq!(mesh, &oriented.reversed());
+        }
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.undo_label(), Some("UnifyMeshNormals"));
+
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "UnifyMeshNormals"),
+            Err(CommandError::UnsupportedUnifyMeshNormalsGeometry)
         ));
         assert_eq!(
             document.objects().collect::<Vec<_>>(),

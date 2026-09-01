@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, VecDeque};
 
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, UnitVector3,
@@ -58,6 +58,32 @@ impl MeshTopology {
 struct EdgeIncidence {
     count: usize,
     forward_count: usize,
+    first_use: Option<EdgeUse>,
+    second_use: Option<EdgeUse>,
+}
+
+impl EdgeIncidence {
+    fn add_use(&mut self, edge_use: EdgeUse) {
+        match self.count {
+            0 => self.first_use = Some(edge_use),
+            1 => self.second_use = Some(edge_use),
+            _ => {}
+        }
+        self.count += 1;
+        self.forward_count += usize::from(edge_use.forward);
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct EdgeUse {
+    face: usize,
+    forward: bool,
+}
+
+#[derive(Debug)]
+struct MeshTopologyData {
+    topological_vertex_count: usize,
+    edges: BTreeMap<(usize, usize), EdgeIncidence>,
 }
 
 /// An indexed, oriented triangle mesh with validated finite vertices and
@@ -138,6 +164,18 @@ impl TriangleMesh {
         &self.triangles
     }
 
+    /// Reverses every face winding without changing mesh vertex or face order.
+    pub fn reversed(&self) -> Self {
+        let mut triangles = self.triangles.clone();
+        for triangle in &mut triangles {
+            triangle.swap(1, 2);
+        }
+        Self {
+            vertices: self.vertices.clone(),
+            triangles,
+        }
+    }
+
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
         let triangle = *self.triangles.get(index)?;
         Some([
@@ -151,35 +189,8 @@ impl TriangleMesh {
     /// exactly equal 3D locations. This recognizes indexed meshes and
     /// triangle-soup imports consistently without applying model tolerance.
     pub fn topology(&self) -> MeshTopology {
-        let mut locations = BTreeMap::<[u64; 3], usize>::new();
-        let mut topological_vertices = Vec::with_capacity(self.vertices.len());
-        for vertex in &self.vertices {
-            let key = vertex.to_array().map(canonical_coordinate_bits);
-            let location_count = locations.len();
-            let id = *locations.entry(key).or_insert(location_count);
-            topological_vertices.push(id);
-        }
-
-        let mut edges = BTreeMap::<(usize, usize), EdgeIncidence>::new();
-        for triangle in &self.triangles {
-            let vertices = triangle.map(|index| topological_vertices[index as usize]);
-            for [from, to] in [
-                [vertices[0], vertices[1]],
-                [vertices[1], vertices[2]],
-                [vertices[2], vertices[0]],
-            ] {
-                debug_assert_ne!(from, to, "validated triangle edge collapsed");
-                let (edge, forward) = if from < to {
-                    ((from, to), true)
-                } else {
-                    ((to, from), false)
-                };
-                let incidence = edges.entry(edge).or_default();
-                incidence.count += 1;
-                incidence.forward_count += usize::from(forward);
-            }
-        }
-
+        let data = self.topology_data();
+        let edges = &data.edges;
         let boundary_edge_count = edges
             .values()
             .filter(|incidence| incidence.count == 1)
@@ -196,7 +207,7 @@ impl TriangleMesh {
             })
             .count();
         MeshTopology {
-            topological_vertex_count: locations.len(),
+            topological_vertex_count: data.topological_vertex_count,
             edge_count: edges.len(),
             boundary_edge_count,
             non_manifold_edge_count,
@@ -204,6 +215,108 @@ impl TriangleMesh {
             closed: self.vertices.len() >= 4
                 && self.triangles.len() >= 4
                 && boundary_edge_count == 0,
+        }
+    }
+
+    /// Reorients each manifold-connected face component consistently while
+    /// retaining face and vertex order. Exact coincident locations define
+    /// adjacency, as they do for [`Self::topology`]. Non-manifold edges do not
+    /// impose an ambiguous orientation constraint.
+    pub fn unified_face_orientations(&self) -> Result<(Self, usize), GeometryError> {
+        let data = self.topology_data();
+        let mut neighbors = vec![Vec::<(usize, bool)>::new(); self.triangles.len()];
+        for incidence in data.edges.values() {
+            if incidence.count != 2 {
+                continue;
+            }
+            let first = incidence
+                .first_use
+                .expect("an edge used twice records its first face");
+            let second = incidence
+                .second_use
+                .expect("an edge used twice records its second face");
+            // Equal traversal directions require exactly one adjacent face to
+            // flip; opposite directions require both to retain equal parity.
+            let opposite_parity = first.forward == second.forward;
+            neighbors[first.face].push((second.face, opposite_parity));
+            neighbors[second.face].push((first.face, opposite_parity));
+        }
+
+        let mut flipped = vec![None; self.triangles.len()];
+        let mut pending = VecDeque::new();
+        for root in 0..self.triangles.len() {
+            if flipped[root].is_some() {
+                continue;
+            }
+            flipped[root] = Some(false);
+            pending.push_back(root);
+            while let Some(face) = pending.pop_front() {
+                let face_flipped = flipped[face].expect("queued faces have assigned parity");
+                for &(neighbor, opposite_parity) in &neighbors[face] {
+                    let expected = face_flipped ^ opposite_parity;
+                    match flipped[neighbor] {
+                        Some(actual) if actual != expected => {
+                            return Err(GeometryError::NonOrientableMesh);
+                        }
+                        Some(_) => {}
+                        None => {
+                            flipped[neighbor] = Some(expected);
+                            pending.push_back(neighbor);
+                        }
+                    }
+                }
+            }
+        }
+
+        let mut triangles = self.triangles.clone();
+        let mut flipped_face_count = 0;
+        for (triangle, flip) in triangles.iter_mut().zip(flipped) {
+            if flip.expect("every face component receives an orientation") {
+                triangle.swap(1, 2);
+                flipped_face_count += 1;
+            }
+        }
+        Ok((
+            Self {
+                vertices: self.vertices.clone(),
+                triangles,
+            },
+            flipped_face_count,
+        ))
+    }
+
+    fn topology_data(&self) -> MeshTopologyData {
+        let mut locations = BTreeMap::<[u64; 3], usize>::new();
+        let mut topological_vertices = Vec::with_capacity(self.vertices.len());
+        for vertex in &self.vertices {
+            let key = vertex.to_array().map(canonical_coordinate_bits);
+            let location_count = locations.len();
+            let id = *locations.entry(key).or_insert(location_count);
+            topological_vertices.push(id);
+        }
+
+        let mut edges = BTreeMap::<(usize, usize), EdgeIncidence>::new();
+        for (face, triangle) in self.triangles.iter().enumerate() {
+            let vertices = triangle.map(|index| topological_vertices[index as usize]);
+            for [from, to] in [
+                [vertices[0], vertices[1]],
+                [vertices[1], vertices[2]],
+                [vertices[2], vertices[0]],
+            ] {
+                debug_assert_ne!(from, to, "validated triangle edge collapsed");
+                let (edge, forward) = if from < to {
+                    ((from, to), true)
+                } else {
+                    ((to, from), false)
+                };
+                let incidence = edges.entry(edge).or_default();
+                incidence.add_use(EdgeUse { face, forward });
+            }
+        }
+
+        MeshTopologyData {
+            topological_vertex_count: locations.len(),
+            edges,
         }
     }
 
@@ -424,6 +537,97 @@ mod tests {
         assert!(!two_tetrahedra.is_manifold());
         assert!(!two_tetrahedra.is_oriented());
         assert!(!two_tetrahedra.is_solid());
+    }
+
+    #[test]
+    fn reverses_and_unifies_face_winding_without_reordering_faces() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(0.0, 1.0, 0.0),
+            point(0.0, 0.0, 1.0),
+        ];
+        let oriented_faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]];
+        let oriented =
+            TriangleMesh::try_new(vertices.clone(), oriented_faces.clone(), Tolerance::DEFAULT)
+                .unwrap();
+        let reversed = oriented.reversed();
+        assert_eq!(reversed.reversed(), oriented);
+        for index in 0..oriented.triangles().len() {
+            let normal = oriented.face_normal(index).unwrap();
+            let reversed_normal = reversed.face_normal(index).unwrap();
+            let dot = normal.as_vector().dot(reversed_normal.as_vector()).unwrap();
+            assert!((dot + 1.0).abs() <= 2.0 * Real::EPSILON);
+        }
+
+        let mut inconsistent_faces = oriented_faces.clone();
+        inconsistent_faces[1].swap(1, 2);
+        let inconsistent =
+            TriangleMesh::try_new(vertices, inconsistent_faces, Tolerance::DEFAULT).unwrap();
+        assert_eq!(inconsistent.topology().orientation_conflict_edge_count(), 3);
+        let (unified, flipped_face_count) = inconsistent.unified_face_orientations().unwrap();
+        assert_eq!(flipped_face_count, 1);
+        assert_eq!(unified.triangles(), oriented_faces);
+        assert!(unified.topology().is_oriented());
+        assert_eq!(inconsistent.triangles()[1], [0, 3, 1]);
+    }
+
+    #[test]
+    fn unification_uses_exact_locations_and_rejects_non_orientable_topology() {
+        let locations = [
+            point(0.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(0.0, 1.0, 0.0),
+            point(0.0, 0.0, 1.0),
+        ];
+        let mut soup_vertices = Vec::new();
+        let mut soup_faces = Vec::new();
+        for (face_index, mut face) in [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]]
+            .into_iter()
+            .enumerate()
+        {
+            if face_index == 2 {
+                face.swap(1, 2);
+            }
+            let start = soup_vertices.len() as u32;
+            soup_vertices.extend(face.map(|index| locations[index]));
+            soup_faces.push([start, start + 1, start + 2]);
+        }
+        let soup = TriangleMesh::try_new(soup_vertices, soup_faces, Tolerance::DEFAULT).unwrap();
+        let (unified, flipped_face_count) = soup.unified_face_orientations().unwrap();
+        assert_eq!(flipped_face_count, 1);
+        assert!(unified.topology().is_oriented());
+
+        const SEGMENTS: usize = 4;
+        let mut vertices = Vec::with_capacity(SEGMENTS * 2);
+        for index in 0..SEGMENTS {
+            let angle = std::f64::consts::TAU * index as Real / SEGMENTS as Real;
+            for lateral in [-0.25, 0.25] {
+                let radius = 2.0 + lateral * (angle * 0.5).cos();
+                vertices.push(point(
+                    radius * angle.cos(),
+                    radius * angle.sin(),
+                    lateral * (angle * 0.5).sin(),
+                ));
+            }
+        }
+        let mut faces = Vec::with_capacity(SEGMENTS * 2);
+        for index in 0..SEGMENTS {
+            let a = (index * 2) as u32;
+            let b = a + 1;
+            let (next_a, next_b) = if index + 1 == SEGMENTS {
+                (1, 0)
+            } else {
+                (a + 2, b + 2)
+            };
+            faces.push([a, next_a, b]);
+            faces.push([next_a, next_b, b]);
+        }
+        let mobius = TriangleMesh::try_new(vertices, faces, Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            mobius.unified_face_orientations(),
+            Err(GeometryError::NonOrientableMesh)
+        );
     }
 
     #[test]

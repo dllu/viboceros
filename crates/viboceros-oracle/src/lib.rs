@@ -11,7 +11,8 @@ use serde_json::{Value, json};
 use thiserror::Error;
 use viboceros_geometry::{
     Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
-    NurbsSurface, Point3, Polyline3, Tolerance, UnitVector3, WeightedPoint3, join_polylines,
+    NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh, UnitVector3, WeightedPoint3,
+    join_polylines,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -132,6 +133,11 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
     },
+    MeshUnifyNormals {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -162,6 +168,7 @@ impl Operation {
             | Self::NurbsCurveDivide { id, .. }
             | Self::NurbsCurveReverse { id, .. }
             | Self::NurbsCurveTopology { id, .. }
+            | Self::MeshUnifyNormals { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -518,6 +525,29 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::MeshUnifyNormals {
+            vertices,
+            triangles,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let ((unified, flipped_faces), elapsed) =
+                measure(iterations, || black_box(&mesh).unified_face_orientations())?;
+            (
+                json!({
+                    "flipped_faces": flipped_faces,
+                    "triangles": unified.triangles(),
+                }),
+                elapsed,
+            )
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -709,6 +739,28 @@ mod tests {
         assert_eq!(
             response.results[0].value,
             json!({"is_closed": true, "is_periodic": true})
+        );
+    }
+
+    #[test]
+    fn unifies_mesh_face_winding_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshUnifyNormals {
+            id: "mesh".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ],
+            triangles: vec![[0, 2, 1], [0, 3, 1], [0, 3, 2], [1, 2, 3]],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "flipped_faces": 1,
+                "triangles": [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            })
         );
     }
 

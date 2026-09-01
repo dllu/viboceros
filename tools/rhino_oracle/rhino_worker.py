@@ -129,6 +129,40 @@ def _set_surface_controls(surface, controls, count_u, count_v):
                 raise ValueError("invalid NURBS surface control point")
 
 
+def _triangle_mesh(vertices, triangles):
+    mesh = Rhino.Geometry.Mesh()
+    try:
+        for vertex in vertices:
+            if mesh.Vertices.Add(_point(vertex)) < 0:
+                raise ValueError("could not add mesh vertex")
+        for triangle in triangles:
+            if len(triangle) != 3:
+                raise ValueError("mesh face must contain exactly three indices")
+            if any(
+                isinstance(index, bool) or int(index) != index for index in triangle
+            ):
+                raise ValueError("mesh face index must be an integer")
+            indices = [int(index) for index in triangle]
+            if mesh.Faces.AddFace(indices[0], indices[1], indices[2]) < 0:
+                raise ValueError("could not add mesh face")
+        if not mesh.IsValid:
+            raise ValueError("mesh is invalid")
+        return mesh
+    except Exception:
+        mesh.Dispose()
+        raise
+
+
+def _mesh_triangles(mesh):
+    triangles = []
+    for index in range(mesh.Faces.Count):
+        face = mesh.Faces[index]
+        if not face.IsTriangle:
+            raise ValueError("oracle mesh unexpectedly contains a quad")
+        triangles.append([int(face.A), int(face.B), int(face.C)])
+    return triangles
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "point_distance":
@@ -377,6 +411,29 @@ def _execute(operation, iterations, tolerance):
                 reversed_curve.Dispose()
 
         return _measure(iterations, reverse_curve)
+
+    if kind == "mesh_unify_normals":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def unify_mesh_normals():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                flipped_faces = int(mesh.UnifyNormals())
+                if flipped_faces < 0:
+                    raise ValueError("mesh face unification failed")
+                return {
+                    "flipped_faces": flipped_faces,
+                    "triangles": _mesh_triangles(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, unify_mesh_normals)
+        finally:
+            source.Dispose()
 
     if kind == "nurbs_surface_evaluate":
         degree_u = int(operation["degree_u"])

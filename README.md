@@ -59,6 +59,7 @@ CrvEnd
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
+UnifyMeshNormals
 Delete
 Clear
 Undo
@@ -95,7 +96,10 @@ Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
 selection. Mesh closure uses exact location-welded edge topology, so indexed
 meshes and STL-style triangle soup classify consistently.
-`Flip` (aliases `Reverse` and `Rev`) reverses selected curve directions without
+`UnifyMeshNormals` repairs inconsistent face winding across exact
+location-welded manifold edges, including STL-style triangle soup, and rejects
+non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)
+reverses selected curve directions or every face in selected meshes without
 changing object identities, attributes, groups, or closed-curve seams.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
 SmartTrack captures horizontal and vertical alignment from the first picked

@@ -824,6 +824,7 @@ impl VibocerosApp {
         let mut join_clicked = false;
         let mut explode_clicked = false;
         let mut flip_clicked = false;
+        let mut unify_mesh_normals_clicked = false;
         let mut close_curve_clicked = false;
         let mut curve_start_clicked = false;
         let mut curve_end_clicked = false;
@@ -869,7 +870,11 @@ impl VibocerosApp {
                     .clicked();
                 flip_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Flip"))
-                    .on_hover_text("Flip selected curve directions")
+                    .on_hover_text("Flip selected curve directions or mesh face windings")
+                    .clicked();
+                unify_mesh_normals_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Unify Normals"))
+                    .on_hover_text("Make selected mesh face windings consistent")
                     .clicked();
                 close_curve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Close"))
@@ -952,6 +957,8 @@ impl VibocerosApp {
             self.execute_command("Explode");
         } else if flip_clicked {
             self.execute_command("Flip");
+        } else if unify_mesh_normals_clicked {
+            self.execute_command("UnifyMeshNormals");
         } else if close_curve_clicked {
             self.execute_command("CloseCrv");
         } else if curve_start_clicked {
