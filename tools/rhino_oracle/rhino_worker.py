@@ -467,6 +467,32 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_extract_duplicate_faces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def extract_duplicate_faces():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            extracted = None
+            try:
+                extracted = remainder.Faces.ExtractDuplicateFaces()
+                return {
+                    "extracted": (
+                        None if extracted is None else _mesh_value(extracted)
+                    ),
+                    "remainder": _mesh_value(remainder),
+                }
+            finally:
+                if extracted is not None:
+                    extracted.Dispose()
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, extract_duplicate_faces)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_extract_non_manifold":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         selective = operation["selective"]

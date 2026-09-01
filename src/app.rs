@@ -827,6 +827,7 @@ impl VibocerosApp {
         let mut unify_mesh_normals_clicked = false;
         let mut split_disjoint_mesh_clicked = false;
         let mut extract_non_manifold_clicked = false;
+        let mut extract_duplicate_faces_clicked = false;
         let mut close_curve_clicked = false;
         let mut curve_start_clicked = false;
         let mut curve_end_clicked = false;
@@ -885,6 +886,10 @@ impl VibocerosApp {
                 extract_non_manifold_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Non-Manifold"))
                     .on_hover_text("Extract faces around non-manifold mesh edges")
+                    .clicked();
+                extract_duplicate_faces_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract Duplicates"))
+                    .on_hover_text("Extract duplicate faces from selected meshes")
                     .clicked();
                 close_curve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Close"))
@@ -973,6 +978,8 @@ impl VibocerosApp {
             self.execute_command("SplitDisjointMesh");
         } else if extract_non_manifold_clicked {
             self.execute_command("ExtractNonManifoldMeshEdges");
+        } else if extract_duplicate_faces_clicked {
+            self.execute_command("ExtractDuplicateMeshFaces");
         } else if close_curve_clicked {
             self.execute_command("CloseCrv");
         } else if curve_start_clicked {

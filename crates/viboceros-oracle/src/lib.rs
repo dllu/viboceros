@@ -149,6 +149,11 @@ pub enum Operation {
         triangles: Vec<[u32; 3]>,
         selective: bool,
     },
+    MeshExtractDuplicateFaces {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -182,6 +187,7 @@ impl Operation {
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
+            | Self::MeshExtractDuplicateFaces { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -614,6 +620,38 @@ fn execute(
             };
             (value, elapsed)
         }
+        Operation::MeshExtractDuplicateFaces {
+            vertices,
+            triangles,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let (extraction, elapsed) =
+                measure(
+                    iterations,
+                    || Ok(black_box(&mesh).extract_duplicate_faces()),
+                )?;
+            let value = if let Some(extraction) = extraction {
+                let (remainder, extracted) = extraction.into_parts();
+                json!({
+                    "extracted": mesh_value(&extracted),
+                    "remainder": remainder.as_ref().map(mesh_value),
+                })
+            } else {
+                json!({
+                    "extracted": null,
+                    "remainder": mesh_value(&mesh),
+                })
+            };
+            (value, elapsed)
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -951,6 +989,46 @@ mod tests {
                         [0.0, 0.0, 0.0],
                         [1.0, 0.0, 0.0],
                         [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0],
+                    ],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn extracts_duplicate_mesh_faces_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshExtractDuplicateFaces {
+            id: "duplicates".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [2.0, 0.0, 0.0],
+                [0.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [2.0, 0.0, 0.0],
+                [0.0, 2.0, 0.0],
+                [0.0, 0.0, 1.0],
+            ],
+            triangles: vec![[0, 1, 2], [0, 1, 6], [3, 5, 4]],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "extracted": {
+                    "triangles": [[0, 2, 1]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
+                    ],
+                },
+                "remainder": {
+                    "triangles": [[0, 1, 2], [0, 1, 3]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
                         [0.0, 0.0, 1.0],
                     ],
                 },

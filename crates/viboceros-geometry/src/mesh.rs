@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, UnitVector3,
@@ -94,7 +94,7 @@ struct MeshTopologyData {
     edges: BTreeMap<(usize, usize), EdgeIncidence>,
 }
 
-/// The two parts produced by removing qualifying non-manifold faces.
+/// The two parts produced by extracting faces from a mesh.
 #[derive(Clone, Debug, PartialEq)]
 pub struct MeshFaceExtraction {
     remainder: Option<TriangleMesh>,
@@ -401,6 +401,40 @@ impl TriangleMesh {
             remainder,
             extracted,
         }))
+    }
+
+    /// Extracts all but one face from every exact-location duplicate class.
+    /// Vertex indices, cyclic order, and winding do not affect equality. The
+    /// first source face in each class is retained so the result is stable.
+    pub fn extract_duplicate_faces(&self) -> Option<MeshFaceExtraction> {
+        let mut representative_locations = BTreeSet::new();
+        let mut extracted_mask = vec![false; self.triangles.len()];
+        for (face, triangle) in self.triangles.iter().enumerate() {
+            let mut locations = triangle.map(|vertex| {
+                self.vertices[vertex as usize]
+                    .to_array()
+                    .map(canonical_coordinate_bits)
+            });
+            locations.sort_unstable();
+            if !representative_locations.insert(locations) {
+                extracted_mask[face] = true;
+            }
+        }
+        let extracted_faces = extracted_mask
+            .iter()
+            .enumerate()
+            .filter_map(|(face, &extracted)| extracted.then_some(face))
+            .collect::<Vec<_>>();
+        if extracted_faces.is_empty() {
+            return None;
+        }
+        let remainder_faces = (0..self.triangles.len())
+            .filter(|&face| !extracted_mask[face])
+            .collect::<Vec<_>>();
+        Some(MeshFaceExtraction {
+            remainder: Some(self.subset_preserving_vertex_order(&remainder_faces)),
+            extracted: self.subset_preserving_vertex_order(&extracted_faces),
+        })
     }
 
     fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
@@ -938,6 +972,51 @@ mod tests {
             mesh.extract_non_manifold_faces(2, false),
             Err(GeometryError::InvalidNonManifoldMinimumFaceCount(2))
         );
+    }
+
+    #[test]
+    fn extracts_exact_location_duplicate_faces_independent_of_winding() {
+        let points = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(-0.0, 0.0, 0.0),
+            point(2.0, -0.0, 0.0),
+            point(0.0, 2.0, -0.0),
+            point(0.0, 0.0, 1.0e-12),
+            point(2.0, 0.0, 1.0e-12),
+            point(0.0, 2.0, 1.0e-12),
+        ];
+        let faces = vec![[0, 1, 2], [1, 2, 0], [3, 5, 4], [6, 7, 8]];
+        let mesh =
+            TriangleMesh::try_new(points.to_vec(), faces.clone(), Tolerance::DEFAULT).unwrap();
+        let extraction = mesh.extract_duplicate_faces().unwrap();
+
+        assert_eq!(extraction.extracted().triangles(), &[[1, 2, 0], [3, 5, 4]]);
+        assert_eq!(extraction.extracted().vertices(), &points[..6]);
+        let remainder = extraction.remainder().unwrap();
+        assert_eq!(remainder.triangles(), &[[0, 1, 2], [3, 4, 5]]);
+        assert_eq!(
+            remainder.vertices(),
+            &[
+                points[0], points[1], points[2], points[6], points[7], points[8]
+            ]
+        );
+
+        let signed_zero_duplicate = TriangleMesh::try_new(
+            points[..6].to_vec(),
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(signed_zero_duplicate.extract_duplicate_faces().is_some());
+        let truly_unique = TriangleMesh::try_new(
+            points.to_vec(),
+            vec![[0, 1, 2], [6, 7, 8]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(truly_unique.extract_duplicate_faces().is_none());
     }
 
     #[test]

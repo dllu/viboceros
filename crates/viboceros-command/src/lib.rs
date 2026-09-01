@@ -9,9 +9,9 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
-    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsSurface, Point3,
-    Polyline3, PolylineClosure, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    join_polylines,
+    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve,
+    NurbsSurface, Point3, Polyline3, PolylineClosure, Real, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -132,6 +132,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ExtractNonManifoldMeshEdgesCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExtractDuplicateMeshFacesCommand)
             .expect("unique built-in command");
         registry
             .register(GroupCommand)
@@ -1449,96 +1452,132 @@ impl Command for ExtractNonManifoldMeshEdgesCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_extract_non_manifold_arguments(arguments)?;
-        let selected_ids = document.selected_object_ids().collect::<Vec<_>>();
-        if selected_ids.is_empty() {
+        if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
-        let inputs = selected_ids
-            .into_iter()
-            .map(|id| {
-                let object = document
-                    .object(id)
-                    .expect("selected object identities belong to the document");
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedExtractNonManifoldGeometry);
-                };
-                let group_ids = document
-                    .groups()
-                    .filter(|group| group.members().any(|member| member == id))
-                    .map(|group| group.id())
-                    .collect();
-                let extraction = mesh
-                    .extract_non_manifold_faces(
-                        options.minimum_face_count,
-                        options.hanging_faces_only,
-                    )?
-                    .map(|extraction| extraction.into_parts());
-                Ok(NonManifoldExtractionInput {
-                    id,
-                    attributes: object.attributes().clone(),
-                    group_ids,
-                    extraction,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
-        let extracted_mesh_count = inputs
-            .iter()
-            .filter(|input| input.extraction.is_some())
-            .count();
-        if extracted_mesh_count == 0 {
+        let inputs = stage_selected_mesh_face_extractions(
+            document,
+            || CommandError::UnsupportedExtractNonManifoldGeometry,
+            |mesh| {
+                mesh.extract_non_manifold_faces(
+                    options.minimum_face_count,
+                    options.hanging_faces_only,
+                )
+            },
+        )?;
+        let counts = mesh_face_extraction_counts(&inputs);
+        if counts.extracted_meshes == 0 {
             return Err(CommandError::NoNonManifoldMeshFaces);
         }
-        let unchanged_mesh_count = inputs.len() - extracted_mesh_count;
-        let extracted_face_count = inputs
-            .iter()
-            .filter_map(|input| input.extraction.as_ref())
-            .map(|(_, extracted)| extracted.triangles().len())
-            .sum::<usize>();
-        let replacements = inputs
-            .iter()
-            .filter_map(|input| {
-                input.extraction.as_ref().map(|(remainder, extracted)| {
-                    (
-                        input.id,
-                        Geometry::Mesh(remainder.as_ref().unwrap_or(extracted).clone()),
-                    )
-                })
-            })
-            .collect::<Vec<_>>();
-        document.replace_object_geometries(replacements)?;
-
-        let mut output_ids = Vec::with_capacity(inputs.len() + extracted_mesh_count);
-        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
-        for input in inputs {
-            output_ids.push(input.id);
-            let Some((remainder, extracted)) = input.extraction else {
-                continue;
-            };
-            if remainder.is_none() {
-                continue;
-            }
-            let id = document
-                .add_geometry_with_attributes(Geometry::Mesh(extracted), input.attributes)?;
-            output_ids.push(id);
-            for group_id in input.group_ids {
-                group_additions.entry(group_id).or_default().push(id);
-            }
-        }
-        for (group_id, additions) in group_additions {
-            document.add_group_members(group_id, additions)?;
-        }
-        replace_selection(document, output_ids)?;
+        apply_mesh_face_extractions(document, inputs, counts.extracted_meshes)?;
         Ok(format!(
-            "Extracted {extracted_face_count} face(s) from {extracted_mesh_count} mesh(es); {unchanged_mesh_count} mesh(es) unchanged"
+            "Extracted {} face(s) from {} mesh(es); {} mesh(es) unchanged",
+            counts.extracted_faces, counts.extracted_meshes, counts.unchanged_meshes
         ))
     }
 }
 
-struct NonManifoldExtractionInput {
+struct MeshFaceExtractionInput {
     id: ObjectId,
     attributes: ObjectAttributes,
     group_ids: Vec<GroupId>,
     extraction: Option<(Option<TriangleMesh>, TriangleMesh)>,
+}
+
+#[derive(Clone, Copy)]
+struct MeshFaceExtractionCounts {
+    extracted_meshes: usize,
+    unchanged_meshes: usize,
+    extracted_faces: usize,
+}
+
+fn stage_selected_mesh_face_extractions(
+    document: &Document,
+    unsupported_geometry: impl Fn() -> CommandError,
+    mut extract: impl FnMut(&TriangleMesh) -> Result<Option<MeshFaceExtraction>, GeometryError>,
+) -> Result<Vec<MeshFaceExtractionInput>, CommandError> {
+    document
+        .selected_object_ids()
+        .map(|id| {
+            let object = document
+                .object(id)
+                .expect("selected object identities belong to the document");
+            let Geometry::Mesh(mesh) = object.geometry() else {
+                return Err(unsupported_geometry());
+            };
+            let group_ids = document
+                .groups()
+                .filter(|group| group.members().any(|member| member == id))
+                .map(|group| group.id())
+                .collect();
+            Ok(MeshFaceExtractionInput {
+                id,
+                attributes: object.attributes().clone(),
+                group_ids,
+                extraction: extract(mesh)?.map(MeshFaceExtraction::into_parts),
+            })
+        })
+        .collect()
+}
+
+fn mesh_face_extraction_counts(inputs: &[MeshFaceExtractionInput]) -> MeshFaceExtractionCounts {
+    let extracted_meshes = inputs
+        .iter()
+        .filter(|input| input.extraction.is_some())
+        .count();
+    let extracted_faces = inputs
+        .iter()
+        .filter_map(|input| input.extraction.as_ref())
+        .map(|(_, extracted)| extracted.triangles().len())
+        .sum();
+    MeshFaceExtractionCounts {
+        extracted_meshes,
+        unchanged_meshes: inputs.len() - extracted_meshes,
+        extracted_faces,
+    }
+}
+
+fn apply_mesh_face_extractions(
+    document: &mut Document,
+    inputs: Vec<MeshFaceExtractionInput>,
+    extracted_mesh_count: usize,
+) -> Result<(), CommandError> {
+    let replacements = inputs
+        .iter()
+        .filter_map(|input| {
+            input.extraction.as_ref().map(|(remainder, extracted)| {
+                (
+                    input.id,
+                    Geometry::Mesh(remainder.as_ref().unwrap_or(extracted).clone()),
+                )
+            })
+        })
+        .collect::<Vec<_>>();
+    let replaced = document.replace_object_geometries(replacements)?;
+    debug_assert_eq!(replaced, extracted_mesh_count);
+
+    let mut output_ids = Vec::with_capacity(inputs.len() + extracted_mesh_count);
+    let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+    for input in inputs {
+        output_ids.push(input.id);
+        let Some((remainder, extracted)) = input.extraction else {
+            continue;
+        };
+        if remainder.is_none() {
+            continue;
+        }
+        let id =
+            document.add_geometry_with_attributes(Geometry::Mesh(extracted), input.attributes)?;
+        output_ids.push(id);
+        for group_id in input.group_ids {
+            group_additions.entry(group_id).or_default().push(id);
+        }
+    }
+    for (group_id, additions) in group_additions {
+        document.add_group_members(group_id, additions)?;
+    }
+    replace_selection(document, output_ids)?;
+    Ok(())
 }
 
 #[derive(Clone, Copy)]
@@ -1589,6 +1628,35 @@ fn parse_extract_non_manifold_arguments(
         index += consumed;
     }
     Ok(options)
+}
+
+struct ExtractDuplicateMeshFacesCommand;
+
+impl Command for ExtractDuplicateMeshFacesCommand {
+    fn name(&self) -> &'static str {
+        "ExtractDuplicateMeshFaces"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "ExtractDuplicateMeshFaces")?;
+        if document.selected_object_count() == 0 {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let inputs = stage_selected_mesh_face_extractions(
+            document,
+            || CommandError::UnsupportedExtractDuplicateMeshFacesGeometry,
+            |mesh| Ok(mesh.extract_duplicate_faces()),
+        )?;
+        let counts = mesh_face_extraction_counts(&inputs);
+        if counts.extracted_meshes == 0 {
+            return Err(CommandError::NoDuplicateMeshFaces);
+        }
+        apply_mesh_face_extractions(document, inputs, counts.extracted_meshes)?;
+        Ok(format!(
+            "Extracted {} duplicate face(s) from {} mesh(es); {} mesh(es) unchanged",
+            counts.extracted_faces, counts.extracted_meshes, counts.unchanged_meshes
+        ))
+    }
 }
 
 struct GroupCommand;
@@ -2661,6 +2729,12 @@ pub enum CommandError {
     #[error("none of the selected meshes has faces on a qualifying non-manifold edge")]
     NoNonManifoldMeshFaces,
 
+    #[error("ExtractDuplicateMeshFaces supports selected meshes only")]
+    UnsupportedExtractDuplicateMeshFacesGeometry,
+
+    #[error("none of the selected meshes contains duplicate faces")]
+    NoDuplicateMeshFaces,
+
     #[error(
         "CrvStart and CrvEnd support selected lines, analytic curves, polylines, and NURBS curves only"
     )]
@@ -2726,7 +2800,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals"
         );
     }
 
@@ -3697,6 +3771,123 @@ mod tests {
             registry.execute(&mut selective, "ExtractNonManifoldMeshEdges"),
             Err(CommandError::UnsupportedExtractNonManifoldGeometry)
         ));
+    }
+
+    #[test]
+    fn extracts_duplicate_mesh_faces_with_identity_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Repair").unwrap();
+        let vertices = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+        ];
+        let faces = vec![[0, 1, 2], [0, 1, 6], [3, 5, 4]];
+        let duplicate = TriangleMesh::try_new(vertices, faces, document.tolerance()).unwrap();
+        let clean = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry(Geometry::Mesh(duplicate.clone()))
+            .unwrap();
+        let clean_id = document
+            .add_geometry(Geometry::Mesh(clean.clone()))
+            .unwrap();
+        let attributes = document.object(source).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry
+            .execute(&mut document, "Group DuplicateSet")
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractDuplicateMeshFaces")
+                .unwrap(),
+            "Extracted 1 duplicate face(s) from 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("ExtractDuplicateMeshFaces"));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.selected_object_count(), 3);
+        let extracted_id = document
+            .objects()
+            .map(|object| object.id())
+            .find(|id| *id != source && *id != clean_id)
+            .unwrap();
+        assert_eq!(
+            document.object(extracted_id).unwrap().attributes(),
+            &attributes
+        );
+        let Geometry::Mesh(remainder) = document.object(source).unwrap().geometry() else {
+            panic!("expected duplicate-free remainder")
+        };
+        assert_eq!(remainder.triangles(), &[[0, 1, 2], [0, 1, 3]]);
+        let Geometry::Mesh(extracted) = document.object(extracted_id).unwrap().geometry() else {
+            panic!("expected extracted duplicate mesh")
+        };
+        assert_eq!(extracted.triangles(), &[[0, 2, 1]]);
+        assert_eq!(
+            document
+                .group_by_name("DuplicateSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, clean_id, extracted_id])
+        );
+        assert_eq!(
+            document.object(clean_id).unwrap().geometry(),
+            &Geometry::Mesh(clean.clone())
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(duplicate)
+        );
+        assert_eq!(
+            document
+                .group_by_name("DuplicateSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, clean_id])
+        );
+
+        let mut clean_only = Document::default();
+        let clean_only_id = clean_only.add_geometry(Geometry::Mesh(clean)).unwrap();
+        clean_only
+            .select_object(clean_only_id, SelectionMode::Replace)
+            .unwrap();
+        let history = clean_only.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut clean_only, "ExtractDuplicateMeshFaces"),
+            Err(CommandError::NoDuplicateMeshFaces)
+        ));
+        assert_eq!(clean_only.undo_label(), history.as_deref());
+
+        registry.execute(&mut clean_only, "Point 9,9").unwrap();
+        registry.execute(&mut clean_only, "SelAll").unwrap();
+        let before = clean_only.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut clean_only, "ExtractDuplicateMeshFaces"),
+            Err(CommandError::UnsupportedExtractDuplicateMeshFacesGeometry)
+        ));
+        assert_eq!(
+            clean_only.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
     }
 
     #[test]

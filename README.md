@@ -61,6 +61,7 @@ CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
 SplitDisjointMesh
+ExtractDuplicateMeshFaces
 ExtractNonManifoldMeshEdges
 ExtractNonManifoldMeshEdges ExtractHangingFacesOnly=Yes MinimumFaceCount=3
 Delete
@@ -107,6 +108,9 @@ changing object identities, attributes, groups, or closed-curve seams.
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
 shared vertex does not connect them), retaining the first object identity and
 copying attributes and group membership to additional pieces.
+`ExtractDuplicateMeshFaces` separates all but one face from each duplicate
+class. Face equality uses exact vertex locations and ignores raw indices,
+cyclic ordering, and winding; attributes and group membership are preserved.
 `ExtractNonManifoldMeshEdges` removes faces around edges shared by three or
 more faces into attribute- and group-preserving mesh objects. Options can limit
 the operation to hanging faces or raise the minimum incident-face count.
