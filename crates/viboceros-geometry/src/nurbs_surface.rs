@@ -1,12 +1,13 @@
 use std::ops::RangeInclusive;
 
+use crate::integration::integrate_adaptive;
 use crate::nurbs::{
     clamped_uniform_knots, curve_points_coincident, de_boor, knot_vector_is_periodic,
     project_homogeneous, stable_divided_difference, validate_direction,
 };
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, TriangleMesh,
-    UnitVector3, Vector3, WeightedPoint3, require_finite,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, Point3, Real,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
 };
 
 /// A finite tensor-product non-uniform rational B-spline surface.
@@ -370,6 +371,55 @@ impl NurbsSurface {
         derivative_u.cross(derivative_v)?.normalized(tolerance)
     }
 
+    /// Evaluates the right-handed surface frame used by Rhino: x follows the
+    /// positive U derivative, y is the component of the positive V derivative
+    /// perpendicular to x, and z is the surface normal.
+    pub fn frame_at(
+        &self,
+        u: Real,
+        v: Real,
+        tolerance: Tolerance,
+    ) -> Result<Frame3, GeometryError> {
+        let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
+        Frame3::try_from_directions(point, derivative_u, derivative_v, tolerance)
+    }
+
+    /// Divides the U-varying isocurve at `v` into equal arc-length segments
+    /// and returns natural U parameters.
+    pub fn divide_u_isocurve_by_count(
+        &self,
+        v: Real,
+        segment_count: usize,
+        include_start: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Real>, GeometryError> {
+        self.divide_isocurve_by_count(
+            SurfaceIsoDirection::U,
+            v,
+            segment_count,
+            include_start,
+            tolerance,
+        )
+    }
+
+    /// Divides the V-varying isocurve at `u` into equal arc-length segments
+    /// and returns natural V parameters.
+    pub fn divide_v_isocurve_by_count(
+        &self,
+        u: Real,
+        segment_count: usize,
+        include_start: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Real>, GeometryError> {
+        self.divide_isocurve_by_count(
+            SurfaceIsoDirection::V,
+            u,
+            segment_count,
+            include_start,
+            tolerance,
+        )
+    }
+
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
         let control_points = self
             .control_points
@@ -538,6 +588,272 @@ impl NurbsSurface {
     fn control_index(&self, u: usize, v: usize) -> usize {
         v * self.control_point_count_u + u
     }
+
+    fn divide_isocurve_by_count(
+        &self,
+        direction: SurfaceIsoDirection,
+        constant_parameter: Real,
+        segment_count: usize,
+        include_start: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Real>, GeometryError> {
+        if segment_count == 0 {
+            return Err(GeometryError::InvalidCurveDivisionCount {
+                actual: segment_count,
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            });
+        }
+        let point_count = segment_count
+            .checked_add(usize::from(include_start))
+            .ok_or(GeometryError::InvalidCurveDivisionCount {
+                actual: segment_count,
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            })?;
+        if point_count > MAX_CURVE_DIVISION_POINTS {
+            return Err(GeometryError::TooManyCurveDivisionPoints {
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            });
+        }
+        let sampler =
+            SurfaceIsoArcLengthSampler::try_new(self, direction, constant_parameter, tolerance)?;
+        let first_index = usize::from(!include_start);
+        let mut parameters = Vec::with_capacity(point_count);
+        for index in first_index..=segment_count {
+            let distance = if index == segment_count {
+                sampler.total_length
+            } else {
+                sampler.total_length * (index as Real / segment_count as Real)
+            };
+            parameters.push(sampler.parameter_at_distance(distance)?);
+        }
+        Ok(parameters)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum SurfaceIsoDirection {
+    U,
+    V,
+}
+
+#[derive(Clone, Copy)]
+struct SurfaceIsoSpan {
+    start: Real,
+    end: Real,
+    length: Real,
+    cumulative_start: Real,
+    cumulative_end: Real,
+}
+
+struct SurfaceIsoArcLengthSampler<'a> {
+    surface: &'a NurbsSurface,
+    direction: SurfaceIsoDirection,
+    constant_parameter: Real,
+    spans: Vec<SurfaceIsoSpan>,
+    total_length: Real,
+    tolerance: Tolerance,
+}
+
+impl<'a> SurfaceIsoArcLengthSampler<'a> {
+    fn try_new(
+        surface: &'a NurbsSurface,
+        direction: SurfaceIsoDirection,
+        constant_parameter: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([constant_parameter], "surface isocurve parameter")?;
+        let raw_spans = match direction {
+            SurfaceIsoDirection::U => {
+                checked_span(
+                    surface.degree_v,
+                    surface.control_point_count_v,
+                    &surface.knots_v,
+                    constant_parameter,
+                )?;
+                surface.spans_u().collect::<Vec<_>>()
+            }
+            SurfaceIsoDirection::V => {
+                checked_span(
+                    surface.degree_u,
+                    surface.control_point_count_u,
+                    &surface.knots_u,
+                    constant_parameter,
+                )?;
+                surface.spans_v().collect::<Vec<_>>()
+            }
+        };
+        let mut spans = Vec::with_capacity(raw_spans.len());
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for (start, end) in raw_spans {
+            let length = integrate_surface_speed(start, end, tolerance, |parameter| {
+                let (_, derivative_u, derivative_v) = match direction {
+                    SurfaceIsoDirection::U => {
+                        surface.evaluate_with_derivatives(parameter, constant_parameter)?
+                    }
+                    SurfaceIsoDirection::V => {
+                        surface.evaluate_with_derivatives(constant_parameter, parameter)?
+                    }
+                };
+                match direction {
+                    SurfaceIsoDirection::U => derivative_u.length(),
+                    SurfaceIsoDirection::V => derivative_v.length(),
+                }
+            })?;
+            if length == 0.0 {
+                continue;
+            }
+            let cumulative_start = sum + correction;
+            compensated_add(&mut sum, &mut correction, length);
+            let cumulative_end = sum + correction;
+            spans.push(SurfaceIsoSpan {
+                start,
+                end,
+                length,
+                cumulative_start,
+                cumulative_end,
+            });
+        }
+        let total_length = sum + correction;
+        require_finite([total_length], "surface isocurve length")?;
+        if spans.is_empty() || total_length <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "surface isocurve",
+            });
+        }
+        Ok(Self {
+            surface,
+            direction,
+            constant_parameter,
+            spans,
+            total_length,
+            tolerance,
+        })
+    }
+
+    fn parameter_at_distance(&self, distance: Real) -> Result<Real, GeometryError> {
+        require_finite([distance], "surface isocurve arc-length distance")?;
+        if distance < 0.0 || distance > self.total_length {
+            return Err(GeometryError::ArcLengthOutOfDomain {
+                distance,
+                length: self.total_length,
+            });
+        }
+        if distance == 0.0 {
+            return Ok(self.spans[0].start);
+        }
+        if distance == self.total_length {
+            return Ok(self.spans.last().expect("an isocurve has spans").end);
+        }
+        let span = self.spans[self
+            .spans
+            .partition_point(|span| span.cumulative_end < distance)
+            .min(self.spans.len() - 1)];
+        let target = (distance - span.cumulative_start).clamp(0.0, span.length);
+        if target == 0.0 {
+            return Ok(span.start);
+        }
+        if target == span.length {
+            return Ok(span.end);
+        }
+        let distance_tolerance = surface_distance_tolerance(span.length, self.tolerance);
+        let mut lower = span.start;
+        let mut upper = span.end;
+        let mut parameter = stable_surface_lerp(span.start, span.end, target / span.length);
+        for _ in 0..80 {
+            let length = integrate_surface_speed(
+                span.start,
+                parameter,
+                Tolerance::try_new(
+                    distance_tolerance,
+                    self.tolerance.relative(),
+                    self.tolerance.angular(),
+                )?,
+                |value| self.speed(value),
+            )?;
+            let residual = length - target;
+            if residual.abs() <= distance_tolerance {
+                return Ok(parameter);
+            }
+            if residual < 0.0 {
+                lower = parameter;
+            } else {
+                upper = parameter;
+            }
+            let midpoint = lower * 0.5 + upper * 0.5;
+            if midpoint <= lower || midpoint >= upper {
+                return Ok(midpoint.clamp(span.start, span.end));
+            }
+            let speed = self.speed(parameter)?;
+            parameter = (speed > 0.0)
+                .then(|| parameter - residual / speed)
+                .filter(|candidate| {
+                    candidate.is_finite() && *candidate > lower && *candidate < upper
+                })
+                .unwrap_or(midpoint);
+        }
+        Err(GeometryError::NumericalIntegrationDidNotConverge)
+    }
+
+    fn speed(&self, parameter: Real) -> Result<Real, GeometryError> {
+        let (_, derivative_u, derivative_v) = match self.direction {
+            SurfaceIsoDirection::U => self
+                .surface
+                .evaluate_with_derivatives(parameter, self.constant_parameter)?,
+            SurfaceIsoDirection::V => self
+                .surface
+                .evaluate_with_derivatives(self.constant_parameter, parameter)?,
+        };
+        match self.direction {
+            SurfaceIsoDirection::U => derivative_u.length(),
+            SurfaceIsoDirection::V => derivative_v.length(),
+        }
+    }
+}
+
+fn integrate_surface_speed(
+    start: Real,
+    end: Real,
+    tolerance: Tolerance,
+    mut speed: impl FnMut(Real) -> Result<Real, GeometryError>,
+) -> Result<Real, GeometryError> {
+    let coarse = integrate_adaptive(
+        start,
+        end,
+        tolerance.absolute(),
+        tolerance.relative(),
+        &mut speed,
+    )?;
+    let tighter = surface_distance_tolerance(coarse, tolerance);
+    if tighter < tolerance.absolute() {
+        integrate_adaptive(start, end, tighter, tolerance.relative(), speed)
+    } else {
+        Ok(coarse)
+    }
+}
+
+fn surface_distance_tolerance(length: Real, tolerance: Tolerance) -> Real {
+    let relative = tolerance.relative() * length.abs();
+    let roundoff = 64.0 * Real::EPSILON * length.abs();
+    tolerance
+        .absolute()
+        .min(relative)
+        .max(roundoff)
+        .max(Real::MIN_POSITIVE)
+}
+
+fn stable_surface_lerp(start: Real, end: Real, fraction: Real) -> Real {
+    start.mul_add(1.0 - fraction, end * fraction)
+}
+
+fn compensated_add(sum: &mut Real, correction: &mut Real, value: Real) {
+    let next = *sum + value;
+    if sum.abs() >= value.abs() {
+        *correction += (*sum - next) + value;
+    } else {
+        *correction += (value - next) + *sum;
+    }
+    *sum = next;
 }
 
 fn knots_are_clamped(degree: usize, knots: &[Real]) -> bool {
@@ -821,6 +1137,84 @@ mod tests {
         assert!(Tolerance::DEFAULT.approx_eq(vertical.x(), 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(vertical.y(), 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(vertical.z(), 3.0));
+    }
+
+    #[test]
+    fn surface_frames_and_isocurve_division_match_a_quarter_cylinder() {
+        let middle_weight = 0.5_f64.sqrt();
+        let mut controls = Vec::new();
+        for z in [0.0, 3.0] {
+            controls.extend([
+                WeightedPoint3::try_new(point(1.0, 0.0, z), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0, z), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0, z), 1.0).unwrap(),
+            ]);
+        }
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            controls,
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+
+        let parameters = surface
+            .divide_u_isocurve_by_count(0.25, 3, true, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(parameters.len(), 4);
+        for (parameter, angle) in parameters.into_iter().zip([
+            0.0,
+            std::f64::consts::FRAC_PI_6,
+            std::f64::consts::FRAC_PI_3,
+            std::f64::consts::FRAC_PI_2,
+        ]) {
+            let actual = surface.evaluate(parameter, 0.25).unwrap();
+            assert_point_near(actual, point(angle.cos(), angle.sin(), 0.75));
+        }
+        let v_parameters = surface
+            .divide_v_isocurve_by_count(0.37, 2, true, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(v_parameters, vec![0.0, 0.5, 1.0]);
+
+        let frame = surface.frame_at(0.5, 0.25, Tolerance::DEFAULT).unwrap();
+        assert_point_near(frame.origin(), surface.evaluate(0.5, 0.25).unwrap());
+        assert!(frame.x_axis().x() < 0.0 && frame.x_axis().y() > 0.0);
+        assert!(frame.y_axis().z() > 0.0);
+        assert!(frame.z_axis().x() > 0.0 && frame.z_axis().y() > 0.0);
+    }
+
+    #[test]
+    fn isocurve_division_uses_the_requested_surface_edge() {
+        let surface = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(5.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 10.0, 10.0),
+                point(0.0, 20.0, 10.0),
+                point(10.0, 10.0, 10.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let u = surface
+            .divide_u_isocurve_by_count(0.0, 3, true, Tolerance::DEFAULT)
+            .unwrap();
+        let v = surface
+            .divide_v_isocurve_by_count(0.0, 2, true, Tolerance::DEFAULT)
+            .unwrap();
+        for (actual, expected) in u.into_iter().zip([0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0]) {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
+        assert_eq!(v, vec![0.0, 0.5, 1.0]);
     }
 
     #[test]

@@ -10,6 +10,49 @@ pub struct Frame3 {
 }
 
 impl Frame3 {
+    /// Constructs the deterministic OpenNURBS-style plane whose z-axis is the
+    /// supplied normal. The x-axis is chosen from the two largest normal
+    /// components, and y completes a right-handed orthonormal frame.
+    pub fn try_from_normal(
+        origin: Point3,
+        normal: Vector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let z_axis = normal.normalized(tolerance)?;
+        let components = z_axis.as_vector().to_array();
+        let [x, y, z] = components.map(f64::abs);
+        let (first, second, zero) = if y > x {
+            if z > y {
+                (2, 1, 0)
+            } else if z >= x {
+                (1, 2, 0)
+            } else {
+                (1, 0, 2)
+            }
+        } else if z > x {
+            (2, 0, 1)
+        } else if z > y {
+            (0, 2, 1)
+        } else {
+            (0, 1, 2)
+        };
+        let mut perpendicular = [0.0; 3];
+        perpendicular[first] = -components[second];
+        perpendicular[second] = components[first];
+        perpendicular[zero] = 0.0;
+        let x_axis = Vector3::try_from(perpendicular)?.normalized_nonzero()?;
+        let y_axis = z_axis
+            .as_vector()
+            .cross(x_axis.as_vector())?
+            .normalized_nonzero()?;
+        Ok(Self {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+        })
+    }
+
     /// Constructs a frame from an origin, a point on its positive x-axis, and
     /// a point in its positive xy half-plane.
     pub fn try_from_points(
@@ -123,6 +166,49 @@ mod tests {
                 Tolerance::DEFAULT,
             )
             .is_err()
+        );
+    }
+
+    #[test]
+    fn normal_constructor_matches_opennurbs_axis_selection() {
+        let origin = point(1.0, 2.0, 3.0);
+        let world_z = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(world_z.x_axis().as_vector().to_array(), [1.0, 0.0, 0.0]);
+        assert_eq!(world_z.y_axis().as_vector().to_array(), [0.0, 1.0, 0.0]);
+
+        let world_y = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(world_y.x_axis().as_vector().to_array(), [0.0, 0.0, 1.0]);
+        assert_eq!(world_y.y_axis().as_vector().to_array(), [1.0, 0.0, 0.0]);
+        assert_eq!(world_y.z_axis().as_vector().to_array(), [0.0, 1.0, 0.0]);
+
+        let oblique = Frame3::try_from_normal(
+            origin,
+            Vector3::try_new(2.0, -3.0, 4.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for axis in oblique.axes() {
+            assert!(Tolerance::DEFAULT.approx_eq(axis.as_vector().length().unwrap(), 1.0));
+        }
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                oblique
+                    .x_axis()
+                    .as_vector()
+                    .dot(oblique.y_axis().as_vector())
+                    .unwrap(),
+                0.0
+            )
         );
     }
 }

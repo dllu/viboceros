@@ -99,6 +99,9 @@ pub enum Operation {
     DocumentCurveArrayCycle {
         id: String,
     },
+    DocumentSurfaceArrayCycle {
+        id: String,
+    },
     DocumentPolarArrayCycle {
         id: String,
     },
@@ -283,6 +286,7 @@ impl Operation {
             | Self::DocumentLinearArrayCycle { id }
             | Self::DocumentRectangularArrayCycle { id }
             | Self::DocumentCurveArrayCycle { id }
+            | Self::DocumentSurfaceArrayCycle { id }
             | Self::DocumentPolarArrayCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::DocumentPointCloudCycle { id }
@@ -485,6 +489,9 @@ fn execute(
         }
         Operation::DocumentCurveArrayCycle { .. } => {
             document_curve_array_cycle(iterations, tolerance)?
+        }
+        Operation::DocumentSurfaceArrayCycle { .. } => {
+            document_surface_array_cycle(iterations, tolerance)?
         }
         Operation::DocumentPolarArrayCycle { .. } => {
             document_polar_array_cycle(iterations, tolerance)?
@@ -1931,6 +1938,206 @@ fn document_orient_scenario(
             .enumerate()
             .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
             .collect::<Vec<_>>(),
+    }))
+}
+
+fn document_surface_array_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let value = json!({
+        "uv": document_surface_array_scenario(
+            tolerance,
+            &registry,
+            "uv",
+            SurfaceArrayFixtureSurface::Bilinear,
+            "ArraySrf 3 2 BasePoint=1,2,3 SurfaceName=Target Mode=UV",
+        )?,
+        "cylinder_uv": document_surface_array_scenario(
+            tolerance,
+            &registry,
+            "cylinder-uv",
+            SurfaceArrayFixtureSurface::Cylinder,
+            "ArraySrf 4 2 BasePoint=1,2,3 SurfaceName=Target Mode=UV",
+        )?,
+        "cylinder_isocurve": document_surface_array_scenario(
+            tolerance,
+            &registry,
+            "cylinder-isocurve",
+            SurfaceArrayFixtureSurface::Cylinder,
+            "ArraySrf 4 2 BasePoint=1,2,3 SurfaceName=Target Mode=Isocurve",
+        )?,
+        "warped_isocurve": document_surface_array_scenario(
+            tolerance,
+            &registry,
+            "warped-isocurve",
+            SurfaceArrayFixtureSurface::Warped,
+            "ArraySrf 4 3 BasePoint=1,2,3 SurfaceName=Target Mode=Isocurve",
+        )?,
+        "single": document_surface_array_scenario(
+            tolerance,
+            &registry,
+            "single",
+            SurfaceArrayFixtureSurface::Warped,
+            "ArraySrf 1 1 BasePoint=1,2,3 SurfaceName=Target Mode=UV",
+        )?,
+        "custom_up": document_surface_array_scenario(
+            tolerance,
+            &registry,
+            "custom-up",
+            SurfaceArrayFixtureSurface::Bilinear,
+            "ArraySrf 1 1 BasePoint=1,2,3 Up=0,1,0 SurfaceName=Target Mode=UV",
+        )?,
+    });
+    let surface = SurfaceArrayFixtureSurface::Cylinder.geometry()?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        black_box(&surface).frame_at(black_box(0.37), black_box(0.62), tolerance)
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+#[derive(Clone, Copy)]
+enum SurfaceArrayFixtureSurface {
+    Bilinear,
+    Cylinder,
+    Warped,
+}
+
+impl SurfaceArrayFixtureSurface {
+    fn geometry(self) -> Result<NurbsSurface, GeometryError> {
+        match self {
+            Self::Bilinear => NurbsSurface::try_bilinear([
+                Point3::try_new(0.0, 0.0, 0.0)?,
+                Point3::try_new(10.0, 0.0, 0.0)?,
+                Point3::try_new(12.0, 10.0, 10.0)?,
+                Point3::try_new(0.0, 10.0, 10.0)?,
+            ]),
+            Self::Cylinder => {
+                let middle_weight = 0.5_f64.sqrt();
+                let mut controls = Vec::new();
+                for z in [0.0, 10.0] {
+                    controls.extend([
+                        WeightedPoint3::try_new(Point3::try_new(10.0, 0.0, z)?, 1.0)?,
+                        WeightedPoint3::try_new(Point3::try_new(10.0, 10.0, z)?, middle_weight)?,
+                        WeightedPoint3::try_new(Point3::try_new(0.0, 10.0, z)?, 1.0)?,
+                    ]);
+                }
+                NurbsSurface::try_new_rational(
+                    2,
+                    1,
+                    3,
+                    2,
+                    controls,
+                    vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                    vec![0.0, 0.0, 1.0, 1.0],
+                )
+            }
+            Self::Warped => NurbsSurface::try_new(
+                2,
+                1,
+                3,
+                2,
+                vec![
+                    Point3::try_new(0.0, 0.0, 0.0)?,
+                    Point3::try_new(5.0, 0.0, 0.0)?,
+                    Point3::try_new(10.0, 0.0, 0.0)?,
+                    Point3::try_new(0.0, 10.0, 10.0)?,
+                    Point3::try_new(0.0, 20.0, 10.0)?,
+                    Point3::try_new(10.0, 10.0, 10.0)?,
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                vec![0.0, 0.0, 1.0, 1.0],
+            ),
+        }
+    }
+}
+
+fn document_surface_array_scenario(
+    tolerance: Tolerance,
+    registry: &CommandRegistry,
+    label: &str,
+    surface: SurfaceArrayFixtureSurface,
+    command: &str,
+) -> Result<Value, ProbeError> {
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let origin = Point3::try_new(1.0, 2.0, 3.0)?;
+    let mut original_ids = Vec::with_capacity(3);
+    for (axis, offset) in [
+        ("x", [1.0, 0.0, 0.0]),
+        ("y", [0.0, 1.0, 0.0]),
+        ("z", [0.0, 0.0, 1.0]),
+    ] {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Line(LineSegment::try_new(
+                origin,
+                origin.translated(Vector3::try_from(offset)?)?,
+                tolerance,
+            )?),
+            ObjectAttributes::on_layer(layer).with_name(format!("{label} {axis}")),
+        )?);
+    }
+    document.add_group(
+        Some(format!("Viboceros Surface Array Group {label}")),
+        original_ids.iter().copied(),
+    )?;
+    let surface_id = document.add_geometry_with_attributes(
+        Geometry::NurbsSurface(surface.geometry()?),
+        ObjectAttributes::on_layer(layer).with_name("Target"),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(&mut document, command)?;
+
+    let name_prefix = format!("{label} ");
+    let object_ids = document
+        .objects()
+        .filter(|object| {
+            object
+                .attributes()
+                .name()
+                .is_some_and(|name| name.starts_with(&name_prefix))
+        })
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    let mut objects = object_ids
+        .iter()
+        .map(|id| array_line_record(&document, *id))
+        .collect::<Result<Vec<_>, _>>()?;
+    objects.sort_by(compare_array_line_records);
+    let mut groups = document
+        .groups()
+        .filter_map(|group| {
+            let members = group
+                .members()
+                .filter(|id| object_ids.contains(id))
+                .collect::<Vec<_>>();
+            (!members.is_empty()).then_some(members)
+        })
+        .map(|members| {
+            let mut records = members
+                .into_iter()
+                .map(|id| array_line_record(&document, id))
+                .collect::<Result<Vec<_>, _>>()?;
+            records.sort_by(compare_array_line_records);
+            Ok::<_, ProbeError>(records)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    groups.sort_by(|left, right| compare_array_line_record_lists(left, right));
+
+    Ok(json!({
+        "command_succeeded": true,
+        "groups": groups
+            .iter()
+            .map(|records| curve_array_line_records_value(records))
+            .collect::<Vec<_>>(),
+        "objects": curve_array_line_records_value(&objects),
+        "originals_selected": original_ids
+            .iter()
+            .enumerate()
+            .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+            .collect::<Vec<_>>(),
+        "surface_selected": document.is_selected(surface_id),
     }))
 }
 

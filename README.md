@@ -65,6 +65,7 @@ Array 3 2 2 4 -3 5
 Array 3 2 1 20 12 0 Mode=Fill
 ArrayCrv 8 Orientation=Freeform PathName=Rail
 ArrayCrv Distance=2.5 Orientation=Roadlike BasePoint=0,0,0 PathName=Rail
+ArraySrf 4 3 BasePoint=0,0,0 Up=0,0,1 Mode=Isocurve SurfaceName=Panel
 ArrayLinear 4 0,0,0 2,1,0
 ArrayPolar 6 0,0,0 360 Rotate=Yes ZOffset=0
 Scale 0,0 2
@@ -241,6 +242,13 @@ only, and `NoRotation` translates without rotating. `BasePoint=` uses an
 explicit source anchor and, as in Rhino, retains the originals in addition to
 all requested rail items. Without it, the originals are the first item. Use
 `Flip` on the rail to reverse its travel direction.
+`ArraySrf` copies every selected source into a U-by-V grid over an untrimmed
+NURBS surface. `Mode=UV` divides normalized parameters; `Mode=Isocurve` divides
+the U and V domain-start isocurves by arc length before forming the grid. Counts
+of one use the corresponding domain start. `BasePoint=` is required, `Up=`
+defaults to world Z, and `SurfaceName=` can be omitted when the target is the
+last selected object. Surface normals determine orientation, while originals,
+attributes, selection, and one copied group topology per cell are preserved.
 `ArrayPolar` uses the same total-item and preservation rules around a top-view
 center. Exactly 360 degrees omits a duplicate endpoint; other positive,
 negative, and multi-turn sweeps include both endpoints. `Rotate=No` keeps object

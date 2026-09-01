@@ -238,6 +238,252 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_surface_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Surface Array " + suffix + " "
+        fixture_group_indices = set()
+        target_ids = []
+
+        def fixture_xyz(value):
+            coordinates = [round(float(component), 6) for component in value]
+            return [0.0 if component == 0.0 else component for component in coordinates]
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": fixture_xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": fixture_xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            return tuple(record["start"] + record["end"] + [record["name"]])
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(
+                key=lambda group: tuple(record_key(record) for record in group)
+            )
+            return groups
+
+        def create_surface(surface_kind):
+            if surface_kind == "bilinear":
+                return Rhino.Geometry.NurbsSurface.CreateFromCorners(
+                    Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(10.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(12.0, 10.0, 10.0),
+                    Rhino.Geometry.Point3d(0.0, 10.0, 10.0),
+                )
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, surface_kind == "cylinder", 3, 2, 3, 2
+            )
+            if surface is None:
+                raise ValueError("could not allocate surface-array fixture")
+            if surface_kind == "cylinder":
+                middle_weight = math.sqrt(0.5)
+                controls = [
+                    {"point": [10.0, 0.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 0.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 0.0, 10.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 10.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 10.0], "weight": 1.0},
+                ]
+            else:
+                controls = [
+                    {"point": [0.0, 0.0, 0.0]},
+                    {"point": [5.0, 0.0, 0.0]},
+                    {"point": [10.0, 0.0, 0.0]},
+                    {"point": [0.0, 10.0, 10.0]},
+                    {"point": [0.0, 20.0, 10.0]},
+                    {"point": [10.0, 10.0, 10.0]},
+                ]
+            _set_surface_controls(surface, controls, 3, 2)
+            _set_knots(
+                surface.KnotsU,
+                [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                "surface-array U knot",
+            )
+            _set_knots(
+                surface.KnotsV,
+                [0.0, 0.0, 1.0, 1.0],
+                "surface-array V knot",
+            )
+            return surface
+
+        def run_scenario(
+            label, surface_kind, command_template, u_count, v_count
+        ):
+            _record_progress("document_surface_array_cycle: %s start" % label)
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            source_ids = []
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(1.0, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, 1.0, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, 1.0)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + axis
+                source_id = document.Objects.AddLine(
+                    origin, origin + offset, attributes
+                )
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add surface-array fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Surface Array Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group surface-array fixture lines")
+            fixture_group_indices.add(group_index)
+            surface = create_surface(surface_kind)
+            if surface is None or not surface.IsValid:
+                raise ValueError("surface-array fixture surface is invalid")
+            target_id = document.Objects.AddSurface(surface)
+            if target_id == System.Guid.Empty:
+                raise ValueError("could not add surface-array fixture surface")
+            target_ids.append(target_id)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                document.Objects.Select(source_id)
+            command = command_template.replace("{target_id}", str(target_id))
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_surface_array_cycle: %s command complete" % label
+            )
+            scenario_prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(scenario_prefix)
+            ]
+            expected_count = len(source_ids) * (1 + u_count * v_count)
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "ArraySrf macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (
+                        command,
+                        succeeded,
+                        len(objects),
+                        history[-2000:],
+                    )
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(succeeded),
+                "groups": scenario_groups(objects),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, source_id in enumerate(source_ids)
+                    if document.Objects.FindId(source_id).IsSelected(False) > 0
+                ],
+                "surface_selected": (
+                    document.Objects.FindId(target_id).IsSelected(False) > 0
+                ),
+            }
+
+        try:
+            base = "_-ArraySrf _Mode={mode} 1,2,3 {up} '_-SelID {target_id} "
+            value = {
+                "uv": run_scenario(
+                    "uv",
+                    "bilinear",
+                    base.format(mode="_UV", up="_Enter", target_id="{target_id}")
+                    + "3 2 _Enter",
+                    3,
+                    2,
+                ),
+                "cylinder_uv": run_scenario(
+                    "cylinder-uv",
+                    "cylinder",
+                    base.format(mode="_UV", up="_Enter", target_id="{target_id}")
+                    + "4 2 _Enter",
+                    4,
+                    2,
+                ),
+                "cylinder_isocurve": run_scenario(
+                    "cylinder-isocurve",
+                    "cylinder",
+                    base.format(
+                        mode="_Isocurve", up="_Enter", target_id="{target_id}"
+                    )
+                    + "4 2 _Enter",
+                    4,
+                    2,
+                ),
+                "warped_isocurve": run_scenario(
+                    "warped-isocurve",
+                    "warped",
+                    base.format(
+                        mode="_Isocurve", up="_Enter", target_id="{target_id}"
+                    )
+                    + "4 3 _Enter",
+                    4,
+                    3,
+                ),
+                "single": run_scenario(
+                    "single",
+                    "warped",
+                    base.format(mode="_UV", up="_Enter", target_id="{target_id}")
+                    + "1 1 _Enter",
+                    1,
+                    1,
+                ),
+                "custom_up": run_scenario(
+                    "custom-up",
+                    "bilinear",
+                    base.format(mode="_UV", up="1,3,3", target_id="{target_id}")
+                    + "1 1 _Enter",
+                    1,
+                    1,
+                ),
+            }
+            timing_surface = create_surface("cylinder")
+            _unused, elapsed = _measure(
+                iterations, lambda: timing_surface.FrameAt(0.37, 0.62)
+            )
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                if not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+            for target_id in target_ids:
+                document.Objects.Delete(target_id, True)
     if kind == "document_orient_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())
