@@ -51,6 +51,14 @@ impl LineSegment {
         self.start.translated(offset)
     }
 
+    #[inline]
+    pub const fn reversed(self) -> Self {
+        Self {
+            start: self.end,
+            end: self.start,
+        }
+    }
+
     pub fn transformed(
         self,
         transform: AffineTransform3,
@@ -95,6 +103,13 @@ mod tests {
         assert_eq!(line.point_at(0.0).unwrap(), line.start());
         assert_eq!(line.point_at(1.0).unwrap(), line.end());
         assert_eq!(line.point_at(0.5).unwrap(), point(3.0, 4.0, 5.0));
+        let reversed = line.reversed();
+        assert_eq!(reversed.start(), line.end());
+        assert_eq!(reversed.end(), line.start());
+        assert_eq!(
+            reversed.point_at(0.25).unwrap(),
+            line.point_at(0.75).unwrap()
+        );
     }
 
     #[test]

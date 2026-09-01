@@ -95,6 +95,9 @@ impl CommandRegistry {
             .register(DivideCommand)
             .expect("unique built-in command");
         registry
+            .register(FlipCommand)
+            .expect("unique built-in command");
+        registry
             .register(GroupCommand)
             .expect("unique built-in command");
         registry
@@ -956,6 +959,46 @@ fn command_division_points(
         }
     }
     Ok(points)
+}
+
+struct FlipCommand;
+
+impl Command for FlipCommand {
+    fn name(&self) -> &'static str {
+        "Flip"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Reverse", "Rev"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Flip")?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let replacements = selected
+            .into_iter()
+            .map(|(id, geometry)| {
+                let reversed = match geometry {
+                    Geometry::Line(line) => Geometry::Line(line.reversed()),
+                    Geometry::Circle(circle) => Geometry::Circle(circle.reversed()),
+                    Geometry::Arc(arc) => Geometry::Arc(arc.reversed(document.tolerance())?),
+                    Geometry::Ellipse(ellipse) => Geometry::Ellipse(ellipse.reversed()),
+                    Geometry::Polyline(polyline) => Geometry::Polyline(polyline.reversed()),
+                    Geometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve.reversed()?),
+                    _ => return Err(CommandError::UnsupportedFlipGeometry),
+                };
+                Ok((id, reversed))
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        let count = document.replace_object_geometries(replacements)?;
+        Ok(format!("Flipped {count} curve(s)"))
+    }
 }
 
 struct GroupCommand;
@@ -2008,6 +2051,9 @@ pub enum CommandError {
     #[error("the requested division creates no point objects")]
     NoCurveDivisionPoints,
 
+    #[error("Flip supports selected lines, analytic curves, polylines, and NURBS curves only")]
+    UnsupportedFlipGeometry,
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -2063,7 +2109,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, ControlPointCurve, Copy, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, ControlPointCurve, Copy, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -2362,6 +2408,92 @@ mod tests {
         assert!(registry.execute(&mut document, "Divide 0").is_err());
         assert!(registry.execute(&mut document, "Divide Length -1").is_err());
         assert_eq!(document.objects().len(), object_count);
+    }
+
+    #[test]
+    fn reverses_curve_direction_without_changing_identity_or_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 1,2 7,5").unwrap();
+        registry.execute(&mut document, "Circle 10,0 3").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let Geometry::Line(original_line) = document.object(ids[0]).unwrap().geometry() else {
+            panic!("expected source line")
+        };
+        let original_line = *original_line;
+        let Geometry::Circle(original_circle) = document.object(ids[1]).unwrap().geometry() else {
+            panic!("expected source circle")
+        };
+        let original_circle = *original_circle;
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Group Pair").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Rev").unwrap(),
+            "Flipped 2 curve(s)"
+        );
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(
+            document
+                .group_by_name("Pair")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            ids.iter().copied().collect()
+        );
+        assert!(matches!(
+            document.object(ids[0]).unwrap().geometry(),
+            Geometry::Line(line) if line.start() == original_line.end() && line.end() == original_line.start()
+        ));
+        let Geometry::Circle(reversed_circle) = document.object(ids[1]).unwrap().geometry() else {
+            panic!("expected reversed circle")
+        };
+        assert_eq!(
+            reversed_circle.point_at_angle(0.0).unwrap(),
+            original_circle.point_at_angle(0.0).unwrap()
+        );
+        assert!(
+            document.tolerance().approx_eq(
+                reversed_circle
+                    .normal()
+                    .unwrap()
+                    .as_vector()
+                    .dot(original_circle.normal().unwrap().as_vector())
+                    .unwrap(),
+                -1.0
+            )
+        );
+        assert_eq!(document.undo_label(), Some("Flip"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(ids[0]).unwrap().geometry(),
+            &Geometry::Line(original_line)
+        );
+        assert_eq!(
+            document.object(ids[1]).unwrap().geometry(),
+            &Geometry::Circle(original_circle)
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(matches!(
+            document.object(ids[0]).unwrap().geometry(),
+            Geometry::Line(line) if *line == original_line.reversed()
+        ));
+
+        registry.execute(&mut document, "Point 99,99").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "Reverse"),
+            Err(CommandError::UnsupportedFlipGeometry)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
     }
 
     #[test]

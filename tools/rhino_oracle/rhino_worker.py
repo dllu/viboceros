@@ -330,6 +330,37 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, divide_curve)
 
+    if kind == "nurbs_curve_reverse":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        normalized = _finite(
+            operation["normalized_parameter"], "normalized curve parameter"
+        )
+        if normalized < 0.0 or normalized > 1.0:
+            raise ValueError("normalized curve parameter must be in [0, 1]")
+
+        def reverse_curve():
+            reversed_curve = curve.DuplicateCurve()
+            if reversed_curve is None:
+                raise ValueError("could not duplicate NURBS curve")
+            try:
+                if not reversed_curve.Reverse():
+                    raise ValueError("could not reverse NURBS curve")
+                parameter = reversed_curve.Domain.ParameterAt(normalized)
+                values = reversed_curve.DerivativeAt(parameter, 1)
+                if values is None or len(values) < 2:
+                    raise ValueError("reversed NURBS curve evaluation failed")
+                return {"point": _xyz(values[0]), "derivative": _xyz(values[1])}
+            finally:
+                reversed_curve.Dispose()
+
+        return _measure(iterations, reverse_curve)
+
     if kind == "nurbs_surface_evaluate":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

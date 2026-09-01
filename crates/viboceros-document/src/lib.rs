@@ -691,6 +691,62 @@ impl Document {
         Ok(transformed_count)
     }
 
+    /// Atomically replaces geometry while retaining object identity,
+    /// attributes, group membership, and selection.
+    pub fn replace_object_geometries(
+        &mut self,
+        replacements: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<usize, DocumentError> {
+        let replacements = replacements.into_iter().collect::<BTreeMap<_, _>>();
+        if let Some(missing) = replacements.keys().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+
+        let mut staged = Vec::with_capacity(replacements.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            let Some(geometry) = replacements.get(&object.id) else {
+                continue;
+            };
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            if &object.geometry == geometry {
+                continue;
+            }
+            let before = object.clone();
+            let mut after = before.clone();
+            after.geometry = geometry.clone();
+            staged.push((index, before, after));
+        }
+        if staged.is_empty() {
+            return Ok(0);
+        }
+
+        let replacement_count = staged.len();
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Replace object geometry")?;
+        }
+        for (index, before, after) in staged {
+            let id = before.id;
+            self.objects[index] = after.clone();
+            self.record_edit(
+                "Replace object geometry",
+                Edit::ObjectChanged { id, before, after },
+            );
+        }
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(replacement_count)
+    }
+
     pub fn copy_objects_transformed(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -1492,6 +1548,62 @@ mod tests {
             document.object(first).unwrap().geometry(),
             Geometry::Point(point) if *point == Point3::try_new(14.0, 0.0, 7.0).unwrap()
         ));
+    }
+
+    #[test]
+    fn geometry_replacement_retains_identity_groups_selection_and_history() {
+        let mut document = Document::default();
+        let line = LineSegment::try_new(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Point3::try_new(7.0, 5.0, 3.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Line(line)).unwrap();
+        let group = document
+            .add_group(Some("Direction".to_owned()), [id])
+            .unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+
+        assert_eq!(
+            document
+                .replace_object_geometries([(id, Geometry::Line(line.reversed()))])
+                .unwrap(),
+            1
+        );
+        assert_eq!(document.undo_label(), Some("Replace object geometry"));
+        assert!(document.is_selected(id));
+        assert_eq!(document.group(group).unwrap().members().next(), Some(id));
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Line(reversed) if reversed.start() == line.end() && reversed.end() == line.start()
+        ));
+
+        document.undo().unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Line(restored) if *restored == line
+        ));
+        assert!(document.is_selected(id));
+        document.redo().unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Line(reversed) if *reversed == line.reversed()
+        ));
+
+        let missing = ObjectId::new();
+        let before = document.object(id).unwrap().geometry().clone();
+        assert_eq!(
+            document.replace_object_geometries([
+                (id, Geometry::Line(line)),
+                (
+                    missing,
+                    Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                ),
+            ]),
+            Err(DocumentError::ObjectNotFound(missing))
+        );
+        assert_eq!(document.object(id).unwrap().geometry(), &before);
     }
 
     #[test]

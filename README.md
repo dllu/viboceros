@@ -44,6 +44,7 @@ Length
 Area
 Divide 8
 Divide Length 2.5 MarkEnds
+Flip
 Delete
 Clear
 Undo
@@ -70,6 +71,8 @@ segments. `Length` measures analytic, polyline, and NURBS curves with controlled
 accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes.
 `Divide` creates equal arc-length points on selected curves by segment count or
 requested segment length; add `MarkEnds` to include open-curve endpoints.
+`Flip` (aliases `Reverse` and `Rev`) reverses selected curve directions without
+changing object identities, attributes, groups, or closed-curve seams.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is

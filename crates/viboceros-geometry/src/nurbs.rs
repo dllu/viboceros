@@ -250,6 +250,15 @@ impl NurbsCurve {
         Ok(length)
     }
 
+    /// Reverses direction by reversing the controls and negating the full
+    /// knot vector. A domain `[a, b]` therefore becomes `[-b, -a]`, matching
+    /// the OpenNURBS/Rhino convention.
+    pub fn reversed(&self) -> Result<Self, GeometryError> {
+        let control_points = self.control_points.iter().rev().copied().collect();
+        let knots = self.knots.iter().rev().map(|knot| -*knot).collect();
+        Self::try_new_rational(self.degree, control_points, knots)
+    }
+
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
         let control_points = self
             .control_points
@@ -607,6 +616,39 @@ mod tests {
             curve.derivative_at(0.5).unwrap(),
             Vector3::try_new(2.0, 0.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn reversal_negates_the_full_domain_and_parameter_direction() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(1.0, 3.0),
+                point(4.0, -1.0),
+                point(7.0, 2.0),
+            ],
+            vec![-2.0, -2.0, -2.0, 1.0, 5.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let reversed = curve.reversed().unwrap();
+        assert_eq!(reversed.domain(), -5.0..=2.0);
+        assert_eq!(reversed.knots(), &[-5.0, -5.0, -5.0, -1.0, 2.0, 2.0, 2.0]);
+        for sample in 0..=16 {
+            let normalized = sample as Real / 16.0;
+            let reversed_parameter = reversed.parameter_at(normalized).unwrap();
+            let original_parameter = curve.parameter_at(1.0 - normalized).unwrap();
+            assert_point_near(
+                reversed.evaluate(reversed_parameter).unwrap(),
+                curve.evaluate(original_parameter).unwrap(),
+            );
+            let actual = reversed.derivative_at(reversed_parameter).unwrap();
+            let expected = curve.derivative_at(original_parameter).unwrap();
+            assert!(Tolerance::DEFAULT.approx_eq(actual.x(), -expected.x()));
+            assert!(Tolerance::DEFAULT.approx_eq(actual.y(), -expected.y()));
+            assert!(Tolerance::DEFAULT.approx_eq(actual.z(), -expected.z()));
+        }
+        assert_eq!(reversed.reversed().unwrap(), curve);
     }
 
     #[test]

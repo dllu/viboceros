@@ -119,6 +119,13 @@ pub enum Operation {
         segment_count: usize,
         include_start: bool,
     },
+    NurbsCurveReverse {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+        normalized_parameter: f64,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -147,6 +154,7 @@ impl Operation {
             | Self::NurbsCurveEvaluate { id, .. }
             | Self::NurbsCurveLength { id, .. }
             | Self::NurbsCurveDivide { id, .. }
+            | Self::NurbsCurveReverse { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -456,6 +464,31 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::NurbsCurveReverse {
+            degree,
+            control_points,
+            knots,
+            normalized_parameter,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let ((point, derivative), elapsed) = measure(iterations, || {
+                let reversed = black_box(&curve).reversed()?;
+                let parameter = reversed.parameter_at(black_box(*normalized_parameter))?;
+                reversed.evaluate_with_derivative(parameter)
+            })?;
+            (
+                json!({
+                    "derivative": derivative.to_array(),
+                    "point": point.to_array(),
+                }),
+                elapsed,
+            )
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -700,6 +733,26 @@ mod tests {
                 segment_count: 4,
                 include_start: true,
             },
+            Operation::NurbsCurveReverse {
+                id: "reverse".to_owned(),
+                degree: 2,
+                control_points: vec![
+                    ControlPoint {
+                        point: [1.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                    ControlPoint {
+                        point: [1.0, 1.0, 0.0],
+                        weight: std::f64::consts::FRAC_1_SQRT_2,
+                    },
+                    ControlPoint {
+                        point: [0.0, 1.0, 0.0],
+                        weight: 1.0,
+                    },
+                ],
+                knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                normalized_parameter: 0.25,
+            },
         ]))
         .unwrap();
         let tolerance = Tolerance::try_new(1.0e-10, 1.0e-12, 1.0e-12).unwrap();
@@ -719,6 +772,34 @@ mod tests {
             assert!(tolerance.approx_eq(actual[0].as_f64().unwrap(), angle.cos()));
             assert!(tolerance.approx_eq(actual[1].as_f64().unwrap(), angle.sin()));
             assert_eq!(actual[2], json!(0.0));
+        }
+        let reversed = response.results[3].value.as_object().unwrap();
+        let point = reversed["point"].as_array().unwrap();
+        let derivative = reversed["derivative"].as_array().unwrap();
+        let source = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(super::point([1.0, 0.0, 0.0]).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(
+                    super::point([1.0, 1.0, 0.0]).unwrap(),
+                    std::f64::consts::FRAC_1_SQRT_2,
+                )
+                .unwrap(),
+                WeightedPoint3::try_new(super::point([0.0, 1.0, 0.0]).unwrap(), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (expected_point, expected_derivative) = source.evaluate_with_derivative(0.75).unwrap();
+        for coordinate in 0..3 {
+            assert!(tolerance.approx_eq(
+                point[coordinate].as_f64().unwrap(),
+                expected_point.to_array()[coordinate]
+            ));
+            assert!(tolerance.approx_eq(
+                derivative[coordinate].as_f64().unwrap(),
+                -expected_derivative.to_array()[coordinate]
+            ));
         }
     }
 

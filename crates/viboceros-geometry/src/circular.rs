@@ -160,6 +160,14 @@ impl Circle3 {
         Ok(area)
     }
 
+    /// Reverses the parameter direction while retaining the seam point.
+    pub fn reversed(self) -> Self {
+        Self {
+            y_axis: self.y_axis.opposite(),
+            ..self
+        }
+    }
+
     pub fn bounds(self) -> BoundingBox3 {
         self.checked_bounds()
             .expect("a validated circle has finite bounds")
@@ -317,6 +325,19 @@ impl CircularArc3 {
         let length = self.radius() * self.sweep_radians;
         require_finite([length], "arc length")?;
         Ok(length)
+    }
+
+    /// Reverses the arc while retaining its sweep magnitude.
+    pub fn reversed(self, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        let end = self.end()?;
+        let x_axis = self.center().vector_to(end)?.normalized_nonzero()?;
+        let normal = self.normal()?.opposite();
+        let circle =
+            Circle3::try_from_frame(self.center(), self.radius(), x_axis, normal, tolerance)?;
+        Ok(Self {
+            circle,
+            sweep_radians: self.sweep_radians,
+        })
     }
 
     pub fn bounds(self) -> BoundingBox3 {
@@ -513,6 +534,26 @@ mod tests {
         assert_eq!(circle.bounds().max(), point(6.0, 7.0, 3.0));
         assert_eq!(circle.length().unwrap(), TAU * 5.0);
         assert_eq!(circle.area().unwrap(), PI * 25.0);
+        let reversed = circle.reversed();
+        assert_eq!(
+            reversed.point_at_angle(0.0).unwrap(),
+            circle.point_at_angle(0.0).unwrap()
+        );
+        assert!(reversed.point_at_angle(FRAC_PI_2).unwrap().is_near(
+            circle.point_at_angle(-FRAC_PI_2).unwrap(),
+            Tolerance::DEFAULT
+        ));
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                reversed
+                    .normal()
+                    .unwrap()
+                    .as_vector()
+                    .dot(circle.normal().unwrap().as_vector())
+                    .unwrap(),
+                -1.0
+            )
+        );
     }
 
     #[test]
@@ -557,6 +598,28 @@ mod tests {
                 .unwrap()
                 .is_near(point(-1.0, 0.0, 0.0), Tolerance::DEFAULT)
         );
+        let reversed = arc.reversed(Tolerance::DEFAULT).unwrap();
+        assert!(
+            reversed
+                .start()
+                .unwrap()
+                .is_near(arc.end().unwrap(), Tolerance::DEFAULT)
+        );
+        assert!(
+            reversed
+                .end()
+                .unwrap()
+                .is_near(arc.start().unwrap(), Tolerance::DEFAULT)
+        );
+        for sample in 0..=16 {
+            let normalized = sample as Real / 16.0;
+            assert!(
+                reversed
+                    .point_at(normalized)
+                    .unwrap()
+                    .is_near(arc.point_at(1.0 - normalized).unwrap(), Tolerance::DEFAULT)
+            );
+        }
     }
 
     #[test]

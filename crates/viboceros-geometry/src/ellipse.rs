@@ -153,6 +153,14 @@ impl Ellipse3 {
         Ok(area)
     }
 
+    /// Reverses the parameter direction while retaining the seam point.
+    pub fn reversed(self) -> Self {
+        Self {
+            y_axis: self.y_axis.opposite(),
+            ..self
+        }
+    }
+
     pub fn bounds(self) -> BoundingBox3 {
         self.checked_bounds()
             .expect("a validated ellipse has finite bounds")
@@ -370,6 +378,20 @@ mod tests {
                 )
         );
         assert!(Tolerance::DEFAULT.approx_eq(ellipse.area().unwrap(), 10.0 * std::f64::consts::PI));
+        let reversed = ellipse.reversed();
+        assert_eq!(
+            reversed.point_at_angle(0.0).unwrap(),
+            ellipse.point_at_angle(0.0).unwrap()
+        );
+        for sample in 0..=16 {
+            let angle = std::f64::consts::TAU * sample as Real / 16.0;
+            assert!(
+                reversed
+                    .point_at_angle(angle)
+                    .unwrap()
+                    .is_near(ellipse.point_at_angle(-angle).unwrap(), Tolerance::DEFAULT)
+            );
+        }
 
         let circle = Ellipse3::try_new(
             point(0.0, 0.0, 0.0),

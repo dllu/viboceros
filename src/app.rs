@@ -823,6 +823,7 @@ impl VibocerosApp {
         let mut delete_clicked = false;
         let mut join_clicked = false;
         let mut explode_clicked = false;
+        let mut flip_clicked = false;
         let mut length_clicked = false;
         let mut area_clicked = false;
         let mut move_clicked = false;
@@ -862,6 +863,10 @@ impl VibocerosApp {
                 explode_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Explode"))
                     .on_hover_text("Explode selected polylines into line segments")
+                    .clicked();
+                flip_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Flip"))
+                    .on_hover_text("Flip selected curve directions")
                     .clicked();
                 length_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Length"))
@@ -930,6 +935,8 @@ impl VibocerosApp {
             self.execute_command("Join");
         } else if explode_clicked {
             self.execute_command("Explode");
+        } else if flip_clicked {
+            self.execute_command("Flip");
         } else if length_clicked {
             self.execute_command("Length");
         } else if area_clicked {

@@ -219,6 +219,11 @@ impl UnitVector3 {
     pub const fn as_vector(self) -> Vector3 {
         self.0
     }
+
+    #[inline]
+    pub fn opposite(self) -> Self {
+        Self(Vector3(-self.0.0))
+    }
 }
 
 impl TryFrom<[Real; 3]> for Vector3 {

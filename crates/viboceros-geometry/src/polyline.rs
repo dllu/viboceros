@@ -127,6 +127,12 @@ impl Polyline3 {
         Ok(length)
     }
 
+    pub fn reversed(&self) -> Self {
+        let mut vertices = self.vertices.clone();
+        vertices.reverse();
+        Self { vertices }
+    }
+
     /// Returns the absolute algebraic area of a closed planar polyline.
     /// Self-intersecting regions follow the usual signed-boundary convention.
     pub fn planar_area(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
@@ -670,6 +676,17 @@ mod tests {
         assert_eq!(curve.evaluate(0.0).unwrap(), point(-2.0, 1.0, 3.0));
         assert_eq!(curve.evaluate(0.5).unwrap(), point(1.0, 5.0, 3.0));
         assert_eq!(curve.evaluate(1.0).unwrap(), point(1.0, 5.0, 15.0));
+
+        let reversed = polyline.reversed();
+        assert_eq!(
+            reversed.vertices(),
+            &[
+                point(1.0, 5.0, 15.0),
+                point(1.0, 5.0, 3.0),
+                point(-2.0, 1.0, 3.0),
+            ]
+        );
+        assert_eq!(reversed.reversed(), polyline);
     }
 
     #[test]
