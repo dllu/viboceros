@@ -1,4 +1,5 @@
 mod app;
+mod sidebar;
 mod viewport;
 
 use eframe::egui;

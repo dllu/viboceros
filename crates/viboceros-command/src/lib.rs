@@ -5,7 +5,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use thiserror::Error;
 use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, GroupId, LayerId, ObjectAttributes,
-    ObjectColorSource, ObjectId, SelectionMode,
+    ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
@@ -3020,7 +3020,7 @@ fn create_current_layer(
     name_arguments: &[&str],
 ) -> Result<String, CommandError> {
     let name = joined_argument(name_arguments, "Layer [New] name")?;
-    let color = layer_color(document.layers().len());
+    let color = suggested_layer_color(document.layers().len());
     let id = document.add_layer(name.clone(), color)?;
     document.set_current_layer(id)?;
     Ok(format!("Created current layer '{name}'"))
@@ -3664,18 +3664,6 @@ fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandEr
         triangles,
         document.tolerance(),
     )?)
-}
-
-fn layer_color(index: usize) -> ColorRgb {
-    const PALETTE: [ColorRgb; 6] = [
-        ColorRgb::new(40, 110, 220),
-        ColorRgb::new(220, 75, 60),
-        ColorRgb::new(30, 155, 85),
-        ColorRgb::new(190, 125, 20),
-        ColorRgb::new(145, 80, 190),
-        ColorRgb::new(20, 155, 165),
-    ];
-    PALETTE[index % PALETTE.len()]
 }
 
 fn parse_point(arguments: &[&str]) -> Result<(Point3, usize), CommandError> {

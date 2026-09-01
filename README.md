@@ -12,7 +12,9 @@ validated triangle meshes, layers, groups, and bounded undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
 and use a balanced XY spatial index for top-view snapping and picking.
 The top viewport can pan and zoom in wireframe, shaded, or ghosted mode. Its
-command line currently accepts:
+layer sidebar creates, renames, recolors, shows, locks, activates, and safely
+deletes layers while reporting their object counts; combined edits remain one
+undo step. The command line currently accepts:
 
 ```text
 Point 1,2,0

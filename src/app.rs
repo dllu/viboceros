@@ -1,34 +1,14 @@
 use std::collections::{BTreeSet, VecDeque};
 
-use eframe::egui::{self, Color32, RichText};
+use eframe::egui::{self, RichText};
 use viboceros_command::CommandRegistry;
-use viboceros_document::{Document, GroupId, LayerId};
+use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{CircularArc3, Ellipse3, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance};
 
+use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
 
 const MAX_LOG_ENTRIES: usize = 100;
-
-enum SidebarAction {
-    SetCurrent {
-        id: LayerId,
-        name: String,
-    },
-    SetVisibility {
-        id: LayerId,
-        name: String,
-        visible: bool,
-    },
-    SetLocked {
-        id: LayerId,
-        name: String,
-        locked: bool,
-    },
-    RemoveGroup {
-        id: GroupId,
-        name: String,
-    },
-}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
@@ -263,6 +243,7 @@ pub struct VibocerosApp {
     smart_track: bool,
     active_command: Option<InteractiveCommand>,
     polyline_points: Vec<Point3>,
+    sidebar: DocumentSidebar,
 }
 
 impl VibocerosApp {
@@ -282,6 +263,7 @@ impl VibocerosApp {
             smart_track: true,
             active_command: None,
             polyline_points: Vec::new(),
+            sidebar: DocumentSidebar::default(),
         }
     }
 
@@ -1141,157 +1123,87 @@ impl VibocerosApp {
     }
 
     fn show_layers(&mut self, root: &mut egui::Ui) {
-        let mut actions = Vec::new();
-        egui::Panel::right("layers")
-            .default_size(220.0)
-            .show(root, |ui| {
-                ui.heading("Layers");
-                ui.separator();
-                let current = self.document.current_layer_id();
-                let layers: Vec<_> = self
-                    .document
-                    .layers()
-                    .map(|layer| {
-                        (
-                            layer.id(),
-                            layer.name().to_owned(),
-                            layer.color(),
-                            layer.is_visible(),
-                            layer.is_locked(),
-                        )
-                    })
-                    .collect();
+        for action in self.sidebar.show(root, &self.document) {
+            self.apply_sidebar_action(action);
+        }
+    }
 
-                ui.horizontal(|ui| {
-                    ui.add_space(2.0);
-                    ui.small("On");
-                    ui.small("Lock");
-                    ui.small("Layer");
-                });
-                for (id, name, color, visible, locked) in layers {
-                    ui.horizontal(|ui| {
-                        let mut new_visible = visible;
-                        let visibility = ui
-                            .add_enabled_ui(id != current, |ui| ui.checkbox(&mut new_visible, ""))
-                            .inner
-                            .on_hover_text(if id == current {
-                                "The current layer must remain visible"
-                            } else {
-                                "Show or hide this layer"
-                            });
-                        if visibility.changed() {
-                            actions.push(SidebarAction::SetVisibility {
-                                id,
-                                name: name.clone(),
-                                visible: new_visible,
-                            });
-                        }
-
-                        let mut new_locked = locked;
-                        let lock = ui
-                            .add_enabled_ui(id != current, |ui| ui.checkbox(&mut new_locked, ""))
-                            .inner
-                            .on_hover_text(if id == current {
-                                "The current layer must remain unlocked"
-                            } else {
-                                "Lock or unlock this layer"
-                            });
-                        if lock.changed() {
-                            actions.push(SidebarAction::SetLocked {
-                                id,
-                                name: name.clone(),
-                                locked: new_locked,
-                            });
-                        }
-
-                        let swatch = Color32::from_rgb(color.red, color.green, color.blue);
-                        ui.label(RichText::new("●").color(swatch));
-                        let select = ui
-                            .add_enabled_ui(visible && !locked, |ui| {
-                                ui.selectable_label(id == current, &name)
-                            })
-                            .inner;
-                        if select.clicked() {
-                            actions.push(SidebarAction::SetCurrent {
-                                id,
-                                name: name.clone(),
-                            });
-                        }
+    fn apply_sidebar_action(&mut self, action: SidebarAction) {
+        match action {
+            SidebarAction::AddLayer { name } => {
+                let color = suggested_layer_color(self.document.layers().len());
+                let result =
+                    edit_document_transaction(&mut self.document, "Add layer", |document| {
+                        let id = document.add_layer(&name, color)?;
+                        document.set_current_layer(id)?;
+                        Ok(id)
                     });
-                }
-                ui.add_space(8.0);
-                ui.small("Create a layer with: Layer New name");
-
-                ui.add_space(14.0);
-                ui.heading("Groups");
-                ui.separator();
-                let groups: Vec<_> = self
-                    .document
-                    .groups()
-                    .enumerate()
-                    .map(|(index, group)| {
-                        (
-                            group.id(),
-                            group
-                                .name()
-                                .map(str::to_owned)
-                                .unwrap_or_else(|| format!("Group {}", index + 1)),
-                            group.members().len(),
-                        )
-                    })
-                    .collect();
-                if groups.is_empty() {
-                    ui.weak("No groups");
-                }
-                for (id, name, members) in groups {
-                    ui.horizontal(|ui| {
-                        ui.label(format!("{name} · {members}"))
-                            .on_hover_text(format!("Group {id} with {members} object(s)"));
-                        if ui.small_button("×").on_hover_text("Ungroup").clicked() {
-                            actions.push(SidebarAction::RemoveGroup {
-                                id,
-                                name: name.clone(),
-                            });
-                        }
-                    });
-                }
-                ui.add_space(8.0);
-                ui.small("Create a group with: Group [name]");
-            });
-
-        for action in actions {
-            match action {
-                SidebarAction::SetCurrent { id, name } => {
-                    match self.document.set_current_layer(id) {
-                        Ok(()) => self.push_log(format!("Current layer is '{name}'")),
-                        Err(error) => self.push_log(format!("Error: {error}")),
-                    }
-                }
-                SidebarAction::SetVisibility { id, name, visible } => {
-                    match self.document.set_layer_visibility(id, visible) {
-                        Ok(_) => self.push_log(format!(
-                            "Layer '{name}' is {}",
-                            if visible { "visible" } else { "hidden" }
-                        )),
-                        Err(error) => self.push_log(format!("Error: {error}")),
-                    }
-                }
-                SidebarAction::SetLocked { id, name, locked } => {
-                    match self.document.set_layer_locked(id, locked) {
-                        Ok(_) => self.push_log(format!(
-                            "Layer '{name}' is {}",
-                            if locked { "locked" } else { "unlocked" }
-                        )),
-                        Err(error) => self.push_log(format!("Error: {error}")),
-                    }
-                }
-                SidebarAction::RemoveGroup { id, name } => match self.document.remove_group(id) {
-                    Ok(members) => {
-                        self.push_log(format!("Removed group '{name}' ({members} object(s))"));
+                match result {
+                    Ok(_) => {
+                        self.sidebar.clear_new_layer_name();
+                        self.push_log(format!("Created current layer '{name}'"));
                     }
                     Err(error) => self.push_log(format!("Error: {error}")),
-                },
+                }
             }
+            SidebarAction::EditLayer {
+                id,
+                old_name,
+                name,
+                color,
+            } => {
+                let result =
+                    edit_document_transaction(&mut self.document, "Edit layer", |document| {
+                        let renamed = document.rename_layer(id, &name)?;
+                        let recolored = document.set_layer_color(id, color)?;
+                        Ok(renamed || recolored)
+                    });
+                match result {
+                    Ok(_) => {
+                        self.sidebar.close_layer_editor(id);
+                        self.push_log(format!(
+                            "Updated layer '{old_name}' as '{name}' with color {},{},{}",
+                            color.red, color.green, color.blue
+                        ));
+                    }
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+            }
+            SidebarAction::DeleteLayer { id, name } => match self.document.delete_layer(id) {
+                Ok(()) => {
+                    self.sidebar.close_layer_editor(id);
+                    self.push_log(format!("Deleted layer '{name}'"));
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            },
+            SidebarAction::SetCurrent { id, name } => match self.document.set_current_layer(id) {
+                Ok(()) => self.push_log(format!("Current layer is '{name}'")),
+                Err(error) => self.push_log(format!("Error: {error}")),
+            },
+            SidebarAction::SetVisibility { id, name, visible } => {
+                match self.document.set_layer_visibility(id, visible) {
+                    Ok(_) => self.push_log(format!(
+                        "Layer '{name}' is {}",
+                        if visible { "visible" } else { "hidden" }
+                    )),
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+            }
+            SidebarAction::SetLocked { id, name, locked } => {
+                match self.document.set_layer_locked(id, locked) {
+                    Ok(_) => self.push_log(format!(
+                        "Layer '{name}' is {}",
+                        if locked { "locked" } else { "unlocked" }
+                    )),
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                }
+            }
+            SidebarAction::RemoveGroup { id, name } => match self.document.remove_group(id) {
+                Ok(members) => {
+                    self.push_log(format!("Removed group '{name}' ({members} object(s))"));
+                }
+                Err(error) => self.push_log(format!("Error: {error}")),
+            },
         }
     }
 
@@ -1394,6 +1306,24 @@ impl eframe::App for VibocerosApp {
     }
 }
 
+fn edit_document_transaction<T>(
+    document: &mut Document,
+    label: &'static str,
+    edit: impl FnOnce(&mut Document) -> Result<T, DocumentError>,
+) -> Result<T, DocumentError> {
+    document.begin_transaction(label)?;
+    match edit(document) {
+        Ok(value) => {
+            document.commit_transaction()?;
+            Ok(value)
+        }
+        Err(error) => {
+            document.rollback_transaction()?;
+            Err(error)
+        }
+    }
+}
+
 fn format_model_point(point: Point3) -> String {
     format!("{},{},{}", point.x(), point.y(), point.z())
 }
@@ -1405,7 +1335,7 @@ fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use viboceros_document::Geometry;
+    use viboceros_document::{ColorRgb, Geometry};
 
     fn test_app() -> VibocerosApp {
         VibocerosApp {
@@ -1418,6 +1348,7 @@ mod tests {
             smart_track: true,
             active_command: None,
             polyline_points: Vec::new(),
+            sidebar: DocumentSidebar::default(),
         }
     }
 
@@ -1792,5 +1723,81 @@ mod tests {
             mode: viboceros_document::SelectionMode::Replace,
         });
         assert_eq!(app.document.selected_object_count(), 0);
+    }
+
+    #[test]
+    fn layer_sidebar_crud_is_atomic_and_protects_nonempty_layers() {
+        let mut app = test_app();
+        let default = app.document.current_layer_id();
+        app.sidebar.set_new_layer_name("Construction");
+        app.apply_sidebar_action(SidebarAction::AddLayer {
+            name: "Construction".to_owned(),
+        });
+        let construction = app.document.layer_by_name("Construction").unwrap().id();
+        assert_eq!(app.document.current_layer_id(), construction);
+        assert_eq!(
+            app.document.layer(construction).unwrap().color(),
+            suggested_layer_color(1)
+        );
+        assert!(app.sidebar.new_layer_name().is_empty());
+        assert_eq!(app.document.undo_label(), Some("Add layer"));
+
+        app.document.undo().unwrap();
+        assert!(app.document.layer(construction).is_none());
+        assert_eq!(app.document.current_layer_id(), default);
+        app.document.redo().unwrap();
+        assert_eq!(app.document.current_layer_id(), construction);
+
+        let edited_color = ColorRgb::new(12, 34, 56);
+        app.apply_sidebar_action(SidebarAction::EditLayer {
+            id: construction,
+            old_name: "Construction".to_owned(),
+            name: "Reference".to_owned(),
+            color: edited_color,
+        });
+        let edited = app.document.layer(construction).unwrap();
+        assert_eq!(edited.name(), "Reference");
+        assert_eq!(edited.color(), edited_color);
+        assert_eq!(app.document.undo_label(), Some("Edit layer"));
+
+        app.document.undo().unwrap();
+        let original = app.document.layer(construction).unwrap();
+        assert_eq!(original.name(), "Construction");
+        assert_eq!(original.color(), suggested_layer_color(1));
+        app.document.redo().unwrap();
+        let edited = app.document.layer(construction).unwrap();
+        assert_eq!(edited.name(), "Reference");
+        assert_eq!(edited.color(), edited_color);
+
+        app.document
+            .add_geometry(Geometry::Point(point(1.0, 2.0, 0.0)))
+            .unwrap();
+        app.apply_sidebar_action(SidebarAction::SetCurrent {
+            id: default,
+            name: "Default".to_owned(),
+        });
+        app.apply_sidebar_action(SidebarAction::DeleteLayer {
+            id: construction,
+            name: "Reference".to_owned(),
+        });
+        assert!(app.document.layer(construction).is_some());
+        assert!(app.command_log.back().unwrap().contains("contains objects"));
+
+        app.apply_sidebar_action(SidebarAction::AddLayer {
+            name: "Empty".to_owned(),
+        });
+        let empty = app.document.layer_by_name("Empty").unwrap().id();
+        app.apply_sidebar_action(SidebarAction::SetCurrent {
+            id: default,
+            name: "Default".to_owned(),
+        });
+        app.apply_sidebar_action(SidebarAction::DeleteLayer {
+            id: empty,
+            name: "Empty".to_owned(),
+        });
+        assert!(app.document.layer(empty).is_none());
+        assert_eq!(app.document.undo_label(), Some("Delete layer"));
+        app.document.undo().unwrap();
+        assert_eq!(app.document.layer(empty).unwrap().name(), "Empty");
     }
 }

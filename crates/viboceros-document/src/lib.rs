@@ -106,6 +106,21 @@ impl ColorRgb {
     }
 }
 
+/// Returns the deterministic application palette color for a layer position.
+/// Keeping this policy in the document crate makes command- and UI-created
+/// layers agree without coupling either frontend to the other.
+pub const fn suggested_layer_color(index: usize) -> ColorRgb {
+    const PALETTE: [ColorRgb; 6] = [
+        ColorRgb::new(40, 110, 220),
+        ColorRgb::new(220, 75, 60),
+        ColorRgb::new(30, 155, 85),
+        ColorRgb::new(190, 125, 20),
+        ColorRgb::new(145, 80, 190),
+        ColorRgb::new(20, 155, 165),
+    ];
+    PALETTE[index % PALETTE.len()]
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectColorSource {
     Layer,
@@ -2447,6 +2462,29 @@ mod tests {
         assert_eq!(
             document.layer(document.current_layer_id()).unwrap().name(),
             "Default"
+        );
+    }
+
+    #[test]
+    fn suggested_layer_palette_is_stable_and_cycles() {
+        let expected = [
+            ColorRgb::new(40, 110, 220),
+            ColorRgb::new(220, 75, 60),
+            ColorRgb::new(30, 155, 85),
+            ColorRgb::new(190, 125, 20),
+            ColorRgb::new(145, 80, 190),
+            ColorRgb::new(20, 155, 165),
+        ];
+        assert_eq!(
+            (0..expected.len())
+                .map(suggested_layer_color)
+                .collect::<Vec<_>>(),
+            expected
+        );
+        assert_eq!(suggested_layer_color(6), expected[0]);
+        assert_eq!(
+            suggested_layer_color(usize::MAX),
+            expected[usize::MAX % expected.len()]
         );
     }
 
