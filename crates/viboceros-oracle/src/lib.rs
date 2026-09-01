@@ -131,6 +131,13 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
     },
+    NurbsCurveShortFilter {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+        maximum_length: f64,
+    },
     NurbsCurveDivide {
         id: String,
         degree: usize,
@@ -241,6 +248,7 @@ impl Operation {
             | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
             | Self::NurbsCurveLength { id, .. }
+            | Self::NurbsCurveShortFilter { id, .. }
             | Self::NurbsCurveDivide { id, .. }
             | Self::NurbsCurveReverse { id, .. }
             | Self::NurbsCurveTopology { id, .. }
@@ -307,6 +315,9 @@ pub enum ProbeError {
     #[error("oracle operation id '{0}' is empty or duplicated")]
     InvalidOperationId(String),
 
+    #[error("oracle maximum curve length must be finite and strictly positive, got {0}")]
+    InvalidMaximumCurveLength(f64),
+
     #[error(
         "document state-cycle object count must be from 1 through {MAX_STATE_CYCLE_OBJECTS}, got {0}"
     )]
@@ -370,6 +381,11 @@ fn validate_request(request: &ProbeRequest) -> Result<(), ProbeError> {
         let id = operation.id();
         if id.trim().is_empty() || !ids.insert(id) {
             return Err(ProbeError::InvalidOperationId(id.to_owned()));
+        }
+        if let Operation::NurbsCurveShortFilter { maximum_length, .. } = operation
+            && (!maximum_length.is_finite() || *maximum_length <= 0.0)
+        {
+            return Err(ProbeError::InvalidMaximumCurveLength(*maximum_length));
         }
     }
     request.tolerance.geometry()?;
@@ -562,6 +578,24 @@ fn execute(
             let (length, elapsed) = measure(iterations, || black_box(&curve).length(tolerance))?;
             (json!(length), elapsed)
         }
+        Operation::NurbsCurveShortFilter {
+            degree,
+            control_points,
+            knots,
+            maximum_length,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let (is_short, elapsed) = measure(iterations, || {
+                Ok(CurveRef::NurbsCurve(black_box(&curve)).length(tolerance)?
+                    <= black_box(*maximum_length))
+            })?;
+            (json!(is_short), elapsed)
+        }
         Operation::NurbsCurveDivide {
             degree,
             control_points,
@@ -645,22 +679,32 @@ fn execute(
                 weighted_points(control_points)?,
                 knots.clone(),
             )?;
-            let ((is_linear_model, is_linear_zero, is_planar_model, sel_line_match), elapsed) =
-                measure(iterations, || {
-                    let is_linear_zero = black_box(&curve).is_linear_at_zero_tolerance()?;
-                    Ok((
-                        curve.is_linear(tolerance)?,
-                        is_linear_zero,
-                        curve.is_planar(tolerance)?,
-                        curve.spans().count() == 1 && is_linear_zero,
-                    ))
-                })?;
+            let (
+                (
+                    is_linear_model,
+                    is_linear_zero,
+                    is_planar_model,
+                    sel_line_match,
+                    sel_polyline_match,
+                ),
+                elapsed,
+            ) = measure(iterations, || {
+                let is_linear_zero = black_box(&curve).is_linear_at_zero_tolerance()?;
+                Ok((
+                    curve.is_linear(tolerance)?,
+                    is_linear_zero,
+                    curve.is_planar(tolerance)?,
+                    curve.spans().count() == 1 && is_linear_zero,
+                    curve.degree() == 1 && curve.control_points().len() > 2,
+                ))
+            })?;
             (
                 json!({
                     "is_linear_model": is_linear_model,
                     "is_linear_zero": is_linear_zero,
                     "is_planar_model": is_planar_model,
                     "sel_line_match": sel_line_match,
+                    "sel_polyline_match": sel_polyline_match,
                 }),
                 elapsed,
             )
@@ -1614,11 +1658,38 @@ mod tests {
     }
 
     #[test]
-    fn classifies_nurbs_curves_for_planar_and_line_selection() {
-        let operation = |id: &str, points: Vec<[f64; 3]>, knots: Vec<f64>| {
+    fn filters_nurbs_curves_at_an_inclusive_maximum_length() {
+        let operation = |id: &str, end_x, maximum_length| Operation::NurbsCurveShortFilter {
+            id: id.to_owned(),
+            degree: 1,
+            control_points: vec![
+                control([0.0, 0.0, 0.0], 1.0),
+                control([end_x, 0.0, 0.0], 1.0),
+            ],
+            knots: vec![0.0, 0.0, 1.0, 1.0],
+            maximum_length,
+        };
+        let response = run_request(&request(vec![
+            operation("boundary", 1.0, 1.0),
+            operation("long", 1.5, 1.0),
+        ]))
+        .unwrap();
+        assert_eq!(response.results[0].value, json!(true));
+        assert_eq!(response.results[1].value, json!(false));
+
+        let error = run_request(&request(vec![operation("invalid", 1.0, 0.0)])).unwrap_err();
+        assert!(matches!(
+            error,
+            ProbeError::InvalidMaximumCurveLength(length) if length == 0.0
+        ));
+    }
+
+    #[test]
+    fn classifies_nurbs_curves_for_shape_selection() {
+        let operation = |id: &str, degree, points: Vec<[f64; 3]>, knots: Vec<f64>| {
             Operation::NurbsCurveClassification {
                 id: id.to_owned(),
-                degree: 3,
+                degree,
                 control_points: points
                     .into_iter()
                     .map(|point| control(point, 1.0))
@@ -1630,6 +1701,7 @@ mod tests {
         let response = run_request(&request(vec![
             operation(
                 "single",
+                3,
                 vec![
                     [0.0, 0.0, 0.0],
                     [1.0, 0.0, 0.0],
@@ -1640,6 +1712,7 @@ mod tests {
             ),
             operation(
                 "multi",
+                3,
                 vec![
                     [0.0, 1.0, 0.0],
                     [1.0, 1.0, 0.0],
@@ -1651,6 +1724,7 @@ mod tests {
             ),
             operation(
                 "near",
+                3,
                 vec![
                     [0.0, 2.0, 0.0],
                     [1.0, 2.000_000_000_5, 0.0],
@@ -1661,6 +1735,7 @@ mod tests {
             ),
             operation(
                 "nonplanar",
+                3,
                 vec![
                     [0.0, 0.0, 0.0],
                     [2.0, 0.0, 0.0],
@@ -1668,6 +1743,18 @@ mod tests {
                     [0.0, 0.0, 2.0],
                 ],
                 single_knots,
+            ),
+            operation(
+                "degree-one-multi",
+                1,
+                vec![[0.0, 3.0, 0.0], [0.3, 3.0, 0.0], [0.8, 3.0, 0.0]],
+                vec![0.0, 0.0, 0.5, 1.0, 1.0],
+            ),
+            operation(
+                "degree-one-two-controls",
+                1,
+                vec![[0.0, 4.0, 0.0], [0.6, 4.0, 0.0]],
+                vec![0.0, 0.0, 1.0, 1.0],
             ),
         ]))
         .unwrap();
@@ -1678,6 +1765,7 @@ mod tests {
                 "is_linear_zero": true,
                 "is_planar_model": true,
                 "sel_line_match": true,
+                "sel_polyline_match": false,
             })
         );
         assert_eq!(
@@ -1687,6 +1775,7 @@ mod tests {
                 "is_linear_zero": true,
                 "is_planar_model": true,
                 "sel_line_match": false,
+                "sel_polyline_match": false,
             })
         );
         assert_eq!(
@@ -1696,6 +1785,7 @@ mod tests {
                 "is_linear_zero": false,
                 "is_planar_model": true,
                 "sel_line_match": false,
+                "sel_polyline_match": false,
             })
         );
         assert_eq!(
@@ -1705,6 +1795,27 @@ mod tests {
                 "is_linear_zero": false,
                 "is_planar_model": false,
                 "sel_line_match": false,
+                "sel_polyline_match": false,
+            })
+        );
+        assert_eq!(
+            response.results[4].value,
+            json!({
+                "is_linear_model": true,
+                "is_linear_zero": true,
+                "is_planar_model": true,
+                "sel_line_match": false,
+                "sel_polyline_match": true,
+            })
+        );
+        assert_eq!(
+            response.results[5].value,
+            json!({
+                "is_linear_model": true,
+                "is_linear_zero": true,
+                "is_planar_model": true,
+                "sel_line_match": true,
+                "sel_polyline_match": false,
             })
         );
     }

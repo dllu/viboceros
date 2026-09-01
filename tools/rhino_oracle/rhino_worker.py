@@ -930,6 +930,27 @@ def _execute(operation, iterations, tolerance):
         )
         return float(value), elapsed
 
+    if kind == "nurbs_curve_short_filter":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        maximum_length = _finite(
+            operation["maximum_length"], "maximum curve length"
+        )
+        if not maximum_length > 0.0:
+            raise ValueError("maximum curve length must be strictly positive")
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+
+        def curve_short_filter():
+            return bool(
+                curve.GetLength(tolerance["relative"]) <= maximum_length
+            )
+
+        return _measure(iterations, curve_short_filter)
+
     if kind == "nurbs_curve_topology":
         degree = int(operation["degree"])
         controls = operation["control_points"]
@@ -968,6 +989,9 @@ def _execute(operation, iterations, tolerance):
                 ),
                 "sel_line_match": bool(
                     curve.SpanCount == 1 and is_linear_zero
+                ),
+                "sel_polyline_match": bool(
+                    curve.Degree == 1 and curve.Points.Count > 2
                 ),
             }
 

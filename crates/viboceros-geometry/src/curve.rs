@@ -23,6 +23,22 @@ pub enum CurveRef<'a> {
 }
 
 impl CurveRef<'_> {
+    /// Computes the complete curve length with controlled numerical accuracy.
+    ///
+    /// Exact analytic and piecewise-linear representations use their direct
+    /// formulas. Ellipse and NURBS representations use the supplied absolute
+    /// and relative tolerances to control adaptive integration.
+    pub fn length(self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        match self {
+            Self::Line(line) => line.length(),
+            Self::Circle(circle) => circle.length(),
+            Self::Arc(arc) => arc.length(),
+            Self::Ellipse(ellipse) => ellipse.length(tolerance),
+            Self::Polyline(polyline) => polyline.length(),
+            Self::NurbsCurve(curve) => curve.length(tolerance),
+        }
+    }
+
     /// Returns whether the curve has coincident natural endpoints.
     pub fn is_closed(self) -> Result<bool, GeometryError> {
         Ok(match self {

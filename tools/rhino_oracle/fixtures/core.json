@@ -118,6 +118,29 @@
       "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
     },
     {
+      "op": "nurbs_curve_short_filter",
+      "id": "unit-degree-one-curve-short-filter",
+      "degree": 1,
+      "control_points": [
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 0.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 1.0, 1.0],
+      "maximum_length": 1.0
+    },
+    {
+      "op": "nurbs_curve_short_filter",
+      "id": "long-degree-one-curve-short-filter",
+      "degree": 1,
+      "control_points": [
+        {"point": [0.0, 1.0, 0.0], "weight": 1.0},
+        {"point": [0.4, 1.0, 0.0], "weight": 1.0},
+        {"point": [1.2, 1.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.5, 1.0, 1.0],
+      "maximum_length": 1.0
+    },
+    {
       "op": "nurbs_curve_topology",
       "id": "closed-clamped-curve-topology",
       "degree": 2,
@@ -202,6 +225,27 @@
         {"point": [0.0, 0.0, 2.0], "weight": 1.0}
       ],
       "knots": [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0]
+    },
+    {
+      "op": "nurbs_curve_classification",
+      "id": "multi-segment-degree-one-curve-classification",
+      "degree": 1,
+      "control_points": [
+        {"point": [0.0, 3.0, 0.0], "weight": 1.0},
+        {"point": [0.3, 3.0, 0.0], "weight": 1.0},
+        {"point": [0.8, 3.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.5, 1.0, 1.0]
+    },
+    {
+      "op": "nurbs_curve_classification",
+      "id": "two-control-degree-one-curve-classification",
+      "degree": 1,
+      "control_points": [
+        {"point": [0.0, 4.0, 0.0], "weight": 1.0},
+        {"point": [0.6, 4.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 1.0, 1.0]
     },
     {
       "op": "nurbs_curve_extract_points",

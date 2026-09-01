@@ -112,6 +112,9 @@ impl CommandRegistry {
                 .expect("unique built-in command");
         }
         registry
+            .register(SelShortCurveCommand)
+            .expect("unique built-in command");
+        registry
             .register(LengthCommand)
             .expect("unique built-in command");
         registry
@@ -932,7 +935,13 @@ impl GeometrySelectionFilter {
                 }
                 _ => false,
             },
-            Self::Polyline => matches!(geometry, Geometry::Polyline(_)),
+            Self::Polyline => match geometry {
+                Geometry::Polyline(_) => true,
+                Geometry::NurbsCurve(curve) => {
+                    curve.degree() == 1 && curve.control_points().len() > 2
+                }
+                _ => false,
+            },
             Self::Point => matches!(geometry, Geometry::Point(_)),
             Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
@@ -946,6 +955,42 @@ impl GeometrySelectionFilter {
             },
         };
         Ok(matches)
+    }
+}
+
+struct SelShortCurveCommand;
+
+impl Command for SelShortCurveCommand {
+    fn name(&self) -> &'static str {
+        "SelShortCrv"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let [maximum_length] = arguments else {
+            return Err(CommandError::Usage("SelShortCrv maximum-length"));
+        };
+        let maximum_length = parse_positive_curve_length(maximum_length)?;
+        let tolerance = document.tolerance();
+        let matches = document
+            .objects()
+            .filter(|object| document.is_object_selectable(object.id()))
+            .filter_map(|object| {
+                geometry_curve_ref(object.geometry()).map(|curve| (object.id(), curve))
+            })
+            .map(|(id, curve)| Ok((curve.length(tolerance)? <= maximum_length).then_some(id)))
+            .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>();
+        document.select_objects(matches, SelectionMode::Add)?;
+        Ok(format!(
+            "Selected {} object(s)",
+            document.selected_object_count()
+        ))
     }
 }
 
@@ -966,16 +1011,12 @@ impl Command for LengthCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Length")?;
-        let (count, total) =
-            selected_measurement(document, |geometry, tolerance| match geometry {
-                Geometry::Line(line) => Ok(line.length()?),
-                Geometry::Circle(circle) => Ok(circle.length()?),
-                Geometry::Arc(arc) => Ok(arc.length()?),
-                Geometry::Ellipse(ellipse) => Ok(ellipse.length(tolerance)?),
-                Geometry::Polyline(polyline) => Ok(polyline.length()?),
-                Geometry::NurbsCurve(curve) => Ok(curve.length(tolerance)?),
-                _ => Err(CommandError::UnsupportedLengthGeometry),
-            })?;
+        let (count, total) = selected_measurement(document, |geometry, tolerance| {
+            geometry_curve_ref(geometry)
+                .ok_or(CommandError::UnsupportedLengthGeometry)?
+                .length(tolerance)
+                .map_err(CommandError::from)
+        })?;
         Ok(format!(
             "Measured {count} curve(s): total length {total:.12}"
         ))
@@ -2664,6 +2705,15 @@ fn parse_finite_real(value: &str) -> Result<Real, CommandError> {
     }
 }
 
+fn parse_positive_curve_length(value: &str) -> Result<Real, CommandError> {
+    let length = parse_finite_real(value)?;
+    if length > 0.0 {
+        Ok(length)
+    } else {
+        Err(CommandError::InvalidMaximumCurveLength(value.to_owned()))
+    }
+}
+
 fn parse_nonzero_scale(value: &str) -> Result<Real, CommandError> {
     let factor = parse_finite_real(value)?;
     if factor != 0.0 {
@@ -3206,6 +3256,9 @@ pub enum CommandError {
     #[error("'{0}' is not a valid finite, non-zero scale factor")]
     InvalidScaleFactor(String),
 
+    #[error("'{0}' is not a valid finite, strictly positive maximum curve length")]
+    InvalidMaximumCurveLength(String),
+
     #[error("no layer named '{0}' was found")]
     NamedLayerNotFound(String),
 
@@ -3357,7 +3410,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5835,6 +5888,83 @@ mod tests {
             registry.execute(&mut document, "SelPlanarCrv extra"),
             Err(CommandError::Usage("SelPlanarCrv"))
         ));
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn polyline_and_short_curve_selection_match_rhino_representation_and_boundary_rules() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        registry.execute(&mut document, "Line 0,0 0.5,0").unwrap();
+        registry.execute(&mut document, "Line 0,1 1,1").unwrap();
+        registry.execute(&mut document, "Line 0,2 1.5,2").unwrap();
+        registry
+            .execute(&mut document, "Polyline 0,3 0.25,3 0.75,3")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 1 0,4 0.3,4 0.8,4")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 1 0,5 0.6,5")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 3 0,6 0.2,6 0.5,6 0.7,6")
+            .unwrap();
+        registry.execute(&mut document, "Line 0,7 0.4,7").unwrap();
+        registry.execute(&mut document, "Line 0,8 0.4,8").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document.set_objects_visibility([ids[8]], false).unwrap();
+        document.set_objects_locked([ids[9]], true).unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry.execute(&mut document, "SelShortCrv 1").unwrap(),
+            "Selected 7 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[1], ids[2], ids[4], ids[5], ids[6], ids[7]])
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelPolyline").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[4], ids[5]])
+        );
+        let selection = document.selected_object_ids().collect::<BTreeSet<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "SelShortCrv"),
+            Err(CommandError::Usage("SelShortCrv maximum-length"))
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SelShortCrv 1 extra"),
+            Err(CommandError::Usage("SelShortCrv maximum-length"))
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SelShortCrv 0"),
+            Err(CommandError::InvalidMaximumCurveLength(value)) if value == "0"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SelShortCrv -1"),
+            Err(CommandError::InvalidMaximumCurveLength(value)) if value == "-1"
+        ));
+        assert!(registry.execute(&mut document, "SelShortCrv NaN").is_err());
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            selection
+        );
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

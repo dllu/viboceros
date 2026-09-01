@@ -37,6 +37,7 @@ SelClosedCrv
 SelPlanarCrv
 SelLine
 SelPolyline
+SelShortCrv 1.0
 SelPt
 SelSrf
 SelMesh
@@ -137,7 +138,11 @@ Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
 selection. `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
 exactly straight, single-span higher-degree NURBS curves, while excluding
-multi-span curves and polylines as Rhino does. Mesh closure uses exact
+multi-span curves and polylines as Rhino does. `SelPolyline` includes native
+polylines and multi-segment degree-one NURBS curves, but excludes line objects
+and two-control-point degree-one NURBS curves. `SelShortCrv` takes an explicit
+positive maximum length and includes curves exactly on that boundary; it uses
+the same controlled length calculation as `Length`. Mesh closure uses exact
 location-welded edge topology, so indexed meshes and STL-style triangle soup
 classify consistently.
 `SelLast` selects every object changed by the latest object-editing transaction,
