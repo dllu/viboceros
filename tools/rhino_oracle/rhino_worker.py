@@ -238,6 +238,177 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_orient_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Orient " + suffix + " "
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": _xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": _xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            coordinates = record["start"] + record["end"]
+            rounded = [round(value, 12) for value in coordinates]
+            return tuple(rounded + [record["name"]])
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=lambda item: record_key(line_record(item)))
+            return objects
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(
+                key=lambda group: tuple(record_key(record) for record in group)
+            )
+            return groups
+
+        def run_scenario(label, command, expected_object_count):
+            _record_progress("document_orient_cycle: %s start" % label)
+            source_ids = []
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(1.0, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, 1.0, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, 1.0)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + axis
+                source_id = document.Objects.AddLine(origin, origin + offset, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add orient fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Orient Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group orient fixture lines")
+            fixture_group_indices.add(group_index)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                if not document.Objects.Select(source_id):
+                    raise ValueError("could not select orient fixture line")
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress("document_orient_cycle: %s command complete" % label)
+            objects = scenario_objects(label)
+            if len(objects) != expected_object_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "orient macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (
+                        command,
+                        command_succeeded,
+                        len(objects),
+                        history[-2000:],
+                    )
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(command_succeeded),
+                "groups": scenario_groups(objects),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, source_id in enumerate(source_ids)
+                    if document.Objects.FindId(source_id).IsSelected(False) > 0
+                ],
+            }
+
+        try:
+            orient = "_-Orient 1,2,3 3,2,3 "
+            targets = " 10,-1,4 10,5,4 _Enter"
+            orient3 = "_-Orient3Pt 1,2,3 3,2,3 1,3,4 "
+            targets3 = " 10,-1,4 10,5,4 8,-1,8 _Enter"
+            value = {
+                "orient_default": run_scenario(
+                    "orient-default", orient + targets, 3
+                ),
+                "orient_copy_no": run_scenario(
+                    "orient-copy-no",
+                    orient + "_Copy=_Yes _Scale=_No" + targets + " _Enter",
+                    6,
+                ),
+                "orient_copy_1d": run_scenario(
+                    "orient-copy-1d",
+                    orient + "_Copy=_Yes _Scale=_1D" + targets + " _Enter",
+                    6,
+                ),
+                "orient_copy_3d": run_scenario(
+                    "orient-copy-3d",
+                    orient + "_Copy=_Yes _Scale=_3D" + targets + " _Enter",
+                    6,
+                ),
+                "orient_spatial": run_scenario(
+                    "orient-spatial",
+                    "_-Orient 1,2,3 2,4,6 _Copy=_Yes _Scale=_No "
+                    "-5,4,2 -7,8,3 _Enter _Enter",
+                    6,
+                ),
+                "orient3_default": run_scenario(
+                    "orient3-default", orient3 + targets3, 3
+                ),
+                "orient3_copy_scale": run_scenario(
+                    "orient3-copy-scale",
+                    orient3 + "_Copy=_Yes _Scale=_Yes" + targets3 + " _Enter",
+                    6,
+                ),
+            }
+            source_direction = Rhino.Geometry.Vector3d(1.0, 2.0, 3.0)
+            target_direction = Rhino.Geometry.Vector3d(-2.0, 4.0, 1.0)
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            _unused, elapsed = _measure(
+                iterations,
+                lambda: Rhino.Geometry.Transform.Rotation(
+                    source_direction, target_direction, origin
+                ),
+            )
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
     if kind == "document_curve_array_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())

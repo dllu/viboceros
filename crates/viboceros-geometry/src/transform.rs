@@ -1,6 +1,6 @@
 use nalgebra::Matrix3;
 
-use crate::{GeometryError, Point3, Real, UnitVector3, Vector3, require_finite};
+use crate::{Frame3, GeometryError, Point3, Real, UnitVector3, Vector3, require_finite};
 
 /// A finite affine map from three-dimensional model space to itself.
 ///
@@ -108,6 +108,64 @@ impl AffineTransform3 {
         )
     }
 
+    /// Maps one directed origin to another with independent scale along and
+    /// perpendicular to the source direction. The rotational component is
+    /// the shortest proper rotation between the directions.
+    #[allow(clippy::too_many_arguments)]
+    pub fn try_direction_mapping(
+        source_origin: Point3,
+        source_direction: UnitVector3,
+        target_origin: Point3,
+        target_direction: UnitVector3,
+        axial_scale: Real,
+        perpendicular_scale: Real,
+        tolerance: crate::Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            [axial_scale, perpendicular_scale],
+            "direction mapping scale",
+        )?;
+        let rotation = Self::try_rotation_between(source_direction, target_direction, tolerance)?;
+        let direction = source_direction.as_vector().to_array();
+        let directional_scale = std::array::from_fn(|row| {
+            std::array::from_fn(|column| {
+                let projection = direction[row] * direction[column];
+                let identity = if row == column { 1.0 } else { 0.0 };
+                axial_scale.mul_add(projection, perpendicular_scale * (identity - projection))
+            })
+        });
+        let linear = multiply_linear(rotation.linear_rows(), directional_scale)?;
+        Self::try_mapping_origins(linear, source_origin, target_origin)
+    }
+
+    /// Maps one right-handed orthonormal frame to another, applying the
+    /// requested scale factors along the source frame axes first.
+    pub fn try_frame_mapping(
+        source: Frame3,
+        target: Frame3,
+        scale_factors: [Real; 3],
+    ) -> Result<Self, GeometryError> {
+        require_finite(scale_factors, "frame mapping scale")?;
+        let source_axes = source.axes();
+        let target_axes = target.axes();
+        let mut linear = [[0.0; 3]; 3];
+        for (row, linear_row) in linear.iter_mut().enumerate() {
+            let weighted_target = Vector3::try_new(
+                target_axes[0].as_vector().to_array()[row] * scale_factors[0],
+                target_axes[1].as_vector().to_array()[row] * scale_factors[1],
+                target_axes[2].as_vector().to_array()[row] * scale_factors[2],
+            )?;
+            for (column, coefficient) in linear_row.iter_mut().enumerate() {
+                *coefficient = weighted_target.dot(Vector3::try_new(
+                    source_axes[0].as_vector().to_array()[column],
+                    source_axes[1].as_vector().to_array()[column],
+                    source_axes[2].as_vector().to_array()[column],
+                )?)?;
+            }
+        }
+        Self::try_mapping_origins(linear, source.origin(), target.origin())
+    }
+
     pub fn try_reflection(
         point_on_plane: Point3,
         plane_normal: UnitVector3,
@@ -178,6 +236,35 @@ impl AffineTransform3 {
         let translation = mapped_fixed_point.vector_to(fixed_point)?;
         Self::try_new(linear_rows, translation)
     }
+
+    fn try_mapping_origins(
+        linear_rows: [[Real; 3]; 3],
+        source_origin: Point3,
+        target_origin: Point3,
+    ) -> Result<Self, GeometryError> {
+        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
+        let linear_transform = Self::try_new(linear_rows, zero)?;
+        let mapped_source = linear_transform.transform_point(source_origin)?;
+        Self::try_new(linear_rows, mapped_source.vector_to(target_origin)?)
+    }
+}
+
+fn multiply_linear(
+    left: [[Real; 3]; 3],
+    right: [[Real; 3]; 3],
+) -> Result<[[Real; 3]; 3], GeometryError> {
+    let mut product = [[0.0; 3]; 3];
+    for (row, product_row) in product.iter_mut().enumerate() {
+        let left_row = Vector3::try_from(left[row])?;
+        for (column, coefficient) in product_row.iter_mut().enumerate() {
+            *coefficient = left_row.dot(Vector3::try_new(
+                right[0][column],
+                right[1][column],
+                right[2][column],
+            )?)?;
+        }
+    }
+    Ok(product)
 }
 
 impl Default for AffineTransform3 {
@@ -335,6 +422,87 @@ mod tests {
                     let expected = if row == column { 1.0 } else { 0.0 };
                     assert!(Tolerance::DEFAULT.approx_eq(dot, expected));
                 }
+            }
+        }
+    }
+
+    #[test]
+    fn direction_mapping_scales_axially_or_uniformly_around_the_source_origin() {
+        let source_origin = point(1.0, 2.0, 3.0);
+        let target_origin = point(10.0, -1.0, 4.0);
+        let source_direction = UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let target_direction = UnitVector3::try_new(0.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let axial = AffineTransform3::try_direction_mapping(
+            source_origin,
+            source_direction,
+            target_origin,
+            target_direction,
+            3.0,
+            1.0,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (source, expected) in [
+            (source_origin, target_origin),
+            (point(2.0, 2.0, 3.0), point(10.0, 2.0, 4.0)),
+            (point(1.0, 3.0, 3.0), point(9.0, -1.0, 4.0)),
+            (point(1.0, 2.0, 4.0), point(10.0, -1.0, 5.0)),
+        ] {
+            assert!(
+                axial
+                    .transform_point(source)
+                    .unwrap()
+                    .is_near(expected, Tolerance::DEFAULT)
+            );
+        }
+
+        let uniform = AffineTransform3::try_direction_mapping(
+            source_origin,
+            source_direction,
+            target_origin,
+            target_direction,
+            3.0,
+            3.0,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            uniform
+                .transform_point(point(1.0, 3.0, 4.0))
+                .unwrap()
+                .is_near(point(7.0, -1.0, 7.0), Tolerance::DEFAULT)
+        );
+    }
+
+    #[test]
+    fn frame_mapping_matches_origins_axes_and_uniform_scale() {
+        let source = Frame3::try_from_points(
+            point(1.0, 2.0, 3.0),
+            point(3.0, 2.0, 3.0),
+            point(1.0, 3.0, 4.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let target = Frame3::try_from_points(
+            point(10.0, -1.0, 4.0),
+            point(10.0, 5.0, 4.0),
+            point(8.0, -1.0, 8.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let transform =
+            AffineTransform3::try_frame_mapping(source, target, [3.0, 3.0, 3.0]).unwrap();
+        assert!(
+            transform
+                .transform_point(source.origin())
+                .unwrap()
+                .is_near(target.origin(), Tolerance::DEFAULT)
+        );
+        for (source_axis, target_axis) in source.axes().into_iter().zip(target.axes()) {
+            let actual = transform.transform_vector(source_axis.as_vector()).unwrap();
+            let expected = target_axis.as_vector().scaled(3.0).unwrap();
+            for (actual, expected) in actual.to_array().into_iter().zip(expected.to_array()) {
+                assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
             }
         }
     }

@@ -59,6 +59,8 @@ SelDupAll
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
+Orient 0,0,0 1,0,0 5,5,0 5,8,0 Scale=1D Copy=Yes
+Orient3Pt 0,0,0 1,0,0 0,1,0 5,5,0 5,8,0 4,5,1 Scale=No
 Array 3 2 2 4 -3 5
 Array 3 2 1 20 12 0 Mode=Fill
 ArrayCrv 8 Orientation=Freeform PathName=Rail
@@ -213,6 +215,12 @@ definitions are implemented.
 or the current layer. `CopyToLayer` skips selected objects already on the target,
 copies each remaining group subset into a fresh automatic group, and leaves the
 original selection unchanged. Hidden and locked target layers are supported.
+`Orient` maps two reference points to two target points with Rhino's shortest
+3D rotation. `Scale=No` preserves size, `Scale=1D` changes only the reference
+axis, and `Scale=3D` scales uniformly. `Orient3Pt` maps right-handed frames
+defined by three reference and target points; its `Scale=Yes` factor comes from
+the first point pair. Both commands default to in-place, unscaled transforms;
+`Copy=Yes` preserves the original selection, attributes, and group topology.
 `Array` takes X/Y/Z counts followed by signed world-axis distances. Its default
 `UnitCell` mode uses those values as successive spacing. `Mode=Fill` treats them
 as outside dimensions and accounts for the selected geometry's bounding-box

@@ -87,6 +87,9 @@ pub enum Operation {
     DocumentLayerAssignmentCycle {
         id: String,
     },
+    DocumentOrientCycle {
+        id: String,
+    },
     DocumentLinearArrayCycle {
         id: String,
     },
@@ -276,6 +279,7 @@ impl Operation {
             | Self::DocumentAttributeSelectionCycle { id }
             | Self::DocumentObjectNamingCycle { id }
             | Self::DocumentLayerAssignmentCycle { id }
+            | Self::DocumentOrientCycle { id }
             | Self::DocumentLinearArrayCycle { id }
             | Self::DocumentRectangularArrayCycle { id }
             | Self::DocumentCurveArrayCycle { id }
@@ -472,6 +476,7 @@ fn execute(
         Operation::DocumentLayerAssignmentCycle { .. } => {
             document_layer_assignment_cycle(iterations)?
         }
+        Operation::DocumentOrientCycle { .. } => document_orient_cycle(iterations, tolerance)?,
         Operation::DocumentLinearArrayCycle { .. } => {
             document_linear_array_cycle(iterations, tolerance)?
         }
@@ -1775,6 +1780,156 @@ fn document_rectangular_array_scenario(
             .iter()
             .filter(|(id, _, _)| document.is_selected(*id))
             .map(|(_, coordinates, _)| *coordinates)
+            .collect::<Vec<_>>(),
+    }))
+}
+
+fn document_orient_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let value = json!({
+        "orient_default": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient-default",
+            "Orient 1,2,3 3,2,3 10,-1,4 10,5,4",
+        )?,
+        "orient_copy_no": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient-copy-no",
+            "Orient 1,2,3 3,2,3 10,-1,4 10,5,4 Copy=Yes Scale=No",
+        )?,
+        "orient_copy_1d": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient-copy-1d",
+            "Orient 1,2,3 3,2,3 10,-1,4 10,5,4 Copy=Yes Scale=1D",
+        )?,
+        "orient_copy_3d": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient-copy-3d",
+            "Orient 1,2,3 3,2,3 10,-1,4 10,5,4 Copy=Yes Scale=3D",
+        )?,
+        "orient_spatial": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient-spatial",
+            "Orient 1,2,3 2,4,6 -5,4,2 -7,8,3 Copy=Yes Scale=No",
+        )?,
+        "orient3_default": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient3-default",
+            "Orient3Pt 1,2,3 3,2,3 1,3,4 10,-1,4 10,5,4 8,-1,8",
+        )?,
+        "orient3_copy_scale": document_orient_scenario(
+            tolerance,
+            &registry,
+            "orient3-copy-scale",
+            "Orient3Pt 1,2,3 3,2,3 1,3,4 10,-1,4 10,5,4 8,-1,8 Copy=Yes Scale=Yes",
+        )?,
+    });
+
+    let source_origin = Point3::try_new(1.0, 2.0, 3.0)?;
+    let target_origin = Point3::try_new(-5.0, 4.0, 2.0)?;
+    let source_direction = Vector3::try_new(1.0, 2.0, 3.0)?.normalized(tolerance)?;
+    let target_direction = Vector3::try_new(-2.0, 4.0, 1.0)?.normalized(tolerance)?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        AffineTransform3::try_direction_mapping(
+            black_box(source_origin),
+            source_direction,
+            black_box(target_origin),
+            target_direction,
+            1.0,
+            1.0,
+            tolerance,
+        )
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+fn document_orient_scenario(
+    tolerance: Tolerance,
+    registry: &CommandRegistry,
+    label: &str,
+    command: &str,
+) -> Result<Value, ProbeError> {
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let origin = Point3::try_new(1.0, 2.0, 3.0)?;
+    let mut original_ids = Vec::with_capacity(3);
+    for (axis, offset) in [
+        ("x", [1.0, 0.0, 0.0]),
+        ("y", [0.0, 1.0, 0.0]),
+        ("z", [0.0, 0.0, 1.0]),
+    ] {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Line(LineSegment::try_new(
+                origin,
+                origin.translated(Vector3::try_from(offset)?)?,
+                tolerance,
+            )?),
+            ObjectAttributes::on_layer(layer).with_name(format!("{label} {axis}")),
+        )?);
+    }
+    document.add_group(
+        Some(format!("Viboceros Orient Group {label}")),
+        original_ids.iter().copied(),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(&mut document, command)?;
+
+    let name_prefix = format!("{label} ");
+    let object_ids = document
+        .objects()
+        .filter(|object| {
+            object
+                .attributes()
+                .name()
+                .is_some_and(|name| name.starts_with(&name_prefix))
+        })
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    let mut objects = object_ids
+        .iter()
+        .map(|id| array_line_record(&document, *id))
+        .collect::<Result<Vec<_>, _>>()?;
+    objects.sort_by(compare_array_line_records);
+    let mut groups = document
+        .groups()
+        .filter_map(|group| {
+            let members = group
+                .members()
+                .filter(|id| object_ids.contains(id))
+                .collect::<Vec<_>>();
+            (!members.is_empty()).then_some(members)
+        })
+        .map(|members| {
+            let mut records = members
+                .into_iter()
+                .map(|id| array_line_record(&document, id))
+                .collect::<Result<Vec<_>, _>>()?;
+            records.sort_by(compare_array_line_records);
+            Ok::<_, ProbeError>(records)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    groups.sort_by(|left, right| compare_array_line_record_lists(left, right));
+
+    Ok(json!({
+        "command_succeeded": true,
+        "groups": groups
+            .iter()
+            .map(|records| array_line_records_value(records))
+            .collect::<Vec<_>>(),
+        "objects": array_line_records_value(&objects),
+        "originals_selected": original_ids
+            .iter()
+            .enumerate()
+            .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
             .collect::<Vec<_>>(),
     }))
 }
@@ -3578,6 +3733,44 @@ mod tests {
             );
             assert_eq!(value[scenario]["originals_selected"], json!([0, 1, 2]));
             assert_eq!(value[scenario]["path_selected"], json!(false));
+            assert_eq!(
+                value[scenario]["objects"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|record| record["selected"] == json!(true))
+                    .count(),
+                3
+            );
+        }
+    }
+
+    #[test]
+    fn orients_grouped_triads_with_rhino_scale_copy_and_frame_scope() {
+        let response = run_request(&request(vec![Operation::DocumentOrientCycle {
+            id: "orient".to_owned(),
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        for (scenario, object_count, group_count) in [
+            ("orient_default", 3, 1),
+            ("orient_copy_no", 6, 2),
+            ("orient_copy_1d", 6, 2),
+            ("orient_copy_3d", 6, 2),
+            ("orient_spatial", 6, 2),
+            ("orient3_default", 3, 1),
+            ("orient3_copy_scale", 6, 2),
+        ] {
+            assert_eq!(value[scenario]["command_succeeded"], json!(true));
+            assert_eq!(
+                value[scenario]["objects"].as_array().unwrap().len(),
+                object_count
+            );
+            assert_eq!(
+                value[scenario]["groups"].as_array().unwrap().len(),
+                group_count
+            );
+            assert_eq!(value[scenario]["originals_selected"], json!([0, 1, 2]));
             assert_eq!(
                 value[scenario]["objects"]
                     .as_array()

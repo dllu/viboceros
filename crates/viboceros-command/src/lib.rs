@@ -8,7 +8,7 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, CurveSample, Ellipse3,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, CurveSample, Ellipse3, Frame3,
     GeometryError, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES,
     MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure,
     Real, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
@@ -247,6 +247,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CopyCommand)
+            .expect("unique built-in command");
+        registry
+            .register(OrientCommand)
+            .expect("unique built-in command");
+        registry
+            .register(OrientThreePointCommand)
             .expect("unique built-in command");
         registry
             .register(ArrayCommand)
@@ -2943,6 +2949,239 @@ impl Command for CopyCommand {
     }
 }
 
+const ORIENT_USAGE: &str = "Orient reference-start reference-end target-start target-end \
+    [Scale=No|1D|3D] [Copy=Yes|No]";
+const ORIENT_THREE_POINT_USAGE: &str = "Orient3Pt reference-1 reference-2 reference-3 \
+    target-1 target-2 target-3 [Scale=Yes|No] [Copy=Yes|No]";
+
+struct OrientCommand;
+
+impl Command for OrientCommand {
+    fn name(&self) -> &'static str {
+        "Orient"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (reference_start, consumed_1) = parse_point(arguments)?;
+        let (reference_end, consumed_2) = parse_point(&arguments[consumed_1..])?;
+        let (target_start, consumed_3) = parse_point(&arguments[consumed_1 + consumed_2..])?;
+        let (target_end, consumed_4) =
+            parse_point(&arguments[consumed_1 + consumed_2 + consumed_3..])?;
+        let consumed = consumed_1 + consumed_2 + consumed_3 + consumed_4;
+        let options = parse_orient_options(&arguments[consumed..])?;
+        let tolerance = document.tolerance();
+        let reference_vector = reference_start.vector_to(reference_end)?;
+        let target_vector = target_start.vector_to(target_end)?;
+        let reference_direction = reference_vector.normalized(tolerance)?;
+        let target_direction = target_vector.normalized(tolerance)?;
+        let scale_factor = match options.scale {
+            OrientScale::No => 1.0,
+            OrientScale::OneDimensional | OrientScale::ThreeDimensional => {
+                orient_scale_factor(reference_vector, target_vector)?
+            }
+        };
+        let perpendicular_scale = match options.scale {
+            OrientScale::ThreeDimensional => scale_factor,
+            OrientScale::No | OrientScale::OneDimensional => 1.0,
+        };
+        let transform = AffineTransform3::try_direction_mapping(
+            reference_start,
+            reference_direction,
+            target_start,
+            target_direction,
+            scale_factor,
+            perpendicular_scale,
+            tolerance,
+        )?;
+        let (transformed, copied) =
+            apply_orient_transform(document, selected.as_slice(), transform, options.copy)?;
+        Ok(format!(
+            "Oriented {transformed} object(s) with {} scaling, creating {copied} copy object(s)",
+            options.scale.name()
+        ))
+    }
+}
+
+struct OrientThreePointCommand;
+
+impl Command for OrientThreePointCommand {
+    fn name(&self) -> &'static str {
+        "Orient3Pt"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Orient3Point"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (reference_1, consumed_1) = parse_point(arguments)?;
+        let (reference_2, consumed_2) = parse_point(&arguments[consumed_1..])?;
+        let (reference_3, consumed_3) = parse_point(&arguments[consumed_1 + consumed_2..])?;
+        let (target_1, consumed_4) =
+            parse_point(&arguments[consumed_1 + consumed_2 + consumed_3..])?;
+        let (target_2, consumed_5) =
+            parse_point(&arguments[consumed_1 + consumed_2 + consumed_3 + consumed_4..])?;
+        let (target_3, consumed_6) = parse_point(
+            &arguments[consumed_1 + consumed_2 + consumed_3 + consumed_4 + consumed_5..],
+        )?;
+        let consumed = consumed_1 + consumed_2 + consumed_3 + consumed_4 + consumed_5 + consumed_6;
+        let options = parse_orient_three_point_options(&arguments[consumed..])?;
+        let tolerance = document.tolerance();
+        let source_frame =
+            Frame3::try_from_points(reference_1, reference_2, reference_3, tolerance)?;
+        let target_frame = Frame3::try_from_points(target_1, target_2, target_3, tolerance)?;
+        let scale_factor = if options.scale {
+            orient_scale_factor(
+                reference_1.vector_to(reference_2)?,
+                target_1.vector_to(target_2)?,
+            )?
+        } else {
+            1.0
+        };
+        let transform =
+            AffineTransform3::try_frame_mapping(source_frame, target_frame, [scale_factor; 3])?;
+        let (transformed, copied) =
+            apply_orient_transform(document, selected.as_slice(), transform, options.copy)?;
+        let scale_name = if options.scale { "3D" } else { "No" };
+        Ok(format!(
+            "Oriented {transformed} object(s) through three-point frames with {scale_name} scaling, creating {copied} copy object(s)"
+        ))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum OrientScale {
+    No,
+    OneDimensional,
+    ThreeDimensional,
+}
+
+impl OrientScale {
+    const fn name(self) -> &'static str {
+        match self {
+            Self::No => "No",
+            Self::OneDimensional => "1D",
+            Self::ThreeDimensional => "3D",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct OrientOptions {
+    scale: OrientScale,
+    copy: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct OrientThreePointOptions {
+    scale: bool,
+    copy: bool,
+}
+
+fn parse_orient_options(arguments: &[&str]) -> Result<OrientOptions, CommandError> {
+    let mut options = OrientOptions {
+        scale: OrientScale::No,
+        copy: false,
+    };
+    let mut scale_seen = false;
+    let mut copy_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, ORIENT_USAGE)?;
+        if option_name_eq(name, "Scale") && !scale_seen {
+            let value = value.trim_start_matches(['_', '-']);
+            options.scale = if value.eq_ignore_ascii_case("No") {
+                OrientScale::No
+            } else if value.eq_ignore_ascii_case("1D") {
+                OrientScale::OneDimensional
+            } else if value.eq_ignore_ascii_case("3D") {
+                OrientScale::ThreeDimensional
+            } else {
+                return Err(CommandError::Usage(ORIENT_USAGE));
+            };
+            scale_seen = true;
+        } else if option_name_eq(name, "Copy") && !copy_seen {
+            options.copy = parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_USAGE))?;
+            copy_seen = true;
+        } else {
+            return Err(CommandError::Usage(ORIENT_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
+fn parse_orient_three_point_options(
+    arguments: &[&str],
+) -> Result<OrientThreePointOptions, CommandError> {
+    let mut options = OrientThreePointOptions {
+        scale: false,
+        copy: false,
+    };
+    let mut scale_seen = false;
+    let mut copy_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, ORIENT_THREE_POINT_USAGE)?;
+        if option_name_eq(name, "Scale") && !scale_seen {
+            options.scale =
+                parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_THREE_POINT_USAGE))?;
+            scale_seen = true;
+        } else if option_name_eq(name, "Copy") && !copy_seen {
+            options.copy =
+                parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_THREE_POINT_USAGE))?;
+            copy_seen = true;
+        } else {
+            return Err(CommandError::Usage(ORIENT_THREE_POINT_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
+fn orient_option<'a>(
+    arguments: &'a [&str],
+    index: usize,
+    usage: &'static str,
+) -> Result<(&'a str, &'a str, usize), CommandError> {
+    let argument = arguments[index];
+    if let Some((name, value)) = argument.split_once('=') {
+        Ok((name, value, 1))
+    } else {
+        let value = arguments.get(index + 1).ok_or(CommandError::Usage(usage))?;
+        Ok((argument, *value, 2))
+    }
+}
+
+fn orient_scale_factor(reference: Vector3, target: Vector3) -> Result<Real, GeometryError> {
+    let factor = target.length()? / reference.length()?;
+    if factor.is_finite() && factor > 0.0 {
+        Ok(factor)
+    } else {
+        Err(GeometryError::NonFinite {
+            context: "orient scale factor",
+        })
+    }
+}
+
+fn apply_orient_transform(
+    document: &mut Document,
+    selected: &[ObjectId],
+    transform: AffineTransform3,
+    copy: bool,
+) -> Result<(usize, usize), DocumentError> {
+    if copy {
+        let copies = document.copy_objects_transformed(selected.iter().copied(), transform)?;
+        document.select_objects_direct(selected.iter().copied(), SelectionMode::Replace)?;
+        Ok((selected.len(), copies.len()))
+    } else {
+        let transformed = document.transform_objects(selected.iter().copied(), transform)?;
+        Ok((transformed, 0))
+    }
+}
+
 const ARRAY_USAGE: &str =
     "Array x-count y-count z-count x-distance y-distance z-distance [Mode=UnitCell|Fill]";
 
@@ -3413,7 +3652,7 @@ fn curve_array_transforms(
         .iter()
         .zip(&frames[skip..])
         .map(|(sample, frame)| {
-            curve_array_frame_transform(base_point, source_frame, sample.point(), *frame)
+            curve_array_frame_transform(base_point, source_frame, sample.point(), *frame, tolerance)
         })
         .collect()
 }
@@ -3646,23 +3885,21 @@ fn curve_array_frame_transform(
     source: CurveArrayFrame,
     target_point: Point3,
     target: CurveArrayFrame,
+    tolerance: Tolerance,
 ) -> Result<AffineTransform3, GeometryError> {
-    let source_axes = [source.x, source.y, source.z];
-    let target_axes = [target.x, target.y, target.z];
-    let linear_rows = std::array::from_fn(|row| {
-        std::array::from_fn(|column| {
-            (0..3)
-                .map(|axis| {
-                    target_axes[axis].as_vector().to_array()[row]
-                        * source_axes[axis].as_vector().to_array()[column]
-                })
-                .sum()
-        })
-    });
-    let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-    let linear = AffineTransform3::try_new(linear_rows, zero)?;
-    let mapped_base = linear.transform_point(base_point)?;
-    AffineTransform3::try_new(linear_rows, mapped_base.vector_to(target_point)?)
+    let source = Frame3::try_from_directions(
+        base_point,
+        source.x.as_vector(),
+        source.y.as_vector(),
+        tolerance,
+    )?;
+    let target = Frame3::try_from_directions(
+        target_point,
+        target.x.as_vector(),
+        target.y.as_vector(),
+        tolerance,
+    )?;
+    AffineTransform3::try_frame_mapping(source, target, [1.0; 3])
 }
 
 struct ArrayLinearCommand;
@@ -4859,7 +5096,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -9080,6 +9317,197 @@ mod tests {
         ));
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    fn add_orient_triad(document: &mut Document) -> [ObjectId; 3] {
+        let layer = document.current_layer_id();
+        let tolerance = document.tolerance();
+        let origin = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let mut ids = Vec::new();
+        for (name, end) in [
+            ("x", Point3::try_new(2.0, 2.0, 3.0).unwrap()),
+            ("y", Point3::try_new(1.0, 3.0, 3.0).unwrap()),
+            ("z", Point3::try_new(1.0, 2.0, 4.0).unwrap()),
+        ] {
+            ids.push(
+                document
+                    .add_geometry_with_attributes(
+                        Geometry::Line(LineSegment::try_new(origin, end, tolerance).unwrap()),
+                        ObjectAttributes::on_layer(layer).with_name(name),
+                    )
+                    .unwrap(),
+            );
+        }
+        let ids: [ObjectId; 3] = ids.try_into().unwrap();
+        document.add_group(Some("Triad".to_owned()), ids).unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        ids
+    }
+
+    fn orient_line(document: &Document, name: &str, excluded: &[ObjectId]) -> LineSegment {
+        document
+            .objects()
+            .find(|object| {
+                object.attributes().name() == Some(name) && !excluded.contains(&object.id())
+            })
+            .map(|object| match object.geometry() {
+                Geometry::Line(line) => *line,
+                _ => panic!("expected an orient fixture line"),
+            })
+            .unwrap()
+    }
+
+    #[test]
+    fn orient_matches_rhino_no_1d_and_3d_copy_scaling() {
+        let registry = CommandRegistry::with_builtins();
+        for (mode, expected) in [
+            (
+                "No",
+                [
+                    Point3::try_new(10.0, 0.0, 4.0).unwrap(),
+                    Point3::try_new(9.0, -1.0, 4.0).unwrap(),
+                    Point3::try_new(10.0, -1.0, 5.0).unwrap(),
+                ],
+            ),
+            (
+                "1D",
+                [
+                    Point3::try_new(10.0, 2.0, 4.0).unwrap(),
+                    Point3::try_new(9.0, -1.0, 4.0).unwrap(),
+                    Point3::try_new(10.0, -1.0, 5.0).unwrap(),
+                ],
+            ),
+            (
+                "3D",
+                [
+                    Point3::try_new(10.0, 2.0, 4.0).unwrap(),
+                    Point3::try_new(7.0, -1.0, 4.0).unwrap(),
+                    Point3::try_new(10.0, -1.0, 7.0).unwrap(),
+                ],
+            ),
+        ] {
+            let mut document = Document::default();
+            let originals = add_orient_triad(&mut document);
+            let message = registry
+                .execute(
+                    &mut document,
+                    &format!("Orient 1,2,3 3,2,3 10,-1,4 10,5,4 Copy=Yes Scale={mode}"),
+                )
+                .unwrap();
+            assert!(message.contains("creating 3 copy object(s)"));
+            assert_eq!(document.objects().len(), 6);
+            assert_eq!(document.groups().len(), 2);
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                originals.into_iter().collect()
+            );
+            for ((name, expected_end), original) in
+                ["x", "y", "z"].into_iter().zip(expected).zip(originals)
+            {
+                let copy = orient_line(&document, name, &[original]);
+                assert!(copy.start().is_near(
+                    Point3::try_new(10.0, -1.0, 4.0).unwrap(),
+                    document.tolerance()
+                ));
+                assert!(copy.end().is_near(expected_end, document.tolerance()));
+            }
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().len(), 3);
+            assert_eq!(document.groups().len(), 1);
+            registry.execute(&mut document, "Redo").unwrap();
+            assert_eq!(document.objects().len(), 6);
+            assert_eq!(document.groups().len(), 2);
+        }
+    }
+
+    #[test]
+    fn orient_defaults_to_unscaled_in_place_shortest_rotation() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let originals = add_orient_triad(&mut document);
+        registry
+            .execute(&mut document, "Orient 1,2,3 3,2,3 10,-1,4 10,5,4")
+            .unwrap();
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            originals.into_iter().collect()
+        );
+        for (name, expected_end) in [
+            ("x", Point3::try_new(10.0, 0.0, 4.0).unwrap()),
+            ("y", Point3::try_new(9.0, -1.0, 4.0).unwrap()),
+            ("z", Point3::try_new(10.0, -1.0, 5.0).unwrap()),
+        ] {
+            let line = orient_line(&document, name, &[]);
+            assert!(line.end().is_near(expected_end, document.tolerance()));
+        }
+        assert_eq!(document.undo_label(), Some("Orient"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            orient_line(&document, "x", &[]),
+            LineSegment::try_new(
+                Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Point3::try_new(2.0, 2.0, 3.0).unwrap(),
+                document.tolerance(),
+            )
+            .unwrap()
+        );
+    }
+
+    #[test]
+    fn orient_three_point_matches_rhino_frames_scale_and_atomic_errors() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let originals = add_orient_triad(&mut document);
+        registry
+            .execute(
+                &mut document,
+                "Orient3Pt 1,2,3 3,2,3 1,3,4 10,-1,4 10,5,4 8,-1,8 Copy=Yes Scale=Yes",
+            )
+            .unwrap();
+        let expected = [
+            ("x", Point3::try_new(10.0, 2.0, 4.0).unwrap()),
+            (
+                "y",
+                Point3::try_new(7.153950105848459, -1.0, 4.948683298050513).unwrap(),
+            ),
+            (
+                "z",
+                Point3::try_new(10.948683298050513, -1.0, 6.846049894151541).unwrap(),
+            ),
+        ];
+        for ((name, expected_end), original) in expected.into_iter().zip(originals) {
+            let copy = orient_line(&document, name, &[original]);
+            assert!(copy.end().is_near(expected_end, document.tolerance()));
+        }
+        assert_eq!(document.groups().len(), 2);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            originals.into_iter().collect()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let object_count = document.objects().len();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "Orient 0,0,0 0,0,0 1,1,1 2,1,1",
+            "Orient 0,0,0 1,0,0 1,1,1 1,1,1",
+            "Orient3Pt 0,0,0 1,0,0 2,0,0 0,0,0 0,1,0 0,0,1",
+            "Orient3Pt 0,0,0 1,0,0 0,1,0 0,0,0 0,1,0 0,2,0",
+            "Orient 0,0,0 1,0,0 0,0,0 0,1,0 Copy=Yes Copy=No",
+            "Orient3Pt 0,0,0 1,0,0 0,1,0 0,0,0 0,1,0 0,0,1 Scale=1D",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.groups().len(), 1);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

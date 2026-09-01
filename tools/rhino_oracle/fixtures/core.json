@@ -39,6 +39,10 @@
       "id": "document-layer-assignment-cycle"
     },
     {
+      "op": "document_orient_cycle",
+      "id": "document-orient-cycle"
+    },
+    {
       "op": "document_linear_array_cycle",
       "id": "document-linear-array-cycle"
     },
