@@ -131,6 +131,9 @@ impl CommandRegistry {
             .register(UnifyMeshNormalsCommand)
             .expect("unique built-in command");
         registry
+            .register(CombineIdenticalMeshVerticesCommand)
+            .expect("unique built-in command");
+        registry
             .register(SplitDisjointMeshCommand)
             .expect("unique built-in command");
         registry
@@ -1398,6 +1401,46 @@ impl Command for UnifyMeshNormalsCommand {
         let changed_mesh_count = document.replace_object_geometries(replacements)?;
         Ok(format!(
             "Unified {mesh_count} mesh(es): flipped {flipped_face_count} face(s) in {changed_mesh_count} mesh(es); {} already consistent",
+            mesh_count - changed_mesh_count
+        ))
+    }
+}
+
+struct CombineIdenticalMeshVerticesCommand;
+
+impl Command for CombineIdenticalMeshVerticesCommand {
+    fn name(&self) -> &'static str {
+        "CombineIdenticalMeshVertices"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "CombineIdenticalMeshVertices")?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let mesh_count = selected.len();
+        let mut removed_vertex_count = 0;
+        let mut replacements = Vec::new();
+        for (id, geometry) in selected {
+            let Geometry::Mesh(mesh) = geometry else {
+                return Err(CommandError::UnsupportedCombineIdenticalMeshVerticesGeometry);
+            };
+            let (combined, removed) = mesh.combined_identical_vertices();
+            removed_vertex_count += removed;
+            if removed > 0 {
+                replacements.push((id, Geometry::Mesh(combined)));
+            }
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoIdenticalMeshVertices);
+        }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Combined {removed_vertex_count} identical vertex occurrence(s) in {changed_mesh_count} mesh(es); {} mesh(es) unchanged",
             mesh_count - changed_mesh_count
         ))
     }
@@ -2775,6 +2818,12 @@ pub enum CommandError {
     #[error("UnifyMeshNormals supports selected meshes only")]
     UnsupportedUnifyMeshNormalsGeometry,
 
+    #[error("CombineIdenticalMeshVertices supports selected meshes only")]
+    UnsupportedCombineIdenticalMeshVerticesGeometry,
+
+    #[error("none of the selected meshes contains identical vertex locations")]
+    NoIdenticalMeshVertices,
+
     #[error("SplitDisjointMesh supports selected meshes only")]
     UnsupportedSplitDisjointMeshGeometry,
 
@@ -2858,7 +2907,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
         );
     }
 
@@ -3611,6 +3660,115 @@ mod tests {
         ));
         assert_eq!(
             document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn combines_identical_mesh_vertices_with_identity_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Cleanup")
+            .unwrap();
+        let duplicated = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, -2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let unique = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry(Geometry::Mesh(duplicated.clone()))
+            .unwrap();
+        let unique_id = document
+            .add_geometry(Geometry::Mesh(unique.clone()))
+            .unwrap();
+        let attributes = document.object(source).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry.execute(&mut document, "Group CleanupSet").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "CombineIdenticalMeshVertices")
+                .unwrap(),
+            "Combined 3 identical vertex occurrence(s) in 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("CombineIdenticalMeshVertices"));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        let Geometry::Mesh(combined) = document.object(source).unwrap().geometry() else {
+            panic!("expected combined mesh")
+        };
+        assert_eq!(
+            combined.vertices(),
+            &[
+                Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, -2.0, 0.0).unwrap(),
+            ]
+        );
+        assert_eq!(combined.triangles(), &[[3, 1, 2], [1, 3, 4]]);
+        assert_eq!(
+            document.object(unique_id).unwrap().geometry(),
+            &Geometry::Mesh(unique.clone())
+        );
+        assert_eq!(
+            document
+                .group_by_name("CleanupSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, unique_id])
+        );
+        assert_eq!(document.selected_object_count(), 2);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(duplicated)
+        );
+
+        let mut unique_only = Document::default();
+        let unique_only_id = unique_only.add_geometry(Geometry::Mesh(unique)).unwrap();
+        unique_only
+            .select_object(unique_only_id, SelectionMode::Replace)
+            .unwrap();
+        let history = unique_only.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut unique_only, "CombineIdenticalMeshVertices"),
+            Err(CommandError::NoIdenticalMeshVertices)
+        ));
+        assert_eq!(unique_only.undo_label(), history.as_deref());
+
+        registry.execute(&mut unique_only, "Point 9,9").unwrap();
+        registry.execute(&mut unique_only, "SelAll").unwrap();
+        let before = unique_only.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut unique_only, "CombineIdenticalMeshVertices"),
+            Err(CommandError::UnsupportedCombineIdenticalMeshVerticesGeometry)
+        ));
+        assert_eq!(
+            unique_only.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
     }

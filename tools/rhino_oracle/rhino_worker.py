@@ -467,6 +467,27 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_combine_identical_vertices":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        def combine_identical_vertices():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                changed = bool(mesh.Vertices.CombineIdentical(True, True))
+                return {
+                    "changed": changed,
+                    "removed_vertices": before - int(mesh.Vertices.Count),
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, combine_identical_vertices)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_volume":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         try:

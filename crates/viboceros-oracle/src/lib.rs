@@ -143,6 +143,11 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    MeshCombineIdenticalVertices {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+    },
     MeshVolume {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -191,6 +196,7 @@ impl Operation {
             | Self::NurbsCurveTopology { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
+            | Self::MeshCombineIdenticalVertices { id, .. }
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
             | Self::MeshExtractDuplicateFaces { id, .. }
@@ -595,6 +601,31 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::MeshCombineIdenticalVertices {
+            vertices,
+            triangles,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let ((combined, removed_vertices), elapsed) = measure(iterations, || {
+                Ok(black_box(&mesh).combined_identical_vertices())
+            })?;
+            (
+                json!({
+                    "changed": removed_vertices > 0,
+                    "removed_vertices": removed_vertices,
+                    "mesh": mesh_value(&combined),
+                }),
+                elapsed,
+            )
+        }
         Operation::MeshVolume {
             vertices,
             triangles,
@@ -941,6 +972,42 @@ mod tests {
                         ],
                     },
                 ],
+            })
+        );
+    }
+
+    #[test]
+    fn combines_identical_mesh_vertices_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshCombineIdenticalVertices {
+            id: "combined".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [2.0, 0.0, 0.0],
+                [0.0, 2.0, 0.0],
+                [2.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [0.0, -2.0, 0.0],
+                [0.0, 2.0, 0.0],
+                [99.0, 99.0, 99.0],
+            ],
+            triangles: vec![[0, 1, 2], [3, 4, 5]],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "changed": true,
+                "removed_vertices": 3,
+                "mesh": {
+                    "triangles": [[3, 1, 2], [1, 3, 4]],
+                    "vertices": [
+                        [99.0, 99.0, 99.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
+                        [0.0, 0.0, 0.0],
+                        [0.0, -2.0, 0.0],
+                    ],
+                },
             })
         );
     }

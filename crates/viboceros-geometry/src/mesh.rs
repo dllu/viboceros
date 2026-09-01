@@ -438,6 +438,55 @@ impl TriangleMesh {
         })
     }
 
+    /// Merges vertices at exactly equal locations, ignoring derived normals
+    /// and attributes that this mesh representation does not store. Matching
+    /// OpenNURBS behavior, a changed mesh sorts unique vertices by descending
+    /// `(x, y, z)` while a mesh with no duplicates remains byte-for-byte equal.
+    pub fn combined_identical_vertices(&self) -> (Self, usize) {
+        let mut unique_by_location = BTreeMap::new();
+        for &vertex in &self.vertices {
+            let key = vertex.to_array().map(canonical_coordinate_bits);
+            unique_by_location.entry(key).or_insert(vertex);
+        }
+        let removed = self.vertices.len() - unique_by_location.len();
+        if removed == 0 {
+            return (self.clone(), 0);
+        }
+
+        let mut vertices = unique_by_location.into_values().collect::<Vec<_>>();
+        vertices.sort_by(compare_points_descending);
+        let index_by_location = vertices
+            .iter()
+            .enumerate()
+            .map(|(index, vertex)| {
+                (
+                    vertex.to_array().map(canonical_coordinate_bits),
+                    u32::try_from(index)
+                        .expect("a combined mesh cannot have more vertices than its source"),
+                )
+            })
+            .collect::<BTreeMap<_, _>>();
+        let triangles = self
+            .triangles
+            .iter()
+            .map(|triangle| {
+                triangle.map(|source| {
+                    let key = self.vertices[source as usize]
+                        .to_array()
+                        .map(canonical_coordinate_bits);
+                    index_by_location[&key]
+                })
+            })
+            .collect();
+        (
+            Self {
+                vertices,
+                triangles,
+            },
+            removed,
+        )
+    }
+
     fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
         let mut used = vec![false; self.vertices.len()];
         for &face in faces {
@@ -654,6 +703,19 @@ fn canonical_coordinate_bits(coordinate: Real) -> u64 {
     } else {
         coordinate.to_bits()
     }
+}
+
+fn compare_points_descending(left: &Point3, right: &Point3) -> std::cmp::Ordering {
+    left.to_array()
+        .into_iter()
+        .zip(right.to_array())
+        .map(|(left, right)| {
+            right
+                .partial_cmp(&left)
+                .expect("validated point coordinates are finite")
+        })
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or(std::cmp::Ordering::Equal)
 }
 
 fn face_root(parents: &mut [usize], face: usize) -> usize {
@@ -1139,6 +1201,61 @@ mod tests {
         )
         .unwrap();
         assert!(truly_unique.extract_duplicate_faces().is_none());
+    }
+
+    #[test]
+    fn combines_identical_vertices_in_rhino_order_without_culling_unused() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(2.0, -0.0, 0.0),
+            point(-0.0, 0.0, 0.0),
+            point(0.0, -2.0, 0.0),
+            point(0.0, 2.0, -0.0),
+            point(99.0, 99.0, 99.0),
+        ];
+        let mesh = TriangleMesh::try_new(vertices, vec![[0, 1, 2], [3, 4, 5]], Tolerance::DEFAULT)
+            .unwrap();
+        let (combined, removed) = mesh.combined_identical_vertices();
+        assert_eq!(removed, 3);
+        assert_eq!(
+            combined.vertices(),
+            &[
+                point(99.0, 99.0, 99.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ]
+        );
+        assert_eq!(combined.triangles(), &[[3, 1, 2], [1, 3, 4]]);
+
+        let unique = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(unique.combined_identical_vertices(), (unique.clone(), 0));
+
+        let near = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 1.0e-12),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(near.combined_identical_vertices(), (near.clone(), 0));
     }
 
     #[test]

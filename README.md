@@ -61,6 +61,7 @@ CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
+CombineIdenticalMeshVertices
 SplitDisjointMesh
 ExtractDuplicateMeshFaces
 ExtractNonManifoldMeshEdges
@@ -109,6 +110,9 @@ location-welded manifold edges, including STL-style triangle soup, and rejects
 non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)
 reverses selected curve directions or every face in selected meshes without
 changing object identities, attributes, groups, or closed-curve seams.
+`CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
+indices without culling unused vertices, preserving object identity, metadata,
+face order, and winding.
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
 shared vertex does not connect them), retaining the first object identity and
 copying attributes and group membership to additional pieces.
