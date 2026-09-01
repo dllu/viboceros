@@ -216,6 +216,28 @@ pub fn nearest_object_snap(
                     arc.center(),
                 );
             }
+            Geometry::Ellipse(ellipse) => {
+                consider_candidate(
+                    &mut best,
+                    cursor,
+                    capture_radius,
+                    object.id(),
+                    ObjectSnapKind::Center,
+                    ellipse.center(),
+                );
+                if let Ok(quadrants) = ellipse.quadrants() {
+                    for quadrant in quadrants {
+                        consider_candidate(
+                            &mut best,
+                            cursor,
+                            capture_radius,
+                            object.id(),
+                            ObjectSnapKind::Quad,
+                            quadrant,
+                        );
+                    }
+                }
+            }
             Geometry::Polyline(polyline) => {
                 for vertex in polyline.vertices() {
                     consider_candidate(
@@ -369,8 +391,8 @@ mod tests {
     use super::*;
     use viboceros_document::Geometry;
     use viboceros_geometry::{
-        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Polyline3, Tolerance,
-        UnitVector3,
+        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, Polyline3,
+        Tolerance, UnitVector3,
     };
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
@@ -526,6 +548,33 @@ mod tests {
                 .point()
                 .is_near(point(10.0, 1.0, 4.0), Tolerance::DEFAULT)
         );
+    }
+
+    #[test]
+    fn ellipse_center_and_quadrants_are_available_to_osnap() {
+        let mut document = Document::default();
+        let ellipse = Ellipse3::try_from_three_points(
+            point(2.0, 3.0, 5.0),
+            point(8.0, 3.0, 5.0),
+            point(4.0, -1.0, 5.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Ellipse(ellipse)).unwrap();
+
+        let center = nearest_object_snap(&document, point(2.02, 3.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(center.object_id(), id);
+        assert_eq!(center.kind(), ObjectSnapKind::Center);
+        assert_eq!(center.point(), point(2.0, 3.0, 5.0));
+
+        let quadrant = nearest_object_snap(&document, point(8.01, 3.02, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(quadrant.object_id(), id);
+        assert_eq!(quadrant.kind(), ObjectSnapKind::Quad);
+        assert_eq!(quadrant.point(), point(8.0, 3.0, 5.0));
     }
 
     #[test]

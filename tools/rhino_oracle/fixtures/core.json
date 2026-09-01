@@ -38,6 +38,14 @@
       "normalized_parameter": 0.37
     },
     {
+      "op": "ellipse_three_point",
+      "id": "three-point-ellipse",
+      "center": [2.0, -1.0, 3.0],
+      "first_axis_point": [7.0, 1.0, 3.0],
+      "second_axis_point": [1.0, 4.0, 3.0],
+      "angle_radians": 1.2345
+    },
+    {
       "op": "polyline_length",
       "id": "polyline-length",
       "vertices": [

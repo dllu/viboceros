@@ -166,6 +166,33 @@ def _execute(operation, iterations, tolerance):
             "sweep_radians": float(arc.Angle),
         }, elapsed
 
+    if kind == "ellipse_three_point":
+        ellipse = Rhino.Geometry.Ellipse(
+            _point(operation["center"]),
+            _point(operation["first_axis_point"]),
+            _point(operation["second_axis_point"]),
+        )
+        if not ellipse.IsValid:
+            raise ValueError("three-point ellipse is degenerate")
+        angle = _finite(operation["angle_radians"], "ellipse angle")
+        plane = ellipse.Plane
+
+        def ellipse_point():
+            return plane.PointAt(
+                ellipse.Radius1 * math.cos(angle),
+                ellipse.Radius2 * math.sin(angle),
+            )
+
+        value, elapsed = _measure(iterations, ellipse_point)
+        return {
+            "center": _xyz(plane.Origin),
+            "point": _xyz(value),
+            "radius_x": float(ellipse.Radius1),
+            "radius_y": float(ellipse.Radius2),
+            "x_axis": _xyz(plane.XAxis),
+            "y_axis": _xyz(plane.YAxis),
+        }, elapsed
+
     if kind == "polyline_length":
         polyline = Rhino.Geometry.Polyline(
             [_point(vertex) for vertex in operation["vertices"]]

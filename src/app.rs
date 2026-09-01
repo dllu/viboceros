@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use eframe::egui::{self, Color32, RichText};
 use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, GroupId, LayerId};
-use viboceros_geometry::{CircularArc3, Point3, Tolerance};
+use viboceros_geometry::{CircularArc3, Ellipse3, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance};
 
 use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
 
@@ -42,9 +42,17 @@ enum InteractiveCommand {
     Arc {
         points: [Option<Point3>; 2],
     },
+    Ellipse {
+        center: Option<Point3>,
+        first_axis: Option<Point3>,
+    },
     Polyline,
     Rectangle {
         first: Option<Point3>,
+    },
+    Polygon {
+        side_count: usize,
+        center: Option<Point3>,
     },
     SrfPt {
         corners: [Option<Point3>; 3],
@@ -75,8 +83,10 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Circle { .. } => "Circle",
             Self::Arc { .. } => "Arc",
+            Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
             Self::Rectangle { .. } => "Rectangle",
+            Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -106,6 +116,17 @@ impl InteractiveCommand {
                 [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
                 [Some(_), Some(_)] => "Arc: pick the end point in the viewport (Esc to cancel)",
             },
+            Self::Ellipse { center: None, .. } => {
+                "Ellipse: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::Ellipse {
+                center: Some(_),
+                first_axis: None,
+            } => "Ellipse: pick the end of the first axis in the viewport (Esc to cancel)",
+            Self::Ellipse {
+                first_axis: Some(_),
+                ..
+            } => "Ellipse: pick the second-axis radius in the viewport (Esc to cancel)",
             Self::Polyline => "Polyline: pick vertices; press Enter to finish (Esc to cancel)",
             Self::Rectangle { first: None } => {
                 "Rectangle: pick the first corner in the viewport (Esc to cancel)"
@@ -113,6 +134,12 @@ impl InteractiveCommand {
             Self::Rectangle { first: Some(_) } => {
                 "Rectangle: pick the opposite corner in the viewport (Esc to cancel)"
             }
+            Self::Polygon { center: None, .. } => {
+                "Polygon: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::Polygon {
+                center: Some(_), ..
+            } => "Polygon: pick the first vertex in the viewport (Esc to cancel)",
             Self::SrfPt { corners } => match corners {
                 [None, _, _] => "SrfPt: pick the first corner in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {
@@ -172,8 +199,10 @@ impl InteractiveCommand {
             | Self::Line { start: None }
             | Self::Circle { center: None }
             | Self::Arc { points: [None, _] }
+            | Self::Ellipse { center: None, .. }
             | Self::Polyline
             | Self::Rectangle { first: None }
+            | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
             }
@@ -188,6 +217,7 @@ impl InteractiveCommand {
             | Self::Move { start }
             | Self::Copy { start }
             | Self::Mirror { start } => start,
+            Self::Ellipse { center, .. } | Self::Polygon { center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],
             }
@@ -217,6 +247,7 @@ impl InteractiveCommand {
     const fn reference(self) -> Option<Point3> {
         match self {
             Self::Scale { reference, .. } | Self::Rotate { reference, .. } => reference,
+            Self::Ellipse { first_axis, .. } => first_axis,
             _ => None,
         }
     }
@@ -290,33 +321,52 @@ impl VibocerosApp {
         let Some(name) = tokens.next() else {
             return false;
         };
-        if tokens.next().is_some() {
-            return false;
-        }
-        let command = match name
-            .trim_start_matches(['_', '-'])
-            .to_ascii_lowercase()
-            .as_str()
-        {
-            "point" | "pt" => InteractiveCommand::Point,
-            "line" | "l" => InteractiveCommand::Line { start: None },
-            "circle" | "c" => InteractiveCommand::Circle { center: None },
-            "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
-            "polyline" | "pline" => InteractiveCommand::Polyline,
-            "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
-            "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
-            "move" | "m" => InteractiveCommand::Move { start: None },
-            "copy" => InteractiveCommand::Copy { start: None },
-            "scale" => InteractiveCommand::Scale {
+        let arguments = tokens.collect::<Vec<_>>();
+        let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        let command = if matches!(normalized.as_str(), "polygon" | "poly") {
+            let side_count = match arguments.as_slice() {
+                [] => 4,
+                [text] => match text.parse::<usize>() {
+                    Ok(side_count) if (3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) => {
+                        side_count
+                    }
+                    _ => return false,
+                },
+                _ => return false,
+            };
+            InteractiveCommand::Polygon {
+                side_count,
                 center: None,
-                reference: None,
-            },
-            "rotate" => InteractiveCommand::Rotate {
-                center: None,
-                reference: None,
-            },
-            "mirror" => InteractiveCommand::Mirror { start: None },
-            _ => return false,
+            }
+        } else {
+            if !arguments.is_empty() {
+                return false;
+            }
+            match normalized.as_str() {
+                "point" | "pt" => InteractiveCommand::Point,
+                "line" | "l" => InteractiveCommand::Line { start: None },
+                "circle" | "c" => InteractiveCommand::Circle { center: None },
+                "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
+                "ellipse" | "ell" => InteractiveCommand::Ellipse {
+                    center: None,
+                    first_axis: None,
+                },
+                "polyline" | "pline" => InteractiveCommand::Polyline,
+                "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
+                "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
+                "move" | "m" => InteractiveCommand::Move { start: None },
+                "copy" => InteractiveCommand::Copy { start: None },
+                "scale" => InteractiveCommand::Scale {
+                    center: None,
+                    reference: None,
+                },
+                "rotate" => InteractiveCommand::Rotate {
+                    center: None,
+                    reference: None,
+                },
+                "mirror" => InteractiveCommand::Mirror { start: None },
+                _ => return false,
+            }
         };
 
         self.cancel_interactive_command(true);
@@ -439,6 +489,54 @@ impl VibocerosApp {
                     ));
                 }
             }
+            InteractiveCommand::Ellipse { center: None, .. } => {
+                let command = InteractiveCommand::Ellipse {
+                    center: Some(point),
+                    first_axis: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Ellipse {
+                center: Some(center),
+                first_axis: None,
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log(
+                        "Error: ellipse axis point must differ from its center".to_owned(),
+                    );
+                    return;
+                }
+                let command = InteractiveCommand::Ellipse {
+                    center: Some(center),
+                    first_axis: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("First axis: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Ellipse {
+                center: Some(center),
+                first_axis: Some(first_axis),
+            } => {
+                if let Err(error) = Ellipse3::try_from_three_points(
+                    center,
+                    first_axis,
+                    point,
+                    self.document.tolerance(),
+                ) {
+                    self.push_log(format!("Error: {error}"));
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Ellipse {} {} {}",
+                    format_model_point(center),
+                    format_model_point(first_axis),
+                    format_model_point(point)
+                ));
+            }
             InteractiveCommand::Polyline => {
                 if let Some(previous) = self.polyline_points.last()
                     && previous.is_near(point, self.document.tolerance())
@@ -475,6 +573,33 @@ impl VibocerosApp {
                 self.execute_command(&format!(
                     "Rectangle {} {}",
                     format_model_point(first),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Polygon {
+                side_count,
+                center: None,
+            } => {
+                let command = InteractiveCommand::Polygon {
+                    side_count,
+                    center: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Polygon {
+                side_count,
+                center: Some(center),
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log("Error: polygon vertex must differ from its center".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Polygon {side_count} {} {}",
+                    format_model_point(center),
                     format_model_point(point)
                 ));
             }
@@ -1186,6 +1311,70 @@ mod tests {
                 .all(|vertex| vertex.z() == first.z())
         );
         assert_eq!(app.document.undo_label(), Some("Rectangle"));
+    }
+
+    #[test]
+    fn interactive_ellipse_and_polygon_validate_each_pick() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Ell"));
+        let center = point(0.0, 0.0, 2.0);
+        let first_axis = point(4.0, 0.0, 2.0);
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(center);
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Ellipse {
+                center: Some(center),
+                first_axis: None,
+            })
+        );
+        app.accept_drafting_point(first_axis);
+        app.accept_drafting_point(point(2.0, 0.0, 2.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Ellipse {
+                center: Some(center),
+                first_axis: Some(first_axis),
+            })
+        );
+        app.accept_drafting_point(point(0.0, 3.0, 2.0));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Ellipse(ellipse)
+                if ellipse.radius_x() == 4.0 && ellipse.radius_y() == 3.0
+        ));
+        assert_eq!(app.document.undo_label(), Some("Ellipse"));
+
+        assert!(app.try_start_interactive_command("Polygon 6"));
+        let polygon_center = point(10.0, 10.0, 5.0);
+        app.accept_drafting_point(polygon_center);
+        app.accept_drafting_point(polygon_center);
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Polygon {
+                side_count: 6,
+                center: Some(polygon_center),
+            })
+        );
+        app.accept_drafting_point(point(12.0, 10.0, 5.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Polyline(polygon) = app.document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected an interactive polygon")
+        };
+        assert!(polygon.is_closed());
+        assert_eq!(polygon.segment_count(), 6);
+        assert_eq!(app.document.undo_label(), Some("Polygon"));
+
+        assert!(!app.try_start_interactive_command("Polygon 2"));
+        assert!(app.try_start_interactive_command("Polygon"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Polygon {
+                side_count: 4,
+                center: None,
+            })
+        );
     }
 
     #[test]

@@ -8,8 +8,8 @@ use std::fmt;
 use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve,
-    NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
+    NurbsCurve, NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh,
 };
 
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
@@ -65,6 +65,7 @@ pub enum Geometry {
     Line(LineSegment),
     Circle(Circle3),
     Arc(CircularArc3),
+    Ellipse(Ellipse3),
     Polyline(Polyline3),
     NurbsCurve(NurbsCurve),
     NurbsSurface(NurbsSurface),
@@ -78,6 +79,7 @@ impl Geometry {
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
             Self::Circle(circle) => circle.bounds(),
             Self::Arc(arc) => arc.bounds(),
+            Self::Ellipse(ellipse) => ellipse.bounds(),
             Self::Polyline(polyline) => polyline.bounds(),
             Self::NurbsCurve(curve) => curve.control_point_bounds(),
             Self::NurbsSurface(surface) => surface.control_point_bounds(),
@@ -101,6 +103,12 @@ impl Geometry {
                 Some(arc) => Self::Arc(arc),
                 None => Self::NurbsCurve(arc.to_nurbs()?.transformed(transform)?),
             },
+            Self::Ellipse(ellipse) => {
+                match ellipse.transformed_orthogonal(transform, tolerance)? {
+                    Some(ellipse) => Self::Ellipse(ellipse),
+                    None => Self::NurbsCurve(ellipse.to_nurbs()?.transformed(transform)?),
+                }
+            }
             Self::Polyline(polyline) => Self::Polyline(polyline.transformed(transform, tolerance)?),
             Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
@@ -1542,6 +1550,58 @@ mod tests {
             document.object(id).unwrap().geometry(),
             Geometry::Circle(restored) if *restored == circle
         ));
+    }
+
+    #[test]
+    fn ellipse_preserves_orthogonal_images_and_promotes_shear_exactly() {
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let x_axis = viboceros_geometry::UnitVector3::try_new(1.0, 0.0, 0.0, tolerance).unwrap();
+        let y_axis = viboceros_geometry::UnitVector3::try_new(0.0, 1.0, 0.0, tolerance).unwrap();
+        let ellipse = Ellipse3::try_new(
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+            4.0,
+            2.0,
+            x_axis,
+            y_axis,
+            tolerance,
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Ellipse(ellipse)).unwrap();
+        let orthogonal = AffineTransform3::try_new(
+            [[2.0, 0.0, 0.0], [0.0, 3.0, 0.0], [0.0, 0.0, 1.0]],
+            viboceros_geometry::Vector3::try_new(5.0, 7.0, 0.0).unwrap(),
+        )
+        .unwrap();
+        document.transform_objects([id], orthogonal).unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Ellipse(transformed)
+                if transformed.center() == Point3::try_new(7.0, 13.0, 0.0).unwrap()
+                    && transformed.radius_x() == 8.0
+                    && transformed.radius_y() == 6.0
+        ));
+
+        document.undo().unwrap();
+        let shear = AffineTransform3::try_new(
+            [[1.0, 0.5, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+            viboceros_geometry::Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+        )
+        .unwrap();
+        document.transform_objects([id], shear).unwrap();
+        let Geometry::NurbsCurve(curve) = document.object(id).unwrap().geometry() else {
+            panic!("a sheared ellipse must be promoted to an exact NURBS curve")
+        };
+        assert_eq!(curve.degree(), 2);
+        assert_eq!(curve.control_points().len(), 9);
+        assert!(
+            curve.evaluate(0.0).unwrap().is_near(
+                shear
+                    .transform_point(ellipse.point_at_angle(0.0).unwrap())
+                    .unwrap(),
+                tolerance
+            )
+        );
     }
 
     #[test]

@@ -5,8 +5,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes};
 use viboceros_geometry::{
-    AffineTransform3, Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve, NurbsSurface,
-    Point3, Polyline3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    AffineTransform3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
+    MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
+    TriangleMesh, UnitVector3, Vector3,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -53,10 +54,16 @@ impl CommandRegistry {
             .register(ArcCommand)
             .expect("unique built-in command");
         registry
+            .register(EllipseCommand)
+            .expect("unique built-in command");
+        registry
             .register(PolylineCommand)
             .expect("unique built-in command");
         registry
             .register(RectangleCommand)
+            .expect("unique built-in command");
+        registry
+            .register(PolygonCommand)
             .expect("unique built-in command");
         registry
             .register(ControlPointCurveCommand)
@@ -292,6 +299,37 @@ impl Command for ArcCommand {
     }
 }
 
+struct EllipseCommand;
+
+impl Command for EllipseCommand {
+    fn name(&self) -> &'static str {
+        "Ellipse"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Ell"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (center, center_consumed) = parse_point(arguments)?;
+        let (first_axis, first_consumed) = parse_point(&arguments[center_consumed..])?;
+        let (second_axis, second_consumed) =
+            parse_point(&arguments[center_consumed + first_consumed..])?;
+        require_consumed(
+            arguments,
+            center_consumed + first_consumed + second_consumed,
+            "Ellipse center first-axis-point second-axis-point",
+        )?;
+        let ellipse =
+            Ellipse3::try_from_three_points(center, first_axis, second_axis, document.tolerance())?;
+        let (radius_x, radius_y) = (ellipse.radius_x(), ellipse.radius_y());
+        let id = document.add_geometry(Geometry::Ellipse(ellipse))?;
+        Ok(format!(
+            "Added ellipse {id} (radii {radius_x:.6} × {radius_y:.6})"
+        ))
+    }
+}
+
 struct PolylineCommand;
 
 impl Command for PolylineCommand {
@@ -359,6 +397,61 @@ fn top_view_rectangle(
     let opposite = Point3::try_new(opposite.x(), opposite.y(), first.z())?;
     let fourth = Point3::try_new(first.x(), opposite.y(), first.z())?;
     Polyline3::try_new(vec![first, second, opposite, fourth, first], tolerance)
+}
+
+struct PolygonCommand;
+
+impl Command for PolygonCommand {
+    fn name(&self) -> &'static str {
+        "Polygon"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Poly"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let side_text = arguments.first().ok_or(CommandError::Usage(
+            "Polygon sides center radius | sides center first-vertex",
+        ))?;
+        let side_count = side_text
+            .parse::<usize>()
+            .map_err(|_| CommandError::InvalidInteger((*side_text).to_owned()))?;
+        if !(3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) {
+            return Err(GeometryError::InvalidRegularPolygonSides {
+                actual: side_count,
+                maximum: MAX_REGULAR_POLYGON_SIDES,
+            }
+            .into());
+        }
+        let (center, center_consumed) = parse_point(&arguments[1..])?;
+        let remaining = &arguments[1 + center_consumed..];
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
+        let first_vertex = if remaining.len() == 1 && !remaining[0].contains(',') {
+            let radius = parse_finite_real(remaining[0])?;
+            Circle3::try_new(center, radius, normal, document.tolerance())?.point_at_angle(0.0)?
+        } else {
+            let (first_vertex, consumed) = parse_point(remaining)?;
+            require_consumed(
+                remaining,
+                consumed,
+                "Polygon sides center radius | sides center first-vertex",
+            )?;
+            first_vertex
+        };
+        let polygon = Polyline3::try_regular_polygon(
+            side_count,
+            center,
+            first_vertex,
+            normal,
+            document.tolerance(),
+        )?;
+        let perimeter = polygon.length()?;
+        let id = document.add_geometry(Geometry::Polyline(polygon))?;
+        Ok(format!(
+            "Added {side_count}-sided polygon {id} (perimeter {perimeter:.6})"
+        ))
+    }
 }
 
 struct LayerCommand;
@@ -1234,6 +1327,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
         Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(arc.to_nurbs()?),
+        Geometry::Ellipse(ellipse) => ThreeDmGeometry::NurbsCurve(ellipse.to_nurbs()?),
         Geometry::Polyline(polyline) => ThreeDmGeometry::NurbsCurve(polyline.to_nurbs()?),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
@@ -1484,7 +1578,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Ellipse, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -1588,6 +1682,46 @@ mod tests {
             restored.vertices()[0],
             Point3::try_new(0.0, 0.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn creates_exact_ellipses_and_regular_polygons_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Ellipse 1,2,3 5,2,3 3,-4,3")
+            .unwrap();
+        registry
+            .execute(&mut document, "Polygon 6 10,20,7 4")
+            .unwrap();
+
+        let mut objects = document.objects();
+        let Geometry::Ellipse(ellipse) = objects.next().unwrap().geometry() else {
+            panic!("expected an ellipse")
+        };
+        assert_eq!(ellipse.center(), Point3::try_new(1.0, 2.0, 3.0).unwrap());
+        assert_eq!(ellipse.radius_x(), 4.0);
+        assert_eq!(ellipse.radius_y(), 40.0_f64.sqrt());
+        let Geometry::Polyline(polygon) = objects.next().unwrap().geometry() else {
+            panic!("expected a polygon polyline")
+        };
+        assert!(polygon.is_closed());
+        assert_eq!(polygon.segment_count(), 6);
+        assert_eq!(
+            polygon.vertices()[0],
+            Point3::try_new(14.0, 20.0, 7.0).unwrap()
+        );
+        drop(objects);
+        assert_eq!(document.undo_label(), Some("Polygon"));
+
+        assert!(
+            registry
+                .execute(&mut document, "Ellipse 0,0 1,0 2,0")
+                .is_err()
+        );
+        assert!(registry.execute(&mut document, "Polygon 2 0,0 5").is_err());
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), Some("Polygon"));
     }
 
     #[test]
@@ -2130,8 +2264,12 @@ mod tests {
             .execute(&mut source, "Arc 9,0,0 10,1,0 11,0,0")
             .unwrap();
         registry
+            .execute(&mut source, "Ellipse 15,0,0 18,0,0 16,2,0")
+            .unwrap();
+        registry
             .execute(&mut source, "Rectangle 12,0,0 14,2,0")
             .unwrap();
+        registry.execute(&mut source, "Polygon 5 20,0,0 2").unwrap();
         registry
             .execute(&mut source, "SrfPt 0,0,0 2,0,0 2,2,1 0,2,1")
             .unwrap();
@@ -2149,9 +2287,9 @@ mod tests {
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("6 objects"));
+        assert!(message.contains("8 objects"));
         assert!(message.contains("0 unsupported objects skipped"));
-        assert_eq!(imported.objects().len(), 6);
+        assert_eq!(imported.objects().len(), 8);
         assert!(
             imported
                 .objects()
@@ -2162,14 +2300,14 @@ mod tests {
                 .objects()
                 .filter(|object| matches!(object.geometry(), Geometry::NurbsCurve(_)))
                 .count(),
-            2
+            3
         );
         assert_eq!(
             imported
                 .objects()
                 .filter(|object| matches!(object.geometry(), Geometry::Polyline(_)))
                 .count(),
-            1
+            2
         );
         assert_eq!(imported.layers().len(), 3);
         let reference = imported.layer_by_name("Reference").unwrap();

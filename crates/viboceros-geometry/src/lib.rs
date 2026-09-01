@@ -6,6 +6,7 @@
 
 mod bounds;
 mod circular;
+mod ellipse;
 mod error;
 mod line;
 mod mesh;
@@ -20,6 +21,7 @@ mod vector;
 
 pub use bounds::BoundingBox3;
 pub use circular::{Circle3, CircularArc3};
+pub use ellipse::Ellipse3;
 pub use error::GeometryError;
 pub use line::LineSegment;
 pub use mesh::TriangleMesh;
@@ -27,7 +29,7 @@ pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
-pub use polyline::Polyline3;
+pub use polyline::{MAX_REGULAR_POLYGON_SIDES, Polyline3};
 pub use tolerance::Tolerance;
 pub use transform::AffineTransform3;
 pub use vector::{UnitVector3, Vector3};

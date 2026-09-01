@@ -6,7 +6,7 @@ use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
 use viboceros_geometry::{
-    Circle3, CircularArc3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
+    Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
     TriangleMesh, UnitVector3,
 };
 
@@ -292,6 +292,9 @@ impl Viewport {
                 }
                 Geometry::Circle(circle) => (1, self.circle_pick_distance(pointer, rect, circle)),
                 Geometry::Arc(arc) => (1, self.arc_pick_distance(pointer, rect, arc)),
+                Geometry::Ellipse(ellipse) => {
+                    (1, self.ellipse_pick_distance(pointer, rect, ellipse))
+                }
                 Geometry::Polyline(polyline) => {
                     (1, self.polyline_pick_distance(pointer, rect, polyline))
                 }
@@ -347,6 +350,12 @@ impl Viewport {
     fn arc_pick_distance(&self, pointer: Pos2, rect: Rect, arc: &CircularArc3) -> f32 {
         let samples = circular_arc_samples(*arc);
         self.parametric_pick_distance(pointer, rect, samples, |parameter| arc.point_at(parameter))
+    }
+
+    fn ellipse_pick_distance(&self, pointer: Pos2, rect: Rect, ellipse: &Ellipse3) -> f32 {
+        self.parametric_pick_distance(pointer, rect, CIRCLE_SAMPLES, |parameter| {
+            ellipse.point_at_angle(std::f64::consts::TAU * parameter)
+        })
     }
 
     fn parametric_pick_distance(
@@ -525,6 +534,15 @@ impl Viewport {
                         circular_arc_samples(*arc),
                         Stroke::new(width, color),
                         |parameter| arc.point_at(parameter),
+                    );
+                }
+                Geometry::Ellipse(ellipse) => {
+                    self.paint_parametric_curve(
+                        painter,
+                        rect,
+                        CIRCLE_SAMPLES,
+                        Stroke::new(width, color),
+                        |parameter| ellipse.point_at_angle(std::f64::consts::TAU * parameter),
                     );
                 }
                 Geometry::Polyline(polyline) => {
@@ -977,8 +995,8 @@ mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
-        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Polyline3, Tolerance,
-        TriangleMesh, UnitVector3,
+        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, Polyline3,
+        Tolerance, TriangleMesh, UnitVector3,
     };
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
@@ -1072,7 +1090,7 @@ mod tests {
     }
 
     #[test]
-    fn picking_supports_analytic_circles_and_arcs() {
+    fn picking_supports_analytic_circles_arcs_and_ellipses() {
         let viewport = Viewport::default();
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let mut document = Document::default();
@@ -1093,6 +1111,17 @@ mod tests {
                 .unwrap(),
             ))
             .unwrap();
+        let ellipse_id = document
+            .add_geometry(Geometry::Ellipse(
+                Ellipse3::try_from_three_points(
+                    point(0.0, -3.0, 0.0),
+                    point(2.0, -3.0, 0.0),
+                    point(0.0, -2.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
 
         let on_circle = viewport.project(point(-2.0, 0.0, 0.0), rect).unwrap();
         assert_eq!(
@@ -1101,6 +1130,11 @@ mod tests {
         );
         let on_arc = viewport.project(point(3.0, 1.0, 0.0), rect).unwrap();
         assert_eq!(viewport.pick_object(on_arc, rect, &document), Some(arc_id));
+        let on_ellipse = viewport.project(point(2.0, -3.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(on_ellipse, rect, &document),
+            Some(ellipse_id)
+        );
         let inside_circle = viewport.project(point(-3.0, 0.0, 0.0), rect).unwrap();
         assert_eq!(viewport.pick_object(inside_circle, rect, &document), None);
     }

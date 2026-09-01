@@ -1,7 +1,12 @@
+use std::f64::consts::TAU;
+
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, LineSegment, NurbsCurve, Point3, Real,
-    Tolerance, require_finite,
+    AffineTransform3, BoundingBox3, Circle3, GeometryError, LineSegment, NurbsCurve, Point3, Real,
+    Tolerance, UnitVector3, require_finite,
 };
+
+/// Allocation guard for regular-polygon construction.
+pub const MAX_REGULAR_POLYGON_SIDES: usize = 100_000;
 
 /// A finite piecewise-linear curve with validated, non-degenerate segments.
 ///
@@ -27,6 +32,32 @@ impl Polyline3 {
             }
         }
         Ok(Self { vertices })
+    }
+
+    /// Constructs a closed regular polygon in the plane described by
+    /// `normal`. The first vertex is projected into that plane and fixes both
+    /// the circumradius and angular phase.
+    pub fn try_regular_polygon(
+        side_count: usize,
+        center: Point3,
+        first_vertex: Point3,
+        normal: UnitVector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !(3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) {
+            return Err(GeometryError::InvalidRegularPolygonSides {
+                actual: side_count,
+                maximum: MAX_REGULAR_POLYGON_SIDES,
+            });
+        }
+        let circle = Circle3::try_from_center_point(center, first_vertex, normal, tolerance)?;
+        let mut vertices = Vec::with_capacity(side_count + 1);
+        for index in 0..side_count {
+            let angle = TAU * index as Real / side_count as Real;
+            vertices.push(circle.point_at_angle(angle)?);
+        }
+        vertices.push(vertices[0]);
+        Self::try_new(vertices, tolerance)
     }
 
     #[inline]
@@ -182,5 +213,53 @@ mod tests {
         )
         .unwrap();
         assert!(polyline.transformed(collapsed, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn regular_polygon_is_closed_oriented_and_bounded() {
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let polygon = Polyline3::try_regular_polygon(
+            6,
+            point(1.0, 2.0, 3.0),
+            point(5.0, 2.0, 8.0),
+            normal,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(polygon.is_closed());
+        assert_eq!(polygon.segment_count(), 6);
+        assert_eq!(polygon.vertices()[0], point(5.0, 2.0, 3.0));
+        assert!(polygon.vertices().iter().all(|vertex| vertex.z() == 3.0));
+        for vertex in &polygon.vertices()[..6] {
+            assert!(
+                Tolerance::DEFAULT
+                    .approx_eq(vertex.distance_to(point(1.0, 2.0, 3.0)).unwrap(), 4.0)
+            );
+        }
+    }
+
+    #[test]
+    fn regular_polygon_rejects_side_and_tolerance_degeneracy() {
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        assert!(matches!(
+            Polyline3::try_regular_polygon(
+                2,
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                normal,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidRegularPolygonSides { actual: 2, .. })
+        ));
+        assert!(
+            Polyline3::try_regular_polygon(
+                3,
+                point(0.0, 0.0, 0.0),
+                point(1.0e-12, 0.0, 0.0),
+                normal,
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
     }
 }

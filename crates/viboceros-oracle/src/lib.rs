@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use thiserror::Error;
 use viboceros_geometry::{
-    Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Polyline3,
-    Tolerance, UnitVector3, WeightedPoint3,
+    Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3,
+    Polyline3, Tolerance, UnitVector3, WeightedPoint3,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -79,6 +79,13 @@ pub enum Operation {
         end: [f64; 3],
         normalized_parameter: f64,
     },
+    EllipseThreePoint {
+        id: String,
+        center: [f64; 3],
+        first_axis_point: [f64; 3],
+        second_axis_point: [f64; 3],
+        angle_radians: f64,
+    },
     PolylineLength {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -111,6 +118,7 @@ impl Operation {
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
             | Self::ArcThreePoint { id, .. }
+            | Self::EllipseThreePoint { id, .. }
             | Self::PolylineLength { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
@@ -291,6 +299,34 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::EllipseThreePoint {
+            center,
+            first_axis_point,
+            second_axis_point,
+            angle_radians,
+            ..
+        } => {
+            let ellipse = Ellipse3::try_from_three_points(
+                point(*center)?,
+                point(*first_axis_point)?,
+                point(*second_axis_point)?,
+                tolerance,
+            )?;
+            let (point, elapsed) = measure(iterations, || {
+                ellipse.point_at_angle(black_box(*angle_radians))
+            })?;
+            (
+                json!({
+                    "center": ellipse.center().to_array(),
+                    "point": point.to_array(),
+                    "radius_x": ellipse.radius_x(),
+                    "radius_y": ellipse.radius_y(),
+                    "x_axis": ellipse.x_axis().as_vector().to_array(),
+                    "y_axis": ellipse.y_axis().as_vector().to_array(),
+                }),
+                elapsed,
+            )
+        }
         Operation::PolylineLength { vertices, .. } => {
             let polyline = Polyline3::try_new(
                 vertices
@@ -433,12 +469,25 @@ mod tests {
                 end: [4.0, 2.0, 0.0],
                 parameter: 0.25,
             },
+            Operation::EllipseThreePoint {
+                id: "ellipse".to_owned(),
+                center: [1.0, 2.0, 3.0],
+                first_axis_point: [5.0, 2.0, 3.0],
+                second_axis_point: [3.0, -4.0, 3.0],
+                angle_radians: 0.75,
+            },
         ]))
         .unwrap();
         assert_eq!(response.engine, "viboceros");
         assert_eq!(response.results[0].id, "distance");
         assert_eq!(response.results[0].value, json!(5.0));
         assert_eq!(response.results[1].value, json!([1.0, 0.5, 0.0]));
+        assert_eq!(response.results[2].id, "ellipse");
+        assert_eq!(response.results[2].value["radius_x"], json!(4.0));
+        assert_eq!(
+            response.results[2].value["radius_y"],
+            json!(40.0_f64.sqrt())
+        );
     }
 
     #[test]
