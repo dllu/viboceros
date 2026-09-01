@@ -163,6 +163,15 @@ def _mesh_triangles(mesh):
     return triangles
 
 
+def _mesh_value(mesh):
+    return {
+        "triangles": _mesh_triangles(mesh),
+        "vertices": [
+            _xyz(mesh.Vertices[index]) for index in range(mesh.Vertices.Count)
+        ],
+    }
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "point_distance":
@@ -446,14 +455,7 @@ def _execute(operation, iterations, tolerance):
                 return {
                     "disjoint_mesh_count": int(source.DisjointMeshCount),
                     "pieces": [
-                        {
-                            "triangles": _mesh_triangles(piece),
-                            "vertices": [
-                                _xyz(piece.Vertices[index])
-                                for index in range(piece.Vertices.Count)
-                            ],
-                        }
-                        for piece in pieces
+                        _mesh_value(piece) for piece in pieces
                     ],
                 }
             finally:
@@ -462,6 +464,38 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, split_disjoint_mesh)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_extract_non_manifold":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        selective = operation["selective"]
+        if not isinstance(selective, bool):
+            source.Dispose()
+            raise ValueError("mesh extraction selective flag must be boolean")
+
+        def extract_non_manifold():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            extracted = None
+            try:
+                extracted = remainder.ExtractNonManifoldEdges(selective)
+                return {
+                    "extracted": (
+                        None if extracted is None else _mesh_value(extracted)
+                    ),
+                    "remainder": (
+                        None if remainder.Faces.Count == 0 else _mesh_value(remainder)
+                    ),
+                }
+            finally:
+                if extracted is not None:
+                    extracted.Dispose()
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, extract_non_manifold)
         finally:
             source.Dispose()
 

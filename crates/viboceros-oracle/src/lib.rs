@@ -143,6 +143,12 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    MeshExtractNonManifold {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        selective: bool,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -175,6 +181,7 @@ impl Operation {
             | Self::NurbsCurveTopology { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
+            | Self::MeshExtractNonManifold { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -571,13 +578,41 @@ fn execute(
             (
                 json!({
                     "disjoint_mesh_count": pieces.len(),
-                    "pieces": pieces.iter().map(|piece| json!({
-                        "triangles": piece.triangles(),
-                        "vertices": piece.vertices().iter().map(|point| point.to_array()).collect::<Vec<_>>(),
-                    })).collect::<Vec<_>>(),
+                    "pieces": pieces.iter().map(mesh_value).collect::<Vec<_>>(),
                 }),
                 elapsed,
             )
+        }
+        Operation::MeshExtractNonManifold {
+            vertices,
+            triangles,
+            selective,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let (extraction, elapsed) = measure(iterations, || {
+                black_box(&mesh).extract_non_manifold_faces(3, black_box(*selective))
+            })?;
+            let value = if let Some(extraction) = extraction {
+                let (remainder, extracted) = extraction.into_parts();
+                json!({
+                    "extracted": mesh_value(&extracted),
+                    "remainder": remainder.as_ref().map(mesh_value),
+                })
+            } else {
+                json!({
+                    "extracted": null,
+                    "remainder": mesh_value(&mesh),
+                })
+            };
+            (value, elapsed)
         }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
@@ -635,6 +670,13 @@ fn weighted_points(points: &[ControlPoint]) -> Result<Vec<WeightedPoint3>, Geome
         .iter()
         .map(|control| WeightedPoint3::try_new(point(control.point)?, control.weight))
         .collect()
+}
+
+fn mesh_value(mesh: &TriangleMesh) -> Value {
+    json!({
+        "triangles": mesh.triangles(),
+        "vertices": mesh.vertices().iter().map(|point| point.to_array()).collect::<Vec<_>>(),
+    })
 }
 
 fn canonical_join_segments(
@@ -839,6 +881,79 @@ mod tests {
                         ],
                     },
                 ],
+            })
+        );
+    }
+
+    #[test]
+    fn extracts_non_manifold_mesh_faces_for_oracle_comparison() {
+        let vertices = vec![
+            [0.0, 0.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0],
+            [0.0, 0.0, 1.0],
+            [0.0, -1.0, 1.0],
+        ];
+        let triangles = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3], [0, 1, 4]];
+        let response = run_request(&request(vec![
+            Operation::MeshExtractNonManifold {
+                id: "all".to_owned(),
+                vertices: vertices.clone(),
+                triangles: triangles.clone(),
+                selective: false,
+            },
+            Operation::MeshExtractNonManifold {
+                id: "hanging".to_owned(),
+                vertices,
+                triangles,
+                selective: true,
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "extracted": {
+                    "triangles": [[0, 2, 1], [0, 1, 3], [0, 1, 4]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0],
+                        [0.0, -1.0, 1.0],
+                    ],
+                },
+                "remainder": {
+                    "triangles": [[0, 3, 2], [1, 2, 3]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0],
+                    ],
+                },
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "extracted": {
+                    "triangles": [[0, 1, 2]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [1.0, 0.0, 0.0],
+                        [0.0, -1.0, 1.0],
+                    ],
+                },
+                "remainder": {
+                    "triangles": [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [1.0, 0.0, 0.0],
+                        [0.0, 1.0, 0.0],
+                        [0.0, 0.0, 1.0],
+                    ],
+                },
             })
         );
     }

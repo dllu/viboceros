@@ -214,6 +214,20 @@
       ]
     },
     {
+      "op": "mesh_extract_non_manifold",
+      "id": "mesh-extract-all-non-manifold",
+      "selective": false,
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, -1, 1]],
+      "triangles": [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3], [0, 1, 4]]
+    },
+    {
+      "op": "mesh_extract_non_manifold",
+      "id": "mesh-extract-hanging-non-manifold",
+      "selective": true,
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1], [0, -1, 1]],
+      "triangles": [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3], [0, 1, 4]]
+    },
+    {
       "op": "nurbs_surface_evaluate",
       "id": "rational-surface",
       "degree_u": 2,

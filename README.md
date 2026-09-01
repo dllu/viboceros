@@ -61,6 +61,8 @@ CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
 SplitDisjointMesh
+ExtractNonManifoldMeshEdges
+ExtractNonManifoldMeshEdges ExtractHangingFacesOnly=Yes MinimumFaceCount=3
 Delete
 Clear
 Undo
@@ -105,6 +107,9 @@ changing object identities, attributes, groups, or closed-curve seams.
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
 shared vertex does not connect them), retaining the first object identity and
 copying attributes and group membership to additional pieces.
+`ExtractNonManifoldMeshEdges` removes faces around edges shared by three or
+more faces into attribute- and group-preserving mesh objects. Options can limit
+the operation to hanging faces or raise the minimum incident-face count.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is

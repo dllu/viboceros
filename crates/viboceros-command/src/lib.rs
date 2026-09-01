@@ -131,6 +131,9 @@ impl CommandRegistry {
             .register(SplitDisjointMeshCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtractNonManifoldMeshEdgesCommand)
+            .expect("unique built-in command");
+        registry
             .register(GroupCommand)
             .expect("unique built-in command");
         registry
@@ -1434,6 +1437,160 @@ struct SplitMeshInput {
     pieces: Vec<TriangleMesh>,
 }
 
+const EXTRACT_NON_MANIFOLD_USAGE: &str =
+    "ExtractNonManifoldMeshEdges [ExtractHangingFacesOnly=Yes|No] [MinimumFaceCount=count]";
+
+struct ExtractNonManifoldMeshEdgesCommand;
+
+impl Command for ExtractNonManifoldMeshEdgesCommand {
+    fn name(&self) -> &'static str {
+        "ExtractNonManifoldMeshEdges"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_extract_non_manifold_arguments(arguments)?;
+        let selected_ids = document.selected_object_ids().collect::<Vec<_>>();
+        if selected_ids.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let inputs = selected_ids
+            .into_iter()
+            .map(|id| {
+                let object = document
+                    .object(id)
+                    .expect("selected object identities belong to the document");
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedExtractNonManifoldGeometry);
+                };
+                let group_ids = document
+                    .groups()
+                    .filter(|group| group.members().any(|member| member == id))
+                    .map(|group| group.id())
+                    .collect();
+                let extraction = mesh
+                    .extract_non_manifold_faces(
+                        options.minimum_face_count,
+                        options.hanging_faces_only,
+                    )?
+                    .map(|extraction| extraction.into_parts());
+                Ok(NonManifoldExtractionInput {
+                    id,
+                    attributes: object.attributes().clone(),
+                    group_ids,
+                    extraction,
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        let extracted_mesh_count = inputs
+            .iter()
+            .filter(|input| input.extraction.is_some())
+            .count();
+        if extracted_mesh_count == 0 {
+            return Err(CommandError::NoNonManifoldMeshFaces);
+        }
+        let unchanged_mesh_count = inputs.len() - extracted_mesh_count;
+        let extracted_face_count = inputs
+            .iter()
+            .filter_map(|input| input.extraction.as_ref())
+            .map(|(_, extracted)| extracted.triangles().len())
+            .sum::<usize>();
+        let replacements = inputs
+            .iter()
+            .filter_map(|input| {
+                input.extraction.as_ref().map(|(remainder, extracted)| {
+                    (
+                        input.id,
+                        Geometry::Mesh(remainder.as_ref().unwrap_or(extracted).clone()),
+                    )
+                })
+            })
+            .collect::<Vec<_>>();
+        document.replace_object_geometries(replacements)?;
+
+        let mut output_ids = Vec::with_capacity(inputs.len() + extracted_mesh_count);
+        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+        for input in inputs {
+            output_ids.push(input.id);
+            let Some((remainder, extracted)) = input.extraction else {
+                continue;
+            };
+            if remainder.is_none() {
+                continue;
+            }
+            let id = document
+                .add_geometry_with_attributes(Geometry::Mesh(extracted), input.attributes)?;
+            output_ids.push(id);
+            for group_id in input.group_ids {
+                group_additions.entry(group_id).or_default().push(id);
+            }
+        }
+        for (group_id, additions) in group_additions {
+            document.add_group_members(group_id, additions)?;
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Extracted {extracted_face_count} face(s) from {extracted_mesh_count} mesh(es); {unchanged_mesh_count} mesh(es) unchanged"
+        ))
+    }
+}
+
+struct NonManifoldExtractionInput {
+    id: ObjectId,
+    attributes: ObjectAttributes,
+    group_ids: Vec<GroupId>,
+    extraction: Option<(Option<TriangleMesh>, TriangleMesh)>,
+}
+
+#[derive(Clone, Copy)]
+struct ExtractNonManifoldOptions {
+    hanging_faces_only: bool,
+    minimum_face_count: usize,
+}
+
+fn parse_extract_non_manifold_arguments(
+    arguments: &[&str],
+) -> Result<ExtractNonManifoldOptions, CommandError> {
+    let mut options = ExtractNonManifoldOptions {
+        hanging_faces_only: false,
+        minimum_face_count: 3,
+    };
+    let mut hanging_seen = false;
+    let mut minimum_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_NON_MANIFOLD_USAGE))?;
+            (argument, *value, 2)
+        };
+        let name = name.trim_start_matches('_');
+        if name.eq_ignore_ascii_case("ExtractHangingFacesOnly") && !hanging_seen {
+            options.hanging_faces_only =
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_NON_MANIFOLD_USAGE))?;
+            hanging_seen = true;
+        } else if name.eq_ignore_ascii_case("MinimumFaceCount") && !minimum_seen {
+            options.minimum_face_count = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            if options.minimum_face_count < 3 {
+                return Err(GeometryError::InvalidNonManifoldMinimumFaceCount(
+                    options.minimum_face_count,
+                )
+                .into());
+            }
+            minimum_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTRACT_NON_MANIFOLD_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
 struct GroupCommand;
 
 impl Command for GroupCommand {
@@ -2498,6 +2655,12 @@ pub enum CommandError {
     #[error("none of the selected meshes contains multiple edge-connected pieces")]
     NoDisjointMeshes,
 
+    #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
+    UnsupportedExtractNonManifoldGeometry,
+
+    #[error("none of the selected meshes has faces on a qualifying non-manifold edge")]
+    NoNonManifoldMeshFaces,
+
     #[error(
         "CrvStart and CrvEnd support selected lines, analytic curves, polylines, and NURBS curves only"
     )]
@@ -2563,7 +2726,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals"
         );
     }
 
@@ -3387,6 +3550,153 @@ mod tests {
             connected_only.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn extracts_non_manifold_faces_with_options_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Repair").unwrap();
+        let vertices = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Point3::try_new(0.0, -1.0, 1.0).unwrap(),
+        ];
+        let faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3], [0, 1, 4]];
+        let non_manifold = TriangleMesh::try_new(vertices, faces, document.tolerance()).unwrap();
+        let clean = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry(Geometry::Mesh(non_manifold.clone()))
+            .unwrap();
+        let clean_id = document
+            .add_geometry(Geometry::Mesh(clean.clone()))
+            .unwrap();
+        let attributes = document.object(source).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry.execute(&mut document, "Group RepairSet").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractNonManifoldMeshEdges")
+                .unwrap(),
+            "Extracted 3 face(s) from 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("ExtractNonManifoldMeshEdges"));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.selected_object_count(), 3);
+        let extracted_id = document
+            .objects()
+            .map(|object| object.id())
+            .find(|id| *id != source && *id != clean_id)
+            .unwrap();
+        assert_eq!(
+            document.object(extracted_id).unwrap().attributes(),
+            &attributes
+        );
+        let Geometry::Mesh(remainder) = document.object(source).unwrap().geometry() else {
+            panic!("expected remainder mesh")
+        };
+        assert_eq!(remainder.triangles(), &[[0, 3, 2], [1, 2, 3]]);
+        let Geometry::Mesh(extracted) = document.object(extracted_id).unwrap().geometry() else {
+            panic!("expected extracted mesh")
+        };
+        assert_eq!(extracted.triangles().len(), 3);
+        assert_eq!(
+            document
+                .group_by_name("RepairSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, clean_id, extracted_id])
+        );
+        assert_eq!(
+            document.object(clean_id).unwrap().geometry(),
+            &Geometry::Mesh(clean)
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(non_manifold.clone())
+        );
+        assert_eq!(
+            document
+                .group_by_name("RepairSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, clean_id])
+        );
+
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "ExtractNonManifoldMeshEdges MinimumFaceCount=4"
+            ),
+            Err(CommandError::NoNonManifoldMeshFaces)
+        ));
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "ExtractNonManifoldMeshEdges MinimumFaceCount=2"
+            ),
+            Err(CommandError::Geometry(
+                GeometryError::InvalidNonManifoldMinimumFaceCount(2)
+            ))
+        ));
+
+        let mut selective = Document::default();
+        let selective_source = selective
+            .add_geometry(Geometry::Mesh(non_manifold))
+            .unwrap();
+        selective
+            .select_object(selective_source, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut selective,
+                    "ExtractNonManifoldMeshEdges ExtractHangingFacesOnly Yes MinimumFaceCount 3"
+                )
+                .unwrap(),
+            "Extracted 1 face(s) from 1 mesh(es); 0 mesh(es) unchanged"
+        );
+        assert_eq!(selective.objects().len(), 2);
+        let Geometry::Mesh(selective_remainder) =
+            selective.object(selective_source).unwrap().geometry()
+        else {
+            panic!("expected selective remainder mesh")
+        };
+        assert_eq!(selective_remainder.triangles().len(), 4);
+        let selective_extracted = selective
+            .objects()
+            .find(|object| object.id() != selective_source)
+            .unwrap();
+        assert!(matches!(
+            selective_extracted.geometry(),
+            Geometry::Mesh(mesh) if mesh.triangles().len() == 1
+        ));
+
+        registry.execute(&mut selective, "Point 9,9").unwrap();
+        registry.execute(&mut selective, "SelAll").unwrap();
+        assert!(matches!(
+            registry.execute(&mut selective, "ExtractNonManifoldMeshEdges"),
+            Err(CommandError::UnsupportedExtractNonManifoldGeometry)
+        ));
     }
 
     #[test]

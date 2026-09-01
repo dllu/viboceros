@@ -73,6 +73,13 @@ impl EdgeIncidence {
         self.count += 1;
         self.forward_count += usize::from(edge_use.forward);
     }
+
+    fn uses(&self) -> impl Iterator<Item = EdgeUse> + '_ {
+        self.first_use
+            .into_iter()
+            .chain(self.second_use)
+            .chain(self.additional_uses.iter().copied())
+    }
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -85,6 +92,27 @@ struct EdgeUse {
 struct MeshTopologyData {
     topological_vertex_count: usize,
     edges: BTreeMap<(usize, usize), EdgeIncidence>,
+}
+
+/// The two parts produced by removing qualifying non-manifold faces.
+#[derive(Clone, Debug, PartialEq)]
+pub struct MeshFaceExtraction {
+    remainder: Option<TriangleMesh>,
+    extracted: TriangleMesh,
+}
+
+impl MeshFaceExtraction {
+    pub fn remainder(&self) -> Option<&TriangleMesh> {
+        self.remainder.as_ref()
+    }
+
+    pub const fn extracted(&self) -> &TriangleMesh {
+        &self.extracted
+    }
+
+    pub fn into_parts(self) -> (Option<TriangleMesh>, TriangleMesh) {
+        (self.remainder, self.extracted)
+    }
 }
 
 /// An indexed, oriented triangle mesh with validated finite vertices and
@@ -294,14 +322,11 @@ impl TriangleMesh {
         let mut parents = (0..self.triangles.len()).collect::<Vec<_>>();
         let mut ranks = vec![0_u8; self.triangles.len()];
         for incidence in data.edges.values() {
-            let Some(first) = incidence.first_use else {
+            let mut uses = incidence.uses();
+            let Some(first) = uses.next() else {
                 continue;
             };
-            for edge_use in incidence
-                .second_use
-                .into_iter()
-                .chain(incidence.additional_uses.iter().copied())
-            {
+            for edge_use in uses {
                 union_faces(&mut parents, &mut ranks, first.face, edge_use.face);
             }
         }
@@ -322,6 +347,87 @@ impl TriangleMesh {
             .into_iter()
             .map(|faces| self.piece_from_faces(&faces))
             .collect()
+    }
+
+    /// Removes faces around exact-location edges used by at least
+    /// `minimum_face_count` faces. With `hanging_faces_only`, a qualifying
+    /// face must also touch an edge used by exactly one face.
+    pub fn extract_non_manifold_faces(
+        &self,
+        minimum_face_count: usize,
+        hanging_faces_only: bool,
+    ) -> Result<Option<MeshFaceExtraction>, GeometryError> {
+        if minimum_face_count < 3 {
+            return Err(GeometryError::InvalidNonManifoldMinimumFaceCount(
+                minimum_face_count,
+            ));
+        }
+        let data = self.topology_data();
+        let mut touches_qualifying_edge = vec![false; self.triangles.len()];
+        let mut touches_boundary_edge = vec![false; self.triangles.len()];
+        for incidence in data.edges.values() {
+            if incidence.count >= minimum_face_count {
+                for edge_use in incidence.uses() {
+                    touches_qualifying_edge[edge_use.face] = true;
+                }
+            }
+            if incidence.count == 1 {
+                let edge_use = incidence
+                    .first_use
+                    .expect("a boundary edge records its incident face");
+                touches_boundary_edge[edge_use.face] = true;
+            }
+        }
+        let extracted_mask = touches_qualifying_edge
+            .into_iter()
+            .zip(touches_boundary_edge)
+            .map(|(qualifying, boundary)| qualifying && (!hanging_faces_only || boundary))
+            .collect::<Vec<_>>();
+        let extracted_faces = extracted_mask
+            .iter()
+            .enumerate()
+            .filter_map(|(face, &extracted)| extracted.then_some(face))
+            .collect::<Vec<_>>();
+        if extracted_faces.is_empty() {
+            return Ok(None);
+        }
+        let remainder_faces = (0..self.triangles.len())
+            .filter(|&face| !extracted_mask[face])
+            .collect::<Vec<_>>();
+        let extracted = self.subset_preserving_vertex_order(&extracted_faces);
+        let remainder = (!remainder_faces.is_empty())
+            .then(|| self.subset_preserving_vertex_order(&remainder_faces));
+        Ok(Some(MeshFaceExtraction {
+            remainder,
+            extracted,
+        }))
+    }
+
+    fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
+        let mut used = vec![false; self.vertices.len()];
+        for &face in faces {
+            for vertex in self.triangles[face] {
+                used[vertex as usize] = true;
+            }
+        }
+        let mut vertex_remap = vec![0_u32; self.vertices.len()];
+        let mut vertices = Vec::new();
+        for (source, (&point, used)) in self.vertices.iter().zip(used).enumerate() {
+            if !used {
+                continue;
+            }
+            vertex_remap[source] = u32::try_from(vertices.len())
+                .expect("a mesh subset cannot have more vertices than its source");
+            vertices.push(point);
+        }
+        let triangles = faces
+            .iter()
+            .map(|&face| self.triangles[face].map(|vertex| vertex_remap[vertex as usize]))
+            .collect();
+        Self {
+            vertices,
+            triangles,
+        }
     }
 
     fn piece_from_faces(&self, faces: &[usize]) -> Self {
@@ -795,6 +901,43 @@ mod tests {
         let pieces = duplicate_edge.disjoint_pieces();
         assert_eq!(pieces.len(), 1);
         assert_eq!(pieces[0], duplicate_edge);
+    }
+
+    #[test]
+    fn extracts_all_or_only_hanging_faces_from_non_manifold_edges() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(0.0, 1.0, 0.0),
+            point(0.0, 0.0, 1.0),
+            point(0.0, -1.0, 1.0),
+        ];
+        let faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3], [0, 1, 4]];
+        let mesh =
+            TriangleMesh::try_new(vertices.clone(), faces.clone(), Tolerance::DEFAULT).unwrap();
+        assert_eq!(mesh.topology().non_manifold_edge_count(), 1);
+
+        let all = mesh.extract_non_manifold_faces(3, false).unwrap().unwrap();
+        assert_eq!(all.extracted().vertices(), vertices);
+        assert_eq!(all.extracted().triangles(), &[faces[0], faces[1], faces[4]]);
+        let remainder = all.remainder().unwrap();
+        assert_eq!(remainder.vertices(), &vertices[..4]);
+        assert_eq!(remainder.triangles(), &[faces[2], faces[3]]);
+
+        let hanging = mesh.extract_non_manifold_faces(3, true).unwrap().unwrap();
+        assert_eq!(
+            hanging.extracted().vertices(),
+            &[vertices[0], vertices[1], vertices[4]]
+        );
+        assert_eq!(hanging.extracted().triangles(), &[[0, 1, 2]]);
+        assert_eq!(hanging.remainder().unwrap().vertices(), &vertices[..4]);
+        assert_eq!(hanging.remainder().unwrap().triangles(), &faces[..4]);
+
+        assert!(mesh.extract_non_manifold_faces(4, false).unwrap().is_none());
+        assert_eq!(
+            mesh.extract_non_manifold_faces(2, false),
+            Err(GeometryError::InvalidNonManifoldMinimumFaceCount(2))
+        );
     }
 
     #[test]

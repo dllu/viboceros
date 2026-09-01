@@ -118,4 +118,7 @@ pub enum GeometryError {
 
     #[error("mesh face winding constraints describe a non-orientable surface")]
     NonOrientableMesh,
+
+    #[error("a non-manifold edge must be shared by at least three faces, got {0}")]
+    InvalidNonManifoldMinimumFaceCount(usize),
 }
