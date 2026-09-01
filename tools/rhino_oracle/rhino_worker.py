@@ -238,6 +238,178 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_polar_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Polar Array " + suffix + " "
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": _xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": _xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            coordinates = record["start"] + record["end"]
+            return tuple([round(value, 12) for value in coordinates] + [record["name"]])
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=lambda item: record_key(line_record(item)))
+            return objects
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(key=lambda group: tuple(record_key(record) for record in group))
+            return groups
+
+        def run_scenario(
+            label,
+            item_count,
+            angle_degrees,
+            rotate,
+            z_offset=None,
+        ):
+            _record_progress("document_polar_array_cycle: %s start" % label)
+            original_ids = []
+            source_lines = (
+                ((2.0, 0.0, 0.0), (4.0, 1.0, 0.0)),
+                ((1.0, -1.0, 2.0), (2.0, -0.5, 3.0)),
+            )
+            for index, endpoints in enumerate(source_lines):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + str(index)
+                line = Rhino.Geometry.Line(_point(endpoints[0]), _point(endpoints[1]))
+                object_id = document.Objects.AddLine(line, attributes)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add polar-array fixture line")
+                original_ids.append(object_id)
+            group_index = document.Groups.Add(
+                "Viboceros Polar Array Group " + suffix + " " + label,
+                original_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group polar-array fixture objects")
+            document.Objects.UnselectAll()
+            for object_id in original_ids:
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select polar-array fixture object")
+
+            options = "_Rotate=_%s" % ("Yes" if rotate else "No")
+            options += " _ZOffset %.17g" % (0.0 if z_offset is None else z_offset)
+            command = "_-ArrayPolar %s %d %s %.17g _Enter" % (
+                "0,0,0",
+                item_count,
+                options,
+                angle_degrees,
+            )
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress("document_polar_array_cycle: %s command complete" % label)
+            objects = scenario_objects(label)
+            expected_count = len(source_lines) * item_count
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "ArrayPolar macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (command, command_succeeded, len(objects), history[-2000:])
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(command_succeeded),
+                "groups": scenario_groups(objects),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, object_id in enumerate(original_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ],
+            }
+
+        try:
+            value = {
+                "full_rotate_yes": run_scenario("full", 4, 360.0, True),
+                "negative_full_rotate_yes": run_scenario(
+                    "negative-full", 4, -360.0, True
+                ),
+                "multi_turn_z_offset_rotate_yes": run_scenario(
+                    "multi-turn", 4, 720.0, True, z_offset=2.0
+                ),
+                "partial_rotate_no": run_scenario("partial-no", 4, 180.0, False),
+                "partial_rotate_yes": run_scenario("partial-yes", 4, 180.0, True),
+                "z_offset_rotate_yes": run_scenario(
+                    "z-offset", 4, 180.0, True, z_offset=2.0
+                ),
+            }
+            source_points = [
+                Rhino.Geometry.Point3d(2.0, 0.0, 0.0),
+                Rhino.Geometry.Point3d(4.0, 1.0, 0.0),
+            ]
+            transforms = [
+                Rhino.Geometry.Transform.Rotation(
+                    math.radians(90.0 * copy_index),
+                    Rhino.Geometry.Vector3d.ZAxis,
+                    Rhino.Geometry.Point3d.Origin,
+                )
+                for copy_index in range(1, 4)
+            ]
+
+            def compute_array_points():
+                result = []
+                for transform in transforms:
+                    for source in source_points:
+                        point = Rhino.Geometry.Point3d(source)
+                        point.Transform(transform)
+                        result.append(point)
+                return result
+
+            _unused, elapsed = _measure(iterations, compute_array_points)
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            fixture_ids = set(item.Id for item in objects)
+            group_indices = []
+            for group_index in range(document.Groups.Count):
+                members = document.Groups.GroupMembers(group_index)
+                if members is not None and any(
+                    member.Id in fixture_ids for member in members
+                ):
+                    group_indices.append(group_index)
+            for group_index in reversed(group_indices):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
     if kind == "document_linear_array_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())

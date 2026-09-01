@@ -252,6 +252,9 @@ impl CommandRegistry {
             .register(ArrayLinearCommand)
             .expect("unique built-in command");
         registry
+            .register(ArrayPolarCommand)
+            .expect("unique built-in command");
+        registry
             .register(ScaleCommand)
             .expect("unique built-in command");
         registry
@@ -2945,11 +2948,7 @@ impl Command for ArrayLinearCommand {
         let item_count_text = arguments.first().ok_or(CommandError::Usage(
             "ArrayLinear item-count first-reference second-reference",
         ))?;
-        let item_count = item_count_text
-            .parse::<usize>()
-            .ok()
-            .filter(|count| *count >= 2)
-            .ok_or_else(|| CommandError::InvalidArrayItemCount((*item_count_text).to_owned()))?;
+        let item_count = parse_array_item_count(item_count_text)?;
         let selected = selected_ids(document)?;
         let copy_instance_count = item_count - 1;
         let copy_count = selected
@@ -2984,6 +2983,155 @@ impl Command for ArrayLinearCommand {
             format_vector(spacing)
         ))
     }
+}
+
+const ARRAY_POLAR_USAGE: &str =
+    "ArrayPolar item-count center angle-degrees [Rotate=Yes|No] [ZOffset=distance]";
+
+struct ArrayPolarCommand;
+
+impl Command for ArrayPolarCommand {
+    fn name(&self) -> &'static str {
+        "ArrayPolar"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let item_count_text = arguments
+            .first()
+            .ok_or(CommandError::Usage(ARRAY_POLAR_USAGE))?;
+        let item_count = parse_array_item_count(item_count_text)?;
+        let selected = selected_ids(document)?;
+        let copy_instance_count = item_count - 1;
+        let copy_count = selected
+            .len()
+            .checked_mul(copy_instance_count)
+            .filter(|count| *count <= MAX_ARRAY_OBJECTS)
+            .ok_or(CommandError::TooManyArrayObjects {
+                maximum: MAX_ARRAY_OBJECTS,
+            })?;
+        let (center, center_consumed) = parse_point(&arguments[1..])?;
+        let angle_index = 1 + center_consumed;
+        let angle_text = arguments
+            .get(angle_index)
+            .ok_or(CommandError::Usage(ARRAY_POLAR_USAGE))?;
+        let fill_angle_degrees = parse_finite_real(angle_text)?;
+        if fill_angle_degrees == 0.0 {
+            return Err(CommandError::InvalidPolarArrayAngle(
+                (*angle_text).to_owned(),
+            ));
+        }
+        let options = parse_polar_array_options(&arguments[angle_index + 1..])?;
+        let axis = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
+        let divisor = if fill_angle_degrees.abs() == 360.0 {
+            item_count
+        } else {
+            copy_instance_count
+        };
+        let step_radians = (fill_angle_degrees / divisor as Real).to_radians();
+        let anchor = if options.rotate {
+            None
+        } else {
+            let mut objects = selected.iter().map(|id| {
+                document
+                    .object(*id)
+                    .expect("selected object identifiers are present")
+            });
+            let first = objects
+                .next()
+                .expect("selected_ids rejects an empty selection")
+                .geometry()
+                .bounds();
+            let bounds = objects.try_fold(first, |bounds, object| {
+                bounds.union(object.geometry().bounds())
+            })?;
+            Some(bounds.center()?)
+        };
+        let transforms = (1..item_count)
+            .map(|index| {
+                let rotation =
+                    AffineTransform3::try_rotation(center, axis, step_radians * index as Real)?;
+                let z_offset = axis.as_vector().scaled(options.z_offset * index as Real)?;
+                if let Some(anchor) = anchor {
+                    let destination = rotation.transform_point(anchor)?.translated(z_offset)?;
+                    Ok(AffineTransform3::from_translation(
+                        anchor.vector_to(destination)?,
+                    ))
+                } else {
+                    post_translate(rotation, z_offset)
+                }
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let copies = document
+            .copy_objects_with_transforms(selected.iter().copied(), transforms.as_slice())?;
+        document.select_objects_direct(selected, SelectionMode::Replace)?;
+        debug_assert_eq!(copies.len(), copy_count);
+        Ok(format!(
+            "Arrayed {} object(s) into {item_count} total item(s) over {fill_angle_degrees:.6} degrees, creating {copy_count} copy object(s)",
+            copy_count / copy_instance_count
+        ))
+    }
+}
+
+#[derive(Clone, Copy)]
+struct PolarArrayOptions {
+    rotate: bool,
+    z_offset: Real,
+}
+
+fn parse_polar_array_options(arguments: &[&str]) -> Result<PolarArrayOptions, CommandError> {
+    let mut options = PolarArrayOptions {
+        rotate: true,
+        z_offset: 0.0,
+    };
+    let mut rotate_seen = false;
+    let mut z_offset_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(ARRAY_POLAR_USAGE))?;
+            (argument, *value, 2)
+        };
+        let name = name.trim_start_matches('_');
+        if name.eq_ignore_ascii_case("Rotate") && !rotate_seen {
+            options.rotate = parse_yes_no(value).ok_or(CommandError::Usage(ARRAY_POLAR_USAGE))?;
+            rotate_seen = true;
+        } else if name.eq_ignore_ascii_case("ZOffset") && !z_offset_seen {
+            options.z_offset = parse_finite_real(value)?;
+            z_offset_seen = true;
+        } else {
+            return Err(CommandError::Usage(ARRAY_POLAR_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
+fn parse_array_item_count(value: &str) -> Result<usize, CommandError> {
+    value
+        .parse::<usize>()
+        .ok()
+        .filter(|count| *count >= 2)
+        .ok_or_else(|| CommandError::InvalidArrayItemCount(value.to_owned()))
+}
+
+fn post_translate(
+    transform: AffineTransform3,
+    offset: Vector3,
+) -> Result<AffineTransform3, GeometryError> {
+    let translation = transform.translation();
+    AffineTransform3::try_new(
+        transform.linear_rows(),
+        Vector3::try_new(
+            translation.x() + offset.x(),
+            translation.y() + offset.y(),
+            translation.z() + offset.z(),
+        )?,
+    )
 }
 
 struct ScaleCommand;
@@ -3790,8 +3938,11 @@ pub enum CommandError {
     #[error("'{0}' is not a valid finite, non-zero scale factor")]
     InvalidScaleFactor(String),
 
-    #[error("'{0}' is not a valid ArrayLinear item count of 2 or more")]
+    #[error("'{0}' is not a valid array item count of 2 or more")]
     InvalidArrayItemCount(String),
+
+    #[error("'{0}' is not a valid non-zero polar-array angle")]
+    InvalidPolarArrayAngle(String),
 
     #[error("'{0}' is not a valid finite, strictly positive maximum curve length")]
     InvalidMaximumCurveLength(String),
@@ -3947,7 +4098,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, ArrayLinear, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7342,6 +7493,254 @@ mod tests {
                 .execute(&mut document, "ArrayLinear 3 0,0,0 1e308,0,0")
                 .is_err()
         );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn polar_array_matches_rhino_full_sweep_selection_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let first = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(4.0, 1.0, 0.0).unwrap(),
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("First"),
+            )
+            .unwrap();
+        let second = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(1.0, -1.0, 2.0).unwrap(),
+                        Point3::try_new(2.0, -0.5, 3.0).unwrap(),
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("Second"),
+            )
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(&mut document, "ArrayPolar 4 0,0,0 360")
+            .unwrap();
+        assert!(message.contains("creating 6 copy object(s)"));
+        assert_eq!(document.objects().len(), 8);
+        assert_eq!(document.groups().len(), 4);
+        assert_eq!(document.undo_label(), Some("ArrayPolar"));
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+        assert_eq!(
+            document
+                .objects()
+                .filter(|object| object.attributes().name() == Some("First"))
+                .count(),
+            4
+        );
+
+        let mut first_lines = document
+            .objects()
+            .filter(|object| object.attributes().name() == Some("First"))
+            .map(|object| match object.geometry() {
+                Geometry::Line(line) => (line.start(), line.end()),
+                _ => panic!("expected arrayed lines"),
+            })
+            .collect::<Vec<_>>();
+        first_lines
+            .sort_by(|left, right| left.0.to_array().partial_cmp(&right.0.to_array()).unwrap());
+        let expected = [
+            (
+                Point3::try_new(-2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(-4.0, -1.0, 0.0).unwrap(),
+            ),
+            (
+                Point3::try_new(0.0, -2.0, 0.0).unwrap(),
+                Point3::try_new(1.0, -4.0, 0.0).unwrap(),
+            ),
+            (
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(-1.0, 4.0, 0.0).unwrap(),
+            ),
+            (
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 1.0, 0.0).unwrap(),
+            ),
+        ];
+        for ((start, end), (expected_start, expected_end)) in first_lines.into_iter().zip(expected)
+        {
+            assert!(start.is_near(expected_start, document.tolerance()));
+            assert!(end.is_near(expected_end, document.tolerance()));
+        }
+
+        let copy_ids = document
+            .objects()
+            .map(|object| object.id())
+            .filter(|id| ![first, second].contains(id))
+            .collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
+        assert!(document.is_selected(first));
+        assert!(document.is_selected(second));
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(copy_ids.iter().all(|id| document.object(*id).is_some()));
+        assert_eq!(document.groups().len(), 4);
+    }
+
+    #[test]
+    fn polar_array_no_rotate_uses_the_combined_selection_bounds_center() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let sources = [
+            ("First", [2.0, 0.0, 0.0], [4.0, 1.0, 0.0]),
+            ("Second", [1.0, -1.0, 2.0], [2.0, -0.5, 3.0]),
+        ];
+        let ids = sources
+            .iter()
+            .map(|(name, start, end)| {
+                document
+                    .add_geometry_with_attributes(
+                        Geometry::Line(
+                            LineSegment::try_new(
+                                Point3::try_from(*start).unwrap(),
+                                Point3::try_from(*end).unwrap(),
+                                document.tolerance(),
+                            )
+                            .unwrap(),
+                        ),
+                        ObjectAttributes::on_layer(layer).with_name(*name),
+                    )
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        document
+            .add_group(Some("Pair".to_owned()), ids.iter().copied())
+            .unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "ArrayPolar 4 0,0,0 180 Rotate=_No")
+            .unwrap();
+        let mut first_lines = document
+            .objects()
+            .filter(|object| object.attributes().name() == Some("First"))
+            .map(|object| match object.geometry() {
+                Geometry::Line(line) => (line.start(), line.end()),
+                _ => panic!("expected arrayed lines"),
+            })
+            .collect::<Vec<_>>();
+        first_lines
+            .sort_by(|left, right| left.0.to_array().partial_cmp(&right.0.to_array()).unwrap());
+        let root_three_over_two = 3.0_f64.sqrt() * 1.25;
+        let expected_starts = [
+            Point3::try_new(-3.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(-1.75, root_three_over_two, 0.0).unwrap(),
+            Point3::try_new(0.75, root_three_over_two, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+        ];
+        let source_direction = Vector3::try_new(2.0, 1.0, 0.0).unwrap();
+        for ((start, end), expected_start) in first_lines.into_iter().zip(expected_starts) {
+            assert!(start.is_near(expected_start, document.tolerance()));
+            let direction = start.vector_to(end).unwrap();
+            assert!(
+                direction
+                    .to_array()
+                    .into_iter()
+                    .zip(source_direction.to_array())
+                    .all(|(actual, expected)| document.tolerance().approx_eq(actual, expected))
+            );
+        }
+        assert_eq!(document.groups().len(), 4);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            ids.into_iter().collect()
+        );
+    }
+
+    #[test]
+    fn polar_array_supports_multi_turn_sweeps_and_cumulative_z_offset() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 2,0,0").unwrap();
+        let original = document.objects().next().unwrap().id();
+        document
+            .select_object(original, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "ArrayPolar 4 0,0,0 720 ZOffset 2")
+            .unwrap();
+
+        let mut points = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected arrayed points"),
+            })
+            .collect::<Vec<_>>();
+        points.sort_by(|left, right| left.z().partial_cmp(&right.z()).unwrap());
+        let root_three = 3.0_f64.sqrt();
+        let expected = [
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(-1.0, -root_three, 2.0).unwrap(),
+            Point3::try_new(-1.0, root_three, 4.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 6.0).unwrap(),
+        ];
+        for (actual, expected) in points.into_iter().zip(expected) {
+            assert!(actual.is_near(expected, document.tolerance()));
+        }
+    }
+
+    #[test]
+    fn polar_array_rejects_invalid_or_unbounded_output_without_partial_copies() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        document.select_all();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayPolar 1 0,0,0 360"),
+            Err(CommandError::InvalidArrayItemCount(value)) if value == "1"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayPolar 3 0,0,0 0"),
+            Err(CommandError::InvalidPolarArrayAngle(value)) if value == "0"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayPolar 500002 0,0,0 360"),
+            Err(CommandError::TooManyArrayObjects { maximum })
+                if maximum == MAX_ARRAY_OBJECTS
+        ));
+        assert!(
+            registry
+                .execute(&mut document, "ArrayPolar 3 0,0,0 180 ZOffset=1e308",)
+                .is_err()
+        );
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayPolar 3 0,0,0 180 Rotate=No Rotate=Yes"),
+            Err(CommandError::Usage(ARRAY_POLAR_USAGE))
+        ));
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.selected_object_count(), 2);
         assert_eq!(document.undo_label(), history.as_deref());

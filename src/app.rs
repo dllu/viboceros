@@ -47,6 +47,12 @@ enum InteractiveCommand {
         item_count: usize,
         start: Option<Point3>,
     },
+    ArrayPolar {
+        item_count: usize,
+        fill_angle_degrees: f64,
+        rotate: bool,
+        z_offset: f64,
+    },
     Scale {
         center: Option<Point3>,
         reference: Option<Point3>,
@@ -75,6 +81,7 @@ impl InteractiveCommand {
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
+            Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { .. } => "Scale",
             Self::Rotate { .. } => "Rotate",
             Self::Mirror { .. } => "Mirror",
@@ -155,6 +162,9 @@ impl InteractiveCommand {
             Self::ArrayLinear { start: Some(_), .. } => {
                 "ArrayLinear: pick the spacing point in the viewport (Esc to cancel)"
             }
+            Self::ArrayPolar { .. } => {
+                "ArrayPolar: pick the array center in the viewport (Esc to cancel)"
+            }
             Self::Scale { center: None, .. } => {
                 "Scale: pick the center point in the viewport (Esc to cancel)"
             }
@@ -200,6 +210,7 @@ impl InteractiveCommand {
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
+            | Self::ArrayPolar { .. }
             | Self::Scale { center: None, .. }
             | Self::Rotate { center: None, .. }
             | Self::Mirror { start: None } => None,
@@ -347,6 +358,68 @@ impl VibocerosApp {
                 item_count,
                 start: None,
             }
+        } else if normalized == "arraypolar" {
+            let Some(item_count_text) = arguments.first() else {
+                return false;
+            };
+            let Ok(item_count) = item_count_text.parse::<usize>() else {
+                return false;
+            };
+            if item_count < 2 {
+                return false;
+            }
+            let mut fill_angle_degrees = 360.0;
+            let mut rotate = true;
+            let mut z_offset = 0.0;
+            let mut rotate_seen = false;
+            let mut z_offset_seen = false;
+            let mut remaining = &arguments[1..];
+            if let Some(angle_text) = remaining.first()
+                && !angle_text.contains('=')
+            {
+                let Ok(angle) = angle_text.parse::<f64>() else {
+                    return false;
+                };
+                if !angle.is_finite() || angle == 0.0 {
+                    return false;
+                }
+                fill_angle_degrees = angle;
+                remaining = &remaining[1..];
+            }
+            for option in remaining {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches('_');
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Rotate") && !rotate_seen {
+                    if value.eq_ignore_ascii_case("Yes") {
+                        rotate = true;
+                    } else if value.eq_ignore_ascii_case("No") {
+                        rotate = false;
+                    } else {
+                        return false;
+                    }
+                    rotate_seen = true;
+                } else if name.eq_ignore_ascii_case("ZOffset") && !z_offset_seen {
+                    let Ok(offset) = value.parse::<f64>() else {
+                        return false;
+                    };
+                    if !offset.is_finite() {
+                        return false;
+                    }
+                    z_offset = offset;
+                    z_offset_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::ArrayPolar {
+                item_count,
+                fill_angle_degrees,
+                rotate,
+                z_offset,
+            }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -385,6 +458,7 @@ impl VibocerosApp {
             InteractiveCommand::Move { .. }
                 | InteractiveCommand::Copy { .. }
                 | InteractiveCommand::ArrayLinear { .. }
+                | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Mirror { .. }
@@ -702,6 +776,19 @@ impl VibocerosApp {
                     "ArrayLinear {item_count} {} {}",
                     format_model_point(start),
                     format_model_point(point)
+                ));
+            }
+            InteractiveCommand::ArrayPolar {
+                item_count,
+                fill_angle_degrees,
+                rotate,
+                z_offset,
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ArrayPolar {item_count} {} {fill_angle_degrees} Rotate={} ZOffset={z_offset}",
+                    format_model_point(point),
+                    if rotate { "Yes" } else { "No" }
                 ));
             }
             InteractiveCommand::Scale { center: None, .. } => {
@@ -1738,9 +1825,68 @@ mod tests {
     }
 
     #[test]
+    fn interactive_polar_array_uses_a_count_angle_options_and_center() {
+        let mut app = test_app();
+        let original = app
+            .document
+            .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_object(original, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ArrayPolar 4 180 Rotate=No ZOffset=2"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ArrayPolar {
+                item_count: 4,
+                fill_angle_degrees: 180.0,
+                rotate: false,
+                z_offset: 2.0,
+            })
+        );
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.undo_label(), Some("ArrayPolar"));
+        assert!(app.document.is_selected(original));
+        let mut locations = app
+            .document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected arrayed points"),
+            })
+            .collect::<Vec<_>>();
+        locations.sort_by(|left, right| left.z().partial_cmp(&right.z()).unwrap());
+        let root_three = 3.0_f64.sqrt();
+        let expected = [
+            point(2.0, 0.0, 0.0),
+            point(1.0, root_three, 2.0),
+            point(-1.0, root_three, 4.0),
+            point(-2.0, 0.0, 6.0),
+        ];
+        for (actual, expected) in locations.into_iter().zip(expected) {
+            assert!(actual.is_near(expected, app.document.tolerance()));
+        }
+
+        assert!(!app.try_start_interactive_command("ArrayPolar"));
+        assert!(!app.try_start_interactive_command("ArrayPolar 1"));
+        assert!(!app.try_start_interactive_command("ArrayPolar 4 0"));
+        assert!(!app.try_start_interactive_command("ArrayPolar 4 Rotate=Maybe"));
+    }
+
+    #[test]
     fn interactive_transforms_require_a_selection() {
         let mut app = test_app();
-        for command in ["M", "Copy", "ArrayLinear 3", "Scale", "Rotate", "Mirror"] {
+        for command in [
+            "M",
+            "Copy",
+            "ArrayLinear 3",
+            "ArrayPolar 4",
+            "Scale",
+            "Rotate",
+            "Mirror",
+        ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
             assert!(app.command_log.back().unwrap().contains("no objects"));

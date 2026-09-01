@@ -14,8 +14,8 @@ use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
-    Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
-    NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3,
+    AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3,
     WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
@@ -88,6 +88,9 @@ pub enum Operation {
         id: String,
     },
     DocumentLinearArrayCycle {
+        id: String,
+    },
+    DocumentPolarArrayCycle {
         id: String,
     },
     DocumentDuplicateSelectionCycle {
@@ -268,6 +271,7 @@ impl Operation {
             | Self::DocumentObjectNamingCycle { id }
             | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentLinearArrayCycle { id }
+            | Self::DocumentPolarArrayCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::DocumentPointCloudCycle { id }
             | Self::ThreeDmGroupRoundTrip { id }
@@ -462,6 +466,9 @@ fn execute(
         }
         Operation::DocumentLinearArrayCycle { .. } => {
             document_linear_array_cycle(iterations, tolerance)?
+        }
+        Operation::DocumentPolarArrayCycle { .. } => {
+            document_polar_array_cycle(iterations, tolerance)?
         }
         Operation::DocumentDuplicateSelectionCycle { .. } => {
             document_duplicate_selection_cycle(iterations, tolerance)?
@@ -1651,6 +1658,240 @@ fn document_linear_array_cycle(
             .collect::<Result<Vec<_>, _>>()
     })?;
     Ok((value, elapsed_ns))
+}
+
+fn document_polar_array_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::new(tolerance);
+    let full_rotate_yes = document_polar_array_scenario(
+        &mut document,
+        &registry,
+        "full",
+        "ArrayPolar 4 0,0,0 360 Rotate=Yes",
+    )?;
+    let negative_full_rotate_yes = document_polar_array_scenario(
+        &mut document,
+        &registry,
+        "negative-full",
+        "ArrayPolar 4 0,0,0 -360 Rotate=Yes",
+    )?;
+    let multi_turn_z_offset_rotate_yes = document_polar_array_scenario(
+        &mut document,
+        &registry,
+        "multi-turn",
+        "ArrayPolar 4 0,0,0 720 Rotate=Yes ZOffset=2",
+    )?;
+    let partial_rotate_no = document_polar_array_scenario(
+        &mut document,
+        &registry,
+        "partial-no",
+        "ArrayPolar 4 0,0,0 180 Rotate=No",
+    )?;
+    let partial_rotate_yes = document_polar_array_scenario(
+        &mut document,
+        &registry,
+        "partial-yes",
+        "ArrayPolar 4 0,0,0 180 Rotate=Yes",
+    )?;
+    let z_offset_rotate_yes = document_polar_array_scenario(
+        &mut document,
+        &registry,
+        "z-offset",
+        "ArrayPolar 4 0,0,0 180 Rotate=Yes ZOffset=2",
+    )?;
+    let value = json!({
+        "full_rotate_yes": full_rotate_yes,
+        "multi_turn_z_offset_rotate_yes": multi_turn_z_offset_rotate_yes,
+        "negative_full_rotate_yes": negative_full_rotate_yes,
+        "partial_rotate_no": partial_rotate_no,
+        "partial_rotate_yes": partial_rotate_yes,
+        "z_offset_rotate_yes": z_offset_rotate_yes,
+    });
+
+    let axis = UnitVector3::try_new(0.0, 0.0, 1.0, tolerance)?;
+    let center = Point3::try_new(0.0, 0.0, 0.0)?;
+    let source_points = [
+        Point3::try_new(2.0, 0.0, 0.0)?,
+        Point3::try_new(4.0, 1.0, 0.0)?,
+    ];
+    let transforms = (1..4)
+        .map(|copy_index| {
+            AffineTransform3::try_rotation(center, axis, (90.0 * copy_index as f64).to_radians())
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        transforms
+            .iter()
+            .flat_map(|transform| {
+                source_points
+                    .iter()
+                    .map(|source| transform.transform_point(*source))
+            })
+            .collect::<Result<Vec<_>, _>>()
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+fn document_polar_array_scenario(
+    document: &mut Document,
+    registry: &CommandRegistry,
+    label: &str,
+    command: &str,
+) -> Result<Value, ProbeError> {
+    let layer = document.current_layer_id();
+    let source_lines = [
+        ([2.0, 0.0, 0.0], [4.0, 1.0, 0.0]),
+        ([1.0, -1.0, 2.0], [2.0, -0.5, 3.0]),
+    ];
+    let mut original_ids = Vec::with_capacity(source_lines.len());
+    for (index, (start, end)) in source_lines.into_iter().enumerate() {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Line(LineSegment::try_new(
+                Point3::try_from(start)?,
+                Point3::try_from(end)?,
+                document.tolerance(),
+            )?),
+            ObjectAttributes::on_layer(layer).with_name(format!("{label} {index}")),
+        )?);
+    }
+    document.add_group(
+        Some(format!("Viboceros Polar Array Group {label}")),
+        original_ids.iter().copied(),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(document, command)?;
+
+    let name_prefix = format!("{label} ");
+    let object_ids = document
+        .objects()
+        .filter(|object| {
+            object
+                .attributes()
+                .name()
+                .is_some_and(|name| name.starts_with(&name_prefix))
+        })
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    let mut objects = object_ids
+        .iter()
+        .map(|id| polar_array_line_record(document, *id))
+        .collect::<Result<Vec<_>, _>>()?;
+    objects.sort_by(compare_polar_array_line_records);
+
+    let mut groups = document
+        .groups()
+        .filter_map(|group| {
+            let members = group
+                .members()
+                .filter(|id| object_ids.contains(id))
+                .collect::<Vec<_>>();
+            (!members.is_empty()).then_some(members)
+        })
+        .map(|members| {
+            let mut records = members
+                .into_iter()
+                .map(|id| polar_array_line_record(document, id))
+                .collect::<Result<Vec<_>, _>>()?;
+            records.sort_by(compare_polar_array_line_records);
+            Ok::<_, ProbeError>(records)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    groups.sort_by(|left, right| compare_polar_array_line_record_lists(left, right));
+
+    Ok(json!({
+        "command_succeeded": true,
+        "groups": groups
+            .iter()
+            .map(|records| polar_array_line_records_value(records))
+            .collect::<Vec<_>>(),
+        "objects": polar_array_line_records_value(&objects),
+        "originals_selected": original_ids
+            .iter()
+            .enumerate()
+            .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+            .collect::<Vec<_>>(),
+    }))
+}
+
+#[derive(Clone)]
+struct PolarArrayLineRecord {
+    start: [f64; 3],
+    end: [f64; 3],
+    name: String,
+    selected: bool,
+}
+
+fn polar_array_line_record(
+    document: &Document,
+    id: ObjectId,
+) -> Result<PolarArrayLineRecord, ProbeError> {
+    let object = document
+        .object(id)
+        .ok_or(DocumentError::ObjectNotFound(id))?;
+    let Geometry::Line(line) = object.geometry() else {
+        return Err(ProbeError::FixtureInvariant(
+            "polar-array fixture contains a non-line object",
+        ));
+    };
+    Ok(PolarArrayLineRecord {
+        start: line.start().to_array(),
+        end: line.end().to_array(),
+        name: object.attributes().name().unwrap_or_default().to_owned(),
+        selected: document.is_selected(id),
+    })
+}
+
+fn compare_polar_array_line_records(
+    left: &PolarArrayLineRecord,
+    right: &PolarArrayLineRecord,
+) -> std::cmp::Ordering {
+    compare_polar_array_sort_point(&left.start, &right.start)
+        .then_with(|| compare_polar_array_sort_point(&left.end, &right.end))
+        .then_with(|| left.name.cmp(&right.name))
+}
+
+fn compare_polar_array_sort_point(left: &[f64; 3], right: &[f64; 3]) -> std::cmp::Ordering {
+    left.iter()
+        .zip(right)
+        .map(|(left, right)| {
+            let left = (left * 1.0e12).round();
+            let left = if left == 0.0 { 0.0 } else { left };
+            let right = (right * 1.0e12).round();
+            let right = if right == 0.0 { 0.0 } else { right };
+            left.total_cmp(&right)
+        })
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or(std::cmp::Ordering::Equal)
+}
+
+fn compare_polar_array_line_record_lists(
+    left: &[PolarArrayLineRecord],
+    right: &[PolarArrayLineRecord],
+) -> std::cmp::Ordering {
+    left.iter()
+        .zip(right)
+        .map(|(left, right)| compare_polar_array_line_records(left, right))
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or_else(|| left.len().cmp(&right.len()))
+}
+
+fn polar_array_line_records_value(records: &[PolarArrayLineRecord]) -> Value {
+    Value::Array(
+        records
+            .iter()
+            .map(|record| {
+                json!({
+                    "end": record.end,
+                    "name": record.name,
+                    "selected": record.selected,
+                    "start": record.start,
+                })
+            })
+            .collect(),
+    )
 }
 
 fn sorted_document_point_records(
@@ -2907,6 +3148,72 @@ mod tests {
                 "selected_after_array": [[1.0, 2.0, 3.0], [4.0, 2.0, 3.0]],
             })
         );
+    }
+
+    #[test]
+    fn polar_arrays_grouped_lines_with_rhino_sweep_and_option_scope() {
+        let response = run_request(&request(vec![Operation::DocumentPolarArrayCycle {
+            id: "polar-array".to_owned(),
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        for scenario in [
+            "full_rotate_yes",
+            "negative_full_rotate_yes",
+            "multi_turn_z_offset_rotate_yes",
+            "partial_rotate_no",
+            "partial_rotate_yes",
+            "z_offset_rotate_yes",
+        ] {
+            assert_eq!(value[scenario]["command_succeeded"], json!(true));
+            assert_eq!(value[scenario]["groups"].as_array().unwrap().len(), 4);
+            assert_eq!(value[scenario]["objects"].as_array().unwrap().len(), 8);
+            assert_eq!(value[scenario]["originals_selected"], json!([0, 1]));
+            assert_eq!(
+                value[scenario]["objects"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|record| record["selected"] == json!(true))
+                    .count(),
+                2
+            );
+        }
+
+        let multi_turn_objects = value["multi_turn_z_offset_rotate_yes"]["objects"]
+            .as_array()
+            .unwrap();
+        assert!(multi_turn_objects.iter().any(|record| {
+            let start = record["start"].as_array().unwrap();
+            let end = record["end"].as_array().unwrap();
+            [([2.0, 0.0, 6.0], start), ([4.0, 1.0, 6.0], end)]
+                .into_iter()
+                .all(|(expected, actual)| {
+                    expected.into_iter().zip(actual).all(|(expected, actual)| {
+                        Tolerance::DEFAULT.approx_eq(expected, actual.as_f64().unwrap())
+                    })
+                })
+                && record["selected"] == json!(false)
+        }));
+        let no_rotate_objects = value["partial_rotate_no"]["objects"].as_array().unwrap();
+        assert!(no_rotate_objects.iter().all(|record| {
+            let start = record["start"].as_array().unwrap();
+            let end = record["end"].as_array().unwrap();
+            let name = record["name"].as_str().unwrap();
+            let expected = if name.ends_with(" 0") {
+                [2.0, 1.0, 0.0]
+            } else {
+                [1.0, 0.5, 1.0]
+            };
+            start
+                .iter()
+                .zip(end)
+                .zip(expected)
+                .all(|((start, end), expected)| {
+                    Tolerance::DEFAULT
+                        .approx_eq(end.as_f64().unwrap() - start.as_f64().unwrap(), expected)
+                })
+        }));
     }
 
     #[test]

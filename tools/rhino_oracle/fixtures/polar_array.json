@@ -1,0 +1,15 @@
+{
+  "protocol_version": 1,
+  "iterations": 10000,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "document_polar_array_cycle",
+      "id": "document-polar-array-cycle"
+    }
+  ]
+}
