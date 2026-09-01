@@ -1,0 +1,11 @@
+[package]
+name = "viboceros-geometry"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+faer.workspace = true
+nalgebra.workspace = true
+thiserror.workspace = true
