@@ -46,6 +46,8 @@ SelClosedMesh
 SelName "Fastener *"
 SelLayer "Construction *"
 SelGroup Assembly
+SelDup
+SelDupAll
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
@@ -158,6 +160,14 @@ expanding overlapping groups; `SelName ""` selects unnamed objects. `SelGroup`
 uses Rhino's exact, case-sensitive group names. Matching hidden or locked layers
 with `SelLayer` makes those layers visible and unlocked outside undo history,
 while object-level hidden and locked states remain untouched.
+`SelDup` adds every visible, unlocked geometric copy except one deterministic
+document-order original per class; `SelDupAll` includes those originals.
+Equality is independent of object properties, groups, and document tolerance,
+and direction-independent for lines, open polylines, analytic circles and
+arcs, and compatible NURBS curves. Points and indexed meshes compare exact
+stored values; curves use Rhino/OpenNURBS' scale-aware fixed zero policy.
+Closed piecewise-linear and NURBS seams remain significant, while mesh vertex
+indexing, face order, and winding must match.
 `SetObjectName` assigns one shared name to the selection. Add
 `AppendCounter=Yes` for Rhino's zero-based suffixes in document order, or use
 `SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style

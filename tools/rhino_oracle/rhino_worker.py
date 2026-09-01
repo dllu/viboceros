@@ -1056,6 +1056,212 @@ def _execute(operation, iterations, tolerance):
             for object_id in object_ids:
                 document.Objects.Delete(object_id, True)
 
+    if kind == "document_duplicate_selection_cycle":
+        geometries = []
+        selectable = []
+
+        def remember(geometry, is_selectable=True):
+            if geometry is None or not geometry.IsValid:
+                raise ValueError("could not create duplicate-selection geometry")
+            geometries.append(geometry)
+            selectable.append(bool(is_selectable))
+            return len(geometries) - 1
+
+        try:
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(30.0, 0.0, 0.0)))
+            point_original = remember(
+                Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0))
+            )
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)))
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)))
+            remember(
+                Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)),
+                False,
+            )
+            remember(
+                Rhino.Geometry.Point(Rhino.Geometry.Point3d(0.0, 0.0, 0.0)),
+                False,
+            )
+            point_near = remember(
+                Rhino.Geometry.Point(
+                    Rhino.Geometry.Point3d(
+                        0.5 * tolerance["absolute"], 0.0, 0.0
+                    )
+                )
+            )
+            remember(Rhino.Geometry.Point(Rhino.Geometry.Point3d(20.0, 0.0, 0.0)))
+
+            line_start = Rhino.Geometry.Point3d(0.0, 10.0, 0.0)
+            line_end = Rhino.Geometry.Point3d(5.0, 10.0, 0.0)
+            line_original = remember(Rhino.Geometry.LineCurve(line_start, line_end))
+            remember(Rhino.Geometry.LineCurve(line_start, line_end))
+            line_reversed = remember(Rhino.Geometry.LineCurve(line_end, line_start))
+            line_nurbs_geometry = Rhino.Geometry.NurbsCurve.Create(
+                False,
+                1,
+                System.Array[Rhino.Geometry.Point3d]([line_start, line_end]),
+            )
+            line_nurbs = remember(line_nurbs_geometry)
+            line_near = remember(
+                Rhino.Geometry.LineCurve(
+                    line_start,
+                    Rhino.Geometry.Point3d(
+                        5.0 + 0.5 * tolerance["absolute"], 10.0, 0.0
+                    ),
+                )
+            )
+
+            open_vertices = [
+                Rhino.Geometry.Point3d(0.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(2.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(2.0, 22.0, 0.0),
+            ]
+            open_polyline = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](open_vertices)
+                )
+            )
+            remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](open_vertices)
+                )
+            )
+            open_polyline_reversed = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](list(reversed(open_vertices)))
+                )
+            )
+
+            closed_vertices = [
+                Rhino.Geometry.Point3d(10.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(12.0, 20.0, 0.0),
+                Rhino.Geometry.Point3d(12.0, 22.0, 0.0),
+                Rhino.Geometry.Point3d(10.0, 20.0, 0.0),
+            ]
+            closed_polyline = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](closed_vertices)
+                )
+            )
+            shifted_closed_polyline = remember(
+                Rhino.Geometry.PolylineCurve(
+                    System.Array[Rhino.Geometry.Point3d](
+                        [
+                            closed_vertices[1],
+                            closed_vertices[2],
+                            closed_vertices[0],
+                            closed_vertices[1],
+                        ]
+                    )
+                )
+            )
+
+            circle_center = Rhino.Geometry.Point3d(0.0, 30.0, 0.0)
+            circle_plane = Rhino.Geometry.Plane(
+                circle_center,
+                Rhino.Geometry.Vector3d.XAxis,
+                Rhino.Geometry.Vector3d.YAxis,
+            )
+            opposite_circle_plane = Rhino.Geometry.Plane(
+                circle_center,
+                Rhino.Geometry.Vector3d.XAxis,
+                -Rhino.Geometry.Vector3d.YAxis,
+            )
+            circle_original = remember(
+                Rhino.Geometry.ArcCurve(Rhino.Geometry.Circle(circle_plane, 3.0))
+            )
+            remember(Rhino.Geometry.ArcCurve(Rhino.Geometry.Circle(circle_plane, 3.0)))
+            circle_opposite = remember(
+                Rhino.Geometry.ArcCurve(
+                    Rhino.Geometry.Circle(opposite_circle_plane, 3.0)
+                )
+            )
+
+            mesh_vertices = [
+                [0.0, 40.0, 0.0],
+                [2.0, 40.0, 0.0],
+                [0.0, 42.0, 0.0],
+            ]
+            mesh_original = remember(
+                _triangle_mesh(mesh_vertices, [[0, 1, 2]])
+            )
+            remember(_triangle_mesh(mesh_vertices, [[0, 1, 2]]))
+            mesh_reversed = remember(
+                _triangle_mesh(mesh_vertices, [[0, 2, 1]])
+            )
+            mesh_reindexed = remember(
+                _triangle_mesh(
+                    [mesh_vertices[1], mesh_vertices[2], mesh_vertices[0]],
+                    [[2, 0, 1]],
+                )
+            )
+
+            def geometry_equal(left, right):
+                return bool(
+                    Rhino.Geometry.GeometryBase.GeometryEquals(
+                        geometries[left], geometries[right]
+                    )
+                )
+
+            def duplicate_classes():
+                classes = []
+                for index in range(len(geometries)):
+                    if not selectable[index]:
+                        continue
+                    matching = None
+                    for candidate_class in classes:
+                        if geometry_equal(index, candidate_class[0]):
+                            matching = candidate_class
+                            break
+                    if matching is None:
+                        classes.append([index])
+                    else:
+                        matching.append(index)
+                return [candidate_class for candidate_class in classes if len(candidate_class) > 1]
+
+            def duplicate_selection_cycle():
+                classes = duplicate_classes()
+                selected_all = set([0])
+                selected_without_originals = set([0])
+                for candidate_class in classes:
+                    selected_all.update(candidate_class)
+                    selected_without_originals.update(candidate_class[1:])
+                return {
+                    "all": sorted(selected_all),
+                    "all_count": len(selected_all),
+                    "circle_opposite_equal": geometry_equal(
+                        circle_original, circle_opposite
+                    ),
+                    "closed_shifted_equal": geometry_equal(
+                        closed_polyline, shifted_closed_polyline
+                    ),
+                    "line_nurbs_equal": geometry_equal(
+                        line_original, line_nurbs
+                    ),
+                    "line_near_equal": geometry_equal(line_original, line_near),
+                    "line_reversed_equal": geometry_equal(
+                        line_original, line_reversed
+                    ),
+                    "mesh_reindexed_equal": geometry_equal(
+                        mesh_original, mesh_reindexed
+                    ),
+                    "mesh_reversed_equal": geometry_equal(
+                        mesh_original, mesh_reversed
+                    ),
+                    "point_near_equal": geometry_equal(
+                        point_original, point_near
+                    ),
+                    "polyline_reversed_equal": geometry_equal(
+                        open_polyline, open_polyline_reversed
+                    ),
+                    "without_original_count": len(selected_without_originals),
+                }
+
+            return _measure(iterations, duplicate_selection_cycle)
+        finally:
+            for geometry in geometries:
+                geometry.Dispose()
+
     if kind == "point_distance":
         a = _point(operation["a"])
         b = _point(operation["b"])

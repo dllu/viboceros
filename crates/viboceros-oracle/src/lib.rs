@@ -79,6 +79,9 @@ pub enum Operation {
     DocumentObjectNamingCycle {
         id: String,
     },
+    DocumentDuplicateSelectionCycle {
+        id: String,
+    },
     PointDistance {
         id: String,
         a: [f64; 3],
@@ -246,6 +249,7 @@ impl Operation {
             | Self::DocumentActionSelectionCycle { id }
             | Self::DocumentAttributeSelectionCycle { id }
             | Self::DocumentObjectNamingCycle { id }
+            | Self::DocumentDuplicateSelectionCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -423,6 +427,9 @@ fn execute(
             document_attribute_selection_cycle(iterations)?
         }
         Operation::DocumentObjectNamingCycle { .. } => document_object_naming_cycle(iterations)?,
+        Operation::DocumentDuplicateSelectionCycle { .. } => {
+            document_duplicate_selection_cycle(iterations, tolerance)?
+        }
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
             let b = point(*b)?;
@@ -1397,6 +1404,230 @@ fn document_object_naming_cycle(iterations: u32) -> Result<(Value, u64), ProbeEr
     })
 }
 
+fn document_duplicate_selection_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let mut object_ids = Vec::new();
+    let mut add = |document: &mut Document,
+                   geometry: Geometry,
+                   attributes: ObjectAttributes|
+     -> Result<ObjectId, DocumentError> {
+        let id = document.add_geometry_with_attributes(geometry, attributes)?;
+        object_ids.push(id);
+        Ok(id)
+    };
+    let ordinary = || ObjectAttributes::on_layer(layer);
+
+    let unrelated = add(
+        &mut document,
+        Geometry::Point(Point3::try_new(30.0, 0.0, 0.0)?),
+        ordinary(),
+    )?;
+    let point_original = add(
+        &mut document,
+        Geometry::Point(Point3::try_new(0.0, 0.0, 0.0)?),
+        ordinary(),
+    )?;
+    let point_duplicate = add(
+        &mut document,
+        Geometry::Point(Point3::try_new(0.0, 0.0, 0.0)?),
+        ordinary(),
+    )?;
+    add(
+        &mut document,
+        Geometry::Point(Point3::try_new(0.0, 0.0, 0.0)?),
+        ordinary().with_name("Different attributes"),
+    )?;
+    add(
+        &mut document,
+        Geometry::Point(Point3::try_new(0.0, 0.0, 0.0)?),
+        ordinary().with_visibility(false),
+    )?;
+    add(
+        &mut document,
+        Geometry::Point(Point3::try_new(0.0, 0.0, 0.0)?),
+        ordinary().with_locked(true),
+    )?;
+    let point_near = add(
+        &mut document,
+        Geometry::Point(Point3::try_new(tolerance.absolute() * 0.5, 0.0, 0.0)?),
+        ordinary(),
+    )?;
+    let group_peer = add(
+        &mut document,
+        Geometry::Point(Point3::try_new(20.0, 0.0, 0.0)?),
+        ordinary(),
+    )?;
+    document.add_group(
+        Some("Duplicate probe group".to_owned()),
+        [point_duplicate, group_peer],
+    )?;
+
+    let line_start = Point3::try_new(0.0, 10.0, 0.0)?;
+    let line_end = Point3::try_new(5.0, 10.0, 0.0)?;
+    let line_original = add(
+        &mut document,
+        Geometry::Line(LineSegment::try_new(line_start, line_end, tolerance)?),
+        ordinary(),
+    )?;
+    add(
+        &mut document,
+        Geometry::Line(LineSegment::try_new(line_start, line_end, tolerance)?),
+        ordinary(),
+    )?;
+    let line_reversed = add(
+        &mut document,
+        Geometry::Line(LineSegment::try_new(line_end, line_start, tolerance)?),
+        ordinary(),
+    )?;
+    let line_nurbs = add(
+        &mut document,
+        Geometry::NurbsCurve(NurbsCurve::try_new(
+            1,
+            vec![line_start, line_end],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )?),
+        ordinary(),
+    )?;
+    let line_near = add(
+        &mut document,
+        Geometry::Line(LineSegment::try_new(
+            line_start,
+            Point3::try_new(5.0 + tolerance.absolute() * 0.5, 10.0, 0.0)?,
+            tolerance,
+        )?),
+        ordinary(),
+    )?;
+
+    let open_vertices = vec![
+        Point3::try_new(0.0, 20.0, 0.0)?,
+        Point3::try_new(2.0, 20.0, 0.0)?,
+        Point3::try_new(2.0, 22.0, 0.0)?,
+    ];
+    let open_polyline = add(
+        &mut document,
+        Geometry::Polyline(Polyline3::try_new(open_vertices.clone(), tolerance)?),
+        ordinary(),
+    )?;
+    add(
+        &mut document,
+        Geometry::Polyline(Polyline3::try_new(open_vertices.clone(), tolerance)?),
+        ordinary(),
+    )?;
+    let mut reversed_open_vertices = open_vertices.clone();
+    reversed_open_vertices.reverse();
+    let open_polyline_reversed = add(
+        &mut document,
+        Geometry::Polyline(Polyline3::try_new(reversed_open_vertices, tolerance)?),
+        ordinary(),
+    )?;
+
+    let closed_vertices = vec![
+        Point3::try_new(10.0, 20.0, 0.0)?,
+        Point3::try_new(12.0, 20.0, 0.0)?,
+        Point3::try_new(12.0, 22.0, 0.0)?,
+        Point3::try_new(10.0, 20.0, 0.0)?,
+    ];
+    let closed_polyline = add(
+        &mut document,
+        Geometry::Polyline(Polyline3::try_new(closed_vertices.clone(), tolerance)?),
+        ordinary(),
+    )?;
+    let shifted_closed_polyline = add(
+        &mut document,
+        Geometry::Polyline(Polyline3::try_new(
+            vec![
+                closed_vertices[1],
+                closed_vertices[2],
+                closed_vertices[0],
+                closed_vertices[1],
+            ],
+            tolerance,
+        )?),
+        ordinary(),
+    )?;
+
+    let up = UnitVector3::try_new(0.0, 0.0, 1.0, tolerance)?;
+    let circle_center = Point3::try_new(0.0, 30.0, 0.0)?;
+    let circle_original = add(
+        &mut document,
+        Geometry::Circle(Circle3::try_new(circle_center, 3.0, up, tolerance)?),
+        ordinary(),
+    )?;
+    add(
+        &mut document,
+        Geometry::Circle(Circle3::try_new(circle_center, 3.0, up, tolerance)?),
+        ordinary(),
+    )?;
+    let circle_opposite = add(
+        &mut document,
+        Geometry::Circle(Circle3::try_new(
+            circle_center,
+            3.0,
+            up.opposite(),
+            tolerance,
+        )?),
+        ordinary(),
+    )?;
+
+    let mesh_vertices = vec![
+        Point3::try_new(0.0, 40.0, 0.0)?,
+        Point3::try_new(2.0, 40.0, 0.0)?,
+        Point3::try_new(0.0, 42.0, 0.0)?,
+    ];
+    let mesh = TriangleMesh::try_new(mesh_vertices.clone(), vec![[0, 1, 2]], tolerance)?;
+    let mesh_original = add(&mut document, Geometry::Mesh(mesh.clone()), ordinary())?;
+    add(&mut document, Geometry::Mesh(mesh.clone()), ordinary())?;
+    let mesh_reversed = add(&mut document, Geometry::Mesh(mesh.reversed()), ordinary())?;
+    let mesh_reindexed = add(
+        &mut document,
+        Geometry::Mesh(TriangleMesh::try_new(
+            vec![mesh_vertices[1], mesh_vertices[2], mesh_vertices[0]],
+            vec![[2, 0, 1]],
+            tolerance,
+        )?),
+        ordinary(),
+    )?;
+
+    measure_document(iterations, || {
+        document.clear_selection();
+        document.select_objects_direct([unrelated], SelectionMode::Replace)?;
+        let all_count = document.select_duplicate_objects(true)?;
+        let all = document_selected_indices(&document, &object_ids);
+
+        document.clear_selection();
+        document.select_objects_direct([unrelated], SelectionMode::Replace)?;
+        let without_original_count = document.select_duplicate_objects(false)?;
+
+        let equal = |left: ObjectId, right: ObjectId| -> Result<bool, DocumentError> {
+            let left = document
+                .object(left)
+                .ok_or(DocumentError::ObjectNotFound(left))?;
+            let right = document
+                .object(right)
+                .ok_or(DocumentError::ObjectNotFound(right))?;
+            Ok(left.geometry().geometrically_equals(right.geometry())?)
+        };
+        Ok(json!({
+            "all": all,
+            "all_count": all_count,
+            "circle_opposite_equal": equal(circle_original, circle_opposite)?,
+            "closed_shifted_equal": equal(closed_polyline, shifted_closed_polyline)?,
+            "line_nurbs_equal": equal(line_original, line_nurbs)?,
+            "line_near_equal": equal(line_original, line_near)?,
+            "line_reversed_equal": equal(line_original, line_reversed)?,
+            "mesh_reindexed_equal": equal(mesh_original, mesh_reindexed)?,
+            "mesh_reversed_equal": equal(mesh_original, mesh_reversed)?,
+            "point_near_equal": equal(point_original, point_near)?,
+            "polyline_reversed_equal": equal(open_polyline, open_polyline_reversed)?,
+            "without_original_count": without_original_count,
+        }))
+    })
+}
+
 fn document_object_names(
     document: &Document,
     object_ids: &[ObjectId],
@@ -1830,6 +2061,31 @@ mod tests {
                 "counter_count": 3,
                 "shared": ["Sample", "Sample", "Sample"],
                 "shared_count": 3,
+            })
+        );
+    }
+
+    #[test]
+    fn selects_duplicate_geometry_without_attributes_or_groups() {
+        let response = run_request(&request(vec![Operation::DocumentDuplicateSelectionCycle {
+            id: "duplicate-selection".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "all": [0, 1, 2, 3, 8, 9, 10, 11, 12, 13, 14, 15, 18, 19, 20, 21, 22],
+                "all_count": 17,
+                "circle_opposite_equal": true,
+                "closed_shifted_equal": false,
+                "line_near_equal": true,
+                "line_nurbs_equal": true,
+                "line_reversed_equal": true,
+                "mesh_reindexed_equal": false,
+                "mesh_reversed_equal": false,
+                "point_near_equal": false,
+                "polyline_reversed_equal": true,
+                "without_original_count": 12,
             })
         );
     }

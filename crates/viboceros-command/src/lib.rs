@@ -103,6 +103,18 @@ impl CommandRegistry {
         registry
             .register(SelGroupCommand)
             .expect("unique built-in command");
+        registry
+            .register(SelectDuplicateCommand {
+                name: "SelDup",
+                include_originals: false,
+            })
+            .expect("unique built-in command");
+        registry
+            .register(SelectDuplicateCommand {
+                name: "SelDupAll",
+                include_originals: true,
+            })
+            .expect("unique built-in command");
         for (name, filter) in [
             ("SelCrv", GeometrySelectionFilter::Curve),
             ("SelOpenCrv", GeometrySelectionFilter::OpenCurve),
@@ -921,6 +933,27 @@ impl Command for SelGroupCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let name = parse_attribute_pattern(arguments, "SelGroup group-name")?;
         let count = document.select_group_objects_by_name(&name);
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+struct SelectDuplicateCommand {
+    name: &'static str,
+    include_originals: bool,
+}
+
+impl Command for SelectDuplicateCommand {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, self.name)?;
+        let count = document.select_duplicate_objects(self.include_originals)?;
         Ok(format!("Selected {count} object(s)"))
     }
 }
@@ -3570,7 +3603,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -6119,6 +6152,55 @@ mod tests {
             );
         }
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn duplicate_selection_commands_include_or_retain_originals_without_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let unique = document
+            .add_geometry(Geometry::Point(Point3::try_new(9.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let original = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()))
+            .unwrap();
+        let duplicate = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()))
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        document
+            .select_object(unique, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelDupAll").unwrap(),
+            "Selected 3 object(s)"
+        );
+        assert!(document.is_selected(original));
+        assert!(document.is_selected(duplicate));
+
+        document.clear_selection();
+        document
+            .select_object(unique, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelDup").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert!(!document.is_selected(original));
+        assert!(document.is_selected(duplicate));
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let selection = document.selected_object_ids().collect::<BTreeSet<_>>();
+        assert!(
+            registry
+                .execute(&mut document, "SelDup unexpected")
+                .is_err()
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            selection
+        );
     }
 
     #[test]

@@ -35,6 +35,10 @@
       "id": "document-object-naming-cycle"
     },
     {
+      "op": "document_duplicate_selection_cycle",
+      "id": "document-duplicate-selection-cycle"
+    },
+    {
       "op": "point_distance",
       "id": "point-distance",
       "a": [1.25, -2.5, 4.0],

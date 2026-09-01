@@ -1,5 +1,6 @@
 //! In-memory CAD document model.
 
+mod duplicate;
 mod history;
 
 use std::collections::{BTreeMap, BTreeSet};
@@ -12,6 +13,7 @@ use viboceros_geometry::{
     NurbsCurve, NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh,
 };
 
+use duplicate::DuplicateGeometryFamily;
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
 
 macro_rules! id_type {
@@ -183,7 +185,6 @@ impl Geometry {
         })
     }
 }
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct ObjectAttributes {
     name: Option<String>,
@@ -799,6 +800,57 @@ impl Document {
             .filter(|id| self.is_object_selectable(*id))
             .collect();
         self.apply_selection_mode(matches, SelectionMode::Add)
+    }
+
+    /// Adds every selectable duplicate class to the selection.
+    ///
+    /// When `include_originals` is false, the first object in document order
+    /// is retained as the deterministic original of each class. Attributes,
+    /// layers, and group membership do not participate in geometry equality,
+    /// and matching a grouped object does not expand its group.
+    pub fn select_duplicate_objects(
+        &mut self,
+        include_originals: bool,
+    ) -> Result<usize, DocumentError> {
+        let mut candidate_buckets = BTreeMap::<DuplicateGeometryFamily, Vec<usize>>::new();
+        for (index, object) in self.objects.iter().enumerate() {
+            if self.is_object_selectable(object.id) {
+                candidate_buckets
+                    .entry(object.geometry.duplicate_family())
+                    .or_default()
+                    .push(index);
+            }
+        }
+        let mut matches = BTreeSet::new();
+        for candidates in candidate_buckets.into_values() {
+            let mut classes = Vec::<Vec<usize>>::new();
+            for candidate in candidates {
+                let mut matching_class = None;
+                for (class_index, class) in classes.iter().enumerate() {
+                    if self.objects[candidate]
+                        .geometry
+                        .geometrically_equals(&self.objects[class[0]].geometry)?
+                    {
+                        matching_class = Some(class_index);
+                        break;
+                    }
+                }
+                if let Some(class_index) = matching_class {
+                    classes[class_index].push(candidate);
+                } else {
+                    classes.push(vec![candidate]);
+                }
+            }
+            for class in classes.into_iter().filter(|class| class.len() > 1) {
+                matches.extend(
+                    class
+                        .into_iter()
+                        .skip(usize::from(!include_originals))
+                        .map(|index| self.objects[index].id),
+                );
+            }
+        }
+        Ok(self.apply_selection_mode(matches, SelectionMode::Add))
     }
 
     /// Selects every layer whose name matches Rhino's case-insensitive `*`
@@ -1891,6 +1943,200 @@ mod tests {
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn geometric_equality_is_scale_aware_and_direction_independent() {
+        let tolerance = Tolerance::DEFAULT;
+        let start = point(0.0, 0.0, 0.0);
+        let end = point(4.0, 2.0, 0.0);
+        let line = Geometry::Line(LineSegment::try_new(start, end, tolerance).unwrap());
+        let reversed_line = Geometry::Line(LineSegment::try_new(end, start, tolerance).unwrap());
+        assert!(line.geometrically_equals(&reversed_line).unwrap());
+
+        let zero = point(0.0, 0.0, 0.0);
+        let five = point(5.0, 0.0, 0.0);
+        let reference_line = Geometry::Line(LineSegment::try_new(zero, five, tolerance).unwrap());
+        let near_line = Geometry::Line(
+            LineSegment::try_new(zero, point(5.0 + 1.0e-7, 0.0, 0.0), tolerance).unwrap(),
+        );
+        let far_line = Geometry::Line(
+            LineSegment::try_new(zero, point(5.0 + 1.0e-6, 0.0, 0.0), tolerance).unwrap(),
+        );
+        assert!(reference_line.geometrically_equals(&near_line).unwrap());
+        assert!(!reference_line.geometrically_equals(&far_line).unwrap());
+
+        let weighted_line = Geometry::NurbsCurve(
+            NurbsCurve::try_new_rational(
+                1,
+                vec![
+                    viboceros_geometry::WeightedPoint3::try_new(start, 2.0).unwrap(),
+                    viboceros_geometry::WeightedPoint3::try_new(end, 5.0).unwrap(),
+                ],
+                vec![2.0, 2.0, 8.0, 8.0],
+            )
+            .unwrap(),
+        );
+        assert!(line.geometrically_equals(&weighted_line).unwrap());
+
+        let open = Geometry::Polyline(
+            Polyline3::try_new(vec![start, point(2.0, 0.0, 0.0), end], tolerance).unwrap(),
+        );
+        let open_reversed = match &open {
+            Geometry::Polyline(polyline) => Geometry::Polyline(polyline.reversed()),
+            _ => unreachable!(),
+        };
+        assert!(open.geometrically_equals(&open_reversed).unwrap());
+
+        let closed = Geometry::Polyline(
+            Polyline3::try_new(
+                vec![start, point(2.0, 0.0, 0.0), point(2.0, 2.0, 0.0), start],
+                tolerance,
+            )
+            .unwrap(),
+        );
+        let shifted_seam = Geometry::Polyline(
+            Polyline3::try_new(
+                vec![
+                    point(2.0, 0.0, 0.0),
+                    point(2.0, 2.0, 0.0),
+                    start,
+                    point(2.0, 0.0, 0.0),
+                ],
+                tolerance,
+            )
+            .unwrap(),
+        );
+        assert!(!closed.geometrically_equals(&shifted_seam).unwrap());
+
+        let up = viboceros_geometry::UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap();
+        let down = up.opposite();
+        let circle = Geometry::Circle(Circle3::try_new(start, 3.0, up, tolerance).unwrap());
+        let opposite_circle =
+            Geometry::Circle(Circle3::try_new(start, 3.0, down, tolerance).unwrap());
+        assert!(circle.geometrically_equals(&opposite_circle).unwrap());
+        let radius_five = Geometry::Circle(Circle3::try_new(start, 5.0, up, tolerance).unwrap());
+        let near_radius =
+            Geometry::Circle(Circle3::try_new(start, 5.0 + 1.0e-7, up, tolerance).unwrap());
+        let far_radius =
+            Geometry::Circle(Circle3::try_new(start, 5.0 + 1.0e-6, up, tolerance).unwrap());
+        assert!(radius_five.geometrically_equals(&near_radius).unwrap());
+        assert!(!radius_five.geometrically_equals(&far_radius).unwrap());
+
+        let arc = CircularArc3::try_from_three_points(
+            point(1.0, 0.0, 0.0),
+            point(0.0, 1.0, 0.0),
+            point(-1.0, 0.0, 0.0),
+            tolerance,
+        )
+        .unwrap();
+        assert!(
+            Geometry::Arc(arc)
+                .geometrically_equals(&Geometry::Arc(arc.reversed(tolerance).unwrap()))
+                .unwrap()
+        );
+
+        assert!(
+            Geometry::Point(start)
+                .geometrically_equals(&Geometry::Point(start))
+                .unwrap()
+        );
+        assert!(
+            !Geometry::Point(start)
+                .geometrically_equals(&Geometry::Point(point(f64::EPSILON, 0.0, 0.0)))
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn duplicate_selection_is_additive_attribute_free_and_document_ordered() {
+        let tolerance = Tolerance::DEFAULT;
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let unrelated = document
+            .add_geometry(Geometry::Point(point(30.0, 0.0, 0.0)))
+            .unwrap();
+        let first = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let second = document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(0.0, 0.0, 0.0)),
+                ObjectAttributes::on_layer(layer).with_name("different"),
+            )
+            .unwrap();
+        let hidden = document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(0.0, 0.0, 0.0)),
+                ObjectAttributes::on_layer(layer).with_visibility(false),
+            )
+            .unwrap();
+        let locked = document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(0.0, 0.0, 0.0)),
+                ObjectAttributes::on_layer(layer).with_locked(true),
+            )
+            .unwrap();
+        let near = document
+            .add_geometry(Geometry::Point(point(tolerance.absolute() * 0.5, 0.0, 0.0)))
+            .unwrap();
+        let group_peer = document
+            .add_geometry(Geometry::Point(point(20.0, 0.0, 0.0)))
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [second, group_peer])
+            .unwrap();
+
+        let line_start = point(0.0, 10.0, 0.0);
+        let line_end = point(5.0, 10.0, 0.0);
+        let line_first = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(line_start, line_end, tolerance).unwrap(),
+            ))
+            .unwrap();
+        let line_second = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(line_end, line_start, tolerance).unwrap(),
+            ))
+            .unwrap();
+        let line_nurbs = document
+            .add_geometry(Geometry::NurbsCurve(
+                NurbsCurve::try_new(1, vec![line_start, line_end], vec![0.0, 0.0, 1.0, 1.0])
+                    .unwrap(),
+            ))
+            .unwrap();
+
+        document
+            .select_object(unrelated, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.select_duplicate_objects(true).unwrap(), 6);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([
+                unrelated,
+                first,
+                second,
+                line_first,
+                line_second,
+                line_nurbs,
+            ])
+        );
+        assert!(!document.is_selected(hidden));
+        assert!(!document.is_selected(locked));
+        assert!(!document.is_selected(near));
+        assert!(!document.is_selected(group_peer));
+
+        document.clear_selection();
+        document
+            .select_object(unrelated, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.select_duplicate_objects(false).unwrap(), 4);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([unrelated, second, line_second, line_nurbs])
+        );
+        assert!(!document.is_selected(first));
+        assert!(!document.is_selected(line_first));
     }
 
     #[test]
