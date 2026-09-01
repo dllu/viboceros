@@ -63,6 +63,9 @@ pub enum GeometryError {
     #[error("polyline segment {segment} is degenerate at the requested tolerance")]
     DegeneratePolylineSegment { segment: usize },
 
+    #[error("curve closure tolerance must be finite and non-negative")]
+    InvalidCurveClosureTolerance,
+
     #[error("a regular polygon requires from 3 through {maximum} sides, got {actual}")]
     InvalidRegularPolygonSides { actual: usize, maximum: usize },
 

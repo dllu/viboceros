@@ -9,7 +9,8 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
     MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsSurface, Point3,
-    Polyline3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    Polyline3, PolylineClosure, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -93,6 +94,15 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(DivideCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CrvStartCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CrvEndCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
             .register(FlipCommand)
@@ -823,7 +833,8 @@ impl Command for DivideCommand {
 
         let mut output = Vec::new();
         for (geometry, attributes) in &selected {
-            let curve = geometry_curve_ref(geometry)?;
+            let curve =
+                geometry_curve_ref(geometry).ok_or(CommandError::UnsupportedDivideGeometry)?;
             let points =
                 command_division_points(curve, specification, mark_ends, document.tolerance())?;
             let output_count = output.len().checked_add(points.len()).ok_or(
@@ -893,15 +904,15 @@ fn parse_division_arguments(
     Ok((specification, mark_ends))
 }
 
-fn geometry_curve_ref(geometry: &Geometry) -> Result<CurveRef<'_>, CommandError> {
+fn geometry_curve_ref(geometry: &Geometry) -> Option<CurveRef<'_>> {
     match geometry {
-        Geometry::Line(line) => Ok(CurveRef::Line(line)),
-        Geometry::Circle(circle) => Ok(CurveRef::Circle(circle)),
-        Geometry::Arc(arc) => Ok(CurveRef::Arc(arc)),
-        Geometry::Ellipse(ellipse) => Ok(CurveRef::Ellipse(ellipse)),
-        Geometry::Polyline(polyline) => Ok(CurveRef::Polyline(polyline)),
-        Geometry::NurbsCurve(curve) => Ok(CurveRef::NurbsCurve(curve)),
-        _ => Err(CommandError::UnsupportedDivideGeometry),
+        Geometry::Line(line) => Some(CurveRef::Line(line)),
+        Geometry::Circle(circle) => Some(CurveRef::Circle(circle)),
+        Geometry::Arc(arc) => Some(CurveRef::Arc(arc)),
+        Geometry::Ellipse(ellipse) => Some(CurveRef::Ellipse(ellipse)),
+        Geometry::Polyline(polyline) => Some(CurveRef::Polyline(polyline)),
+        Geometry::NurbsCurve(curve) => Some(CurveRef::NurbsCurve(curve)),
+        _ => None,
     }
 }
 
@@ -959,6 +970,195 @@ fn command_division_points(
         }
     }
     Ok(points)
+}
+
+struct CrvStartCommand;
+
+impl Command for CrvStartCommand {
+    fn name(&self) -> &'static str {
+        "CrvStart"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "CrvStart")?;
+        mark_selected_curve_endpoints(document, CurveEndpoint::Start)
+    }
+}
+
+struct CrvEndCommand;
+
+impl Command for CrvEndCommand {
+    fn name(&self) -> &'static str {
+        "CrvEnd"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "CrvEnd")?;
+        mark_selected_curve_endpoints(document, CurveEndpoint::End)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum CurveEndpoint {
+    Start,
+    End,
+}
+
+fn mark_selected_curve_endpoints(
+    document: &mut Document,
+    endpoint: CurveEndpoint,
+) -> Result<String, CommandError> {
+    let selected = document
+        .selected_objects()
+        .map(|object| {
+            let curve = geometry_curve_ref(object.geometry())
+                .ok_or(CommandError::UnsupportedCurveEndpointGeometry)?;
+            let point = match endpoint {
+                CurveEndpoint::Start => curve.start_point()?,
+                CurveEndpoint::End => curve.end_point()?,
+            };
+            Ok((point, object.attributes().clone()))
+        })
+        .collect::<Result<Vec<_>, CommandError>>()?;
+    if selected.is_empty() {
+        return Err(CommandError::NoObjectsSelected);
+    }
+
+    let mut ids = Vec::with_capacity(selected.len());
+    for (point, attributes) in selected {
+        ids.push(document.add_geometry_with_attributes(Geometry::Point(point), attributes)?);
+    }
+    replace_selection(document, ids.iter().copied())?;
+    let location = match endpoint {
+        CurveEndpoint::Start => "starts",
+        CurveEndpoint::End => "ends",
+    };
+    Ok(format!("Added {} point(s) at curve {location}", ids.len()))
+}
+
+const CLOSE_CRV_USAGE: &str = "CloseCrv [CloseWideGapsWithLine=Yes|No] [Tolerance=value]";
+
+struct CloseCrvCommand;
+
+impl Command for CloseCrvCommand {
+    fn name(&self) -> &'static str {
+        "CloseCrv"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_close_curve_arguments(arguments, document.tolerance().absolute())?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut endpoint_moved = 0;
+        let mut segment_added = 0;
+        let mut unchanged = 0;
+        let mut replacements = Vec::new();
+        for (id, geometry) in &selected {
+            let polyline = match geometry {
+                Geometry::Line(line) => {
+                    Polyline3::try_new(vec![line.start(), line.end()], document.tolerance())?
+                }
+                Geometry::Polyline(polyline) => polyline.clone(),
+                Geometry::Circle(_) | Geometry::Ellipse(_) => {
+                    unchanged += 1;
+                    continue;
+                }
+                Geometry::NurbsCurve(curve)
+                    if curve.evaluate(*curve.domain().start())?
+                        == curve.evaluate(*curve.domain().end())? =>
+                {
+                    unchanged += 1;
+                    continue;
+                }
+                _ => return Err(CommandError::UnsupportedCloseCurveGeometry),
+            };
+            let (closed, outcome) = polyline.close(
+                options.tolerance,
+                options.close_wide_gaps_with_line,
+                document.tolerance(),
+            )?;
+            match outcome {
+                PolylineClosure::EndpointMoved => {
+                    endpoint_moved += 1;
+                    replacements.push((*id, Geometry::Polyline(closed)));
+                }
+                PolylineClosure::SegmentAdded => {
+                    segment_added += 1;
+                    replacements.push((*id, Geometry::Polyline(closed)));
+                }
+                PolylineClosure::AlreadyClosed | PolylineClosure::GapTooWide => unchanged += 1,
+            }
+        }
+
+        let closed = document.replace_object_geometries(replacements)?;
+        debug_assert_eq!(closed, endpoint_moved + segment_added);
+        Ok(format!(
+            "Closed {closed} of {} selected curve(s): {segment_added} with a line, {endpoint_moved} by moving an endpoint; {unchanged} unchanged",
+            selected.len()
+        ))
+    }
+}
+
+#[derive(Clone, Copy)]
+struct CloseCurveOptions {
+    close_wide_gaps_with_line: bool,
+    tolerance: Real,
+}
+
+fn parse_close_curve_arguments(
+    arguments: &[&str],
+    default_tolerance: Real,
+) -> Result<CloseCurveOptions, CommandError> {
+    let mut options = CloseCurveOptions {
+        close_wide_gaps_with_line: true,
+        tolerance: default_tolerance,
+    };
+    let mut wide_gap_seen = false;
+    let mut tolerance_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(CLOSE_CRV_USAGE))?;
+            (argument, *value, 2)
+        };
+        if name.eq_ignore_ascii_case("CloseWideGapsWithLine") && !wide_gap_seen {
+            options.close_wide_gaps_with_line =
+                parse_yes_no(value).ok_or(CommandError::Usage(CLOSE_CRV_USAGE))?;
+            wide_gap_seen = true;
+        } else if name.eq_ignore_ascii_case("Tolerance") && !tolerance_seen {
+            options.tolerance = parse_finite_real(value)?;
+            if options.tolerance < 0.0 {
+                return Err(GeometryError::InvalidCurveClosureTolerance.into());
+            }
+            tolerance_seen = true;
+        } else {
+            return Err(CommandError::Usage(CLOSE_CRV_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
+fn parse_yes_no(value: &str) -> Option<bool> {
+    let value = value.trim_start_matches('_');
+    if value.eq_ignore_ascii_case("yes") {
+        Some(true)
+    } else if value.eq_ignore_ascii_case("no") {
+        Some(false)
+    } else {
+        None
+    }
 }
 
 struct FlipCommand;
@@ -2054,6 +2254,16 @@ pub enum CommandError {
     #[error("Flip supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedFlipGeometry,
 
+    #[error(
+        "CrvStart and CrvEnd support selected lines, analytic curves, polylines, and NURBS curves only"
+    )]
+    UnsupportedCurveEndpointGeometry,
+
+    #[error(
+        "CloseCrv currently closes lines and polylines only; open arcs and NURBS curves require polycurve support"
+    )]
+    UnsupportedCloseCurveGeometry,
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -2109,7 +2319,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, ControlPointCurve, Copy, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -2408,6 +2618,209 @@ mod tests {
         assert!(registry.execute(&mut document, "Divide 0").is_err());
         assert!(registry.execute(&mut document, "Divide Length -1").is_err());
         assert_eq!(document.objects().len(), object_count);
+    }
+
+    #[test]
+    fn marks_curve_starts_and_ends_with_attribute_preserving_points() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Markers")
+            .unwrap();
+        let source_layer = document.current_layer_id();
+        registry.execute(&mut document, "Line 1,2,3 7,5,3").unwrap();
+        registry.execute(&mut document, "Circle 10,2,3 4").unwrap();
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let expected_starts = source_ids
+            .iter()
+            .map(|id| {
+                geometry_curve_ref(document.object(*id).unwrap().geometry())
+                    .unwrap()
+                    .start_point()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let expected_ends = source_ids
+            .iter()
+            .map(|id| {
+                geometry_curve_ref(document.object(*id).unwrap().geometry())
+                    .unwrap()
+                    .end_point()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "CrvStart").unwrap(),
+            "Added 2 point(s) at curve starts"
+        );
+        let start_points = document
+            .selected_objects()
+            .map(|object| {
+                assert_eq!(object.attributes().layer_id(), source_layer);
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!("expected a start marker")
+                };
+                *point
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(start_points.len(), 2);
+        assert!(
+            expected_starts
+                .iter()
+                .all(|expected| start_points.contains(expected))
+        );
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.undo_label(), Some("CrvStart"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        for id in &source_ids {
+            document.select_object(*id, SelectionMode::Add).unwrap();
+        }
+        assert_eq!(
+            registry.execute(&mut document, "CrvEnd").unwrap(),
+            "Added 2 point(s) at curve ends"
+        );
+        let end_points = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected an end marker"),
+            })
+            .collect::<Vec<_>>();
+        assert!(
+            expected_ends
+                .iter()
+                .all(|expected| end_points.contains(expected))
+        );
+        assert_eq!(expected_starts[1], expected_ends[1]);
+
+        registry.execute(&mut document, "Point 99,99").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let object_count = document.objects().len();
+        assert!(matches!(
+            registry.execute(&mut document, "CrvStart"),
+            Err(CommandError::UnsupportedCurveEndpointGeometry)
+        ));
+        assert_eq!(document.objects().len(), object_count);
+    }
+
+    #[test]
+    fn closes_lines_without_changing_identity_attributes_or_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Boundary")
+            .unwrap();
+        let layer_id = document.current_layer_id();
+        registry.execute(&mut document, "Line 0,0 4,0").unwrap();
+        let id = document.objects().next().unwrap().id();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Group Loop").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "CloseCrv").unwrap(),
+            "Closed 1 of 1 selected curve(s): 1 with a line, 0 by moving an endpoint; 0 unchanged"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.attributes().layer_id(), layer_id);
+        let Geometry::Polyline(closed) = object.geometry() else {
+            panic!("expected the line to become a closed polyline")
+        };
+        assert_eq!(
+            closed.vertices(),
+            &[
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("Loop")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("CloseCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Line(_)
+        ));
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Polyline(polyline) if polyline.is_closed()
+        ));
+    }
+
+    #[test]
+    fn closes_near_polyline_endpoints_and_respects_wide_gap_policy_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Polyline 0,0 2,0 2,2 0,0.0000000005")
+            .unwrap();
+        let id = document.objects().next().unwrap().id();
+        registry.execute(&mut document, "SelAll").unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "CloseCrv CloseWideGapsWithLine=No Tolerance=0.000000001",
+                )
+                .unwrap(),
+            "Closed 1 of 1 selected curve(s): 0 with a line, 1 by moving an endpoint; 0 unchanged"
+        );
+        let Geometry::Polyline(closed) = document.object(id).unwrap().geometry() else {
+            panic!("expected a closed polyline")
+        };
+        assert!(closed.is_closed());
+        assert_eq!(closed.segment_count(), 3);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "CloseCrv CloseWideGapsWithLine No Tolerance 0.0000000001",
+                )
+                .unwrap(),
+            "Closed 0 of 1 selected curve(s): 0 with a line, 0 by moving an endpoint; 1 unchanged"
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Polyline(polyline) if !polyline.is_closed()
+        ));
+
+        registry.execute(&mut document, "Arc 1,0 0,1 -1,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "CloseCrv"),
+            Err(CommandError::UnsupportedCloseCurveGeometry)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert!(
+            registry
+                .execute(&mut document, "CloseCrv Tolerance=-1")
+                .is_err()
+        );
     }
 
     #[test]

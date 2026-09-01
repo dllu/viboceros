@@ -16,6 +16,15 @@ pub struct JoinedPolyline3 {
     source_indices: Vec<usize>,
 }
 
+/// How an attempted polyline closure was resolved.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum PolylineClosure {
+    AlreadyClosed,
+    EndpointMoved,
+    SegmentAdded,
+    GapTooWide,
+}
+
 impl JoinedPolyline3 {
     #[inline]
     pub const fn polyline(&self) -> &Polyline3 {
@@ -94,6 +103,52 @@ impl Polyline3 {
     #[inline]
     pub fn is_closed(&self) -> bool {
         self.vertices.first() == self.vertices.last()
+    }
+
+    /// Closes this polyline using Rhino's `CloseCrv` rules.
+    ///
+    /// An endpoint gap within `closure_tolerance` is removed by replacing the
+    /// final vertex with the first. A zero closure tolerance forces that
+    /// endpoint move for every open polyline. Wider gaps either gain a final
+    /// straight segment or remain open according to
+    /// `close_wide_gaps_with_line`.
+    pub fn close(
+        &self,
+        closure_tolerance: Real,
+        close_wide_gaps_with_line: bool,
+        validation_tolerance: Tolerance,
+    ) -> Result<(Self, PolylineClosure), GeometryError> {
+        if !closure_tolerance.is_finite() || closure_tolerance < 0.0 {
+            return Err(GeometryError::InvalidCurveClosureTolerance);
+        }
+        if self.is_closed() {
+            return Ok((self.clone(), PolylineClosure::AlreadyClosed));
+        }
+
+        let first = self.vertices[0];
+        let last = *self
+            .vertices
+            .last()
+            .expect("a validated polyline has vertices");
+        let gap = first.distance_to(last)?;
+        let move_endpoint = closure_tolerance == 0.0 || gap <= closure_tolerance;
+        if move_endpoint {
+            let mut vertices = self.vertices.clone();
+            *vertices.last_mut().expect("a polyline has vertices") = first;
+            return Ok((
+                Self::try_new(vertices, validation_tolerance)?,
+                PolylineClosure::EndpointMoved,
+            ));
+        }
+        if close_wide_gaps_with_line {
+            let mut vertices = self.vertices.clone();
+            vertices.push(first);
+            return Ok((
+                Self::try_new(vertices, validation_tolerance)?,
+                PolylineClosure::SegmentAdded,
+            ));
+        }
+        Ok((self.clone(), PolylineClosure::GapTooWide))
     }
 
     pub fn segments(&self) -> impl ExactSizeIterator<Item = LineSegment> + '_ {
@@ -653,6 +708,77 @@ mod tests {
         .unwrap();
         assert!(closed.is_closed());
         assert_eq!(closed.segment_count(), 3);
+    }
+
+    #[test]
+    fn closes_with_an_endpoint_move_or_straight_segment() {
+        let near_open = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 5.0e-10, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (snapped, outcome) = near_open.close(1.0e-9, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::EndpointMoved);
+        assert!(snapped.is_closed());
+        assert_eq!(snapped.vertices()[0], *snapped.vertices().last().unwrap());
+        assert_eq!(snapped.segment_count(), near_open.segment_count());
+
+        let wide = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 2.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (closed, outcome) = wide.close(1.0e-9, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::SegmentAdded);
+        assert!(closed.is_closed());
+        assert_eq!(closed.segment_count(), wide.segment_count() + 1);
+
+        let (still_closed, outcome) = closed.close(1.0e-9, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::AlreadyClosed);
+        assert_eq!(still_closed, closed);
+
+        let (unchanged, outcome) = wide.close(1.0e-9, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::GapTooWide);
+        assert_eq!(unchanged, wide);
+    }
+
+    #[test]
+    fn zero_closure_tolerance_forces_endpoint_move_and_invalid_values_fail() {
+        let open = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 2.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (closed, outcome) = open.close(0.0, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::EndpointMoved);
+        assert_eq!(
+            closed.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0)
+            ]
+        );
+
+        for invalid in [-1.0, Real::NAN, Real::INFINITY] {
+            assert_eq!(
+                open.close(invalid, true, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidCurveClosureTolerance)
+            );
+        }
     }
 
     #[test]

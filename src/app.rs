@@ -824,6 +824,9 @@ impl VibocerosApp {
         let mut join_clicked = false;
         let mut explode_clicked = false;
         let mut flip_clicked = false;
+        let mut close_curve_clicked = false;
+        let mut curve_start_clicked = false;
+        let mut curve_end_clicked = false;
         let mut length_clicked = false;
         let mut area_clicked = false;
         let mut move_clicked = false;
@@ -867,6 +870,18 @@ impl VibocerosApp {
                 flip_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Flip"))
                     .on_hover_text("Flip selected curve directions")
+                    .clicked();
+                close_curve_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Close"))
+                    .on_hover_text("Close selected lines and polylines")
+                    .clicked();
+                curve_start_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Start Pt"))
+                    .on_hover_text("Place points at selected curve starts")
+                    .clicked();
+                curve_end_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("End Pt"))
+                    .on_hover_text("Place points at selected curve ends")
                     .clicked();
                 length_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Length"))
@@ -937,6 +952,12 @@ impl VibocerosApp {
             self.execute_command("Explode");
         } else if flip_clicked {
             self.execute_command("Flip");
+        } else if close_curve_clicked {
+            self.execute_command("CloseCrv");
+        } else if curve_start_clicked {
+            self.execute_command("CrvStart");
+        } else if curve_end_clicked {
+            self.execute_command("CrvEnd");
         } else if length_clicked {
             self.execute_command("Length");
         } else if area_clicked {

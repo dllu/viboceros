@@ -44,6 +44,10 @@ Length
 Area
 Divide 8
 Divide Length 2.5 MarkEnds
+CrvStart
+CrvEnd
+CloseCrv
+CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 Delete
 Clear
@@ -71,6 +75,11 @@ segments. `Length` measures analytic, polyline, and NURBS curves with controlled
 accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes.
 `Divide` creates equal arc-length points on selected curves by segment count or
 requested segment length; add `MarkEnds` to include open-curve endpoints.
+`CrvStart` and `CrvEnd` place attribute-preserving point objects at the natural
+ends of every selected curve. `CloseCrv` currently closes selected lines and
+polylines: nearby ends are made identical, while wider gaps gain a straight
+segment unless `CloseWideGapsWithLine=No` is set. Open arcs and NURBS curves
+will be enabled once the document has an exact polycurve representation.
 `Flip` (aliases `Reverse` and `Rev`) reverses selected curve directions without
 changing object identities, attributes, groups, or closed-curve seams.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
