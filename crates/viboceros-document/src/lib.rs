@@ -2,12 +2,15 @@
 
 mod history;
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
 
 use thiserror::Error;
 use uuid::Uuid;
-use viboceros_geometry::{BoundingBox3, LineSegment, NurbsCurve, Point3, Tolerance, TriangleMesh};
+use viboceros_geometry::{
+    AffineTransform3, BoundingBox3, GeometryError, LineSegment, NurbsCurve, Point3, Tolerance,
+    TriangleMesh,
+};
 
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
 
@@ -72,6 +75,19 @@ impl Geometry {
             Self::NurbsCurve(curve) => curve.control_point_bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
         }
+    }
+
+    pub fn transformed(
+        &self,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Ok(match self {
+            Self::Point(point) => Self::Point(transform.transform_point(*point)?),
+            Self::Line(line) => Self::Line(line.transformed(transform, tolerance)?),
+            Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
+            Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
+        })
     }
 }
 
@@ -599,6 +615,114 @@ impl Document {
         Ok(self.selection.len())
     }
 
+    pub fn transform_objects(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transform: AffineTransform3,
+    ) -> Result<usize, DocumentError> {
+        let staged = self
+            .stage_transformed_objects(ids, transform)?
+            .into_iter()
+            .filter(|(_, before, after)| before != after)
+            .collect::<Vec<_>>();
+        if staged.is_empty() {
+            return Ok(0);
+        }
+        let transformed_count = staged.len();
+
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Transform objects")?;
+        }
+        for (index, before, after) in staged {
+            let id = before.id;
+            self.objects[index] = after.clone();
+            self.record_edit(
+                "Transform object",
+                Edit::ObjectChanged { id, before, after },
+            );
+        }
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(transformed_count)
+    }
+
+    pub fn copy_objects_transformed(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transform: AffineTransform3,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let staged = self.stage_transformed_objects(ids, transform)?;
+        if staged.is_empty() {
+            return Ok(Vec::new());
+        }
+        let originals: BTreeSet<_> = staged.iter().map(|(_, object, _)| object.id).collect();
+        let copied_groups = self
+            .groups
+            .iter()
+            .filter_map(|group| {
+                let members: Vec<_> = group
+                    .members
+                    .iter()
+                    .filter(|member| originals.contains(member))
+                    .copied()
+                    .collect();
+                (!members.is_empty()).then(|| (group.name.clone(), members))
+            })
+            .collect::<Vec<_>>();
+
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Copy objects")?;
+        }
+        let mut copied_ids = Vec::with_capacity(staged.len());
+        let mut copied_by_original = BTreeMap::new();
+        for (_, original, transformed) in staged {
+            let id = ObjectId::new();
+            let index = self.objects.len();
+            self.objects.push(Object {
+                id,
+                geometry: transformed.geometry,
+                attributes: original.attributes,
+            });
+            self.record_edit(
+                "Copy object",
+                Edit::ObjectInserted {
+                    index,
+                    id,
+                    stored: None,
+                },
+            );
+            copied_by_original.insert(original.id, id);
+            copied_ids.push(id);
+        }
+        for (name, original_members) in copied_groups {
+            let members = original_members
+                .into_iter()
+                .map(|member| copied_by_original[&member])
+                .collect();
+            let name = name.map(|name| self.next_group_copy_name(&name));
+            let id = GroupId::new();
+            let index = self.groups.len();
+            self.groups.push(Group { id, name, members });
+            self.record_edit(
+                "Copy group",
+                Edit::GroupInserted {
+                    index,
+                    id,
+                    stored: None,
+                },
+            );
+        }
+        self.selection = copied_ids.iter().copied().collect();
+        self.prune_selection();
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(copied_ids)
+    }
+
     pub fn add_geometry(&mut self, geometry: Geometry) -> Result<ObjectId, DocumentError> {
         self.add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(self.current_layer))
     }
@@ -838,6 +962,56 @@ impl Document {
         connected
     }
 
+    fn stage_transformed_objects(
+        &self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transform: AffineTransform3,
+    ) -> Result<Vec<(usize, Object, Object)>, DocumentError> {
+        let ids: BTreeSet<_> = ids.into_iter().collect();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+
+        let mut staged = Vec::with_capacity(ids.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            if !ids.contains(&object.id) {
+                continue;
+            }
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            let mut transformed = object.clone();
+            transformed.geometry = object.geometry.transformed(transform, self.tolerance)?;
+            staged.push((index, object.clone(), transformed));
+        }
+        Ok(staged)
+    }
+
+    fn next_group_copy_name(&self, original: &str) -> String {
+        let root = format!("{original} copy");
+        if self.group_by_name(&root).is_none() {
+            return root;
+        }
+        for suffix in 2_u64..=u64::MAX {
+            let candidate = format!("{root} {suffix}");
+            if self.group_by_name(&candidate).is_none() {
+                return candidate;
+            }
+        }
+        loop {
+            let candidate = format!("{root} {}", GroupId::new());
+            if self.group_by_name(&candidate).is_none() {
+                return candidate;
+            }
+        }
+    }
+
     fn prune_selection(&mut self) {
         let selection = std::mem::take(&mut self.selection);
         self.selection = selection
@@ -917,6 +1091,9 @@ pub enum DocumentError {
     #[error("object {0} is hidden or locked and cannot be selected")]
     ObjectNotSelectable(ObjectId),
 
+    #[error("object {0} is locked and cannot be edited")]
+    ObjectLocked(ObjectId),
+
     #[error("a group must contain at least one object")]
     EmptyGroup,
 
@@ -937,6 +1114,9 @@ pub enum DocumentError {
 
     #[error("document history invariant failed: {0}")]
     HistoryInvariant(&'static str),
+
+    #[error(transparent)]
+    Geometry(#[from] GeometryError),
 }
 
 #[cfg(test)]
@@ -1176,6 +1356,191 @@ mod tests {
         assert!(document.is_selected(first));
         assert_eq!(document.clear_selection(), 1);
         assert_eq!(document.clear_selection(), 0);
+    }
+
+    #[test]
+    fn object_transforms_are_atomic_identity_preserving_and_reversible() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        let transform = AffineTransform3::from_translation(
+            viboceros_geometry::Vector3::try_new(10.0, -2.0, 4.0).unwrap(),
+        );
+        assert_eq!(
+            document
+                .transform_objects([second, first, first], transform)
+                .unwrap(),
+            2
+        );
+        assert_eq!(document.undo_label(), Some("Transform objects"));
+        assert!(document.is_selected(first));
+        assert!(matches!(
+            document.object(first).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(11.0, 0.0, 7.0).unwrap()
+        ));
+
+        document.undo().unwrap();
+        assert!(matches!(
+            document.object(first).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(1.0, 2.0, 3.0).unwrap()
+        ));
+        assert_eq!(document.object(first).unwrap().id(), first);
+        assert_eq!(document.object(second).unwrap().id(), second);
+        document.redo().unwrap();
+        assert!(matches!(
+            document.object(second).unwrap().geometry(),
+            Geometry::Line(line)
+                if line.start() == Point3::try_new(10.0, -2.0, 4.0).unwrap()
+                    && line.end() == Point3::try_new(12.0, -2.0, 4.0).unwrap()
+        ));
+
+        let history_label = document.undo_label().map(str::to_owned);
+        assert_eq!(
+            document
+                .transform_objects([first, second], AffineTransform3::identity())
+                .unwrap(),
+            0
+        );
+        assert_eq!(document.undo_label(), history_label.as_deref());
+
+        document.begin_transaction("Two transforms").unwrap();
+        document
+            .transform_objects(
+                [first],
+                AffineTransform3::from_translation(
+                    viboceros_geometry::Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                ),
+            )
+            .unwrap();
+        document
+            .transform_objects(
+                [first],
+                AffineTransform3::from_translation(
+                    viboceros_geometry::Vector3::try_new(2.0, 0.0, 0.0).unwrap(),
+                ),
+            )
+            .unwrap();
+        document.commit_transaction().unwrap();
+        assert!(matches!(
+            document.object(first).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(14.0, 0.0, 7.0).unwrap()
+        ));
+        document.undo().unwrap();
+        assert!(matches!(
+            document.object(first).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(11.0, 0.0, 7.0).unwrap()
+        ));
+        document.redo().unwrap();
+        assert!(matches!(
+            document.object(first).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(14.0, 0.0, 7.0).unwrap()
+        ));
+    }
+
+    #[test]
+    fn copying_objects_preserves_layers_and_recreates_group_topology() {
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Parts", ColorRgb::new(12, 34, 56))
+            .unwrap();
+        document.set_current_layer(layer).unwrap();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        let copies = document
+            .copy_objects_transformed(
+                document.selected_object_ids().collect::<Vec<_>>(),
+                AffineTransform3::from_translation(
+                    viboceros_geometry::Vector3::try_new(0.0, 5.0, 0.0).unwrap(),
+                ),
+            )
+            .unwrap();
+
+        assert_eq!(copies.len(), 2);
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.groups().len(), 2);
+        assert_eq!(
+            document.group_by_name("Pair copy").unwrap().members().len(),
+            2
+        );
+        assert!(copies.iter().all(|id| document.is_selected(*id)));
+        assert!(!document.is_selected(first));
+        for copy in &copies {
+            assert_eq!(
+                document.object(*copy).unwrap().attributes().layer_id(),
+                layer
+            );
+        }
+        let copied_points = copies
+            .iter()
+            .map(|id| match document.object(*id).unwrap().geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected copied points"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            copied_points,
+            vec![
+                Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 5.0, 0.0).unwrap(),
+            ]
+        );
+
+        document.undo().unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.selected_object_count(), 0);
+        document.redo().unwrap();
+        assert!(copies.iter().all(|id| document.object(*id).is_some()));
+        assert_eq!(document.groups().len(), 2);
+    }
+
+    #[test]
+    fn failed_transform_staging_leaves_geometry_history_and_selection_unchanged() {
+        let mut document = Document::default();
+        let object = document
+            .add_geometry(Geometry::Point(
+                Point3::try_new(viboceros_geometry::Real::MAX, 0.0, 0.0).unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_object(object, SelectionMode::Replace)
+            .unwrap();
+        let history_label = document.undo_label().map(str::to_owned);
+        let transform = AffineTransform3::from_translation(
+            viboceros_geometry::Vector3::try_new(viboceros_geometry::Real::MAX, 0.0, 0.0).unwrap(),
+        );
+
+        assert!(document.transform_objects([object], transform).is_err());
+        assert!(matches!(
+            document.object(object).unwrap().geometry(),
+            Geometry::Point(point) if point.x() == viboceros_geometry::Real::MAX
+        ));
+        assert!(document.is_selected(object));
+        assert_eq!(document.undo_label(), history_label.as_deref());
     }
 
     #[test]

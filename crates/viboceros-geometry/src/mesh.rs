@@ -1,4 +1,4 @@
-use crate::{BoundingBox3, GeometryError, Point3, Tolerance, UnitVector3};
+use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Tolerance, UnitVector3};
 
 /// An indexed, oriented triangle mesh with validated finite vertices and
 /// non-degenerate faces.
@@ -103,6 +103,19 @@ impl TriangleMesh {
         BoundingBox3::from_points(self.vertices.iter().copied())
             .expect("a validated mesh has triangle vertices")
     }
+
+    pub fn transformed(
+        &self,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let vertices = self
+            .vertices
+            .iter()
+            .map(|point| transform.transform_point(*point))
+            .collect::<Result<_, _>>()?;
+        Self::try_new(vertices, self.triangles.clone(), tolerance)
+    }
 }
 
 #[cfg(test)]
@@ -157,5 +170,34 @@ mod tests {
         .unwrap();
 
         assert_eq!(mesh.face_normal(0).unwrap().z(), 1.0);
+    }
+
+    #[test]
+    fn transforms_vertices_and_rejects_collapsed_faces() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let moved = mesh
+            .transformed(
+                AffineTransform3::from_translation(crate::Vector3::try_new(2.0, 3.0, 4.0).unwrap()),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(moved.vertices()[0], point(2.0, 3.0, 4.0));
+        assert_eq!(moved.vertices()[2], point(2.0, 4.0, 4.0));
+
+        let collapsed = AffineTransform3::try_new(
+            [[1.0, 0.0, 0.0], [0.0; 3], [0.0; 3]],
+            crate::Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+        )
+        .unwrap();
+        assert!(mesh.transformed(collapsed, Tolerance::DEFAULT).is_err());
     }
 }

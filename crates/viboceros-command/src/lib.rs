@@ -4,7 +4,9 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId};
-use viboceros_geometry::{GeometryError, LineSegment, NurbsCurve, Point3, Real, TriangleMesh};
+use viboceros_geometry::{
+    AffineTransform3, GeometryError, LineSegment, NurbsCurve, Point3, Real, TriangleMesh,
+};
 use viboceros_io::{StlError, StlFormat, read_stl_file, write_stl_file};
 
 pub trait Command: Send + Sync {
@@ -60,6 +62,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(DeleteCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MoveCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CopyCommand)
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -465,6 +473,55 @@ impl Command for DeleteCommand {
     }
 }
 
+struct MoveCommand;
+
+impl Command for MoveCommand {
+    fn name(&self) -> &'static str {
+        "Move"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["M"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected: Vec<_> = document.selected_object_ids().collect();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let offset = parse_translation(arguments, "Move from to")?;
+        let count =
+            document.transform_objects(selected, AffineTransform3::from_translation(offset))?;
+        Ok(format!(
+            "Moved {count} object(s) by {}",
+            format_vector(offset)
+        ))
+    }
+}
+
+struct CopyCommand;
+
+impl Command for CopyCommand {
+    fn name(&self) -> &'static str {
+        "Copy"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected: Vec<_> = document.selected_object_ids().collect();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let offset = parse_translation(arguments, "Copy from to")?;
+        let copies = document
+            .copy_objects_transformed(selected, AffineTransform3::from_translation(offset))?;
+        Ok(format!(
+            "Copied {} object(s) by {}",
+            copies.len(),
+            format_vector(offset)
+        ))
+    }
+}
+
 fn create_current_layer(
     document: &mut Document,
     name_arguments: &[&str],
@@ -503,6 +560,20 @@ fn parse_color(value: &str) -> Result<ColorRgb, CommandError> {
             .map_err(|_| CommandError::InvalidColor(value.to_owned()))?;
     }
     Ok(ColorRgb::new(parsed[0], parsed[1], parsed[2]))
+}
+
+fn parse_translation(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<viboceros_geometry::Vector3, CommandError> {
+    let (from, consumed) = parse_point(arguments)?;
+    let (to, to_consumed) = parse_point(&arguments[consumed..])?;
+    require_consumed(arguments, consumed + to_consumed, usage)?;
+    Ok(from.vector_to(to)?)
+}
+
+fn format_vector(vector: viboceros_geometry::Vector3) -> String {
+    format!("{:.6},{:.6},{:.6}", vector.x(), vector.y(), vector.z())
 }
 
 struct ClearCommand;
@@ -748,6 +819,9 @@ pub enum CommandError {
     #[error("no group named '{0}' was found")]
     NamedGroupNotFound(String),
 
+    #[error("no objects are selected")]
+    NoObjectsSelected,
+
     #[error("the document contains no visible triangle meshes to export")]
     NoMeshToExport,
 
@@ -797,7 +871,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Delete, ExportStl, Group, ImportStl, Invert, Layer, Line, Point, Redo, SelAll, SelNone, Undo, Ungroup"
+            "Commands: Clear, ControlPointCurve, Copy, Delete, ExportStl, Group, ImportStl, Invert, Layer, Line, Move, Point, Redo, SelAll, SelNone, Undo, Ungroup"
         );
     }
 
@@ -1019,6 +1093,47 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.groups().len(), 1);
+    }
+
+    #[test]
+    fn move_and_copy_transform_the_selection_as_atomic_commands() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(registry.execute(&mut document, "Move 0,0 1,1").is_err());
+        registry.execute(&mut document, "Point 1,2,3").unwrap();
+        let original = document.objects().next().unwrap().id();
+        document
+            .select_object(original, SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "Move 0,0,0 4,-2,1")
+            .unwrap();
+        assert_eq!(document.undo_label(), Some("Move"));
+        assert!(matches!(
+            document.object(original).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(5.0, 0.0, 4.0).unwrap()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(matches!(
+            document.object(original).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(1.0, 2.0, 3.0).unwrap()
+        ));
+        registry.execute(&mut document, "Redo").unwrap();
+
+        registry.execute(&mut document, "Copy 5,0,4 8,1,4").unwrap();
+        assert_eq!(document.undo_label(), Some("Copy"));
+        assert_eq!(document.objects().len(), 2);
+        assert!(!document.is_selected(original));
+        let copy = document.selected_object_ids().next().unwrap();
+        assert_ne!(copy, original);
+        assert!(matches!(
+            document.object(copy).unwrap().geometry(),
+            Geometry::Point(point) if *point == Point3::try_new(8.0, 1.0, 4.0).unwrap()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.object(original).is_some());
     }
 
     struct MutateThenFailCommand;

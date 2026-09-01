@@ -1,6 +1,6 @@
 use std::ops::RangeInclusive;
 
-use crate::{BoundingBox3, GeometryError, Point3, Real, Vector3, require_finite};
+use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Vector3, require_finite};
 
 /// A Euclidean control point paired with a strictly positive rational weight.
 ///
@@ -233,6 +233,20 @@ impl NurbsCurve {
     pub fn derivative_at(&self, parameter: Real) -> Result<Vector3, GeometryError> {
         self.evaluate_with_derivative(parameter)
             .map(|(_, derivative)| derivative)
+    }
+
+    pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
+        let control_points = self
+            .control_points
+            .iter()
+            .map(|control_point| {
+                Ok(WeightedPoint3 {
+                    point: transform.transform_point(control_point.point)?,
+                    weight: control_point.weight,
+                })
+            })
+            .collect::<Result<_, GeometryError>>()?;
+        Self::try_new_rational(self.degree, control_points, self.knots.clone())
     }
 
     fn checked_span(&self, parameter: Real) -> Result<usize, GeometryError> {
@@ -622,6 +636,42 @@ mod tests {
         assert_point_near(
             ordinary.evaluate(0.37).unwrap(),
             huge.evaluate(0.37).unwrap(),
+        );
+    }
+
+    #[test]
+    fn affine_transform_preserves_knots_weights_and_evaluation() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 2.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(3.0, 0.0), 2.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let transform = AffineTransform3::try_new(
+            [[2.0, -1.0, 0.0], [0.5, 3.0, 0.0], [0.0, 0.0, 1.0]],
+            Vector3::try_new(4.0, -2.0, 7.0).unwrap(),
+        )
+        .unwrap();
+        let transformed = curve.transformed(transform).unwrap();
+
+        assert_eq!(transformed.knots(), curve.knots());
+        assert_eq!(
+            transformed
+                .control_points()
+                .iter()
+                .map(|control| control.weight())
+                .collect::<Vec<_>>(),
+            vec![1.0, 0.5, 2.0]
+        );
+        assert_point_near(
+            transformed.evaluate(0.37).unwrap(),
+            transform
+                .transform_point(curve.evaluate(0.37).unwrap())
+                .unwrap(),
         );
     }
 

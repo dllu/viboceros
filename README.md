@@ -20,6 +20,8 @@ Layer Show Construction
 Layer Current Default
 SelAll
 Invert
+Move 0,0,0 5,0,0
+Copy 5,0,0 5,5,0
 Group Assembly
 Group All Everything
 Ungroup
@@ -35,8 +37,9 @@ Help
 ```
 
 Enter `Point` or `Line` without coordinates to pick points in the viewport.
-Osnap captures visible Point, End, and Mid features; SmartTrack captures
-horizontal and vertical alignment from the first line point. Drag with the
+With objects selected, enter `Move` or `Copy` to pick a base and destination
+point. Osnap captures visible Point, End, and Mid features; SmartTrack captures
+horizontal and vertical alignment from the first picked point. Drag with the
 middle mouse button to pan while a drafting command is active. Outside a
 drafting command, click geometry to select its connected group, Shift-click to
 add, and Ctrl-click or Command-click to toggle. Click empty space or press Esc

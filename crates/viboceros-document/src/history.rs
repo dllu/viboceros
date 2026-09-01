@@ -36,6 +36,11 @@ pub(super) enum Edit {
         id: ObjectId,
         stored: Option<Object>,
     },
+    ObjectChanged {
+        id: ObjectId,
+        before: Object,
+        after: Object,
+    },
     LayerInserted {
         index: usize,
         id: LayerId,
@@ -87,6 +92,9 @@ impl Edit {
                     "removed object was not stored",
                 ))?;
                 insert_at(&mut document.objects, *index, object)?;
+            }
+            Self::ObjectChanged { id, before, after } => {
+                replace_object(document, *id, after, before)?;
             }
             Self::LayerInserted { index, id, stored } => {
                 ensure_empty(stored, "inserted layer was already stored")?;
@@ -154,6 +162,9 @@ impl Edit {
             Self::ObjectRemoved { index, id, stored } => {
                 ensure_empty(stored, "removed object was already stored")?;
                 *stored = Some(remove_object(document, *index, *id)?);
+            }
+            Self::ObjectChanged { id, before, after } => {
+                replace_object(document, *id, before, after)?;
             }
             Self::LayerInserted { index, stored, .. } => {
                 let layer = stored.take().ok_or(DocumentError::HistoryInvariant(
@@ -246,6 +257,33 @@ fn remove_object(
         ));
     }
     Ok(document.objects.remove(index))
+}
+
+fn replace_object(
+    document: &mut Document,
+    id: ObjectId,
+    expected: &Object,
+    replacement: &Object,
+) -> Result<(), DocumentError> {
+    if expected.id != id || replacement.id != id {
+        return Err(DocumentError::HistoryInvariant(
+            "changed object identity did not match",
+        ));
+    }
+    let object = document
+        .objects
+        .iter_mut()
+        .find(|object| object.id == id)
+        .ok_or(DocumentError::HistoryInvariant(
+            "changed object was missing",
+        ))?;
+    if object != expected {
+        return Err(DocumentError::HistoryInvariant(
+            "changed object state did not match",
+        ));
+    }
+    *object = replacement.clone();
+    Ok(())
 }
 
 fn remove_layer(

@@ -34,6 +34,8 @@ enum SidebarAction {
 enum InteractiveCommand {
     Point,
     Line { start: Option<Point3> },
+    Move { start: Option<Point3> },
+    Copy { start: Option<Point3> },
 }
 
 impl InteractiveCommand {
@@ -41,6 +43,8 @@ impl InteractiveCommand {
         match self {
             Self::Point => "Point",
             Self::Line { .. } => "Line",
+            Self::Move { .. } => "Move",
+            Self::Copy { .. } => "Copy",
         }
     }
 
@@ -53,13 +57,28 @@ impl InteractiveCommand {
             Self::Line { start: Some(_) } => {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
+            Self::Move { start: None } => {
+                "Move: pick the base point in the viewport (Esc to cancel)"
+            }
+            Self::Move { start: Some(_) } => {
+                "Move: pick the destination point in the viewport (Esc to cancel)"
+            }
+            Self::Copy { start: None } => {
+                "Copy: pick the base point in the viewport (Esc to cancel)"
+            }
+            Self::Copy { start: Some(_) } => {
+                "Copy: pick the destination point in the viewport (Esc to cancel)"
+            }
         }
     }
 
     const fn anchor(self) -> Option<Point3> {
         match self {
-            Self::Point | Self::Line { start: None } => None,
-            Self::Line { start } => start,
+            Self::Point
+            | Self::Line { start: None }
+            | Self::Move { start: None }
+            | Self::Copy { start: None } => None,
+            Self::Line { start } | Self::Move { start } | Self::Copy { start } => start,
         }
     }
 }
@@ -137,11 +156,21 @@ impl VibocerosApp {
         {
             "point" | "pt" => InteractiveCommand::Point,
             "line" | "l" => InteractiveCommand::Line { start: None },
+            "move" | "m" => InteractiveCommand::Move { start: None },
+            "copy" => InteractiveCommand::Copy { start: None },
             _ => return false,
         };
 
         self.cancel_interactive_command(true);
         self.push_log(format!("> {input}"));
+        if matches!(
+            command,
+            InteractiveCommand::Move { .. } | InteractiveCommand::Copy { .. }
+        ) && self.document.selected_object_count() == 0
+        {
+            self.push_log("Error: no objects are selected".to_owned());
+            return true;
+        }
         self.push_log(command.prompt().to_owned());
         self.active_command = Some(command);
         true
@@ -185,6 +214,40 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::Move { start: None } => {
+                self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
+                self.push_log(format!("Base: {}", format_model_point(point)));
+                self.push_log(
+                    InteractiveCommand::Move { start: Some(point) }
+                        .prompt()
+                        .to_owned(),
+                );
+            }
+            InteractiveCommand::Copy { start: None } => {
+                self.active_command = Some(InteractiveCommand::Copy { start: Some(point) });
+                self.push_log(format!("Base: {}", format_model_point(point)));
+                self.push_log(
+                    InteractiveCommand::Copy { start: Some(point) }
+                        .prompt()
+                        .to_owned(),
+                );
+            }
+            InteractiveCommand::Move { start: Some(start) } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Move {} {}",
+                    format_model_point(start),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Copy { start: Some(start) } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Copy {} {}",
+                    format_model_point(start),
+                    format_model_point(point)
+                ));
+            }
         }
     }
 
@@ -220,9 +283,11 @@ impl VibocerosApp {
         let mut select_all_clicked = false;
         let mut select_none_clicked = false;
         let mut delete_clicked = false;
+        let mut move_clicked = false;
+        let mut copy_clicked = false;
         let selected = self.document.selected_object_count();
         egui::Panel::top("toolbar").show(root, |ui| {
-            ui.horizontal(|ui| {
+            ui.horizontal_wrapped(|ui| {
                 ui.heading("Viboceros");
                 ui.separator();
                 undo_clicked = ui
@@ -244,6 +309,14 @@ impl VibocerosApp {
                 delete_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Delete"))
                     .on_hover_text("Delete selected objects")
+                    .clicked();
+                move_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Move"))
+                    .on_hover_text("Move selected objects using two viewport points")
+                    .clicked();
+                copy_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Copy"))
+                    .on_hover_text("Copy selected objects using two viewport points")
                     .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
@@ -280,6 +353,10 @@ impl VibocerosApp {
             self.execute_command("SelNone");
         } else if delete_clicked {
             self.execute_command("Delete");
+        } else if move_clicked {
+            self.try_start_interactive_command("Move");
+        } else if copy_clicked {
+            self.try_start_interactive_command("Copy");
         }
     }
 
@@ -593,6 +670,54 @@ mod tests {
             app.document.objects().next().unwrap().geometry(),
             Geometry::Point(point) if *point == Point3::try_new(7.0, 8.0, 9.0).unwrap()
         ));
+    }
+
+    #[test]
+    fn interactive_move_and_copy_use_the_selected_objects() {
+        let mut app = test_app();
+        let original = app
+            .document
+            .add_geometry(Geometry::Point(point(1.0, 2.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_object(original, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("Move"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Move {
+                start: Some(point(0.0, 0.0, 0.0))
+            })
+        );
+        app.accept_drafting_point(point(3.0, -1.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.undo_label(), Some("Move"));
+        assert!(matches!(
+            app.document.object(original).unwrap().geometry(),
+            Geometry::Point(position) if *position == point(4.0, 1.0, 0.0)
+        ));
+
+        assert!(app.try_start_interactive_command("Copy"));
+        app.accept_drafting_point(point(4.0, 1.0, 0.0));
+        app.accept_drafting_point(point(6.0, 4.0, 0.0));
+        assert_eq!(app.document.undo_label(), Some("Copy"));
+        assert_eq!(app.document.objects().len(), 2);
+        let copy = app.document.selected_object_ids().next().unwrap();
+        assert_ne!(copy, original);
+        assert!(matches!(
+            app.document.object(copy).unwrap().geometry(),
+            Geometry::Point(position) if *position == point(6.0, 4.0, 0.0)
+        ));
+    }
+
+    #[test]
+    fn interactive_transforms_require_a_selection() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("M"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
     }
 
     #[test]

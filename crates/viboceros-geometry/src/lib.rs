@@ -12,6 +12,7 @@ mod nurbs;
 mod plane;
 mod point;
 mod tolerance;
+mod transform;
 mod vector;
 
 pub use bounds::BoundingBox3;
@@ -22,6 +23,7 @@ pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
 pub use tolerance::Tolerance;
+pub use transform::AffineTransform3;
 pub use vector::{UnitVector3, Vector3};
 
 /// Scalar type used throughout the geometry kernel.
