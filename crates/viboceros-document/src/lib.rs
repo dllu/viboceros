@@ -999,6 +999,50 @@ impl Document {
         })
     }
 
+    /// Adds existing objects to an existing group as one undoable edit.
+    pub fn add_group_members(
+        &mut self,
+        group_id: GroupId,
+        members: impl IntoIterator<Item = ObjectId>,
+    ) -> Result<usize, DocumentError> {
+        let group_index = self
+            .groups
+            .iter()
+            .position(|group| group.id == group_id)
+            .ok_or(DocumentError::GroupNotFound(group_id))?;
+        let members = members.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = members.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+        let additions = members
+            .into_iter()
+            .filter(|member| !self.groups[group_index].members.contains(member))
+            .collect::<Vec<_>>();
+        if additions.is_empty() {
+            return Ok(0);
+        }
+
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Add group members")?;
+        }
+        for object_id in &additions {
+            let inserted = self.groups[group_index].members.insert(*object_id);
+            debug_assert!(inserted, "new group members were filtered in advance");
+            self.record_edit(
+                "Add group member",
+                Edit::GroupMemberInserted {
+                    group_id,
+                    object_id: *object_id,
+                },
+            );
+        }
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(additions.len())
+    }
+
     pub fn remove_group(&mut self, id: GroupId) -> Result<usize, DocumentError> {
         let index = self
             .groups
@@ -1348,6 +1392,57 @@ mod tests {
         document.delete_object(object).unwrap();
         assert_eq!(document.objects().len(), 0);
         assert_eq!(document.groups().len(), 0);
+    }
+
+    #[test]
+    fn adding_group_members_is_deduplicated_and_reversible() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let group = document
+            .add_group(Some("Pair".to_owned()), [first])
+            .unwrap();
+
+        assert_eq!(
+            document.add_group_members(group, [first, second]).unwrap(),
+            1
+        );
+        assert_eq!(document.undo_label(), Some("Add group members"));
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+        assert_eq!(document.add_group_members(group, [second]).unwrap(), 0);
+        assert_eq!(document.undo_label(), Some("Add group members"));
+
+        document.undo().unwrap();
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![first]
+        );
+        document.redo().unwrap();
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+
+        let missing = ObjectId::new();
+        assert_eq!(
+            document.add_group_members(group, [missing]),
+            Err(DocumentError::ObjectNotFound(missing))
+        );
     }
 
     #[test]

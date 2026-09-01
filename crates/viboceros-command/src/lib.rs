@@ -4,7 +4,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
 use viboceros_document::{
-    ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
+    ColorRgb, Document, DocumentError, Geometry, GroupId, LayerId, ObjectAttributes, ObjectId,
+    SelectionMode,
 };
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
@@ -125,6 +126,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(UnifyMeshNormalsCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SplitDisjointMeshCommand)
             .expect("unique built-in command");
         registry
             .register(GroupCommand)
@@ -1341,6 +1345,95 @@ impl Command for UnifyMeshNormalsCommand {
     }
 }
 
+struct SplitDisjointMeshCommand;
+
+impl Command for SplitDisjointMeshCommand {
+    fn name(&self) -> &'static str {
+        "SplitDisjointMesh"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "SplitDisjointMesh")?;
+        let selected_ids = document.selected_object_ids().collect::<Vec<_>>();
+        if selected_ids.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let inputs = selected_ids
+            .into_iter()
+            .map(|id| {
+                let object = document
+                    .object(id)
+                    .expect("selected object identities belong to the document");
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedSplitDisjointMeshGeometry);
+                };
+                let group_ids = document
+                    .groups()
+                    .filter(|group| group.members().any(|member| member == id))
+                    .map(|group| group.id())
+                    .collect();
+                Ok(SplitMeshInput {
+                    id,
+                    attributes: object.attributes().clone(),
+                    group_ids,
+                    pieces: mesh.disjoint_pieces(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        let split_mesh_count = inputs.iter().filter(|input| input.pieces.len() > 1).count();
+        if split_mesh_count == 0 {
+            return Err(CommandError::NoDisjointMeshes);
+        }
+        let unchanged_mesh_count = inputs.len() - split_mesh_count;
+        let piece_count = inputs
+            .iter()
+            .filter(|input| input.pieces.len() > 1)
+            .map(|input| input.pieces.len())
+            .sum::<usize>();
+
+        let replacements = inputs
+            .iter()
+            .filter(|input| input.pieces.len() > 1)
+            .map(|input| (input.id, Geometry::Mesh(input.pieces[0].clone())))
+            .collect::<Vec<_>>();
+        let replaced = document.replace_object_geometries(replacements)?;
+        debug_assert_eq!(replaced, split_mesh_count);
+
+        let mut output_ids = Vec::with_capacity(inputs.len() + piece_count - split_mesh_count);
+        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+        for input in inputs {
+            output_ids.push(input.id);
+            if input.pieces.len() <= 1 {
+                continue;
+            }
+            for piece in input.pieces.into_iter().skip(1) {
+                let id = document.add_geometry_with_attributes(
+                    Geometry::Mesh(piece),
+                    input.attributes.clone(),
+                )?;
+                output_ids.push(id);
+                for group_id in &input.group_ids {
+                    group_additions.entry(*group_id).or_default().push(id);
+                }
+            }
+        }
+        for (group_id, additions) in group_additions {
+            document.add_group_members(group_id, additions)?;
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Split {split_mesh_count} mesh(es) into {piece_count} piece(s); {unchanged_mesh_count} mesh(es) unchanged"
+        ))
+    }
+}
+
+struct SplitMeshInput {
+    id: ObjectId,
+    attributes: ObjectAttributes,
+    group_ids: Vec<GroupId>,
+    pieces: Vec<TriangleMesh>,
+}
+
 struct GroupCommand;
 
 impl Command for GroupCommand {
@@ -2399,6 +2492,12 @@ pub enum CommandError {
     #[error("UnifyMeshNormals supports selected meshes only")]
     UnsupportedUnifyMeshNormalsGeometry,
 
+    #[error("SplitDisjointMesh supports selected meshes only")]
+    UnsupportedSplitDisjointMeshGeometry,
+
+    #[error("none of the selected meshes contains multiple edge-connected pieces")]
+    NoDisjointMeshes,
+
     #[error(
         "CrvStart and CrvEnd support selected lines, analytic curves, polylines, and NURBS curves only"
     )]
@@ -2464,7 +2563,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SrfPt, Undo, Ungroup, UnifyMeshNormals"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals"
         );
     }
 
@@ -3157,6 +3256,135 @@ mod tests {
         ));
         assert_eq!(
             document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn splits_disjoint_meshes_with_identity_attributes_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Components")
+            .unwrap();
+        let disjoint = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let connected = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(21.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(21.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let first = document
+            .add_geometry(Geometry::Mesh(disjoint.clone()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Mesh(connected.clone()))
+            .unwrap();
+        let attributes = document.object(first).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry.execute(&mut document, "Group Assembly").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "SplitDisjointMesh")
+                .unwrap(),
+            "Split 1 mesh(es) into 2 piece(s); 1 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("SplitDisjointMesh"));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.selected_object_count(), 3);
+        let third = document
+            .objects()
+            .map(|object| object.id())
+            .find(|id| *id != first && *id != second)
+            .unwrap();
+        assert_eq!(document.object(third).unwrap().attributes(), &attributes);
+        assert_eq!(
+            document
+                .group_by_name("Assembly")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second, third])
+        );
+        for id in [first, third] {
+            let Geometry::Mesh(piece) = document.object(id).unwrap().geometry() else {
+                panic!("expected split mesh piece")
+            };
+            assert_eq!(piece.triangles().len(), 1);
+            assert_eq!(piece.vertices().len(), 3);
+        }
+        assert_eq!(
+            document.object(second).unwrap().geometry(),
+            &Geometry::Mesh(connected)
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(
+            document.object(first).unwrap().geometry(),
+            &Geometry::Mesh(disjoint.clone())
+        );
+        assert_eq!(
+            document
+                .group_by_name("Assembly")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(
+            document
+                .group_by_name("Assembly")
+                .unwrap()
+                .members()
+                .count(),
+            3
+        );
+
+        let mut connected_only = Document::default();
+        let connected_id = connected_only
+            .add_geometry(Geometry::Mesh(disjoint.disjoint_pieces()[0].clone()))
+            .unwrap();
+        connected_only
+            .select_object(connected_id, SelectionMode::Replace)
+            .unwrap();
+        let history = connected_only.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut connected_only, "SplitDisjointMesh"),
+            Err(CommandError::NoDisjointMeshes)
+        ));
+        assert_eq!(connected_only.undo_label(), history.as_deref());
+
+        registry.execute(&mut connected_only, "Point 9,9").unwrap();
+        registry.execute(&mut connected_only, "SelAll").unwrap();
+        let before = connected_only.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut connected_only, "SplitDisjointMesh"),
+            Err(CommandError::UnsupportedSplitDisjointMeshGeometry)
+        ));
+        assert_eq!(
+            connected_only.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
     }

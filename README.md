@@ -60,6 +60,7 @@ CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
+SplitDisjointMesh
 Delete
 Clear
 Undo
@@ -101,6 +102,9 @@ location-welded manifold edges, including STL-style triangle soup, and rejects
 non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)
 reverses selected curve directions or every face in selected meshes without
 changing object identities, attributes, groups, or closed-curve seams.
+`SplitDisjointMesh` separates exact-location edge-connected components (a lone
+shared vertex does not connect them), retaining the first object identity and
+copying attributes and group membership to additional pieces.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is

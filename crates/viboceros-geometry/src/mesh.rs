@@ -54,12 +54,13 @@ impl MeshTopology {
     }
 }
 
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Debug, Default)]
 struct EdgeIncidence {
     count: usize,
     forward_count: usize,
     first_use: Option<EdgeUse>,
     second_use: Option<EdgeUse>,
+    additional_uses: Vec<EdgeUse>,
 }
 
 impl EdgeIncidence {
@@ -67,7 +68,7 @@ impl EdgeIncidence {
         match self.count {
             0 => self.first_use = Some(edge_use),
             1 => self.second_use = Some(edge_use),
-            _ => {}
+            _ => self.additional_uses.push(edge_use),
         }
         self.count += 1;
         self.forward_count += usize::from(edge_use.forward);
@@ -285,6 +286,66 @@ impl TriangleMesh {
         ))
     }
 
+    /// Splits the mesh into exact-location edge-connected components. A lone
+    /// shared vertex does not connect faces. Each result retains source face
+    /// order and compacts referenced raw vertices in first-use order.
+    pub fn disjoint_pieces(&self) -> Vec<Self> {
+        let data = self.topology_data();
+        let mut parents = (0..self.triangles.len()).collect::<Vec<_>>();
+        let mut ranks = vec![0_u8; self.triangles.len()];
+        for incidence in data.edges.values() {
+            let Some(first) = incidence.first_use else {
+                continue;
+            };
+            for edge_use in incidence
+                .second_use
+                .into_iter()
+                .chain(incidence.additional_uses.iter().copied())
+            {
+                union_faces(&mut parents, &mut ranks, first.face, edge_use.face);
+            }
+        }
+
+        let mut component_by_root = BTreeMap::new();
+        let mut component_faces = Vec::<Vec<usize>>::new();
+        for face in 0..self.triangles.len() {
+            let root = face_root(&mut parents, face);
+            let component_count = component_faces.len();
+            let component = *component_by_root.entry(root).or_insert_with(|| {
+                component_faces.push(Vec::new());
+                component_count
+            });
+            component_faces[component].push(face);
+        }
+
+        component_faces
+            .into_iter()
+            .map(|faces| self.piece_from_faces(&faces))
+            .collect()
+    }
+
+    fn piece_from_faces(&self, faces: &[usize]) -> Self {
+        let mut vertex_remap = vec![None; self.vertices.len()];
+        let mut vertices = Vec::new();
+        let mut triangles = Vec::with_capacity(faces.len());
+        for &face in faces {
+            let triangle = self.triangles[face].map(|source| {
+                let source = source as usize;
+                *vertex_remap[source].get_or_insert_with(|| {
+                    let target = u32::try_from(vertices.len())
+                        .expect("a mesh component cannot have more vertices than its source");
+                    vertices.push(self.vertices[source]);
+                    target
+                })
+            });
+            triangles.push(triangle);
+        }
+        Self {
+            vertices,
+            triangles,
+        }
+    }
+
     fn topology_data(&self) -> MeshTopologyData {
         let mut locations = BTreeMap::<[u64; 3], usize>::new();
         let mut topological_vertices = Vec::with_capacity(self.vertices.len());
@@ -380,6 +441,36 @@ fn canonical_coordinate_bits(coordinate: Real) -> u64 {
         0
     } else {
         coordinate.to_bits()
+    }
+}
+
+fn face_root(parents: &mut [usize], face: usize) -> usize {
+    let mut root = face;
+    while parents[root] != root {
+        root = parents[root];
+    }
+    let mut current = face;
+    while parents[current] != current {
+        let next = parents[current];
+        parents[current] = root;
+        current = next;
+    }
+    root
+}
+
+fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize, second: usize) {
+    let first_root = face_root(parents, first);
+    let second_root = face_root(parents, second);
+    if first_root == second_root {
+        return;
+    }
+    match ranks[first_root].cmp(&ranks[second_root]) {
+        std::cmp::Ordering::Less => parents[first_root] = second_root,
+        std::cmp::Ordering::Greater => parents[second_root] = first_root,
+        std::cmp::Ordering::Equal => {
+            parents[second_root] = first_root;
+            ranks[first_root] += 1;
+        }
     }
 }
 
@@ -628,6 +719,82 @@ mod tests {
             mobius.unified_face_orientations(),
             Err(GeometryError::NonOrientableMesh)
         );
+    }
+
+    #[test]
+    fn splits_edge_connected_components_and_compacts_vertices_in_source_order() {
+        let source = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(11.0, 0.0, 0.0),
+                point(10.0, 1.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [4, 5, 6], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let pieces = source.disjoint_pieces();
+        assert_eq!(pieces.len(), 2);
+        assert_eq!(
+            pieces[0].vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ]
+        );
+        assert_eq!(pieces[0].triangles(), &[[0, 1, 2], [0, 2, 3]]);
+        assert_eq!(
+            pieces[1].vertices(),
+            &[
+                point(10.0, 0.0, 0.0),
+                point(11.0, 0.0, 0.0),
+                point(10.0, 1.0, 0.0),
+            ]
+        );
+        assert_eq!(pieces[1].triangles(), &[[0, 1, 2]]);
+    }
+
+    #[test]
+    fn disjoint_pieces_require_an_edge_but_accept_exact_duplicate_edge_locations() {
+        let vertex_touch = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(-1.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 3, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let pieces = vertex_touch.disjoint_pieces();
+        assert_eq!(pieces.len(), 2);
+        assert_eq!(pieces[0].vertices()[0], pieces[1].vertices()[0]);
+
+        let duplicate_edge = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let pieces = duplicate_edge.disjoint_pieces();
+        assert_eq!(pieces.len(), 1);
+        assert_eq!(pieces[0], duplicate_edge);
     }
 
     #[test]

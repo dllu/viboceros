@@ -70,6 +70,10 @@ pub(super) enum Edit {
         group_id: GroupId,
         object_id: ObjectId,
     },
+    GroupMemberInserted {
+        group_id: GroupId,
+        object_id: ObjectId,
+    },
     CurrentLayerChanged {
         before: LayerId,
         after: LayerId,
@@ -133,6 +137,23 @@ impl Edit {
                 if !group.members.insert(*object_id) {
                     return Err(DocumentError::HistoryInvariant(
                         "restored group member already existed",
+                    ));
+                }
+            }
+            Self::GroupMemberInserted {
+                group_id,
+                object_id,
+            } => {
+                let group = document
+                    .groups
+                    .iter_mut()
+                    .find(|group| group.id == *group_id)
+                    .ok_or(DocumentError::HistoryInvariant(
+                        "group for removed inserted member was missing",
+                    ))?;
+                if !group.members.remove(object_id) {
+                    return Err(DocumentError::HistoryInvariant(
+                        "inserted group member was missing",
                     ));
                 }
             }
@@ -203,6 +224,32 @@ impl Edit {
                 if !group.members.remove(object_id) {
                     return Err(DocumentError::HistoryInvariant(
                         "removed group member was missing",
+                    ));
+                }
+            }
+            Self::GroupMemberInserted {
+                group_id,
+                object_id,
+            } => {
+                if document
+                    .objects
+                    .iter()
+                    .all(|object| object.id != *object_id)
+                {
+                    return Err(DocumentError::HistoryInvariant(
+                        "object for inserted group member was missing",
+                    ));
+                }
+                let group = document
+                    .groups
+                    .iter_mut()
+                    .find(|group| group.id == *group_id)
+                    .ok_or(DocumentError::HistoryInvariant(
+                        "group for inserted member was missing",
+                    ))?;
+                if !group.members.insert(*object_id) {
+                    return Err(DocumentError::HistoryInvariant(
+                        "inserted group member already existed",
                     ));
                 }
             }

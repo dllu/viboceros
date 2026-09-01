@@ -138,6 +138,11 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    MeshDisjointPieces {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -169,6 +174,7 @@ impl Operation {
             | Self::NurbsCurveReverse { id, .. }
             | Self::NurbsCurveTopology { id, .. }
             | Self::MeshUnifyNormals { id, .. }
+            | Self::MeshDisjointPieces { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -548,6 +554,31 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::MeshDisjointPieces {
+            vertices,
+            triangles,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let (pieces, elapsed) = measure(iterations, || Ok(black_box(&mesh).disjoint_pieces()))?;
+            (
+                json!({
+                    "disjoint_mesh_count": pieces.len(),
+                    "pieces": pieces.iter().map(|piece| json!({
+                        "triangles": piece.triangles(),
+                        "vertices": piece.vertices().iter().map(|point| point.to_array()).collect::<Vec<_>>(),
+                    })).collect::<Vec<_>>(),
+                }),
+                elapsed,
+            )
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -760,6 +791,54 @@ mod tests {
             json!({
                 "flipped_faces": 1,
                 "triangles": [[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            })
+        );
+    }
+
+    #[test]
+    fn splits_mesh_components_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshDisjointPieces {
+            id: "mesh".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [1.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [0.0, -1.0, 0.0],
+                [0.0, 1.0, 0.0],
+                [0.0, 2.0, 0.0],
+                [1.0, 2.0, 0.0],
+                [99.0, 99.0, 99.0],
+            ],
+            triangles: vec![[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "disjoint_mesh_count": 2,
+                "pieces": [
+                    {
+                        "triangles": [[0, 1, 2], [3, 4, 5]],
+                        "vertices": [
+                            [0.0, 0.0, 0.0],
+                            [1.0, 0.0, 0.0],
+                            [0.0, 1.0, 0.0],
+                            [1.0, 0.0, 0.0],
+                            [0.0, 0.0, 0.0],
+                            [0.0, -1.0, 0.0],
+                        ],
+                    },
+                    {
+                        "triangles": [[0, 1, 2]],
+                        "vertices": [
+                            [0.0, 1.0, 0.0],
+                            [0.0, 2.0, 0.0],
+                            [1.0, 2.0, 0.0],
+                        ],
+                    },
+                ],
             })
         );
     }

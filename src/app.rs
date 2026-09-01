@@ -825,6 +825,7 @@ impl VibocerosApp {
         let mut explode_clicked = false;
         let mut flip_clicked = false;
         let mut unify_mesh_normals_clicked = false;
+        let mut split_disjoint_mesh_clicked = false;
         let mut close_curve_clicked = false;
         let mut curve_start_clicked = false;
         let mut curve_end_clicked = false;
@@ -875,6 +876,10 @@ impl VibocerosApp {
                 unify_mesh_normals_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Unify Normals"))
                     .on_hover_text("Make selected mesh face windings consistent")
+                    .clicked();
+                split_disjoint_mesh_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Split Pieces"))
+                    .on_hover_text("Separate edge-disconnected parts of selected meshes")
                     .clicked();
                 close_curve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Close"))
@@ -959,6 +964,8 @@ impl VibocerosApp {
             self.execute_command("Flip");
         } else if unify_mesh_normals_clicked {
             self.execute_command("UnifyMeshNormals");
+        } else if split_disjoint_mesh_clicked {
+            self.execute_command("SplitDisjointMesh");
         } else if close_curve_clicked {
             self.execute_command("CloseCrv");
         } else if curve_start_clicked {

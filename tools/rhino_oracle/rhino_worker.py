@@ -435,6 +435,36 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_disjoint_pieces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+
+        def split_disjoint_mesh():
+            pieces = source.SplitDisjointPieces()
+            if pieces is None:
+                raise ValueError("mesh disjoint split failed")
+            try:
+                return {
+                    "disjoint_mesh_count": int(source.DisjointMeshCount),
+                    "pieces": [
+                        {
+                            "triangles": _mesh_triangles(piece),
+                            "vertices": [
+                                _xyz(piece.Vertices[index])
+                                for index in range(piece.Vertices.Count)
+                            ],
+                        }
+                        for piece in pieces
+                    ],
+                }
+            finally:
+                for piece in pieces:
+                    piece.Dispose()
+
+        try:
+            return _measure(iterations, split_disjoint_mesh)
+        finally:
+            source.Dispose()
+
     if kind == "nurbs_surface_evaluate":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
