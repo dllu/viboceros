@@ -9,6 +9,7 @@ from pathlib import Path
 from .client import (
     OracleError,
     OracleProtocolError,
+    _run_logged,
     compare_responses,
     load_request,
     posix_to_wine_path,
@@ -77,6 +78,19 @@ class OracleClientTests(unittest.TestCase):
             request.write_text("[]", encoding="utf-8")
             with self.assertRaisesRegex(OracleProtocolError, "root"):
                 load_request(request)
+
+    def test_logged_launcher_capture_preserves_diagnostics(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            completed = _run_logged(
+                ["sh", "-c", "printf standard; printf error >&2"],
+                root,
+                5.0,
+                root / "launcher.log",
+            )
+        self.assertEqual(completed.returncode, 0)
+        self.assertEqual(completed.stdout, "standarderror")
+        self.assertEqual(completed.stderr, "")
 
 
 if __name__ == "__main__":

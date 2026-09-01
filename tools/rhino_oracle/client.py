@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import math
 import os
+import signal
 import shutil
 import subprocess
 import tempfile
@@ -171,7 +172,12 @@ class OracleClient:
             ]
             existing_pids = _rhino_process_ids()
             launch_timeout = min(timeout, 60.0)
-            completed = _run(command, self.repo_root, launch_timeout)
+            completed = _run_logged(
+                command,
+                self.repo_root,
+                launch_timeout,
+                job_path / "launcher-output.log",
+            )
             if completed.returncode != 0:
                 raise OracleError(_command_failure("Rhino launcher", completed))
 
@@ -222,6 +228,7 @@ class OracleClient:
                     owned_window = _rhino_window_for_pids(owned_pids)
                 if owned_window is not None:
                     _close_rhino_window(owned_window, self.repo_root)
+                _terminate_owned_rhino_processes(owned_pids, windows_worker)
         _validate_response(response, "rhino")
         return response
 
@@ -327,6 +334,44 @@ def _run(command: Sequence[str], cwd: Path, timeout: float) -> subprocess.Comple
         raise OracleError(f"could not run {command[0]}: {error}") from error
 
 
+def _run_logged(
+    command: Sequence[str], cwd: Path, timeout: float, log_path: Path
+) -> subprocess.CompletedProcess[str]:
+    """Run a launcher without waiting for inherited output pipes to close.
+
+    Wine services can outlive the launcher and inherit its file descriptors.
+    A regular log file retains diagnostics without making ``subprocess.run``
+    wait for those descendants to close a captured pipe.
+    """
+
+    try:
+        with log_path.open("w+", encoding="utf-8") as stream:
+            completed = subprocess.run(
+                command,
+                cwd=cwd,
+                text=True,
+                stdout=stream,
+                stderr=subprocess.STDOUT,
+                timeout=timeout,
+                check=False,
+            )
+            stream.flush()
+            stream.seek(0)
+            output = stream.read()
+        return subprocess.CompletedProcess(
+            completed.args,
+            completed.returncode,
+            stdout=output,
+            stderr="",
+        )
+    except subprocess.TimeoutExpired as error:
+        raise OracleError(
+            f"command timed out after {timeout:g} seconds: {command[0]}"
+        ) from error
+    except OSError as error:
+        raise OracleError(f"could not run {command[0]}: {error}") from error
+
+
 def _rhino_process_ids(command_marker: str | None = None) -> set[int]:
     """Return matching Rhino.exe PIDs visible through procfs."""
 
@@ -393,6 +438,27 @@ def _wait_for_process_exit(pids: set[int], timeout: float) -> bool:
             return True
         time.sleep(0.05)
     return not any((Path("/proc") / str(pid)).exists() for pid in pids)
+
+
+def _terminate_owned_rhino_processes(
+    pids: set[int], command_marker: str
+) -> None:
+    """Stop only Rhino processes carrying this oracle worker path."""
+
+    targets = pids & _rhino_process_ids(command_marker)
+    for pid in targets:
+        try:
+            os.kill(pid, signal.SIGTERM)
+        except ProcessLookupError:
+            pass
+    if _wait_for_process_exit(targets, 2.0):
+        return
+    for pid in targets & _rhino_process_ids(command_marker):
+        try:
+            os.kill(pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+    _wait_for_process_exit(targets, 2.0)
 
 
 def _ui_fallback_enabled() -> bool:
