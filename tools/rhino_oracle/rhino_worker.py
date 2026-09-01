@@ -467,6 +467,13 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_volume":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        try:
+            return _measure(iterations, lambda: float(source.Volume()))
+        finally:
+            source.Dispose()
+
     if kind == "mesh_extract_duplicate_faces":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
 

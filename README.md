@@ -52,6 +52,7 @@ Join
 Explode
 Length
 Area
+Volume
 Divide 8
 Divide Length 2.5 MarkEnds
 CrvStart
@@ -88,6 +89,9 @@ connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
 segments. `Length` measures analytic, polyline, and NURBS curves with controlled
 accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes.
+`Volume` reports the accumulated signed volume of selected closed meshes;
+outward winding is positive and reversed winding is negative. The calculation
+is stabilized around each mesh bounding-box center and does not alter history.
 `Divide` creates equal arc-length points on selected curves by segment count or
 requested segment length; add `MarkEnds` to include open-curve endpoints.
 `CrvStart` and `CrvEnd` place attribute-preserving point objects at the natural

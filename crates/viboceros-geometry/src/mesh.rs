@@ -1,5 +1,6 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
+use crate::vector::product_three;
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, UnitVector3,
     require_finite,
@@ -557,6 +558,77 @@ impl TriangleMesh {
         Ok(area)
     }
 
+    /// Computes oriented mesh volume. Outward winding is positive and
+    /// reversing every face negates the result. A bounding-box-center base
+    /// point and normalized coordinates keep large translations from
+    /// introducing cancellation or intermediate overflow.
+    pub fn signed_volume(&self) -> Result<Real, GeometryError> {
+        let mut used = vec![false; self.vertices.len()];
+        for triangle in &self.triangles {
+            for vertex in triangle {
+                used[*vertex as usize] = true;
+            }
+        }
+        let base = BoundingBox3::from_points(
+            self.vertices
+                .iter()
+                .zip(&used)
+                .filter_map(|(&point, &used)| used.then_some(point)),
+        )?
+        .center()?;
+        let mut relative_vertices = vec![[0.0; 3]; self.vertices.len()];
+        let mut scale: Real = 0.0;
+        for (index, (&vertex, &used)) in self.vertices.iter().zip(&used).enumerate() {
+            if !used {
+                continue;
+            }
+            let relative = base.vector_to(vertex)?.to_array();
+            scale = relative
+                .iter()
+                .fold(scale, |current, coordinate| current.max(coordinate.abs()));
+            relative_vertices[index] = relative;
+        }
+        debug_assert!(scale > 0.0, "a validated mesh has non-coincident vertices");
+        for (relative, used) in relative_vertices.iter_mut().zip(used) {
+            if !used {
+                continue;
+            }
+            for coordinate in relative.iter_mut() {
+                *coordinate /= scale;
+            }
+        }
+
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for triangle in &self.triangles {
+            let a = relative_vertices[triangle[0] as usize];
+            let b = relative_vertices[triangle[1] as usize];
+            let c = relative_vertices[triangle[2] as usize];
+            let cross = [
+                b[1].mul_add(c[2], -b[2] * c[1]),
+                b[2].mul_add(c[0], -b[0] * c[2]),
+                b[0].mul_add(c[1], -b[1] * c[0]),
+            ];
+            let determinant = a[0].mul_add(cross[0], a[1].mul_add(cross[1], a[2] * cross[2]));
+            let next = sum + determinant;
+            if sum.abs() >= determinant.abs() {
+                correction += (sum - next) + determinant;
+            } else {
+                correction += (determinant - next) + sum;
+            }
+            sum = next;
+        }
+        let normalized_volume = (sum + correction) / 6.0;
+        require_finite([normalized_volume], "mesh volume")?;
+        if normalized_volume == 0.0 {
+            return Ok(0.0);
+        }
+        let scaled_square = product_three(normalized_volume.abs(), scale, scale, "mesh volume")?;
+        let magnitude = scaled_square * scale;
+        require_finite([magnitude], "mesh volume")?;
+        Ok(normalized_volume.signum() * magnitude)
+    }
+
     pub fn bounds(&self) -> BoundingBox3 {
         BoundingBox3::from_points(self.vertices.iter().copied())
             .expect("a validated mesh has triangle vertices")
@@ -716,6 +788,56 @@ mod tests {
         assert!(!unoriented.is_oriented());
         assert_eq!(unoriented.orientation_conflict_edge_count(), 3);
         assert!(!unoriented.is_solid());
+    }
+
+    #[test]
+    fn computes_translation_stable_oriented_volume_and_reports_overflow() {
+        let faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]];
+        let tetrahedron = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            faces.clone(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(tetrahedron.signed_volume().unwrap(), 4.0);
+        assert_eq!(tetrahedron.reversed().signed_volume().unwrap(), -4.0);
+
+        let translated = TriangleMesh::try_new(
+            vec![
+                point(1.0e9, -2.0e9, 3.0e9),
+                point(1.0e9 + 2.0, -2.0e9, 3.0e9),
+                point(1.0e9, -2.0e9 + 3.0, 3.0e9),
+                point(1.0e9, -2.0e9, 3.0e9 + 4.0),
+                point(1.0e200, -1.0e200, 1.0e200),
+            ],
+            faces.clone(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(translated.signed_volume().unwrap(), 4.0);
+
+        let overflowing = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0e110, 0.0, 0.0),
+                point(0.0, 3.0e110, 0.0),
+                point(0.0, 0.0, 4.0e110),
+            ],
+            faces,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            overflowing.signed_volume(),
+            Err(GeometryError::NonFinite {
+                context: "mesh volume"
+            })
+        );
     }
 
     #[test]

@@ -110,6 +110,9 @@ impl CommandRegistry {
             .register(AreaCommand)
             .expect("unique built-in command");
         registry
+            .register(VolumeCommand)
+            .expect("unique built-in command");
+        registry
             .register(DivideCommand)
             .expect("unique built-in command");
         registry
@@ -882,6 +885,55 @@ impl Command for AreaCommand {
             })?;
         Ok(format!(
             "Measured {count} object(s): total area {total:.12}"
+        ))
+    }
+}
+
+struct VolumeCommand;
+
+impl Command for VolumeCommand {
+    fn name(&self) -> &'static str {
+        "Volume"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Volume")?;
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for object in &selected {
+            let Geometry::Mesh(mesh) = object.geometry() else {
+                return Err(CommandError::UnsupportedVolumeGeometry);
+            };
+            if !mesh.topology().is_closed() {
+                return Err(CommandError::OpenMeshVolume);
+            }
+            let volume = mesh.signed_volume()?;
+            let next = sum + volume;
+            if sum.abs() >= volume.abs() {
+                correction += (sum - next) + volume;
+            } else {
+                correction += (volume - next) + sum;
+            }
+            sum = next;
+        }
+        let total = sum + correction;
+        if !total.is_finite() {
+            return Err(GeometryError::NonFinite {
+                context: "volume total",
+            }
+            .into());
+        }
+        Ok(format!(
+            "Measured {} closed mesh(es): total volume {total:.12}",
+            selected.len()
         ))
     }
 }
@@ -2703,6 +2755,12 @@ pub enum CommandError {
     #[error("Area supports selected circles, ellipses, closed planar polylines, and meshes only")]
     UnsupportedAreaGeometry,
 
+    #[error("Volume currently supports selected meshes only")]
+    UnsupportedVolumeGeometry,
+
+    #[error("Volume requires every selected mesh to be closed")]
+    OpenMeshVolume,
+
     #[error("Divide supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedDivideGeometry,
 
@@ -2800,7 +2858,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
         );
     }
 
@@ -2999,6 +3057,66 @@ mod tests {
             Err(CommandError::UnsupportedAreaGeometry)
         ));
         assert_eq!(document.undo_label(), Some("Point"));
+    }
+
+    #[test]
+    fn volume_measures_closed_meshes_with_signed_accumulation_without_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let vertices = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+        ];
+        let faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]];
+        let outward =
+            TriangleMesh::try_new(vertices.clone(), faces.clone(), document.tolerance()).unwrap();
+        let reversed = outward.reversed();
+        let open =
+            TriangleMesh::try_new(vertices, faces[..3].to_vec(), document.tolerance()).unwrap();
+        let outward_id = document.add_geometry(Geometry::Mesh(outward)).unwrap();
+        let reversed_id = document.add_geometry(Geometry::Mesh(reversed)).unwrap();
+        let open_id = document.add_geometry(Geometry::Mesh(open)).unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        document
+            .select_object(outward_id, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Volume").unwrap(),
+            "Measured 1 closed mesh(es): total volume 4.000000000000"
+        );
+        document
+            .select_object(reversed_id, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Volume").unwrap(),
+            "Measured 1 closed mesh(es): total volume -4.000000000000"
+        );
+        document
+            .select_object(outward_id, SelectionMode::Add)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Volume").unwrap(),
+            "Measured 2 closed mesh(es): total volume 0.000000000000"
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document
+            .select_object(open_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Volume"),
+            Err(CommandError::OpenMeshVolume)
+        ));
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        registry.execute(&mut document, "SelNone").unwrap();
+        registry.execute(&mut document, "SelPt").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Volume"),
+            Err(CommandError::UnsupportedVolumeGeometry)
+        ));
     }
 
     #[test]

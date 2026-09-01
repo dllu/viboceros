@@ -833,6 +833,7 @@ impl VibocerosApp {
         let mut curve_end_clicked = false;
         let mut length_clicked = false;
         let mut area_clicked = false;
+        let mut volume_clicked = false;
         let mut move_clicked = false;
         let mut copy_clicked = false;
         let mut scale_clicked = false;
@@ -910,6 +911,10 @@ impl VibocerosApp {
                 area_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Area"))
                     .on_hover_text("Measure selected planar or mesh area")
+                    .clicked();
+                volume_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Volume"))
+                    .on_hover_text("Measure signed volume of selected closed meshes")
                     .clicked();
                 move_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Move"))
@@ -990,6 +995,8 @@ impl VibocerosApp {
             self.execute_command("Length");
         } else if area_clicked {
             self.execute_command("Area");
+        } else if volume_clicked {
+            self.execute_command("Volume");
         } else if move_clicked {
             self.try_start_interactive_command("Move");
         } else if copy_clicked {

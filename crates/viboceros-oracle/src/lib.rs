@@ -143,6 +143,11 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    MeshVolume {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+    },
     MeshExtractNonManifold {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -186,6 +191,7 @@ impl Operation {
             | Self::NurbsCurveTopology { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
+            | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
             | Self::MeshExtractDuplicateFaces { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
@@ -589,6 +595,22 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::MeshVolume {
+            vertices,
+            triangles,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let (volume, elapsed) = measure(iterations, || black_box(&mesh).signed_volume())?;
+            (json!(volume), elapsed)
+        }
         Operation::MeshExtractNonManifold {
             vertices,
             triangles,
@@ -921,6 +943,42 @@ mod tests {
                 ],
             })
         );
+    }
+
+    #[test]
+    fn measures_translation_stable_signed_mesh_volume_for_oracle_comparison() {
+        let faces = vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]];
+        let response = run_request(&request(vec![
+            Operation::MeshVolume {
+                id: "translated".to_owned(),
+                vertices: vec![
+                    [1.0e9, -2.0e9, 3.0e9],
+                    [1.0e9 + 2.0, -2.0e9, 3.0e9],
+                    [1.0e9, -2.0e9 + 3.0, 3.0e9],
+                    [1.0e9, -2.0e9, 3.0e9 + 4.0],
+                ],
+                triangles: faces.clone(),
+            },
+            Operation::MeshVolume {
+                id: "reversed".to_owned(),
+                vertices: vec![
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [0.0, 3.0, 0.0],
+                    [0.0, 0.0, 4.0],
+                ],
+                triangles: faces
+                    .into_iter()
+                    .map(|mut face| {
+                        face.swap(1, 2);
+                        face
+                    })
+                    .collect(),
+            },
+        ]))
+        .unwrap();
+        assert_eq!(response.results[0].value, json!(4.0));
+        assert_eq!(response.results[1].value, json!(-4.0));
     }
 
     #[test]
