@@ -769,6 +769,60 @@ def _execute(operation, iterations, tolerance):
             for object_id in object_ids + batch_ids:
                 document.Objects.Delete(object_id, True)
 
+    if kind == "document_object_naming_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        try:
+            for index in range(3):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document naming-cycle point")
+                object_ids.append(object_id)
+
+            def object_names():
+                return [
+                    document.Objects.FindId(object_id).Attributes.Name
+                    for object_id in object_ids
+                ]
+
+            def assign_names(names):
+                changed = 0
+                for object_id, name in zip(object_ids, names):
+                    rhino_object = document.Objects.FindId(object_id)
+                    attributes = rhino_object.Attributes.Duplicate()
+                    attributes.Name = name
+                    changed += int(
+                        document.Objects.ModifyAttributes(
+                            rhino_object, attributes, True
+                        )
+                    )
+                return changed
+
+            def naming_cycle():
+                shared_count = assign_names(["Sample", "Sample", "Sample"])
+                shared = object_names()
+                counter_count = assign_names(
+                    ["Sample 0", "Sample 1", "Sample 2"]
+                )
+                counter = object_names()
+                clear_count = assign_names([None, None, None])
+                return {
+                    "clear_count": clear_count,
+                    "cleared": object_names(),
+                    "counter": counter,
+                    "counter_count": counter_count,
+                    "shared": shared,
+                    "shared_count": shared_count,
+                }
+
+            return _measure(iterations, naming_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Delete(object_id, True)
+
     if kind == "point_distance":
         a = _point(operation["a"])
         b = _point(operation["b"])

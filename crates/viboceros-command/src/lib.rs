@@ -163,6 +163,9 @@ impl CommandRegistry {
             .register(GroupCommand)
             .expect("unique built-in command");
         registry
+            .register(SetObjectNameCommand)
+            .expect("unique built-in command");
+        registry
             .register(UngroupCommand)
             .expect("unique built-in command");
         registry
@@ -2081,7 +2084,11 @@ impl Command for GroupCommand {
             .first()
             .is_some_and(|argument| argument.eq_ignore_ascii_case("all"));
         let name_arguments = if all { &arguments[1..] } else { arguments };
-        let name = (!name_arguments.is_empty()).then(|| name_arguments.join(" "));
+        let name = if name_arguments.is_empty() {
+            document.next_unused_group_name()
+        } else {
+            name_arguments.join(" ")
+        };
         let members: Vec<_> = if all {
             document
                 .objects()
@@ -2092,12 +2099,81 @@ impl Command for GroupCommand {
             document.selected_object_ids().collect()
         };
         let member_count = members.len();
-        let id = document.add_group(name.clone(), members)?;
-        Ok(match name {
-            Some(name) => format!("Created group '{name}' {id} with {member_count} object(s)"),
-            None => format!("Created group {id} with {member_count} object(s)"),
+        let id = document.add_group(Some(name.clone()), members)?;
+        Ok(format!(
+            "Created group '{name}' {id} with {member_count} object(s)"
+        ))
+    }
+}
+
+const SET_OBJECT_NAME_USAGE: &str = "SetObjectName name [AppendCounter=Yes|No]";
+
+struct SetObjectNameCommand;
+
+impl Command for SetObjectNameCommand {
+    fn name(&self) -> &'static str {
+        "SetObjectName"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (name, append_counter) = parse_set_object_name_arguments(arguments)?;
+        let selected = document
+            .objects()
+            .filter(|object| document.is_selected(object.id()))
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let has_name = name.is_some();
+        let assignments = match name.as_ref() {
+            Some(name) if append_counter => selected
+                .iter()
+                .enumerate()
+                .map(|(index, id)| (*id, Some(format!("{name} {index}"))))
+                .collect::<Vec<_>>(),
+            _ => selected
+                .iter()
+                .map(|id| (*id, name.clone()))
+                .collect::<Vec<_>>(),
+        };
+        document.set_object_names(assignments)?;
+        Ok(if has_name {
+            format!("Named {} object(s)", selected.len())
+        } else {
+            format!("Cleared names on {} object(s)", selected.len())
         })
     }
+}
+
+fn parse_set_object_name_arguments(
+    arguments: &[&str],
+) -> Result<(Option<String>, bool), CommandError> {
+    let mut append_counter = false;
+    let mut name_parts = Vec::new();
+    for argument in arguments {
+        let normalized = argument.trim_start_matches('_');
+        if let Some((option, value)) = normalized.split_once('=')
+            && option.eq_ignore_ascii_case("AppendCounter")
+        {
+            append_counter = parse_yes_no(value.trim_start_matches('_'))
+                .ok_or(CommandError::Usage(SET_OBJECT_NAME_USAGE))?;
+        } else {
+            name_parts.push(*argument);
+        }
+    }
+    if name_parts.is_empty() {
+        return Err(CommandError::Usage(SET_OBJECT_NAME_USAGE));
+    }
+    let joined = name_parts.join(" ");
+    let trimmed = joined.trim();
+    let unquoted = if trimmed.len() >= 2 && trimmed.starts_with('"') && trimmed.ends_with('"') {
+        &trimmed[1..trimmed.len() - 1]
+    } else {
+        trimmed
+    };
+    let name = (!unquoted.trim().is_empty()).then(|| unquoted.trim().to_owned());
+    Ok((name, append_counter))
 }
 
 struct UngroupCommand;
@@ -3410,7 +3486,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5271,17 +5347,108 @@ mod tests {
             .unwrap();
 
         registry.execute(&mut document, "Group All Pair").unwrap();
-        let group = document.group_by_name("pair").unwrap();
+        let group = document.group_by_name("Pair").unwrap();
         assert_eq!(group.members().len(), 2);
-        assert!(registry.execute(&mut document, "Group All PAIR").is_err());
-        assert_eq!(document.groups().len(), 1);
+        assert!(document.group_by_name("pair").is_none());
+        registry.execute(&mut document, "Group All PAIR").unwrap();
+        assert_eq!(document.groups().len(), 2);
 
         registry.execute(&mut document, "Ungroup Pair").unwrap();
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.groups().len(), 1);
+        assert!(document.group_by_name("PAIR").is_some());
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.group_by_name("Pair").unwrap().members().len(), 2);
         registry.execute(&mut document, "Redo").unwrap();
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.groups().len(), 1);
+    }
+
+    #[test]
+    fn set_object_name_matches_rhino_counter_order_and_preserves_selection_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0").unwrap();
+        registry.execute(&mut document, "Point 2,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Group").unwrap();
+        assert_eq!(
+            document.group_by_name("Group01").unwrap().members().len(),
+            3
+        );
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "SetObjectName _AppendCounter=_Yes \"Fastener Part\"",
+                )
+                .unwrap(),
+            "Named 3 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("SetObjectName"));
+        assert_eq!(
+            ids.iter()
+                .map(|id| document.object(*id).unwrap().attributes().name())
+                .collect::<Vec<_>>(),
+            vec![
+                Some("Fastener Part 0"),
+                Some("Fastener Part 1"),
+                Some("Fastener Part 2")
+            ]
+        );
+        assert_eq!(document.selected_object_count(), 3);
+        assert_eq!(
+            document.group_by_name("Group01").unwrap().members().len(),
+            3
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(
+            document
+                .objects()
+                .all(|object| object.attributes().name().is_none())
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "SetObjectName Shared Name")
+                .unwrap(),
+            "Named 3 object(s)"
+        );
+        assert!(
+            document
+                .objects()
+                .all(|object| object.attributes().name() == Some("Shared Name"))
+        );
+        assert_eq!(
+            registry
+                .execute(&mut document, "SetObjectName \"\"")
+                .unwrap(),
+            "Cleared names on 3 object(s)"
+        );
+        assert!(
+            document
+                .objects()
+                .all(|object| object.attributes().name().is_none())
+        );
+
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "SetObjectName AppendCounter=Maybe Part"),
+            Err(CommandError::Usage(SET_OBJECT_NAME_USAGE))
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), history.as_deref());
+        document.clear_selection();
+        assert!(matches!(
+            registry.execute(&mut document, "SetObjectName Part"),
+            Err(CommandError::NoObjectsSelected)
+        ));
     }
 
     #[test]

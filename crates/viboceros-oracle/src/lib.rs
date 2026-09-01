@@ -73,6 +73,9 @@ pub enum Operation {
     DocumentActionSelectionCycle {
         id: String,
     },
+    DocumentObjectNamingCycle {
+        id: String,
+    },
     PointDistance {
         id: String,
         a: [f64; 3],
@@ -238,6 +241,7 @@ impl Operation {
             | Self::DocumentObjectSwapCycle { id }
             | Self::DocumentObjectIsolationCycle { id }
             | Self::DocumentActionSelectionCycle { id }
+            | Self::DocumentObjectNamingCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -411,6 +415,7 @@ fn execute(
         Operation::DocumentActionSelectionCycle { .. } => {
             document_action_selection_cycle(iterations)?
         }
+        Operation::DocumentObjectNamingCycle { .. } => document_object_naming_cycle(iterations)?,
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
             let b = point(*b)?;
@@ -1259,6 +1264,55 @@ fn document_action_selection_cycle(iterations: u32) -> Result<(Value, u64), Prob
     })
 }
 
+fn document_object_naming_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::default();
+    let mut object_ids = Vec::with_capacity(3);
+    for index in 0..3 {
+        object_ids.push(document.add_geometry(Geometry::Point(Point3::try_new(
+            index as f64,
+            0.0,
+            0.0,
+        )?))?);
+    }
+
+    measure_document(iterations, || {
+        let shared_count = document
+            .set_object_names(object_ids.iter().map(|id| (*id, Some("Sample".to_owned()))))?;
+        let shared = document_object_names(&document, &object_ids)?;
+        let counter_count = document.set_object_names(
+            object_ids
+                .iter()
+                .enumerate()
+                .map(|(index, id)| (*id, Some(format!("Sample {index}")))),
+        )?;
+        let counter = document_object_names(&document, &object_ids)?;
+        let clear_count = document.set_object_names(object_ids.iter().map(|id| (*id, None)))?;
+        Ok(json!({
+            "clear_count": clear_count,
+            "cleared": document_object_names(&document, &object_ids)?,
+            "counter": counter,
+            "counter_count": counter_count,
+            "shared": shared,
+            "shared_count": shared_count,
+        }))
+    })
+}
+
+fn document_object_names(
+    document: &Document,
+    object_ids: &[ObjectId],
+) -> Result<Vec<Option<String>>, DocumentError> {
+    object_ids
+        .iter()
+        .map(|id| {
+            document
+                .object(*id)
+                .map(|object| object.attributes().name().map(str::to_owned))
+                .ok_or(DocumentError::ObjectNotFound(*id))
+        })
+        .collect()
+}
+
 fn establish_previous_selection(
     document: &mut Document,
     object_ids: &[ObjectId],
@@ -1629,6 +1683,25 @@ mod tests {
                 "previous_once_count": 1,
                 "previous_twice": [3],
                 "previous_twice_count": 1,
+            })
+        );
+    }
+
+    #[test]
+    fn assigns_shared_countered_and_cleared_object_names() {
+        let response = run_request(&request(vec![Operation::DocumentObjectNamingCycle {
+            id: "object-naming".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "clear_count": 3,
+                "cleared": [null, null, null],
+                "counter": ["Sample 0", "Sample 1", "Sample 2"],
+                "counter_count": 3,
+                "shared": ["Sample", "Sample", "Sample"],
+                "shared_count": 3,
             })
         );
     }

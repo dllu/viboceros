@@ -51,6 +51,7 @@ Rotate 0,0 45
 Mirror 0,-5 0,5
 Group Assembly
 Group All Everything
+SetObjectName "Fastener Part" AppendCounter=Yes
 Ungroup
 Ungroup Assembly
 Join
@@ -149,6 +150,10 @@ classify consistently.
 including multi-object imports and command outputs. `SelPrev` swaps the current
 and previous selection sets. Both replace by default, matching Rhino; set
 `DeselectOthersBeforeSelect=No` to add instead.
+`SetObjectName` assigns one shared name to the selection. Add
+`AppendCounter=Yes` for Rhino's zero-based suffixes in document order, or use
+`SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style
+`Group01`, `Group02`, ... names; explicit group names are case-sensitive.
 `UnifyMeshNormals` repairs inconsistent face winding across exact
 location-welded manifold edges, including STL-style triangle soup, and rejects
 non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)

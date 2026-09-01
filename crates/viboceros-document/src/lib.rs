@@ -807,6 +807,70 @@ impl Document {
         })
     }
 
+    /// Atomically assigns trimmed optional names while retaining object
+    /// identity, geometry, layers, groups, and selection.
+    pub fn set_object_names(
+        &mut self,
+        assignments: impl IntoIterator<Item = (ObjectId, Option<String>)>,
+    ) -> Result<usize, DocumentError> {
+        let assignments = assignments
+            .into_iter()
+            .map(|(id, name)| {
+                let name = name
+                    .map(|name| name.trim().to_owned())
+                    .filter(|name| !name.is_empty());
+                (id, name)
+            })
+            .collect::<BTreeMap<_, _>>();
+        if assignments.is_empty() {
+            return Ok(0);
+        }
+        if let Some(missing) = assignments.keys().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+
+        let mut staged = Vec::with_capacity(assignments.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            let Some(name) = assignments.get(&object.id) else {
+                continue;
+            };
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            if &object.attributes.name == name {
+                continue;
+            }
+            let before = object.clone();
+            let mut after = before.clone();
+            after.attributes.name = name.clone();
+            staged.push((index, before, after));
+        }
+        if staged.is_empty() {
+            return Ok(0);
+        }
+
+        let changed_count = staged.len();
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Set object name")?;
+        }
+        for (index, before, after) in staged {
+            let id = before.id;
+            self.objects[index] = after.clone();
+            self.record_edit("Set object name", Edit::ObjectChanged { id, before, after });
+        }
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(changed_count)
+    }
+
     /// Swaps normal and hidden object modes on visible, unlocked layers.
     /// Locked objects and every object on a hidden or locked layer are left
     /// unchanged, matching Rhino's `HideSwap` scope.
@@ -1206,7 +1270,7 @@ impl Document {
                 group
                     .name
                     .as_ref()
-                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
+                    .is_some_and(|candidate| candidate == name)
             })
         {
             return Err(DocumentError::DuplicateGroupName(name.clone()));
@@ -1242,12 +1306,30 @@ impl Document {
     }
 
     pub fn group_by_name(&self, name: &str) -> Option<&Group> {
+        let name = name.trim();
         self.groups.iter().find(|group| {
             group
                 .name
                 .as_ref()
-                .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name.trim()))
+                .is_some_and(|candidate| candidate == name)
         })
+    }
+
+    /// Returns Rhino's next unused automatic group name (`Group01`,
+    /// `Group02`, ...). Group-name comparisons are case-sensitive.
+    pub fn next_unused_group_name(&self) -> String {
+        for number in 1_u64..=u64::MAX {
+            let candidate = format!("Group{number:02}");
+            if self.group_by_name(&candidate).is_none() {
+                return candidate;
+            }
+        }
+        loop {
+            let candidate = format!("Group{}", GroupId::new());
+            if self.group_by_name(&candidate).is_none() {
+                return candidate;
+            }
+        }
     }
 
     /// Adds existing objects to an existing group as one undoable edit.
@@ -1957,10 +2039,23 @@ mod tests {
         let group = document
             .add_group(Some("Pair".to_owned()), [first, second])
             .unwrap();
-        assert_eq!(document.group_by_name("pair").unwrap().id(), group);
+        assert!(document.group_by_name("pair").is_none());
+        let case_variant = document
+            .add_group(Some("PAIR".to_owned()), [first])
+            .unwrap();
+        assert_ne!(case_variant, group);
+        assert_eq!(document.next_unused_group_name(), "Group01");
+        document
+            .add_group(Some("Group01".to_owned()), [second])
+            .unwrap();
+        assert_eq!(document.next_unused_group_name(), "Group02");
+        document
+            .add_group(Some("group02".to_owned()), [second])
+            .unwrap();
+        assert_eq!(document.next_unused_group_name(), "Group02");
         assert_eq!(
-            document.add_group(Some("PAIR".to_owned()), [first]),
-            Err(DocumentError::DuplicateGroupName("PAIR".to_owned()))
+            document.add_group(Some("Pair".to_owned()), [first]),
+            Err(DocumentError::DuplicateGroupName("Pair".to_owned()))
         );
 
         assert_eq!(document.remove_group(group).unwrap(), 2);
@@ -1969,6 +2064,76 @@ mod tests {
         assert_eq!(document.group(group).unwrap().members().len(), 2);
         document.redo().unwrap();
         assert!(document.group(group).is_none());
+    }
+
+    #[test]
+    fn object_names_are_atomic_identity_preserving_and_reversible() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(1.0, 0.0, 0.0)))
+            .unwrap();
+        let locked = document
+            .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+            .unwrap();
+        let group = document
+            .add_group(Some("Names".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            document
+                .set_object_names([
+                    (first, Some(" First ".to_owned())),
+                    (second, Some("Second".to_owned())),
+                ])
+                .unwrap(),
+            2
+        );
+        assert_eq!(document.undo_label(), Some("Set object name"));
+        assert_eq!(
+            document.object(first).unwrap().attributes().name(),
+            Some("First")
+        );
+        assert_eq!(
+            document.object(second).unwrap().attributes().name(),
+            Some("Second")
+        );
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+
+        document.undo().unwrap();
+        assert_eq!(document.object(first).unwrap().attributes().name(), None);
+        assert_eq!(document.object(second).unwrap().attributes().name(), None);
+        assert_eq!(document.selected_object_count(), 2);
+        document.redo().unwrap();
+        assert_eq!(
+            document.object(first).unwrap().attributes().name(),
+            Some("First")
+        );
+        assert_eq!(
+            document
+                .set_object_names([(first, Some("First".to_owned()))])
+                .unwrap(),
+            0
+        );
+        assert_eq!(document.set_object_names([(second, None)]).unwrap(), 1);
+        assert_eq!(document.object(second).unwrap().attributes().name(), None);
+
+        document.set_objects_locked([locked], true).unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert_eq!(
+            document.set_object_names([
+                (first, Some("Changed".to_owned())),
+                (locked, Some("Locked".to_owned())),
+            ]),
+            Err(DocumentError::ObjectLocked(locked))
+        );
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
     }
 
     #[test]
