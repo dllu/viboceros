@@ -1,0 +1,83 @@
+{
+  "protocol_version": 1,
+  "iterations": 10000,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "point_distance",
+      "id": "point-distance",
+      "a": [1.25, -2.5, 4.0],
+      "b": [7.75, 1.5, -3.0]
+    },
+    {
+      "op": "line_point",
+      "id": "line-point",
+      "start": [-2.0, 5.0, 1.0],
+      "end": [9.0, -3.0, 7.0],
+      "parameter": 0.375
+    },
+    {
+      "op": "circle_point",
+      "id": "circle-point",
+      "center": [2.0, -1.0, 4.0],
+      "radius": 3.75,
+      "x_axis": [0.6, 0.8, 0.0],
+      "normal": [0.0, 0.0, 1.0],
+      "angle_radians": 1.2345
+    },
+    {
+      "op": "arc_three_point",
+      "id": "major-arc",
+      "start": [1.0, 0.0, 0.0],
+      "through": [0.0, -1.0, 0.0],
+      "end": [0.0, 1.0, 0.0],
+      "normalized_parameter": 0.37
+    },
+    {
+      "op": "polyline_length",
+      "id": "polyline-length",
+      "vertices": [
+        [0.0, 0.0, 0.0],
+        [3.0, 4.0, 0.0],
+        [5.0, -2.0, 7.0],
+        [-1.0, 3.0, 2.0]
+      ]
+    },
+    {
+      "op": "nurbs_curve_evaluate",
+      "id": "rational-curve",
+      "degree": 2,
+      "control_points": [
+        {"point": [1.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 1.0, 0.0], "weight": 0.7071067811865476},
+        {"point": [0.0, 1.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+      "parameter": 0.35
+    },
+    {
+      "op": "nurbs_surface_evaluate",
+      "id": "rational-surface",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 3,
+      "control_point_count_v": 2,
+      "control_points": [
+        {"point": [1.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 1.0, 0.0], "weight": 0.7071067811865476},
+        {"point": [0.0, 1.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 0.0, 3.0], "weight": 1.0},
+        {"point": [1.0, 1.0, 3.0], "weight": 0.7071067811865476},
+        {"point": [0.0, 1.0, 3.0], "weight": 1.0}
+      ],
+      "knots_u": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+      "knots_v": [0.0, 0.0, 1.0, 1.0],
+      "u": 0.35,
+      "v": 0.6
+    }
+  ]
+}

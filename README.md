@@ -80,6 +80,37 @@ cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
+## Rhino geometry oracle
+
+The versioned Python oracle API runs identical JSON geometry batches in a
+native release build of Viboceros and Rhino 8, recursively checks every numeric
+result, and reports per-operation timings. With Rhino installed through the
+configured Wine/FEX launcher, run the core fixture with:
+
+```sh
+python3 -m tools.rhino_oracle compare \
+  tools/rhino_oracle/fixtures/core.json \
+  --absolute-epsilon 1e-12 --relative-epsilon 1e-12
+```
+
+The same workflow is importable for instrumentation and tests:
+
+```python
+from tools.rhino_oracle import OracleClient, load_request
+
+report = OracleClient().compare(load_request("tools/rhino_oracle/fixtures/core.json"))
+assert report.passed
+```
+
+Set `VIBOCEROS_RHINO_LAUNCHER` to use another launcher. McNeel's documented
+`/runscript` startup interface is tried first; this project's Wine path also
+has an owned-window fallback that requires `wmctrl` and `xdotool` and never
+targets a pre-existing Rhino process. Set `VIBOCEROS_RHINO_UI_FALLBACK=0` to
+disable it. The `viboceros` and `rhino` modes run either side independently.
+Timings cover repeated geometry/API calls after one warm-up and exclude process
+startup, object construction, and JSON I/O; Rhino timings include its public
+Python/RhinoCommon bridge.
+
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, lines, NURBS curves, untrimmed NURBS
 surfaces, triangle meshes, layer state, and object state. Circles, arcs, and
