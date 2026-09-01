@@ -2997,6 +2997,7 @@ dependencies = [
  "eframe",
  "viboceros-command",
  "viboceros-document",
+ "viboceros-drafting",
  "viboceros-geometry",
 ]
 
@@ -3016,6 +3017,15 @@ version = "0.1.0"
 dependencies = [
  "thiserror 2.0.20",
  "uuid",
+ "viboceros-geometry",
+]
+
+[[package]]
+name = "viboceros-drafting"
+version = "0.1.0"
+dependencies = [
+ "thiserror 2.0.20",
+ "viboceros-document",
  "viboceros-geometry",
 ]
 

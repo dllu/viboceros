@@ -1,8 +1,8 @@
 # Viboceros
 
 Viboceros is an early-stage, cross-platform CAD application written in Rust. It
-is organized around independent geometry, document, and command crates, with an
-egui interface rendered by wgpu.
+is organized around independent geometry, document, drafting, command, and
+file-format crates, with an egui interface rendered by wgpu.
 
 The current foundation supports finite 3D points, vectors, line segments,
 planes, bounding boxes, rational NURBS curves with analytic first derivatives,
@@ -23,6 +23,11 @@ ExportStl Binary path/to/model.stl
 ExportStl Ascii path/to/model.stl
 Help
 ```
+
+Enter `Point` or `Line` without coordinates to pick points in the viewport.
+Osnap captures visible Point, End, and Mid features; SmartTrack captures
+horizontal and vertical alignment from the first line point. Drag with the
+middle mouse button to pan while a drafting command is active.
 
 ## Build and run
 

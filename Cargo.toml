@@ -10,6 +10,7 @@ resolver = "3"
 members = [
     "crates/viboceros-command",
     "crates/viboceros-document",
+    "crates/viboceros-drafting",
     "crates/viboceros-geometry",
     "crates/viboceros-io",
 ]
@@ -28,6 +29,7 @@ uuid = { version = "1.18.1", features = ["v4"] }
 
 viboceros-command = { path = "crates/viboceros-command" }
 viboceros-document = { path = "crates/viboceros-document" }
+viboceros-drafting = { path = "crates/viboceros-drafting" }
 viboceros-geometry = { path = "crates/viboceros-geometry" }
 viboceros-io = { path = "crates/viboceros-io" }
 
@@ -40,6 +42,7 @@ eframe = { version = "0.36.1", default-features = false, features = [
 ] }
 viboceros-command.workspace = true
 viboceros-document.workspace = true
+viboceros-drafting.workspace = true
 viboceros-geometry.workspace = true
 
 [profile.release]
