@@ -292,6 +292,8 @@ pub struct Document {
     objects: Vec<Object>,
     groups: Vec<Group>,
     selection: BTreeSet<ObjectId>,
+    previous_selection: BTreeSet<ObjectId>,
+    last_changed_objects: BTreeSet<ObjectId>,
     history: History,
 }
 
@@ -312,6 +314,8 @@ impl Document {
             objects: Vec::new(),
             groups: Vec::new(),
             selection: BTreeSet::new(),
+            previous_selection: BTreeSet::new(),
+            last_changed_objects: BTreeSet::new(),
             history: History::default(),
         }
     }
@@ -331,7 +335,9 @@ impl Document {
         self.history.active = Some(PendingTransaction {
             label,
             edits: Vec::new(),
+            object_ids: BTreeSet::new(),
             selection_before: self.selection.clone(),
+            previous_selection_before: self.previous_selection.clone(),
         });
         Ok(())
     }
@@ -343,12 +349,18 @@ impl Document {
             .active
             .take()
             .ok_or(DocumentError::NoActiveTransaction)?;
+        if transaction.selection_before.is_subset(&self.selection) {
+            self.previous_selection = transaction.previous_selection_before;
+        } else {
+            self.previous_selection = transaction.selection_before.clone();
+        }
         if transaction.edits.is_empty() {
             return Ok(false);
         }
         self.push_new_undo(HistoryEntry {
             label: transaction.label,
             edits: transaction.edits,
+            object_ids: transaction.object_ids,
         });
         Ok(true)
     }
@@ -367,6 +379,7 @@ impl Document {
             .rev()
             .try_for_each(|edit| edit.undo(self));
         self.selection = transaction.selection_before;
+        self.previous_selection = transaction.previous_selection_before;
         self.prune_selection();
         result?;
         Ok(changed)
@@ -404,6 +417,7 @@ impl Document {
             }
         }
         let label = entry.label.clone();
+        self.update_last_changed_objects(&entry.object_ids);
         self.history.redo.push(entry);
         self.prune_selection();
         Ok(Some(label))
@@ -425,6 +439,7 @@ impl Document {
             }
         }
         let label = entry.label.clone();
+        self.update_last_changed_objects(&entry.object_ids);
         self.push_replayed_undo(entry);
         self.prune_selection();
         Ok(Some(label))
@@ -644,22 +659,22 @@ impl Document {
 
     pub fn clear_selection(&mut self) -> usize {
         let count = self.selection.len();
-        self.selection.clear();
+        self.update_selection(BTreeSet::new());
         count
     }
 
     pub fn select_all(&mut self) -> usize {
-        self.selection = self
+        let selection = self
             .objects
             .iter()
             .filter(|object| self.is_object_selectable(object.id))
             .map(|object| object.id)
             .collect();
-        self.selection.len()
+        self.update_selection(selection)
     }
 
     pub fn invert_selection(&mut self) -> usize {
-        self.selection = self
+        let selection = self
             .objects
             .iter()
             .filter(|object| {
@@ -667,7 +682,7 @@ impl Document {
             })
             .map(|object| object.id)
             .collect();
-        self.selection.len()
+        self.update_selection(selection)
     }
 
     pub fn select_object(
@@ -675,29 +690,87 @@ impl Document {
         id: ObjectId,
         mode: SelectionMode,
     ) -> Result<usize, DocumentError> {
-        if self.object(id).is_none() {
-            return Err(DocumentError::ObjectNotFound(id));
+        self.select_objects([id], mode)
+    }
+
+    /// Selects complete selectable group clusters as one atomic selection
+    /// action. Every requested id is validated before the selection changes.
+    pub fn select_objects(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        mode: SelectionMode,
+    ) -> Result<usize, DocumentError> {
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
         }
-        if !self.is_object_selectable(id) {
-            return Err(DocumentError::ObjectNotSelectable(id));
+        if let Some(unselectable) = ids.iter().find(|id| !self.is_object_selectable(**id)) {
+            return Err(DocumentError::ObjectNotSelectable(*unselectable));
         }
-        let cluster = self.selectable_group_cluster(id);
+        let cluster = self.selectable_clusters(ids.iter().copied());
+        Ok(self.apply_selection_mode(cluster, mode))
+    }
+
+    /// Selects the objects affected by the latest object-editing transaction.
+    /// Rhino's default replaces the current selection; setting
+    /// `deselect_others` to false adds the objects instead.
+    pub fn select_last_changed(&mut self, deselect_others: bool) -> usize {
+        let targets = self.selectable_clusters(self.last_changed_objects.iter().copied());
+        self.apply_selection_mode(
+            targets,
+            if deselect_others {
+                SelectionMode::Replace
+            } else {
+                SelectionMode::Add
+            },
+        )
+    }
+
+    /// Re-selects the previous selection and makes the current selection the
+    /// next previous set, so repeated replacement calls toggle between them.
+    pub fn select_previous(&mut self, deselect_others: bool) -> usize {
+        let targets = self.selectable_clusters(self.previous_selection.iter().copied());
+        let current = self.selection.clone();
+        let next = if deselect_others {
+            targets
+        } else {
+            let mut next = current.clone();
+            next.extend(targets);
+            next
+        };
+        self.selection = next;
+        self.previous_selection = current;
+        self.selection.len()
+    }
+
+    pub fn selectable_last_changed_object_count(&self) -> usize {
+        self.selectable_clusters(self.last_changed_objects.iter().copied())
+            .len()
+    }
+
+    pub fn selectable_previous_object_count(&self) -> usize {
+        self.selectable_clusters(self.previous_selection.iter().copied())
+            .len()
+    }
+
+    fn apply_selection_mode(&mut self, cluster: BTreeSet<ObjectId>, mode: SelectionMode) -> usize {
+        let mut next = self.selection.clone();
         match mode {
             SelectionMode::Replace => {
-                self.selection = cluster;
+                next = cluster;
             }
             SelectionMode::Add => {
-                self.selection.extend(cluster);
+                next.extend(cluster);
             }
             SelectionMode::Toggle => {
-                if cluster.iter().all(|member| self.selection.contains(member)) {
-                    self.selection.retain(|member| !cluster.contains(member));
+                if cluster.iter().all(|member| next.contains(member)) {
+                    next.retain(|member| !cluster.contains(member));
                 } else {
-                    self.selection.extend(cluster);
+                    next.extend(cluster);
                 }
             }
         }
-        Ok(self.selection.len())
+        self.update_selection(next)
     }
 
     /// Atomically sets object-level visibility without changing geometry,
@@ -991,7 +1064,7 @@ impl Document {
                 },
             );
         }
-        self.selection = copied_ids.iter().copied().collect();
+        self.update_selection(copied_ids.iter().copied().collect());
         self.prune_selection();
         if owns_transaction {
             self.commit_transaction()?;
@@ -1109,7 +1182,7 @@ impl Document {
         }
         let stored_objects = std::mem::take(&mut self.objects);
         let stored_groups = std::mem::take(&mut self.groups);
-        self.selection.clear();
+        self.update_selection(BTreeSet::new());
         self.record_edit(
             "Clear objects",
             Edit::ObjectsCleared {
@@ -1283,6 +1356,26 @@ impl Document {
         connected
     }
 
+    fn selectable_clusters(&self, ids: impl IntoIterator<Item = ObjectId>) -> BTreeSet<ObjectId> {
+        let mut clusters = BTreeSet::new();
+        for id in ids {
+            if self.is_object_selectable(id) {
+                clusters.extend(self.selectable_group_cluster(id));
+            }
+        }
+        clusters
+    }
+
+    fn update_selection(&mut self, next: BTreeSet<ObjectId>) -> usize {
+        if self.selection != next {
+            if !self.selection.is_subset(&next) {
+                self.previous_selection = self.selection.clone();
+            }
+            self.selection = next;
+        }
+        self.selection.len()
+    }
+
     fn change_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -1405,11 +1498,13 @@ impl Document {
     }
 
     fn prune_selection(&mut self) {
-        let selection = std::mem::take(&mut self.selection);
-        self.selection = selection
-            .into_iter()
+        let selection = self
+            .selection
+            .iter()
+            .copied()
             .filter(|id| self.is_object_selectable(*id))
             .collect();
+        self.update_selection(selection);
     }
 
     fn record_layer_change(&mut self, label: &'static str, index: usize, before: Layer) {
@@ -1418,20 +1513,81 @@ impl Document {
         self.record_edit(label, Edit::LayerChanged { id, before, after });
     }
 
+    fn single_affected_object_id(edit: &Edit) -> Option<ObjectId> {
+        match edit {
+            Edit::ObjectInserted { id, .. }
+            | Edit::ObjectRemoved { id, .. }
+            | Edit::ObjectChanged { id, .. } => Some(*id),
+            Edit::GroupMemberRemoved { object_id, .. }
+            | Edit::GroupMemberInserted { object_id, .. } => Some(*object_id),
+            _ => None,
+        }
+    }
+
+    fn affected_object_ids(&self, edit: &Edit) -> BTreeSet<ObjectId> {
+        match edit {
+            Edit::GroupInserted { id, .. } => self
+                .group(*id)
+                .map(|group| group.members.clone())
+                .unwrap_or_default(),
+            Edit::GroupRemoved { stored, .. } => stored
+                .as_ref()
+                .map(|group| group.members.clone())
+                .unwrap_or_default(),
+            Edit::ObjectsCleared { stored_objects, .. } => {
+                stored_objects.iter().map(|object| object.id).collect()
+            }
+            Edit::ObjectInserted { .. }
+            | Edit::ObjectRemoved { .. }
+            | Edit::ObjectChanged { .. }
+            | Edit::LayerInserted { .. }
+            | Edit::LayerRemoved { .. }
+            | Edit::LayerChanged { .. }
+            | Edit::GroupMemberRemoved { .. }
+            | Edit::GroupMemberInserted { .. }
+            | Edit::CurrentLayerChanged { .. } => BTreeSet::new(),
+        }
+    }
+
     fn record_edit(&mut self, label: &'static str, edit: Edit) {
+        if let Some(object_id) = Self::single_affected_object_id(&edit) {
+            if let Some(transaction) = &mut self.history.active {
+                transaction.object_ids.insert(object_id);
+                transaction.edits.push(edit);
+                return;
+            }
+            self.push_new_undo(HistoryEntry {
+                label: label.to_owned(),
+                edits: vec![edit],
+                object_ids: BTreeSet::from([object_id]),
+            });
+            return;
+        }
+        let object_ids = self.affected_object_ids(&edit);
         if let Some(transaction) = &mut self.history.active {
+            transaction.object_ids.extend(object_ids);
             transaction.edits.push(edit);
             return;
         }
         self.push_new_undo(HistoryEntry {
             label: label.to_owned(),
             edits: vec![edit],
+            object_ids,
         });
     }
 
     fn push_new_undo(&mut self, entry: HistoryEntry) {
+        self.update_last_changed_objects(&entry.object_ids);
         self.history.redo.clear();
         self.push_replayed_undo(entry);
+    }
+
+    fn update_last_changed_objects(&mut self, ids: &BTreeSet<ObjectId>) {
+        self.last_changed_objects = ids
+            .iter()
+            .copied()
+            .filter(|id| self.object(*id).is_some())
+            .collect();
     }
 
     fn push_replayed_undo(&mut self, entry: HistoryEntry) {
@@ -1894,6 +2050,88 @@ mod tests {
         assert!(document.is_selected(first));
         assert_eq!(document.clear_selection(), 1);
         assert_eq!(document.clear_selection(), 0);
+    }
+
+    #[test]
+    fn action_order_selection_tracks_transactions_and_toggles_previous_sets() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let third = document
+            .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let selected = |document: &Document| {
+            document
+                .selected_object_ids()
+                .collect::<BTreeSet<ObjectId>>()
+        };
+
+        assert_eq!(document.selectable_last_changed_object_count(), 1);
+        assert_eq!(document.select_last_changed(true), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [third]);
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        document.clear_selection();
+        document.select_object(third, SelectionMode::Add).unwrap();
+        assert_eq!(document.selectable_previous_object_count(), 2);
+        assert_eq!(document.select_previous(true), 2);
+        assert_eq!(selected(&document), BTreeSet::from([first, second]));
+        assert_eq!(document.select_previous(true), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [third]);
+
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        document.clear_selection();
+        document.select_object(third, SelectionMode::Add).unwrap();
+        assert_eq!(document.select_previous(false), 3);
+        assert_eq!(selected(&document), BTreeSet::from([first, second, third]));
+        assert_eq!(document.select_previous(true), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [third]);
+
+        document.clear_selection();
+        document.begin_transaction("Add pair").unwrap();
+        let fourth = document
+            .add_geometry(Geometry::Point(Point3::try_new(3.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let fifth = document
+            .add_geometry(Geometry::Point(Point3::try_new(4.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document.commit_transaction().unwrap();
+        assert_eq!(document.selectable_last_changed_object_count(), 2);
+        assert_eq!(document.select_last_changed(true), 2);
+        assert_eq!(selected(&document), BTreeSet::from([fourth, fifth]));
+        document.undo().unwrap();
+        assert_eq!(document.selectable_last_changed_object_count(), 0);
+        assert_eq!(document.selected_object_count(), 0);
+        document.redo().unwrap();
+        assert_eq!(document.select_last_changed(true), 2);
+
+        document
+            .add_group(Some("First pair".to_owned()), [first, second])
+            .unwrap();
+        assert_eq!(document.select_last_changed(true), 2);
+        assert_eq!(selected(&document), BTreeSet::from([first, second]));
+        let missing = ObjectId::new();
+        assert_eq!(
+            document.select_objects([first, missing], SelectionMode::Replace),
+            Err(DocumentError::ObjectNotFound(missing))
+        );
+        assert_eq!(selected(&document), BTreeSet::from([first, second]));
+
+        document.clear_selection();
+        document.select_object(third, SelectionMode::Add).unwrap();
+        document.begin_transaction("Cancelled delete").unwrap();
+        document.delete_object(third).unwrap();
+        document.rollback_transaction().unwrap();
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [third]);
+        assert_eq!(document.select_previous(true), 2);
+        assert_eq!(selected(&document), BTreeSet::from([first, second]));
     }
 
     #[test]

@@ -820,6 +820,8 @@ impl VibocerosApp {
         let mut redo_clicked = false;
         let mut select_all_clicked = false;
         let mut select_none_clicked = false;
+        let mut select_last_clicked = false;
+        let mut select_previous_clicked = false;
         let mut delete_clicked = false;
         let mut hide_clicked = false;
         let mut show_clicked = false;
@@ -853,6 +855,8 @@ impl VibocerosApp {
         let mut rotate_clicked = false;
         let mut mirror_clicked = false;
         let selected = self.document.selected_object_count();
+        let selectable_last_changed = self.document.selectable_last_changed_object_count();
+        let selectable_previous = self.document.selectable_previous_object_count();
         let swappable_layers = self
             .document
             .layers()
@@ -893,6 +897,14 @@ impl VibocerosApp {
                     .clicked();
                 select_none_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Clear Selection"))
+                    .clicked();
+                select_last_clicked = ui
+                    .add_enabled(selectable_last_changed > 0, egui::Button::new("Select Last"))
+                    .on_hover_text("Replace the selection with the last changed objects")
+                    .clicked();
+                select_previous_clicked = ui
+                    .add_enabled(selectable_previous > 0, egui::Button::new("Select Previous"))
+                    .on_hover_text("Swap the current and previous selections")
                     .clicked();
                 delete_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Delete"))
@@ -1057,6 +1069,10 @@ impl VibocerosApp {
             self.execute_command("SelAll");
         } else if select_none_clicked {
             self.execute_command("SelNone");
+        } else if select_last_clicked {
+            self.execute_command("SelLast");
+        } else if select_previous_clicked {
+            self.execute_command("SelPrev");
         } else if delete_clicked {
             self.execute_command("Delete");
         } else if hide_clicked {

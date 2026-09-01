@@ -70,6 +70,9 @@ pub enum Operation {
     DocumentObjectIsolationCycle {
         id: String,
     },
+    DocumentActionSelectionCycle {
+        id: String,
+    },
     PointDistance {
         id: String,
         a: [f64; 3],
@@ -221,6 +224,7 @@ impl Operation {
             Self::DocumentObjectStateCycle { id, .. }
             | Self::DocumentObjectSwapCycle { id }
             | Self::DocumentObjectIsolationCycle { id }
+            | Self::DocumentActionSelectionCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -380,6 +384,9 @@ fn execute(
         Operation::DocumentObjectSwapCycle { .. } => document_object_swap_cycle(iterations)?,
         Operation::DocumentObjectIsolationCycle { .. } => {
             document_object_isolation_cycle(iterations)?
+        }
+        Operation::DocumentActionSelectionCycle { .. } => {
+            document_action_selection_cycle(iterations)?
         }
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
@@ -1099,6 +1106,95 @@ fn document_object_isolation_cycle(iterations: u32) -> Result<(Value, u64), Prob
     })
 }
 
+fn document_action_selection_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::default();
+    let mut object_ids = Vec::with_capacity(4);
+    for index in 0..4 {
+        object_ids.push(document.add_geometry(Geometry::Point(Point3::try_new(
+            index as f64,
+            0.0,
+            0.0,
+        )?))?);
+    }
+
+    let mut batch_document = Document::default();
+    batch_document.begin_transaction("Oracle batch")?;
+    let mut batch_ids = Vec::with_capacity(2);
+    for index in 0..2 {
+        batch_ids.push(batch_document.add_geometry(Geometry::Point(Point3::try_new(
+            index as f64,
+            1.0,
+            0.0,
+        )?))?);
+    }
+    batch_document.commit_transaction()?;
+
+    measure_document(iterations, || {
+        document.clear_selection();
+        document.select_object(object_ids[0], SelectionMode::Replace)?;
+        let last_default_count = document.select_last_changed(true);
+        let last_default = document_selected_indices(&document, &object_ids);
+        let previous_once_count = document.select_previous(true);
+        let previous_once = document_selected_indices(&document, &object_ids);
+        let previous_twice_count = document.select_previous(true);
+        let previous_twice = document_selected_indices(&document, &object_ids);
+
+        document.select_object(object_ids[0], SelectionMode::Replace)?;
+        let last_add_count = document.select_last_changed(false);
+        let last_add = document_selected_indices(&document, &object_ids);
+
+        establish_previous_selection(&mut document, &object_ids)?;
+        let previous_default_count = document.select_previous(true);
+        let previous_default = document_selected_indices(&document, &object_ids);
+        let previous_default_twice_count = document.select_previous(true);
+        let previous_default_twice = document_selected_indices(&document, &object_ids);
+
+        establish_previous_selection(&mut document, &object_ids)?;
+        let previous_add_count = document.select_previous(false);
+        let previous_add = document_selected_indices(&document, &object_ids);
+
+        batch_document.clear_selection();
+        let batch_last_count = batch_document.select_last_changed(true);
+        let batch_last = document_selected_indices(&batch_document, &batch_ids);
+        Ok(json!({
+            "batch_last": batch_last,
+            "batch_last_count": batch_last_count,
+            "last_add": last_add,
+            "last_add_count": last_add_count,
+            "last_default": last_default,
+            "last_default_count": last_default_count,
+            "previous_add": previous_add,
+            "previous_add_count": previous_add_count,
+            "previous_default": previous_default,
+            "previous_default_count": previous_default_count,
+            "previous_default_twice": previous_default_twice,
+            "previous_default_twice_count": previous_default_twice_count,
+            "previous_once": previous_once,
+            "previous_once_count": previous_once_count,
+            "previous_twice": previous_twice,
+            "previous_twice_count": previous_twice_count,
+        }))
+    })
+}
+
+fn establish_previous_selection(
+    document: &mut Document,
+    object_ids: &[ObjectId],
+) -> Result<(), DocumentError> {
+    document.select_objects([object_ids[0], object_ids[1]], SelectionMode::Replace)?;
+    document.clear_selection();
+    document.select_object(object_ids[2], SelectionMode::Add)?;
+    Ok(())
+}
+
+fn document_selected_indices(document: &Document, object_ids: &[ObjectId]) -> Vec<usize> {
+    object_ids
+        .iter()
+        .enumerate()
+        .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+        .collect()
+}
+
 fn state_cycle_ids(
     object_ids: &[ObjectId],
     indices: &[usize],
@@ -1422,6 +1518,35 @@ mod tests {
                 "unisolate_lock_count": 1,
                 "unisolate_lock_repeat_count": 0,
                 "unisolate_repeat_count": 0,
+            })
+        );
+    }
+
+    #[test]
+    fn selects_last_and_previous_objects_with_rhino_defaults() {
+        let response = run_request(&request(vec![Operation::DocumentActionSelectionCycle {
+            id: "action-selection".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "batch_last": [0, 1],
+                "batch_last_count": 2,
+                "last_add": [0, 3],
+                "last_add_count": 2,
+                "last_default": [3],
+                "last_default_count": 1,
+                "previous_add": [0, 1, 2],
+                "previous_add_count": 3,
+                "previous_default": [0, 1],
+                "previous_default_count": 2,
+                "previous_default_twice": [2],
+                "previous_default_twice_count": 1,
+                "previous_once": [0],
+                "previous_once_count": 1,
+                "previous_twice": [3],
+                "previous_twice_count": 1,
             })
         );
     }

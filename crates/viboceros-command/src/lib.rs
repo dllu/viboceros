@@ -88,6 +88,12 @@ impl CommandRegistry {
         registry
             .register(InvertCommand)
             .expect("unique built-in command");
+        registry
+            .register(SelLastCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SelPrevCommand)
+            .expect("unique built-in command");
         for (name, filter) in [
             ("SelCrv", GeometrySelectionFilter::Curve),
             ("SelOpenCrv", GeometrySelectionFilter::OpenCurve),
@@ -786,6 +792,69 @@ impl Command for InvertCommand {
     }
 }
 
+struct SelLastCommand;
+
+impl Command for SelLastCommand {
+    fn name(&self) -> &'static str {
+        "SelLast"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let deselect_others = parse_action_selection_arguments(
+            arguments,
+            "SelLast [DeselectOthersBeforeSelect=Yes|No]",
+        )?;
+        let count = document.select_last_changed(deselect_others);
+        Ok(format!("Selection contains {count} object(s)"))
+    }
+}
+
+struct SelPrevCommand;
+
+impl Command for SelPrevCommand {
+    fn name(&self) -> &'static str {
+        "SelPrev"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let deselect_others = parse_action_selection_arguments(
+            arguments,
+            "SelPrev [DeselectOthersBeforeSelect=Yes|No]",
+        )?;
+        let count = document.select_previous(deselect_others);
+        Ok(format!("Selection contains {count} object(s)"))
+    }
+}
+
+fn parse_action_selection_arguments(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<bool, CommandError> {
+    if arguments.is_empty() {
+        return Ok(true);
+    }
+    let (name, value) = match arguments {
+        [option] => option.split_once('=').ok_or(CommandError::Usage(usage))?,
+        [name, value] => (*name, *value),
+        _ => return Err(CommandError::Usage(usage)),
+    };
+    if !name
+        .trim_start_matches('_')
+        .eq_ignore_ascii_case("DeselectOthersBeforeSelect")
+    {
+        return Err(CommandError::Usage(usage));
+    }
+    parse_yes_no(value.trim_start_matches('_')).ok_or(CommandError::Usage(usage))
+}
+
 struct SelectGeometryCommand {
     name: &'static str,
     filter: GeometrySelectionFilter,
@@ -815,9 +884,7 @@ impl Command for SelectGeometryCommand {
             .into_iter()
             .flatten()
             .collect::<Vec<_>>();
-        for id in matches {
-            document.select_object(id, SelectionMode::Add)?;
-        }
+        document.select_objects(matches, SelectionMode::Add)?;
         Ok(format!(
             "Selected {} object(s)",
             document.selected_object_count()
@@ -2378,10 +2445,7 @@ fn replace_selection(
     document: &mut Document,
     ids: impl IntoIterator<Item = ObjectId>,
 ) -> Result<(), DocumentError> {
-    document.clear_selection();
-    for id in ids {
-        document.select_object(id, SelectionMode::Add)?;
-    }
+    document.select_objects(ids, SelectionMode::Replace)?;
     Ok(())
 }
 
@@ -3280,7 +3344,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPrev, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5197,6 +5261,84 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.groups().len(), 1);
+    }
+
+    #[test]
+    fn action_order_selection_commands_match_rhino_replace_add_and_toggle_modes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for x in 0..4 {
+            registry
+                .execute(&mut document, &format!("Point {x},0,0"))
+                .unwrap();
+        }
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let selected = |document: &Document| {
+            document
+                .selected_object_ids()
+                .collect::<BTreeSet<ObjectId>>()
+        };
+        let history = document.undo_label().map(str::to_owned);
+
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelLast").unwrap(),
+            "Selection contains 1 object(s)"
+        );
+        assert_eq!(selected(&document), BTreeSet::from([ids[3]]));
+        registry.execute(&mut document, "SelPrev").unwrap();
+        assert_eq!(selected(&document), BTreeSet::from([ids[0]]));
+        registry.execute(&mut document, "SelPrev").unwrap();
+        assert_eq!(selected(&document), BTreeSet::from([ids[3]]));
+
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "SelLast DeselectOthersBeforeSelect=No",)
+                .unwrap(),
+            "Selection contains 2 object(s)"
+        );
+        assert_eq!(selected(&document), BTreeSet::from([ids[0], ids[3]]));
+
+        document
+            .select_objects([ids[0], ids[1]], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "SelNone").unwrap();
+        document.select_object(ids[2], SelectionMode::Add).unwrap();
+        registry.execute(&mut document, "SelPrev").unwrap();
+        assert_eq!(selected(&document), BTreeSet::from([ids[0], ids[1]]));
+        registry.execute(&mut document, "SelPrev").unwrap();
+        assert_eq!(selected(&document), BTreeSet::from([ids[2]]));
+
+        document
+            .select_objects([ids[0], ids[1]], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "SelNone").unwrap();
+        document.select_object(ids[2], SelectionMode::Add).unwrap();
+        registry
+            .execute(&mut document, "SelPrev DeselectOthersBeforeSelect No")
+            .unwrap();
+        assert_eq!(
+            selected(&document),
+            BTreeSet::from([ids[0], ids[1], ids[2]])
+        );
+
+        let before = selected(&document);
+        assert!(matches!(
+            registry.execute(&mut document, "SelLast DeselectOthersBeforeSelect=Maybe"),
+            Err(CommandError::Usage(
+                "SelLast [DeselectOthersBeforeSelect=Yes|No]"
+            ))
+        ));
+        assert_eq!(selected(&document), before);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

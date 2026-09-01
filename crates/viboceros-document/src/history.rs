@@ -8,13 +8,16 @@ pub(super) const HISTORY_LIMIT: usize = 100;
 pub(super) struct HistoryEntry {
     pub label: String,
     pub edits: Vec<Edit>,
+    pub object_ids: BTreeSet<ObjectId>,
 }
 
 #[derive(Clone, Debug)]
 pub(super) struct PendingTransaction {
     pub label: String,
     pub edits: Vec<Edit>,
+    pub object_ids: BTreeSet<ObjectId>,
     pub selection_before: BTreeSet<ObjectId>,
+    pub previous_selection_before: BTreeSet<ObjectId>,
 }
 
 #[derive(Clone, Debug, Default)]

@@ -633,6 +633,142 @@ def _execute(operation, iterations, tolerance):
                 document.Objects.Unlock(object_id, True)
                 document.Objects.Delete(object_id, True)
 
+    if kind == "document_action_selection_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        batch_ids = []
+        state = {"previous": []}
+        try:
+            for index in range(4):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add action-selection point")
+                object_ids.append(object_id)
+            for index in range(2):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 1.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add batch action-selection point")
+                batch_ids.append(object_id)
+            all_ids = object_ids + batch_ids
+            last_changed = [object_ids[3]]
+            batch_last_changed = list(batch_ids)
+
+            def current_selection():
+                return [
+                    object_id
+                    for object_id in all_ids
+                    if document.Objects.FindId(object_id).IsSelected(False) != 0
+                ]
+
+            def assign_selection(ids):
+                ids = set(ids)
+                document.Objects.UnselectAll()
+                for object_id in all_ids:
+                    if object_id in ids and not document.Objects.Select(object_id):
+                        raise ValueError("could not select action-selection object")
+
+            def apply_selection(ids, deselect_others):
+                current = current_selection()
+                target = set(ids)
+                if deselect_others:
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in target
+                    ]
+                else:
+                    combined = set(current)
+                    combined.update(target)
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in combined
+                    ]
+                if not set(current).issubset(set(next_selection)):
+                    state["previous"] = current
+                assign_selection(next_selection)
+                return len(next_selection)
+
+            def select_previous(deselect_others):
+                current = current_selection()
+                previous = set(state["previous"])
+                if deselect_others:
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in previous
+                    ]
+                else:
+                    combined = set(current)
+                    combined.update(previous)
+                    next_selection = [
+                        object_id for object_id in all_ids if object_id in combined
+                    ]
+                assign_selection(next_selection)
+                state["previous"] = current
+                return len(next_selection)
+
+            def selected_indices(ids):
+                return [
+                    index
+                    for index, object_id in enumerate(ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) != 0
+                ]
+
+            def establish_previous():
+                apply_selection([object_ids[0], object_ids[1]], True)
+                apply_selection([], True)
+                apply_selection([object_ids[2]], False)
+
+            def action_selection_cycle():
+                apply_selection([], True)
+                apply_selection([object_ids[0]], True)
+                last_default_count = apply_selection(last_changed, True)
+                last_default = selected_indices(object_ids)
+                previous_once_count = select_previous(True)
+                previous_once = selected_indices(object_ids)
+                previous_twice_count = select_previous(True)
+                previous_twice = selected_indices(object_ids)
+
+                apply_selection([object_ids[0]], True)
+                last_add_count = apply_selection(last_changed, False)
+                last_add = selected_indices(object_ids)
+
+                establish_previous()
+                previous_default_count = select_previous(True)
+                previous_default = selected_indices(object_ids)
+                previous_default_twice_count = select_previous(True)
+                previous_default_twice = selected_indices(object_ids)
+
+                establish_previous()
+                previous_add_count = select_previous(False)
+                previous_add = selected_indices(object_ids)
+
+                apply_selection([], True)
+                batch_last_count = apply_selection(batch_last_changed, True)
+                return {
+                    "batch_last": selected_indices(batch_ids),
+                    "batch_last_count": batch_last_count,
+                    "last_add": last_add,
+                    "last_add_count": last_add_count,
+                    "last_default": last_default,
+                    "last_default_count": last_default_count,
+                    "previous_add": previous_add,
+                    "previous_add_count": previous_add_count,
+                    "previous_default": previous_default,
+                    "previous_default_count": previous_default_count,
+                    "previous_default_twice": previous_default_twice,
+                    "previous_default_twice_count": previous_default_twice_count,
+                    "previous_once": previous_once,
+                    "previous_once_count": previous_once_count,
+                    "previous_twice": previous_twice,
+                    "previous_twice_count": previous_twice_count,
+                }
+
+            return _measure(iterations, action_selection_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids + batch_ids:
+                document.Objects.Delete(object_id, True)
+
     if kind == "point_distance":
         a = _point(operation["a"])
         b = _point(operation["b"])
