@@ -27,6 +27,10 @@
       "id": "document-action-selection-cycle"
     },
     {
+      "op": "document_attribute_selection_cycle",
+      "id": "document-attribute-selection-cycle"
+    },
+    {
       "op": "document_object_naming_cycle",
       "id": "document-object-naming-cycle"
     },

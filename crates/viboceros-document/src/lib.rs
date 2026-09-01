@@ -44,6 +44,50 @@ pub enum SelectionMode {
     Toggle,
 }
 
+#[derive(Clone, Debug)]
+struct CaseInsensitiveWildcard {
+    pattern: Vec<char>,
+}
+
+impl CaseInsensitiveWildcard {
+    fn new(pattern: &str) -> Self {
+        Self {
+            pattern: pattern.to_lowercase().chars().collect(),
+        }
+    }
+
+    fn matches(&self, candidate: &str) -> bool {
+        let candidate = candidate.to_lowercase().chars().collect::<Vec<_>>();
+        let mut pattern_index = 0;
+        let mut candidate_index = 0;
+        let mut star_index = None;
+        let mut star_candidate_index = 0;
+        while candidate_index < candidate.len() {
+            if pattern_index < self.pattern.len()
+                && (self.pattern[pattern_index] == '?'
+                    || self.pattern[pattern_index] == candidate[candidate_index])
+            {
+                pattern_index += 1;
+                candidate_index += 1;
+            } else if pattern_index < self.pattern.len() && self.pattern[pattern_index] == '*' {
+                star_index = Some(pattern_index);
+                pattern_index += 1;
+                star_candidate_index = candidate_index;
+            } else if let Some(star) = star_index {
+                pattern_index = star + 1;
+                star_candidate_index += 1;
+                candidate_index = star_candidate_index;
+            } else {
+                return false;
+            }
+        }
+        while pattern_index < self.pattern.len() && self.pattern[pattern_index] == '*' {
+            pattern_index += 1;
+        }
+        pattern_index == self.pattern.len()
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct ColorRgb {
     pub red: u8,
@@ -709,6 +753,98 @@ impl Document {
         }
         let cluster = self.selectable_clusters(ids.iter().copied());
         Ok(self.apply_selection_mode(cluster, mode))
+    }
+
+    /// Selects exactly the requested selectable objects without expanding
+    /// their groups. Attribute-based Rhino commands use this path so a name,
+    /// layer, or group match does not pull in members from other groups.
+    pub fn select_objects_direct(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        mode: SelectionMode,
+    ) -> Result<usize, DocumentError> {
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+        if let Some(unselectable) = ids.iter().find(|id| !self.is_object_selectable(**id)) {
+            return Err(DocumentError::ObjectNotSelectable(*unselectable));
+        }
+        Ok(self.apply_selection_mode(ids, mode))
+    }
+
+    /// Directly adds selectable objects whose names match Rhino's
+    /// case-insensitive `*` and `?` wildcard rules. An empty pattern matches
+    /// unnamed objects.
+    pub fn select_objects_by_name_pattern(&mut self, pattern: &str) -> usize {
+        let pattern = CaseInsensitiveWildcard::new(pattern);
+        let matches = self
+            .objects
+            .iter()
+            .filter(|object| self.is_object_selectable(object.id))
+            .filter(|object| pattern.matches(object.attributes.name.as_deref().unwrap_or_default()))
+            .map(|object| object.id)
+            .collect();
+        self.apply_selection_mode(matches, SelectionMode::Add)
+    }
+
+    /// Directly adds the selectable members of an exact, case-sensitive named
+    /// group without expanding any overlapping groups.
+    pub fn select_group_objects_by_name(&mut self, name: &str) -> usize {
+        let matches = self
+            .group_by_name(name)
+            .map(|group| group.members.clone())
+            .unwrap_or_default()
+            .into_iter()
+            .filter(|id| self.is_object_selectable(*id))
+            .collect();
+        self.apply_selection_mode(matches, SelectionMode::Add)
+    }
+
+    /// Selects every layer whose name matches Rhino's case-insensitive `*`
+    /// and `?` wildcard rules.
+    pub fn select_layer_objects_by_name_pattern(
+        &mut self,
+        pattern: &str,
+    ) -> Result<usize, DocumentError> {
+        let pattern = CaseInsensitiveWildcard::new(pattern);
+        let layer_ids = self
+            .layers
+            .iter()
+            .filter(|layer| pattern.matches(&layer.name))
+            .map(|layer| layer.id)
+            .collect::<Vec<_>>();
+        self.select_layer_objects(layer_ids)
+    }
+
+    /// Makes the requested layers visible and unlocked, then directly adds
+    /// their ordinary objects to the selection. Rhino's `SelLayer` persists
+    /// these layer-state changes outside normal undo history; object-level
+    /// hidden and locked states are retained.
+    pub fn select_layer_objects(
+        &mut self,
+        layer_ids: impl IntoIterator<Item = LayerId>,
+    ) -> Result<usize, DocumentError> {
+        self.ensure_no_transaction()?;
+        let layer_ids = layer_ids.into_iter().collect::<BTreeSet<_>>();
+        let indices = layer_ids
+            .iter()
+            .map(|id| self.layer_index(*id))
+            .collect::<Result<Vec<_>, _>>()?;
+        for index in indices {
+            self.layers[index].visible = true;
+            self.layers[index].locked = false;
+        }
+        let matches = self
+            .objects
+            .iter()
+            .filter(|object| {
+                layer_ids.contains(&object.attributes.layer_id)
+                    && self.is_object_selectable(object.id)
+            })
+            .map(|object| object.id)
+            .collect();
+        Ok(self.apply_selection_mode(matches, SelectionMode::Add))
     }
 
     /// Selects the objects affected by the latest object-editing transaction.
@@ -2178,6 +2314,115 @@ mod tests {
                 .unwrap(),
             0
         );
+    }
+
+    #[test]
+    fn direct_and_layer_selection_match_attribute_command_scope_without_history() {
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let first = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let grouped = document
+            .add_geometry(Geometry::Point(point(1.0, 0.0, 0.0)))
+            .unwrap();
+        let locked_object = document
+            .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, grouped])
+            .unwrap();
+        document.set_objects_locked([locked_object], true).unwrap();
+
+        let hidden_layer = document
+            .add_layer("Hidden", ColorRgb::new(10, 20, 30))
+            .unwrap();
+        document.set_current_layer(hidden_layer).unwrap();
+        let on_hidden_layer = document
+            .add_geometry(Geometry::Point(point(3.0, 0.0, 0.0)))
+            .unwrap();
+        let hidden_object = document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(4.0, 0.0, 0.0)),
+                ObjectAttributes::on_layer(hidden_layer).with_visibility(false),
+            )
+            .unwrap();
+        document.set_current_layer(default).unwrap();
+        document.set_layer_visibility(hidden_layer, false).unwrap();
+
+        let locked_layer = document
+            .add_layer("Locked", ColorRgb::new(40, 50, 60))
+            .unwrap();
+        document.set_current_layer(locked_layer).unwrap();
+        let on_locked_layer = document
+            .add_geometry(Geometry::Point(point(5.0, 0.0, 0.0)))
+            .unwrap();
+        let locked_on_layer = document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(6.0, 0.0, 0.0)),
+                ObjectAttributes::on_layer(locked_layer).with_locked(true),
+            )
+            .unwrap();
+        document.set_current_layer(default).unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            document
+                .select_objects_direct([first], SelectionMode::Replace)
+                .unwrap(),
+            1
+        );
+        assert!(document.is_selected(first));
+        assert!(!document.is_selected(grouped));
+        assert_eq!(
+            document.select_objects_direct([locked_object], SelectionMode::Add),
+            Err(DocumentError::ObjectNotSelectable(locked_object))
+        );
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [first]);
+
+        assert_eq!(
+            document
+                .select_layer_objects([hidden_layer, locked_layer])
+                .unwrap(),
+            3
+        );
+        assert!(document.layer(hidden_layer).unwrap().is_visible());
+        assert!(!document.layer(locked_layer).unwrap().is_locked());
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, on_hidden_layer, on_locked_layer])
+        );
+        assert!(!document.is_selected(hidden_object));
+        assert!(!document.is_selected(locked_on_layer));
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document.begin_transaction("active").unwrap();
+        assert_eq!(
+            document.select_layer_objects([hidden_layer]),
+            Err(DocumentError::TransactionInProgress)
+        );
+        document.rollback_transaction().unwrap();
+    }
+
+    #[test]
+    fn name_wildcards_support_rhino_star_question_and_case_rules() {
+        for (pattern, candidate, expected) in [
+            ("Bolt*", "bolt assembly", true),
+            ("?olt?", "BOLTA", true),
+            ("*", "", true),
+            ("", "", true),
+            ("", "Bolt", false),
+            ("Bolt?", "Bolt", false),
+            ("Bolt", "bolt", true),
+            ("Å*", "ångström", true),
+        ] {
+            assert_eq!(
+                CaseInsensitiveWildcard::new(pattern).matches(candidate),
+                expected,
+                "pattern {pattern:?}, candidate {candidate:?}"
+            );
+        }
     }
 
     #[test]

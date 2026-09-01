@@ -43,6 +43,9 @@ SelSrf
 SelMesh
 SelOpenMesh
 SelClosedMesh
+SelName "Fastener *"
+SelLayer "Construction *"
+SelGroup Assembly
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
@@ -150,6 +153,11 @@ classify consistently.
 including multi-object imports and command outputs. `SelPrev` swaps the current
 and previous selection sets. Both replace by default, matching Rhino; set
 `DeselectOthersBeforeSelect=No` to add instead.
+`SelName` and `SelLayer` add case-insensitive `*`/`?` wildcard matches without
+expanding overlapping groups; `SelName ""` selects unnamed objects. `SelGroup`
+uses Rhino's exact, case-sensitive group names. Matching hidden or locked layers
+with `SelLayer` makes those layers visible and unlocked outside undo history,
+while object-level hidden and locked states remain untouched.
 `SetObjectName` assigns one shared name to the selection. Add
 `AppendCounter=Yes` for Rhino's zero-based suffixes in document order, or use
 `SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style

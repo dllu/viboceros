@@ -56,6 +56,35 @@ def _finite(value, context):
     return number
 
 
+def _wildcard_matches(pattern, candidate):
+    pattern = pattern.lower()
+    candidate = candidate.lower()
+    pattern_index = 0
+    candidate_index = 0
+    star_index = None
+    star_candidate_index = 0
+    while candidate_index < len(candidate):
+        if pattern_index < len(pattern) and (
+            pattern[pattern_index] == "?"
+            or pattern[pattern_index] == candidate[candidate_index]
+        ):
+            pattern_index += 1
+            candidate_index += 1
+        elif pattern_index < len(pattern) and pattern[pattern_index] == "*":
+            star_index = pattern_index
+            pattern_index += 1
+            star_candidate_index = candidate_index
+        elif star_index is not None:
+            pattern_index = star_index + 1
+            star_candidate_index += 1
+            candidate_index = star_candidate_index
+        else:
+            return False
+    while pattern_index < len(pattern) and pattern[pattern_index] == "*":
+        pattern_index += 1
+    return pattern_index == len(pattern)
+
+
 def _state_cycle_indices(operation, name, object_count):
     values = operation.get(name)
     if not isinstance(values, list):
@@ -767,6 +796,210 @@ def _execute(operation, iterations, tolerance):
         finally:
             document.Objects.UnselectAll()
             for object_id in object_ids + batch_ids:
+                document.Objects.Delete(object_id, True)
+
+    if kind == "document_attribute_selection_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        group_indices = []
+        suffix = " " + str(System.Guid.NewGuid())
+        hidden_layer = Rhino.DocObjects.Layer()
+        hidden_layer.Name = "Hidden Parts" + suffix
+        hidden_layer_index = document.Layers.Add(hidden_layer)
+        locked_layer = Rhino.DocObjects.Layer()
+        locked_layer.Name = "Locked Parts" + suffix
+        locked_layer_index = document.Layers.Add(locked_layer)
+        if hidden_layer_index < 0 or locked_layer_index < 0:
+            raise ValueError("could not add attribute-selection layers")
+        default_layer_index = document.Layers.CurrentLayerIndex
+        probe_layer_indices = [
+            default_layer_index,
+            hidden_layer_index,
+            locked_layer_index,
+        ]
+
+        def set_layer_mode(layer_index, visible, locked):
+            layer = document.Layers[layer_index]
+            if layer.IsVisible == visible and layer.IsLocked == locked:
+                return
+            settings = Rhino.DocObjects.Layer()
+            settings.CopyAttributesFrom(layer)
+            settings.Name = layer.Name
+            settings.ParentLayerId = layer.ParentLayerId
+            settings.IsVisible = visible
+            settings.IsLocked = locked
+            if not document.Layers.Modify(settings, layer.Id, True):
+                raise ValueError(
+                    "could not change attribute-selection layer %d to visible=%r locked=%r"
+                    % (layer_index, visible, locked)
+                )
+
+        try:
+            specifications = [
+                (default_layer_index, None),
+                (default_layer_index, "BoltA"),
+                (default_layer_index, "bolta"),
+                (default_layer_index, "BoltLong"),
+                (default_layer_index, "Peer"),
+                (default_layer_index, "BoltA"),
+                (default_layer_index, "BoltA"),
+                (hidden_layer_index, "BoltA"),
+                (hidden_layer_index, "BoltA"),
+                (locked_layer_index, "BoltA"),
+                (locked_layer_index, "BoltA"),
+            ]
+            for index, (layer_index, name) in enumerate(specifications):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.LayerIndex = layer_index
+                attributes.Name = name
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add attribute-selection point")
+                object_ids.append(object_id)
+            for index in (5, 8):
+                if not document.Objects.Hide(object_ids[index], True):
+                    raise ValueError("could not hide attribute-selection point")
+            for index in (6, 10):
+                if not document.Objects.Lock(object_ids[index], True):
+                    raise ValueError("could not lock attribute-selection point")
+
+            for name, members in (
+                ("Team" + suffix, [object_ids[1], object_ids[4], object_ids[6]]),
+                ("team" + suffix, [object_ids[2]]),
+                ("Overlap" + suffix, [object_ids[1], object_ids[3]]),
+            ):
+                group_index = document.Groups.Add(
+                    name, System.Array[System.Guid](members)
+                )
+                if group_index < 0:
+                    raise ValueError("could not add attribute-selection group")
+                group_indices.append(group_index)
+
+            def object_is_selectable(object_id):
+                rhino_object = document.Objects.FindId(object_id)
+                if (
+                    rhino_object is None
+                    or rhino_object.IsHidden
+                    or rhino_object.IsLocked
+                ):
+                    return False
+                layer = document.Layers[rhino_object.Attributes.LayerIndex]
+                return bool(layer.IsVisible and not layer.IsLocked)
+
+            def selected_indices():
+                return [
+                    index
+                    for index, object_id in enumerate(object_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ]
+
+            def select_ids(ids):
+                for object_id in ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if (
+                        object_is_selectable(object_id)
+                        and rhino_object.IsSelected(False) <= 0
+                        and not document.Objects.Select(object_id)
+                    ):
+                        raise ValueError("could not select attribute-selection point")
+                return int(document.Objects.GetSelectedObjectCount(False))
+
+            def select_name(pattern):
+                matches = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    name = rhino_object.Attributes.Name or ""
+                    if _wildcard_matches(pattern, name):
+                        matches.append(object_id)
+                return select_ids(matches)
+
+            def select_group(name):
+                matches = []
+                for group_index in group_indices:
+                    if document.Groups.GroupName(group_index) != name:
+                        continue
+                    members = document.Groups.GroupMembers(group_index)
+                    if members is not None:
+                        matches.extend(member.Id for member in members)
+                return select_ids(matches)
+
+            def select_layers(pattern):
+                matching_layers = []
+                for layer_index in probe_layer_indices:
+                    layer = document.Layers[layer_index]
+                    if _wildcard_matches(pattern, layer.Name):
+                        matching_layers.append(layer_index)
+                        set_layer_mode(layer_index, True, False)
+                return select_ids(
+                    object_id
+                    for object_id in object_ids
+                    if document.Objects.FindId(object_id).Attributes.LayerIndex
+                    in matching_layers
+                )
+
+            def seed_selection():
+                document.Objects.UnselectAll()
+                return select_ids([object_ids[0]])
+
+            def attribute_selection_cycle():
+                set_layer_mode(hidden_layer_index, False, False)
+                set_layer_mode(locked_layer_index, True, True)
+
+                seed_selection()
+                name_count = select_name("BOLT?")
+                name = selected_indices()
+
+                seed_selection()
+                group_upper_count = select_group("Team" + suffix)
+                group_upper = selected_indices()
+                group_lower_count = select_group("team" + suffix)
+                group_lower = selected_indices()
+                group_wrong_case_count = select_group("TEAM" + suffix)
+                group_wrong_case = selected_indices()
+
+                seed_selection()
+                hidden_layer_count = select_layers("hidden parts*")
+                hidden_layer_selection = selected_indices()
+                hidden_layer_visible = bool(
+                    document.Layers[hidden_layer_index].IsVisible
+                )
+                locked_layer_count = select_layers("LOCKED*")
+                locked_layer_selection = selected_indices()
+                locked_layer_locked = bool(
+                    document.Layers[locked_layer_index].IsLocked
+                )
+                all_layers_count = select_layers("*")
+                return {
+                    "all_layers": selected_indices(),
+                    "all_layers_count": all_layers_count,
+                    "group_lower": group_lower,
+                    "group_lower_count": group_lower_count,
+                    "group_upper": group_upper,
+                    "group_upper_count": group_upper_count,
+                    "group_wrong_case": group_wrong_case,
+                    "group_wrong_case_count": group_wrong_case_count,
+                    "hidden_layer": hidden_layer_selection,
+                    "hidden_layer_count": hidden_layer_count,
+                    "hidden_layer_visible": hidden_layer_visible,
+                    "locked_layer": locked_layer_selection,
+                    "locked_layer_count": locked_layer_count,
+                    "locked_layer_locked": locked_layer_locked,
+                    "name": name,
+                    "name_count": name_count,
+                }
+
+            return _measure(iterations, attribute_selection_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for group_index in reversed(group_indices):
+                document.Groups.Delete(group_index)
+            set_layer_mode(hidden_layer_index, True, False)
+            set_layer_mode(locked_layer_index, True, False)
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
                 document.Objects.Delete(object_id, True)
 
     if kind == "document_object_naming_cycle":

@@ -94,6 +94,15 @@ impl CommandRegistry {
         registry
             .register(SelPrevCommand)
             .expect("unique built-in command");
+        registry
+            .register(SelNameCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SelLayerCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SelGroupCommand)
+            .expect("unique built-in command");
         for (name, filter) in [
             ("SelCrv", GeometrySelectionFilter::Curve),
             ("SelOpenCrv", GeometrySelectionFilter::OpenCurve),
@@ -860,6 +869,81 @@ fn parse_action_selection_arguments(
         return Err(CommandError::Usage(usage));
     }
     parse_yes_no(value.trim_start_matches('_')).ok_or(CommandError::Usage(usage))
+}
+
+struct SelNameCommand;
+
+impl Command for SelNameCommand {
+    fn name(&self) -> &'static str {
+        "SelName"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let pattern = parse_attribute_pattern(arguments, "SelName name-pattern")?;
+        let count = document.select_objects_by_name_pattern(&pattern);
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+struct SelLayerCommand;
+
+impl Command for SelLayerCommand {
+    fn name(&self) -> &'static str {
+        "SelLayer"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let pattern = parse_attribute_pattern(arguments, "SelLayer layer-pattern")?;
+        let count = document.select_layer_objects_by_name_pattern(&pattern)?;
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+struct SelGroupCommand;
+
+impl Command for SelGroupCommand {
+    fn name(&self) -> &'static str {
+        "SelGroup"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let name = parse_attribute_pattern(arguments, "SelGroup group-name")?;
+        let count = document.select_group_objects_by_name(&name);
+        Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+fn parse_attribute_pattern(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<String, CommandError> {
+    if arguments.is_empty() {
+        return Err(CommandError::Usage(usage));
+    }
+    let joined = arguments.join(" ");
+    let pattern = joined.trim();
+    let starts_quoted = pattern.starts_with('"');
+    let ends_quoted = pattern.ends_with('"');
+    if starts_quoted != ends_quoted {
+        return Err(CommandError::Usage(usage));
+    }
+    Ok(if starts_quoted && pattern.len() >= 2 {
+        pattern[1..pattern.len() - 1].to_owned()
+    } else {
+        pattern.to_owned()
+    })
 }
 
 struct SelectGeometryCommand {
@@ -3486,7 +3570,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5861,6 +5945,179 @@ mod tests {
             Err(CommandError::NoObjectsSelected)
         ));
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn attribute_selection_matches_names_layers_and_exact_case_sensitive_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let add_named_point = |document: &mut Document, x, attributes: ObjectAttributes| {
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Point(Point3::try_new(x, 0.0, 0.0).unwrap()),
+                    attributes,
+                )
+                .unwrap()
+        };
+        let unrelated = add_named_point(&mut document, 0.0, ObjectAttributes::on_layer(default));
+        let upper = add_named_point(
+            &mut document,
+            1.0,
+            ObjectAttributes::on_layer(default).with_name("BoltA"),
+        );
+        let lower = add_named_point(
+            &mut document,
+            2.0,
+            ObjectAttributes::on_layer(default).with_name("bolta"),
+        );
+        let wildcard = add_named_point(
+            &mut document,
+            3.0,
+            ObjectAttributes::on_layer(default).with_name("BoltLong"),
+        );
+        let peer = add_named_point(
+            &mut document,
+            4.0,
+            ObjectAttributes::on_layer(default).with_name("Peer"),
+        );
+        let hidden_object = add_named_point(
+            &mut document,
+            5.0,
+            ObjectAttributes::on_layer(default)
+                .with_name("BoltA")
+                .with_visibility(false),
+        );
+        let locked_object = add_named_point(
+            &mut document,
+            6.0,
+            ObjectAttributes::on_layer(default)
+                .with_name("BoltA")
+                .with_locked(true),
+        );
+
+        let hidden_layer = document
+            .add_layer("Hidden Parts", ColorRgb::new(10, 20, 30))
+            .unwrap();
+        let hidden_layer_match = add_named_point(
+            &mut document,
+            7.0,
+            ObjectAttributes::on_layer(hidden_layer).with_name("BoltA"),
+        );
+        let hidden_on_hidden_layer = add_named_point(
+            &mut document,
+            8.0,
+            ObjectAttributes::on_layer(hidden_layer)
+                .with_name("BoltA")
+                .with_visibility(false),
+        );
+        document.set_layer_visibility(hidden_layer, false).unwrap();
+
+        let locked_layer = document
+            .add_layer("Locked Parts", ColorRgb::new(40, 50, 60))
+            .unwrap();
+        let locked_layer_match = add_named_point(
+            &mut document,
+            9.0,
+            ObjectAttributes::on_layer(locked_layer).with_name("BoltA"),
+        );
+        let locked_on_locked_layer = add_named_point(
+            &mut document,
+            10.0,
+            ObjectAttributes::on_layer(locked_layer)
+                .with_name("BoltA")
+                .with_locked(true),
+        );
+        document.set_layer_locked(locked_layer, true).unwrap();
+        document
+            .add_group(Some("Team".to_owned()), [upper, peer, locked_object])
+            .unwrap();
+        document
+            .add_group(Some("team".to_owned()), [lower])
+            .unwrap();
+        document
+            .add_group(Some("Overlap".to_owned()), [upper, wildcard])
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        document
+            .select_object(unrelated, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelName BOLT?").unwrap(),
+            "Selected 3 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([unrelated, upper, lower])
+        );
+        assert!(!document.is_selected(wildcard));
+        assert!(!document.is_selected(peer));
+        assert!(!document.is_selected(hidden_object));
+        assert!(!document.is_selected(locked_object));
+        assert!(!document.is_selected(hidden_layer_match));
+        assert!(!document.is_selected(locked_layer_match));
+
+        registry.execute(&mut document, "SelName bolt*").unwrap();
+        assert!(document.is_selected(wildcard));
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelName \"\"").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [unrelated]
+        );
+
+        assert_eq!(
+            registry.execute(&mut document, "SelGroup Team").unwrap(),
+            "Selected 3 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([unrelated, upper, peer])
+        );
+        assert!(!document.is_selected(wildcard));
+        assert_eq!(
+            registry.execute(&mut document, "SelGroup team").unwrap(),
+            "Selected 4 object(s)"
+        );
+        assert!(document.is_selected(lower));
+        assert_eq!(
+            registry.execute(&mut document, "SelGroup TEAM").unwrap(),
+            "Selected 4 object(s)"
+        );
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "SelLayer \"Hidden Parts\"")
+                .unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert!(document.layer(hidden_layer).unwrap().is_visible());
+        assert!(document.is_selected(hidden_layer_match));
+        assert!(!document.is_selected(hidden_on_hidden_layer));
+        assert!(!document.is_selected(peer));
+        assert_eq!(
+            registry.execute(&mut document, "SelLayer LOCKED*").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert!(!document.layer(locked_layer).unwrap().is_locked());
+        assert!(document.is_selected(locked_layer_match));
+        assert!(!document.is_selected(locked_on_locked_layer));
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let selection = document.selected_object_ids().collect::<BTreeSet<_>>();
+        for command in ["SelName", "SelLayer", "SelGroup", "SelName \"unterminated"] {
+            assert!(registry.execute(&mut document, command).is_err());
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                selection
+            );
+        }
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

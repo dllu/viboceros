@@ -73,6 +73,9 @@ pub enum Operation {
     DocumentActionSelectionCycle {
         id: String,
     },
+    DocumentAttributeSelectionCycle {
+        id: String,
+    },
     DocumentObjectNamingCycle {
         id: String,
     },
@@ -241,6 +244,7 @@ impl Operation {
             | Self::DocumentObjectSwapCycle { id }
             | Self::DocumentObjectIsolationCycle { id }
             | Self::DocumentActionSelectionCycle { id }
+            | Self::DocumentAttributeSelectionCycle { id }
             | Self::DocumentObjectNamingCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
@@ -414,6 +418,9 @@ fn execute(
         }
         Operation::DocumentActionSelectionCycle { .. } => {
             document_action_selection_cycle(iterations)?
+        }
+        Operation::DocumentAttributeSelectionCycle { .. } => {
+            document_attribute_selection_cycle(iterations)?
         }
         Operation::DocumentObjectNamingCycle { .. } => document_object_naming_cycle(iterations)?,
         Operation::PointDistance { a, b, .. } => {
@@ -1264,6 +1271,98 @@ fn document_action_selection_cycle(iterations: u32) -> Result<(Value, u64), Prob
     })
 }
 
+fn document_attribute_selection_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::default();
+    let default_layer = document.current_layer_id();
+    let hidden_layer = document.add_layer("Hidden Parts", ColorRgb::new(10, 20, 30))?;
+    let locked_layer = document.add_layer("Locked Parts", ColorRgb::new(40, 50, 60))?;
+    let specifications = [
+        (default_layer, None, true, false),
+        (default_layer, Some("BoltA"), true, false),
+        (default_layer, Some("bolta"), true, false),
+        (default_layer, Some("BoltLong"), true, false),
+        (default_layer, Some("Peer"), true, false),
+        (default_layer, Some("BoltA"), false, false),
+        (default_layer, Some("BoltA"), true, true),
+        (hidden_layer, Some("BoltA"), true, false),
+        (hidden_layer, Some("BoltA"), false, false),
+        (locked_layer, Some("BoltA"), true, false),
+        (locked_layer, Some("BoltA"), true, true),
+    ];
+    let mut object_ids = Vec::with_capacity(specifications.len());
+    for (index, (layer, name, visible, locked)) in specifications.into_iter().enumerate() {
+        let mut attributes = ObjectAttributes::on_layer(layer)
+            .with_visibility(visible)
+            .with_locked(locked);
+        if let Some(name) = name {
+            attributes = attributes.with_name(name);
+        }
+        object_ids.push(document.add_geometry_with_attributes(
+            Geometry::Point(Point3::try_new(index as f64, 0.0, 0.0)?),
+            attributes,
+        )?);
+    }
+    document.add_group(
+        Some("Team".to_owned()),
+        [object_ids[1], object_ids[4], object_ids[6]],
+    )?;
+    document.add_group(Some("team".to_owned()), [object_ids[2]])?;
+    document.add_group(Some("Overlap".to_owned()), [object_ids[1], object_ids[3]])?;
+    document.set_layer_visibility(hidden_layer, false)?;
+    document.set_layer_locked(locked_layer, true)?;
+
+    measure_document(iterations, || {
+        document.set_layer_visibility(hidden_layer, false)?;
+        document.set_layer_locked(locked_layer, true)?;
+
+        document.clear_selection();
+        document.select_objects_direct([object_ids[0]], SelectionMode::Replace)?;
+        let name_count = document.select_objects_by_name_pattern("BOLT?");
+        let name = document_selected_indices(&document, &object_ids);
+
+        document.clear_selection();
+        document.select_objects_direct([object_ids[0]], SelectionMode::Replace)?;
+        let group_upper_count = document.select_group_objects_by_name("Team");
+        let group_upper = document_selected_indices(&document, &object_ids);
+        let group_lower_count = document.select_group_objects_by_name("team");
+        let group_lower = document_selected_indices(&document, &object_ids);
+        let group_wrong_case_count = document.select_group_objects_by_name("TEAM");
+        let group_wrong_case = document_selected_indices(&document, &object_ids);
+
+        document.clear_selection();
+        document.select_objects_direct([object_ids[0]], SelectionMode::Replace)?;
+        let hidden_layer_count = document.select_layer_objects_by_name_pattern("hidden parts")?;
+        let hidden_layer_selection = document_selected_indices(&document, &object_ids);
+        let hidden_layer_visible = document
+            .layer(hidden_layer)
+            .is_some_and(|layer| layer.is_visible());
+        let locked_layer_count = document.select_layer_objects_by_name_pattern("LOCKED*")?;
+        let locked_layer_selection = document_selected_indices(&document, &object_ids);
+        let locked_layer_locked = document
+            .layer(locked_layer)
+            .is_some_and(|layer| layer.is_locked());
+        let all_layers_count = document.select_layer_objects_by_name_pattern("*")?;
+        Ok(json!({
+            "all_layers": document_selected_indices(&document, &object_ids),
+            "all_layers_count": all_layers_count,
+            "group_lower": group_lower,
+            "group_lower_count": group_lower_count,
+            "group_upper": group_upper,
+            "group_upper_count": group_upper_count,
+            "group_wrong_case": group_wrong_case,
+            "group_wrong_case_count": group_wrong_case_count,
+            "hidden_layer": hidden_layer_selection,
+            "hidden_layer_count": hidden_layer_count,
+            "hidden_layer_visible": hidden_layer_visible,
+            "locked_layer": locked_layer_selection,
+            "locked_layer_count": locked_layer_count,
+            "locked_layer_locked": locked_layer_locked,
+            "name": name,
+            "name_count": name_count,
+        }))
+    })
+}
+
 fn document_object_naming_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
     let mut document = Document::default();
     let mut object_ids = Vec::with_capacity(3);
@@ -1683,6 +1782,35 @@ mod tests {
                 "previous_once_count": 1,
                 "previous_twice": [3],
                 "previous_twice_count": 1,
+            })
+        );
+    }
+
+    #[test]
+    fn selects_attributes_without_group_expansion_and_activates_layers() {
+        let response = run_request(&request(vec![Operation::DocumentAttributeSelectionCycle {
+            id: "attribute-selection".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "all_layers": [0, 1, 2, 3, 4, 7, 9],
+                "all_layers_count": 7,
+                "group_lower": [0, 1, 2, 4],
+                "group_lower_count": 4,
+                "group_upper": [0, 1, 4],
+                "group_upper_count": 3,
+                "group_wrong_case": [0, 1, 2, 4],
+                "group_wrong_case_count": 4,
+                "hidden_layer": [0, 7],
+                "hidden_layer_count": 2,
+                "hidden_layer_visible": true,
+                "locked_layer": [0, 7, 9],
+                "locked_layer_count": 3,
+                "locked_layer_locked": false,
+                "name": [0, 1, 2],
+                "name_count": 3,
             })
         );
     }
