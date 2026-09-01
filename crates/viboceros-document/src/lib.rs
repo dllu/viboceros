@@ -328,6 +328,12 @@ impl Document {
         self.layers.iter().find(|layer| layer.id == id)
     }
 
+    pub fn layer_by_name(&self, name: &str) -> Option<&Layer> {
+        self.layers
+            .iter()
+            .find(|layer| layer.name.eq_ignore_ascii_case(name.trim()))
+    }
+
     pub fn add_layer(
         &mut self,
         name: impl Into<String>,
@@ -368,6 +374,9 @@ impl Document {
 
     pub fn set_current_layer(&mut self, id: LayerId) -> Result<(), DocumentError> {
         let layer = self.layer(id).ok_or(DocumentError::LayerNotFound(id))?;
+        if !layer.visible {
+            return Err(DocumentError::LayerHidden(id));
+        }
         if layer.locked {
             return Err(DocumentError::LayerLocked(id));
         }
@@ -379,6 +388,100 @@ impl Document {
         self.record_edit(
             "Set current layer",
             Edit::CurrentLayerChanged { before, after: id },
+        );
+        Ok(())
+    }
+
+    pub fn rename_layer(
+        &mut self,
+        id: LayerId,
+        name: impl Into<String>,
+    ) -> Result<bool, DocumentError> {
+        let name = name.into();
+        let name = name.trim();
+        if name.is_empty() {
+            return Err(DocumentError::EmptyLayerName);
+        }
+        let index = self.layer_index(id)?;
+        if self
+            .layers
+            .iter()
+            .any(|layer| layer.id != id && layer.name.eq_ignore_ascii_case(name))
+        {
+            return Err(DocumentError::DuplicateLayerName(name.to_owned()));
+        }
+        if self.layers[index].name == name {
+            return Ok(false);
+        }
+        let before = self.layers[index].clone();
+        self.layers[index].name = name.to_owned();
+        self.record_layer_change("Rename layer", index, before);
+        Ok(true)
+    }
+
+    pub fn set_layer_color(&mut self, id: LayerId, color: ColorRgb) -> Result<bool, DocumentError> {
+        let index = self.layer_index(id)?;
+        if self.layers[index].color == color {
+            return Ok(false);
+        }
+        let before = self.layers[index].clone();
+        self.layers[index].color = color;
+        self.record_layer_change("Set layer color", index, before);
+        Ok(true)
+    }
+
+    pub fn set_layer_visibility(
+        &mut self,
+        id: LayerId,
+        visible: bool,
+    ) -> Result<bool, DocumentError> {
+        let index = self.layer_index(id)?;
+        if self.layers[index].visible == visible {
+            return Ok(false);
+        }
+        if !visible && self.current_layer == id {
+            return Err(DocumentError::CurrentLayerCannotBeHidden(id));
+        }
+        let before = self.layers[index].clone();
+        self.layers[index].visible = visible;
+        self.record_layer_change("Set layer visibility", index, before);
+        Ok(true)
+    }
+
+    pub fn set_layer_locked(&mut self, id: LayerId, locked: bool) -> Result<bool, DocumentError> {
+        let index = self.layer_index(id)?;
+        if self.layers[index].locked == locked {
+            return Ok(false);
+        }
+        if locked && self.current_layer == id {
+            return Err(DocumentError::CurrentLayerCannotBeLocked(id));
+        }
+        let before = self.layers[index].clone();
+        self.layers[index].locked = locked;
+        self.record_layer_change("Set layer lock", index, before);
+        Ok(true)
+    }
+
+    pub fn delete_layer(&mut self, id: LayerId) -> Result<(), DocumentError> {
+        let index = self.layer_index(id)?;
+        if self.current_layer == id {
+            return Err(DocumentError::CurrentLayerCannotBeDeleted(id));
+        }
+        if self
+            .objects
+            .iter()
+            .any(|object| object.attributes.layer_id == id)
+        {
+            return Err(DocumentError::LayerNotEmpty(id));
+        }
+        let layer = self.layers.remove(index);
+        self.record_edit(
+            "Delete layer",
+            Edit::LayerRemoved {
+                index,
+                id,
+                stored: Some(layer),
+            },
         );
         Ok(())
     }
@@ -514,6 +617,19 @@ impl Document {
         name: Option<String>,
         members: impl IntoIterator<Item = ObjectId>,
     ) -> Result<GroupId, DocumentError> {
+        let name = name
+            .map(|name| name.trim().to_owned())
+            .filter(|name| !name.is_empty());
+        if let Some(name) = &name
+            && self.groups.iter().any(|group| {
+                group
+                    .name
+                    .as_ref()
+                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
+            })
+        {
+            return Err(DocumentError::DuplicateGroupName(name.clone()));
+        }
         let members: BTreeSet<_> = members.into_iter().collect();
         if members.is_empty() {
             return Err(DocumentError::EmptyGroup);
@@ -540,6 +656,38 @@ impl Document {
         self.groups.iter()
     }
 
+    pub fn group(&self, id: GroupId) -> Option<&Group> {
+        self.groups.iter().find(|group| group.id == id)
+    }
+
+    pub fn group_by_name(&self, name: &str) -> Option<&Group> {
+        self.groups.iter().find(|group| {
+            group
+                .name
+                .as_ref()
+                .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name.trim()))
+        })
+    }
+
+    pub fn remove_group(&mut self, id: GroupId) -> Result<usize, DocumentError> {
+        let index = self
+            .groups
+            .iter()
+            .position(|group| group.id == id)
+            .ok_or(DocumentError::GroupNotFound(id))?;
+        let group = self.groups.remove(index);
+        let member_count = group.members.len();
+        self.record_edit(
+            "Remove group",
+            Edit::GroupRemoved {
+                index,
+                id,
+                stored: Some(group),
+            },
+        );
+        Ok(member_count)
+    }
+
     pub fn bounds(&self) -> Option<BoundingBox3> {
         self.objects
             .iter()
@@ -553,6 +701,19 @@ impl Document {
         } else {
             Ok(())
         }
+    }
+
+    fn layer_index(&self, id: LayerId) -> Result<usize, DocumentError> {
+        self.layers
+            .iter()
+            .position(|layer| layer.id == id)
+            .ok_or(DocumentError::LayerNotFound(id))
+    }
+
+    fn record_layer_change(&mut self, label: &'static str, index: usize, before: Layer) {
+        let after = self.layers[index].clone();
+        let id = after.id;
+        self.record_edit(label, Edit::LayerChanged { id, before, after });
     }
 
     fn record_edit(&mut self, label: &'static str, edit: Edit) {
@@ -599,11 +760,32 @@ pub enum DocumentError {
     #[error("layer {0} is locked")]
     LayerLocked(LayerId),
 
+    #[error("layer {0} is hidden")]
+    LayerHidden(LayerId),
+
+    #[error("the current layer {0} cannot be hidden")]
+    CurrentLayerCannotBeHidden(LayerId),
+
+    #[error("the current layer {0} cannot be locked")]
+    CurrentLayerCannotBeLocked(LayerId),
+
+    #[error("the current layer {0} cannot be deleted")]
+    CurrentLayerCannotBeDeleted(LayerId),
+
+    #[error("layer {0} contains objects and cannot be deleted")]
+    LayerNotEmpty(LayerId),
+
     #[error("object {0} was not found")]
     ObjectNotFound(ObjectId),
 
     #[error("a group must contain at least one object")]
     EmptyGroup,
+
+    #[error("a group named '{0}' already exists")]
+    DuplicateGroupName(String),
+
+    #[error("group {0} was not found")]
+    GroupNotFound(GroupId),
 
     #[error("a document edit transaction is already active")]
     TransactionAlreadyActive,
@@ -645,6 +827,100 @@ mod tests {
     }
 
     #[test]
+    fn layer_properties_are_atomic_and_reversible() {
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Construction", ColorRgb::new(10, 20, 30))
+            .unwrap();
+        document.begin_transaction("Edit layer").unwrap();
+        assert!(document.rename_layer(layer, "Reference").unwrap());
+        assert!(
+            document
+                .set_layer_color(layer, ColorRgb::new(80, 90, 100))
+                .unwrap()
+        );
+        assert!(document.set_layer_visibility(layer, false).unwrap());
+        assert!(document.set_layer_locked(layer, true).unwrap());
+        document.commit_transaction().unwrap();
+
+        let changed = document.layer(layer).unwrap();
+        assert_eq!(changed.name(), "Reference");
+        assert_eq!(changed.color(), ColorRgb::new(80, 90, 100));
+        assert!(!changed.is_visible());
+        assert!(changed.is_locked());
+
+        document.undo().unwrap();
+        let original = document.layer(layer).unwrap();
+        assert_eq!(original.name(), "Construction");
+        assert_eq!(original.color(), ColorRgb::new(10, 20, 30));
+        assert!(original.is_visible());
+        assert!(!original.is_locked());
+
+        document.redo().unwrap();
+        let replayed = document.layer(layer).unwrap();
+        assert_eq!(replayed.name(), "Reference");
+        assert!(!replayed.is_visible());
+        assert!(replayed.is_locked());
+    }
+
+    #[test]
+    fn current_layer_stays_visible_unlocked_and_present() {
+        let mut document = Document::default();
+        let current = document.current_layer_id();
+        assert_eq!(
+            document.set_layer_visibility(current, false),
+            Err(DocumentError::CurrentLayerCannotBeHidden(current))
+        );
+        assert_eq!(
+            document.set_layer_locked(current, true),
+            Err(DocumentError::CurrentLayerCannotBeLocked(current))
+        );
+        assert_eq!(
+            document.delete_layer(current),
+            Err(DocumentError::CurrentLayerCannotBeDeleted(current))
+        );
+
+        let other = document.add_layer("Other", ColorRgb::new(1, 2, 3)).unwrap();
+        document.set_layer_visibility(other, false).unwrap();
+        assert_eq!(
+            document.set_current_layer(other),
+            Err(DocumentError::LayerHidden(other))
+        );
+        document.set_layer_visibility(other, true).unwrap();
+        document.set_layer_locked(other, true).unwrap();
+        assert_eq!(
+            document.set_current_layer(other),
+            Err(DocumentError::LayerLocked(other))
+        );
+    }
+
+    #[test]
+    fn deleting_an_empty_layer_is_reversible_but_nonempty_layers_are_protected() {
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let occupied = document
+            .add_layer("Occupied", ColorRgb::new(1, 2, 3))
+            .unwrap();
+        document.set_current_layer(occupied).unwrap();
+        document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document.set_current_layer(default).unwrap();
+        assert_eq!(
+            document.delete_layer(occupied),
+            Err(DocumentError::LayerNotEmpty(occupied))
+        );
+
+        let empty = document.add_layer("Empty", ColorRgb::new(4, 5, 6)).unwrap();
+        document.delete_layer(empty).unwrap();
+        assert!(document.layer(empty).is_none());
+        document.undo().unwrap();
+        assert_eq!(document.layer(empty).unwrap().name(), "Empty");
+        document.redo().unwrap();
+        assert!(document.layer(empty).is_none());
+    }
+
+    #[test]
     fn deleting_an_object_prunes_empty_groups() {
         let mut document = Document::default();
         let object = document
@@ -654,6 +930,32 @@ mod tests {
         document.delete_object(object).unwrap();
         assert_eq!(document.objects().len(), 0);
         assert_eq!(document.groups().len(), 0);
+    }
+
+    #[test]
+    fn named_groups_are_unique_and_removal_is_reversible() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let group = document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        assert_eq!(document.group_by_name("pair").unwrap().id(), group);
+        assert_eq!(
+            document.add_group(Some("PAIR".to_owned()), [first]),
+            Err(DocumentError::DuplicateGroupName("PAIR".to_owned()))
+        );
+
+        assert_eq!(document.remove_group(group).unwrap(), 2);
+        assert!(document.group(group).is_none());
+        document.undo().unwrap();
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+        document.redo().unwrap();
+        assert!(document.group(group).is_none());
     }
 
     #[test]
@@ -700,9 +1002,15 @@ mod tests {
         document
             .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
             .unwrap();
-        document
+        let temporary = document
             .add_layer("Temporary", ColorRgb::new(1, 2, 3))
             .unwrap();
+        document.rename_layer(temporary, "Discarded").unwrap();
+        document
+            .set_layer_color(temporary, ColorRgb::new(4, 5, 6))
+            .unwrap();
+        document.set_layer_visibility(temporary, false).unwrap();
+        document.set_layer_locked(temporary, true).unwrap();
         assert!(document.rollback_transaction().unwrap());
 
         assert_eq!(document.objects().len(), 0);

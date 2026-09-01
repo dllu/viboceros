@@ -38,6 +38,16 @@ pub(super) enum Edit {
         id: LayerId,
         stored: Option<Layer>,
     },
+    LayerRemoved {
+        index: usize,
+        id: LayerId,
+        stored: Option<Layer>,
+    },
+    LayerChanged {
+        id: LayerId,
+        before: Layer,
+        after: Layer,
+    },
     GroupInserted {
         index: usize,
         id: GroupId,
@@ -78,6 +88,15 @@ impl Edit {
             Self::LayerInserted { index, id, stored } => {
                 ensure_empty(stored, "inserted layer was already stored")?;
                 *stored = Some(remove_layer(document, *index, *id)?);
+            }
+            Self::LayerRemoved { index, stored, .. } => {
+                let layer = stored.take().ok_or(DocumentError::HistoryInvariant(
+                    "removed layer was not stored",
+                ))?;
+                insert_at(&mut document.layers, *index, layer)?;
+            }
+            Self::LayerChanged { id, before, after } => {
+                replace_layer(document, *id, after, before)?;
             }
             Self::GroupInserted { index, id, stored } => {
                 ensure_empty(stored, "inserted group was already stored")?;
@@ -138,6 +157,13 @@ impl Edit {
                     "inserted layer was not stored",
                 ))?;
                 insert_at(&mut document.layers, *index, layer)?;
+            }
+            Self::LayerRemoved { index, id, stored } => {
+                ensure_empty(stored, "removed layer was already stored")?;
+                *stored = Some(remove_layer(document, *index, *id)?);
+            }
+            Self::LayerChanged { id, before, after } => {
+                replace_layer(document, *id, before, after)?;
             }
             Self::GroupInserted { index, stored, .. } => {
                 let group = stored.take().ok_or(DocumentError::HistoryInvariant(
@@ -236,6 +262,31 @@ fn remove_layer(
         ));
     }
     Ok(document.layers.remove(index))
+}
+
+fn replace_layer(
+    document: &mut Document,
+    id: LayerId,
+    expected: &Layer,
+    replacement: &Layer,
+) -> Result<(), DocumentError> {
+    if expected.id != id || replacement.id != id {
+        return Err(DocumentError::HistoryInvariant(
+            "changed layer identity did not match",
+        ));
+    }
+    let layer = document
+        .layers
+        .iter_mut()
+        .find(|layer| layer.id == id)
+        .ok_or(DocumentError::HistoryInvariant("changed layer was missing"))?;
+    if layer != expected {
+        return Err(DocumentError::HistoryInvariant(
+            "changed layer state did not match",
+        ));
+    }
+    *layer = replacement.clone();
+    Ok(())
 }
 
 fn remove_group(

@@ -2,12 +2,33 @@ use std::collections::VecDeque;
 
 use eframe::egui::{self, Color32, RichText};
 use viboceros_command::CommandRegistry;
-use viboceros_document::Document;
+use viboceros_document::{Document, GroupId, LayerId};
 use viboceros_geometry::Point3;
 
 use crate::viewport::{DisplayMode, DraftingInput, Viewport, ViewportOutput};
 
 const MAX_LOG_ENTRIES: usize = 100;
+
+enum SidebarAction {
+    SetCurrent {
+        id: LayerId,
+        name: String,
+    },
+    SetVisibility {
+        id: LayerId,
+        name: String,
+        visible: bool,
+    },
+    SetLocked {
+        id: LayerId,
+        name: String,
+        locked: bool,
+    },
+    RemoveGroup {
+        id: GroupId,
+        name: String,
+    },
+}
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
@@ -224,6 +245,7 @@ impl VibocerosApp {
     }
 
     fn show_layers(&mut self, root: &mut egui::Ui) {
+        let mut actions = Vec::new();
         egui::Panel::right("layers")
             .default_size(220.0)
             .show(root, |ui| {
@@ -239,27 +261,142 @@ impl VibocerosApp {
                             layer.name().to_owned(),
                             layer.color(),
                             layer.is_visible(),
+                            layer.is_locked(),
                         )
                     })
                     .collect();
 
-                for (id, name, color, visible) in layers {
+                ui.horizontal(|ui| {
+                    ui.add_space(2.0);
+                    ui.small("On");
+                    ui.small("Lock");
+                    ui.small("Layer");
+                });
+                for (id, name, color, visible, locked) in layers {
                     ui.horizontal(|ui| {
+                        let mut new_visible = visible;
+                        let visibility = ui
+                            .add_enabled_ui(id != current, |ui| ui.checkbox(&mut new_visible, ""))
+                            .inner
+                            .on_hover_text(if id == current {
+                                "The current layer must remain visible"
+                            } else {
+                                "Show or hide this layer"
+                            });
+                        if visibility.changed() {
+                            actions.push(SidebarAction::SetVisibility {
+                                id,
+                                name: name.clone(),
+                                visible: new_visible,
+                            });
+                        }
+
+                        let mut new_locked = locked;
+                        let lock = ui
+                            .add_enabled_ui(id != current, |ui| ui.checkbox(&mut new_locked, ""))
+                            .inner
+                            .on_hover_text(if id == current {
+                                "The current layer must remain unlocked"
+                            } else {
+                                "Lock or unlock this layer"
+                            });
+                        if lock.changed() {
+                            actions.push(SidebarAction::SetLocked {
+                                id,
+                                name: name.clone(),
+                                locked: new_locked,
+                            });
+                        }
+
                         let swatch = Color32::from_rgb(color.red, color.green, color.blue);
                         ui.label(RichText::new("●").color(swatch));
-                        let label = if visible {
-                            name
-                        } else {
-                            format!("{name} (hidden)")
-                        };
-                        if ui.selectable_label(id == current, label).clicked() {
-                            let _ = self.document.set_current_layer(id);
+                        let select = ui
+                            .add_enabled_ui(visible && !locked, |ui| {
+                                ui.selectable_label(id == current, &name)
+                            })
+                            .inner;
+                        if select.clicked() {
+                            actions.push(SidebarAction::SetCurrent {
+                                id,
+                                name: name.clone(),
+                            });
                         }
                     });
                 }
                 ui.add_space(8.0);
-                ui.small("Create a layer with: Layer name");
+                ui.small("Create a layer with: Layer New name");
+
+                ui.add_space(14.0);
+                ui.heading("Groups");
+                ui.separator();
+                let groups: Vec<_> = self
+                    .document
+                    .groups()
+                    .enumerate()
+                    .map(|(index, group)| {
+                        (
+                            group.id(),
+                            group
+                                .name()
+                                .map(str::to_owned)
+                                .unwrap_or_else(|| format!("Group {}", index + 1)),
+                            group.members().len(),
+                        )
+                    })
+                    .collect();
+                if groups.is_empty() {
+                    ui.weak("No groups");
+                }
+                for (id, name, members) in groups {
+                    ui.horizontal(|ui| {
+                        ui.label(format!("{name} · {members}"))
+                            .on_hover_text(format!("Group {id} with {members} object(s)"));
+                        if ui.small_button("×").on_hover_text("Ungroup").clicked() {
+                            actions.push(SidebarAction::RemoveGroup {
+                                id,
+                                name: name.clone(),
+                            });
+                        }
+                    });
+                }
+                ui.add_space(8.0);
+                ui.small("Create a group with: Group All [name]");
             });
+
+        for action in actions {
+            match action {
+                SidebarAction::SetCurrent { id, name } => {
+                    match self.document.set_current_layer(id) {
+                        Ok(()) => self.push_log(format!("Current layer is '{name}'")),
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
+                }
+                SidebarAction::SetVisibility { id, name, visible } => {
+                    match self.document.set_layer_visibility(id, visible) {
+                        Ok(_) => self.push_log(format!(
+                            "Layer '{name}' is {}",
+                            if visible { "visible" } else { "hidden" }
+                        )),
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
+                }
+                SidebarAction::SetLocked { id, name, locked } => {
+                    match self.document.set_layer_locked(id, locked) {
+                        Ok(_) => self.push_log(format!(
+                            "Layer '{name}' is {}",
+                            if locked { "locked" } else { "unlocked" }
+                        )),
+                        Err(error) => self.push_log(format!("Error: {error}")),
+                    }
+                }
+                SidebarAction::RemoveGroup { id, name } => match self.document.remove_group(id) {
+                    Ok(members) => {
+                        self.push_log(format!("Removed group '{name}' ({members} object(s))"));
+                    }
+                    Err(error) => self.push_log(format!("Error: {error}")),
+                },
+            }
+        }
     }
 
     fn show_command_line(&mut self, root: &mut egui::Ui) {

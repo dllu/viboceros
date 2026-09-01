@@ -113,7 +113,11 @@ pub fn nearest_object_snap(
         let Some(layer) = document.layer(attributes.layer_id()) else {
             continue;
         };
-        if !attributes.is_visible() || !layer.is_visible() {
+        if !attributes.is_visible()
+            || attributes.is_locked()
+            || !layer.is_visible()
+            || layer.is_locked()
+        {
             continue;
         }
 
@@ -329,6 +333,34 @@ mod tests {
             .unwrap();
         assert_eq!(snap.kind(), ObjectSnapKind::End);
         assert_eq!(snap.point(), point(7.0, 2.0, 0.0));
+    }
+
+    #[test]
+    fn hidden_and_locked_layers_are_not_snap_targets() {
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let reference = document
+            .add_layer("Reference", viboceros_document::ColorRgb::new(1, 2, 3))
+            .unwrap();
+        document.set_current_layer(reference).unwrap();
+        document
+            .add_geometry(Geometry::Point(point(5.0, 6.0, 0.0)))
+            .unwrap();
+        document.set_current_layer(default).unwrap();
+
+        document.set_layer_locked(reference, true).unwrap();
+        assert!(
+            nearest_object_snap(&document, point(5.0, 6.0, 0.0), 0.1)
+                .unwrap()
+                .is_none()
+        );
+        document.set_layer_locked(reference, false).unwrap();
+        document.set_layer_visibility(reference, false).unwrap();
+        assert!(
+            nearest_object_snap(&document, point(5.0, 6.0, 0.0), 0.1)
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[test]

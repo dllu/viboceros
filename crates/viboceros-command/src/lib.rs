@@ -3,7 +3,7 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
-use viboceros_document::{ColorRgb, Document, DocumentError, Geometry};
+use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId};
 use viboceros_geometry::{GeometryError, LineSegment, NurbsCurve, Point3, Real, TriangleMesh};
 use viboceros_io::{StlError, StlFormat, read_stl_file, write_stl_file};
 
@@ -42,6 +42,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(LayerCommand)
+            .expect("unique built-in command");
+        registry
+            .register(GroupCommand)
+            .expect("unique built-in command");
+        registry
+            .register(UngroupCommand)
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -208,14 +214,208 @@ impl Command for LayerCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         if arguments.is_empty() {
-            return Err(CommandError::Usage("Layer name"));
+            return Err(CommandError::Usage(
+                "Layer name | New name | Current/Show/Hide/Lock/Unlock/Delete name | Color r,g,b name | Rename old => new | List",
+            ));
         }
-        let name = arguments.join(" ");
-        let color = layer_color(document.layers().len());
-        let id = document.add_layer(name.clone(), color)?;
-        document.set_current_layer(id)?;
-        Ok(format!("Created current layer '{name}'"))
+        match arguments[0].to_ascii_lowercase().as_str() {
+            "new" => create_current_layer(document, &arguments[1..]),
+            "current" => {
+                let name = joined_argument(&arguments[1..], "Layer Current name")?;
+                let id = named_layer_id(document, &name)?;
+                document.set_current_layer(id)?;
+                Ok(format!("Current layer is '{name}'"))
+            }
+            "show" | "hide" => {
+                let visible = arguments[0].eq_ignore_ascii_case("show");
+                let name = joined_argument(&arguments[1..], "Layer Show|Hide name")?;
+                let id = named_layer_id(document, &name)?;
+                document.set_layer_visibility(id, visible)?;
+                Ok(format!(
+                    "Layer '{name}' is {}",
+                    if visible { "visible" } else { "hidden" }
+                ))
+            }
+            "lock" | "unlock" => {
+                let locked = arguments[0].eq_ignore_ascii_case("lock");
+                let name = joined_argument(&arguments[1..], "Layer Lock|Unlock name")?;
+                let id = named_layer_id(document, &name)?;
+                document.set_layer_locked(id, locked)?;
+                Ok(format!(
+                    "Layer '{name}' is {}",
+                    if locked { "locked" } else { "unlocked" }
+                ))
+            }
+            "delete" => {
+                let name = joined_argument(&arguments[1..], "Layer Delete name")?;
+                let id = named_layer_id(document, &name)?;
+                document.delete_layer(id)?;
+                Ok(format!("Deleted layer '{name}'"))
+            }
+            "color" => {
+                let color_text = arguments
+                    .get(1)
+                    .ok_or(CommandError::Usage("Layer Color r,g,b name"))?;
+                let color = parse_color(color_text)?;
+                let name = joined_argument(&arguments[2..], "Layer Color r,g,b name")?;
+                let id = named_layer_id(document, &name)?;
+                document.set_layer_color(id, color)?;
+                Ok(format!(
+                    "Layer '{name}' color is {},{},{}",
+                    color.red, color.green, color.blue
+                ))
+            }
+            "rename" => {
+                let separator = arguments
+                    .iter()
+                    .position(|argument| *argument == "=>")
+                    .ok_or(CommandError::Usage("Layer Rename old name => new name"))?;
+                let old_name = joined_argument(
+                    &arguments[1..separator],
+                    "Layer Rename old name => new name",
+                )?;
+                let new_name = joined_argument(
+                    &arguments[separator + 1..],
+                    "Layer Rename old name => new name",
+                )?;
+                let id = named_layer_id(document, &old_name)?;
+                document.rename_layer(id, &new_name)?;
+                Ok(format!("Renamed layer '{old_name}' to '{new_name}'"))
+            }
+            "list" => {
+                require_consumed(arguments, 1, "Layer List")?;
+                let layers = document
+                    .layers()
+                    .map(|layer| {
+                        let current = if layer.id() == document.current_layer_id() {
+                            " current"
+                        } else {
+                            ""
+                        };
+                        let visibility = if layer.is_visible() {
+                            "visible"
+                        } else {
+                            "hidden"
+                        };
+                        let lock = if layer.is_locked() {
+                            "locked"
+                        } else {
+                            "unlocked"
+                        };
+                        format!("{} ({visibility}, {lock}{current})", layer.name())
+                    })
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                Ok(format!("Layers: {layers}"))
+            }
+            _ => create_current_layer(document, arguments),
+        }
     }
+}
+
+struct GroupCommand;
+
+impl Command for GroupCommand {
+    fn name(&self) -> &'static str {
+        "Group"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if !arguments
+            .first()
+            .is_some_and(|argument| argument.eq_ignore_ascii_case("all"))
+        {
+            return Err(CommandError::Usage("Group All [name]"));
+        }
+        let name = (!arguments[1..].is_empty()).then(|| arguments[1..].join(" "));
+        let members: Vec<_> = document
+            .objects()
+            .filter(|object| {
+                let attributes = object.attributes();
+                !attributes.is_locked()
+                    && attributes.is_visible()
+                    && document
+                        .layer(attributes.layer_id())
+                        .is_some_and(|layer| layer.is_visible() && !layer.is_locked())
+            })
+            .map(|object| object.id())
+            .collect();
+        let member_count = members.len();
+        let id = document.add_group(name.clone(), members)?;
+        Ok(match name {
+            Some(name) => format!("Created group '{name}' {id} with {member_count} object(s)"),
+            None => format!("Created group {id} with {member_count} object(s)"),
+        })
+    }
+}
+
+struct UngroupCommand;
+
+impl Command for UngroupCommand {
+    fn name(&self) -> &'static str {
+        "Ungroup"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("Ungroup All|name"));
+        }
+        if arguments.len() == 1 && arguments[0].eq_ignore_ascii_case("all") {
+            let groups: Vec<_> = document.groups().map(|group| group.id()).collect();
+            for group in &groups {
+                document.remove_group(*group)?;
+            }
+            return Ok(format!("Removed {} group(s)", groups.len()));
+        }
+
+        let name = arguments.join(" ");
+        let id = document
+            .group_by_name(&name)
+            .map(|group| group.id())
+            .ok_or_else(|| CommandError::NamedGroupNotFound(name.clone()))?;
+        let members = document.remove_group(id)?;
+        Ok(format!("Removed group '{name}' ({members} object(s))"))
+    }
+}
+
+fn create_current_layer(
+    document: &mut Document,
+    name_arguments: &[&str],
+) -> Result<String, CommandError> {
+    let name = joined_argument(name_arguments, "Layer [New] name")?;
+    let color = layer_color(document.layers().len());
+    let id = document.add_layer(name.clone(), color)?;
+    document.set_current_layer(id)?;
+    Ok(format!("Created current layer '{name}'"))
+}
+
+fn joined_argument(arguments: &[&str], usage: &'static str) -> Result<String, CommandError> {
+    if arguments.is_empty() {
+        Err(CommandError::Usage(usage))
+    } else {
+        Ok(arguments.join(" "))
+    }
+}
+
+fn named_layer_id(document: &Document, name: &str) -> Result<LayerId, CommandError> {
+    document
+        .layer_by_name(name)
+        .map(|layer| layer.id())
+        .ok_or_else(|| CommandError::NamedLayerNotFound(name.to_owned()))
+}
+
+fn parse_color(value: &str) -> Result<ColorRgb, CommandError> {
+    let components: Vec<_> = value.split(',').collect();
+    if components.len() != 3 {
+        return Err(CommandError::InvalidColor(value.to_owned()));
+    }
+    let mut parsed = [0_u8; 3];
+    for (target, component) in parsed.iter_mut().zip(components) {
+        *target = component
+            .parse::<u8>()
+            .map_err(|_| CommandError::InvalidColor(value.to_owned()))?;
+    }
+    Ok(ColorRgb::new(parsed[0], parsed[1], parsed[2]))
 }
 
 struct ClearCommand;
@@ -452,6 +652,15 @@ pub enum CommandError {
     #[error("'{0}' is not a valid non-negative integer")]
     InvalidInteger(String),
 
+    #[error("'{0}' is not a valid r,g,b color with components from 0 through 255")]
+    InvalidColor(String),
+
+    #[error("no layer named '{0}' was found")]
+    NamedLayerNotFound(String),
+
+    #[error("no group named '{0}' was found")]
+    NamedGroupNotFound(String),
+
     #[error("the document contains no visible triangle meshes to export")]
     NoMeshToExport,
 
@@ -500,7 +709,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, ExportStl, ImportStl, Layer, Line, Point, Redo, Undo"
+            "Commands: Clear, ControlPointCurve, ExportStl, Group, ImportStl, Layer, Line, Point, Redo, Undo, Ungroup"
         );
     }
 
@@ -560,6 +769,123 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.layers().len(), 1);
         assert_eq!(document.current_layer_id(), default_layer);
+    }
+
+    #[test]
+    fn layer_command_manages_named_state_and_preserves_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Construction")
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Layer Rename Construction => Reference Geometry",
+            )
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Color 12,34,56 Reference Geometry")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Hide Reference Geometry")
+            .unwrap();
+
+        let layer = document.layer_by_name("reference geometry").unwrap();
+        assert_eq!(layer.color(), ColorRgb::new(12, 34, 56));
+        assert!(!layer.is_visible());
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(
+            document
+                .layer_by_name("Reference Geometry")
+                .unwrap()
+                .is_visible()
+        );
+
+        registry
+            .execute(&mut document, "Layer Lock Reference Geometry")
+            .unwrap();
+        assert!(
+            registry
+                .execute(&mut document, "Layer Current Reference Geometry")
+                .is_err()
+        );
+        registry
+            .execute(&mut document, "Layer Unlock Reference Geometry")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Current Reference Geometry")
+            .unwrap();
+    }
+
+    #[test]
+    fn layer_delete_and_color_validation_are_safe() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(
+            registry
+                .execute(&mut document, "Layer Color 256,0,0 Default")
+                .is_err()
+        );
+        assert_eq!(
+            document.layer(document.current_layer_id()).unwrap().color(),
+            ColorRgb::BLACK
+        );
+
+        registry.execute(&mut document, "Layer New Empty").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Delete Empty")
+            .unwrap();
+        assert!(document.layer_by_name("Empty").is_none());
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(document.layer_by_name("Empty").is_some());
+    }
+
+    #[test]
+    fn group_and_ungroup_all_visible_unlocked_objects_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        registry
+            .execute(&mut document, "Layer New Hidden Geometry")
+            .unwrap();
+        registry.execute(&mut document, "Point 2,0,0").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Hide Hidden Geometry")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer New Locked Geometry")
+            .unwrap();
+        registry.execute(&mut document, "Point 3,0,0").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Lock Locked Geometry")
+            .unwrap();
+
+        registry.execute(&mut document, "Group All Pair").unwrap();
+        let group = document.group_by_name("pair").unwrap();
+        assert_eq!(group.members().len(), 2);
+        assert!(registry.execute(&mut document, "Group All PAIR").is_err());
+        assert_eq!(document.groups().len(), 1);
+
+        registry.execute(&mut document, "Ungroup Pair").unwrap();
+        assert_eq!(document.groups().len(), 0);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.group_by_name("Pair").unwrap().members().len(), 2);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.groups().len(), 0);
     }
 
     struct MutateThenFailCommand;
