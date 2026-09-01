@@ -41,12 +41,16 @@ impl VibocerosApp {
         if input.is_empty() {
             return;
         }
+        self.command_input.clear();
+        self.execute_command(&input);
+    }
+
+    fn execute_command(&mut self, input: &str) {
         self.push_log(format!("> {input}"));
-        match self.commands.execute(&mut self.document, &input) {
+        match self.commands.execute(&mut self.document, input) {
             Ok(message) => self.push_log(message),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
-        self.command_input.clear();
     }
 
     fn push_log(&mut self, message: String) {
@@ -57,9 +61,30 @@ impl VibocerosApp {
     }
 
     fn show_toolbar(&mut self, root: &mut egui::Ui) {
+        let can_undo = self.document.can_undo();
+        let can_redo = self.document.can_redo();
+        let undo_tooltip = self.document.undo_label().map_or_else(
+            || "Nothing to undo".to_owned(),
+            |label| format!("Undo {label}"),
+        );
+        let redo_tooltip = self.document.redo_label().map_or_else(
+            || "Nothing to redo".to_owned(),
+            |label| format!("Redo {label}"),
+        );
+        let mut undo_clicked = false;
+        let mut redo_clicked = false;
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal(|ui| {
                 ui.heading("Viboceros");
+                ui.separator();
+                undo_clicked = ui
+                    .add_enabled(can_undo, egui::Button::new("Undo"))
+                    .on_hover_text(undo_tooltip)
+                    .clicked();
+                redo_clicked = ui
+                    .add_enabled(can_redo, egui::Button::new("Redo"))
+                    .on_hover_text(redo_tooltip)
+                    .clicked();
                 ui.separator();
                 ui.label("Display:");
                 ui.selectable_value(
@@ -82,6 +107,11 @@ impl VibocerosApp {
                 ui.toggle_value(&mut self.smart_track, "SmartTrack");
             });
         });
+        if undo_clicked {
+            self.execute_command("Undo");
+        } else if redo_clicked {
+            self.execute_command("Redo");
+        }
     }
 
     fn show_layers(&mut self, root: &mut egui::Ui) {

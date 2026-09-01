@@ -13,6 +13,11 @@ pub trait Command: Send + Sync {
         &[]
     }
 
+    /// Whether successful mutations should be grouped into one undo step.
+    fn records_history(&self) -> bool {
+        true
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError>;
 }
 
@@ -39,6 +44,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
+            .expect("unique built-in command");
+        registry
+            .register(UndoCommand)
+            .expect("unique built-in command");
+        registry
+            .register(RedoCommand)
             .expect("unique built-in command");
         registry
     }
@@ -75,7 +86,22 @@ impl CommandRegistry {
             .copied()
             .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
         let arguments: Vec<_> = tokens.collect();
-        self.commands[index].run(document, &arguments)
+        let command = &self.commands[index];
+        if !command.records_history() {
+            return command.run(document, &arguments);
+        }
+
+        document.begin_transaction(command.name())?;
+        match command.run(document, &arguments) {
+            Ok(message) => {
+                document.commit_transaction()?;
+                Ok(message)
+            }
+            Err(error) => {
+                document.rollback_transaction()?;
+                Err(error)
+            }
+        }
     }
 
     pub fn command_names(&self) -> Vec<&'static str> {
@@ -203,6 +229,46 @@ impl Command for ClearCommand {
     }
 }
 
+struct UndoCommand;
+
+impl Command for UndoCommand {
+    fn name(&self) -> &'static str {
+        "Undo"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Undo")?;
+        Ok(match document.undo()? {
+            Some(label) => format!("Undid {label}"),
+            None => "Nothing to undo".to_owned(),
+        })
+    }
+}
+
+struct RedoCommand;
+
+impl Command for RedoCommand {
+    fn name(&self) -> &'static str {
+        "Redo"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Redo")?;
+        Ok(match document.redo()? {
+            Some(label) => format!("Redid {label}"),
+            None => "Nothing to redo".to_owned(),
+        })
+    }
+}
+
 fn layer_color(index: usize) -> ColorRgb {
     const PALETTE: [ColorRgb; 6] = [
         ColorRgb::new(40, 110, 220),
@@ -319,7 +385,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Layer, Line, Point"
+            "Commands: Clear, ControlPointCurve, Layer, Line, Point, Redo, Undo"
         );
     }
 
@@ -344,5 +410,67 @@ mod tests {
             curve.evaluate(1.0).unwrap(),
             Point3::try_new(8.0, 0.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn undo_and_redo_commands_replay_a_model_edit() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 1,2,3").unwrap();
+        assert_eq!(document.objects().len(), 1);
+
+        assert_eq!(
+            registry.execute(&mut document, "Undo").unwrap(),
+            "Undid Point"
+        );
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(
+            registry.execute(&mut document, "Redo").unwrap(),
+            "Redid Point"
+        );
+        assert_eq!(document.objects().len(), 1);
+    }
+
+    #[test]
+    fn compound_layer_command_is_one_undo_step() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let default_layer = document.current_layer_id();
+        registry
+            .execute(&mut document, "Layer Construction")
+            .unwrap();
+        assert_eq!(document.layers().len(), 2);
+        assert_ne!(document.current_layer_id(), default_layer);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.layers().len(), 1);
+        assert_eq!(document.current_layer_id(), default_layer);
+    }
+
+    struct MutateThenFailCommand;
+
+    impl Command for MutateThenFailCommand {
+        fn name(&self) -> &'static str {
+            "MutateThenFail"
+        }
+
+        fn run(
+            &self,
+            document: &mut Document,
+            _arguments: &[&str],
+        ) -> Result<String, CommandError> {
+            document.add_geometry(Geometry::Point(Point3::try_new(9.0, 9.0, 9.0).unwrap()))?;
+            Err(CommandError::Usage("this command always fails"))
+        }
+    }
+
+    #[test]
+    fn failed_command_rolls_back_mutations_atomically() {
+        let mut registry = CommandRegistry::default();
+        registry.register(MutateThenFailCommand).unwrap();
+        let mut document = Document::default();
+        assert!(registry.execute(&mut document, "MutateThenFail").is_err());
+        assert_eq!(document.objects().len(), 0);
+        assert!(!document.can_undo());
     }
 }

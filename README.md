@@ -15,6 +15,8 @@ Line 0,0,0 10,5,0
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 Layer Construction
 Clear
+Undo
+Redo
 Help
 ```
 
