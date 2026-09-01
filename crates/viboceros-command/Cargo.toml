@@ -10,3 +10,6 @@ thiserror.workspace = true
 viboceros-document.workspace = true
 viboceros-geometry.workspace = true
 viboceros-io.workspace = true
+
+[dev-dependencies]
+monstertruck.workspace = true

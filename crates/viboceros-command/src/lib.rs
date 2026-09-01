@@ -9,8 +9,9 @@ use viboceros_geometry::{
     TriangleMesh, UnitVector3, Vector3,
 };
 use viboceros_io::{
-    StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel, ThreeDmObject,
-    read_3dm_file, read_stl_file, write_3dm_file, write_stl_file,
+    StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
+    ThreeDmObject, read_3dm_file, read_step_file, read_stl_file, write_3dm_file, write_step_file,
+    write_stl_file,
 };
 
 pub trait Command: Send + Sync {
@@ -96,6 +97,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ExportStlCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ImportStepCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExportStepCommand)
             .expect("unique built-in command");
         registry
             .register(ImportThreeDmCommand)
@@ -867,6 +874,73 @@ impl Command for ExportStlCommand {
 
 struct ImportThreeDmCommand;
 
+struct ImportStepCommand;
+
+impl Command for ImportStepCommand {
+    fn name(&self) -> &'static str {
+        "ImportStep"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["ImportStp"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("ImportStep path"));
+        }
+        let path = arguments.join(" ");
+        let import = read_step_file(&path, document.tolerance())?;
+        let object_count = import.objects.len();
+        let triangle_count = import
+            .objects
+            .iter()
+            .map(|object| object.mesh.triangles().len())
+            .sum::<usize>();
+        let warning_count = import.report.warning_count();
+        let layer_id = document.current_layer_id();
+        for object in import.objects {
+            let mut attributes = ObjectAttributes::on_layer(layer_id);
+            if let Some(name) = object.name {
+                attributes = attributes.with_name(name);
+            }
+            document.add_geometry_with_attributes(Geometry::Mesh(object.mesh), attributes)?;
+        }
+        Ok(format!(
+            "Imported {object_count} STEP mesh object(s) ({triangle_count} triangles) from '{path}' ({warning_count} conversion warning(s))"
+        ))
+    }
+}
+
+struct ExportStepCommand;
+
+impl Command for ExportStepCommand {
+    fn name(&self) -> &'static str {
+        "ExportStep"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["ExportStp"]
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("ExportStep path"));
+        }
+        let path = arguments.join(" ");
+        let mesh = combined_document_mesh(document)?;
+        let triangle_count = mesh.triangles().len();
+        write_step_file(&path, std::slice::from_ref(&mesh))?;
+        Ok(format!(
+            "Exported {triangle_count} triangles as a STEP faceted shell to '{path}'"
+        ))
+    }
+}
+
 impl Command for ImportThreeDmCommand {
     fn name(&self) -> &'static str {
         "Import3dm"
@@ -1155,6 +1229,9 @@ pub enum CommandError {
     Stl(#[from] StlError),
 
     #[error(transparent)]
+    Step(#[from] StepError),
+
+    #[error(transparent)]
     ThreeDm(#[from] ThreeDmError),
 
     #[error(transparent)]
@@ -1197,7 +1274,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStl, Group, Import3dm, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, Undo, Ungroup"
+            "Commands: Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, Undo, Ungroup"
         );
     }
 
@@ -1591,6 +1668,71 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 0);
         fs::remove_file(source).unwrap();
+        fs::remove_file(output).unwrap();
+    }
+
+    #[test]
+    fn imports_and_exports_step_without_polluting_undo_history() {
+        use std::fs;
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        use monstertruck::modeling::{BoundingBox, Point3 as TruckPoint3, primitive};
+        use monstertruck::step::save::{
+            CompleteStepDisplay, StepHeaderDescriptor, StepModel as TruckStepModel,
+        };
+
+        let cube: monstertruck::modeling::Solid = primitive::cuboid(BoundingBox::from_iter([
+            TruckPoint3::new(0.0, 0.0, 0.0),
+            TruckPoint3::new(2.0, 3.0, 4.0),
+        ]));
+        let compressed = cube.compress();
+        let step = CompleteStepDisplay::new(
+            TruckStepModel::from(&compressed),
+            StepHeaderDescriptor {
+                organization_system: "Viboceros command test".to_owned(),
+                ..Default::default()
+            },
+        )
+        .to_string();
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-command model.step",
+            std::process::id()
+        ));
+        let output = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-command output.step",
+            std::process::id()
+        ));
+        fs::write(&path, step).unwrap();
+
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let message = registry
+            .execute(&mut document, &format!("ImportStep {}", path.display()))
+            .unwrap();
+        assert!(message.contains("1 STEP mesh object"));
+        assert!(message.contains("12 triangles"));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("ImportStep"));
+        let Geometry::Mesh(mesh) = document.objects().next().unwrap().geometry() else {
+            panic!("expected imported STEP mesh")
+        };
+        assert_eq!(mesh.bounds().max(), Point3::try_new(2.0, 3.0, 4.0).unwrap());
+
+        let export_message = registry
+            .execute(&mut document, &format!("ExportStep {}", output.display()))
+            .unwrap();
+        assert!(export_message.contains("12 triangles"));
+        let exported = read_step_file(&output, document.tolerance()).unwrap();
+        assert_eq!(exported.objects.len(), 1);
+        assert_eq!(exported.objects[0].mesh.triangles().len(), 12);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 0);
+        fs::remove_file(path).unwrap();
         fs::remove_file(output).unwrap();
     }
 

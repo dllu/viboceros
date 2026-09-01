@@ -36,6 +36,8 @@ Redo
 ImportStl path/to/model.stl
 ExportStl Binary path/to/model.stl
 ExportStl Ascii path/to/model.stl
+ImportStep path/to/model.step
+ExportStep path/to/model.step
 Import3dm path/to/model.3dm
 Export3dm path/to/model.3dm
 Help
@@ -73,5 +75,11 @@ cargo clippy --workspace --all-targets -- -D warnings
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, lines, NURBS curves, triangle meshes,
 layer state, and object state. Unsupported surface and solid objects are counted
-and reported during import. STEP, 3DM surface/solid interchange, groups in 3DM,
-and production surface and solid modelling are not implemented yet.
+and reported during import. Initial STEP interchange uses the Apache-2.0
+Monstertruck kernel to read solid/shell B-reps and assemblies, apply instance
+transforms, and robustly tessellate exact trimmed surfaces into validated display
+meshes. Parser, topology, and unsupported-representation losses are reported
+instead of being silent. Export writes visible triangle meshes as faceted STEP
+shells with shared topology and planar faces. Editable STEP B-reps, 3DM
+surface/solid interchange, groups in 3DM, and production surface and solid
+modelling are not implemented yet.

@@ -6,6 +6,7 @@ license.workspace = true
 rust-version.workspace = true
 
 [dependencies]
+monstertruck.workspace = true
 tempfile = "3.27.0"
 thiserror.workspace = true
 viboceros-geometry.workspace = true

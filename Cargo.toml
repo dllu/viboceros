@@ -24,6 +24,7 @@ rust-version = "1.95"
 [workspace.dependencies]
 faer = { version = "0.24.4", default-features = false, features = ["linalg", "std"] }
 nalgebra = "0.35.0"
+monstertruck = { version = "0.4.0", default-features = false, features = ["assembly", "meshing", "step"] }
 thiserror = "2.0.16"
 uuid = { version = "1.18.1", features = ["v4"] }
 
