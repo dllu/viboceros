@@ -947,6 +947,32 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, curve_topology)
 
+    if kind == "nurbs_curve_classification":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+
+        def curve_classification():
+            is_linear_zero = bool(curve.IsLinear())
+            return {
+                "is_linear_model": bool(
+                    curve.IsLinear(tolerance["absolute"])
+                ),
+                "is_linear_zero": is_linear_zero,
+                "is_planar_model": bool(
+                    curve.IsPlanar(tolerance["absolute"])
+                ),
+                "sel_line_match": bool(
+                    curve.SpanCount == 1 and is_linear_zero
+                ),
+            }
+
+        return _measure(iterations, curve_classification)
+
     if kind == "nurbs_curve_extract_points":
         degree = int(operation["degree"])
         controls = operation["control_points"]

@@ -98,6 +98,7 @@ impl CommandRegistry {
             ("SelCrv", GeometrySelectionFilter::Curve),
             ("SelOpenCrv", GeometrySelectionFilter::OpenCurve),
             ("SelClosedCrv", GeometrySelectionFilter::ClosedCurve),
+            ("SelPlanarCrv", GeometrySelectionFilter::PlanarCurve),
             ("SelLine", GeometrySelectionFilter::Line),
             ("SelPolyline", GeometrySelectionFilter::Polyline),
             ("SelPt", GeometrySelectionFilter::Point),
@@ -871,13 +872,14 @@ impl Command for SelectGeometryCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, self.name)?;
+        let tolerance = document.tolerance();
         let matches = document
             .objects()
             .filter(|object| document.is_object_selectable(object.id()))
             .map(|object| {
                 Ok(self
                     .filter
-                    .matches(object.geometry())?
+                    .matches(object.geometry(), tolerance)?
                     .then_some(object.id()))
             })
             .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
@@ -897,6 +899,7 @@ enum GeometrySelectionFilter {
     Curve,
     OpenCurve,
     ClosedCurve,
+    PlanarCurve,
     Line,
     Polyline,
     Point,
@@ -907,7 +910,7 @@ enum GeometrySelectionFilter {
 }
 
 impl GeometrySelectionFilter {
-    fn matches(self, geometry: &Geometry) -> Result<bool, GeometryError> {
+    fn matches(self, geometry: &Geometry, tolerance: Tolerance) -> Result<bool, GeometryError> {
         let matches = match self {
             Self::Curve => geometry_curve_ref(geometry).is_some(),
             Self::OpenCurve => match geometry_curve_ref(geometry) {
@@ -918,7 +921,17 @@ impl GeometrySelectionFilter {
                 Some(curve) => curve.is_closed()?,
                 None => false,
             },
-            Self::Line => matches!(geometry, Geometry::Line(_)),
+            Self::PlanarCurve => match geometry_curve_ref(geometry) {
+                Some(curve) => curve.is_planar(tolerance)?,
+                None => false,
+            },
+            Self::Line => match geometry {
+                Geometry::Line(_) => true,
+                Geometry::NurbsCurve(curve) => {
+                    curve.spans().count() == 1 && curve.is_linear_at_zero_tolerance()?
+                }
+                _ => false,
+            },
             Self::Polyline => matches!(geometry, Geometry::Polyline(_)),
             Self::Point => matches!(geometry, Geometry::Point(_)),
             Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
@@ -3344,7 +3357,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPrev, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLast, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5771,6 +5784,57 @@ mod tests {
         );
         assert!(registry.execute(&mut document, "SelMesh extra").is_err());
         assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn curve_shape_selection_matches_rhino_nurbs_span_and_planarity_rules() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 3,0").unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 3 0,1 1,1 2,1 3,1")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 3 0,2 1,2 2,2 3,2 4,2")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 2 0,3 1,3 2,3")
+            .unwrap();
+        registry
+            .execute(&mut document, "Polyline 0,4 1,4 2,4")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 3 0,5,0 1,5,0 2,6,0 3,5,1")
+            .unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry.execute(&mut document, "SelLine").unwrap(),
+            "Selected 3 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[1], ids[3]])
+        );
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelPlanarCrv").unwrap(),
+            "Selected 5 object(s)"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([ids[0], ids[1], ids[2], ids[3], ids[4]])
+        );
+        assert!(matches!(
+            registry.execute(&mut document, "SelPlanarCrv extra"),
+            Err(CommandError::Usage("SelPlanarCrv"))
+        ));
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

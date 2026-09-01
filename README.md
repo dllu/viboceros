@@ -34,6 +34,7 @@ SelLast DeselectOthersBeforeSelect=No
 SelCrv
 SelOpenCrv
 SelClosedCrv
+SelPlanarCrv
 SelLine
 SelPolyline
 SelPt
@@ -134,8 +135,11 @@ are unchanged. Their `Unisolate` counterparts restore only modes introduced by
 the matching isolate command, with provenance preserved through undo and redo.
 Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
-selection. Mesh closure uses exact location-welded edge topology, so indexed
-meshes and STL-style triangle soup classify consistently.
+selection. `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
+exactly straight, single-span higher-degree NURBS curves, while excluding
+multi-span curves and polylines as Rhino does. Mesh closure uses exact
+location-welded edge topology, so indexed meshes and STL-style triangle soup
+classify consistently.
 `SelLast` selects every object changed by the latest object-editing transaction,
 including multi-object imports and command outputs. `SelPrev` swaps the current
 and previous selection sets. Both replace by default, matching Rhino; set

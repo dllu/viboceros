@@ -2,7 +2,10 @@ use std::f64::consts::FRAC_PI_2;
 
 use crate::{
     Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, Point3, Polyline3,
-    Real, Tolerance, integration::integrate_adaptive, require_finite,
+    Real, Tolerance,
+    integration::integrate_adaptive,
+    nurbs::{CURVE_COINCIDENCE_ABSOLUTE, curve_points_coincident},
+    require_finite,
 };
 
 /// Allocation guard for commands that create arc-length division points.
@@ -28,6 +31,25 @@ impl CurveRef<'_> {
             Self::Polyline(polyline) => polyline.is_closed(),
             Self::NurbsCurve(curve) => curve.is_closed()?,
         })
+    }
+
+    /// Tests whether the complete curve lies in a plane within the document's
+    /// absolute tolerance.
+    ///
+    /// Analytic curves carry an exact plane. Polyline and NURBS predicates
+    /// follow OpenNURBS' largest-control-triangle test and therefore retain
+    /// Rhino's behavior for degenerate, reversed, and unclamped curves.
+    pub fn is_planar(self, tolerance: Tolerance) -> Result<bool, GeometryError> {
+        match self {
+            Self::Line(_) | Self::Circle(_) | Self::Arc(_) | Self::Ellipse(_) => Ok(true),
+            Self::Polyline(polyline) => control_polygon_is_planar(
+                polyline.vertices().len(),
+                |index| polyline.vertices()[index],
+                polyline.vertices()[0],
+                tolerance,
+            ),
+            Self::NurbsCurve(curve) => curve.is_planar(tolerance),
+        }
     }
 
     pub fn start_point(self) -> Result<Point3, GeometryError> {
@@ -143,6 +165,189 @@ impl CurveRef<'_> {
         }
         Ok(points)
     }
+}
+
+impl NurbsCurve {
+    /// Tests whether this curve is a non-reversing line within the supplied
+    /// modelling tolerance.
+    ///
+    /// This is a direct Rust translation of OpenNURBS' clamped-control-polygon
+    /// predicate. Rational weights do not affect the result because positive
+    /// weights preserve a collinear Euclidean control polygon.
+    pub fn is_linear(&self, tolerance: Tolerance) -> Result<bool, GeometryError> {
+        self.is_linear_with(LinearityTolerance::Absolute(tolerance.absolute()))
+    }
+
+    /// Tests linearity using OpenNURBS' zero-tolerance coordinate policy.
+    /// Rhino's `SelLine` uses this stricter overload rather than document
+    /// tolerance.
+    pub fn is_linear_at_zero_tolerance(&self) -> Result<bool, GeometryError> {
+        self.is_linear_with(LinearityTolerance::OpenNurbsZero)
+    }
+
+    /// Tests whether all Euclidean controls lie in the OpenNURBS candidate
+    /// plane within the document's absolute tolerance.
+    pub fn is_planar(&self, tolerance: Tolerance) -> Result<bool, GeometryError> {
+        if self.is_linear(tolerance)? {
+            return Ok(true);
+        }
+        let start = self.evaluate(*self.domain().start())?;
+        let controls = self.control_points();
+        control_polygon_is_planar_non_linear(
+            controls.len(),
+            |index| controls[index].point(),
+            start,
+            tolerance,
+        )
+    }
+
+    fn is_linear_with(&self, tolerance: LinearityTolerance) -> Result<bool, GeometryError> {
+        if !nurbs_is_clamped(self) {
+            return Ok(false);
+        }
+        let controls = self.control_points();
+        control_polygon_is_linear(controls.len(), |index| controls[index].point(), tolerance)
+    }
+}
+
+#[derive(Clone, Copy)]
+enum LinearityTolerance {
+    OpenNurbsZero,
+    Absolute(Real),
+}
+
+impl LinearityTolerance {
+    fn distance(self) -> Real {
+        match self {
+            Self::OpenNurbsZero => CURVE_COINCIDENCE_ABSOLUTE,
+            Self::Absolute(distance) => distance,
+        }
+    }
+
+    fn points_coincide(self, left: Point3, right: Point3) -> Result<bool, GeometryError> {
+        match self {
+            Self::OpenNurbsZero => Ok(curve_points_coincident(left, right)),
+            Self::Absolute(distance) => Ok(left.distance_to(right)? <= distance),
+        }
+    }
+}
+
+fn nurbs_is_clamped(curve: &NurbsCurve) -> bool {
+    let knots = curve.knots();
+    let degree = curve.degree();
+    let control_count = curve.control_points().len();
+    // OpenNURBS stores a knot vector without our two artificial end knots.
+    // These are the equivalent exact start/end multiplicity comparisons.
+    knots[1] == knots[degree] && knots[control_count] == knots[knots.len() - 2]
+}
+
+fn control_polygon_is_linear(
+    point_count: usize,
+    point_at: impl Fn(usize) -> Point3 + Copy,
+    tolerance: LinearityTolerance,
+) -> Result<bool, GeometryError> {
+    debug_assert!(point_count >= 2);
+    let start = point_at(0);
+    let end = point_at(point_count - 1);
+    let chord = start.vector_to(end)?;
+    let chord_length = chord.length()?;
+    if chord_length <= tolerance.distance() {
+        return Ok(false);
+    }
+    if point_count == 2 {
+        return Ok(true);
+    }
+
+    let direction = chord.normalized_nonzero()?;
+    let mut previous_parameter = 0.0;
+    for index in 1..point_count - 1 {
+        let point = point_at(index);
+        let from_start = start.vector_to(point)?;
+        let from_end = end.vector_to(point)?;
+        let parameter = if from_start.length()? <= from_end.length()? {
+            from_start.dot(direction.as_vector())? / chord_length
+        } else {
+            1.0 + from_end.dot(direction.as_vector())? / chord_length
+        };
+        if !parameter.is_finite() || !(-0.01..=1.01).contains(&parameter) {
+            return Ok(false);
+        }
+
+        let projected = start.translated(chord.scaled(parameter)?)?;
+        if !tolerance.points_coincide(point, projected)? {
+            return Ok(false);
+        }
+
+        if parameter > previous_parameter && previous_parameter < 1.0 {
+            previous_parameter = parameter.min(1.0);
+        }
+        if !(parameter >= previous_parameter && parameter <= 1.0) {
+            let previous = start.translated(chord.scaled(previous_parameter)?)?;
+            if projected.distance_to(previous)? > tolerance.distance() {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
+
+fn control_polygon_is_planar(
+    point_count: usize,
+    point_at: impl Fn(usize) -> Point3 + Copy,
+    start: Point3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    if control_polygon_is_linear(
+        point_count,
+        point_at,
+        LinearityTolerance::Absolute(tolerance.absolute()),
+    )? {
+        return Ok(true);
+    }
+    control_polygon_is_planar_non_linear(point_count, point_at, start, tolerance)
+}
+
+fn control_polygon_is_planar_non_linear(
+    point_count: usize,
+    point_at: impl Fn(usize) -> Point3 + Copy,
+    start: Point3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    if point_count < 3 {
+        return Ok(false);
+    }
+
+    // This sampling stride deliberately matches OpenNURBS. All controls are
+    // still checked against the resulting plane below.
+    let stride = (point_count / 64).max(1);
+    let mut largest_area = 0.0;
+    let mut triangle = None;
+    for first_index in (1..point_count).step_by(stride) {
+        let first = point_at(first_index);
+        for second_index in ((first_index + stride)..point_count).step_by(stride) {
+            let second = point_at(second_index);
+            let cross = start.vector_to(first)?.cross(start.vector_to(second)?)?;
+            let area = cross.length()?;
+            if area > largest_area {
+                largest_area = area;
+                triangle = Some(cross);
+            }
+        }
+    }
+    let Some(cross) = triangle else {
+        return Ok(false);
+    };
+    let normal = cross.normalized_nonzero()?;
+    for index in 0..point_count {
+        let distance = start
+            .vector_to(point_at(index))?
+            .dot(normal.as_vector())?
+            .abs();
+        if distance > tolerance.absolute() {
+            return Ok(false);
+        }
+    }
+    Ok(true)
 }
 
 fn require_division_capacity(point_count: usize) -> Result<(), GeometryError> {
@@ -458,6 +663,118 @@ mod tests {
 
     fn axis(x: Real, y: Real, z: Real) -> UnitVector3 {
         UnitVector3::try_new(x, y, z, Tolerance::DEFAULT).unwrap()
+    }
+
+    fn clamped_curve(degree: usize, points: Vec<Point3>) -> NurbsCurve {
+        NurbsCurve::try_clamped_uniform(degree, points).unwrap()
+    }
+
+    #[test]
+    fn classifies_clamped_nurbs_linearity_with_opennurbs_rules() {
+        let cubic = clamped_curve(
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+            ],
+        );
+        assert!(cubic.is_linear_at_zero_tolerance().unwrap());
+
+        let near = clamped_curve(
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 5.0e-10, 0.0),
+                point(2.0, 5.0e-10, 0.0),
+                point(3.0, 0.0, 0.0),
+            ],
+        );
+        assert!(!near.is_linear_at_zero_tolerance().unwrap());
+        assert!(near.is_linear(Tolerance::DEFAULT).unwrap());
+
+        let reversing = clamped_curve(
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+            ],
+        );
+        assert!(!reversing.is_linear(Tolerance::DEFAULT).unwrap());
+
+        let unclamped = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 3.0],
+        )
+        .unwrap();
+        assert!(!unclamped.is_linear(Tolerance::DEFAULT).unwrap());
+    }
+
+    #[test]
+    fn classifies_analytic_polyline_and_rational_nurbs_planarity() {
+        let planar = NurbsCurve::try_new_rational(
+            3,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 0.0, 1.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 2.0, 3.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(3.0, -1.0, 2.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(
+            CurveRef::NurbsCurve(&planar)
+                .is_planar(Tolerance::DEFAULT)
+                .unwrap()
+        );
+
+        let nonplanar = clamped_curve(
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 2.0),
+            ],
+        );
+        assert!(
+            !CurveRef::NurbsCurve(&nonplanar)
+                .is_planar(Tolerance::DEFAULT)
+                .unwrap()
+        );
+
+        let bent_polyline = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 2.0, 1.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            !CurveRef::Polyline(&bent_polyline)
+                .is_planar(Tolerance::DEFAULT)
+                .unwrap()
+        );
+
+        let line = LineSegment::try_new(
+            point(0.0, 0.0, 0.0),
+            point(1.0, 2.0, 3.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(CurveRef::Line(&line).is_planar(Tolerance::DEFAULT).unwrap());
     }
 
     #[test]

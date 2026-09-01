@@ -6,7 +6,7 @@ use crate::{
 };
 
 // OpenNURBS uses these fixed coordinate tolerances for Curve::IsClosed.
-const CURVE_COINCIDENCE_ABSOLUTE: Real = 2.328_306_436_538_696_3e-10;
+pub(crate) const CURVE_COINCIDENCE_ABSOLUTE: Real = 2.328_306_436_538_696_3e-10;
 const CURVE_COINCIDENCE_RELATIVE: Real = 2.273_736_754_432_320_6e-13;
 const OPENNURBS_SQRT_EPSILON: Real = 1.490_116_119_385e-8;
 

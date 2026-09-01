@@ -152,6 +152,12 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
     },
+    NurbsCurveClassification {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+    },
     NurbsCurveExtractPoints {
         id: String,
         degree: usize,
@@ -238,6 +244,7 @@ impl Operation {
             | Self::NurbsCurveDivide { id, .. }
             | Self::NurbsCurveReverse { id, .. }
             | Self::NurbsCurveTopology { id, .. }
+            | Self::NurbsCurveClassification { id, .. }
             | Self::NurbsCurveExtractPoints { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
@@ -623,6 +630,37 @@ fn execute(
                 json!({
                     "is_closed": is_closed,
                     "is_periodic": is_periodic,
+                }),
+                elapsed,
+            )
+        }
+        Operation::NurbsCurveClassification {
+            degree,
+            control_points,
+            knots,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let ((is_linear_model, is_linear_zero, is_planar_model, sel_line_match), elapsed) =
+                measure(iterations, || {
+                    let is_linear_zero = black_box(&curve).is_linear_at_zero_tolerance()?;
+                    Ok((
+                        curve.is_linear(tolerance)?,
+                        is_linear_zero,
+                        curve.is_planar(tolerance)?,
+                        curve.spans().count() == 1 && is_linear_zero,
+                    ))
+                })?;
+            (
+                json!({
+                    "is_linear_model": is_linear_model,
+                    "is_linear_zero": is_linear_zero,
+                    "is_planar_model": is_planar_model,
+                    "sel_line_match": sel_line_match,
                 }),
                 elapsed,
             )
@@ -1572,6 +1610,102 @@ mod tests {
         assert_eq!(
             response.results[0].value,
             json!({"is_closed": true, "is_periodic": true})
+        );
+    }
+
+    #[test]
+    fn classifies_nurbs_curves_for_planar_and_line_selection() {
+        let operation = |id: &str, points: Vec<[f64; 3]>, knots: Vec<f64>| {
+            Operation::NurbsCurveClassification {
+                id: id.to_owned(),
+                degree: 3,
+                control_points: points
+                    .into_iter()
+                    .map(|point| control(point, 1.0))
+                    .collect(),
+                knots,
+            }
+        };
+        let single_knots = vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0];
+        let response = run_request(&request(vec![
+            operation(
+                "single",
+                vec![
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [3.0, 0.0, 0.0],
+                ],
+                single_knots.clone(),
+            ),
+            operation(
+                "multi",
+                vec![
+                    [0.0, 1.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [2.0, 1.0, 0.0],
+                    [3.0, 1.0, 0.0],
+                    [4.0, 1.0, 0.0],
+                ],
+                vec![0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0],
+            ),
+            operation(
+                "near",
+                vec![
+                    [0.0, 2.0, 0.0],
+                    [1.0, 2.000_000_000_5, 0.0],
+                    [2.0, 2.000_000_000_5, 0.0],
+                    [3.0, 2.0, 0.0],
+                ],
+                single_knots.clone(),
+            ),
+            operation(
+                "nonplanar",
+                vec![
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [0.0, 2.0, 0.0],
+                    [0.0, 0.0, 2.0],
+                ],
+                single_knots,
+            ),
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "is_linear_model": true,
+                "is_linear_zero": true,
+                "is_planar_model": true,
+                "sel_line_match": true,
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "is_linear_model": true,
+                "is_linear_zero": true,
+                "is_planar_model": true,
+                "sel_line_match": false,
+            })
+        );
+        assert_eq!(
+            response.results[2].value,
+            json!({
+                "is_linear_model": true,
+                "is_linear_zero": false,
+                "is_planar_model": true,
+                "sel_line_match": false,
+            })
+        );
+        assert_eq!(
+            response.results[3].value,
+            json!({
+                "is_linear_model": false,
+                "is_linear_zero": false,
+                "is_planar_model": false,
+                "sel_line_match": false,
+            })
         );
     }
 
