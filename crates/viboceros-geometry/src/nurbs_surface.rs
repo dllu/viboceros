@@ -303,6 +303,17 @@ impl NurbsSurface {
             .and_then(project_homogeneous)
     }
 
+    /// Evaluates the polynomial/rational continuation of the first or last
+    /// knot span when either parameter lies outside the natural domain.
+    /// Surface space morphs use this continuation for source geometry that
+    /// crosses a target surface edge, matching Rhino's splop behavior.
+    pub fn evaluate_extended(&self, u: Real, v: Real) -> Result<Point3, GeometryError> {
+        let span_u = extended_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
+        let span_v = extended_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
+        self.evaluate_homogeneous_at_spans(u, v, span_u, span_v)
+            .and_then(project_homogeneous)
+    }
+
     /// Evaluates a point and its exact first partial derivatives.
     pub fn evaluate_with_derivatives(
         &self,
@@ -311,6 +322,28 @@ impl NurbsSurface {
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         let span_u = checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
         let span_v = checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
+        self.evaluate_with_derivatives_at_spans(u, v, span_u, span_v)
+    }
+
+    /// Evaluates a surface continuation and its exact first partial
+    /// derivatives outside the natural parameter domain.
+    pub fn evaluate_extended_with_derivatives(
+        &self,
+        u: Real,
+        v: Real,
+    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
+        let span_u = extended_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
+        let span_v = extended_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
+        self.evaluate_with_derivatives_at_spans(u, v, span_u, span_v)
+    }
+
+    fn evaluate_with_derivatives_at_spans(
+        &self,
+        u: Real,
+        v: Real,
+        span_u: usize,
+        span_v: usize,
+    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         let active = self.active_homogeneous_control_net(span_u, span_v)?;
         let homogeneous = evaluate_tensor_product(
             &active,
@@ -382,6 +415,114 @@ impl NurbsSurface {
     ) -> Result<Frame3, GeometryError> {
         let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
         Frame3::try_from_directions(point, derivative_u, derivative_v, tolerance)
+    }
+
+    /// Finds natural surface parameters nearest to a finite model-space
+    /// point. A bounded multi-start search followed by tangent-plane Newton
+    /// refinement handles rational and non-uniform surfaces without assuming
+    /// normalized parameter domains.
+    pub fn closest_parameters(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<(Real, Real), GeometryError> {
+        let u_domain = self.domain_u();
+        let v_domain = self.domain_v();
+        let u_start = *u_domain.start();
+        let u_end = *u_domain.end();
+        let v_start = *v_domain.start();
+        let v_end = *v_domain.end();
+        let u_seeds = closest_parameter_seeds(self.spans_u(), u_start, u_end);
+        let v_seeds = closest_parameter_seeds(self.spans_v(), v_start, v_end);
+        let mut seeds = Vec::with_capacity(u_seeds.len() * v_seeds.len());
+        for &v in &v_seeds {
+            for &u in &u_seeds {
+                if let Ok(point) = self.evaluate(u, v)
+                    && let Ok(distance) = point.distance_to(target)
+                {
+                    seeds.push((distance, u, v));
+                }
+            }
+        }
+        seeds.sort_by(|left, right| left.0.total_cmp(&right.0));
+        seeds.truncate(16);
+        let mut best = seeds.first().copied().ok_or(GeometryError::Degenerate {
+            context: "NURBS surface closest-point search",
+        })?;
+        for (_, seed_u, seed_v) in seeds {
+            if let Ok((u, v, distance)) = self.refine_closest_parameters(
+                target,
+                seed_u,
+                seed_v,
+                [u_start, u_end],
+                [v_start, v_end],
+                tolerance,
+            ) && distance < best.0
+            {
+                best = (distance, u, v);
+            }
+        }
+        Ok((best.1, best.2))
+    }
+
+    fn refine_closest_parameters(
+        &self,
+        target: Point3,
+        mut u: Real,
+        mut v: Real,
+        u_domain: [Real; 2],
+        v_domain: [Real; 2],
+        tolerance: Tolerance,
+    ) -> Result<(Real, Real, Real), GeometryError> {
+        let mut distance = self.evaluate(u, v)?.distance_to(target)?;
+        for _ in 0..64 {
+            let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
+            let residual = point.vector_to(target)?;
+            let x_axis = derivative_u.normalized(tolerance)?;
+            let u_speed = derivative_u.length()?;
+            let v_along_x = derivative_v.dot(x_axis.as_vector())?;
+            let derivative_v_values = derivative_v.to_array();
+            let x_values = x_axis.as_vector().to_array();
+            let v_perpendicular = Vector3::try_new(
+                (-v_along_x).mul_add(x_values[0], derivative_v_values[0]),
+                (-v_along_x).mul_add(x_values[1], derivative_v_values[1]),
+                (-v_along_x).mul_add(x_values[2], derivative_v_values[2]),
+            )?;
+            let y_axis = v_perpendicular.normalized(tolerance)?;
+            let v_speed = v_perpendicular.length()?;
+            let tangent_x = residual.dot(x_axis.as_vector())?;
+            let tangent_y = residual.dot(y_axis.as_vector())?;
+            if tangent_x.hypot(tangent_y) <= tolerance.absolute() {
+                break;
+            }
+            let delta_v = tangent_y / v_speed;
+            let delta_u = tangent_x / u_speed - v_along_x * delta_v / u_speed;
+            require_finite([delta_u, delta_v], "surface closest-point step")?;
+            let mut step = 1.0;
+            let mut accepted = None;
+            for _ in 0..24 {
+                let candidate_u = (u + step * delta_u).clamp(u_domain[0], u_domain[1]);
+                let candidate_v = (v + step * delta_v).clamp(v_domain[0], v_domain[1]);
+                if candidate_u == u && candidate_v == v {
+                    break;
+                }
+                let candidate_distance = self
+                    .evaluate(candidate_u, candidate_v)?
+                    .distance_to(target)?;
+                if candidate_distance <= distance {
+                    accepted = Some((candidate_u, candidate_v, candidate_distance));
+                    break;
+                }
+                step *= 0.5;
+            }
+            let Some((next_u, next_v, next_distance)) = accepted else {
+                break;
+            };
+            u = next_u;
+            v = next_v;
+            distance = next_distance;
+        }
+        Ok((u, v, distance))
     }
 
     /// Divides the U-varying isocurve at `v` into equal arc-length segments
@@ -533,6 +674,16 @@ impl NurbsSurface {
     fn evaluate_homogeneous(&self, u: Real, v: Real) -> Result<[Real; 4], GeometryError> {
         let span_u = checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
         let span_v = checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
+        self.evaluate_homogeneous_at_spans(u, v, span_u, span_v)
+    }
+
+    fn evaluate_homogeneous_at_spans(
+        &self,
+        u: Real,
+        v: Real,
+        span_u: usize,
+        span_v: usize,
+    ) -> Result<[Real; 4], GeometryError> {
         let active = self.active_homogeneous_control_net(span_u, span_v)?;
         evaluate_tensor_product(
             &active,
@@ -974,6 +1125,16 @@ fn checked_span(
             domain_end: end,
         });
     }
+    extended_span(degree, control_point_count, knots, parameter)
+}
+
+fn extended_span(
+    degree: usize,
+    control_point_count: usize,
+    knots: &[Real],
+    parameter: Real,
+) -> Result<usize, GeometryError> {
+    require_finite([parameter], "NURBS surface parameter")?;
     let last_control = control_point_count - 1;
     if parameter >= knots[last_control + 1] {
         return Ok(last_control);
@@ -1005,6 +1166,29 @@ fn nonempty_spans(
         .skip(degree)
         .take(control_point_count - degree)
         .filter_map(|pair| (pair[0] < pair[1]).then_some((pair[0], pair[1])))
+}
+
+fn closest_parameter_seeds(
+    spans: impl Iterator<Item = (Real, Real)>,
+    domain_start: Real,
+    domain_end: Real,
+) -> Vec<Real> {
+    const MAX_SEEDS: usize = 33;
+    let spans = spans.collect::<Vec<_>>();
+    let mut seeds = Vec::new();
+    if spans.len() <= 10 {
+        for (start, end) in spans {
+            seeds.extend([start, start * 0.5 + end * 0.5, end]);
+        }
+    }
+    let remaining = MAX_SEEDS.saturating_sub(seeds.len()).max(2);
+    for index in 0..remaining {
+        let fraction = index as Real / (remaining - 1) as Real;
+        seeds.push(domain_start.mul_add(1.0 - fraction, domain_end * fraction));
+    }
+    seeds.sort_by(Real::total_cmp);
+    seeds.dedup();
+    seeds
 }
 
 fn normalized_parameter(
@@ -1184,6 +1368,24 @@ mod tests {
         assert!(frame.x_axis().x() < 0.0 && frame.x_axis().y() > 0.0);
         assert!(frame.y_axis().z() > 0.0);
         assert!(frame.z_axis().x() > 0.0 && frame.z_axis().y() > 0.0);
+
+        let target = surface
+            .evaluate(0.37, 0.62)
+            .unwrap()
+            .translated(
+                surface
+                    .normal_at(0.37, 0.62, Tolerance::DEFAULT)
+                    .unwrap()
+                    .as_vector()
+                    .scaled(2.0)
+                    .unwrap(),
+            )
+            .unwrap();
+        let (closest_u, closest_v) = surface
+            .closest_parameters(target, Tolerance::DEFAULT)
+            .unwrap();
+        assert!((closest_u - 0.37).abs() <= 1.0e-8, "closest_u={closest_u}");
+        assert!((closest_v - 0.62).abs() <= 1.0e-8, "closest_v={closest_v}");
     }
 
     #[test]

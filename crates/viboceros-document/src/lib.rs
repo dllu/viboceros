@@ -11,7 +11,7 @@ use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, Tolerance, TriangleMesh,
 };
 
 use duplicate::DuplicateGeometryFamily;
@@ -186,6 +186,30 @@ impl Geometry {
             Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
+        })
+    }
+
+    /// Applies a non-affine point morph while retaining the richest geometry
+    /// representation supported by the kernel. Linear primitives become
+    /// cubic NURBS curves so their interiors follow the morph.
+    pub fn morphed(
+        &self,
+        morph: &(impl PointMorph + ?Sized),
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Ok(match self {
+            Self::Point(point) => Self::Point(morph.morph_point(*point)?),
+            Self::PointCloud(cloud) => Self::PointCloud(morph.morph_point_cloud(cloud)?),
+            Self::Line(line) => Self::NurbsCurve(morph.morph_line(*line)?),
+            Self::Circle(circle) => Self::NurbsCurve(morph.morph_nurbs_curve(&circle.to_nurbs()?)?),
+            Self::Arc(arc) => Self::NurbsCurve(morph.morph_nurbs_curve(&arc.to_nurbs()?)?),
+            Self::Ellipse(ellipse) => {
+                Self::NurbsCurve(morph.morph_nurbs_curve(&ellipse.to_nurbs()?)?)
+            }
+            Self::Polyline(polyline) => Self::NurbsCurve(morph.morph_polyline(polyline)?),
+            Self::NurbsCurve(curve) => Self::NurbsCurve(morph.morph_nurbs_curve(curve)?),
+            Self::NurbsSurface(surface) => Self::NurbsSurface(morph.morph_nurbs_surface(surface)?),
+            Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
         })
     }
 
@@ -1409,6 +1433,78 @@ impl Document {
             }
         }
 
+        self.copy_staged_object_sets(&sources, transforms.len(), staged)
+    }
+
+    /// Atomically copies one source set through a non-affine point morph.
+    /// Attributes and overlapping group topology are preserved for the copy.
+    pub fn copy_objects_morphed(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        morph: &(impl PointMorph + ?Sized),
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+        let mut sources = Vec::with_capacity(ids.len());
+        let mut staged = Vec::with_capacity(ids.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            if !ids.contains(&object.id) {
+                continue;
+            }
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            sources.push(index);
+            staged.push((index, object.geometry.morphed(morph, self.tolerance)?));
+        }
+        if sources.is_empty() {
+            return Ok(Vec::new());
+        }
+        self.copy_staged_object_sets(&sources, 1, staged)
+    }
+
+    /// Atomically morphs objects in place while retaining identities,
+    /// attributes, group membership, and selection.
+    pub fn morph_objects(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        morph: &(impl PointMorph + ?Sized),
+    ) -> Result<usize, DocumentError> {
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+        let replacements = self
+            .objects
+            .iter()
+            .filter(|object| ids.contains(&object.id))
+            .map(|object| Ok((object.id, object.geometry.morphed(morph, self.tolerance)?)))
+            .collect::<Result<Vec<_>, DocumentError>>()?;
+        self.replace_object_geometries(replacements)
+    }
+
+    fn copy_staged_object_sets(
+        &mut self,
+        sources: &[usize],
+        instance_count: usize,
+        staged: Vec<(usize, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let copy_count = sources
+            .len()
+            .checked_mul(instance_count)
+            .ok_or(DocumentError::TooManyObjectCopies)?;
+        if staged.len() != copy_count {
+            return Err(DocumentError::TooManyObjectCopies);
+        }
+
         let originals = sources
             .iter()
             .map(|index| self.objects[*index].id)
@@ -1428,7 +1524,7 @@ impl Document {
             .collect::<Vec<_>>();
         let group_copy_count = copied_group_templates
             .len()
-            .checked_mul(transforms.len())
+            .checked_mul(instance_count)
             .ok_or(DocumentError::TooManyObjectCopies)?;
         self.objects
             .try_reserve_exact(copy_count)
@@ -1443,9 +1539,9 @@ impl Document {
         }
         let mut copied_ids = Vec::with_capacity(copy_count);
         let mut staged = staged.into_iter();
-        for _ in transforms {
+        for _ in 0..instance_count {
             let mut copied_by_original = BTreeMap::new();
-            for _ in &sources {
+            for _ in sources {
                 let (source_index, geometry) = staged
                     .next()
                     .expect("each transform has one staged geometry per source");

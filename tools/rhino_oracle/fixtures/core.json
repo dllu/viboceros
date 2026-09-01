@@ -55,6 +55,10 @@
       "id": "document-curve-array-cycle"
     },
     {
+      "op": "document_surface_orient_cycle",
+      "id": "document-surface-orient-cycle"
+    },
+    {
       "op": "document_surface_array_cycle",
       "id": "document-surface-array-cycle"
     },

@@ -11,7 +11,7 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, CurveSample, Ellipse3, Frame3,
     GeometryError, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES,
     MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure,
-    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -253,6 +253,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(OrientThreePointCommand)
+            .expect("unique built-in command");
+        registry
+            .register(OrientOnSurfaceCommand)
             .expect("unique built-in command");
         registry
             .register(ArrayCommand)
@@ -3185,6 +3188,246 @@ fn apply_orient_transform(
     }
 }
 
+const ORIENT_ON_SURFACE_USAGE: &str = "OrientOnSrf base-point reference-point target-point \
+    [Scale=factor] [Rotation=degrees] [Copy=Yes|No] [Rigid=Yes|No] [Flip=Yes|No] \
+    [SourceNormal=x,y,z] [ConstrainNormal=x,y,z] [SurfaceName=name]";
+
+struct OrientOnSurfaceCommand;
+
+impl Command for OrientOnSurfaceCommand {
+    fn name(&self) -> &'static str {
+        "OrientOnSrf"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["OrientOnSurface"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (base_point, consumed_1) = parse_point(arguments)?;
+        let (reference_point, consumed_2) = parse_point(&arguments[consumed_1..])?;
+        let (target_point, consumed_3) = parse_point(&arguments[consumed_1 + consumed_2..])?;
+        let consumed = consumed_1 + consumed_2 + consumed_3;
+        let options = parse_orient_on_surface_options(&arguments[consumed..])?;
+        let (surface, surface_id, sources) =
+            orient_on_surface_inputs(document, options.surface_name.as_deref())?;
+        let tolerance = document.tolerance();
+        let source_frame = Frame3::try_from_x_and_normal(
+            base_point,
+            base_point.vector_to(reference_point)?,
+            options.source_normal,
+            tolerance,
+        )?;
+        let (target_u, target_v) = surface.closest_parameters(target_point, tolerance)?;
+        let rotation_radians = options.rotation_degrees.to_radians();
+        if !rotation_radians.is_finite() {
+            return Err(CommandError::InvalidNumber(
+                options.rotation_degrees.to_string(),
+            ));
+        }
+
+        let (transformed, copied) = if options.rigid {
+            if options.constrained_normal.is_some() {
+                return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE));
+            }
+            let target_frame = orient_on_surface_target_frame(
+                surface.frame_at(target_u, target_v, tolerance)?,
+                rotation_radians,
+                options.flip,
+                tolerance,
+            )?;
+            let transform = AffineTransform3::try_frame_mapping(
+                source_frame,
+                target_frame,
+                [options.scale; 3],
+            )?;
+            apply_orient_transform(document, sources.as_slice(), transform, options.copy)?
+        } else {
+            let morph = SurfacePointMorph::try_new(
+                source_frame,
+                &surface,
+                target_u,
+                target_v,
+                options.scale,
+                rotation_radians,
+                options.flip,
+                tolerance,
+            )?;
+            if let Some(normal) = options.constrained_normal {
+                let morph = morph.with_constrained_normal(normal)?;
+                apply_orient_surface_morph(document, sources.as_slice(), &morph, options.copy)?
+            } else {
+                apply_orient_surface_morph(document, sources.as_slice(), &morph, options.copy)?
+            }
+        };
+        document.select_objects_direct(sources.iter().copied(), SelectionMode::Replace)?;
+        debug_assert!(!document.is_selected(surface_id));
+        Ok(format!(
+            "Oriented {transformed} object(s) onto surface parameters {target_u:.6},{target_v:.6} with {} placement, creating {copied} copy object(s)",
+            if options.rigid { "rigid" } else { "deformable" }
+        ))
+    }
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct OrientOnSurfaceOptions {
+    scale: Real,
+    rotation_degrees: Real,
+    copy: bool,
+    rigid: bool,
+    flip: bool,
+    source_normal: Vector3,
+    constrained_normal: Option<Vector3>,
+    surface_name: Option<String>,
+}
+
+fn parse_orient_on_surface_options(
+    arguments: &[&str],
+) -> Result<OrientOnSurfaceOptions, CommandError> {
+    let mut options = OrientOnSurfaceOptions {
+        scale: 1.0,
+        rotation_degrees: 0.0,
+        copy: true,
+        rigid: true,
+        flip: false,
+        source_normal: Vector3::try_new(0.0, 0.0, 1.0).expect("the world z direction is finite"),
+        constrained_normal: None,
+        surface_name: None,
+    };
+    let mut seen = BTreeSet::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, ORIENT_ON_SURFACE_USAGE)?;
+        let normalized_name = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        if !seen.insert(normalized_name.clone()) {
+            return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE));
+        }
+        match normalized_name.as_str() {
+            "scale" => {
+                options.scale = parse_finite_real(value)?;
+                if options.scale <= 0.0 {
+                    return Err(CommandError::InvalidScaleFactor(value.to_owned()));
+                }
+            }
+            "rotation" | "angle" => options.rotation_degrees = parse_finite_real(value)?,
+            "copy" => {
+                options.copy =
+                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
+            }
+            "rigid" => {
+                options.rigid =
+                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
+            }
+            "flip" => {
+                options.flip =
+                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
+            }
+            "sourcenormal" | "up" => {
+                options.source_normal = Vector3::try_from(
+                    parse_single_option_point(value, ORIENT_ON_SURFACE_USAGE)?.to_array(),
+                )?;
+            }
+            "constrainnormal" => {
+                options.constrained_normal = Some(Vector3::try_from(
+                    parse_single_option_point(value, ORIENT_ON_SURFACE_USAGE)?.to_array(),
+                )?);
+            }
+            "ignoretrims" => {
+                parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
+            }
+            "surfacename" if !value.is_empty() => options.surface_name = Some(value.to_owned()),
+            _ => return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE)),
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
+fn orient_on_surface_inputs(
+    document: &Document,
+    surface_name: Option<&str>,
+) -> Result<(NurbsSurface, ObjectId, Vec<ObjectId>), CommandError> {
+    let selected = selected_ids(document)?;
+    let surface_id = if let Some(name) = surface_name {
+        let matches = document
+            .objects()
+            .filter(|object| {
+                object
+                    .attributes()
+                    .name()
+                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
+            })
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        match matches.as_slice() {
+            [] => return Err(CommandError::SurfaceOrientTargetNotFound(name.to_owned())),
+            [id] => *id,
+            _ => return Err(CommandError::AmbiguousSurfaceOrientTarget(name.to_owned())),
+        }
+    } else {
+        *selected
+            .last()
+            .ok_or(CommandError::SurfaceOrientTargetRequired)?
+    };
+    let target = document
+        .object(surface_id)
+        .expect("resolved surface-orient target identifiers are present");
+    let Geometry::NurbsSurface(surface) = target.geometry() else {
+        return Err(CommandError::SurfaceOrientTargetNotSurface);
+    };
+    let sources = selected
+        .into_iter()
+        .filter(|id| *id != surface_id)
+        .collect::<Vec<_>>();
+    if sources.is_empty() {
+        return Err(CommandError::SurfaceOrientSourcesRequired);
+    }
+    Ok((surface.clone(), surface_id, sources))
+}
+
+fn orient_on_surface_target_frame(
+    frame: Frame3,
+    rotation_radians: Real,
+    flip: bool,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
+    let (sine, cosine) = rotation_radians.sin_cos();
+    let y_sign = if flip { -1.0 } else { 1.0 };
+    let x = combine_frame_axes(frame.x_axis(), frame.y_axis(), cosine, sine * y_sign)?;
+    let y = combine_frame_axes(frame.x_axis(), frame.y_axis(), -sine, cosine * y_sign)?;
+    Frame3::try_from_directions(frame.origin(), x, y, tolerance)
+}
+
+fn combine_frame_axes(
+    first: UnitVector3,
+    second: UnitVector3,
+    first_scale: Real,
+    second_scale: Real,
+) -> Result<Vector3, GeometryError> {
+    let first = first.as_vector().to_array();
+    let second = second.as_vector().to_array();
+    Vector3::try_new(
+        first_scale.mul_add(first[0], second_scale * second[0]),
+        first_scale.mul_add(first[1], second_scale * second[1]),
+        first_scale.mul_add(first[2], second_scale * second[2]),
+    )
+}
+
+fn apply_orient_surface_morph(
+    document: &mut Document,
+    selected: &[ObjectId],
+    morph: &SurfacePointMorph<'_>,
+    copy: bool,
+) -> Result<(usize, usize), DocumentError> {
+    if copy {
+        let copies = document.copy_objects_morphed(selected.iter().copied(), morph)?;
+        Ok((selected.len(), copies.len()))
+    } else {
+        let transformed = document.morph_objects(selected.iter().copied(), morph)?;
+        Ok((transformed, 0))
+    }
+}
+
 const ARRAY_USAGE: &str =
     "Array x-count y-count z-count x-distance y-distance z-distance [Mode=UnitCell|Fill]";
 
@@ -5183,6 +5426,21 @@ pub enum CommandError {
     #[error("ArraySrf requires at least one selected source object besides the target surface")]
     SurfaceArraySourcesRequired,
 
+    #[error("no object named '{0}' was found for the surface-orient target")]
+    SurfaceOrientTargetNotFound(String),
+
+    #[error("more than one object named '{0}' could be the surface-orient target")]
+    AmbiguousSurfaceOrientTarget(String),
+
+    #[error("OrientOnSrf requires a named target surface or a selected surface as the last object")]
+    SurfaceOrientTargetRequired,
+
+    #[error("the OrientOnSrf target must be an untrimmed NURBS surface")]
+    SurfaceOrientTargetNotSurface,
+
+    #[error("OrientOnSrf requires at least one selected source object besides the target surface")]
+    SurfaceOrientSourcesRequired,
+
     #[error("no object named '{0}' was found for the curve-array path")]
     CurveArrayPathNotFound(String),
 
@@ -5362,7 +5620,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -10010,6 +10268,180 @@ mod tests {
         assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.groups().len(), 1);
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    fn orient_surface_quarter_cylinder() -> NurbsSurface {
+        let middle_weight = 0.5_f64.sqrt();
+        let mut controls = Vec::new();
+        for z in [0.0, 10.0] {
+            controls.extend([
+                WeightedPoint3::try_new(Point3::try_new(10.0, 0.0, z).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(10.0, 10.0, z).unwrap(), middle_weight)
+                    .unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(0.0, 10.0, z).unwrap(), 1.0).unwrap(),
+            ]);
+        }
+        NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            controls,
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap()
+    }
+
+    fn oriented_surface_curve(document: &Document, name: &str, original: ObjectId) -> NurbsCurve {
+        document
+            .objects()
+            .find(|object| object.id() != original && object.attributes().name() == Some(name))
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.clone(),
+                _ => panic!("expected a deformable surface-orient curve"),
+            })
+            .unwrap()
+    }
+
+    #[test]
+    fn orient_on_surface_deformable_matches_rhino_splop_groups_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let originals = add_orient_triad(&mut document);
+        let target = add_named_surface(&mut document, orient_surface_quarter_cylinder(), "Target");
+        let message = registry
+            .execute(
+                &mut document,
+                "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
+                 Copy=Yes Rigid=No SurfaceName=target",
+            )
+            .unwrap();
+        assert!(message.contains("deformable"));
+        assert!(message.contains("creating 3 copy object(s)"));
+        assert_eq!(document.objects().len(), 7);
+        assert_eq!(document.groups().len(), 2);
+        assert_eq!(document.undo_label(), Some("OrientOnSrf"));
+        assert!(!document.is_selected(target));
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            originals.into_iter().collect()
+        );
+        let expected_ends = [
+            Point3::try_new(8.484425274005353, 5.292875189329445, 4.0).unwrap(),
+            Point3::try_new(8.973756499953724, 4.412674277525845, 5.0).unwrap(),
+            Point3::try_new(9.8711321499491, 4.85394170527843, 4.0).unwrap(),
+        ];
+        let base = Point3::try_new(8.973756499953726, 4.412674277525846, 4.0).unwrap();
+        let copy_ids = document
+            .objects()
+            .filter(|object| !originals.contains(&object.id()) && object.id() != target)
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        for (((name, original), expected_end), copy_id) in ["x", "y", "z"]
+            .into_iter()
+            .zip(originals)
+            .zip(expected_ends)
+            .zip(copy_ids.iter().copied())
+        {
+            let curve = oriented_surface_curve(&document, name, original);
+            assert_eq!(curve.degree(), 3);
+            assert_eq!(curve.control_points().len(), 4);
+            assert!(
+                curve
+                    .evaluate(*curve.domain().start())
+                    .unwrap()
+                    .is_near(base, document.tolerance())
+            );
+            assert!(
+                curve
+                    .evaluate(*curve.domain().end())
+                    .unwrap()
+                    .is_near(expected_end, document.tolerance())
+            );
+            assert!(!document.is_selected(copy_id));
+        }
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.groups().len(), 1);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(copy_ids.iter().all(|id| document.object(*id).is_some()));
+        assert_eq!(document.groups().len(), 2);
+    }
+
+    #[test]
+    fn orient_on_surface_rigid_flip_and_errors_are_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let originals = add_orient_triad(&mut document);
+        let target = add_named_surface(&mut document, orient_surface_quarter_cylinder(), "Target");
+        registry
+            .execute(
+                &mut document,
+                "OrientOnSurface 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
+                 Scale=2 Rotation=90 Copy=Yes Rigid=Yes SurfaceName=Target",
+            )
+            .unwrap();
+        let base = Point3::try_new(8.973756499953726, 4.412674277525846, 4.0).unwrap();
+        let expected = [
+            Point3::try_new(base.x(), base.y(), 6.0).unwrap(),
+            Point3::try_new(9.856291355458895, 2.6179229775351006, 4.0).unwrap(),
+            Point3::try_new(10.76850779994447, 5.295209133030891, 4.0).unwrap(),
+        ];
+        for ((name, expected_end), original) in
+            ["x", "y", "z"].into_iter().zip(expected).zip(originals)
+        {
+            let copy = orient_line(&document, name, &[original]);
+            assert!(copy.start().is_near(base, document.tolerance()));
+            assert!(copy.end().is_near(expected_end, document.tolerance()));
+        }
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
+                 Copy=No Rigid=No Flip=Yes SurfaceName=Target",
+            )
+            .unwrap();
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.groups().len(), 1);
+        let y = match document.object(originals[1]).unwrap().geometry() {
+            Geometry::NurbsCurve(curve) => curve,
+            _ => panic!("expected an in-place surface morph"),
+        };
+        assert!(y.evaluate(*y.domain().end()).unwrap().is_near(
+            Point3::try_new(base.x(), base.y(), 3.0).unwrap(),
+            document.tolerance()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let object_count = document.objects().len();
+        let group_count = document.groups().len();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "OrientOnSrf 1,2,3 1,2,3 8.973756499953726,4.412674277525846,4 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Scale=0 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Scale=-1 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 SourceNormal=1,0,0 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Rigid=Yes ConstrainNormal=0,0,1 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 SurfaceName=Missing",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=Yes Copy=No SurfaceName=Target",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.groups().len(), group_count);
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert!(!document.is_selected(target));
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            originals.into_iter().collect()
+        );
     }
 
     #[test]

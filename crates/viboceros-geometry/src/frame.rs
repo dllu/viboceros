@@ -10,6 +10,37 @@ pub struct Frame3 {
 }
 
 impl Frame3 {
+    /// Constructs a frame whose x-axis follows `x_direction` while its z-axis
+    /// is the component of `preferred_normal` perpendicular to x. This is the
+    /// construction-plane rule Rhino uses for two-point orientation commands.
+    pub fn try_from_x_and_normal(
+        origin: Point3,
+        x_direction: Vector3,
+        preferred_normal: Vector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let x_axis = x_direction.normalized(tolerance)?;
+        let projection = preferred_normal.dot(x_axis.as_vector())?;
+        let normal = preferred_normal.to_array();
+        let x = x_axis.as_vector().to_array();
+        let z_axis = Vector3::try_new(
+            (-projection).mul_add(x[0], normal[0]),
+            (-projection).mul_add(x[1], normal[1]),
+            (-projection).mul_add(x[2], normal[2]),
+        )?
+        .normalized(tolerance)?;
+        let y_axis = z_axis
+            .as_vector()
+            .cross(x_axis.as_vector())?
+            .normalized_nonzero()?;
+        Ok(Self {
+            origin,
+            x_axis,
+            y_axis,
+            z_axis,
+        })
+    }
+
     /// Constructs the deterministic OpenNURBS-style plane whose z-axis is the
     /// supplied normal. The x-axis is chosen from the two largest normal
     /// components, and y completes a right-handed orthonormal frame.
@@ -210,5 +241,40 @@ mod tests {
                 0.0
             )
         );
+    }
+
+    #[test]
+    fn x_and_normal_constructor_projects_the_preferred_normal() {
+        let frame = Frame3::try_from_x_and_normal(
+            point(1.0, 2.0, 3.0),
+            Vector3::try_new(1.0, 1.0, 1.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let inverse_root_three = 1.0 / 3.0_f64.sqrt();
+        let inverse_root_two = 1.0 / 2.0_f64.sqrt();
+        let inverse_root_six = 1.0 / 6.0_f64.sqrt();
+        for (actual, expected) in frame.x_axis().as_vector().to_array().into_iter().zip([
+            inverse_root_three,
+            inverse_root_three,
+            inverse_root_three,
+        ]) {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
+        for (actual, expected) in frame.y_axis().as_vector().to_array().into_iter().zip([
+            -inverse_root_two,
+            inverse_root_two,
+            0.0,
+        ]) {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
+        for (actual, expected) in frame.z_axis().as_vector().to_array().into_iter().zip([
+            -inverse_root_six,
+            -inverse_root_six,
+            2.0 * inverse_root_six,
+        ]) {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
     }
 }

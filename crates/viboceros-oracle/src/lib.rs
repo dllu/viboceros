@@ -14,9 +14,10 @@ use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
-    AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, WeightedPoint3, join_polylines,
+    AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, Frame3, GeometryError,
+    LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -88,6 +89,9 @@ pub enum Operation {
         id: String,
     },
     DocumentOrientCycle {
+        id: String,
+    },
+    DocumentSurfaceOrientCycle {
         id: String,
     },
     DocumentLinearArrayCycle {
@@ -283,6 +287,7 @@ impl Operation {
             | Self::DocumentObjectNamingCycle { id }
             | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentOrientCycle { id }
+            | Self::DocumentSurfaceOrientCycle { id }
             | Self::DocumentLinearArrayCycle { id }
             | Self::DocumentRectangularArrayCycle { id }
             | Self::DocumentCurveArrayCycle { id }
@@ -481,6 +486,9 @@ fn execute(
             document_layer_assignment_cycle(iterations)?
         }
         Operation::DocumentOrientCycle { .. } => document_orient_cycle(iterations, tolerance)?,
+        Operation::DocumentSurfaceOrientCycle { .. } => {
+            document_surface_orient_cycle(iterations, tolerance)?
+        }
         Operation::DocumentLinearArrayCycle { .. } => {
             document_linear_array_cycle(iterations, tolerance)?
         }
@@ -1939,6 +1947,270 @@ fn document_orient_scenario(
             .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
             .collect::<Vec<_>>(),
     }))
+}
+
+fn document_surface_orient_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let value = json!({
+        "deformable": document_surface_orient_scenario(
+            tolerance,
+            &registry,
+            "deformable",
+            SurfaceArrayFixtureSurface::Cylinder,
+            [2.0, 2.0, 3.0],
+            "Copy=Yes Rigid=No Flip=No",
+        )?,
+        "flip": document_surface_orient_scenario(
+            tolerance,
+            &registry,
+            "flip",
+            SurfaceArrayFixtureSurface::Cylinder,
+            [2.0, 2.0, 3.0],
+            "Copy=Yes Rigid=No Flip=Yes",
+        )?,
+        "scale_rotate": document_surface_orient_scenario(
+            tolerance,
+            &registry,
+            "scale-rotate",
+            SurfaceArrayFixtureSurface::Cylinder,
+            [2.0, 2.0, 3.0],
+            "Copy=Yes Rigid=No Flip=No Scale=2 Rotation=90",
+        )?,
+        "rigid": document_surface_orient_scenario(
+            tolerance,
+            &registry,
+            "rigid",
+            SurfaceArrayFixtureSurface::Cylinder,
+            [2.0, 2.0, 3.0],
+            "Copy=Yes Rigid=Yes Flip=No Scale=2 Rotation=35",
+        )?,
+        "oblique_source": document_surface_orient_scenario(
+            tolerance,
+            &registry,
+            "oblique-source",
+            SurfaceArrayFixtureSurface::Bilinear,
+            [2.0, 3.0, 4.0],
+            "Copy=Yes Rigid=No Flip=No",
+        )?,
+        "copy_no": document_surface_orient_scenario(
+            tolerance,
+            &registry,
+            "copy-no",
+            SurfaceArrayFixtureSurface::Warped,
+            [2.0, 2.0, 3.0],
+            "Copy=No Rigid=No Flip=No",
+        )?,
+    });
+    let surface = SurfaceArrayFixtureSurface::Cylinder.geometry()?;
+    let source = Frame3::try_from_x_and_normal(
+        Point3::try_new(1.0, 2.0, 3.0)?,
+        Vector3::try_new(1.0, 0.0, 0.0)?,
+        Vector3::try_new(0.0, 0.0, 1.0)?,
+        tolerance,
+    )?;
+    let morph = SurfacePointMorph::try_new(source, &surface, 0.3, 0.4, 1.0, 0.0, false, tolerance)?;
+    let sample = Point3::try_new(3.0, 0.5, 3.75)?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        black_box(&morph).morph_point(black_box(sample))
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+fn document_surface_orient_scenario(
+    tolerance: Tolerance,
+    registry: &CommandRegistry,
+    label: &str,
+    surface_kind: SurfaceArrayFixtureSurface,
+    reference_point: [f64; 3],
+    options: &str,
+) -> Result<Value, ProbeError> {
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let origin = Point3::try_new(1.0, 2.0, 3.0)?;
+    let mut original_ids = Vec::with_capacity(3);
+    for (axis, offset) in [
+        ("x", [1.0, 0.0, 0.0]),
+        ("y", [0.0, 1.0, 0.0]),
+        ("z", [0.0, 0.0, 1.0]),
+    ] {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Line(LineSegment::try_new(
+                origin,
+                origin.translated(Vector3::try_from(offset)?)?,
+                tolerance,
+            )?),
+            ObjectAttributes::on_layer(layer).with_name(format!("{label} {axis}")),
+        )?);
+    }
+    document.add_group(
+        Some(format!("Viboceros Surface Orient Group {label}")),
+        original_ids.iter().copied(),
+    )?;
+    let surface = surface_kind.geometry()?;
+    let target_point = surface.evaluate(0.3, 0.4)?;
+    let surface_id = document.add_geometry_with_attributes(
+        Geometry::NurbsSurface(surface),
+        ObjectAttributes::on_layer(layer).with_name("Target"),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(
+        &mut document,
+        &format!(
+            "OrientOnSrf 1,2,3 {},{},{} {},{},{} {options} SurfaceName=Target",
+            reference_point[0],
+            reference_point[1],
+            reference_point[2],
+            target_point.x(),
+            target_point.y(),
+            target_point.z(),
+        ),
+    )?;
+
+    let prefix = format!("{label} ");
+    let object_ids = document
+        .objects()
+        .filter(|object| {
+            object
+                .attributes()
+                .name()
+                .is_some_and(|name| name.starts_with(&prefix))
+        })
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    let mut objects = object_ids
+        .iter()
+        .map(|id| surface_orient_curve_record(&document, *id, &prefix))
+        .collect::<Result<Vec<_>, _>>()?;
+    objects.sort_by(compare_surface_orient_curve_records);
+    let mut groups = document
+        .groups()
+        .filter_map(|group| {
+            let members = group
+                .members()
+                .filter(|id| object_ids.contains(id))
+                .collect::<Vec<_>>();
+            (!members.is_empty()).then_some(members)
+        })
+        .map(|members| {
+            let mut records = members
+                .into_iter()
+                .map(|id| surface_orient_curve_record(&document, id, &prefix))
+                .collect::<Result<Vec<_>, _>>()?;
+            records.sort_by(compare_surface_orient_curve_records);
+            Ok::<_, ProbeError>(records)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    groups.sort_by(|left, right| {
+        left.iter()
+            .zip(right)
+            .map(|(left, right)| compare_surface_orient_curve_records(left, right))
+            .find(|ordering| !ordering.is_eq())
+            .unwrap_or_else(|| left.len().cmp(&right.len()))
+    });
+
+    Ok(json!({
+        "command_succeeded": true,
+        "groups": groups
+            .iter()
+            .map(|records| surface_orient_curve_records_value(records))
+            .collect::<Vec<_>>(),
+        "objects": surface_orient_curve_records_value(&objects),
+        "originals_selected": original_ids
+            .iter()
+            .enumerate()
+            .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+            .collect::<Vec<_>>(),
+        "surface_selected": document.is_selected(surface_id),
+    }))
+}
+
+#[derive(Clone)]
+struct SurfaceOrientCurveRecord {
+    controls: Vec<([f64; 3], f64)>,
+    degree: usize,
+    name: String,
+    rational: bool,
+    selected: bool,
+}
+
+fn surface_orient_curve_record(
+    document: &Document,
+    id: ObjectId,
+    prefix: &str,
+) -> Result<SurfaceOrientCurveRecord, ProbeError> {
+    let object = document
+        .object(id)
+        .ok_or(DocumentError::ObjectNotFound(id))?;
+    let (degree, rational, controls) = match object.geometry() {
+        Geometry::Line(line) => (
+            1,
+            false,
+            vec![(line.start().to_array(), 1.0), (line.end().to_array(), 1.0)],
+        ),
+        Geometry::NurbsCurve(curve) => (
+            curve.degree(),
+            curve.is_rational(),
+            curve
+                .control_points()
+                .iter()
+                .map(|control| (control.point().to_array(), control.weight()))
+                .collect(),
+        ),
+        _ => {
+            return Err(ProbeError::FixtureInvariant(
+                "surface-orient fixture contains a non-curve object",
+            ));
+        }
+    };
+    let name = object.attributes().name().unwrap_or_default();
+    Ok(SurfaceOrientCurveRecord {
+        controls,
+        degree,
+        name: name.strip_prefix(prefix).unwrap_or(name).to_owned(),
+        rational,
+        selected: document.is_selected(id),
+    })
+}
+
+fn compare_surface_orient_curve_records(
+    left: &SurfaceOrientCurveRecord,
+    right: &SurfaceOrientCurveRecord,
+) -> std::cmp::Ordering {
+    left.name
+        .cmp(&right.name)
+        .then_with(|| left.degree.cmp(&right.degree))
+        .then_with(|| {
+            let left = left.controls.first().map_or([0.0; 3], |control| control.0);
+            let right = right.controls.first().map_or([0.0; 3], |control| control.0);
+            compare_array_sort_point(&left, &right)
+        })
+}
+
+fn surface_orient_curve_records_value(records: &[SurfaceOrientCurveRecord]) -> Value {
+    let rounded = |value: f64| {
+        let value = (value * 1.0e6).round() / 1.0e6;
+        if value == 0.0 { 0.0 } else { value }
+    };
+    Value::Array(
+        records
+            .iter()
+            .map(|record| {
+                json!({
+                    "controls": record.controls.iter().map(|(point, weight)| json!({
+                        "point": point.map(rounded),
+                        "weight": rounded(*weight),
+                    })).collect::<Vec<_>>(),
+                    "degree": record.degree,
+                    "is_rational": record.rational,
+                    "name": record.name,
+                    "selected": record.selected,
+                })
+            })
+            .collect(),
+    )
 }
 
 fn document_surface_array_cycle(

@@ -238,6 +238,279 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_surface_orient_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Surface Orient " + suffix + " "
+        fixture_group_indices = set()
+        target_ids = []
+
+        def fixture_number(value):
+            value = round(float(value), 6)
+            return 0.0 if value == 0.0 else value
+
+        def fixture_point(value):
+            return [
+                fixture_number(value.X),
+                fixture_number(value.Y),
+                fixture_number(value.Z),
+            ]
+
+        def fixture_objects():
+            return [
+                rhino_object
+                for rhino_object in document.Objects
+                if rhino_object.Attributes.Name is not None
+                and rhino_object.Attributes.Name.startswith(name_prefix)
+            ]
+
+        def curve_record(rhino_object, scenario_prefix):
+            curve = rhino_object.Geometry
+            if not isinstance(curve, Rhino.Geometry.Curve):
+                raise ValueError("surface-orient fixture contains a non-curve")
+            nurbs = curve.ToNurbsCurve()
+            if nurbs is None:
+                raise ValueError("could not convert surface-orient curve to NURBS")
+            return {
+                "controls": [
+                    {
+                        "point": fixture_point(nurbs.Points[index].Location),
+                        "weight": fixture_number(nurbs.Points[index].Weight),
+                    }
+                    for index in range(nurbs.Points.Count)
+                ],
+                "degree": int(nurbs.Degree),
+                "is_rational": bool(nurbs.IsRational),
+                "name": rhino_object.Attributes.Name[len(scenario_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+            }
+
+        def record_key(record):
+            first = (
+                record["controls"][0]["point"]
+                if record["controls"]
+                else [0.0, 0.0, 0.0]
+            )
+            return tuple([record["name"], record["degree"]] + first)
+
+        def scenario_groups(objects, scenario_prefix):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    curve_record(member, scenario_prefix)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(key=lambda group: tuple(record_key(item) for item in group))
+            return groups
+
+        def create_surface(surface_kind):
+            if surface_kind == "bilinear":
+                surface = Rhino.Geometry.NurbsSurface.Create(
+                    3, False, 2, 2, 2, 2
+                )
+                controls = [
+                    {"point": [0.0, 0.0, 0.0]},
+                    {"point": [10.0, 0.0, 0.0]},
+                    {"point": [0.0, 10.0, 10.0]},
+                    {"point": [12.0, 10.0, 10.0]},
+                ]
+                control_count_u = 2
+                u_knots = [0.0, 0.0, 1.0, 1.0]
+                v_knots = [0.0, 0.0, 1.0, 1.0]
+            else:
+                surface = Rhino.Geometry.NurbsSurface.Create(
+                    3, surface_kind == "cylinder", 3, 2, 3, 2
+                )
+                control_count_u = 3
+                u_knots = [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+                v_knots = [0.0, 0.0, 1.0, 1.0]
+            if surface is None:
+                raise ValueError("could not allocate surface-orient fixture")
+            if surface_kind == "cylinder":
+                middle_weight = math.sqrt(0.5)
+                controls = [
+                    {"point": [10.0, 0.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 0.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 0.0], "weight": 1.0},
+                    {"point": [10.0, 0.0, 10.0], "weight": 1.0},
+                    {"point": [10.0, 10.0, 10.0], "weight": middle_weight},
+                    {"point": [0.0, 10.0, 10.0], "weight": 1.0},
+                ]
+            elif surface_kind != "bilinear":
+                controls = [
+                    {"point": [0.0, 0.0, 0.0]},
+                    {"point": [5.0, 0.0, 0.0]},
+                    {"point": [10.0, 0.0, 0.0]},
+                    {"point": [0.0, 10.0, 10.0]},
+                    {"point": [0.0, 20.0, 10.0]},
+                    {"point": [10.0, 10.0, 10.0]},
+                ]
+            _set_surface_controls(surface, controls, control_count_u, 2)
+            _set_knots(
+                surface.KnotsU,
+                u_knots,
+                "surface-orient U knot",
+            )
+            _set_knots(
+                surface.KnotsV,
+                v_knots,
+                "surface-orient V knot",
+            )
+            return surface
+
+        def run_scenario(
+            label,
+            surface_kind,
+            reference_point,
+            copy,
+            rigid,
+            flip,
+            scale,
+            rotation,
+        ):
+            _record_progress("document_surface_orient_cycle: %s start" % label)
+            origin = Rhino.Geometry.Point3d(1.0, 2.0, 3.0)
+            source_ids = []
+            scenario_prefix = name_prefix + label + " "
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(1.0, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, 1.0, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, 1.0)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = scenario_prefix + axis
+                source_id = document.Objects.AddLine(origin, origin + offset, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add surface-orient fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Surface Orient Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group surface-orient fixture lines")
+            fixture_group_indices.add(group_index)
+            surface = create_surface(surface_kind)
+            if surface is None or not surface.IsValid:
+                raise ValueError("surface-orient fixture surface is invalid")
+            target_id = document.Objects.AddSurface(surface)
+            if target_id == System.Guid.Empty:
+                raise ValueError("could not add surface-orient target")
+            target_ids.append(target_id)
+            target_point = surface.PointAt(0.3, 0.4)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                document.Objects.Select(source_id)
+            command = (
+                "_-OrientOnSrf 1,2,3 %s '_-SelID %s "
+                "_Copy=_%s _Rigid=_%s _Flip=_%s %.17g,%.17g,%.17g %.17g %.17g _Enter"
+                % (
+                    reference_point,
+                    target_id,
+                    "Yes" if copy else "No",
+                    "Yes" if rigid else "No",
+                    "Yes" if flip else "No",
+                    target_point.X,
+                    target_point.Y,
+                    target_point.Z,
+                    scale,
+                    rotation,
+                )
+            )
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_surface_orient_cycle: %s command complete" % label
+            )
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(scenario_prefix)
+            ]
+            expected_count = len(source_ids) * (2 if copy else 1)
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "OrientOnSrf macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (command, succeeded, len(objects), history[-2000:])
+                )
+            records = [curve_record(item, scenario_prefix) for item in objects]
+            records.sort(key=record_key)
+            return {
+                "command_succeeded": bool(succeeded),
+                "groups": scenario_groups(objects, scenario_prefix),
+                "objects": records,
+                "originals_selected": [
+                    index
+                    for index, source_id in enumerate(source_ids)
+                    if document.Objects.FindId(source_id).IsSelected(False) > 0
+                ],
+                "surface_selected": (
+                    document.Objects.FindId(target_id).IsSelected(False) > 0
+                ),
+            }
+
+        try:
+            value = {
+                "deformable": run_scenario(
+                    "deformable", "cylinder", "2,2,3", True, False, False, 1.0, 0.0
+                ),
+                "flip": run_scenario(
+                    "flip", "cylinder", "2,2,3", True, False, True, 1.0, 0.0
+                ),
+                "scale_rotate": run_scenario(
+                    "scale-rotate", "cylinder", "2,2,3", True, False, False, 2.0, 90.0
+                ),
+                "rigid": run_scenario(
+                    "rigid", "cylinder", "2,2,3", True, True, False, 2.0, 35.0
+                ),
+                "oblique_source": run_scenario(
+                    "oblique-source", "bilinear", "2,3,4", True, False, False, 1.0, 0.0
+                ),
+                "copy_no": run_scenario(
+                    "copy-no", "warped", "2,2,3", False, False, False, 1.0, 0.0
+                ),
+            }
+            timing_surface = create_surface("cylinder")
+            timing_plane = Rhino.Geometry.Plane(
+                Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                Rhino.Geometry.Vector3d.XAxis,
+                Rhino.Geometry.Vector3d.YAxis,
+            )
+            timing_morph = Rhino.Geometry.Morphs.SplopSpaceMorph(
+                timing_plane,
+                timing_surface,
+                Rhino.Geometry.Point2d(0.3, 0.4),
+            )
+            try:
+                timing_point = Rhino.Geometry.Point3d(3.0, 0.5, 3.75)
+                _unused, elapsed = _measure(
+                    iterations, lambda: timing_morph.MorphPoint(timing_point)
+                )
+            finally:
+                timing_morph.Dispose()
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            for group_index in sorted(fixture_group_indices, reverse=True):
+                if not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
+            for target_id in target_ids:
+                document.Objects.Delete(target_id, True)
     if kind == "document_surface_array_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())
