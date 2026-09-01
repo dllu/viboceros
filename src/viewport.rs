@@ -6,8 +6,8 @@ use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
 use viboceros_geometry::{
-    Circle3, CircularArc3, NurbsCurve, NurbsSurface, Point3, Real, Tolerance, TriangleMesh,
-    UnitVector3,
+    Circle3, CircularArc3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
+    TriangleMesh, UnitVector3,
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
@@ -88,6 +88,7 @@ impl Viewport {
         ui: &mut egui::Ui,
         document: &Document,
         drafting: DraftingInput,
+        preview_polyline: &[Point3],
     ) -> ViewportOutput {
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
@@ -139,7 +140,7 @@ impl Viewport {
         self.paint_grid(&painter, rect);
         self.paint_objects(&painter, rect, document);
         if let Some(cursor) = drafting_cursor {
-            self.paint_drafting(&painter, rect, drafting, cursor);
+            self.paint_drafting(&painter, rect, drafting, cursor, preview_polyline);
         }
         painter.text(
             rect.left_top() + Vec2::new(10.0, 8.0),
@@ -291,6 +292,9 @@ impl Viewport {
                 }
                 Geometry::Circle(circle) => (1, self.circle_pick_distance(pointer, rect, circle)),
                 Geometry::Arc(arc) => (1, self.arc_pick_distance(pointer, rect, arc)),
+                Geometry::Polyline(polyline) => {
+                    (1, self.polyline_pick_distance(pointer, rect, polyline))
+                }
                 Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
                 Geometry::NurbsSurface(surface) => (
                     2,
@@ -364,6 +368,17 @@ impl Viewport {
             previous = projected;
         }
         nearest
+    }
+
+    fn polyline_pick_distance(&self, pointer: Pos2, rect: Rect, polyline: &Polyline3) -> f32 {
+        polyline
+            .segments()
+            .filter_map(|segment| {
+                self.project(segment.start(), rect)
+                    .zip(self.project(segment.end(), rect))
+            })
+            .map(|(start, end)| point_segment_distance(pointer, start, end))
+            .fold(f32::INFINITY, f32::min)
     }
 
     fn mesh_pick_distance(&self, pointer: Pos2, rect: Rect, mesh: &TriangleMesh) -> f32 {
@@ -511,6 +526,16 @@ impl Viewport {
                         Stroke::new(width, color),
                         |parameter| arc.point_at(parameter),
                     );
+                }
+                Geometry::Polyline(polyline) => {
+                    for segment in polyline.segments() {
+                        if let (Some(start), Some(end)) = (
+                            self.project(segment.start(), rect),
+                            self.project(segment.end(), rect),
+                        ) {
+                            painter.line_segment([start, end], Stroke::new(width, color));
+                        }
+                    }
                 }
                 Geometry::NurbsCurve(curve) => {
                     self.paint_nurbs_curve(painter, rect, curve, Stroke::new(width, color));
@@ -746,9 +771,19 @@ impl Viewport {
         rect: Rect,
         input: DraftingInput,
         cursor: DraftingCursor,
+        preview_polyline: &[Point3],
     ) {
         const TRACK_COLOR: Color32 = Color32::from_rgb(15, 155, 190);
         const SNAP_COLOR: Color32 = Color32::from_rgb(210, 45, 145);
+
+        for vertices in preview_polyline.windows(2) {
+            if let (Some(start), Some(end)) = (
+                self.project(vertices[0], rect),
+                self.project(vertices[1], rect),
+            ) {
+                painter.line_segment([start, end], Stroke::new(1.5, Color32::from_gray(80)));
+            }
+        }
 
         if let Some(track) = cursor.track
             && let Some(anchor) = input.anchor.and_then(|point| self.project(point, rect))
@@ -942,8 +977,8 @@ mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
-        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Tolerance, TriangleMesh,
-        UnitVector3,
+        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Polyline3, Tolerance,
+        TriangleMesh, UnitVector3,
     };
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
@@ -1068,6 +1103,32 @@ mod tests {
         assert_eq!(viewport.pick_object(on_arc, rect, &document), Some(arc_id));
         let inside_circle = viewport.project(point(-3.0, 0.0, 0.0), rect).unwrap();
         assert_eq!(viewport.pick_object(inside_circle, rect, &document), None);
+    }
+
+    #[test]
+    fn picking_supports_polyline_segments_without_filling_closed_regions() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(2.0, 2.0, 0.0),
+                        point(-2.0, 2.0, 0.0),
+                        point(-2.0, -2.0, 0.0),
+                    ],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let viewport = Viewport::default();
+        let edge = viewport.project(point(2.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(edge, rect, &document), Some(id));
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(center, rect, &document), None);
     }
 
     #[test]

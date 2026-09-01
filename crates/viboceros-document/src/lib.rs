@@ -9,7 +9,7 @@ use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve,
-    NurbsSurface, Point3, Tolerance, TriangleMesh,
+    NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh,
 };
 
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
@@ -65,6 +65,7 @@ pub enum Geometry {
     Line(LineSegment),
     Circle(Circle3),
     Arc(CircularArc3),
+    Polyline(Polyline3),
     NurbsCurve(NurbsCurve),
     NurbsSurface(NurbsSurface),
     Mesh(TriangleMesh),
@@ -77,6 +78,7 @@ impl Geometry {
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
             Self::Circle(circle) => circle.bounds(),
             Self::Arc(arc) => arc.bounds(),
+            Self::Polyline(polyline) => polyline.bounds(),
             Self::NurbsCurve(curve) => curve.control_point_bounds(),
             Self::NurbsSurface(surface) => surface.control_point_bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
@@ -99,6 +101,7 @@ impl Geometry {
                 Some(arc) => Self::Arc(arc),
                 None => Self::NurbsCurve(arc.to_nurbs()?.transformed(transform)?),
             },
+            Self::Polyline(polyline) => Self::Polyline(polyline.transformed(transform, tolerance)?),
             Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),

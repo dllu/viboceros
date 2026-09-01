@@ -216,6 +216,30 @@ pub fn nearest_object_snap(
                     arc.center(),
                 );
             }
+            Geometry::Polyline(polyline) => {
+                for vertex in polyline.vertices() {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::End,
+                        *vertex,
+                    );
+                }
+                for segment in polyline.segments() {
+                    if let Ok(midpoint) = segment.point_at(0.5) {
+                        consider_candidate(
+                            &mut best,
+                            cursor,
+                            capture_radius,
+                            object.id(),
+                            ObjectSnapKind::Mid,
+                            midpoint,
+                        );
+                    }
+                }
+            }
             Geometry::NurbsCurve(curve) => {
                 let domain = curve.domain();
                 for parameter in [*domain.start(), *domain.end()] {
@@ -345,7 +369,8 @@ mod tests {
     use super::*;
     use viboceros_document::Geometry;
     use viboceros_geometry::{
-        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Tolerance, UnitVector3,
+        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Polyline3, Tolerance,
+        UnitVector3,
     };
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
@@ -501,6 +526,36 @@ mod tests {
                 .point()
                 .is_near(point(10.0, 1.0, 4.0), Tolerance::DEFAULT)
         );
+    }
+
+    #[test]
+    fn polyline_vertices_and_segment_midpoints_are_available_to_osnap() {
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![
+                        point(0.0, 0.0, 2.0),
+                        point(4.0, 0.0, 2.0),
+                        point(4.0, 6.0, 2.0),
+                    ],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let vertex = nearest_object_snap(&document, point(4.02, 0.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(vertex.object_id(), id);
+        assert_eq!(vertex.kind(), ObjectSnapKind::End);
+        assert_eq!(vertex.point(), point(4.0, 0.0, 2.0));
+
+        let midpoint = nearest_object_snap(&document, point(4.02, 3.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(midpoint.kind(), ObjectSnapKind::Mid);
+        assert_eq!(midpoint.point(), point(4.0, 3.0, 2.0));
     }
 
     #[test]

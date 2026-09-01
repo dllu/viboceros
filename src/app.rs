@@ -42,6 +42,10 @@ enum InteractiveCommand {
     Arc {
         points: [Option<Point3>; 2],
     },
+    Polyline,
+    Rectangle {
+        first: Option<Point3>,
+    },
     SrfPt {
         corners: [Option<Point3>; 3],
     },
@@ -71,6 +75,8 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Circle { .. } => "Circle",
             Self::Arc { .. } => "Arc",
+            Self::Polyline => "Polyline",
+            Self::Rectangle { .. } => "Rectangle",
             Self::SrfPt { .. } => "SrfPt",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -100,6 +106,13 @@ impl InteractiveCommand {
                 [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
                 [Some(_), Some(_)] => "Arc: pick the end point in the viewport (Esc to cancel)",
             },
+            Self::Polyline => "Polyline: pick vertices; press Enter to finish (Esc to cancel)",
+            Self::Rectangle { first: None } => {
+                "Rectangle: pick the first corner in the viewport (Esc to cancel)"
+            }
+            Self::Rectangle { first: Some(_) } => {
+                "Rectangle: pick the opposite corner in the viewport (Esc to cancel)"
+            }
             Self::SrfPt { corners } => match corners {
                 [None, _, _] => "SrfPt: pick the first corner in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {
@@ -159,6 +172,8 @@ impl InteractiveCommand {
             | Self::Line { start: None }
             | Self::Circle { center: None }
             | Self::Arc { points: [None, _] }
+            | Self::Polyline
+            | Self::Rectangle { first: None }
             | Self::SrfPt {
                 corners: [None, _, _],
             }
@@ -169,6 +184,7 @@ impl InteractiveCommand {
             | Self::Mirror { start: None } => None,
             Self::Line { start }
             | Self::Circle { center: start }
+            | Self::Rectangle { first: start }
             | Self::Move { start }
             | Self::Copy { start }
             | Self::Mirror { start } => start,
@@ -215,6 +231,7 @@ pub struct VibocerosApp {
     osnap: bool,
     smart_track: bool,
     active_command: Option<InteractiveCommand>,
+    polyline_points: Vec<Point3>,
 }
 
 impl VibocerosApp {
@@ -233,12 +250,16 @@ impl VibocerosApp {
             osnap: true,
             smart_track: true,
             active_command: None,
+            polyline_points: Vec::new(),
         }
     }
 
     fn run_command(&mut self) {
         let input = self.command_input.trim().to_owned();
         if input.is_empty() {
+            if self.active_command == Some(InteractiveCommand::Polyline) {
+                self.finish_interactive_polyline();
+            }
             return;
         }
         self.command_input.clear();
@@ -281,6 +302,8 @@ impl VibocerosApp {
             "line" | "l" => InteractiveCommand::Line { start: None },
             "circle" | "c" => InteractiveCommand::Circle { center: None },
             "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
+            "polyline" | "pline" => InteractiveCommand::Polyline,
+            "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
             "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
             "move" | "m" => InteractiveCommand::Move { start: None },
             "copy" => InteractiveCommand::Copy { start: None },
@@ -316,7 +339,9 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
-        if let Some(command) = self.active_command.take()
+        let command = self.active_command.take();
+        self.polyline_points.clear();
+        if let Some(command) = command
             && announce
         {
             self.push_log(format!("Cancelled {}", command.name()));
@@ -413,6 +438,45 @@ impl VibocerosApp {
                         format_model_point(point)
                     ));
                 }
+            }
+            InteractiveCommand::Polyline => {
+                if let Some(previous) = self.polyline_points.last()
+                    && previous.is_near(point, self.document.tolerance())
+                {
+                    self.push_log("Error: adjacent polyline vertices must differ".to_owned());
+                    return;
+                }
+                self.polyline_points.push(point);
+                self.push_log(format!(
+                    "Vertex {}: {}",
+                    self.polyline_points.len(),
+                    format_model_point(point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Rectangle { first: None } => {
+                let command = InteractiveCommand::Rectangle { first: Some(point) };
+                self.active_command = Some(command);
+                self.push_log(format!("First corner: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Rectangle { first: Some(first) } => {
+                let tolerance = self.document.tolerance().absolute();
+                if (first.x() - point.x()).abs() <= tolerance
+                    || (first.y() - point.y()).abs() <= tolerance
+                {
+                    self.push_log(
+                        "Error: rectangle width and height must both exceed model tolerance"
+                            .to_owned(),
+                    );
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Rectangle {} {}",
+                    format_model_point(first),
+                    format_model_point(point)
+                ));
             }
             InteractiveCommand::SrfPt { mut corners } => {
                 let corner_count = corners.iter().flatten().count();
@@ -585,6 +649,21 @@ impl VibocerosApp {
         }
     }
 
+    fn finish_interactive_polyline(&mut self) {
+        if self.polyline_points.len() < 2 {
+            self.push_log("Error: a polyline requires at least two vertices".to_owned());
+            return;
+        }
+        let points = std::mem::take(&mut self.polyline_points);
+        self.active_command = None;
+        let arguments = points
+            .into_iter()
+            .map(format_model_point)
+            .collect::<Vec<_>>()
+            .join(" ");
+        self.execute_command(&format!("Polyline {arguments}"));
+    }
+
     fn apply_selection_click(&mut self, click: SelectionClick) {
         match click.object_id {
             Some(id) => match self.document.select_object(id, click.mode) {
@@ -687,7 +766,7 @@ impl VibocerosApp {
                 );
                 ui.separator();
                 ui.toggle_value(&mut self.osnap, "Osnap")
-                    .on_hover_text("Snap to visible Point, End, and Mid features");
+                    .on_hover_text("Snap to visible Point, End, Mid, Center, and Quad features");
                 ui.toggle_value(&mut self.smart_track, "SmartTrack")
                     .on_hover_text("Track horizontally or vertically from the last picked point");
             });
@@ -893,7 +972,11 @@ impl VibocerosApp {
                         egui::TextEdit::singleline(&mut self.command_input)
                             .desired_width(f32::INFINITY)
                             .hint_text(if self.active_command.is_some() {
-                                "Pick in the viewport or press Esc"
+                                if self.active_command == Some(InteractiveCommand::Polyline) {
+                                    "Pick vertices; press Enter to finish or Esc to cancel"
+                                } else {
+                                    "Pick in the viewport or press Esc"
+                                }
                             } else {
                                 "Point 0,0,0 | Line 0,0,0 10,5,0"
                             }),
@@ -921,6 +1004,13 @@ impl eframe::App for VibocerosApp {
                 }
             }
         }
+        if self.active_command == Some(InteractiveCommand::Polyline)
+            && self.command_input.trim().is_empty()
+            && !ui.ctx().egui_wants_keyboard_input()
+            && ui.input(|input| input.key_pressed(egui::Key::Enter))
+        {
+            self.finish_interactive_polyline();
+        }
         if self.active_command.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
@@ -935,12 +1025,18 @@ impl eframe::App for VibocerosApp {
             active: self.active_command.is_some(),
             osnap: self.osnap,
             smart_track: self.smart_track,
-            anchor: self.active_command.and_then(InteractiveCommand::anchor),
+            anchor: if self.active_command == Some(InteractiveCommand::Polyline) {
+                self.polyline_points.last().copied()
+            } else {
+                self.active_command.and_then(InteractiveCommand::anchor)
+            },
             reference: self.active_command.and_then(InteractiveCommand::reference),
         };
         let mut viewport_output = ViewportOutput::default();
         egui::CentralPanel::default().show(ui, |ui| {
-            viewport_output = self.viewport.show(ui, &self.document, drafting);
+            viewport_output =
+                self.viewport
+                    .show(ui, &self.document, drafting, &self.polyline_points);
         });
         if viewport_output.cancelled {
             self.cancel_interactive_command(true);
@@ -975,6 +1071,7 @@ mod tests {
             osnap: true,
             smart_track: true,
             active_command: None,
+            polyline_points: Vec::new(),
         }
     }
 
@@ -1059,6 +1156,70 @@ mod tests {
             Geometry::Arc(_)
         ));
         assert_eq!(app.document.undo_label(), Some("Arc"));
+    }
+
+    #[test]
+    fn interactive_rectangle_keeps_a_degenerate_second_pick_active() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Rect"));
+        let first = point(-2.0, -1.0, 3.0);
+        app.accept_drafting_point(first);
+        app.accept_drafting_point(point(-2.0, 4.0, 3.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Rectangle { first: Some(first) })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(5.0, 4.0, 9.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Polyline(rectangle) = app.document.objects().next().unwrap().geometry()
+        else {
+            panic!("expected an interactive rectangle polyline")
+        };
+        assert!(rectangle.is_closed());
+        assert_eq!(rectangle.segment_count(), 4);
+        assert!(
+            rectangle
+                .vertices()
+                .iter()
+                .all(|vertex| vertex.z() == first.z())
+        );
+        assert_eq!(app.document.undo_label(), Some("Rectangle"));
+    }
+
+    #[test]
+    fn interactive_polyline_collects_until_enter_and_cancel_discards_vertices() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("PLine"));
+        app.run_command();
+        assert_eq!(app.active_command, Some(InteractiveCommand::Polyline));
+        assert_eq!(app.document.objects().len(), 0);
+
+        let first = point(0.0, 0.0, 1.0);
+        let second = point(3.0, 0.0, 1.0);
+        app.accept_drafting_point(first);
+        app.accept_drafting_point(first);
+        assert_eq!(app.polyline_points, vec![first]);
+        app.accept_drafting_point(second);
+        app.accept_drafting_point(first);
+        assert_eq!(app.polyline_points.last(), Some(&first));
+
+        app.run_command();
+        assert_eq!(app.active_command, None);
+        assert!(app.polyline_points.is_empty());
+        let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactive polyline")
+        };
+        assert!(polyline.is_closed());
+        assert_eq!(polyline.segment_count(), 2);
+        assert_eq!(app.document.undo_label(), Some("Polyline"));
+
+        assert!(app.try_start_interactive_command("Polyline"));
+        app.accept_drafting_point(point(5.0, 5.0, 0.0));
+        app.cancel_interactive_command(false);
+        assert!(app.polyline_points.is_empty());
+        assert_eq!(app.document.objects().len(), 1);
     }
 
     #[test]

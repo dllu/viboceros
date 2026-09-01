@@ -5,10 +5,10 @@ is organized around independent geometry, document, drafting, command, and
 file-format crates, with an egui interface rendered by wgpu.
 
 The current foundation supports finite 3D points, vectors, line segments,
-analytic circles and circular arcs, planes, bounding boxes, rational NURBS
-curves with analytic first derivatives, rational NURBS surfaces with analytic
-partial derivatives, validated triangle meshes, layers, groups, and bounded
-undo/redo.
+analytic circles and circular arcs, validated open and closed polylines, planes,
+bounding boxes, rational NURBS curves with analytic first derivatives, rational
+NURBS surfaces with analytic partial derivatives, validated triangle meshes,
+layers, groups, and bounded undo/redo.
 The top viewport can pan and zoom in wireframe, shaded, or ghosted mode. Its
 command line currently accepts:
 
@@ -17,6 +17,8 @@ Point 1,2,0
 Line 0,0,0 10,5,0
 Circle 0,0,0 5
 Arc 5,0,0 0,5,0 -5,0,0
+Polyline 0,0 4,0 4,3 7,3
+Rectangle 0,0 8,5
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 Layer New Construction
@@ -48,9 +50,10 @@ Export3dm path/to/model.3dm
 Help
 ```
 
-Enter `Point`, `Line`, `Circle`, `Arc`, or `SrfPt` without coordinates to pick
-points in the viewport. With objects selected, enter `Move` or `Copy` to pick a
-base and destination point, `Scale` or `Rotate` to pick
+Enter `Point`, `Line`, `Circle`, `Arc`, `Polyline`, `Rectangle`, or `SrfPt`
+without coordinates to pick points in the viewport; press Enter to finish a
+polyline. With objects selected, enter `Move` or `Copy` to pick a base and
+destination point, `Scale` or `Rotate` to pick
 center/reference/target points, or `Mirror` to pick a two-point axis. Osnap
 captures visible Point, End, Mid, Center, and Quad features; SmartTrack captures
 horizontal and vertical alignment from the first picked point. Drag with the
@@ -79,12 +82,13 @@ cargo clippy --workspace --all-targets -- -D warnings
 
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, lines, NURBS curves, untrimmed NURBS
-surfaces, triangle meshes, layer state, and object state. Circles and arcs are
-exported without approximation as rational quadratic NURBS curves. Unsupported trimmed
+surfaces, triangle meshes, layer state, and object state. Circles, arcs, and
+polylines are exported without approximation as rational NURBS curves;
+canonical degree-one curves return as editable polylines. Unsupported trimmed
 B-rep and solid objects are counted and reported during import. Initial STEP
 interchange uses the Apache-2.0 Monstertruck kernel to read solid/shell B-reps
-and assemblies, apply instance transforms, and robustly tessellate exact trimmed
-surfaces into validated display meshes. Parser, topology, and
+and assemblies, apply instance transforms, and robustly tessellate exact
+trimmed surfaces into validated display meshes. Parser, topology, and
 unsupported-representation losses are reported instead of being silent. STL and
 STEP export tessellate visible NURBS surfaces; STEP writes the results as faceted
 shells with shared topology and planar faces. Editable STEP B-reps, trimmed 3DM

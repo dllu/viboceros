@@ -6,7 +6,7 @@ use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes};
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve, NurbsSurface,
-    Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    Point3, Polyline3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -51,6 +51,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ArcCommand)
+            .expect("unique built-in command");
+        registry
+            .register(PolylineCommand)
+            .expect("unique built-in command");
+        registry
+            .register(RectangleCommand)
             .expect("unique built-in command");
         registry
             .register(ControlPointCurveCommand)
@@ -284,6 +290,75 @@ impl Command for ArcCommand {
         let id = document.add_geometry(Geometry::Arc(arc))?;
         Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
     }
+}
+
+struct PolylineCommand;
+
+impl Command for PolylineCommand {
+    fn name(&self) -> &'static str {
+        "Polyline"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["PLine"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let mut vertices = Vec::new();
+        let mut consumed = 0;
+        while consumed < arguments.len() {
+            let (vertex, vertex_consumed) = parse_point(&arguments[consumed..])?;
+            vertices.push(vertex);
+            consumed += vertex_consumed;
+        }
+        let polyline = Polyline3::try_new(vertices, document.tolerance())?;
+        let vertex_count = polyline.vertices().len();
+        let segment_count = polyline.segment_count();
+        let closed = polyline.is_closed();
+        let id = document.add_geometry(Geometry::Polyline(polyline))?;
+        Ok(format!(
+            "Added {}polyline {id} ({vertex_count} vertices, {segment_count} segments)",
+            if closed { "closed " } else { "" }
+        ))
+    }
+}
+
+struct RectangleCommand;
+
+impl Command for RectangleCommand {
+    fn name(&self) -> &'static str {
+        "Rectangle"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Rect"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (first, first_consumed) = parse_point(arguments)?;
+        let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
+        require_consumed(
+            arguments,
+            first_consumed + opposite_consumed,
+            "Rectangle first-corner opposite-corner",
+        )?;
+        let polyline = top_view_rectangle(first, opposite, document.tolerance())?;
+        let width = polyline.vertices()[0].distance_to(polyline.vertices()[1])?;
+        let height = polyline.vertices()[1].distance_to(polyline.vertices()[2])?;
+        let id = document.add_geometry(Geometry::Polyline(polyline))?;
+        Ok(format!("Added rectangle {id} ({width:.6} × {height:.6})"))
+    }
+}
+
+fn top_view_rectangle(
+    first: Point3,
+    opposite: Point3,
+    tolerance: Tolerance,
+) -> Result<Polyline3, GeometryError> {
+    let second = Point3::try_new(opposite.x(), first.y(), first.z())?;
+    let opposite = Point3::try_new(opposite.x(), opposite.y(), first.z())?;
+    let fourth = Point3::try_new(first.x(), opposite.y(), first.z())?;
+    Polyline3::try_new(vec![first, second, opposite, fourth, first], tolerance)
 }
 
 struct LayerCommand;
@@ -1078,7 +1153,7 @@ impl Command for ImportThreeDmCommand {
                 attributes = attributes.with_name(name);
             }
             document.add_geometry_with_attributes(
-                document_geometry_from_3dm(object.geometry),
+                document_geometry_from_3dm(object.geometry, document.tolerance()),
                 attributes,
             )?;
         }
@@ -1159,20 +1234,44 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
         Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(arc.to_nurbs()?),
+        Geometry::Polyline(polyline) => ThreeDmGeometry::NurbsCurve(polyline.to_nurbs()?),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
     })
 }
 
-fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry {
+fn document_geometry_from_3dm(geometry: ThreeDmGeometry, tolerance: Tolerance) -> Geometry {
     match geometry {
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
-        ThreeDmGeometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve),
+        ThreeDmGeometry::NurbsCurve(curve) => exported_polyline(&curve, tolerance)
+            .map_or_else(|| Geometry::NurbsCurve(curve), Geometry::Polyline),
         ThreeDmGeometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
     }
+}
+
+fn exported_polyline(curve: &NurbsCurve, tolerance: Tolerance) -> Option<Polyline3> {
+    if curve.degree() != 1
+        || curve
+            .control_points()
+            .iter()
+            .any(|control| control.weight() != 1.0)
+    {
+        return None;
+    }
+    let polyline = Polyline3::try_new(
+        curve
+            .control_points()
+            .iter()
+            .map(|control| control.point())
+            .collect(),
+        tolerance,
+    )
+    .ok()?;
+    let expected = polyline.to_nurbs().ok()?;
+    (expected.knots() == curve.knots()).then_some(polyline)
 }
 
 fn unique_import_layer_name(document: &Document, source_name: &str) -> String {
@@ -1385,7 +1484,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -1424,6 +1523,88 @@ mod tests {
         assert!(registry.execute(&mut document, "Arc 0,0 1,0 2,0").is_err());
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Circle"));
+    }
+
+    #[test]
+    fn creates_validated_polylines_and_top_view_rectangles() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Polyline 0,0 3,0 3,4")
+            .unwrap();
+        registry
+            .execute(&mut document, "Rectangle -1,-2,7 4,5,9")
+            .unwrap();
+
+        let mut objects = document.objects();
+        let Geometry::Polyline(open) = objects.next().unwrap().geometry() else {
+            panic!("expected a polyline")
+        };
+        assert!(!open.is_closed());
+        assert_eq!(open.segment_count(), 2);
+        assert_eq!(open.length().unwrap(), 7.0);
+        let Geometry::Polyline(rectangle) = objects.next().unwrap().geometry() else {
+            panic!("expected a rectangle polyline")
+        };
+        assert!(rectangle.is_closed());
+        assert_eq!(rectangle.segment_count(), 4);
+        assert_eq!(
+            rectangle.vertices(),
+            &[
+                Point3::try_new(-1.0, -2.0, 7.0).unwrap(),
+                Point3::try_new(4.0, -2.0, 7.0).unwrap(),
+                Point3::try_new(4.0, 5.0, 7.0).unwrap(),
+                Point3::try_new(-1.0, 5.0, 7.0).unwrap(),
+                Point3::try_new(-1.0, -2.0, 7.0).unwrap(),
+            ]
+        );
+        drop(objects);
+        assert_eq!(document.undo_label(), Some("Rectangle"));
+
+        assert!(
+            registry
+                .execute(&mut document, "Rectangle 0,0 0,5")
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), Some("Rectangle"));
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(&mut document, "Move 0,0,0 10,-2,1")
+            .unwrap();
+        let Geometry::Polyline(moved) = document.objects().next().unwrap().geometry() else {
+            panic!("expected a moved polyline")
+        };
+        assert_eq!(
+            moved.vertices()[0],
+            Point3::try_new(10.0, -2.0, 1.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+        let Geometry::Polyline(restored) = document.objects().next().unwrap().geometry() else {
+            panic!("expected a restored polyline")
+        };
+        assert_eq!(
+            restored.vertices()[0],
+            Point3::try_new(0.0, 0.0, 0.0).unwrap()
+        );
+    }
+
+    #[test]
+    fn three_dm_polyline_recognition_preserves_noncanonical_nurbs() {
+        let points = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 1.0, 0.0).unwrap(),
+        ];
+        let canonical = Polyline3::try_new(points.clone(), Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        assert!(exported_polyline(&canonical, Tolerance::DEFAULT).is_some());
+
+        let nonuniform = NurbsCurve::try_new(1, points, vec![0.0, 0.0, 0.25, 1.0, 1.0]).unwrap();
+        assert!(exported_polyline(&nonuniform, Tolerance::DEFAULT).is_none());
     }
 
     #[test]
@@ -1949,6 +2130,9 @@ mod tests {
             .execute(&mut source, "Arc 9,0,0 10,1,0 11,0,0")
             .unwrap();
         registry
+            .execute(&mut source, "Rectangle 12,0,0 14,2,0")
+            .unwrap();
+        registry
             .execute(&mut source, "SrfPt 0,0,0 2,0,0 2,2,1 0,2,1")
             .unwrap();
         registry
@@ -1965,9 +2149,9 @@ mod tests {
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("5 objects"));
+        assert!(message.contains("6 objects"));
         assert!(message.contains("0 unsupported objects skipped"));
-        assert_eq!(imported.objects().len(), 5);
+        assert_eq!(imported.objects().len(), 6);
         assert!(
             imported
                 .objects()
@@ -1979,6 +2163,13 @@ mod tests {
                 .filter(|object| matches!(object.geometry(), Geometry::NurbsCurve(_)))
                 .count(),
             2
+        );
+        assert_eq!(
+            imported
+                .objects()
+                .filter(|object| matches!(object.geometry(), Geometry::Polyline(_)))
+                .count(),
+            1
         );
         assert_eq!(imported.layers().len(), 3);
         let reference = imported.layer_by_name("Reference").unwrap();

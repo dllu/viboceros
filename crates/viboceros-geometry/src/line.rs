@@ -8,6 +8,10 @@ pub struct LineSegment {
 }
 
 impl LineSegment {
+    pub(crate) const fn from_validated(start: Point3, end: Point3) -> Self {
+        Self { start, end }
+    }
+
     pub fn try_new(
         start: Point3,
         end: Point3,

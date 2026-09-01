@@ -57,6 +57,12 @@ pub enum GeometryError {
     #[error("the rational NURBS denominator vanished during evaluation")]
     ZeroWeightAtParameter,
 
+    #[error("a polyline requires at least two vertices")]
+    InsufficientPolylineVertices,
+
+    #[error("polyline segment {segment} is degenerate at the requested tolerance")]
+    DegeneratePolylineSegment { segment: usize },
+
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
 
