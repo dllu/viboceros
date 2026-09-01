@@ -1,4 +1,4 @@
-//! Versioned geometry-probe protocol used to compare Viboceros with Rhino.
+//! Versioned compatibility-probe protocol used to compare Viboceros with Rhino.
 
 use std::collections::BTreeSet;
 use std::fs;
@@ -9,6 +9,7 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use thiserror::Error;
+use viboceros_document::{Document, DocumentError, Geometry, ObjectId, SelectionMode};
 use viboceros_geometry::{
     Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
     NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh, UnitVector3, WeightedPoint3,
@@ -17,6 +18,7 @@ use viboceros_geometry::{
 
 pub const PROTOCOL_VERSION: u32 = 1;
 const MAX_ITERATIONS: u32 = 1_000_000;
+const MAX_STATE_CYCLE_OBJECTS: usize = 100_000;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct ProbeRequest {
@@ -54,6 +56,12 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    DocumentObjectStateCycle {
+        id: String,
+        object_count: usize,
+        hide_indices: Vec<usize>,
+        lock_indices: Vec<usize>,
+    },
     PointDistance {
         id: String,
         a: [f64; 3],
@@ -202,7 +210,8 @@ pub enum Operation {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::PointDistance { id, .. }
+            Self::DocumentObjectStateCycle { id, .. }
+            | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
             | Self::ArcThreePoint { id, .. }
@@ -265,6 +274,9 @@ pub enum ProbeError {
     #[error(transparent)]
     Geometry(#[from] GeometryError),
 
+    #[error(transparent)]
+    Document(#[from] DocumentError),
+
     #[error("unsupported oracle protocol version {actual}; expected {expected}")]
     ProtocolVersion { actual: u32, expected: u32 },
 
@@ -273,6 +285,14 @@ pub enum ProbeError {
 
     #[error("oracle operation id '{0}' is empty or duplicated")]
     InvalidOperationId(String),
+
+    #[error(
+        "document state-cycle object count must be from 1 through {MAX_STATE_CYCLE_OBJECTS}, got {0}"
+    )]
+    InvalidStateCycleObjectCount(usize),
+
+    #[error("document state-cycle object index {index} is outside object count {object_count}")]
+    InvalidStateCycleObjectIndex { index: usize, object_count: usize },
 
     #[error("oracle timing exceeded the 64-bit nanosecond range")]
     TimingOverflow,
@@ -341,6 +361,12 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::DocumentObjectStateCycle {
+            object_count,
+            hide_indices,
+            lock_indices,
+            ..
+        } => document_object_state_cycle(iterations, *object_count, hide_indices, lock_indices)?,
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
             let b = point(*b)?;
@@ -841,6 +867,102 @@ fn execute(
     })
 }
 
+fn document_object_state_cycle(
+    iterations: u32,
+    object_count: usize,
+    hide_indices: &[usize],
+    lock_indices: &[usize],
+) -> Result<(Value, u64), ProbeError> {
+    if !(1..=MAX_STATE_CYCLE_OBJECTS).contains(&object_count) {
+        return Err(ProbeError::InvalidStateCycleObjectCount(object_count));
+    }
+    let mut document = Document::default();
+    let mut object_ids = Vec::with_capacity(object_count);
+    for index in 0..object_count {
+        object_ids.push(document.add_geometry(Geometry::Point(Point3::try_new(
+            index as f64,
+            0.0,
+            0.0,
+        )?))?);
+    }
+    let hide_ids = state_cycle_ids(&object_ids, hide_indices)?;
+    let lock_ids = state_cycle_ids(&object_ids, lock_indices)?;
+
+    measure_document(iterations, || {
+        document.clear_selection();
+        for id in &hide_ids {
+            document.select_object(*id, SelectionMode::Add)?;
+        }
+        let hide_count = document.set_objects_visibility(hide_ids.iter().copied(), false)?;
+        let modes_after_hide = document_object_modes(&document, &object_ids)?;
+        let selected_after_hide = document.selected_object_count();
+
+        let show_count = document.set_objects_visibility(hide_ids.iter().copied(), true)?;
+        let modes_after_show = document_object_modes(&document, &object_ids)?;
+        for id in &lock_ids {
+            document.select_object(*id, SelectionMode::Add)?;
+        }
+        let lock_count = document.set_objects_locked(lock_ids.iter().copied(), true)?;
+        let modes_after_lock = document_object_modes(&document, &object_ids)?;
+        let selected_after_lock = document.selected_object_count();
+
+        let unlock_count = document.set_objects_locked(lock_ids.iter().copied(), false)?;
+        let modes_after_unlock = document_object_modes(&document, &object_ids)?;
+        Ok(json!({
+            "hide_count": hide_count,
+            "lock_count": lock_count,
+            "modes_after_hide": modes_after_hide,
+            "modes_after_lock": modes_after_lock,
+            "modes_after_show": modes_after_show,
+            "modes_after_unlock": modes_after_unlock,
+            "selected_after_hide": selected_after_hide,
+            "selected_after_lock": selected_after_lock,
+            "show_count": show_count,
+            "unlock_count": unlock_count,
+        }))
+    })
+}
+
+fn state_cycle_ids(
+    object_ids: &[ObjectId],
+    indices: &[usize],
+) -> Result<Vec<ObjectId>, ProbeError> {
+    let indices = indices.iter().copied().collect::<BTreeSet<_>>();
+    if let Some(index) = indices
+        .iter()
+        .find(|index| **index >= object_ids.len())
+        .copied()
+    {
+        return Err(ProbeError::InvalidStateCycleObjectIndex {
+            index,
+            object_count: object_ids.len(),
+        });
+    }
+    Ok(indices.into_iter().map(|index| object_ids[index]).collect())
+}
+
+fn document_object_modes(
+    document: &Document,
+    object_ids: &[ObjectId],
+) -> Result<Vec<&'static str>, DocumentError> {
+    object_ids
+        .iter()
+        .map(|id| {
+            let attributes = document
+                .object(*id)
+                .ok_or(DocumentError::ObjectNotFound(*id))?
+                .attributes();
+            Ok(if !attributes.is_visible() {
+                "hidden"
+            } else if attributes.is_locked() {
+                "locked"
+            } else {
+                "normal"
+            })
+        })
+        .collect()
+}
+
 fn point(coordinates: [f64; 3]) -> Result<Point3, GeometryError> {
     Point3::try_from(coordinates)
 }
@@ -919,6 +1041,20 @@ fn measure<T>(
     Ok((value, elapsed_ns))
 }
 
+fn measure_document<T>(
+    iterations: u32,
+    mut operation: impl FnMut() -> Result<T, DocumentError>,
+) -> Result<(T, u64), ProbeError> {
+    let mut value = black_box(operation()?);
+    let started = Instant::now();
+    for _ in 0..iterations {
+        value = black_box(operation()?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 const fn default_iterations() -> u32 {
     1
 }
@@ -977,6 +1113,47 @@ mod tests {
             response.results[2].value["radius_y"],
             json!(40.0_f64.sqrt())
         );
+    }
+
+    #[test]
+    fn cycles_document_object_modes_and_prunes_selection() {
+        let response = run_request(&request(vec![Operation::DocumentObjectStateCycle {
+            id: "object-state".to_owned(),
+            object_count: 4,
+            hide_indices: vec![2, 0, 2],
+            lock_indices: vec![1, 2],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "hide_count": 2,
+                "lock_count": 2,
+                "modes_after_hide": ["hidden", "normal", "hidden", "normal"],
+                "modes_after_lock": ["normal", "locked", "locked", "normal"],
+                "modes_after_show": ["normal", "normal", "normal", "normal"],
+                "modes_after_unlock": ["normal", "normal", "normal", "normal"],
+                "selected_after_hide": 0,
+                "selected_after_lock": 0,
+                "show_count": 2,
+                "unlock_count": 2,
+            })
+        );
+
+        let error = run_request(&request(vec![Operation::DocumentObjectStateCycle {
+            id: "invalid-object-state".to_owned(),
+            object_count: 2,
+            hide_indices: vec![2],
+            lock_indices: Vec::new(),
+        }]))
+        .unwrap_err();
+        assert!(matches!(
+            error,
+            ProbeError::InvalidStateCycleObjectIndex {
+                index: 2,
+                object_count: 2
+            }
+        ));
     }
 
     #[test]

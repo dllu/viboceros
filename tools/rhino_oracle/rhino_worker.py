@@ -1,4 +1,4 @@
-"""Standalone RhinoPython worker for the versioned geometry oracle protocol.
+"""Standalone RhinoPython worker for the versioned compatibility oracle.
 
 This file is copied beside request.json and executed inside Rhino. Keep its
 syntax compatible with both Rhino 8 Python 3 and the legacy IronPython host.
@@ -15,6 +15,7 @@ import System
 
 PROTOCOL_VERSION = 1
 MAX_ITERATIONS = 1000000
+MAX_STATE_CYCLE_OBJECTS = 100000
 DEFAULT_TOLERANCE = {
     "absolute": 1.0e-9,
     "relative": 1.0e-12,
@@ -53,6 +54,24 @@ def _finite(value, context):
     if math.isnan(number) or math.isinf(number):
         raise ValueError("%s must be finite" % context)
     return number
+
+
+def _state_cycle_indices(operation, name, object_count):
+    values = operation.get(name)
+    if not isinstance(values, list):
+        raise ValueError("%s must be an array" % name)
+    indices = set()
+    for value in values:
+        if isinstance(value, bool) or int(value) != value:
+            raise ValueError("%s must contain integer indices" % name)
+        index = int(value)
+        if index < 0 or index >= object_count:
+            raise ValueError(
+                "%s index %d is outside object count %d"
+                % (name, index, object_count)
+            )
+        indices.add(index)
+    return sorted(indices)
 
 
 def _unit(vector, tolerance, context):
@@ -174,6 +193,114 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_object_state_cycle":
+        object_count_value = operation.get("object_count")
+        if (
+            isinstance(object_count_value, bool)
+            or int(object_count_value) != object_count_value
+        ):
+            raise ValueError("object_count must be an integer")
+        object_count = int(object_count_value)
+        if object_count < 1 or object_count > MAX_STATE_CYCLE_OBJECTS:
+            raise ValueError(
+                "object_count must be from 1 through %d"
+                % MAX_STATE_CYCLE_OBJECTS
+            )
+        hide_indices = _state_cycle_indices(
+            operation, "hide_indices", object_count
+        )
+        lock_indices = _state_cycle_indices(
+            operation, "lock_indices", object_count
+        )
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        try:
+            for index in range(object_count):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document state-cycle point")
+                object_ids.append(object_id)
+
+            hide_ids = [object_ids[index] for index in hide_indices]
+            lock_ids = [object_ids[index] for index in lock_indices]
+
+            def object_modes():
+                modes = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object is None:
+                        raise ValueError("document state-cycle object disappeared")
+                    if rhino_object.IsHidden:
+                        modes.append("hidden")
+                    elif rhino_object.IsLocked:
+                        modes.append("locked")
+                    else:
+                        modes.append("normal")
+                return modes
+
+            def state_cycle():
+                document.Objects.UnselectAll()
+                for object_id in hide_ids:
+                    if not document.Objects.Select(object_id):
+                        raise ValueError("could not select object to hide")
+                hide_count = sum(
+                    1
+                    for object_id in hide_ids
+                    if document.Objects.Hide(object_id, True)
+                )
+                modes_after_hide = object_modes()
+                selected_after_hide = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+
+                show_count = sum(
+                    1
+                    for object_id in hide_ids
+                    if document.Objects.Show(object_id, True)
+                )
+                modes_after_show = object_modes()
+                for object_id in lock_ids:
+                    if not document.Objects.Select(object_id):
+                        raise ValueError("could not select object to lock")
+                lock_count = sum(
+                    1
+                    for object_id in lock_ids
+                    if document.Objects.Lock(object_id, True)
+                )
+                modes_after_lock = object_modes()
+                selected_after_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+
+                unlock_count = sum(
+                    1
+                    for object_id in lock_ids
+                    if document.Objects.Unlock(object_id, True)
+                )
+                modes_after_unlock = object_modes()
+                return {
+                    "hide_count": hide_count,
+                    "lock_count": lock_count,
+                    "modes_after_hide": modes_after_hide,
+                    "modes_after_lock": modes_after_lock,
+                    "modes_after_show": modes_after_show,
+                    "modes_after_unlock": modes_after_unlock,
+                    "selected_after_hide": selected_after_hide,
+                    "selected_after_lock": selected_after_lock,
+                    "show_count": show_count,
+                    "unlock_count": unlock_count,
+                }
+
+            return _measure(iterations, state_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
     if kind == "point_distance":
         a = _point(operation["a"])
         b = _point(operation["b"])

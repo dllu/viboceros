@@ -68,6 +68,10 @@ SplitDisjointMesh
 ExtractDuplicateMeshFaces
 ExtractNonManifoldMeshEdges
 ExtractNonManifoldMeshEdges ExtractHangingFacesOnly=Yes MinimumFaceCount=3
+Hide
+Show
+Lock
+Unlock
 Delete
 Clear
 Undo
@@ -108,6 +112,10 @@ vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Results default to each input layer;
 use `OutputLayer=Current` to place them on the active layer. Point-cloud output
 awaits a native point-cloud document type.
+`Hide` and `Lock` change selected objects; `Show` and `Unlock` restore every
+object with the corresponding object-level state. Hidden objects neither render
+nor snap. Locked objects render in gray and remain available to osnap, but
+cannot be selected or edited. Layer visibility and locking remain independent.
 Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
 selection. Mesh closure uses exact location-welded edge topology, so indexed
@@ -132,7 +140,8 @@ cyclic ordering, and winding; attributes and group membership are preserved.
 `ExtractNonManifoldMeshEdges` removes faces around edges shared by three or
 more faces into attribute- and group-preserving mesh objects. Options can limit
 the operation to hanging faces or raise the minimum incident-face count.
-Osnap captures visible Point, End, Mid, Center, and Quad features;
+Osnap captures visible Point, End, Mid, Center, and Quad features, including
+features on locked objects and layers;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is
 active. Outside a drafting command, click geometry to select its connected
@@ -158,12 +167,12 @@ cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-## Rhino geometry oracle
+## Rhino compatibility oracle
 
-The versioned Python oracle API runs identical JSON geometry batches in a
-native release build of Viboceros and Rhino 8, recursively checks topology and
-numeric results, and reports per-operation timings. With Rhino installed
-through the configured Wine/FEX launcher, run the core fixture with:
+The versioned Python oracle API runs identical JSON geometry and document-state
+batches in a native release build of Viboceros and Rhino 8, recursively checks
+results, and reports per-operation timings. With Rhino installed through the
+configured Wine/FEX launcher, run the core fixture with:
 
 ```sh
 python3 -m tools.rhino_oracle compare \
@@ -185,8 +194,8 @@ Set `VIBOCEROS_RHINO_LAUNCHER` to use another launcher. McNeel's documented
 has an owned-window fallback that requires `wmctrl` and `xdotool` and never
 targets a pre-existing Rhino process. Set `VIBOCEROS_RHINO_UI_FALLBACK=0` to
 disable it. The `viboceros` and `rhino` modes run either side independently.
-Timings cover repeated geometry/API calls after one warm-up and exclude process
-startup, object construction, and JSON I/O; Rhino timings include its public
+Timings cover repeated API calls after one warm-up and exclude process startup,
+fixture construction, and JSON I/O; Rhino timings include its public
 Python/RhinoCommon bridge.
 
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's

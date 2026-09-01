@@ -18,6 +18,7 @@ const CIRCLE_SAMPLES: usize = 64;
 const SURFACE_SAMPLES_PER_SPAN: usize = 8;
 const SURFACE_ISOCURVES_PER_SPAN: usize = 2;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
+const LOCKED_COLOR: Color32 = Color32::from_gray(145);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DisplayMode {
@@ -484,7 +485,11 @@ impl Viewport {
             }
 
             let layer_color = layer.color();
-            let mut color = Color32::from_rgb(layer_color.red, layer_color.green, layer_color.blue);
+            let mut color = if attributes.is_locked() || layer.is_locked() {
+                LOCKED_COLOR
+            } else {
+                Color32::from_rgb(layer_color.red, layer_color.green, layer_color.blue)
+            };
             if self.display_mode == DisplayMode::Ghosted {
                 color = Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 110);
             }
@@ -1232,14 +1237,14 @@ mod tests {
     }
 
     #[test]
-    fn picking_ignores_locked_layers_and_prefers_point_features() {
+    fn picking_ignores_locked_or_hidden_objects_and_prefers_point_features() {
         let viewport = Viewport {
             display_mode: DisplayMode::Shaded,
             ..Viewport::default()
         };
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let mut document = Document::default();
-        document
+        let mesh_id = document
             .add_geometry(Geometry::Mesh(
                 TriangleMesh::try_new(
                     vec![
@@ -1272,6 +1277,11 @@ mod tests {
             viewport.pick_object(center, rect, &document),
             Some(point_id)
         );
+        document.set_objects_locked([point_id], true).unwrap();
+        assert_eq!(viewport.pick_object(center, rect, &document), Some(mesh_id));
+        document.set_objects_locked([point_id], false).unwrap();
+        document.set_objects_visibility([point_id], false).unwrap();
+        assert_eq!(viewport.pick_object(center, rect, &document), Some(mesh_id));
         let locked = viewport.project(point(4.0, 0.0, 0.0), rect).unwrap();
         assert_eq!(viewport.pick_object(locked, rect, &document), None);
     }

@@ -171,11 +171,17 @@ impl ObjectAttributes {
 
     pub const fn with_visibility(mut self, visible: bool) -> Self {
         self.visible = visible;
+        if !visible {
+            self.locked = false;
+        }
         self
     }
 
     pub const fn with_locked(mut self, locked: bool) -> Self {
         self.locked = locked;
+        if locked {
+            self.visible = true;
+        }
         self
     }
 
@@ -686,6 +692,38 @@ impl Document {
         Ok(self.selection.len())
     }
 
+    /// Atomically sets object-level visibility without changing geometry,
+    /// identity, layers, or group membership. Hidden objects are removed from
+    /// the transient selection.
+    pub fn set_objects_visibility(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        visible: bool,
+    ) -> Result<usize, DocumentError> {
+        self.change_object_attributes(ids, "Set object visibility", |attributes| {
+            attributes.visible = visible;
+            if !visible {
+                attributes.locked = false;
+            }
+        })
+    }
+
+    /// Atomically sets object-level locking without changing geometry,
+    /// identity, layers, or group membership. Newly locked objects are removed
+    /// from the transient selection.
+    pub fn set_objects_locked(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        locked: bool,
+    ) -> Result<usize, DocumentError> {
+        self.change_object_attributes(ids, "Set object lock", |attributes| {
+            attributes.locked = locked;
+            if locked {
+                attributes.visible = true;
+            }
+        })
+    }
+
     pub fn transform_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
@@ -1131,6 +1169,50 @@ impl Document {
         }
         connected.retain(|member| self.is_object_selectable(*member));
         connected
+    }
+
+    fn change_object_attributes(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        label: &'static str,
+        change: impl Fn(&mut ObjectAttributes),
+    ) -> Result<usize, DocumentError> {
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+
+        let mut staged = Vec::with_capacity(ids.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            if !ids.contains(&object.id) {
+                continue;
+            }
+            let before = object.clone();
+            let mut after = before.clone();
+            change(&mut after.attributes);
+            if before != after {
+                staged.push((index, before, after));
+            }
+        }
+        if staged.is_empty() {
+            return Ok(0);
+        }
+
+        let changed_count = staged.len();
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction(label)?;
+        }
+        for (index, before, after) in staged {
+            let id = before.id;
+            self.objects[index] = after.clone();
+            self.record_edit(label, Edit::ObjectChanged { id, before, after });
+        }
+        self.prune_selection();
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(changed_count)
     }
 
     fn stage_transformed_objects(
@@ -1673,6 +1755,101 @@ mod tests {
         assert!(document.is_selected(first));
         assert_eq!(document.clear_selection(), 1);
         assert_eq!(document.clear_selection(), 0);
+    }
+
+    #[test]
+    fn object_visibility_and_lock_are_atomic_identity_preserving_and_reversible() {
+        let mut document = Document::default();
+        let hidden = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_locked(true)
+            .with_visibility(false);
+        assert!(!hidden.is_visible());
+        assert!(!hidden.is_locked());
+        let locked = hidden.with_locked(true);
+        assert!(locked.is_visible());
+        assert!(locked.is_locked());
+
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let third = document
+            .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let group = document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.selected_object_count(), 2);
+
+        assert_eq!(
+            document
+                .set_objects_visibility([second, first, first], false)
+                .unwrap(),
+            2
+        );
+        assert_eq!(document.undo_label(), Some("Set object visibility"));
+        assert_eq!(document.selected_object_count(), 0);
+        assert!(!document.object(first).unwrap().attributes().is_visible());
+        assert!(!document.object(second).unwrap().attributes().is_visible());
+        assert!(document.object(third).unwrap().attributes().is_visible());
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+        assert_eq!(
+            document
+                .set_objects_visibility([first, second], false)
+                .unwrap(),
+            0
+        );
+
+        let missing = ObjectId::new();
+        assert_eq!(
+            document.set_objects_visibility([third, missing], false),
+            Err(DocumentError::ObjectNotFound(missing))
+        );
+        assert!(document.object(third).unwrap().attributes().is_visible());
+
+        document.undo().unwrap();
+        assert!(document.object(first).unwrap().attributes().is_visible());
+        assert!(document.object(second).unwrap().attributes().is_visible());
+        assert_eq!(document.object(first).unwrap().id(), first);
+        document.redo().unwrap();
+        assert!(!document.object(first).unwrap().attributes().is_visible());
+        assert_eq!(
+            document
+                .set_objects_visibility([first, second], true)
+                .unwrap(),
+            2
+        );
+
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            document.set_objects_locked([first, second], true).unwrap(),
+            2
+        );
+        assert_eq!(document.undo_label(), Some("Set object lock"));
+        assert_eq!(document.selected_object_count(), 0);
+        assert!(document.object(first).unwrap().attributes().is_locked());
+        assert!(document.object(second).unwrap().attributes().is_locked());
+        assert!(!document.is_object_selectable(first));
+        assert_eq!(document.set_objects_locked([first], true).unwrap(), 0);
+
+        document.undo().unwrap();
+        assert!(!document.object(first).unwrap().attributes().is_locked());
+        assert!(!document.object(second).unwrap().attributes().is_locked());
+        document.redo().unwrap();
+        assert!(document.object(first).unwrap().attributes().is_locked());
+        assert_eq!(
+            document.set_objects_locked([first, second], false).unwrap(),
+            2
+        );
+        assert_eq!(document.object(first).unwrap().id(), first);
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
     }
 
     #[test]

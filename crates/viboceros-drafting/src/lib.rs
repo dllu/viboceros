@@ -105,7 +105,8 @@ pub enum DraftingError {
 }
 
 /// Finds the closest visible feature snap in the top-view XY projection.
-/// Exact-distance ties use the stable priority encoded by [`ObjectSnapKind`].
+/// Locked objects remain snap targets, matching Rhino. Exact-distance ties use
+/// the stable priority encoded by [`ObjectSnapKind`].
 pub fn nearest_object_snap(
     document: &Document,
     cursor: Point3,
@@ -119,11 +120,7 @@ pub fn nearest_object_snap(
         let Some(layer) = document.layer(attributes.layer_id()) else {
             continue;
         };
-        if !attributes.is_visible()
-            || attributes.is_locked()
-            || !layer.is_visible()
-            || layer.is_locked()
-        {
+        if !attributes.is_visible() || !layer.is_visible() {
             continue;
         }
 
@@ -608,25 +605,42 @@ mod tests {
     }
 
     #[test]
-    fn hidden_and_locked_layers_are_not_snap_targets() {
+    fn locked_objects_remain_snap_targets_but_hidden_objects_do_not() {
         let mut document = Document::default();
         let default = document.current_layer_id();
         let reference = document
             .add_layer("Reference", viboceros_document::ColorRgb::new(1, 2, 3))
             .unwrap();
         document.set_current_layer(reference).unwrap();
-        document
+        let point_id = document
             .add_geometry(Geometry::Point(point(5.0, 6.0, 0.0)))
             .unwrap();
         document.set_current_layer(default).unwrap();
 
         document.set_layer_locked(reference, true).unwrap();
+        assert_eq!(
+            nearest_object_snap(&document, point(5.0, 6.0, 0.0), 0.1)
+                .unwrap()
+                .unwrap()
+                .object_id(),
+            point_id
+        );
+        document.set_layer_locked(reference, false).unwrap();
+        document.set_objects_locked([point_id], true).unwrap();
+        assert_eq!(
+            nearest_object_snap(&document, point(5.0, 6.0, 0.0), 0.1)
+                .unwrap()
+                .unwrap()
+                .object_id(),
+            point_id
+        );
+        document.set_objects_visibility([point_id], false).unwrap();
         assert!(
             nearest_object_snap(&document, point(5.0, 6.0, 0.0), 0.1)
                 .unwrap()
                 .is_none()
         );
-        document.set_layer_locked(reference, false).unwrap();
+        document.set_objects_visibility([point_id], true).unwrap();
         document.set_layer_visibility(reference, false).unwrap();
         assert!(
             nearest_object_snap(&document, point(5.0, 6.0, 0.0), 0.1)

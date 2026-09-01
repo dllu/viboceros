@@ -8,6 +8,13 @@
   },
   "operations": [
     {
+      "op": "document_object_state_cycle",
+      "id": "document-object-state-cycle",
+      "object_count": 4,
+      "hide_indices": [2, 0, 2],
+      "lock_indices": [1, 2]
+    },
+    {
       "op": "point_distance",
       "id": "point-distance",
       "a": [1.25, -2.5, 4.0],

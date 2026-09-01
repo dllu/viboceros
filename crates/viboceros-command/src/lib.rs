@@ -159,6 +159,18 @@ impl CommandRegistry {
             .register(DeleteCommand)
             .expect("unique built-in command");
         registry
+            .register(HideCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ShowCommand)
+            .expect("unique built-in command");
+        registry
+            .register(LockCommand)
+            .expect("unique built-in command");
+        registry
+            .register(UnlockCommand)
+            .expect("unique built-in command");
+        registry
             .register(JoinCommand)
             .expect("unique built-in command");
         registry
@@ -2004,6 +2016,80 @@ impl Command for DeleteCommand {
     }
 }
 
+struct HideCommand;
+
+impl Command for HideCommand {
+    fn name(&self) -> &'static str {
+        "Hide"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Hide")?;
+        let selected = document.selected_object_ids().collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let count = document.set_objects_visibility(selected, false)?;
+        Ok(format!("Hid {count} object(s)"))
+    }
+}
+
+struct ShowCommand;
+
+impl Command for ShowCommand {
+    fn name(&self) -> &'static str {
+        "Show"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Show")?;
+        let hidden = document
+            .objects()
+            .filter(|object| !object.attributes().is_visible())
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let count = document.set_objects_visibility(hidden, true)?;
+        Ok(format!("Showed {count} object(s)"))
+    }
+}
+
+struct LockCommand;
+
+impl Command for LockCommand {
+    fn name(&self) -> &'static str {
+        "Lock"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Lock")?;
+        let selected = document.selected_object_ids().collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let count = document.set_objects_locked(selected, true)?;
+        Ok(format!("Locked {count} object(s)"))
+    }
+}
+
+struct UnlockCommand;
+
+impl Command for UnlockCommand {
+    fn name(&self) -> &'static str {
+        "Unlock"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Unlock")?;
+        let locked = document
+            .objects()
+            .filter(|object| object.attributes().is_locked())
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let count = document.set_objects_locked(locked, false)?;
+        Ok(format!("Unlocked {count} object(s)"))
+    }
+}
+
 struct JoinCommand;
 
 impl Command for JoinCommand {
@@ -3086,7 +3172,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Lock, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unlock, Volume"
         );
     }
 
@@ -5006,6 +5092,133 @@ mod tests {
     }
 
     #[test]
+    fn hide_show_lock_and_unlock_preserve_identity_groups_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        registry.execute(&mut document, "Point 2,0,0").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        document.select_object(ids[1], SelectionMode::Add).unwrap();
+        registry.execute(&mut document, "Group Pair").unwrap();
+        let group = document.group_by_name("Pair").unwrap().id();
+        document.clear_selection();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(document.selected_object_count(), 2);
+
+        assert_eq!(
+            registry.execute(&mut document, "Hide").unwrap(),
+            "Hid 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("Hide"));
+        assert_eq!(document.selected_object_count(), 0);
+        for id in &ids[..2] {
+            let object = document.object(*id).unwrap();
+            assert_eq!(object.id(), *id);
+            assert!(!object.attributes().is_visible());
+            assert!(!document.is_object_selectable(*id));
+        }
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+        assert!(document.object(ids[2]).unwrap().attributes().is_visible());
+
+        document
+            .select_object(ids[2], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Show").unwrap(),
+            "Showed 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("Show"));
+        assert!(document.is_selected(ids[2]));
+        assert!(
+            ids[..2]
+                .iter()
+                .all(|id| document.object(*id).unwrap().attributes().is_visible())
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(
+            ids[..2]
+                .iter()
+                .all(|id| !document.object(*id).unwrap().attributes().is_visible())
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(
+            ids[..2]
+                .iter()
+                .all(|id| document.object(*id).unwrap().attributes().is_visible())
+        );
+
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Lock").unwrap(),
+            "Locked 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("Lock"));
+        assert_eq!(document.selected_object_count(), 0);
+        for id in &ids[..2] {
+            assert!(document.object(*id).unwrap().attributes().is_locked());
+            assert_eq!(
+                document.select_object(*id, SelectionMode::Replace),
+                Err(DocumentError::ObjectNotSelectable(*id))
+            );
+        }
+        assert_eq!(
+            registry.execute(&mut document, "Unlock").unwrap(),
+            "Unlocked 2 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("Unlock"));
+        assert!(
+            ids[..2]
+                .iter()
+                .all(|id| !document.object(*id).unwrap().attributes().is_locked())
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(
+            ids[..2]
+                .iter()
+                .all(|id| document.object(*id).unwrap().attributes().is_locked())
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(
+            ids[..2]
+                .iter()
+                .all(|id| !document.object(*id).unwrap().attributes().is_locked())
+        );
+
+        let history = document.undo_label().map(str::to_owned);
+        assert_eq!(
+            registry.execute(&mut document, "Show").unwrap(),
+            "Showed 0 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "Unlock").unwrap(),
+            "Unlocked 0 object(s)"
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert!(matches!(
+            registry.execute(&mut document, "Hide unexpected"),
+            Err(CommandError::Usage("Hide"))
+        ));
+        document.clear_selection();
+        assert!(matches!(
+            registry.execute(&mut document, "Lock"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+    }
+
+    #[test]
     fn type_selection_commands_add_only_visible_unlocked_matches_without_history() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -5427,6 +5640,18 @@ mod tests {
         registry
             .execute(&mut source, "SrfPt 0,0,0 2,0,0 2,2,1 0,2,1")
             .unwrap();
+        let source_ids = source
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        source
+            .select_object(source_ids[1], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut source, "Hide").unwrap();
+        source
+            .select_object(source_ids[0], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut source, "Lock").unwrap();
         registry
             .execute(&mut source, "Layer Hide Reference")
             .unwrap();
@@ -5469,6 +5694,18 @@ mod tests {
         assert!(!reference.is_visible());
         assert!(reference.is_locked());
         assert!(imported.layer_by_name("Default (Imported 1)").is_some());
+        let point = imported
+            .objects()
+            .find(|object| matches!(object.geometry(), Geometry::Point(_)))
+            .unwrap();
+        assert!(point.attributes().is_visible());
+        assert!(point.attributes().is_locked());
+        let line = imported
+            .objects()
+            .find(|object| matches!(object.geometry(), Geometry::Line(_)))
+            .unwrap();
+        assert!(!line.attributes().is_visible());
+        assert!(!line.attributes().is_locked());
 
         assert_eq!(imported.undo_label(), Some("Import3dm"));
         registry.execute(&mut imported, "Undo").unwrap();

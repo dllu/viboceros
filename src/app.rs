@@ -821,6 +821,10 @@ impl VibocerosApp {
         let mut select_all_clicked = false;
         let mut select_none_clicked = false;
         let mut delete_clicked = false;
+        let mut hide_clicked = false;
+        let mut show_clicked = false;
+        let mut lock_clicked = false;
+        let mut unlock_clicked = false;
         let mut join_clicked = false;
         let mut explode_clicked = false;
         let mut flip_clicked = false;
@@ -843,6 +847,16 @@ impl VibocerosApp {
         let mut rotate_clicked = false;
         let mut mirror_clicked = false;
         let selected = self.document.selected_object_count();
+        let hidden = self
+            .document
+            .objects()
+            .filter(|object| !object.attributes().is_visible())
+            .count();
+        let locked = self
+            .document
+            .objects()
+            .filter(|object| object.attributes().is_locked())
+            .count();
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
                 ui.heading("Viboceros");
@@ -866,6 +880,22 @@ impl VibocerosApp {
                 delete_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Delete"))
                     .on_hover_text("Delete selected objects")
+                    .clicked();
+                hide_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Hide"))
+                    .on_hover_text("Hide selected objects")
+                    .clicked();
+                show_clicked = ui
+                    .add_enabled(hidden > 0, egui::Button::new("Show"))
+                    .on_hover_text("Show all hidden objects")
+                    .clicked();
+                lock_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Lock"))
+                    .on_hover_text("Lock selected objects while keeping them available to osnap")
+                    .clicked();
+                unlock_clicked = ui
+                    .add_enabled(locked > 0, egui::Button::new("Unlock"))
+                    .on_hover_text("Unlock all object-level locks")
                     .clicked();
                 join_clicked = ui
                     .add_enabled(selected > 1, egui::Button::new("Join"))
@@ -971,7 +1001,9 @@ impl VibocerosApp {
                 );
                 ui.separator();
                 ui.toggle_value(&mut self.osnap, "Osnap")
-                    .on_hover_text("Snap to visible Point, End, Mid, Center, and Quad features");
+                    .on_hover_text(
+                        "Snap to visible Point, End, Mid, Center, and Quad features, including locked geometry",
+                    );
                 ui.toggle_value(&mut self.smart_track, "SmartTrack")
                     .on_hover_text("Track horizontally or vertically from the last picked point");
             });
@@ -986,6 +1018,14 @@ impl VibocerosApp {
             self.execute_command("SelNone");
         } else if delete_clicked {
             self.execute_command("Delete");
+        } else if hide_clicked {
+            self.execute_command("Hide");
+        } else if show_clicked {
+            self.execute_command("Show");
+        } else if lock_clicked {
+            self.execute_command("Lock");
+        } else if unlock_clicked {
+            self.execute_command("Unlock");
         } else if join_clicked {
             self.execute_command("Join");
         } else if explode_clicked {
