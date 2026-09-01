@@ -442,6 +442,197 @@ def _execute(operation, iterations, tolerance):
                 document.Objects.Unlock(object_id, True)
                 document.Objects.Delete(object_id, True)
 
+    if kind == "document_object_isolation_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_ids = []
+        isolated_hidden = []
+        isolated_locked = []
+        try:
+            for index in range(4):
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0)
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add document isolation-cycle point")
+                object_ids.append(object_id)
+            if not document.Objects.Hide(object_ids[2], True):
+                raise ValueError("could not seed isolation-cycle hidden object")
+            if not document.Objects.Lock(object_ids[3], True):
+                raise ValueError("could not seed isolation-cycle locked object")
+
+            layer_suffix = str(System.Guid.NewGuid())
+            hidden_layer = Rhino.DocObjects.Layer()
+            hidden_layer.Name = "Viboceros Isolation Cycle Hidden " + layer_suffix
+            hidden_layer.IsVisible = False
+            hidden_layer_index = document.Layers.Add(hidden_layer)
+            locked_layer = Rhino.DocObjects.Layer()
+            locked_layer.Name = "Viboceros Isolation Cycle Locked " + layer_suffix
+            locked_layer.IsLocked = True
+            locked_layer_index = document.Layers.Add(locked_layer)
+            if hidden_layer_index < 0 or locked_layer_index < 0:
+                raise ValueError("could not add document isolation-cycle layers")
+            for layer_index in (hidden_layer_index, locked_layer_index):
+                for mode_index in range(3):
+                    attributes = Rhino.DocObjects.ObjectAttributes()
+                    attributes.LayerIndex = layer_index
+                    object_id = document.Objects.AddPoint(
+                        Rhino.Geometry.Point3d(float(len(object_ids)), 0.0, 0.0),
+                        attributes,
+                    )
+                    if object_id == System.Guid.Empty:
+                        raise ValueError(
+                            "could not add layered isolation-cycle point"
+                        )
+                    object_ids.append(object_id)
+                    if mode_index == 1 and not document.Objects.Hide(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered hidden object")
+                    if mode_index == 2 and not document.Objects.Lock(
+                        object_id, True
+                    ):
+                        raise ValueError("could not seed layered locked object")
+
+            def isolation_modes():
+                result = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object.IsHidden:
+                        result.append("hidden")
+                    elif rhino_object.IsLocked:
+                        result.append("locked")
+                    else:
+                        result.append("normal")
+                return result
+
+            def layer_allows_isolation(rhino_object):
+                layer = document.Layers[rhino_object.Attributes.LayerIndex]
+                return bool(layer.IsVisible and not layer.IsLocked)
+
+            def isolate():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if (
+                        rhino_object.IsSelected(False) != 0
+                        or rhino_object.IsHidden
+                        or rhino_object.IsLocked
+                        or not layer_allows_isolation(rhino_object)
+                    ):
+                        continue
+                    if document.Objects.Hide(object_id, True):
+                        isolated_hidden.append(object_id)
+                        changed += 1
+                return changed
+
+            def unisolate():
+                changed = sum(
+                    1
+                    for object_id in isolated_hidden
+                    if document.Objects.Show(object_id, True)
+                )
+                del isolated_hidden[:]
+                return changed
+
+            def isolate_lock():
+                changed = 0
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if (
+                        rhino_object.IsSelected(False) != 0
+                        or rhino_object.IsHidden
+                        or rhino_object.IsLocked
+                        or not layer_allows_isolation(rhino_object)
+                    ):
+                        continue
+                    if document.Objects.Lock(object_id, True):
+                        isolated_locked.append(object_id)
+                        changed += 1
+                return changed
+
+            def unisolate_lock():
+                changed = sum(
+                    1
+                    for object_id in isolated_locked
+                    if document.Objects.Unlock(object_id, True)
+                )
+                del isolated_locked[:]
+                return changed
+
+            labels = [
+                "default-selected",
+                "default-normal",
+                "default-hidden",
+                "default-locked",
+                "hidden-layer-normal",
+                "hidden-layer-hidden",
+                "hidden-layer-locked",
+                "locked-layer-normal",
+                "locked-layer-hidden",
+                "locked-layer-locked",
+            ]
+
+            def isolation_cycle():
+                document.Objects.UnselectAll()
+                if not document.Objects.Select(object_ids[0]):
+                    raise ValueError("could not select isolation survivor")
+                isolate_count = isolate()
+                isolate_repeat_count = isolate()
+                after_isolate = isolation_modes()
+                selected_after_isolate = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                unisolate_count = unisolate()
+                unisolate_repeat_count = unisolate()
+                after_unisolate = isolation_modes()
+                selected_after_unisolate = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+
+                if (
+                    document.Objects.FindId(object_ids[0]).IsSelected(False) == 0
+                    and not document.Objects.Select(object_ids[0])
+                ):
+                    raise ValueError("could not select isolation-lock survivor")
+                isolate_lock_count = isolate_lock()
+                isolate_lock_repeat_count = isolate_lock()
+                after_isolate_lock = isolation_modes()
+                selected_after_isolate_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                unisolate_lock_count = unisolate_lock()
+                unisolate_lock_repeat_count = unisolate_lock()
+                selected_after_unisolate_lock = int(
+                    document.Objects.GetSelectedObjectCount(False)
+                )
+                return {
+                    "after_isolate": after_isolate,
+                    "after_isolate_lock": after_isolate_lock,
+                    "after_unisolate": after_unisolate,
+                    "after_unisolate_lock": isolation_modes(),
+                    "isolate_count": isolate_count,
+                    "isolate_lock_count": isolate_lock_count,
+                    "isolate_lock_repeat_count": isolate_lock_repeat_count,
+                    "isolate_repeat_count": isolate_repeat_count,
+                    "labels": labels,
+                    "selected_after_isolate": selected_after_isolate,
+                    "selected_after_isolate_lock": selected_after_isolate_lock,
+                    "selected_after_unisolate": selected_after_unisolate,
+                    "selected_after_unisolate_lock": selected_after_unisolate_lock,
+                    "unisolate_count": unisolate_count,
+                    "unisolate_lock_count": unisolate_lock_count,
+                    "unisolate_lock_repeat_count": unisolate_lock_repeat_count,
+                    "unisolate_repeat_count": unisolate_repeat_count,
+                }
+
+            return _measure(iterations, isolation_cycle)
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+
     if kind == "point_distance":
         a = _point(operation["a"])
         b = _point(operation["b"])

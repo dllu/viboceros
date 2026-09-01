@@ -208,6 +208,14 @@ pub struct Object {
     id: ObjectId,
     geometry: Geometry,
     attributes: ObjectAttributes,
+    isolation: ObjectIsolation,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ObjectIsolation {
+    None,
+    Hidden,
+    Locked,
 }
 
 impl Object {
@@ -700,11 +708,12 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         visible: bool,
     ) -> Result<usize, DocumentError> {
-        self.change_object_attributes(ids, "Set object visibility", |attributes| {
-            attributes.visible = visible;
+        self.change_objects(ids, "Set object visibility", |object| {
+            object.attributes.visible = visible;
             if !visible {
-                attributes.locked = false;
+                object.attributes.locked = false;
             }
+            object.isolation = ObjectIsolation::None;
         })
     }
 
@@ -716,11 +725,12 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         locked: bool,
     ) -> Result<usize, DocumentError> {
-        self.change_object_attributes(ids, "Set object lock", |attributes| {
-            attributes.locked = locked;
+        self.change_objects(ids, "Set object lock", |object| {
+            object.attributes.locked = locked;
             if locked {
-                attributes.visible = true;
+                object.attributes.visible = true;
             }
+            object.isolation = ObjectIsolation::None;
         })
     }
 
@@ -728,10 +738,11 @@ impl Document {
     /// Locked objects and every object on a hidden or locked layer are left
     /// unchanged, matching Rhino's `HideSwap` scope.
     pub fn swap_object_visibility_modes(&mut self) -> Result<usize, DocumentError> {
-        let ids = self.swappable_object_ids(|attributes| !attributes.locked)?;
-        self.change_object_attributes(ids, "Swap object visibility", |attributes| {
-            if !attributes.locked {
-                attributes.visible = !attributes.visible;
+        let ids = self.eligible_object_ids(|object| !object.attributes.locked)?;
+        self.change_objects(ids, "Swap object visibility", |object| {
+            if !object.attributes.locked {
+                object.attributes.visible = !object.attributes.visible;
+                object.isolation = ObjectIsolation::None;
             }
         })
     }
@@ -740,12 +751,87 @@ impl Document {
     /// Hidden objects and every object on a hidden or locked layer are left
     /// unchanged, matching Rhino's `LockSwap` scope.
     pub fn swap_object_lock_modes(&mut self) -> Result<usize, DocumentError> {
-        let ids = self.swappable_object_ids(|attributes| attributes.visible)?;
-        self.change_object_attributes(ids, "Swap object lock", |attributes| {
-            if attributes.visible {
-                attributes.locked = !attributes.locked;
+        let ids = self.eligible_object_ids(|object| object.attributes.visible)?;
+        self.change_objects(ids, "Swap object lock", |object| {
+            if object.attributes.visible {
+                object.attributes.locked = !object.attributes.locked;
+                object.isolation = ObjectIsolation::None;
             }
         })
+    }
+
+    /// Hides ordinary objects outside the current selection on visible,
+    /// unlocked layers and records exactly which objects were changed.
+    pub fn isolate_selected_objects(&mut self) -> Result<usize, DocumentError> {
+        let ids = self.eligible_object_ids(|object| {
+            object.attributes.visible
+                && !object.attributes.locked
+                && !self.selection.contains(&object.id)
+        })?;
+        self.change_objects(ids, "Isolate objects", |object| {
+            object.attributes.visible = false;
+            object.attributes.locked = false;
+            object.isolation = ObjectIsolation::Hidden;
+        })
+    }
+
+    /// Shows only objects hidden by [`Self::isolate_selected_objects`].
+    pub fn unisolate_objects(&mut self) -> Result<usize, DocumentError> {
+        let ids = self
+            .objects
+            .iter()
+            .filter(|object| object.isolation == ObjectIsolation::Hidden)
+            .map(|object| object.id)
+            .collect::<Vec<_>>();
+        self.change_objects(ids, "Unisolate objects", |object| {
+            object.attributes.visible = true;
+            object.attributes.locked = false;
+            object.isolation = ObjectIsolation::None;
+        })
+    }
+
+    /// Locks ordinary objects outside the current selection on visible,
+    /// unlocked layers and records exactly which objects were changed.
+    pub fn isolate_lock_selected_objects(&mut self) -> Result<usize, DocumentError> {
+        let ids = self.eligible_object_ids(|object| {
+            object.attributes.visible
+                && !object.attributes.locked
+                && !self.selection.contains(&object.id)
+        })?;
+        self.change_objects(ids, "Isolate-lock objects", |object| {
+            object.attributes.visible = true;
+            object.attributes.locked = true;
+            object.isolation = ObjectIsolation::Locked;
+        })
+    }
+
+    /// Unlocks only objects locked by [`Self::isolate_lock_selected_objects`].
+    pub fn unisolate_locked_objects(&mut self) -> Result<usize, DocumentError> {
+        let ids = self
+            .objects
+            .iter()
+            .filter(|object| object.isolation == ObjectIsolation::Locked)
+            .map(|object| object.id)
+            .collect::<Vec<_>>();
+        self.change_objects(ids, "Unisolate-lock objects", |object| {
+            object.attributes.visible = true;
+            object.attributes.locked = false;
+            object.isolation = ObjectIsolation::None;
+        })
+    }
+
+    pub fn isolated_hidden_object_count(&self) -> usize {
+        self.objects
+            .iter()
+            .filter(|object| object.isolation == ObjectIsolation::Hidden)
+            .count()
+    }
+
+    pub fn isolated_locked_object_count(&self) -> usize {
+        self.objects
+            .iter()
+            .filter(|object| object.isolation == ObjectIsolation::Locked)
+            .count()
     }
 
     pub fn transform_objects(
@@ -874,6 +960,7 @@ impl Document {
                 id,
                 geometry: transformed.geometry,
                 attributes: original.attributes,
+                isolation: ObjectIsolation::None,
             });
             self.record_edit(
                 "Copy object",
@@ -934,6 +1021,7 @@ impl Document {
             id,
             geometry,
             attributes,
+            isolation: ObjectIsolation::None,
         });
         self.record_edit(
             "Add object",
@@ -1195,11 +1283,11 @@ impl Document {
         connected
     }
 
-    fn change_object_attributes(
+    fn change_objects(
         &mut self,
         ids: impl IntoIterator<Item = ObjectId>,
         label: &'static str,
-        change: impl Fn(&mut ObjectAttributes),
+        change: impl Fn(&mut Object),
     ) -> Result<usize, DocumentError> {
         let mut remaining = ids.into_iter().collect::<BTreeSet<_>>();
         if remaining.is_empty() {
@@ -1212,7 +1300,7 @@ impl Document {
             }
             let before = object.clone();
             let mut after = before.clone();
-            change(&mut after.attributes);
+            change(&mut after);
             if before != after {
                 staged.push((index, before, after));
             }
@@ -1244,9 +1332,9 @@ impl Document {
         Ok(changed_count)
     }
 
-    fn swappable_object_ids(
+    fn eligible_object_ids(
         &self,
-        include: impl Fn(&ObjectAttributes) -> bool,
+        include: impl Fn(&Object) -> bool,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         let layer_is_eligible = self
             .layers
@@ -1259,7 +1347,7 @@ impl Document {
                 .get(&object.attributes.layer_id)
                 .copied()
                 .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if eligible && include(&object.attributes) {
+            if eligible && include(object) {
                 ids.push(object.id);
             }
         }
@@ -1992,6 +2080,159 @@ mod tests {
         document.redo().unwrap();
         assert_eq!(document.swap_object_lock_modes().unwrap(), 2);
         assert_eq!(modes(&document), initial);
+        assert!(!document.layer(hidden_layer).unwrap().is_visible());
+        assert!(document.layer(locked_layer).unwrap().is_locked());
+        assert!(
+            ids.iter()
+                .enumerate()
+                .all(|(index, id)| document.object(*id).unwrap().id() == ids[index])
+        );
+    }
+
+    #[test]
+    fn object_isolation_tracks_only_rhino_changed_modes_and_is_reversible() {
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let hidden_layer = document
+            .add_layer("Isolation Hidden", ColorRgb::new(1, 2, 3))
+            .unwrap();
+        let locked_layer = document
+            .add_layer("Isolation Locked", ColorRgb::new(4, 5, 6))
+            .unwrap();
+        let mut ids = Vec::new();
+        for (offset, attributes) in [
+            (0.0, ObjectAttributes::on_layer(default)),
+            (1.0, ObjectAttributes::on_layer(default)),
+            (
+                2.0,
+                ObjectAttributes::on_layer(default).with_visibility(false),
+            ),
+            (3.0, ObjectAttributes::on_layer(default).with_locked(true)),
+            (10.0, ObjectAttributes::on_layer(hidden_layer)),
+            (
+                11.0,
+                ObjectAttributes::on_layer(hidden_layer).with_visibility(false),
+            ),
+            (
+                12.0,
+                ObjectAttributes::on_layer(hidden_layer).with_locked(true),
+            ),
+            (20.0, ObjectAttributes::on_layer(locked_layer)),
+            (
+                21.0,
+                ObjectAttributes::on_layer(locked_layer).with_visibility(false),
+            ),
+            (
+                22.0,
+                ObjectAttributes::on_layer(locked_layer).with_locked(true),
+            ),
+        ] {
+            ids.push(
+                document
+                    .add_geometry_with_attributes(
+                        Geometry::Point(Point3::try_new(offset, 0.0, 0.0).unwrap()),
+                        attributes,
+                    )
+                    .unwrap(),
+            );
+        }
+        document.set_layer_visibility(hidden_layer, false).unwrap();
+        document.set_layer_locked(locked_layer, true).unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        let modes = |document: &Document| {
+            ids.iter()
+                .map(|id| {
+                    let attributes = document.object(*id).unwrap().attributes();
+                    if !attributes.is_visible() {
+                        "hidden"
+                    } else if attributes.is_locked() {
+                        "locked"
+                    } else {
+                        "normal"
+                    }
+                })
+                .collect::<Vec<_>>()
+        };
+        let initial = vec![
+            "normal", "normal", "hidden", "locked", "normal", "hidden", "locked", "normal",
+            "hidden", "locked",
+        ];
+        assert_eq!(modes(&document), initial);
+
+        assert_eq!(document.isolate_selected_objects().unwrap(), 1);
+        assert_eq!(document.undo_label(), Some("Isolate objects"));
+        assert_eq!(document.isolated_hidden_object_count(), 1);
+        assert!(document.is_selected(ids[0]));
+        assert_eq!(
+            modes(&document),
+            vec![
+                "normal", "hidden", "hidden", "locked", "normal", "hidden", "locked", "normal",
+                "hidden", "locked",
+            ]
+        );
+        document.undo().unwrap();
+        assert_eq!(modes(&document), initial);
+        assert_eq!(document.isolated_hidden_object_count(), 0);
+        document.redo().unwrap();
+        assert_eq!(document.isolated_hidden_object_count(), 1);
+        assert_eq!(document.unisolate_objects().unwrap(), 1);
+        assert_eq!(modes(&document), initial);
+        assert_eq!(document.isolated_hidden_object_count(), 0);
+        document.undo().unwrap();
+        assert_eq!(document.isolated_hidden_object_count(), 1);
+        document.redo().unwrap();
+        assert_eq!(modes(&document), initial);
+
+        assert_eq!(document.isolate_selected_objects().unwrap(), 1);
+        assert_eq!(document.isolate_selected_objects().unwrap(), 0);
+        let hidden_ids = document
+            .objects()
+            .filter(|object| !object.attributes().is_visible())
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        assert_eq!(
+            document.set_objects_visibility(hidden_ids, true).unwrap(),
+            4
+        );
+        assert_eq!(document.isolated_hidden_object_count(), 0);
+        assert_eq!(document.unisolate_objects().unwrap(), 0);
+        document
+            .set_objects_visibility([ids[2], ids[5], ids[8]], false)
+            .unwrap();
+        assert_eq!(modes(&document), initial);
+
+        assert_eq!(document.isolate_lock_selected_objects().unwrap(), 1);
+        assert_eq!(document.undo_label(), Some("Isolate-lock objects"));
+        assert_eq!(document.isolated_locked_object_count(), 1);
+        assert!(document.is_selected(ids[0]));
+        assert_eq!(
+            modes(&document),
+            vec![
+                "normal", "locked", "hidden", "locked", "normal", "hidden", "locked", "normal",
+                "hidden", "locked",
+            ]
+        );
+        document.undo().unwrap();
+        assert_eq!(modes(&document), initial);
+        assert_eq!(document.isolated_locked_object_count(), 0);
+        document.redo().unwrap();
+        assert_eq!(document.isolated_locked_object_count(), 1);
+        assert_eq!(document.unisolate_locked_objects().unwrap(), 1);
+        assert_eq!(modes(&document), initial);
+        assert_eq!(document.isolated_locked_object_count(), 0);
+
+        assert_eq!(document.isolate_lock_selected_objects().unwrap(), 1);
+        assert_eq!(document.isolate_lock_selected_objects().unwrap(), 0);
+        let locked_ids = document
+            .objects()
+            .filter(|object| object.attributes().is_locked())
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        assert_eq!(document.set_objects_locked(locked_ids, false).unwrap(), 4);
+        assert_eq!(document.isolated_locked_object_count(), 0);
+        assert_eq!(document.unisolate_locked_objects().unwrap(), 0);
         assert!(!document.layer(hidden_layer).unwrap().is_visible());
         assert!(document.layer(locked_layer).unwrap().is_locked());
         assert!(

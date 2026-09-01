@@ -67,6 +67,9 @@ pub enum Operation {
     DocumentObjectSwapCycle {
         id: String,
     },
+    DocumentObjectIsolationCycle {
+        id: String,
+    },
     PointDistance {
         id: String,
         a: [f64; 3],
@@ -217,6 +220,7 @@ impl Operation {
         match self {
             Self::DocumentObjectStateCycle { id, .. }
             | Self::DocumentObjectSwapCycle { id }
+            | Self::DocumentObjectIsolationCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -374,6 +378,9 @@ fn execute(
             ..
         } => document_object_state_cycle(iterations, *object_count, hide_indices, lock_indices)?,
         Operation::DocumentObjectSwapCycle { .. } => document_object_swap_cycle(iterations)?,
+        Operation::DocumentObjectIsolationCycle { .. } => {
+            document_object_isolation_cycle(iterations)?
+        }
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
             let b = point(*b)?;
@@ -996,6 +1003,102 @@ fn document_object_swap_cycle(iterations: u32) -> Result<(Value, u64), ProbeErro
     })
 }
 
+fn document_object_isolation_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::default();
+    let default = document.current_layer_id();
+    let hidden_layer = document.add_layer("Isolation Hidden", ColorRgb::new(1, 2, 3))?;
+    let locked_layer = document.add_layer("Isolation Locked", ColorRgb::new(4, 5, 6))?;
+    let mut object_ids = Vec::with_capacity(10);
+    for (x, attributes) in [
+        (0.0, ObjectAttributes::on_layer(default)),
+        (1.0, ObjectAttributes::on_layer(default)),
+        (
+            2.0,
+            ObjectAttributes::on_layer(default).with_visibility(false),
+        ),
+        (3.0, ObjectAttributes::on_layer(default).with_locked(true)),
+        (10.0, ObjectAttributes::on_layer(hidden_layer)),
+        (
+            11.0,
+            ObjectAttributes::on_layer(hidden_layer).with_visibility(false),
+        ),
+        (
+            12.0,
+            ObjectAttributes::on_layer(hidden_layer).with_locked(true),
+        ),
+        (20.0, ObjectAttributes::on_layer(locked_layer)),
+        (
+            21.0,
+            ObjectAttributes::on_layer(locked_layer).with_visibility(false),
+        ),
+        (
+            22.0,
+            ObjectAttributes::on_layer(locked_layer).with_locked(true),
+        ),
+    ] {
+        object_ids.push(document.add_geometry_with_attributes(
+            Geometry::Point(Point3::try_new(x, 0.0, 0.0)?),
+            attributes,
+        )?);
+    }
+    document.set_layer_visibility(hidden_layer, false)?;
+    document.set_layer_locked(locked_layer, true)?;
+    let labels = [
+        "default-selected",
+        "default-normal",
+        "default-hidden",
+        "default-locked",
+        "hidden-layer-normal",
+        "hidden-layer-hidden",
+        "hidden-layer-locked",
+        "locked-layer-normal",
+        "locked-layer-hidden",
+        "locked-layer-locked",
+    ];
+
+    measure_document(iterations, || {
+        document.clear_selection();
+        document.select_object(object_ids[0], SelectionMode::Replace)?;
+        let isolate_count = document.isolate_selected_objects()?;
+        let isolate_repeat_count = document.isolate_selected_objects()?;
+        let after_isolate = document_object_modes(&document, &object_ids)?;
+        let selected_after_isolate = document.selected_object_count();
+        let unisolate_count = document.unisolate_objects()?;
+        let unisolate_repeat_count = document.unisolate_objects()?;
+        let after_unisolate = document_object_modes(&document, &object_ids)?;
+        let selected_after_unisolate = document.selected_object_count();
+
+        document.select_object(object_ids[0], SelectionMode::Replace)?;
+        let isolate_lock_count = document.isolate_lock_selected_objects()?;
+        let isolate_lock_repeat_count = document.isolate_lock_selected_objects()?;
+        let after_isolate_lock = document_object_modes(&document, &object_ids)?;
+        let selected_after_isolate_lock = document.selected_object_count();
+        let unisolate_lock_count = document.unisolate_locked_objects()?;
+        let unisolate_lock_repeat_count = document.unisolate_locked_objects()?;
+        let after_unisolate_lock = document_object_modes(&document, &object_ids)?;
+        let selected_after_unisolate_lock = document.selected_object_count();
+        Ok(json!({
+            "after_isolate": after_isolate,
+            "after_isolate_lock": after_isolate_lock,
+            "after_unisolate": after_unisolate,
+            "after_unisolate_lock": after_unisolate_lock,
+            "isolate_count": isolate_count,
+            "isolate_lock_count": isolate_lock_count,
+            "isolate_lock_repeat_count": isolate_lock_repeat_count,
+            "isolate_repeat_count": isolate_repeat_count,
+            "labels": labels,
+            "selected_after_isolate": selected_after_isolate,
+            "selected_after_isolate_lock": selected_after_isolate_lock,
+            "selected_after_unisolate": selected_after_unisolate,
+            "selected_after_unisolate_lock": selected_after_unisolate_lock,
+            "unisolate_count": unisolate_count,
+            "unisolate_lock_count": unisolate_lock_count,
+            "unisolate_lock_repeat_count": unisolate_lock_repeat_count,
+            "unisolate_repeat_count": unisolate_repeat_count,
+        }))
+    })
+}
+
 fn state_cycle_ids(
     object_ids: &[ObjectId],
     indices: &[usize],
@@ -1269,6 +1372,56 @@ mod tests {
                 ],
                 "selected_after_hide": 0,
                 "selected_after_lock": 0,
+            })
+        );
+    }
+
+    #[test]
+    fn isolates_only_ordinary_unselected_objects_in_rhino_scope() {
+        let response = run_request(&request(vec![Operation::DocumentObjectIsolationCycle {
+            id: "object-isolation".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "after_isolate": [
+                    "normal", "hidden", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "after_isolate_lock": [
+                    "normal", "locked", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "after_unisolate": [
+                    "normal", "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "after_unisolate_lock": [
+                    "normal", "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                    "normal", "hidden", "locked",
+                ],
+                "isolate_count": 1,
+                "isolate_lock_count": 1,
+                "isolate_lock_repeat_count": 0,
+                "isolate_repeat_count": 0,
+                "labels": [
+                    "default-selected", "default-normal", "default-hidden", "default-locked",
+                    "hidden-layer-normal", "hidden-layer-hidden", "hidden-layer-locked",
+                    "locked-layer-normal", "locked-layer-hidden", "locked-layer-locked",
+                ],
+                "selected_after_isolate": 1,
+                "selected_after_isolate_lock": 1,
+                "selected_after_unisolate": 1,
+                "selected_after_unisolate_lock": 1,
+                "unisolate_count": 1,
+                "unisolate_lock_count": 1,
+                "unisolate_lock_repeat_count": 0,
+                "unisolate_repeat_count": 0,
             })
         );
     }

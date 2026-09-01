@@ -827,6 +827,10 @@ impl VibocerosApp {
         let mut unlock_clicked = false;
         let mut hide_swap_clicked = false;
         let mut lock_swap_clicked = false;
+        let mut isolate_clicked = false;
+        let mut unisolate_clicked = false;
+        let mut isolate_lock_clicked = false;
+        let mut unisolate_lock_clicked = false;
         let mut join_clicked = false;
         let mut explode_clicked = false;
         let mut flip_clicked = false;
@@ -868,6 +872,8 @@ impl VibocerosApp {
                 )
             },
         );
+        let isolated_hidden = self.document.isolated_hidden_object_count();
+        let isolated_locked = self.document.isolated_locked_object_count();
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
                 ui.heading("Viboceros");
@@ -915,6 +921,22 @@ impl VibocerosApp {
                 lock_swap_clicked = ui
                     .add_enabled(lock_swappable > 0, egui::Button::new("Swap Locked"))
                     .on_hover_text("Swap normal and locked objects on visible, unlocked layers")
+                    .clicked();
+                isolate_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Isolate"))
+                    .on_hover_text("Hide ordinary objects outside the selection")
+                    .clicked();
+                unisolate_clicked = ui
+                    .add_enabled(isolated_hidden > 0, egui::Button::new("Unisolate"))
+                    .on_hover_text("Show only objects hidden by Isolate")
+                    .clicked();
+                isolate_lock_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Isolate Lock"))
+                    .on_hover_text("Lock ordinary objects outside the selection")
+                    .clicked();
+                unisolate_lock_clicked = ui
+                    .add_enabled(isolated_locked > 0, egui::Button::new("Unisolate Lock"))
+                    .on_hover_text("Unlock only objects locked by Isolate Lock")
                     .clicked();
                 join_clicked = ui
                     .add_enabled(selected > 1, egui::Button::new("Join"))
@@ -1049,6 +1071,14 @@ impl VibocerosApp {
             self.execute_command("HideSwap");
         } else if lock_swap_clicked {
             self.execute_command("LockSwap");
+        } else if isolate_clicked {
+            self.execute_command("Isolate");
+        } else if unisolate_clicked {
+            self.execute_command("Unisolate");
+        } else if isolate_lock_clicked {
+            self.execute_command("IsolateLock");
+        } else if unisolate_lock_clicked {
+            self.execute_command("UnisolateLock");
         } else if join_clicked {
             self.execute_command("Join");
         } else if explode_clicked {

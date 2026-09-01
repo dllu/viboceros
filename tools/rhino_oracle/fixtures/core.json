@@ -19,6 +19,10 @@
       "id": "document-object-swap-cycle"
     },
     {
+      "op": "document_object_isolation_cycle",
+      "id": "document-object-isolation-cycle"
+    },
+    {
       "op": "point_distance",
       "id": "point-distance",
       "a": [1.25, -2.5, 4.0],

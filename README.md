@@ -74,6 +74,10 @@ Lock
 Unlock
 HideSwap
 LockSwap
+Isolate
+Unisolate
+IsolateLock
+UnisolateLock
 Delete
 Clear
 Undo
@@ -121,6 +125,10 @@ cannot be selected or edited. Layer visibility and locking remain independent.
 `HideSwap` exchanges normal and hidden object modes, while `LockSwap` exchanges
 normal and locked modes. Like Rhino, both swaps affect only objects on visible,
 unlocked layers and leave the third object mode unchanged.
+`Isolate` hides ordinary objects outside the selection and `IsolateLock` locks
+them; objects already hidden or locked and objects on hidden or locked layers
+are unchanged. Their `Unisolate` counterparts restore only modes introduced by
+the matching isolate command, with provenance preserved through undo and redo.
 Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
 selection. Mesh closure uses exact location-welded edge topology, so indexed

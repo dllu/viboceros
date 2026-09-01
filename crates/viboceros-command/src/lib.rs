@@ -177,6 +177,18 @@ impl CommandRegistry {
             .register(LockSwapCommand)
             .expect("unique built-in command");
         registry
+            .register(IsolateCommand)
+            .expect("unique built-in command");
+        registry
+            .register(UnisolateCommand)
+            .expect("unique built-in command");
+        registry
+            .register(IsolateLockCommand)
+            .expect("unique built-in command");
+        registry
+            .register(UnisolateLockCommand)
+            .expect("unique built-in command");
+        registry
             .register(JoinCommand)
             .expect("unique built-in command");
         registry
@@ -2124,6 +2136,68 @@ impl Command for LockSwapCommand {
     }
 }
 
+struct IsolateCommand;
+
+impl Command for IsolateCommand {
+    fn name(&self) -> &'static str {
+        "Isolate"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Isolate")?;
+        if document.selected_object_count() == 0 {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let count = document.isolate_selected_objects()?;
+        Ok(format!("Isolated {count} object(s)"))
+    }
+}
+
+struct UnisolateCommand;
+
+impl Command for UnisolateCommand {
+    fn name(&self) -> &'static str {
+        "Unisolate"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Unisolate")?;
+        let count = document.unisolate_objects()?;
+        Ok(format!("Unisolated {count} object(s)"))
+    }
+}
+
+struct IsolateLockCommand;
+
+impl Command for IsolateLockCommand {
+    fn name(&self) -> &'static str {
+        "IsolateLock"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "IsolateLock")?;
+        if document.selected_object_count() == 0 {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let count = document.isolate_lock_selected_objects()?;
+        Ok(format!("Locked {count} non-selected object(s)"))
+    }
+}
+
+struct UnisolateLockCommand;
+
+impl Command for UnisolateLockCommand {
+    fn name(&self) -> &'static str {
+        "UnisolateLock"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "UnisolateLock")?;
+        let count = document.unisolate_locked_objects()?;
+        Ok(format!("Unlocked {count} isolated object(s)"))
+    }
+}
+
 struct JoinCommand;
 
 impl Command for JoinCommand {
@@ -3206,7 +3280,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unlock, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5316,6 +5390,100 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "HideSwap unexpected"),
             Err(CommandError::Usage("HideSwap"))
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn isolate_commands_restore_only_their_own_object_modes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for x in 0..4 {
+            registry
+                .execute(&mut document, &format!("Point {x},0,0"))
+                .unwrap();
+        }
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document.set_objects_visibility([ids[2]], false).unwrap();
+        document.set_objects_locked([ids[3]], true).unwrap();
+        document
+            .select_object(ids[0], SelectionMode::Replace)
+            .unwrap();
+        let modes = |document: &Document| {
+            ids.iter()
+                .map(|id| {
+                    let attributes = document.object(*id).unwrap().attributes();
+                    if !attributes.is_visible() {
+                        "hidden"
+                    } else if attributes.is_locked() {
+                        "locked"
+                    } else {
+                        "normal"
+                    }
+                })
+                .collect::<Vec<_>>()
+        };
+        let initial = vec!["normal", "normal", "hidden", "locked"];
+
+        assert_eq!(
+            registry.execute(&mut document, "Isolate").unwrap(),
+            "Isolated 1 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("Isolate"));
+        assert_eq!(document.isolated_hidden_object_count(), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[0]]);
+        assert_eq!(
+            modes(&document),
+            vec!["normal", "hidden", "hidden", "locked"]
+        );
+        assert_eq!(
+            registry.execute(&mut document, "Isolate").unwrap(),
+            "Isolated 0 object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("Isolate"));
+        assert_eq!(
+            registry.execute(&mut document, "Unisolate").unwrap(),
+            "Unisolated 1 object(s)"
+        );
+        assert_eq!(modes(&document), initial);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.isolated_hidden_object_count(), 1);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(modes(&document), initial);
+
+        assert_eq!(
+            registry.execute(&mut document, "IsolateLock").unwrap(),
+            "Locked 1 non-selected object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("IsolateLock"));
+        assert_eq!(document.isolated_locked_object_count(), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [ids[0]]);
+        assert_eq!(
+            modes(&document),
+            vec!["normal", "locked", "hidden", "locked"]
+        );
+        assert_eq!(
+            registry.execute(&mut document, "UnisolateLock").unwrap(),
+            "Unlocked 1 isolated object(s)"
+        );
+        assert_eq!(modes(&document), initial);
+
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Unisolate extra"),
+            Err(CommandError::Usage("Unisolate"))
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), history.as_deref());
+        document.clear_selection();
+        assert!(matches!(
+            registry.execute(&mut document, "Isolate"),
+            Err(CommandError::NoObjectsSelected)
         ));
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
         assert_eq!(document.undo_label(), history.as_deref());
