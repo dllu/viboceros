@@ -5,6 +5,11 @@ use crate::{
     integration::integrate_adaptive, require_finite,
 };
 
+// OpenNURBS uses these fixed coordinate tolerances for Curve::IsClosed.
+const CURVE_COINCIDENCE_ABSOLUTE: Real = 2.328_306_436_538_696_3e-10;
+const CURVE_COINCIDENCE_RELATIVE: Real = 2.273_736_754_432_320_6e-13;
+const OPENNURBS_SQRT_EPSILON: Real = 1.490_116_119_385e-8;
+
 /// A Euclidean control point paired with a strictly positive rational weight.
 ///
 /// Positive weights make every evaluated point a convex combination of its
@@ -120,6 +125,47 @@ impl NurbsCurve {
             .skip(self.degree)
             .take(self.control_points.len() - self.degree)
             .filter_map(|knots| (knots[0] < knots[1]).then_some((knots[0], knots[1])))
+    }
+
+    /// Returns the OpenNURBS-compatible topological closed state.
+    ///
+    /// NURBS curves need at least four controls, coincident natural endpoints,
+    /// and interior samples distinct from both ends. Endpoint coincidence uses
+    /// OpenNURBS' fixed zero/relative tolerances rather than document tolerance.
+    pub fn is_closed(&self) -> Result<bool, GeometryError> {
+        if self.control_points.len() < 4 {
+            return Ok(false);
+        }
+        if self.is_periodic() {
+            return Ok(true);
+        }
+        let start = self.evaluate(*self.domain().start())?;
+        let end = self.evaluate(*self.domain().end())?;
+        if !curve_points_coincident(start, end) {
+            return Ok(false);
+        }
+        let first_interior = self.evaluate(self.parameter_at(1.0 / 3.0)?)?;
+        let second_interior = self.evaluate(self.parameter_at(2.0 / 3.0)?)?;
+        Ok(!curve_points_coincident(start, first_interior)
+            && !curve_points_coincident(start, second_interior)
+            && !curve_points_coincident(end, first_interior)
+            && !curve_points_coincident(end, second_interior))
+    }
+
+    /// Returns whether knots and repeated end controls form an OpenNURBS-style
+    /// periodic curve. By convention, degree-one curves are never periodic.
+    pub fn is_periodic(&self) -> bool {
+        let order = self.degree + 1;
+        let control_count = self.control_points.len();
+        let short_knots = &self.knots[1..self.knots.len() - 1];
+        if !knot_vector_is_periodic(order, control_count, short_knots) {
+            return false;
+        }
+        (0..self.degree).all(|index| {
+            let left = self.control_points[index].point;
+            let right = self.control_points[control_count - self.degree + index].point;
+            curve_points_coincident(left, right)
+        })
     }
 
     pub fn control_point_bounds(&self) -> BoundingBox3 {
@@ -336,6 +382,39 @@ impl NurbsCurve {
         }
         middle
     }
+}
+
+fn curve_points_coincident(left: Point3, right: Point3) -> bool {
+    left.to_array()
+        .into_iter()
+        .zip(right.to_array())
+        .all(|(left, right)| {
+            let difference = (left - right).abs();
+            difference <= CURVE_COINCIDENCE_ABSOLUTE
+                || difference <= (left.abs() + right.abs()) * CURVE_COINCIDENCE_RELATIVE
+        })
+}
+
+fn knot_vector_is_periodic(order: usize, control_count: usize, knots: &[Real]) -> bool {
+    if order < 2 || control_count < order || knots.len() != order + control_count - 2 {
+        return false;
+    }
+    if order == 2 {
+        return false;
+    }
+    if (order <= 4 && control_count < order + 2) || (order > 4 && control_count < 2 * order - 2) {
+        return false;
+    }
+
+    let mut tolerance = (knots[order - 1] - knots[order - 3]).abs() * OPENNURBS_SQRT_EPSILON;
+    tolerance =
+        tolerance.max((knots[control_count - 1] - knots[order - 2]).abs() * OPENNURBS_SQRT_EPSILON);
+    let right_start = control_count - order + 1;
+    (0..2 * (order - 2)).all(|index| {
+        let left_delta = knots[index + 1] - knots[index];
+        let right_delta = knots[right_start + index + 1] - knots[right_start + index];
+        (left_delta - right_delta).abs() <= tolerance
+    })
 }
 
 pub(crate) fn de_boor(
@@ -601,6 +680,71 @@ mod tests {
             curve.derivative_at(0.25).unwrap(),
             Vector3::try_new(2.0, 4.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn closed_state_matches_opennurbs_endpoint_and_size_rules() {
+        let closed = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(3.0, 0.0),
+                point(3.0, 2.0),
+                point(0.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        assert!(closed.is_closed().unwrap());
+
+        let nearly_closed = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(3.0, 0.0),
+                point(3.0, 2.0),
+                point(1.0e-10, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        assert!(nearly_closed.is_closed().unwrap());
+
+        let open = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(3.0, 0.0),
+                point(3.0, 2.0),
+                point(1.0e-6, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        assert!(!open.is_closed().unwrap());
+
+        let two_segment_loop = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(3.0, 0.0), point(0.0, 0.0)],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+        )
+        .unwrap();
+        assert!(!two_segment_loop.is_closed().unwrap());
+
+        let periodic = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(1.0, 2.0),
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        assert!(periodic.is_periodic());
+        assert!(periodic.is_closed().unwrap());
     }
 
     #[test]

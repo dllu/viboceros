@@ -23,6 +23,7 @@ pub enum PolylineClosure {
     EndpointMoved,
     SegmentAdded,
     GapTooWide,
+    NotClosable,
 }
 
 impl JoinedPolyline3 {
@@ -102,7 +103,7 @@ impl Polyline3 {
 
     #[inline]
     pub fn is_closed(&self) -> bool {
-        self.vertices.first() == self.vertices.last()
+        self.segment_count() >= 3 && self.vertices.first() == self.vertices.last()
     }
 
     /// Closes this polyline using Rhino's `CloseCrv` rules.
@@ -133,20 +134,34 @@ impl Polyline3 {
         let gap = first.distance_to(last)?;
         let move_endpoint = closure_tolerance == 0.0 || gap <= closure_tolerance;
         if move_endpoint {
+            if self.segment_count() < 3 {
+                return Ok((self.clone(), PolylineClosure::NotClosable));
+            }
             let mut vertices = self.vertices.clone();
             *vertices.last_mut().expect("a polyline has vertices") = first;
-            return Ok((
-                Self::try_new(vertices, validation_tolerance)?,
-                PolylineClosure::EndpointMoved,
-            ));
+            let closed = match Self::try_new(vertices, validation_tolerance) {
+                Ok(closed) => closed,
+                Err(GeometryError::DegeneratePolylineSegment { .. }) => {
+                    return Ok((self.clone(), PolylineClosure::NotClosable));
+                }
+                Err(error) => return Err(error),
+            };
+            return Ok((closed, PolylineClosure::EndpointMoved));
         }
         if close_wide_gaps_with_line {
+            if self.segment_count() < 2 {
+                return Ok((self.clone(), PolylineClosure::NotClosable));
+            }
             let mut vertices = self.vertices.clone();
             vertices.push(first);
-            return Ok((
-                Self::try_new(vertices, validation_tolerance)?,
-                PolylineClosure::SegmentAdded,
-            ));
+            let closed = match Self::try_new(vertices, validation_tolerance) {
+                Ok(closed) => closed,
+                Err(GeometryError::DegeneratePolylineSegment { .. }) => {
+                    return Ok((self.clone(), PolylineClosure::NotClosable));
+                }
+                Err(error) => return Err(error),
+            };
+            return Ok((closed, PolylineClosure::SegmentAdded));
         }
         Ok((self.clone(), PolylineClosure::GapTooWide))
     }
@@ -758,6 +773,7 @@ mod tests {
                 point(0.0, 0.0, 0.0),
                 point(3.0, 0.0, 0.0),
                 point(3.0, 2.0, 0.0),
+                point(0.0, 2.0, 0.0),
             ],
             Tolerance::DEFAULT,
         )
@@ -769,9 +785,31 @@ mod tests {
             &[
                 point(0.0, 0.0, 0.0),
                 point(3.0, 0.0, 0.0),
-                point(0.0, 0.0, 0.0)
+                point(3.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
             ]
         );
+
+        let two_segments = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 2.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (unchanged, outcome) = two_segments.close(0.0, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::NotClosable);
+        assert_eq!(unchanged, two_segments);
+        let line = Polyline3::try_new(
+            vec![point(0.0, 0.0, 0.0), point(3.0, 0.0, 0.0)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (unchanged, outcome) = line.close(1.0, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(outcome, PolylineClosure::NotClosable);
+        assert_eq!(unchanged, line);
 
         for invalid in [-1.0, Real::NAN, Real::INFINITY] {
             assert_eq!(

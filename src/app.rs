@@ -873,7 +873,7 @@ impl VibocerosApp {
                     .clicked();
                 close_curve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Close"))
-                    .on_hover_text("Close selected lines and polylines")
+                    .on_hover_text("Close selected polylines")
                     .clicked();
                 curve_start_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Start Pt"))
@@ -1443,10 +1443,12 @@ mod tests {
 
         let first = point(0.0, 0.0, 1.0);
         let second = point(3.0, 0.0, 1.0);
+        let third = point(3.0, 2.0, 1.0);
         app.accept_drafting_point(first);
         app.accept_drafting_point(first);
         assert_eq!(app.polyline_points, vec![first]);
         app.accept_drafting_point(second);
+        app.accept_drafting_point(third);
         app.accept_drafting_point(first);
         assert_eq!(app.polyline_points.last(), Some(&first));
 
@@ -1457,7 +1459,7 @@ mod tests {
             panic!("expected an interactive polyline")
         };
         assert!(polyline.is_closed());
-        assert_eq!(polyline.segment_count(), 2);
+        assert_eq!(polyline.segment_count(), 3);
         assert_eq!(app.document.undo_label(), Some("Polyline"));
 
         assert!(app.try_start_interactive_command("Polyline"));

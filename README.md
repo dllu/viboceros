@@ -28,6 +28,14 @@ Layer Hide Construction
 Layer Show Construction
 Layer Current Default
 SelAll
+SelCrv
+SelOpenCrv
+SelClosedCrv
+SelLine
+SelPolyline
+SelPt
+SelSrf
+SelMesh
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
@@ -76,10 +84,14 @@ accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes
 `Divide` creates equal arc-length points on selected curves by segment count or
 requested segment length; add `MarkEnds` to include open-curve endpoints.
 `CrvStart` and `CrvEnd` place attribute-preserving point objects at the natural
-ends of every selected curve. `CloseCrv` currently closes selected lines and
-polylines: nearby ends are made identical, while wider gaps gain a straight
-segment unless `CloseWideGapsWithLine=No` is set. Open arcs and NURBS curves
-will be enabled once the document has an exact polycurve representation.
+ends of every selected curve. `CloseCrv` currently closes selected polylines:
+nearby ends are made identical, while wider gaps gain a straight segment unless
+`CloseWideGapsWithLine=No` is set. Lines that cannot form a valid three-segment
+loop remain unchanged. Open arcs and NURBS curves will be enabled once the
+document has an exact polycurve representation.
+Rhino-compatible `SelCrv`, open/closed curve, line, polyline, point, surface,
+and mesh filters add visible, unlocked objects of the requested type to the
+current selection.
 `Flip` (aliases `Reverse` and `Rev`) reverses selected curve directions without
 changing object identities, attributes, groups, or closed-curve seams.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
@@ -111,9 +123,9 @@ cargo clippy --workspace --all-targets -- -D warnings
 ## Rhino geometry oracle
 
 The versioned Python oracle API runs identical JSON geometry batches in a
-native release build of Viboceros and Rhino 8, recursively checks every numeric
-result, and reports per-operation timings. With Rhino installed through the
-configured Wine/FEX launcher, run the core fixture with:
+native release build of Viboceros and Rhino 8, recursively checks topology and
+numeric results, and reports per-operation timings. With Rhino installed
+through the configured Wine/FEX launcher, run the core fixture with:
 
 ```sh
 python3 -m tools.rhino_oracle compare \

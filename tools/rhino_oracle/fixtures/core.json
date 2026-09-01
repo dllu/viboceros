@@ -99,6 +99,31 @@
       "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
     },
     {
+      "op": "nurbs_curve_topology",
+      "id": "closed-clamped-curve-topology",
+      "degree": 2,
+      "control_points": [
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [3.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [3.0, 2.0, 0.0], "weight": 1.0},
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0]
+    },
+    {
+      "op": "nurbs_curve_topology",
+      "id": "periodic-curve-topology",
+      "degree": 2,
+      "control_points": [
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [2.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 2.0, 0.0], "weight": 1.0},
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [2.0, 0.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    },
+    {
       "op": "nurbs_curve_divide",
       "id": "rational-curve-division",
       "degree": 2,

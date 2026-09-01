@@ -86,6 +86,20 @@ impl CommandRegistry {
         registry
             .register(InvertCommand)
             .expect("unique built-in command");
+        for (name, filter) in [
+            ("SelCrv", GeometrySelectionFilter::Curve),
+            ("SelOpenCrv", GeometrySelectionFilter::OpenCurve),
+            ("SelClosedCrv", GeometrySelectionFilter::ClosedCurve),
+            ("SelLine", GeometrySelectionFilter::Line),
+            ("SelPolyline", GeometrySelectionFilter::Polyline),
+            ("SelPt", GeometrySelectionFilter::Point),
+            ("SelSrf", GeometrySelectionFilter::Surface),
+            ("SelMesh", GeometrySelectionFilter::Mesh),
+        ] {
+            registry
+                .register(SelectGeometryCommand { name, filter })
+                .expect("unique built-in command");
+        }
         registry
             .register(LengthCommand)
             .expect("unique built-in command");
@@ -714,6 +728,79 @@ impl Command for InvertCommand {
     }
 }
 
+struct SelectGeometryCommand {
+    name: &'static str,
+    filter: GeometrySelectionFilter,
+}
+
+impl Command for SelectGeometryCommand {
+    fn name(&self) -> &'static str {
+        self.name
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, self.name)?;
+        let matches = document
+            .objects()
+            .filter(|object| document.is_object_selectable(object.id()))
+            .map(|object| {
+                Ok(self
+                    .filter
+                    .matches(object.geometry())?
+                    .then_some(object.id()))
+            })
+            .collect::<Result<Vec<Option<ObjectId>>, GeometryError>>()?
+            .into_iter()
+            .flatten()
+            .collect::<Vec<_>>();
+        for id in matches {
+            document.select_object(id, SelectionMode::Add)?;
+        }
+        Ok(format!(
+            "Selected {} object(s)",
+            document.selected_object_count()
+        ))
+    }
+}
+
+#[derive(Clone, Copy)]
+enum GeometrySelectionFilter {
+    Curve,
+    OpenCurve,
+    ClosedCurve,
+    Line,
+    Polyline,
+    Point,
+    Surface,
+    Mesh,
+}
+
+impl GeometrySelectionFilter {
+    fn matches(self, geometry: &Geometry) -> Result<bool, GeometryError> {
+        let matches = match self {
+            Self::Curve => geometry_curve_ref(geometry).is_some(),
+            Self::OpenCurve => match geometry_curve_ref(geometry) {
+                Some(curve) => !curve.is_closed()?,
+                None => false,
+            },
+            Self::ClosedCurve => match geometry_curve_ref(geometry) {
+                Some(curve) => curve.is_closed()?,
+                None => false,
+            },
+            Self::Line => matches!(geometry, Geometry::Line(_)),
+            Self::Polyline => matches!(geometry, Geometry::Polyline(_)),
+            Self::Point => matches!(geometry, Geometry::Point(_)),
+            Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
+            Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+        };
+        Ok(matches)
+    }
+}
+
 struct LengthCommand;
 
 impl Command for LengthCommand {
@@ -922,7 +1009,7 @@ fn command_division_points(
     mark_ends: bool,
     tolerance: Tolerance,
 ) -> Result<Vec<Point3>, CommandError> {
-    let closed = curve.is_closed(tolerance)?;
+    let closed = curve.is_closed()?;
     let mut points = match specification {
         DivisionSpecification::Count(count) => {
             let mut points = curve.divide_by_count(count, true, tolerance)?;
@@ -1069,10 +1156,7 @@ impl Command for CloseCrvCommand {
                     unchanged += 1;
                     continue;
                 }
-                Geometry::NurbsCurve(curve)
-                    if curve.evaluate(*curve.domain().start())?
-                        == curve.evaluate(*curve.domain().end())? =>
-                {
+                Geometry::NurbsCurve(curve) if curve.is_closed()? => {
                     unchanged += 1;
                     continue;
                 }
@@ -1092,7 +1176,9 @@ impl Command for CloseCrvCommand {
                     segment_added += 1;
                     replacements.push((*id, Geometry::Polyline(closed)));
                 }
-                PolylineClosure::AlreadyClosed | PolylineClosure::GapTooWide => unchanged += 1,
+                PolylineClosure::AlreadyClosed
+                | PolylineClosure::GapTooWide
+                | PolylineClosure::NotClosable => unchanged += 1,
             }
         }
 
@@ -2260,7 +2346,7 @@ pub enum CommandError {
     UnsupportedCurveEndpointGeometry,
 
     #[error(
-        "CloseCrv currently closes lines and polylines only; open arcs and NURBS curves require polycurve support"
+        "CloseCrv currently supports line and polyline inputs only; open arcs and NURBS curves require polycurve support"
     )]
     UnsupportedCloseCurveGeometry,
 
@@ -2319,7 +2405,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelPolyline, SelPt, SelSrf, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -2713,14 +2799,16 @@ mod tests {
     }
 
     #[test]
-    fn closes_lines_without_changing_identity_attributes_or_groups() {
+    fn closes_polylines_without_changing_identity_attributes_or_groups() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         registry
             .execute(&mut document, "Layer New Boundary")
             .unwrap();
         let layer_id = document.current_layer_id();
-        registry.execute(&mut document, "Line 0,0 4,0").unwrap();
+        registry
+            .execute(&mut document, "Polyline 0,0 4,0 2,3")
+            .unwrap();
         let id = document.objects().next().unwrap().id();
         registry.execute(&mut document, "SelAll").unwrap();
         registry.execute(&mut document, "Group Loop").unwrap();
@@ -2732,13 +2820,14 @@ mod tests {
         let object = document.object(id).unwrap();
         assert_eq!(object.attributes().layer_id(), layer_id);
         let Geometry::Polyline(closed) = object.geometry() else {
-            panic!("expected the line to become a closed polyline")
+            panic!("expected a closed polyline")
         };
         assert_eq!(
             closed.vertices(),
             &[
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
             ]
         );
@@ -2755,13 +2844,28 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert!(matches!(
             document.object(id).unwrap().geometry(),
-            Geometry::Line(_)
+            Geometry::Polyline(polyline) if !polyline.is_closed()
         ));
         registry.execute(&mut document, "Redo").unwrap();
         assert!(matches!(
             document.object(id).unwrap().geometry(),
             Geometry::Polyline(polyline) if polyline.is_closed()
         ));
+
+        registry.execute(&mut document, "Line 10,0 14,0").unwrap();
+        let line_id = document.objects().last().unwrap().id();
+        document.clear_selection();
+        document.select_object(line_id, SelectionMode::Add).unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert_eq!(
+            registry.execute(&mut document, "CloseCrv").unwrap(),
+            "Closed 0 of 1 selected curve(s): 0 with a line, 0 by moving an endpoint; 1 unchanged"
+        );
+        assert!(matches!(
+            document.object(line_id).unwrap().geometry(),
+            Geometry::Line(_)
+        ));
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
@@ -3326,6 +3430,120 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.groups().len(), 1);
+    }
+
+    #[test]
+    fn type_selection_commands_add_only_visible_unlocked_matches_without_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry
+            .execute(&mut document, "Layer New Hidden Markers")
+            .unwrap();
+        registry.execute(&mut document, "Point 9,9,9").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Hide Hidden Markers")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer New Locked Markers")
+            .unwrap();
+        registry.execute(&mut document, "Point 8,8,8").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Lock Locked Markers")
+            .unwrap();
+        registry.execute(&mut document, "Line 0,0 4,0").unwrap();
+        registry.execute(&mut document, "Circle 10,0 2").unwrap();
+        registry
+            .execute(&mut document, "Polyline 0,0 2,0 2,2")
+            .unwrap();
+        registry
+            .execute(&mut document, "Rectangle 20,0 24,3")
+            .unwrap();
+        registry
+            .execute(&mut document, "ControlPointCurve 3 30,0 31,2 33,2 34,0")
+            .unwrap();
+        registry
+            .execute(&mut document, "SrfPt 0,10 2,10 2,12 0,12")
+            .unwrap();
+        document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        Point3::try_new(10.0, 10.0, 0.0).unwrap(),
+                        Point3::try_new(12.0, 10.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 12.0, 0.0).unwrap(),
+                    ],
+                    vec![[0, 1, 2]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry.execute(&mut document, "SelPt").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelOpenCrv").unwrap(),
+            "Selected 4 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelClosedCrv").unwrap(),
+            "Selected 6 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelCrv").unwrap(),
+            "Selected 6 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelSrf").unwrap(),
+            "Selected 7 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelMesh").unwrap(),
+            "Selected 8 object(s)"
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert_eq!(document.objects().len(), 10);
+        assert_eq!(
+            document
+                .objects()
+                .filter(|object| document.is_selected(object.id()))
+                .count(),
+            8
+        );
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelLine").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert!(
+            document
+                .selected_objects()
+                .all(|object| matches!(object.geometry(), Geometry::Line(_)))
+        );
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelPolyline").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert!(
+            document
+                .selected_objects()
+                .all(|object| matches!(object.geometry(), Geometry::Polyline(_)))
+        );
+        assert!(registry.execute(&mut document, "SelMesh extra").is_err());
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

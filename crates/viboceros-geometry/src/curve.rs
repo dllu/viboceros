@@ -21,17 +21,12 @@ pub enum CurveRef<'a> {
 
 impl CurveRef<'_> {
     /// Returns whether the curve has coincident natural endpoints.
-    pub fn is_closed(self, tolerance: Tolerance) -> Result<bool, GeometryError> {
+    pub fn is_closed(self) -> Result<bool, GeometryError> {
         Ok(match self {
             Self::Circle(_) | Self::Ellipse(_) => true,
             Self::Line(_) | Self::Arc(_) => false,
             Self::Polyline(polyline) => polyline.is_closed(),
-            Self::NurbsCurve(curve) => {
-                let domain = curve.domain();
-                curve
-                    .evaluate(*domain.start())?
-                    .is_near(curve.evaluate(*domain.end())?, tolerance)
-            }
+            Self::NurbsCurve(curve) => curve.is_closed()?,
         })
     }
 

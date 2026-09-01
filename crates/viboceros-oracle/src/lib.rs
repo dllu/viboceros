@@ -126,6 +126,12 @@ pub enum Operation {
         knots: Vec<f64>,
         normalized_parameter: f64,
     },
+    NurbsCurveTopology {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -155,6 +161,7 @@ impl Operation {
             | Self::NurbsCurveLength { id, .. }
             | Self::NurbsCurveDivide { id, .. }
             | Self::NurbsCurveReverse { id, .. }
+            | Self::NurbsCurveTopology { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -489,6 +496,28 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::NurbsCurveTopology {
+            degree,
+            control_points,
+            knots,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let ((is_closed, is_periodic), elapsed) = measure(iterations, || {
+                Ok((black_box(&curve).is_closed()?, curve.is_periodic()))
+            })?;
+            (
+                json!({
+                    "is_closed": is_closed,
+                    "is_periodic": is_periodic,
+                }),
+                elapsed,
+            )
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -656,6 +685,30 @@ mod tests {
         assert_eq!(
             response.results[2].value["radius_y"],
             json!(40.0_f64.sqrt())
+        );
+    }
+
+    #[test]
+    fn reports_closed_and_periodic_nurbs_topology() {
+        let controls = [
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [1.0, 2.0, 0.0],
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+        ]
+        .map(|point| ControlPoint { point, weight: 1.0 })
+        .to_vec();
+        let response = run_request(&request(vec![Operation::NurbsCurveTopology {
+            id: "topology".to_owned(),
+            degree: 2,
+            control_points: controls,
+            knots: vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({"is_closed": true, "is_periodic": true})
         );
     }
 

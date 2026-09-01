@@ -292,6 +292,23 @@ def _execute(operation, iterations, tolerance):
         )
         return float(value), elapsed
 
+    if kind == "nurbs_curve_topology":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+
+        def curve_topology():
+            return {
+                "is_closed": bool(curve.IsClosed),
+                "is_periodic": bool(curve.IsPeriodic),
+            }
+
+        return _measure(iterations, curve_topology)
+
     if kind == "nurbs_curve_divide":
         degree = int(operation["degree"])
         controls = operation["control_points"]
