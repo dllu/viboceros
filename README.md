@@ -59,6 +59,7 @@ SelDupAll
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
+ArrayLinear 4 0,0,0 2,1,0
 Scale 0,0 2
 Rotate 0,0 45
 Mirror 0,-5 0,5
@@ -119,7 +120,8 @@ Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Rectangle`,
 press Enter to finish a polyline. `Polygon` defaults to four sides, or accepts
 a side count such as `Polygon 6`. With objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale` or `Rotate` to pick
-center/reference/target points, or `Mirror` to pick a two-point axis. `Join`
+center/reference/target points, `Mirror` to pick a two-point axis, or
+`ArrayLinear 4` to pick its two spacing references. `Join`
 connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
 segments and frees point-cloud members as point objects. `Length` measures
@@ -202,6 +204,10 @@ definitions are implemented.
 or the current layer. `CopyToLayer` skips selected objects already on the target,
 copies each remaining group subset into a fresh automatic group, and leaves the
 original selection unchanged. Hidden and locked target layers are supported.
+`ArrayLinear` takes Rhino's total item count followed by two reference points;
+their vector is the spacing between successive items. It retains the originals
+as the selection, preserves object attributes, and recreates every selected
+group topology independently for each copy as one bounded, atomic undo step.
 `UnifyMeshNormals` repairs inconsistent face winding across exact
 location-welded manifold edges, including STL-style triangle soup, and rejects
 non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)

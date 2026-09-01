@@ -87,6 +87,9 @@ pub enum Operation {
     DocumentLayerAssignmentCycle {
         id: String,
     },
+    DocumentLinearArrayCycle {
+        id: String,
+    },
     DocumentDuplicateSelectionCycle {
         id: String,
     },
@@ -264,6 +267,7 @@ impl Operation {
             | Self::DocumentAttributeSelectionCycle { id }
             | Self::DocumentObjectNamingCycle { id }
             | Self::DocumentLayerAssignmentCycle { id }
+            | Self::DocumentLinearArrayCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::DocumentPointCloudCycle { id }
             | Self::ThreeDmGroupRoundTrip { id }
@@ -363,6 +367,9 @@ pub enum ProbeError {
 
     #[error("oracle timing exceeded the 64-bit nanosecond range")]
     TimingOverflow,
+
+    #[error("oracle fixture invariant failed: {0}")]
+    FixtureInvariant(&'static str),
 }
 
 pub fn run_request(request: &ProbeRequest) -> Result<ProbeResponse, ProbeError> {
@@ -452,6 +459,9 @@ fn execute(
         Operation::DocumentObjectNamingCycle { .. } => document_object_naming_cycle(iterations)?,
         Operation::DocumentLayerAssignmentCycle { .. } => {
             document_layer_assignment_cycle(iterations)?
+        }
+        Operation::DocumentLinearArrayCycle { .. } => {
+            document_linear_array_cycle(iterations, tolerance)?
         }
         Operation::DocumentDuplicateSelectionCycle { .. } => {
             document_duplicate_selection_cycle(iterations, tolerance)?
@@ -1576,6 +1586,116 @@ fn document_layer_assignment_cycle(iterations: u32) -> Result<(Value, u64), Prob
     Ok((value, elapsed_ns))
 }
 
+fn document_linear_array_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let source_points = [
+        Point3::try_new(1.0, 2.0, 3.0)?,
+        Point3::try_new(4.0, 2.0, 3.0)?,
+    ];
+    let mut original_ids = Vec::with_capacity(source_points.len());
+    for (index, point) in source_points.iter().enumerate() {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Point(*point),
+            ObjectAttributes::on_layer(layer).with_name(index.to_string()),
+        )?);
+    }
+    document.add_group(
+        Some("Viboceros Linear Array Group".to_owned()),
+        original_ids.iter().copied(),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(&mut document, "ArrayLinear 4 0,0,0 2,-1,3")?;
+
+    let records = sorted_document_point_records(&document)?;
+    let locations_after_array = records
+        .iter()
+        .map(|(_, coordinates, _)| *coordinates)
+        .collect::<Vec<_>>();
+    let names_after_array = records
+        .iter()
+        .map(|(_, _, name)| name.clone())
+        .collect::<Vec<_>>();
+    let selected_after_array = records
+        .iter()
+        .filter(|(id, _, _)| document.is_selected(*id))
+        .map(|(_, coordinates, _)| *coordinates)
+        .collect::<Vec<_>>();
+    let originals_selected_after_array = original_ids
+        .iter()
+        .enumerate()
+        .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+        .collect::<Vec<_>>();
+    let groups_after_array = document_group_point_locations(&document)?;
+    let value = json!({
+        "command_succeeded": true,
+        "groups_after_array": groups_after_array,
+        "locations_after_array": locations_after_array,
+        "names_after_array": names_after_array,
+        "originals_selected_after_array": originals_selected_after_array,
+        "selected_after_array": selected_after_array,
+    });
+
+    let spacing = Point3::try_new(0.0, 0.0, 0.0)?.vector_to(Point3::try_new(2.0, -1.0, 3.0)?)?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        (1..4)
+            .flat_map(|copy_index| {
+                source_points
+                    .into_iter()
+                    .map(move |source| source.translated(spacing.scaled(copy_index as f64)?))
+            })
+            .collect::<Result<Vec<_>, _>>()
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+fn sorted_document_point_records(
+    document: &Document,
+) -> Result<Vec<(ObjectId, [f64; 3], String)>, ProbeError> {
+    let mut records = Vec::with_capacity(document.objects().len());
+    for object in document.objects() {
+        let Geometry::Point(point) = object.geometry() else {
+            return Err(ProbeError::FixtureInvariant(
+                "linear-array fixture contains a non-point object",
+            ));
+        };
+        records.push((
+            object.id(),
+            point.to_array(),
+            object.attributes().name().unwrap_or_default().to_owned(),
+        ));
+    }
+    records
+        .sort_by(|left, right| compare_point(&left.1, &right.1).then_with(|| left.2.cmp(&right.2)));
+    Ok(records)
+}
+
+fn document_group_point_locations(document: &Document) -> Result<Vec<Vec<[f64; 3]>>, ProbeError> {
+    let mut groups = Vec::with_capacity(document.groups().len());
+    for group in document.groups() {
+        let mut points = Vec::with_capacity(group.members().len());
+        for id in group.members() {
+            let object = document
+                .object(id)
+                .ok_or(DocumentError::ObjectNotFound(id))?;
+            let Geometry::Point(point) = object.geometry() else {
+                return Err(ProbeError::FixtureInvariant(
+                    "linear-array group contains a non-point object",
+                ));
+            };
+            points.push(point.to_array());
+        }
+        points.sort_by(compare_point);
+        groups.push(points);
+    }
+    groups.sort_by(|left, right| compare_point_lists(left, right));
+    Ok(groups)
+}
+
 struct OracleTemporaryFile {
     path: PathBuf,
 }
@@ -2405,6 +2525,14 @@ fn compare_point(left: &[f64; 3], right: &[f64; 3]) -> std::cmp::Ordering {
         .unwrap_or(std::cmp::Ordering::Equal)
 }
 
+fn compare_point_lists(left: &[[f64; 3]], right: &[[f64; 3]]) -> std::cmp::Ordering {
+    left.iter()
+        .zip(right)
+        .map(|(left, right)| compare_point(left, right))
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or_else(|| left.len().cmp(&right.len()))
+}
+
 fn measure<T>(
     iterations: u32,
     mut operation: impl FnMut() -> Result<T, GeometryError>,
@@ -2744,6 +2872,39 @@ mod tests {
                 "original_selected_after_copy": [0, 1],
                 "original_selected_after_destination_copies": [3],
                 "same_layer_copy_count": 0,
+            })
+        );
+    }
+
+    #[test]
+    fn linearly_arrays_grouped_objects_with_rhino_scope() {
+        let response = run_request(&request(vec![Operation::DocumentLinearArrayCycle {
+            id: "linear-array".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "command_succeeded": true,
+                "groups_after_array": [
+                    [[1.0, 2.0, 3.0], [4.0, 2.0, 3.0]],
+                    [[3.0, 1.0, 6.0], [6.0, 1.0, 6.0]],
+                    [[5.0, 0.0, 9.0], [8.0, 0.0, 9.0]],
+                    [[7.0, -1.0, 12.0], [10.0, -1.0, 12.0]],
+                ],
+                "locations_after_array": [
+                    [1.0, 2.0, 3.0],
+                    [3.0, 1.0, 6.0],
+                    [4.0, 2.0, 3.0],
+                    [5.0, 0.0, 9.0],
+                    [6.0, 1.0, 6.0],
+                    [7.0, -1.0, 12.0],
+                    [8.0, 0.0, 9.0],
+                    [10.0, -1.0, 12.0],
+                ],
+                "names_after_array": ["0", "0", "1", "0", "1", "0", "1", "1"],
+                "originals_selected_after_array": [0, 1],
+                "selected_after_array": [[1.0, 2.0, 3.0], [4.0, 2.0, 3.0]],
             })
         );
     }

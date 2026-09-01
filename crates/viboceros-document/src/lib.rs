@@ -1352,12 +1352,68 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         transform: AffineTransform3,
     ) -> Result<Vec<ObjectId>, DocumentError> {
-        let staged = self.stage_transformed_objects(ids, transform)?;
-        if staged.is_empty() {
+        self.copy_objects_with_transforms(ids, &[transform])
+    }
+
+    /// Atomically copies one source set through each transform. Source order,
+    /// attributes, and overlapping group topology are preserved independently
+    /// for every transformed instance.
+    pub fn copy_objects_with_transforms(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transforms: &[AffineTransform3],
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        if transforms.is_empty() {
             return Ok(Vec::new());
         }
-        let originals: BTreeSet<_> = staged.iter().map(|(_, object, _)| object.id).collect();
-        let copied_groups = self
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+        let mut sources = Vec::with_capacity(ids.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            if !ids.contains(&object.id) {
+                continue;
+            }
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            sources.push(index);
+        }
+        if sources.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let copy_count = sources
+            .len()
+            .checked_mul(transforms.len())
+            .ok_or(DocumentError::TooManyObjectCopies)?;
+        let mut staged = Vec::new();
+        staged
+            .try_reserve_exact(copy_count)
+            .map_err(|_| DocumentError::TooManyObjectCopies)?;
+        for transform in transforms {
+            for source_index in &sources {
+                staged.push((
+                    *source_index,
+                    self.objects[*source_index]
+                        .geometry
+                        .transformed(*transform, self.tolerance)?,
+                ));
+            }
+        }
+
+        let originals = sources
+            .iter()
+            .map(|index| self.objects[*index].id)
+            .collect::<BTreeSet<_>>();
+        let copied_group_templates = self
             .groups
             .iter()
             .filter_map(|group| {
@@ -1370,50 +1426,69 @@ impl Document {
                 (!members.is_empty()).then(|| (group.name.clone(), members))
             })
             .collect::<Vec<_>>();
+        let group_copy_count = copied_group_templates
+            .len()
+            .checked_mul(transforms.len())
+            .ok_or(DocumentError::TooManyObjectCopies)?;
+        self.objects
+            .try_reserve_exact(copy_count)
+            .map_err(|_| DocumentError::TooManyObjectCopies)?;
+        self.groups
+            .try_reserve_exact(group_copy_count)
+            .map_err(|_| DocumentError::TooManyObjectCopies)?;
 
         let owns_transaction = self.history.active.is_none();
         if owns_transaction {
             self.begin_transaction("Copy objects")?;
         }
-        let mut copied_ids = Vec::with_capacity(staged.len());
-        let mut copied_by_original = BTreeMap::new();
-        for (_, original, transformed) in staged {
-            let id = ObjectId::new();
-            let index = self.objects.len();
-            self.objects.push(Object {
-                id,
-                geometry: transformed.geometry,
-                attributes: original.attributes,
-                isolation: ObjectIsolation::None,
-            });
-            self.record_edit(
-                "Copy object",
-                Edit::ObjectInserted {
-                    index,
+        let mut copied_ids = Vec::with_capacity(copy_count);
+        let mut staged = staged.into_iter();
+        for _ in transforms {
+            let mut copied_by_original = BTreeMap::new();
+            for _ in &sources {
+                let (source_index, geometry) = staged
+                    .next()
+                    .expect("each transform has one staged geometry per source");
+                let source = &self.objects[source_index];
+                let original_id = source.id;
+                let attributes = source.attributes.clone();
+                let id = ObjectId::new();
+                let index = self.objects.len();
+                self.objects.push(Object {
                     id,
-                    stored: None,
-                },
-            );
-            copied_by_original.insert(original.id, id);
-            copied_ids.push(id);
-        }
-        for (name, original_members) in copied_groups {
-            let members = original_members
-                .into_iter()
-                .map(|member| copied_by_original[&member])
-                .collect();
-            let name = name.map(|name| self.next_group_copy_name(&name));
-            let id = GroupId::new();
-            let index = self.groups.len();
-            self.groups.push(Group { id, name, members });
-            self.record_edit(
-                "Copy group",
-                Edit::GroupInserted {
-                    index,
-                    id,
-                    stored: None,
-                },
-            );
+                    geometry,
+                    attributes,
+                    isolation: ObjectIsolation::None,
+                });
+                self.record_edit(
+                    "Copy object",
+                    Edit::ObjectInserted {
+                        index,
+                        id,
+                        stored: None,
+                    },
+                );
+                copied_by_original.insert(original_id, id);
+                copied_ids.push(id);
+            }
+            for (name, original_members) in &copied_group_templates {
+                let members = original_members
+                    .iter()
+                    .map(|member| copied_by_original[member])
+                    .collect();
+                let name = name.as_ref().map(|name| self.next_group_copy_name(name));
+                let id = GroupId::new();
+                let index = self.groups.len();
+                self.groups.push(Group { id, name, members });
+                self.record_edit(
+                    "Copy group",
+                    Edit::GroupInserted {
+                        index,
+                        id,
+                        stored: None,
+                    },
+                );
+            }
         }
         self.update_selection(copied_ids.iter().copied().collect());
         self.prune_selection();
@@ -2095,6 +2170,9 @@ pub enum DocumentError {
 
     #[error("object {0} is locked and cannot be edited")]
     ObjectLocked(ObjectId),
+
+    #[error("the requested object copies exceed addressable memory")]
+    TooManyObjectCopies,
 
     #[error("a group must contain at least one object")]
     EmptyGroup,
@@ -3850,6 +3928,42 @@ mod tests {
         document.redo().unwrap();
         assert!(copies.iter().all(|id| document.object(*id).is_some()));
         assert_eq!(document.groups().len(), 2);
+    }
+
+    #[test]
+    fn batch_copy_preflights_every_transform_before_mutating() {
+        let mut document = Document::default();
+        let original = document
+            .add_geometry(Geometry::Point(
+                Point3::try_new(viboceros_geometry::Real::MAX, 0.0, 0.0).unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_object(original, SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        let transforms = [
+            AffineTransform3::from_translation(
+                viboceros_geometry::Vector3::try_new(-viboceros_geometry::Real::MAX, 0.0, 0.0)
+                    .unwrap(),
+            ),
+            AffineTransform3::from_translation(
+                viboceros_geometry::Vector3::try_new(viboceros_geometry::Real::MAX, 0.0, 0.0)
+                    .unwrap(),
+            ),
+        ];
+
+        assert!(
+            document
+                .copy_objects_with_transforms([original], &transforms)
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.groups().len(), 0);
+        assert!(document.is_selected(original));
+        assert_eq!(document.undo_label(), history.as_deref());
+        document.begin_transaction("probe").unwrap();
+        document.rollback_transaction().unwrap();
     }
 
     #[test]

@@ -238,6 +238,130 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_linear_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Linear Array " + suffix + " "
+        original_ids = []
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            objects.sort(
+                key=lambda item: (
+                    float(item.Geometry.Location.X),
+                    float(item.Geometry.Location.Y),
+                    float(item.Geometry.Location.Z),
+                    item.Attributes.Name,
+                )
+            )
+            return objects
+
+        def locations(objects):
+            return [_xyz(item.Geometry.Location) for item in objects]
+
+        def selected_locations(objects):
+            return locations([item for item in objects if item.IsSelected(False) > 0])
+
+        def fixture_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                fixture_members = [
+                    member for member in members if member.Id in fixture_ids
+                ]
+                if fixture_members:
+                    fixture_members.sort(
+                        key=lambda item: (
+                            float(item.Geometry.Location.X),
+                            float(item.Geometry.Location.Y),
+                            float(item.Geometry.Location.Z),
+                        )
+                    )
+                    groups.append(locations(fixture_members))
+            groups.sort(key=lambda group: tuple(tuple(point) for point in group))
+            return groups
+
+        try:
+            for index, coordinates in enumerate(((1.0, 2.0, 3.0), (4.0, 2.0, 3.0))):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + str(index)
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(*coordinates), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add linear-array fixture point")
+                original_ids.append(object_id)
+            original_group_index = document.Groups.Add(
+                "Viboceros Linear Array Group " + suffix, original_ids
+            )
+            if original_group_index < 0:
+                raise ValueError("could not group linear-array fixture objects")
+            document.Objects.UnselectAll()
+            for object_id in original_ids:
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select linear-array fixture object")
+
+            command_succeeded = Rhino.RhinoApp.RunScript(
+                "_-ArrayLinear 4 0,0,0 2,-1,3 _Enter", False
+            )
+            array_objects = fixture_objects()
+            if len(array_objects) != 8:
+                raise ValueError(
+                    "ArrayLinear returned %r and left %d fixture objects"
+                    % (command_succeeded, len(array_objects))
+                )
+            value = {
+                "command_succeeded": bool(command_succeeded),
+                "groups_after_array": fixture_groups(array_objects),
+                "locations_after_array": locations(array_objects),
+                "names_after_array": [
+                    item.Attributes.Name[len(name_prefix):] for item in array_objects
+                ],
+                "originals_selected_after_array": [
+                    index
+                    for index, object_id in enumerate(original_ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) > 0
+                ],
+                "selected_after_array": selected_locations(array_objects),
+            }
+
+            source_points = [
+                Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                Rhino.Geometry.Point3d(4.0, 2.0, 3.0),
+            ]
+            spacing = Rhino.Geometry.Vector3d(2.0, -1.0, 3.0)
+
+            def compute_array_points():
+                return [
+                    point + spacing * copy_index
+                    for copy_index in range(1, 4)
+                    for point in source_points
+                ]
+
+            _unused, elapsed = _measure(iterations, compute_array_points)
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            objects = fixture_objects()
+            fixture_ids = set(item.Id for item in objects)
+            group_indices = []
+            for group_index in range(document.Groups.Count):
+                members = document.Groups.GroupMembers(group_index)
+                if members is not None and any(
+                    member.Id in fixture_ids for member in members
+                ):
+                    group_indices.append(group_index)
+            for group_index in reversed(group_indices):
+                document.Groups.Delete(group_index)
+            for item in objects:
+                document.Objects.Delete(item.Id, True)
     if kind == "three_dm_group_round_trip":
         _record_progress("three_dm_group_round_trip: start")
         path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "groups.3dm")

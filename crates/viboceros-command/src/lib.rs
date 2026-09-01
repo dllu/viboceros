@@ -21,6 +21,7 @@ use viboceros_io::{
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
+const MAX_ARRAY_OBJECTS: usize = 1_000_000;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -246,6 +247,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CopyCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ArrayLinearCommand)
             .expect("unique built-in command");
         registry
             .register(ScaleCommand)
@@ -2930,6 +2934,58 @@ impl Command for CopyCommand {
     }
 }
 
+struct ArrayLinearCommand;
+
+impl Command for ArrayLinearCommand {
+    fn name(&self) -> &'static str {
+        "ArrayLinear"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let item_count_text = arguments.first().ok_or(CommandError::Usage(
+            "ArrayLinear item-count first-reference second-reference",
+        ))?;
+        let item_count = item_count_text
+            .parse::<usize>()
+            .ok()
+            .filter(|count| *count >= 2)
+            .ok_or_else(|| CommandError::InvalidArrayItemCount((*item_count_text).to_owned()))?;
+        let selected = selected_ids(document)?;
+        let copy_instance_count = item_count - 1;
+        let copy_count = selected
+            .len()
+            .checked_mul(copy_instance_count)
+            .filter(|count| *count <= MAX_ARRAY_OBJECTS)
+            .ok_or(CommandError::TooManyArrayObjects {
+                maximum: MAX_ARRAY_OBJECTS,
+            })?;
+        let (first_reference, first_consumed) = parse_point(&arguments[1..])?;
+        let (second_reference, second_consumed) = parse_point(&arguments[1 + first_consumed..])?;
+        require_consumed(
+            arguments,
+            1 + first_consumed + second_consumed,
+            "ArrayLinear item-count first-reference second-reference",
+        )?;
+        let spacing = first_reference.vector_to(second_reference)?;
+        let transforms = (1..item_count)
+            .map(|index| {
+                spacing
+                    .scaled(index as Real)
+                    .map(AffineTransform3::from_translation)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let copies = document
+            .copy_objects_with_transforms(selected.iter().copied(), transforms.as_slice())?;
+        document.select_objects_direct(selected, SelectionMode::Replace)?;
+        debug_assert_eq!(copies.len(), copy_count);
+        Ok(format!(
+            "Arrayed {} object(s) into {item_count} total item(s), creating {copy_count} copy object(s) at spacing {}",
+            copy_count / copy_instance_count,
+            format_vector(spacing)
+        ))
+    }
+}
+
 struct ScaleCommand;
 
 impl Command for ScaleCommand {
@@ -3734,6 +3790,9 @@ pub enum CommandError {
     #[error("'{0}' is not a valid finite, non-zero scale factor")]
     InvalidScaleFactor(String),
 
+    #[error("'{0}' is not a valid ArrayLinear item count of 2 or more")]
+    InvalidArrayItemCount(String),
+
     #[error("'{0}' is not a valid finite, strictly positive maximum curve length")]
     InvalidMaximumCurveLength(String),
 
@@ -3825,6 +3884,9 @@ pub enum CommandError {
     #[error("ExtractPt would extract more than {maximum} points")]
     TooManyExtractedPoints { maximum: usize },
 
+    #[error("the array would create more than {maximum} object copies")]
+    TooManyArrayObjects { maximum: usize },
+
     #[error(
         "CloseCrv currently supports line and polyline inputs only; open arcs and NURBS curves require polycurve support"
     )]
@@ -3885,7 +3947,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, ArrayLinear, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7153,6 +7215,136 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 1);
         assert!(document.object(original).is_some());
+    }
+
+    #[test]
+    fn linear_array_matches_rhino_spacing_selection_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let first = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("First"),
+            )
+            .unwrap();
+        let second = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(4.0, 2.0, 3.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Second"),
+            )
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(&mut document, "ArrayLinear 4 0,0,0 2,-1,3")
+            .unwrap();
+        assert!(message.contains("creating 6 copy object(s)"));
+        assert_eq!(document.objects().len(), 8);
+        assert_eq!(document.groups().len(), 4);
+        assert_eq!(document.undo_label(), Some("ArrayLinear"));
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+
+        let mut named_points = document
+            .objects()
+            .map(|object| {
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!("expected arrayed points")
+                };
+                (
+                    point.to_array(),
+                    object.attributes().name().unwrap().to_owned(),
+                )
+            })
+            .collect::<Vec<_>>();
+        named_points.sort_by(|left, right| left.0.partial_cmp(&right.0).unwrap());
+        assert_eq!(
+            named_points,
+            vec![
+                ([1.0, 2.0, 3.0], "First".to_owned()),
+                ([3.0, 1.0, 6.0], "First".to_owned()),
+                ([4.0, 2.0, 3.0], "Second".to_owned()),
+                ([5.0, 0.0, 9.0], "First".to_owned()),
+                ([6.0, 1.0, 6.0], "Second".to_owned()),
+                ([7.0, -1.0, 12.0], "First".to_owned()),
+                ([8.0, 0.0, 9.0], "Second".to_owned()),
+                ([10.0, -1.0, 12.0], "Second".to_owned()),
+            ]
+        );
+        let mut group_points = document
+            .groups()
+            .map(|group| {
+                let mut points = group
+                    .members()
+                    .map(|id| match document.object(id).unwrap().geometry() {
+                        Geometry::Point(point) => point.to_array(),
+                        _ => panic!("expected grouped array points"),
+                    })
+                    .collect::<Vec<_>>();
+                points.sort_by(|left, right| left.partial_cmp(right).unwrap());
+                points
+            })
+            .collect::<Vec<_>>();
+        group_points.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        assert_eq!(
+            group_points,
+            vec![
+                vec![[1.0, 2.0, 3.0], [4.0, 2.0, 3.0]],
+                vec![[3.0, 1.0, 6.0], [6.0, 1.0, 6.0]],
+                vec![[5.0, 0.0, 9.0], [8.0, 0.0, 9.0]],
+                vec![[7.0, -1.0, 12.0], [10.0, -1.0, 12.0]],
+            ]
+        );
+
+        let array_ids = document
+            .objects()
+            .map(|object| object.id())
+            .filter(|id| ![first, second].contains(id))
+            .collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
+        assert!(document.is_selected(first));
+        assert!(document.is_selected(second));
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(array_ids.iter().all(|id| document.object(*id).is_some()));
+        assert_eq!(document.groups().len(), 4);
+    }
+
+    #[test]
+    fn linear_array_rejects_invalid_or_unbounded_output_without_partial_copies() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        document.select_all();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayLinear 1 0,0,0 1,0,0"),
+            Err(CommandError::InvalidArrayItemCount(value)) if value == "1"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayLinear 500002 0,0,0 1,0,0"),
+            Err(CommandError::TooManyArrayObjects { maximum })
+                if maximum == MAX_ARRAY_OBJECTS
+        ));
+        assert!(
+            registry
+                .execute(&mut document, "ArrayLinear 3 0,0,0 1e308,0,0")
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

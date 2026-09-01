@@ -43,6 +43,10 @@ enum InteractiveCommand {
     Copy {
         start: Option<Point3>,
     },
+    ArrayLinear {
+        item_count: usize,
+        start: Option<Point3>,
+    },
     Scale {
         center: Option<Point3>,
         reference: Option<Point3>,
@@ -70,6 +74,7 @@ impl InteractiveCommand {
             Self::SrfPt { .. } => "SrfPt",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
+            Self::ArrayLinear { .. } => "ArrayLinear",
             Self::Scale { .. } => "Scale",
             Self::Rotate { .. } => "Rotate",
             Self::Mirror { .. } => "Mirror",
@@ -144,6 +149,12 @@ impl InteractiveCommand {
             Self::Copy { start: Some(_) } => {
                 "Copy: pick the destination point in the viewport (Esc to cancel)"
             }
+            Self::ArrayLinear { start: None, .. } => {
+                "ArrayLinear: pick the first reference point in the viewport (Esc to cancel)"
+            }
+            Self::ArrayLinear { start: Some(_), .. } => {
+                "ArrayLinear: pick the spacing point in the viewport (Esc to cancel)"
+            }
             Self::Scale { center: None, .. } => {
                 "Scale: pick the center point in the viewport (Esc to cancel)"
             }
@@ -188,6 +199,7 @@ impl InteractiveCommand {
             }
             | Self::Move { start: None }
             | Self::Copy { start: None }
+            | Self::ArrayLinear { start: None, .. }
             | Self::Scale { center: None, .. }
             | Self::Rotate { center: None, .. }
             | Self::Mirror { start: None } => None,
@@ -196,6 +208,7 @@ impl InteractiveCommand {
             | Self::Rectangle { first: start }
             | Self::Move { start }
             | Self::Copy { start }
+            | Self::ArrayLinear { start, .. }
             | Self::Mirror { start } => start,
             Self::Ellipse { center, .. } | Self::Polygon { center, .. } => center,
             Self::Arc {
@@ -320,6 +333,20 @@ impl VibocerosApp {
                 side_count,
                 center: None,
             }
+        } else if normalized == "arraylinear" {
+            let [item_count] = arguments.as_slice() else {
+                return false;
+            };
+            let Ok(item_count) = item_count.parse::<usize>() else {
+                return false;
+            };
+            if item_count < 2 {
+                return false;
+            }
+            InteractiveCommand::ArrayLinear {
+                item_count,
+                start: None,
+            }
         } else {
             if !arguments.is_empty() {
                 return false;
@@ -357,6 +384,7 @@ impl VibocerosApp {
             command,
             InteractiveCommand::Move { .. }
                 | InteractiveCommand::Copy { .. }
+                | InteractiveCommand::ArrayLinear { .. }
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Mirror { .. }
@@ -649,6 +677,29 @@ impl VibocerosApp {
                 self.active_command = None;
                 self.execute_command(&format!(
                     "Copy {} {}",
+                    format_model_point(start),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::ArrayLinear {
+                item_count,
+                start: None,
+            } => {
+                let command = InteractiveCommand::ArrayLinear {
+                    item_count,
+                    start: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("First reference: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ArrayLinear {
+                item_count,
+                start: Some(start),
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ArrayLinear {item_count} {} {}",
                     format_model_point(start),
                     format_model_point(point)
                 ));
@@ -1645,9 +1696,51 @@ mod tests {
     }
 
     #[test]
+    fn interactive_linear_array_uses_a_count_and_two_reference_points() {
+        let mut app = test_app();
+        let original = app
+            .document
+            .add_geometry(Geometry::Point(point(1.0, 2.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_object(original, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ArrayLinear 3"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ArrayLinear {
+                item_count: 3,
+                start: Some(point(0.0, 0.0, 0.0)),
+            })
+        );
+        app.accept_drafting_point(point(2.0, -1.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.undo_label(), Some("ArrayLinear"));
+        assert!(app.document.is_selected(original));
+        let mut locations = app
+            .document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => point.to_array(),
+                _ => panic!("expected arrayed points"),
+            })
+            .collect::<Vec<_>>();
+        locations.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        assert_eq!(
+            locations,
+            vec![[1.0, 2.0, 0.0], [3.0, 1.0, 0.0], [5.0, 0.0, 0.0]]
+        );
+
+        assert!(!app.try_start_interactive_command("ArrayLinear"));
+        assert!(!app.try_start_interactive_command("ArrayLinear 1"));
+    }
+
+    #[test]
     fn interactive_transforms_require_a_selection() {
         let mut app = test_app();
-        for command in ["M", "Copy", "Scale", "Rotate", "Mirror"] {
+        for command in ["M", "Copy", "ArrayLinear 3", "Scale", "Rotate", "Mirror"] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
             assert!(app.command_log.back().unwrap().contains("no objects"));
