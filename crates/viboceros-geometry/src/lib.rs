@@ -7,6 +7,7 @@
 mod bounds;
 mod error;
 mod line;
+mod mesh;
 mod nurbs;
 mod plane;
 mod point;
@@ -16,6 +17,7 @@ mod vector;
 pub use bounds::BoundingBox3;
 pub use error::GeometryError;
 pub use line::LineSegment;
+pub use mesh::TriangleMesh;
 pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;

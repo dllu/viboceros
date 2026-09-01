@@ -6,8 +6,9 @@ egui interface rendered by wgpu.
 
 The current foundation supports finite 3D points, vectors, line segments,
 planes, bounding boxes, rational NURBS curves with analytic first derivatives,
-layers, and groups. The top viewport can pan and zoom in wireframe, shaded, or
-ghosted mode. Its command line currently accepts:
+validated triangle meshes, layers, groups, and bounded undo/redo. The top
+viewport can pan and zoom in wireframe, shaded, or ghosted mode. Its command
+line currently accepts:
 
 ```text
 Point 1,2,0
@@ -17,6 +18,9 @@ Layer Construction
 Clear
 Undo
 Redo
+ImportStl path/to/model.stl
+ExportStl Binary path/to/model.stl
+ExportStl Ascii path/to/model.stl
 Help
 ```
 
@@ -36,5 +40,5 @@ cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
-File import/export and production surface/solid modelling are not implemented
-yet.
+Both ASCII and binary STL are supported. 3DM, STEP, and production surface and
+solid modelling are not implemented yet.

@@ -1,5 +1,5 @@
 [package]
-name = "viboceros-command"
+name = "viboceros-io"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,6 +7,4 @@ rust-version.workspace = true
 
 [dependencies]
 thiserror.workspace = true
-viboceros-document.workspace = true
 viboceros-geometry.workspace = true
-viboceros-io.workspace = true

@@ -50,4 +50,19 @@ pub enum GeometryError {
 
     #[error("the rational NURBS denominator vanished during evaluation")]
     ZeroWeightAtParameter,
+
+    #[error("a triangle mesh must contain at least one triangle")]
+    EmptyMesh,
+
+    #[error("a triangle mesh has too many vertices for 32-bit indices")]
+    TooManyMeshVertices,
+
+    #[error("triangle {triangle} references missing vertex index {vertex}")]
+    InvalidTriangleIndex { triangle: usize, vertex: u32 },
+
+    #[error("triangle index {triangle} is outside the mesh")]
+    TriangleIndexOutOfRange { triangle: usize },
+
+    #[error("triangle {triangle} is degenerate at the requested tolerance")]
+    DegenerateTriangle { triangle: usize },
 }

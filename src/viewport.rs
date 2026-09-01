@@ -1,6 +1,6 @@
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, Sense, Stroke, Vec2};
 use viboceros_document::{Document, Geometry};
-use viboceros_geometry::{NurbsCurve, Point3, Real};
+use viboceros_geometry::{NurbsCurve, Point3, Real, TriangleMesh, UnitVector3};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DisplayMode {
@@ -175,6 +175,9 @@ impl Viewport {
                 Geometry::NurbsCurve(curve) => {
                     self.paint_nurbs_curve(painter, rect, curve, Stroke::new(width, color));
                 }
+                Geometry::Mesh(mesh) => {
+                    self.paint_mesh(painter, rect, mesh, color, width);
+                }
             }
         }
     }
@@ -212,6 +215,58 @@ impl Viewport {
             }
         }
     }
+
+    fn paint_mesh(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        mesh: &TriangleMesh,
+        color: Color32,
+        width: f32,
+    ) {
+        let edge = Stroke::new(width, color);
+        for triangle_index in 0..mesh.triangles().len() {
+            let Some(points) = mesh.triangle_points(triangle_index) else {
+                continue;
+            };
+            let projected = points.map(|point| self.project(point, rect));
+            let [Some(first), Some(second), Some(third)] = projected else {
+                continue;
+            };
+            let fill = match self.display_mode {
+                DisplayMode::Wireframe => Color32::TRANSPARENT,
+                DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
+                    |_| blend_toward_white(color, 0.35),
+                    |normal| shaded_color(color, normal),
+                ),
+                DisplayMode::Ghosted => {
+                    Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35)
+                }
+            };
+            painter.add(egui::Shape::convex_polygon(
+                vec![first, second, third],
+                fill,
+                edge,
+            ));
+        }
+    }
+}
+
+fn blend_toward_white(color: Color32, amount: f32) -> Color32 {
+    let blend = |component: u8| {
+        (f32::from(component) + (255.0 - f32::from(component)) * amount).round() as u8
+    };
+    Color32::from_rgb(blend(color.r()), blend(color.g()), blend(color.b()))
+}
+
+fn shaded_color(color: Color32, normal: UnitVector3) -> Color32 {
+    // A fixed camera-space key light keeps the placeholder top viewport
+    // deterministic while making face orientation legible.
+    let illumination = normal
+        .x()
+        .mul_add(-0.35, normal.y().mul_add(-0.45, normal.z() * 0.82))
+        .clamp(0.0, 1.0) as f32;
+    blend_toward_white(color, 0.35 + 0.55 * illumination)
 }
 
 #[cfg(test)]
@@ -224,5 +279,16 @@ mod tests {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let point = Point3::try_new(f64::MAX, 0.0, 0.0).unwrap();
         assert_eq!(viewport.project(point, rect), None);
+    }
+
+    #[test]
+    fn shaded_faces_respond_to_the_fixed_light_direction() {
+        let up =
+            UnitVector3::try_new(0.0, 0.0, 1.0, viboceros_geometry::Tolerance::DEFAULT).unwrap();
+        let down =
+            UnitVector3::try_new(0.0, 0.0, -1.0, viboceros_geometry::Tolerance::DEFAULT).unwrap();
+        let lit = shaded_color(Color32::BLACK, up);
+        let unlit = shaded_color(Color32::BLACK, down);
+        assert!(lit.r() > unlit.r());
     }
 }

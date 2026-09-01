@@ -11,6 +11,7 @@ members = [
     "crates/viboceros-command",
     "crates/viboceros-document",
     "crates/viboceros-geometry",
+    "crates/viboceros-io",
 ]
 
 [workspace.package]
@@ -28,6 +29,7 @@ uuid = { version = "1.18.1", features = ["v4"] }
 viboceros-command = { path = "crates/viboceros-command" }
 viboceros-document = { path = "crates/viboceros-document" }
 viboceros-geometry = { path = "crates/viboceros-geometry" }
+viboceros-io = { path = "crates/viboceros-io" }
 
 [dependencies]
 eframe = { version = "0.36.1", default-features = false, features = [

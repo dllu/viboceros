@@ -4,7 +4,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry};
-use viboceros_geometry::{GeometryError, LineSegment, NurbsCurve, Point3, Real};
+use viboceros_geometry::{GeometryError, LineSegment, NurbsCurve, Point3, Real, TriangleMesh};
+use viboceros_io::{StlError, StlFormat, read_stl_file, write_stl_file};
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -50,6 +51,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(RedoCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ImportStlCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExportStlCommand)
             .expect("unique built-in command");
         registry
     }
@@ -269,6 +276,108 @@ impl Command for RedoCommand {
     }
 }
 
+struct ImportStlCommand;
+
+impl Command for ImportStlCommand {
+    fn name(&self) -> &'static str {
+        "ImportStl"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("ImportStl path"));
+        }
+        let path = arguments.join(" ");
+        let mesh = read_stl_file(&path, document.tolerance())?;
+        let triangle_count = mesh.triangles().len();
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Imported STL mesh {id} ({triangle_count} triangles) from '{path}'"
+        ))
+    }
+}
+
+struct ExportStlCommand;
+
+impl Command for ExportStlCommand {
+    fn name(&self) -> &'static str {
+        "ExportStl"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.is_empty() {
+            return Err(CommandError::Usage("ExportStl [Ascii|Binary] path"));
+        }
+        let (format, path_arguments) = if arguments[0].eq_ignore_ascii_case("ascii") {
+            (StlFormat::Ascii, &arguments[1..])
+        } else if arguments[0].eq_ignore_ascii_case("binary") {
+            (StlFormat::Binary, &arguments[1..])
+        } else {
+            (StlFormat::Binary, arguments)
+        };
+        if path_arguments.is_empty() {
+            return Err(CommandError::Usage("ExportStl [Ascii|Binary] path"));
+        }
+        let path = path_arguments.join(" ");
+        let mesh = combined_document_mesh(document)?;
+        let triangle_count = mesh.triangles().len();
+        write_stl_file(&path, &mesh, format)?;
+        Ok(format!(
+            "Exported {triangle_count} triangles as {format:?} STL to '{path}'"
+        ))
+    }
+}
+
+fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandError> {
+    let meshes: Vec<_> = document
+        .objects()
+        .filter_map(|object| match object.geometry() {
+            Geometry::Mesh(mesh)
+                if object.attributes().is_visible()
+                    && document
+                        .layer(object.attributes().layer_id())
+                        .is_some_and(|layer| layer.is_visible()) =>
+            {
+                Some(mesh)
+            }
+            _ => None,
+        })
+        .collect();
+    if meshes.is_empty() {
+        return Err(CommandError::NoMeshToExport);
+    }
+
+    let mut vertices = Vec::new();
+    let mut triangles = Vec::new();
+    for mesh in meshes {
+        let offset =
+            u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+        vertices.extend_from_slice(mesh.vertices());
+        for triangle in mesh.triangles() {
+            triangles.push([
+                triangle[0]
+                    .checked_add(offset)
+                    .ok_or(GeometryError::TooManyMeshVertices)?,
+                triangle[1]
+                    .checked_add(offset)
+                    .ok_or(GeometryError::TooManyMeshVertices)?,
+                triangle[2]
+                    .checked_add(offset)
+                    .ok_or(GeometryError::TooManyMeshVertices)?,
+            ]);
+        }
+    }
+    Ok(TriangleMesh::try_new(
+        vertices,
+        triangles,
+        document.tolerance(),
+    )?)
+}
+
 fn layer_color(index: usize) -> ColorRgb {
     const PALETTE: [ColorRgb; 6] = [
         ColorRgb::new(40, 110, 220),
@@ -323,7 +432,7 @@ fn format_point(point: Point3) -> String {
     format!("{:.6},{:.6},{:.6}", point.x(), point.y(), point.z())
 }
 
-#[derive(Debug, Error, PartialEq)]
+#[derive(Debug, Error)]
 pub enum CommandError {
     #[error("enter a command")]
     EmptyInput,
@@ -343,8 +452,14 @@ pub enum CommandError {
     #[error("'{0}' is not a valid non-negative integer")]
     InvalidInteger(String),
 
+    #[error("the document contains no visible triangle meshes to export")]
+    NoMeshToExport,
+
     #[error(transparent)]
     Geometry(#[from] GeometryError),
+
+    #[error(transparent)]
+    Stl(#[from] StlError),
 
     #[error(transparent)]
     Document(#[from] DocumentError),
@@ -385,7 +500,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Layer, Line, Point, Redo, Undo"
+            "Commands: Clear, ControlPointCurve, ExportStl, ImportStl, Layer, Line, Point, Redo, Undo"
         );
     }
 
@@ -472,5 +587,52 @@ mod tests {
         assert!(registry.execute(&mut document, "MutateThenFail").is_err());
         assert_eq!(document.objects().len(), 0);
         assert!(!document.can_undo());
+    }
+
+    #[test]
+    fn imports_and_exports_stl_through_commands() {
+        use std::fs;
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let source = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-source model.stl",
+            std::process::id()
+        ));
+        let output = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-output model.stl",
+            std::process::id()
+        ));
+        fs::write(
+            &source,
+            "solid test\n  facet normal 0 0 1\n    outer loop\n      vertex 0 0 0\n      vertex 1 0 0\n      vertex 0 1 0\n    endloop\n  endfacet\nendsolid test\n",
+        )
+        .unwrap();
+
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, &format!("ImportStl {}", source.display()))
+            .unwrap();
+        assert!(matches!(
+            document.objects().next().unwrap().geometry(),
+            Geometry::Mesh(_)
+        ));
+        registry
+            .execute(
+                &mut document,
+                &format!("ExportStl Binary {}", output.display()),
+            )
+            .unwrap();
+        let exported = read_stl_file(&output, document.tolerance()).unwrap();
+        assert_eq!(exported.triangles().len(), 1);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 0);
+        fs::remove_file(source).unwrap();
+        fs::remove_file(output).unwrap();
     }
 }

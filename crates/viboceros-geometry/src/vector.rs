@@ -51,8 +51,30 @@ impl Vector3 {
         let left = self.to_array().map(|value| value / left_scale);
         let right = other.to_array().map(|value| value / right_scale);
         let normalized = left[0].mul_add(right[0], left[1].mul_add(right[1], left[2] * right[2]));
-        let magnitude = product_three(normalized.abs(), left_scale, right_scale)?;
+        let magnitude = product_three(normalized.abs(), left_scale, right_scale, "dot product")?;
         Ok(normalized.signum() * magnitude)
+    }
+
+    pub fn cross(self, other: Self) -> Result<Self, GeometryError> {
+        let left_scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
+        let right_scale = other.x().abs().max(other.y().abs()).max(other.z().abs());
+        if left_scale == 0.0 || right_scale == 0.0 {
+            return Self::try_new(0.0, 0.0, 0.0);
+        }
+
+        let left = self.to_array().map(|value| value / left_scale);
+        let right = other.to_array().map(|value| value / right_scale);
+        let normalized = [
+            left[1].mul_add(right[2], -left[2] * right[1]),
+            left[2].mul_add(right[0], -left[0] * right[2]),
+            left[0].mul_add(right[1], -left[1] * right[0]),
+        ];
+        let mut result = [0.0; 3];
+        for (index, component) in normalized.into_iter().enumerate() {
+            result[index] = component.signum()
+                * product_three(component.abs(), left_scale, right_scale, "cross product")?;
+        }
+        Self::try_from(result)
     }
 
     pub fn scaled(self, scale: Real) -> Result<Self, GeometryError> {
@@ -74,13 +96,44 @@ impl Vector3 {
         if scale <= tolerance.absolute() / scaled_length {
             return Err(GeometryError::Degenerate { context: "vector" });
         }
+        self.normalized_with_scale(scale, scaled_length)
+    }
+
+    /// Returns the direction of any mathematically non-zero finite vector.
+    /// Geometry constructors should normally use [`Self::normalized`] so they
+    /// honor model tolerance; this is for recomputing derived data from an
+    /// object that has already been validated.
+    pub(crate) fn normalized_nonzero(self) -> Result<UnitVector3, GeometryError> {
+        let scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
+        if scale == 0.0 {
+            return Err(GeometryError::Degenerate { context: "vector" });
+        }
+        let scaled_length = (self.x() / scale)
+            .hypot(self.y() / scale)
+            .hypot(self.z() / scale);
+        self.normalized_with_scale(scale, scaled_length)
+    }
+
+    fn normalized_with_scale(
+        self,
+        scale: Real,
+        scaled_length: Real,
+    ) -> Result<UnitVector3, GeometryError> {
+        let x = self.x() / scale;
+        let y = self.y() / scale;
+        let z = self.z() / scale;
         let inverse_length = 1.0 / scaled_length;
         let vector = Self::try_new(x * inverse_length, y * inverse_length, z * inverse_length)?;
         Ok(UnitVector3(vector))
     }
 }
 
-fn product_three(first: Real, second: Real, third: Real) -> Result<Real, GeometryError> {
+fn product_three(
+    first: Real,
+    second: Real,
+    third: Real,
+    context: &'static str,
+) -> Result<Real, GeometryError> {
     if first == 0.0 || second == 0.0 || third == 0.0 {
         return Ok(0.0);
     }
@@ -107,9 +160,7 @@ fn product_three(first: Real, second: Real, third: Real) -> Result<Real, Geometr
     if underflowed {
         Ok(0.0)
     } else {
-        Err(GeometryError::NonFinite {
-            context: "dot product",
-        })
+        Err(GeometryError::NonFinite { context })
     }
 }
 
@@ -140,6 +191,14 @@ impl UnitVector3 {
     #[inline]
     pub const fn as_vector(self) -> Vector3 {
         self.0
+    }
+}
+
+impl TryFrom<[Real; 3]> for Vector3 {
+    type Error = GeometryError;
+
+    fn try_from(value: [Real; 3]) -> Result<Self, Self::Error> {
+        Self::try_new(value[0], value[1], value[2])
     }
 }
 
@@ -184,5 +243,19 @@ mod tests {
         let left = Vector3::try_new(1.0e-200, 0.0, 0.0).unwrap();
         let right = Vector3::try_new(1.0e-108, 0.0, 0.0).unwrap();
         assert_eq!(left.dot(right).unwrap(), 1.0e-308);
+    }
+
+    #[test]
+    fn cross_product_is_oriented_and_scaled_without_intermediate_overflow() {
+        let x = Vector3::try_new(Real::MAX, 0.0, 0.0).unwrap();
+        let y = Vector3::try_new(0.0, 1.0, 0.0).unwrap();
+        assert_eq!(
+            x.cross(y).unwrap(),
+            Vector3::try_new(0.0, 0.0, Real::MAX).unwrap()
+        );
+        assert_eq!(
+            y.cross(x).unwrap(),
+            Vector3::try_new(0.0, 0.0, -Real::MAX).unwrap()
+        );
     }
 }

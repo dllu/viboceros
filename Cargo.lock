@@ -3007,6 +3007,7 @@ dependencies = [
  "thiserror 2.0.20",
  "viboceros-document",
  "viboceros-geometry",
+ "viboceros-io",
 ]
 
 [[package]]
@@ -3025,6 +3026,14 @@ dependencies = [
  "faer",
  "nalgebra",
  "thiserror 2.0.20",
+]
+
+[[package]]
+name = "viboceros-io"
+version = "0.1.0"
+dependencies = [
+ "thiserror 2.0.20",
+ "viboceros-geometry",
 ]
 
 [[package]]
