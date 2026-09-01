@@ -173,6 +173,39 @@ pub fn nearest_object_snap(
                     }
                 }
             }
+            Geometry::NurbsSurface(surface) => {
+                let domain_u = surface.domain_u();
+                let domain_v = surface.domain_v();
+                for (u, v) in [
+                    (*domain_u.start(), *domain_v.start()),
+                    (*domain_u.end(), *domain_v.start()),
+                    (*domain_u.end(), *domain_v.end()),
+                    (*domain_u.start(), *domain_v.end()),
+                ] {
+                    if let Ok(point) = surface.evaluate(u, v) {
+                        consider_candidate(
+                            &mut best,
+                            cursor,
+                            capture_radius,
+                            object.id(),
+                            ObjectSnapKind::End,
+                            point,
+                        );
+                    }
+                }
+                if let Ok(point) =
+                    surface.evaluate(surface.parameter_at_u(0.5)?, surface.parameter_at_v(0.5)?)
+                {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::Mid,
+                        point,
+                    );
+                }
+            }
             // Mesh vertex snapping needs a spatial index to remain responsive
             // on production STL meshes; do not introduce an O(vertices) query
             // into every pointer frame.
@@ -253,7 +286,7 @@ fn consider_candidate(
 mod tests {
     use super::*;
     use viboceros_document::Geometry;
-    use viboceros_geometry::{LineSegment, NurbsCurve, Tolerance};
+    use viboceros_geometry::{LineSegment, NurbsCurve, NurbsSurface, Tolerance};
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -333,6 +366,35 @@ mod tests {
             .unwrap();
         assert_eq!(snap.kind(), ObjectSnapKind::End);
         assert_eq!(snap.point(), point(7.0, 2.0, 0.0));
+    }
+
+    #[test]
+    fn surface_corners_and_center_are_available_to_osnap() {
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_bilinear([
+                    point(1.0, 2.0, 0.0),
+                    point(7.0, 2.0, 0.0),
+                    point(7.0, 6.0, 2.0),
+                    point(1.0, 6.0, 2.0),
+                ])
+                .unwrap(),
+            ))
+            .unwrap();
+
+        let corner = nearest_object_snap(&document, point(7.02, 6.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(corner.object_id(), id);
+        assert_eq!(corner.kind(), ObjectSnapKind::End);
+        assert_eq!(corner.point(), point(7.0, 6.0, 2.0));
+
+        let center = nearest_object_snap(&document, point(4.01, 4.02, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(center.kind(), ObjectSnapKind::Mid);
+        assert_eq!(center.point(), point(4.0, 4.0, 1.0));
     }
 
     #[test]

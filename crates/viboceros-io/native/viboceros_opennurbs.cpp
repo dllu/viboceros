@@ -32,10 +32,13 @@ struct BridgeObject {
   std::string name;
   uint8_t visible = 1;
   uint8_t locked = 0;
-  uint32_t degree = 0;
-  size_t control_point_count = 0;
+  uint32_t degree_u = 0;
+  uint32_t degree_v = 0;
+  size_t control_point_count_u = 0;
+  size_t control_point_count_v = 0;
   std::vector<double> coordinates;
-  std::vector<double> knots;
+  std::vector<double> knots_u;
+  std::vector<double> knots_v;
   std::vector<uint32_t> indices;
 };
 
@@ -101,9 +104,9 @@ bool append_nurbs(const ON_Curve& source, BridgeObject& output) {
   }
 
   output.object_type = VIBO_OBJECT_NURBS_CURVE;
-  output.degree = static_cast<uint32_t>(curve.Order() - 1);
-  output.control_point_count = static_cast<size_t>(curve.CVCount());
-  output.coordinates.reserve(output.control_point_count * 4);
+  output.degree_u = static_cast<uint32_t>(curve.Order() - 1);
+  output.control_point_count_u = static_cast<size_t>(curve.CVCount());
+  output.coordinates.reserve(output.control_point_count_u * 4);
   for (int index = 0; index < curve.CVCount(); ++index) {
     ON_3dPoint point;
     const double weight = curve.Weight(index);
@@ -115,14 +118,64 @@ bool append_nurbs(const ON_Curve& source, BridgeObject& output) {
                               {point.x, point.y, point.z, weight});
   }
 
-  output.knots.reserve(static_cast<size_t>(curve.KnotCount()) + 2);
-  output.knots.push_back(curve.SuperfluousKnot(0));
+  output.knots_u.reserve(static_cast<size_t>(curve.KnotCount()) + 2);
+  output.knots_u.push_back(curve.SuperfluousKnot(0));
   for (int index = 0; index < curve.KnotCount(); ++index) {
-    output.knots.push_back(curve.Knot(index));
+    output.knots_u.push_back(curve.Knot(index));
   }
-  output.knots.push_back(curve.SuperfluousKnot(1));
-  return std::all_of(output.knots.begin(), output.knots.end(),
+  output.knots_u.push_back(curve.SuperfluousKnot(1));
+  return std::all_of(output.knots_u.begin(), output.knots_u.end(),
                      [](double knot) { return std::isfinite(knot); });
+}
+
+bool append_nurbs_surface(const ON_Surface& source, BridgeObject& output) {
+  ON_NurbsSurface surface;
+  if (source.GetNurbForm(surface) <= 0 || !surface.IsValid() ||
+      surface.Order(0) < 2 || surface.Order(1) < 2 ||
+      surface.CVCount(0) < surface.Order(0) ||
+      surface.CVCount(1) < surface.Order(1)) {
+    return false;
+  }
+
+  output.object_type = VIBO_OBJECT_NURBS_SURFACE;
+  output.degree_u = static_cast<uint32_t>(surface.Order(0) - 1);
+  output.degree_v = static_cast<uint32_t>(surface.Order(1) - 1);
+  output.control_point_count_u = static_cast<size_t>(surface.CVCount(0));
+  output.control_point_count_v = static_cast<size_t>(surface.CVCount(1));
+  if (output.control_point_count_u >
+      std::numeric_limits<size_t>::max() / output.control_point_count_v / 4) {
+    return false;
+  }
+  output.coordinates.reserve(output.control_point_count_u *
+                             output.control_point_count_v * 4);
+  for (int v = 0; v < surface.CVCount(1); ++v) {
+    for (int u = 0; u < surface.CVCount(0); ++u) {
+      ON_3dPoint point;
+      const double weight = surface.Weight(u, v);
+      if (!surface.GetCV(u, v, point) || !point.IsValid() ||
+          !std::isfinite(weight) || weight <= 0.0) {
+        return false;
+      }
+      output.coordinates.insert(output.coordinates.end(),
+                                {point.x, point.y, point.z, weight});
+    }
+  }
+
+  for (int direction = 0; direction < 2; ++direction) {
+    std::vector<double>& knots =
+        direction == 0 ? output.knots_u : output.knots_v;
+    knots.reserve(static_cast<size_t>(surface.KnotCount(direction)) + 2);
+    knots.push_back(surface.SuperfluousKnot(direction, 0));
+    for (int index = 0; index < surface.KnotCount(direction); ++index) {
+      knots.push_back(surface.Knot(direction, index));
+    }
+    knots.push_back(surface.SuperfluousKnot(direction, 1));
+    if (!std::all_of(knots.begin(), knots.end(),
+                     [](double knot) { return std::isfinite(knot); })) {
+      return false;
+    }
+  }
+  return true;
 }
 
 bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
@@ -191,7 +244,8 @@ ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
 
 ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
   if (!finite_coordinates(source.coordinates, source.coordinate_count) ||
-      !finite_coordinates(source.knots, source.knot_count)) {
+      !finite_coordinates(source.knots_u, source.knot_u_count) ||
+      !finite_coordinates(source.knots_v, source.knot_v_count)) {
     error = "geometry contains a null array or non-finite number";
     return nullptr;
   }
@@ -223,20 +277,21 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       return line;
     }
     case VIBO_OBJECT_NURBS_CURVE: {
-      if (source.degree == 0 || source.degree >= source.control_point_count ||
-          source.control_point_count >
+      if (source.degree_u == 0 ||
+          source.degree_u >= source.control_point_count_u ||
+          source.degree_v != 0 || source.control_point_count_v != 0 ||
+          source.knot_v_count != 0 || source.control_point_count_u >
               static_cast<size_t>(std::numeric_limits<int>::max()) ||
-          source.coordinate_count != source.control_point_count * 4 ||
-          source.knot_count !=
-              source.control_point_count + static_cast<size_t>(source.degree) +
-                  1) {
+          source.coordinate_count != source.control_point_count_u * 4 ||
+          source.knot_u_count != source.control_point_count_u +
+                                     static_cast<size_t>(source.degree_u) + 1) {
         error = "NURBS curve dimensions are inconsistent";
         return nullptr;
       }
       auto* curve = new ON_NurbsCurve(
-          3, true, static_cast<int>(source.degree) + 1,
-          static_cast<int>(source.control_point_count));
-      for (size_t index = 0; index < source.control_point_count; ++index) {
+          3, true, static_cast<int>(source.degree_u) + 1,
+          static_cast<int>(source.control_point_count_u));
+      for (size_t index = 0; index < source.control_point_count_u; ++index) {
         const double* point = source.coordinates + index * 4;
         const double weight = point[3];
         if (weight <= 0.0 ||
@@ -249,7 +304,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         }
       }
       for (int index = 0; index < curve->KnotCount(); ++index) {
-        if (!curve->SetKnot(index, source.knots[static_cast<size_t>(index) + 1])) {
+        if (!curve->SetKnot(
+                index, source.knots_u[static_cast<size_t>(index) + 1])) {
           delete curve;
           error = "NURBS curve has an invalid knot vector";
           return nullptr;
@@ -261,6 +317,66 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         return nullptr;
       }
       return curve;
+    }
+    case VIBO_OBJECT_NURBS_SURFACE: {
+      if (source.degree_u == 0 || source.degree_v == 0 ||
+          source.degree_u >= source.control_point_count_u ||
+          source.degree_v >= source.control_point_count_v ||
+          source.control_point_count_u >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.control_point_count_v >
+              static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.control_point_count_u >
+              std::numeric_limits<size_t>::max() /
+                  source.control_point_count_v / 4 ||
+          source.coordinate_count != source.control_point_count_u *
+                                         source.control_point_count_v * 4 ||
+          source.knot_u_count != source.control_point_count_u +
+                                     static_cast<size_t>(source.degree_u) + 1 ||
+          source.knot_v_count != source.control_point_count_v +
+                                     static_cast<size_t>(source.degree_v) + 1) {
+        error = "NURBS surface dimensions are inconsistent";
+        return nullptr;
+      }
+      auto* surface = new ON_NurbsSurface(
+          3, true, static_cast<int>(source.degree_u) + 1,
+          static_cast<int>(source.degree_v) + 1,
+          static_cast<int>(source.control_point_count_u),
+          static_cast<int>(source.control_point_count_v));
+      for (size_t v = 0; v < source.control_point_count_v; ++v) {
+        for (size_t u = 0; u < source.control_point_count_u; ++u) {
+          const size_t index = v * source.control_point_count_u + u;
+          const double* point = source.coordinates + index * 4;
+          const double weight = point[3];
+          if (weight <= 0.0 ||
+              !surface->SetCV(
+                  static_cast<int>(u), static_cast<int>(v),
+                  ON_4dPoint(point[0] * weight, point[1] * weight,
+                             point[2] * weight, weight))) {
+            delete surface;
+            error = "NURBS surface has an invalid control point weight";
+            return nullptr;
+          }
+        }
+      }
+      for (int direction = 0; direction < 2; ++direction) {
+        const double* knots =
+            direction == 0 ? source.knots_u : source.knots_v;
+        for (int index = 0; index < surface->KnotCount(direction); ++index) {
+          if (!surface->SetKnot(
+                  direction, index, knots[static_cast<size_t>(index) + 1])) {
+            delete surface;
+            error = "NURBS surface has an invalid knot vector";
+            return nullptr;
+          }
+        }
+      }
+      if (!surface->IsValid()) {
+        delete surface;
+        error = "NURBS surface is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return surface;
     }
     case VIBO_OBJECT_TRIANGLE_MESH: {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
@@ -398,6 +514,8 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         supported = append_mesh(*mesh, object);
       } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
         supported = append_nurbs(*curve, object);
+      } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {
+        supported = append_nurbs_surface(*surface, object);
       }
 
       if (supported) {
@@ -458,9 +576,11 @@ extern "C" size_t vibo_3dm_unsupported_object_count(
 
 extern "C" int32_t vibo_3dm_object(
     const ViboThreeDmModel* model, size_t index, ViboObjectInfo* info,
-    const double** coordinates, const double** knots, const uint32_t** indices) {
+    const double** coordinates, const double** knots_u, const double** knots_v,
+    const uint32_t** indices) {
   if (model == nullptr || index >= model->objects.size() || info == nullptr ||
-      coordinates == nullptr || knots == nullptr || indices == nullptr) {
+      coordinates == nullptr || knots_u == nullptr || knots_v == nullptr ||
+      indices == nullptr) {
     return 0;
   }
   const BridgeObject& object = model->objects[index];
@@ -469,13 +589,17 @@ extern "C" int32_t vibo_3dm_object(
            object.name.c_str(),
            object.visible,
            object.locked,
-           object.degree,
-           object.control_point_count,
+           object.degree_u,
+           object.degree_v,
+           object.control_point_count_u,
+           object.control_point_count_v,
            object.coordinates.size(),
-           object.knots.size(),
+           object.knots_u.size(),
+           object.knots_v.size(),
            object.indices.size()};
   *coordinates = object.coordinates.empty() ? nullptr : object.coordinates.data();
-  *knots = object.knots.empty() ? nullptr : object.knots.data();
+  *knots_u = object.knots_u.empty() ? nullptr : object.knots_u.data();
+  *knots_v = object.knots_v.empty() ? nullptr : object.knots_v.data();
   *indices = object.indices.empty() ? nullptr : object.indices.data();
   return 1;
 }

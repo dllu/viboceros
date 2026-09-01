@@ -82,26 +82,7 @@ impl NurbsCurve {
         degree: usize,
         control_points: Vec<Point3>,
     ) -> Result<Self, GeometryError> {
-        validate_control_point_count(degree, control_points.len())?;
-        let knot_count = control_points
-            .len()
-            .checked_add(degree)
-            .and_then(|count| count.checked_add(1))
-            .ok_or(GeometryError::InvalidKnotVector {
-                context: "knot count overflowed usize",
-            })?;
-        let span_count = control_points.len() - degree;
-        let knots = (0..knot_count)
-            .map(|index| {
-                if index <= degree {
-                    0.0
-                } else if index >= control_points.len() {
-                    1.0
-                } else {
-                    (index - degree) as Real / span_count as Real
-                }
-            })
-            .collect();
+        let knots = clamped_uniform_knots(degree, control_points.len())?;
         Self::try_new(degree, control_points, knots)
     }
 
@@ -314,7 +295,7 @@ impl NurbsCurve {
     }
 }
 
-fn de_boor(
+pub(crate) fn de_boor(
     knots: &[Real],
     degree: usize,
     span: usize,
@@ -334,7 +315,7 @@ fn de_boor(
     Ok(work[degree])
 }
 
-fn project_homogeneous(homogeneous: [Real; 4]) -> Result<Point3, GeometryError> {
+pub(crate) fn project_homogeneous(homogeneous: [Real; 4]) -> Result<Point3, GeometryError> {
     let weight = homogeneous[3];
     if !weight.is_finite() || weight <= 0.0 {
         return Err(GeometryError::ZeroWeightAtParameter);
@@ -346,7 +327,7 @@ fn project_homogeneous(homogeneous: [Real; 4]) -> Result<Point3, GeometryError> 
     )
 }
 
-fn stable_divided_difference(
+pub(crate) fn stable_divided_difference(
     right: Real,
     left: Real,
     degree: usize,
@@ -428,15 +409,23 @@ fn validate_structure(
     control_points: &[WeightedPoint3],
     knots: &[Real],
 ) -> Result<(), GeometryError> {
-    validate_control_point_count(degree, control_points.len())?;
+    validate_direction(degree, control_points.len(), knots)?;
     for (index, control_point) in control_points.iter().enumerate() {
         if !control_point.weight.is_finite() || control_point.weight <= 0.0 {
             return Err(GeometryError::InvalidWeight { index });
         }
     }
 
-    let expected_knot_count = control_points
-        .len()
+    Ok(())
+}
+
+pub(crate) fn validate_direction(
+    degree: usize,
+    control_point_count: usize,
+    knots: &[Real],
+) -> Result<(), GeometryError> {
+    validate_control_point_count(degree, control_point_count)?;
+    let expected_knot_count = control_point_count
         .checked_add(degree)
         .and_then(|count| count.checked_add(1))
         .ok_or(GeometryError::InvalidKnotVector {
@@ -458,7 +447,7 @@ fn validate_structure(
             context: "knots must be nondecreasing",
         });
     }
-    if knots[degree] >= knots[control_points.len()] {
+    if knots[degree] >= knots[control_point_count] {
         return Err(GeometryError::InvalidKnotVector {
             context: "the active domain must have positive length",
         });
@@ -480,6 +469,31 @@ fn validate_structure(
     }
 
     Ok(())
+}
+
+pub(crate) fn clamped_uniform_knots(
+    degree: usize,
+    control_point_count: usize,
+) -> Result<Vec<Real>, GeometryError> {
+    validate_control_point_count(degree, control_point_count)?;
+    let knot_count = control_point_count
+        .checked_add(degree)
+        .and_then(|count| count.checked_add(1))
+        .ok_or(GeometryError::InvalidKnotVector {
+            context: "knot count overflowed usize",
+        })?;
+    let span_count = control_point_count - degree;
+    Ok((0..knot_count)
+        .map(|index| {
+            if index <= degree {
+                0.0
+            } else if index >= control_point_count {
+                1.0
+            } else {
+                (index - degree) as Real / span_count as Real
+            }
+        })
+        .collect())
 }
 
 fn validate_control_point_count(degree: usize, count: usize) -> Result<(), GeometryError> {

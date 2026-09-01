@@ -8,8 +8,8 @@ use std::fmt;
 use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, GeometryError, LineSegment, NurbsCurve, Point3, Tolerance,
-    TriangleMesh,
+    AffineTransform3, BoundingBox3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3,
+    Tolerance, TriangleMesh,
 };
 
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
@@ -64,6 +64,7 @@ pub enum Geometry {
     Point(Point3),
     Line(LineSegment),
     NurbsCurve(NurbsCurve),
+    NurbsSurface(NurbsSurface),
     Mesh(TriangleMesh),
 }
 
@@ -73,6 +74,7 @@ impl Geometry {
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
             Self::NurbsCurve(curve) => curve.control_point_bounds(),
+            Self::NurbsSurface(surface) => surface.control_point_bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
         }
     }
@@ -86,6 +88,7 @@ impl Geometry {
             Self::Point(point) => Self::Point(transform.transform_point(*point)?),
             Self::Line(line) => Self::Line(line.transformed(transform, tolerance)?),
             Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
+            Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
         })
     }

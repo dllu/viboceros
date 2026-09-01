@@ -5,14 +5,16 @@ use std::collections::{BTreeMap, BTreeSet};
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes};
 use viboceros_geometry::{
-    AffineTransform3, GeometryError, LineSegment, NurbsCurve, Point3, Real, Tolerance,
-    TriangleMesh, UnitVector3, Vector3,
+    AffineTransform3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Real,
+    Tolerance, TriangleMesh, UnitVector3, Vector3,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
     ThreeDmObject, read_3dm_file, read_step_file, read_stl_file, write_3dm_file, write_step_file,
     write_stl_file,
 };
+
+const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -46,6 +48,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ControlPointCurveCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
             .register(LayerCommand)
@@ -250,6 +255,38 @@ impl Command for ControlPointCurveCommand {
         Ok(format!(
             "Added degree {degree} control-point curve {id} ({control_point_count} control points)"
         ))
+    }
+}
+
+struct SrfPtCommand;
+
+impl Command for SrfPtCommand {
+    fn name(&self) -> &'static str {
+        "SrfPt"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["SurfaceFromCorners"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let mut corners = Vec::with_capacity(4);
+        let mut consumed = 0;
+        for _ in 0..4 {
+            let (corner, point_tokens) = parse_point(&arguments[consumed..])?;
+            corners.push(corner);
+            consumed += point_tokens;
+        }
+        require_consumed(arguments, consumed, "SrfPt corner1 corner2 corner3 corner4")?;
+        let corners: [Point3; 4] = corners
+            .try_into()
+            .map_err(|_| CommandError::Usage("SrfPt corner1 corner2 corner3 corner4"))?;
+        let surface = NurbsSurface::try_bilinear(corners)?;
+        // A tensor-product surface may legitimately have singular boundaries,
+        // but four-corner construction must span at least one valid face.
+        surface.tessellate(1, document.tolerance())?;
+        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+        Ok(format!("Added four-corner NURBS surface {id}"))
     }
 }
 
@@ -1053,6 +1090,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> ThreeDmGeometry {
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
+        Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
     }
 }
@@ -1062,6 +1100,7 @@ fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry {
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
         ThreeDmGeometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve),
+        ThreeDmGeometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
     }
 }
@@ -1085,27 +1124,26 @@ fn unique_import_layer_name(document: &Document, source_name: &str) -> String {
 }
 
 fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandError> {
-    let meshes: Vec<_> = document
-        .objects()
-        .filter_map(|object| match object.geometry() {
-            Geometry::Mesh(mesh)
-                if object.attributes().is_visible()
-                    && document
-                        .layer(object.attributes().layer_id())
-                        .is_some_and(|layer| layer.is_visible()) =>
-            {
-                Some(mesh)
-            }
-            _ => None,
-        })
-        .collect();
-    if meshes.is_empty() {
-        return Err(CommandError::NoMeshToExport);
-    }
-
     let mut vertices = Vec::new();
     let mut triangles = Vec::new();
-    for mesh in meshes {
+    for object in document.objects() {
+        if !object.attributes().is_visible()
+            || !document
+                .layer(object.attributes().layer_id())
+                .is_some_and(|layer| layer.is_visible())
+        {
+            continue;
+        }
+        let tessellation;
+        let mesh = match object.geometry() {
+            Geometry::Mesh(mesh) => mesh,
+            Geometry::NurbsSurface(surface) => {
+                tessellation =
+                    surface.tessellate(SURFACE_EXPORT_SAMPLES_PER_SPAN, document.tolerance())?;
+                &tessellation
+            }
+            _ => continue,
+        };
         let offset =
             u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
         vertices.extend_from_slice(mesh.vertices());
@@ -1122,6 +1160,9 @@ fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandEr
                     .ok_or(GeometryError::TooManyMeshVertices)?,
             ]);
         }
+    }
+    if triangles.is_empty() {
+        return Err(CommandError::NoMeshToExport);
     }
     Ok(TriangleMesh::try_new(
         vertices,
@@ -1219,7 +1260,7 @@ pub enum CommandError {
     #[error("no objects are selected")]
     NoObjectsSelected,
 
-    #[error("the document contains no visible triangle meshes to export")]
+    #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
     #[error(transparent)]
@@ -1274,7 +1315,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, Undo, Ungroup"
+            "Commands: Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -1299,6 +1340,39 @@ mod tests {
             curve.evaluate(1.0).unwrap(),
             Point3::try_new(8.0, 0.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn creates_and_tessellates_a_four_corner_surface_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let message = registry
+            .execute(&mut document, "SrfPt 0,0,0 4,0,0 4,3,2 0,3,2")
+            .unwrap();
+        assert!(message.contains("four-corner NURBS surface"));
+        let Geometry::NurbsSurface(surface) = document.objects().next().unwrap().geometry() else {
+            panic!("expected a NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 1);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(
+            surface.evaluate(0.5, 0.5).unwrap(),
+            Point3::try_new(2.0, 1.5, 1.0).unwrap()
+        );
+        assert_eq!(
+            combined_document_mesh(&document).unwrap().triangles().len(),
+            2 * SURFACE_EXPORT_SAMPLES_PER_SPAN * SURFACE_EXPORT_SAMPLES_PER_SPAN
+        );
+        assert_eq!(document.undo_label(), Some("SrfPt"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 0);
+
+        assert!(
+            registry
+                .execute(&mut document, "SrfPt 0,0 1,0 2,0 3,0")
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 0);
     }
 
     #[test]
@@ -1764,6 +1838,9 @@ mod tests {
             .unwrap();
         registry.execute(&mut source, "Line 0,0,0 4,0,0").unwrap();
         registry
+            .execute(&mut source, "SrfPt 0,0,0 2,0,0 2,2,1 0,2,1")
+            .unwrap();
+        registry
             .execute(&mut source, "Layer Hide Reference")
             .unwrap();
         registry
@@ -1777,9 +1854,14 @@ mod tests {
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("2 objects"));
+        assert!(message.contains("3 objects"));
         assert!(message.contains("0 unsupported objects skipped"));
-        assert_eq!(imported.objects().len(), 2);
+        assert_eq!(imported.objects().len(), 3);
+        assert!(
+            imported
+                .objects()
+                .any(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)))
+        );
         assert_eq!(imported.layers().len(), 3);
         let reference = imported.layer_by_name("Reference").unwrap();
         assert_eq!(reference.color(), ColorRgb::new(12, 34, 56));

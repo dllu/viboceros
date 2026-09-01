@@ -6,7 +6,8 @@ use std::slice;
 
 use thiserror::Error;
 use viboceros_geometry::{
-    GeometryError, LineSegment, NurbsCurve, Point3, Tolerance, TriangleMesh, WeightedPoint3,
+    GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Tolerance, TriangleMesh,
+    WeightedPoint3,
 };
 
 const ERROR_CAPACITY: usize = 4096;
@@ -14,6 +15,7 @@ const OBJECT_POINT: c_int = 1;
 const OBJECT_LINE: c_int = 2;
 const OBJECT_NURBS_CURVE: c_int = 3;
 const OBJECT_TRIANGLE_MESH: c_int = 4;
+const OBJECT_NURBS_SURFACE: c_int = 5;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -28,6 +30,7 @@ pub enum ThreeDmGeometry {
     Point(Point3),
     Line(LineSegment),
     NurbsCurve(NurbsCurve),
+    NurbsSurface(NurbsSurface),
     Mesh(TriangleMesh),
 }
 
@@ -175,12 +178,16 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
             visible: u8::from(object.visible),
             locked: u8::from(object.locked),
-            degree: payload.degree,
-            control_point_count: payload.control_point_count,
+            degree_u: payload.degree_u,
+            degree_v: payload.degree_v,
+            control_point_count_u: payload.control_point_count_u,
+            control_point_count_v: payload.control_point_count_v,
             coordinates: pointer_or_null(&payload.coordinates),
             coordinate_count: payload.coordinates.len(),
-            knots: pointer_or_null(&payload.knots),
-            knot_count: payload.knots.len(),
+            knots_u: pointer_or_null(&payload.knots_u),
+            knot_u_count: payload.knots_u.len(),
+            knots_v: pointer_or_null(&payload.knots_v),
+            knot_v_count: payload.knots_v.len(),
             indices: pointer_or_null(&payload.indices),
             index_count: payload.indices.len(),
         })
@@ -284,7 +291,8 @@ fn decode_object(
 ) -> Result<ThreeDmObject, ThreeDmError> {
     let mut info = ffi::ViboObjectInfo::default();
     let mut coordinates = std::ptr::null();
-    let mut knots = std::ptr::null();
+    let mut knots_u = std::ptr::null();
+    let mut knots_v = std::ptr::null();
     let mut indices = std::ptr::null();
     // SAFETY: output pointers are valid, the model is live, and index is in range.
     let success = unsafe {
@@ -293,7 +301,8 @@ fn decode_object(
             index,
             &mut info,
             &mut coordinates,
-            &mut knots,
+            &mut knots_u,
+            &mut knots_v,
             &mut indices,
         )
     };
@@ -301,11 +310,15 @@ fn decode_object(
         return Err(ThreeDmError::MalformedBridge("invalid object record"));
     }
     let coordinates = ffi_slice(handle, coordinates, info.coordinate_count)?;
-    let knots = ffi_slice(handle, knots, info.knot_count)?;
+    let knots_u = ffi_slice(handle, knots_u, info.knot_u_count)?;
+    let knots_v = ffi_slice(handle, knots_v, info.knot_v_count)?;
     let indices = ffi_slice(handle, indices, info.index_count)?;
     let layer_index = layer_positions
         .get(&info.source_layer_index)
         .copied()
+        // Legacy OpenNURBS archives use a negative unset index for geometry
+        // that belongs on the first/default layer.
+        .or_else(|| (info.source_layer_index < 0).then_some(0))
         .ok_or_else(|| {
             ThreeDmError::InvalidModel(format!(
                 "object {index} references unknown layer index {}",
@@ -320,10 +333,20 @@ fn decode_object(
     };
 
     let geometry = match info.object_type {
-        OBJECT_POINT if coordinates.len() == 3 && knots.is_empty() && indices.is_empty() => {
+        OBJECT_POINT
+            if coordinates.len() == 3
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty() =>
+        {
             ThreeDmGeometry::Point(point(coordinates)?)
         }
-        OBJECT_LINE if coordinates.len() == 6 && knots.is_empty() && indices.is_empty() => {
+        OBJECT_LINE
+            if coordinates.len() == 6
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty() =>
+        {
             ThreeDmGeometry::Line(LineSegment::try_new(
                 point(&coordinates[..3])?,
                 point(&coordinates[3..])?,
@@ -331,15 +354,18 @@ fn decode_object(
             )?)
         }
         OBJECT_NURBS_CURVE
-            if info.degree > 0
-                && info.control_point_count
-                    > usize::try_from(info.degree).unwrap_or(usize::MAX)
-                && coordinates.len() == info.control_point_count.saturating_mul(4)
-                && knots.len()
+            if info.degree_u > 0
+                && info.degree_v == 0
+                && info.control_point_count_v == 0
+                && info.control_point_count_u
+                    > usize::try_from(info.degree_u).unwrap_or(usize::MAX)
+                && coordinates.len() == info.control_point_count_u.saturating_mul(4)
+                && knots_u.len()
                     == info
-                        .control_point_count
-                        .saturating_add(info.degree as usize)
+                        .control_point_count_u
+                        .saturating_add(info.degree_u as usize)
                         .saturating_add(1)
+                && knots_v.is_empty()
                 && indices.is_empty() =>
         {
             let control_points = coordinates
@@ -347,9 +373,47 @@ fn decode_object(
                 .map(|value| WeightedPoint3::try_new(point(value)?, value[3]))
                 .collect::<Result<Vec<_>, GeometryError>>()?;
             ThreeDmGeometry::NurbsCurve(NurbsCurve::try_new_rational(
-                info.degree as usize,
+                info.degree_u as usize,
                 control_points,
-                knots.to_vec(),
+                knots_u.to_vec(),
+            )?)
+        }
+        OBJECT_NURBS_SURFACE
+            if info.degree_u > 0
+                && info.degree_v > 0
+                && info.control_point_count_u
+                    > usize::try_from(info.degree_u).unwrap_or(usize::MAX)
+                && info.control_point_count_v
+                    > usize::try_from(info.degree_v).unwrap_or(usize::MAX)
+                && coordinates.len()
+                    == info
+                        .control_point_count_u
+                        .saturating_mul(info.control_point_count_v)
+                        .saturating_mul(4)
+                && knots_u.len()
+                    == info
+                        .control_point_count_u
+                        .saturating_add(info.degree_u as usize)
+                        .saturating_add(1)
+                && knots_v.len()
+                    == info
+                        .control_point_count_v
+                        .saturating_add(info.degree_v as usize)
+                        .saturating_add(1)
+                && indices.is_empty() =>
+        {
+            let control_points = coordinates
+                .chunks_exact(4)
+                .map(|value| WeightedPoint3::try_new(point(value)?, value[3]))
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            ThreeDmGeometry::NurbsSurface(NurbsSurface::try_new_rational(
+                info.degree_u as usize,
+                info.degree_v as usize,
+                info.control_point_count_u,
+                info.control_point_count_v,
+                control_points,
+                knots_u.to_vec(),
+                knots_v.to_vec(),
             )?)
         }
         OBJECT_TRIANGLE_MESH
@@ -357,7 +421,8 @@ fn decode_object(
                 && coordinates.len() % 3 == 0
                 && !indices.is_empty()
                 && indices.len() % 3 == 0
-                && knots.is_empty() =>
+                && knots_u.is_empty()
+                && knots_v.is_empty() =>
         {
             let vertices = coordinates
                 .chunks_exact(3)
@@ -406,10 +471,13 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
 
 struct ObjectPayload {
     object_type: c_int,
-    degree: u32,
-    control_point_count: usize,
+    degree_u: u32,
+    degree_v: u32,
+    control_point_count_u: usize,
+    control_point_count_v: usize,
     coordinates: Vec<c_double>,
-    knots: Vec<c_double>,
+    knots_u: Vec<c_double>,
+    knots_v: Vec<c_double>,
     indices: Vec<u32>,
 }
 
@@ -418,29 +486,37 @@ impl ObjectPayload {
         match &object.geometry {
             ThreeDmGeometry::Point(point) => Self {
                 object_type: OBJECT_POINT,
-                degree: 0,
-                control_point_count: 0,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
                 coordinates: point.to_array().to_vec(),
-                knots: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
                 indices: Vec::new(),
             },
             ThreeDmGeometry::Line(line) => Self {
                 object_type: OBJECT_LINE,
-                degree: 0,
-                control_point_count: 0,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
                 coordinates: line
                     .start()
                     .to_array()
                     .into_iter()
                     .chain(line.end().to_array())
                     .collect(),
-                knots: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
                 indices: Vec::new(),
             },
             ThreeDmGeometry::NurbsCurve(curve) => Self {
                 object_type: OBJECT_NURBS_CURVE,
-                degree: curve.degree() as u32,
-                control_point_count: curve.control_points().len(),
+                degree_u: curve.degree() as u32,
+                degree_v: 0,
+                control_point_count_u: curve.control_points().len(),
+                control_point_count_v: 0,
                 coordinates: curve
                     .control_points()
                     .iter()
@@ -452,19 +528,44 @@ impl ObjectPayload {
                             .chain([control.weight()])
                     })
                     .collect(),
-                knots: curve.knots().to_vec(),
+                knots_u: curve.knots().to_vec(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+            },
+            ThreeDmGeometry::NurbsSurface(surface) => Self {
+                object_type: OBJECT_NURBS_SURFACE,
+                degree_u: surface.degree_u() as u32,
+                degree_v: surface.degree_v() as u32,
+                control_point_count_u: surface.control_point_count_u(),
+                control_point_count_v: surface.control_point_count_v(),
+                coordinates: surface
+                    .control_points()
+                    .iter()
+                    .flat_map(|control| {
+                        control
+                            .point()
+                            .to_array()
+                            .into_iter()
+                            .chain([control.weight()])
+                    })
+                    .collect(),
+                knots_u: surface.knots_u().to_vec(),
+                knots_v: surface.knots_v().to_vec(),
                 indices: Vec::new(),
             },
             ThreeDmGeometry::Mesh(mesh) => Self {
                 object_type: OBJECT_TRIANGLE_MESH,
-                degree: 0,
-                control_point_count: 0,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
                 coordinates: mesh
                     .vertices()
                     .iter()
                     .flat_map(|point| point.to_array())
                     .collect(),
-                knots: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
                 indices: mesh.triangles().iter().flatten().copied().collect(),
             },
         }
@@ -555,10 +656,13 @@ mod ffi {
         pub name: *const c_char,
         pub visible: u8,
         pub locked: u8,
-        pub degree: u32,
-        pub control_point_count: usize,
+        pub degree_u: u32,
+        pub degree_v: u32,
+        pub control_point_count_u: usize,
+        pub control_point_count_v: usize,
         pub coordinate_count: usize,
-        pub knot_count: usize,
+        pub knot_u_count: usize,
+        pub knot_v_count: usize,
         pub index_count: usize,
     }
 
@@ -579,12 +683,16 @@ mod ffi {
         pub name: *const c_char,
         pub visible: u8,
         pub locked: u8,
-        pub degree: u32,
-        pub control_point_count: usize,
+        pub degree_u: u32,
+        pub degree_v: u32,
+        pub control_point_count_u: usize,
+        pub control_point_count_v: usize,
         pub coordinates: *const c_double,
         pub coordinate_count: usize,
-        pub knots: *const c_double,
-        pub knot_count: usize,
+        pub knots_u: *const c_double,
+        pub knot_u_count: usize,
+        pub knots_v: *const c_double,
+        pub knot_v_count: usize,
         pub indices: *const u32,
         pub index_count: usize,
     }
@@ -616,7 +724,8 @@ mod ffi {
             index: usize,
             info: *mut ViboObjectInfo,
             coordinates: *mut *const c_double,
-            knots: *mut *const c_double,
+            knots_u: *mut *const c_double,
+            knots_v: *mut *const c_double,
             indices: *mut *const u32,
         ) -> c_int;
         pub fn vibo_3dm_write(
@@ -656,6 +765,26 @@ mod tests {
             vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
         )
         .unwrap();
+        let middle_weight = 0.5_f64.sqrt();
+        let mut surface_controls = Vec::new();
+        for z in [0.0, 3.0] {
+            surface_controls.extend([
+                WeightedPoint3::try_new(Point3::try_new(1.0, 0.0, z).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(1.0, 1.0, z).unwrap(), middle_weight)
+                    .unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(0.0, 1.0, z).unwrap(), 1.0).unwrap(),
+            ]);
+        }
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            surface_controls,
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
         let mesh = TriangleMesh::try_new(
             vec![
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
@@ -691,6 +820,7 @@ mod tests {
                     locked: true,
                 },
                 ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve), 0),
+                ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0),
             ],
         )
@@ -739,7 +869,7 @@ mod tests {
     }
 
     #[test]
-    fn reads_official_old_archive_fixtures_and_counts_unsupported_surfaces() {
+    fn reads_official_old_archive_curve_and_surface_fixtures() {
         let root =
             Path::new(env!("CARGO_MANIFEST_DIR")).join("../../third_party/opennurbs/example_files");
         let curves = read_3dm_file(root.join("V2/v2_my_curves.3dm"), Tolerance::DEFAULT).unwrap();
@@ -751,7 +881,12 @@ mod tests {
 
         let surfaces =
             read_3dm_file(root.join("V7/v7_my_surfaces.3dm"), Tolerance::DEFAULT).unwrap();
-        assert!(surfaces.unsupported_object_count() > 0);
+        assert!(
+            surfaces
+                .objects
+                .iter()
+                .any(|object| matches!(object.geometry, ThreeDmGeometry::NurbsSurface(_)))
+        );
     }
 
     fn temporary_path(suffix: &str) -> std::path::PathBuf {

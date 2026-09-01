@@ -18,11 +18,11 @@ pub enum GeometryError {
     #[error("the linear system is singular at the requested tolerance")]
     SingularSystem,
 
-    #[error("a NURBS curve degree must be at least one")]
+    #[error("a NURBS degree must be at least one")]
     InvalidDegree,
 
     #[error(
-        "a degree {degree} NURBS curve requires at least {required} control points, got {actual}"
+        "a degree {degree} NURBS direction requires at least {required} control points, got {actual}"
     )]
     InsufficientControlPoints {
         degree: usize,
@@ -31,9 +31,15 @@ pub enum GeometryError {
     },
 
     #[error(
-        "a NURBS curve with this degree and control-point count requires {expected} knots, got {actual}"
+        "a NURBS direction with this degree and control-point count requires {expected} knots, got {actual}"
     )]
     InvalidKnotCount { expected: usize, actual: usize },
+
+    #[error("a NURBS control net requires {expected} points, got {actual}")]
+    InvalidControlNetSize { expected: usize, actual: usize },
+
+    #[error("invalid NURBS control net: {context}")]
+    InvalidControlNet { context: &'static str },
 
     #[error("invalid NURBS knot vector: {context}")]
     InvalidKnotVector { context: &'static str },
@@ -50,6 +56,9 @@ pub enum GeometryError {
 
     #[error("the rational NURBS denominator vanished during evaluation")]
     ZeroWeightAtParameter,
+
+    #[error("surface tessellation requires at least one sample per knot span")]
+    InvalidTessellationResolution,
 
     #[error("a triangle mesh must contain at least one triangle")]
     EmptyMesh,

@@ -36,6 +36,9 @@ enum InteractiveCommand {
     Line {
         start: Option<Point3>,
     },
+    SrfPt {
+        corners: [Option<Point3>; 3],
+    },
     Move {
         start: Option<Point3>,
     },
@@ -60,6 +63,7 @@ impl InteractiveCommand {
         match self {
             Self::Point => "Point",
             Self::Line { .. } => "Line",
+            Self::SrfPt { .. } => "SrfPt",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::Scale { .. } => "Scale",
@@ -77,6 +81,18 @@ impl InteractiveCommand {
             Self::Line { start: Some(_) } => {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
+            Self::SrfPt { corners } => match corners {
+                [None, _, _] => "SrfPt: pick the first corner in the viewport (Esc to cancel)",
+                [Some(_), None, _] => {
+                    "SrfPt: pick the second corner in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), None] => {
+                    "SrfPt: pick the third corner in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), Some(_)] => {
+                    "SrfPt: pick the fourth corner in the viewport (Esc to cancel)"
+                }
+            },
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -122,6 +138,9 @@ impl InteractiveCommand {
         match self {
             Self::Point
             | Self::Line { start: None }
+            | Self::SrfPt {
+                corners: [None, _, _],
+            }
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::Scale { center: None, .. }
@@ -131,6 +150,15 @@ impl InteractiveCommand {
             | Self::Move { start }
             | Self::Copy { start }
             | Self::Mirror { start } => start,
+            Self::SrfPt {
+                corners: [_, _, Some(corner)],
+            }
+            | Self::SrfPt {
+                corners: [_, Some(corner), None],
+            }
+            | Self::SrfPt {
+                corners: [Some(corner), None, None],
+            } => Some(corner),
             Self::Scale {
                 center: Some(center),
                 ..
@@ -223,6 +251,7 @@ impl VibocerosApp {
         {
             "point" | "pt" => InteractiveCommand::Point,
             "line" | "l" => InteractiveCommand::Line { start: None },
+            "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
             "move" | "m" => InteractiveCommand::Move { start: None },
             "copy" => InteractiveCommand::Copy { start: None },
             "scale" => InteractiveCommand::Scale {
@@ -293,6 +322,40 @@ impl VibocerosApp {
                     format_model_point(start),
                     format_model_point(point)
                 ));
+            }
+            InteractiveCommand::SrfPt { mut corners } => {
+                let corner_count = corners.iter().flatten().count();
+                if let Some(previous) = corners.iter().flatten().next_back()
+                    && previous.is_near(point, self.document.tolerance())
+                {
+                    self.push_log("Error: adjacent surface corners must differ".to_owned());
+                    return;
+                }
+                if corner_count < corners.len() {
+                    corners[corner_count] = Some(point);
+                    let command = InteractiveCommand::SrfPt { corners };
+                    self.active_command = Some(command);
+                    self.push_log(format!(
+                        "Corner {}: {}",
+                        corner_count + 1,
+                        format_model_point(point)
+                    ));
+                    self.push_log(command.prompt().to_owned());
+                } else {
+                    let [Some(first), Some(second), Some(third)] = corners else {
+                        self.push_log("Error: surface corner state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "SrfPt {} {} {} {}",
+                        format_model_point(first),
+                        format_model_point(second),
+                        format_model_point(third),
+                        format_model_point(point)
+                    ));
+                }
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -864,6 +927,33 @@ mod tests {
         );
         assert_eq!(app.document.objects().len(), 0);
         assert!(app.command_log.back().unwrap().contains("line end"));
+    }
+
+    #[test]
+    fn interactive_srfpt_collects_four_corners_and_uses_command_history() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("SurfaceFromCorners"));
+        let corners = [
+            point(0.0, 0.0, 0.0),
+            point(4.0, 0.0, 0.0),
+            point(4.0, 3.0, 0.0),
+            point(0.0, 3.0, 0.0),
+        ];
+        for corner in corners[..3].iter().copied() {
+            app.accept_drafting_point(corner);
+            assert!(matches!(
+                app.active_command,
+                Some(InteractiveCommand::SrfPt { .. })
+            ));
+        }
+        app.accept_drafting_point(corners[3]);
+        assert_eq!(app.active_command, None);
+        let Geometry::NurbsSurface(surface) = app.document.objects().next().unwrap().geometry()
+        else {
+            panic!("expected an interactively created NURBS surface")
+        };
+        assert_eq!(surface.evaluate(0.5, 0.5).unwrap(), point(2.0, 1.5, 0.0));
+        assert_eq!(app.document.undo_label(), Some("SrfPt"));
     }
 
     #[test]

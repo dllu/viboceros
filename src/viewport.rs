@@ -5,12 +5,16 @@ use viboceros_document::{Document, Geometry, ObjectId, SelectionMode};
 use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
-use viboceros_geometry::{NurbsCurve, Point3, Real, TriangleMesh, UnitVector3};
+use viboceros_geometry::{
+    NurbsCurve, NurbsSurface, Point3, Real, Tolerance, TriangleMesh, UnitVector3,
+};
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
 const PICK_CAPTURE_PIXELS: f32 = 8.0;
 const CURVE_SAMPLES_PER_SPAN: usize = 16;
+const SURFACE_SAMPLES_PER_SPAN: usize = 8;
+const SURFACE_ISOCURVES_PER_SPAN: usize = 2;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -284,6 +288,10 @@ impl Viewport {
                     (1, distance)
                 }
                 Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
+                Geometry::NurbsSurface(surface) => (
+                    2,
+                    self.nurbs_surface_pick_distance(pointer, rect, surface, document.tolerance()),
+                ),
                 Geometry::Mesh(mesh) => (2, self.mesh_pick_distance(pointer, rect, mesh)),
             };
             if distance > PICK_CAPTURE_PIXELS {
@@ -343,6 +351,25 @@ impl Viewport {
                 .min(point_segment_distance(pointer, second, third))
                 .min(point_segment_distance(pointer, third, first));
         }
+        nearest
+    }
+
+    fn nurbs_surface_pick_distance(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        surface: &NurbsSurface,
+        tolerance: Tolerance,
+    ) -> f32 {
+        if self.display_mode != DisplayMode::Wireframe
+            && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
+        {
+            return self.mesh_pick_distance(pointer, rect, &mesh);
+        }
+        let mut nearest = f32::INFINITY;
+        self.for_each_surface_grid_segment(rect, surface, |start, end| {
+            nearest = nearest.min(point_segment_distance(pointer, start, end));
+        });
         nearest
     }
 
@@ -434,6 +461,16 @@ impl Viewport {
                 Geometry::NurbsCurve(curve) => {
                     self.paint_nurbs_curve(painter, rect, curve, Stroke::new(width, color));
                 }
+                Geometry::NurbsSurface(surface) => {
+                    self.paint_nurbs_surface(
+                        painter,
+                        rect,
+                        surface,
+                        color,
+                        width,
+                        document.tolerance(),
+                    );
+                }
                 Geometry::Mesh(mesh) => {
                     self.paint_mesh(painter, rect, mesh, color, width);
                 }
@@ -469,6 +506,127 @@ impl Viewport {
                     painter.line_segment([start, end], stroke);
                 }
                 previous = projected;
+            }
+        }
+    }
+
+    fn paint_nurbs_surface(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        surface: &NurbsSurface,
+        color: Color32,
+        width: f32,
+        tolerance: Tolerance,
+    ) {
+        if self.display_mode != DisplayMode::Wireframe
+            && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
+        {
+            for triangle_index in 0..mesh.triangles().len() {
+                let Some(points) = mesh.triangle_points(triangle_index) else {
+                    continue;
+                };
+                let [Some(first), Some(second), Some(third)] =
+                    points.map(|point| self.project(point, rect))
+                else {
+                    continue;
+                };
+                let fill = match self.display_mode {
+                    DisplayMode::Wireframe => Color32::TRANSPARENT,
+                    DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
+                        |_| blend_toward_white(color, 0.35),
+                        |normal| shaded_color(color, normal),
+                    ),
+                    DisplayMode::Ghosted => {
+                        Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35)
+                    }
+                };
+                painter.add(egui::Shape::convex_polygon(
+                    vec![first, second, third],
+                    fill,
+                    Stroke::NONE,
+                ));
+            }
+        }
+
+        let stroke = Stroke::new(width, color);
+        self.for_each_surface_grid_segment(rect, surface, |start, end| {
+            painter.line_segment([start, end], stroke);
+        });
+    }
+
+    fn for_each_surface_grid_segment(
+        &self,
+        rect: Rect,
+        surface: &NurbsSurface,
+        mut visit: impl FnMut(Pos2, Pos2),
+    ) {
+        let spans_u = surface.spans_u().collect::<Vec<_>>();
+        let spans_v = surface.spans_v().collect::<Vec<_>>();
+        let domain_u_end = *surface.domain_u().end();
+        let domain_v_end = *surface.domain_v().end();
+
+        for &(u_start, u_end) in &spans_u {
+            for iso_sample in 0..=SURFACE_ISOCURVES_PER_SPAN {
+                let u = sampled_span_parameter(
+                    u_start,
+                    u_end,
+                    iso_sample,
+                    SURFACE_ISOCURVES_PER_SPAN,
+                    domain_u_end,
+                );
+                for &(v_start, v_end) in &spans_v {
+                    let mut previous = None;
+                    for sample in 0..=CURVE_SAMPLES_PER_SPAN {
+                        let v = sampled_span_parameter(
+                            v_start,
+                            v_end,
+                            sample,
+                            CURVE_SAMPLES_PER_SPAN,
+                            domain_v_end,
+                        );
+                        let projected = surface
+                            .evaluate(u, v)
+                            .ok()
+                            .and_then(|point| self.project(point, rect));
+                        if let (Some(start), Some(end)) = (previous, projected) {
+                            visit(start, end);
+                        }
+                        previous = projected;
+                    }
+                }
+            }
+        }
+
+        for &(v_start, v_end) in &spans_v {
+            for iso_sample in 0..=SURFACE_ISOCURVES_PER_SPAN {
+                let v = sampled_span_parameter(
+                    v_start,
+                    v_end,
+                    iso_sample,
+                    SURFACE_ISOCURVES_PER_SPAN,
+                    domain_v_end,
+                );
+                for &(u_start, u_end) in &spans_u {
+                    let mut previous = None;
+                    for sample in 0..=CURVE_SAMPLES_PER_SPAN {
+                        let u = sampled_span_parameter(
+                            u_start,
+                            u_end,
+                            sample,
+                            CURVE_SAMPLES_PER_SPAN,
+                            domain_u_end,
+                        );
+                        let projected = surface
+                            .evaluate(u, v)
+                            .ok()
+                            .and_then(|point| self.project(point, rect));
+                        if let (Some(start), Some(end)) = (previous, projected) {
+                            visit(start, end);
+                        }
+                        previous = projected;
+                    }
+                }
             }
         }
     }
@@ -625,6 +783,22 @@ impl Viewport {
     }
 }
 
+fn sampled_span_parameter(
+    start: Real,
+    end: Real,
+    sample: usize,
+    sample_count: usize,
+    domain_end: Real,
+) -> Real {
+    let fraction = sample as Real / sample_count as Real;
+    let parameter = start.mul_add(1.0 - fraction, end * fraction);
+    if sample == sample_count && end < domain_end {
+        parameter.next_down().max(start)
+    } else {
+        parameter
+    }
+}
+
 fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32 {
     let start_x = f64::from(start.x);
     let start_y = f64::from(start.y);
@@ -689,7 +863,7 @@ fn shaded_color(color: Color32, normal: UnitVector3) -> Color32 {
 mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
-    use viboceros_geometry::{LineSegment, NurbsCurve, Tolerance, TriangleMesh};
+    use viboceros_geometry::{LineSegment, NurbsCurve, NurbsSurface, Tolerance, TriangleMesh};
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -810,6 +984,41 @@ mod tests {
             ..Viewport::default()
         };
         assert_eq!(shaded.pick_object(center, rect, &document), Some(mesh_id));
+    }
+
+    #[test]
+    fn shaded_nurbs_surfaces_pick_from_their_display_tessellation() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_bilinear([
+                    point(-2.0, -2.0, 0.0),
+                    point(2.0, -2.0, 0.0),
+                    point(2.0, 2.0, 1.0),
+                    point(-2.0, 2.0, 1.0),
+                ])
+                .unwrap(),
+            ))
+            .unwrap();
+        let viewport = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(center, rect, &document),
+            Some(surface_id)
+        );
+        let off_isocurve = viewport.project(point(1.0, 1.0, 0.0), rect).unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(off_isocurve, rect, &document),
+            None
+        );
+        assert_eq!(
+            viewport.pick_object(off_isocurve, rect, &document),
+            Some(surface_id)
+        );
     }
 
     #[test]
