@@ -9,13 +9,14 @@ use std::time::Instant;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use thiserror::Error;
+use viboceros_command::{CommandError, CommandRegistry};
 use viboceros_document::{
-    ColorRgb, Document, DocumentError, Geometry, ObjectAttributes, ObjectId, SelectionMode,
+    ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
     Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
-    NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh, UnitVector3, WeightedPoint3,
-    join_polylines,
+    NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3,
+    WeightedPoint3, join_polylines,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -83,6 +84,9 @@ pub enum Operation {
         id: String,
     },
     DocumentDuplicateSelectionCycle {
+        id: String,
+    },
+    DocumentPointCloudCycle {
         id: String,
     },
     PointDistance {
@@ -254,6 +258,7 @@ impl Operation {
             | Self::DocumentObjectNamingCycle { id }
             | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
+            | Self::DocumentPointCloudCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -321,6 +326,9 @@ pub enum ProbeError {
 
     #[error(transparent)]
     Document(#[from] DocumentError),
+
+    #[error(transparent)]
+    Command(#[from] CommandError),
 
     #[error("unsupported oracle protocol version {actual}; expected {expected}")]
     ProtocolVersion { actual: u32, expected: u32 },
@@ -436,6 +444,9 @@ fn execute(
         }
         Operation::DocumentDuplicateSelectionCycle { .. } => {
             document_duplicate_selection_cycle(iterations, tolerance)?
+        }
+        Operation::DocumentPointCloudCycle { .. } => {
+            document_point_cloud_cycle(iterations, tolerance)?
         }
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
@@ -1539,6 +1550,267 @@ fn document_layer_assignment_cycle(iterations: u32) -> Result<(Value, u64), Prob
     Ok((value, elapsed_ns))
 }
 
+#[derive(Clone, Copy)]
+struct PointCloudCycleIds {
+    line: ObjectId,
+    mesh: ObjectId,
+    cloud: ObjectId,
+    point: ObjectId,
+    default_layer: LayerId,
+}
+
+fn document_point_cloud_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let (mut document, ids) = point_cloud_cycle_document(tolerance)?;
+
+    let cloud_to_cloud_input =
+        run_point_cloud_extract(&registry, &mut document, ids, [ids.cloud], "Input")?;
+    let line_mesh_cloud_current = run_point_cloud_extract(
+        &registry,
+        &mut document,
+        ids,
+        [ids.line, ids.mesh, ids.cloud],
+        "Current",
+    )?;
+    let mesh_line_cloud_input =
+        run_point_cloud_extract(&registry, &mut document, ids, [ids.mesh, ids.line], "Input")?;
+
+    document.clear_selection();
+    registry.execute(&mut document, "SelPt")?;
+    let sel_pt = point_cloud_source_selection(&document, ids);
+    document.clear_selection();
+    registry.execute(&mut document, "SelPtCloud")?;
+    let sel_pt_cloud = point_cloud_source_selection(&document, ids);
+
+    document.clear_selection();
+    document.select_objects_direct([ids.cloud], SelectionMode::Replace)?;
+    let before_explode = document
+        .objects()
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    registry.execute(&mut document, "Explode")?;
+    let explode = describe_point_cloud_cycle_objects(
+        &document,
+        document
+            .objects()
+            .filter(|object| !before_explode.contains(&object.id()))
+            .map(|object| object.id()),
+        ids.default_layer,
+    );
+    let equality_base = [[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]];
+    let geometry_equals_delta = [
+        1.0e-16, 1.0e-15, 1.0e-14, 1.0e-13, 1.0e-12, 1.0e-11, 1.0e-10, 1.0e-9, 1.0e-8, 1.0e-7,
+    ]
+    .into_iter()
+    .map(|delta| {
+        point_clouds_geometrically_equal(
+            &equality_base,
+            &[[1.0 + delta, 2.0, 3.0], [4.0, 5.0, 6.0]],
+        )
+    })
+    .collect::<Result<Vec<_>, _>>()?;
+    let geometry_equals_reversed =
+        point_clouds_geometrically_equal(&equality_base, &[[4.0, 5.0, 6.0], [1.0, 2.0, 3.0]])?;
+    let geometry_equals_relative_delta = [1.0, 1.0e3, 1.0e6, 1.0e9]
+        .into_iter()
+        .map(|scale| {
+            point_clouds_geometrically_equal(
+                &[[scale, 0.0, 0.0], [0.0, scale, 0.0]],
+                &[[scale * (1.0 + 1.0e-10), 0.0, 0.0], [0.0, scale, 0.0]],
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let value = json!({
+        "cloud_to_cloud_input": cloud_to_cloud_input,
+        "explode": explode,
+        "explode_source_exists": document.object(ids.cloud).is_some(),
+        "explode_succeeded": true,
+        "geometry_equals_delta": geometry_equals_delta,
+        "geometry_equals_relative_delta": geometry_equals_relative_delta,
+        "geometry_equals_reversed": geometry_equals_reversed,
+        "line_mesh_cloud_current": line_mesh_cloud_current,
+        "mesh_line_cloud_input": mesh_line_cloud_input,
+        "sel_pt": sel_pt,
+        "sel_pt_cloud": sel_pt_cloud,
+        "sel_pt_cloud_succeeded": true,
+        "sel_pt_succeeded": true,
+    });
+
+    let query_cloud = PointCloud3::try_new(
+        (0..4096)
+            .map(|index| Point3::try_new((index % 64) as f64, (index / 64) as f64, 0.0))
+            .collect::<Result<Vec<_>, _>>()?,
+    )?;
+    let query = Point3::try_new(31.25, 27.75, 0.0)?;
+    let (_nearest, elapsed_ns) = measure(iterations, || query_cloud.nearest_xy(query, 100.0))?;
+    Ok((value, elapsed_ns))
+}
+
+fn point_clouds_geometrically_equal(
+    left: &[[f64; 3]],
+    right: &[[f64; 3]],
+) -> Result<bool, ProbeError> {
+    let cloud = |points: &[[f64; 3]]| {
+        Ok::<_, GeometryError>(Geometry::PointCloud(PointCloud3::try_new(
+            points
+                .iter()
+                .copied()
+                .map(point)
+                .collect::<Result<Vec<_>, _>>()?,
+        )?))
+    };
+    Ok(cloud(left)?.geometrically_equals(&cloud(right)?)?)
+}
+
+fn point_cloud_cycle_document(
+    tolerance: Tolerance,
+) -> Result<(Document, PointCloudCycleIds), ProbeError> {
+    let mut document = Document::new(tolerance);
+    let default_layer = document.current_layer_id();
+    let layer_a = document.add_layer("A", ColorRgb::new(10, 20, 30))?;
+    let layer_b = document.add_layer("B", ColorRgb::new(40, 50, 60))?;
+    let line = document.add_geometry_with_attributes(
+        Geometry::Line(LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0)?,
+            Point3::try_new(2.0, 0.0, 0.0)?,
+            tolerance,
+        )?),
+        ObjectAttributes::on_layer(layer_a).with_name("LineSource"),
+    )?;
+    let mesh = document.add_geometry_with_attributes(
+        Geometry::Mesh(TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0)?,
+                Point3::try_new(12.0, 0.0, 0.0)?,
+                Point3::try_new(10.0, 2.0, 0.0)?,
+            ],
+            vec![[0, 1, 2]],
+            tolerance,
+        )?),
+        ObjectAttributes::on_layer(layer_b).with_name("MeshSource"),
+    )?;
+    let cloud = document.add_geometry_with_attributes(
+        Geometry::PointCloud(PointCloud3::try_new(vec![
+            Point3::try_new(20.0, 0.0, 0.0)?,
+            Point3::try_new(21.0, 1.0, 0.0)?,
+            Point3::try_new(22.0, 0.0, 0.0)?,
+        ])?),
+        ObjectAttributes::on_layer(layer_a).with_name("CloudSource"),
+    )?;
+    let point = document.add_geometry_with_attributes(
+        Geometry::Point(Point3::try_new(30.0, 0.0, 0.0)?),
+        ObjectAttributes::on_layer(layer_b).with_name("PointSource"),
+    )?;
+    Ok((
+        document,
+        PointCloudCycleIds {
+            line,
+            mesh,
+            cloud,
+            point,
+            default_layer,
+        },
+    ))
+}
+
+fn run_point_cloud_extract<const N: usize>(
+    registry: &CommandRegistry,
+    document: &mut Document,
+    source_ids: PointCloudCycleIds,
+    selection: [ObjectId; N],
+    output_layer: &str,
+) -> Result<Value, ProbeError> {
+    document.clear_selection();
+    for (index, id) in selection.into_iter().enumerate() {
+        document.select_objects_direct(
+            [id],
+            if index == 0 {
+                SelectionMode::Replace
+            } else {
+                SelectionMode::Add
+            },
+        )?;
+    }
+    let before = document
+        .objects()
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    registry.execute(
+        document,
+        &format!("ExtractPt Output=PointCloud OutputLayer={output_layer}"),
+    )?;
+    let objects = describe_point_cloud_cycle_objects(
+        document,
+        document
+            .objects()
+            .filter(|object| !before.contains(&object.id()))
+            .map(|object| object.id()),
+        source_ids.default_layer,
+    );
+    let result = json!({
+        "objects": objects,
+        "source_selection": point_cloud_source_selection(document, source_ids),
+        "succeeded": true,
+    });
+    document.undo()?.ok_or(DocumentError::HistoryInvariant(
+        "point-cloud extraction did not create an undo entry",
+    ))?;
+    Ok(result)
+}
+
+fn describe_point_cloud_cycle_objects(
+    document: &Document,
+    ids: impl IntoIterator<Item = ObjectId>,
+    default_layer: LayerId,
+) -> Vec<Value> {
+    ids.into_iter()
+        .filter_map(|id| document.object(id))
+        .map(|object| {
+            let (geometry_type, points) = match object.geometry() {
+                Geometry::Point(point) => ("point", vec![point.to_array()]),
+                Geometry::PointCloud(cloud) => (
+                    "point_cloud",
+                    cloud
+                        .points()
+                        .iter()
+                        .map(|point| point.to_array())
+                        .collect(),
+                ),
+                _ => ("unexpected", Vec::new()),
+            };
+            let layer = if object.attributes().layer_id() == default_layer {
+                "Current"
+            } else {
+                document
+                    .layer(object.attributes().layer_id())
+                    .map_or("Unexpected", |layer| layer.name())
+            };
+            json!({
+                "layer": layer,
+                "name": object.attributes().name(),
+                "points": points,
+                "selected": document.is_selected(object.id()),
+                "type": geometry_type,
+            })
+        })
+        .collect()
+}
+
+fn point_cloud_source_selection(document: &Document, ids: PointCloudCycleIds) -> Vec<&'static str> {
+    [
+        ("line", ids.line),
+        ("mesh", ids.mesh),
+        ("cloud", ids.cloud),
+        ("point", ids.point),
+    ]
+    .into_iter()
+    .filter_map(|(label, id)| document.is_selected(id).then_some(label))
+    .collect()
+}
+
 fn document_duplicate_selection_cycle(
     iterations: u32,
     tolerance: Tolerance,
@@ -2281,6 +2553,59 @@ mod tests {
                 "original_selected_after_destination_copies": [3],
                 "same_layer_copy_count": 0,
             })
+        );
+    }
+
+    #[test]
+    fn extracts_selects_and_explodes_native_point_clouds() {
+        let response = run_request(&request(vec![Operation::DocumentPointCloudCycle {
+            id: "point-cloud-cycle".to_owned(),
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        assert_eq!(
+            value["mesh_line_cloud_input"]["objects"][0],
+            json!({
+                "layer": "B",
+                "name": "MeshSource",
+                "points": [
+                    [10.0, 0.0, 0.0],
+                    [12.0, 0.0, 0.0],
+                    [10.0, 2.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                ],
+                "selected": true,
+                "type": "point_cloud",
+            })
+        );
+        assert_eq!(
+            value["line_mesh_cloud_current"]["objects"][0]["layer"],
+            json!("Current")
+        );
+        assert_eq!(
+            value["line_mesh_cloud_current"]["objects"][0]["name"],
+            Value::Null
+        );
+        assert_eq!(value["sel_pt"], json!(["point"]));
+        assert_eq!(value["sel_pt_cloud"], json!(["cloud"]));
+        assert_eq!(
+            value["geometry_equals_delta"],
+            json!([true, true, true, true, true, true, true, true, true, false])
+        );
+        assert_eq!(
+            value["geometry_equals_relative_delta"],
+            json!([true, true, true, true])
+        );
+        assert_eq!(value["geometry_equals_reversed"], json!(false));
+        assert_eq!(value["explode_source_exists"], json!(false));
+        assert_eq!(value["explode"].as_array().unwrap().len(), 3);
+        assert!(
+            value["explode"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .all(|point| point["selected"] == json!(false))
         );
     }
 

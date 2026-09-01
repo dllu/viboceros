@@ -15,6 +15,9 @@ pub enum GeometryError {
     #[error("at least one point is required")]
     EmptyPointSet,
 
+    #[error("point-cloud search radius must be finite and non-negative")]
+    InvalidPointCloudSearchRadius,
+
     #[error("the linear system is singular at the requested tolerance")]
     SingularSystem,
 

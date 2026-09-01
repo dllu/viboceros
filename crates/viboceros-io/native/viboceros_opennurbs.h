@@ -14,6 +14,7 @@ enum ViboObjectType {
   VIBO_OBJECT_NURBS_CURVE = 3,
   VIBO_OBJECT_TRIANGLE_MESH = 4,
   VIBO_OBJECT_NURBS_SURFACE = 5,
+  VIBO_OBJECT_POINT_CLOUD = 6,
 };
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;

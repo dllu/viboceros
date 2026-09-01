@@ -10,8 +10,8 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
     MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve,
-    NurbsSurface, Point3, Polyline3, PolylineClosure, Real, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, join_polylines,
+    NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure, Real, Tolerance, TriangleMesh,
+    UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -20,7 +20,7 @@ use viboceros_io::{
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
-const MAX_EXTRACTED_POINT_OBJECTS: usize = 1_000_000;
+const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -129,6 +129,7 @@ impl CommandRegistry {
             ("SelLine", GeometrySelectionFilter::Line),
             ("SelPolyline", GeometrySelectionFilter::Polyline),
             ("SelPt", GeometrySelectionFilter::Point),
+            ("SelPtCloud", GeometrySelectionFilter::PointCloud),
             ("SelSrf", GeometrySelectionFilter::Surface),
             ("SelMesh", GeometrySelectionFilter::Mesh),
             ("SelOpenMesh", GeometrySelectionFilter::OpenMesh),
@@ -1067,6 +1068,7 @@ enum GeometrySelectionFilter {
     Line,
     Polyline,
     Point,
+    PointCloud,
     Surface,
     Mesh,
     OpenMesh,
@@ -1104,6 +1106,7 @@ impl GeometrySelectionFilter {
                 _ => false,
             },
             Self::Point => matches!(geometry, Geometry::Point(_)),
+            Self::PointCloud => matches!(geometry, Geometry::PointCloud(_)),
             Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::OpenMesh => match geometry {
@@ -1522,7 +1525,7 @@ fn mark_selected_curve_endpoints(
     Ok(format!("Added {} point(s) at curve {location}", ids.len()))
 }
 
-const EXTRACT_PT_USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points]";
+const EXTRACT_PT_USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points|PointCloud]";
 
 struct ExtractPtCommand;
 
@@ -1532,10 +1535,9 @@ impl Command for ExtractPtCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let output_layer = parse_extract_point_arguments(arguments)?;
+        let options = parse_extract_point_arguments(arguments)?;
         let selected = document
-            .objects()
-            .filter(|object| document.is_selected(object.id()))
+            .selected_objects()
             .map(|object| (object.geometry().clone(), object.attributes().clone()))
             .collect::<Vec<_>>();
         if selected.is_empty() {
@@ -1545,30 +1547,34 @@ impl Command for ExtractPtCommand {
         let current_layer = document.current_layer_id();
         let mut output = Vec::new();
         let mut source_with_points = 0;
-        for (geometry, attributes) in &selected {
+        let mut first_source_has_points = false;
+        for (source_index, (geometry, attributes)) in selected.iter().enumerate() {
             let points = geometry.extract_point_locations()?;
+            if source_index == 0 {
+                first_source_has_points = !points.is_empty();
+            }
             if points.is_empty() {
                 continue;
             }
             source_with_points += 1;
             let output_count = output.len().checked_add(points.len()).ok_or(
                 CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINT_OBJECTS,
+                    maximum: MAX_EXTRACTED_POINTS,
                 },
             )?;
-            if output_count > MAX_EXTRACTED_POINT_OBJECTS {
+            if output_count > MAX_EXTRACTED_POINTS {
                 return Err(CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINT_OBJECTS,
+                    maximum: MAX_EXTRACTED_POINTS,
                 });
             }
             output
                 .try_reserve(points.len())
                 .map_err(|_| CommandError::TooManyExtractedPoints {
-                    maximum: MAX_EXTRACTED_POINT_OBJECTS,
+                    maximum: MAX_EXTRACTED_POINTS,
                 })?;
-            let attributes = match output_layer {
+            let attributes = match options.output_layer {
                 ExtractPointOutputLayer::Input => attributes.clone(),
-                ExtractPointOutputLayer::Current => attributes.clone().with_layer(current_layer),
+                ExtractPointOutputLayer::Current => ObjectAttributes::on_layer(current_layer),
             };
             output.extend(points.into_iter().map(|point| (point, attributes.clone())));
         }
@@ -1576,14 +1582,43 @@ impl Command for ExtractPtCommand {
             return Err(CommandError::NoExtractablePoints);
         }
 
-        let mut ids = Vec::with_capacity(output.len());
-        for (point, attributes) in output {
-            ids.push(document.add_geometry_with_attributes(Geometry::Point(point), attributes)?);
+        let point_count = output.len();
+        let mut ids = Vec::with_capacity(match options.output {
+            ExtractPointOutput::Points => point_count,
+            ExtractPointOutput::PointCloud => 1,
+        });
+        match options.output {
+            ExtractPointOutput::Points => {
+                for (point, attributes) in output {
+                    ids.push(
+                        document
+                            .add_geometry_with_attributes(Geometry::Point(point), attributes)?,
+                    );
+                }
+            }
+            ExtractPointOutput::PointCloud => {
+                let attributes = match options.output_layer {
+                    ExtractPointOutputLayer::Input => selected
+                        .first()
+                        .filter(|_| first_source_has_points)
+                        .map_or_else(
+                            || ObjectAttributes::on_layer(current_layer),
+                            |(_, attributes)| attributes.clone(),
+                        ),
+                    ExtractPointOutputLayer::Current => ObjectAttributes::on_layer(current_layer),
+                };
+                let cloud =
+                    PointCloud3::try_new(output.into_iter().map(|(point, _)| point).collect())?;
+                ids.push(
+                    document
+                        .add_geometry_with_attributes(Geometry::PointCloud(cloud), attributes)?,
+                );
+            }
         }
         replace_selection(document, ids.iter().copied())?;
         Ok(format!(
             "Extracted {} point(s) from {source_with_points} of {} selected object(s)",
-            ids.len(),
+            point_count,
             selected.len()
         ))
     }
@@ -1595,10 +1630,21 @@ enum ExtractPointOutputLayer {
     Current,
 }
 
-fn parse_extract_point_arguments(
-    arguments: &[&str],
-) -> Result<ExtractPointOutputLayer, CommandError> {
+#[derive(Clone, Copy)]
+enum ExtractPointOutput {
+    Points,
+    PointCloud,
+}
+
+#[derive(Clone, Copy)]
+struct ExtractPointOptions {
+    output_layer: ExtractPointOutputLayer,
+    output: ExtractPointOutput,
+}
+
+fn parse_extract_point_arguments(arguments: &[&str]) -> Result<ExtractPointOptions, CommandError> {
     let mut output_layer = ExtractPointOutputLayer::Input;
+    let mut output = ExtractPointOutput::Points;
     let mut output_layer_seen = false;
     let mut output_seen = false;
     let mut index = 0;
@@ -1625,9 +1671,10 @@ fn parse_extract_point_arguments(
             output_layer_seen = true;
         } else if name.eq_ignore_ascii_case("Output") && !output_seen {
             if value.eq_ignore_ascii_case("PointCloud") {
-                return Err(CommandError::UnsupportedExtractPointCloudOutput);
-            }
-            if !value.eq_ignore_ascii_case("Points") {
+                output = ExtractPointOutput::PointCloud;
+            } else if value.eq_ignore_ascii_case("Points") {
+                output = ExtractPointOutput::Points;
+            } else {
                 return Err(CommandError::Usage(EXTRACT_PT_USAGE));
             }
             output_seen = true;
@@ -1636,7 +1683,10 @@ fn parse_extract_point_arguments(
         }
         index += consumed;
     }
-    Ok(output_layer)
+    Ok(ExtractPointOptions {
+        output_layer,
+        output,
+    })
 }
 
 const CLOSE_CRV_USAGE: &str = "CloseCrv [CloseWideGapsWithLine=Yes|No] [Tolerance=value]";
@@ -2625,10 +2675,7 @@ struct SelectedLinearCurve {
 
 fn selected_linear_curves(document: &Document) -> Result<Vec<SelectedLinearCurve>, CommandError> {
     let mut inputs = Vec::new();
-    for object in document
-        .objects()
-        .filter(|object| document.is_selected(object.id()))
-    {
+    for object in document.selected_objects() {
         let polyline = match object.geometry() {
             Geometry::Line(line) => {
                 Polyline3::try_new(vec![line.start(), line.end()], document.tolerance())?
@@ -2651,6 +2698,11 @@ fn selected_linear_curves(document: &Document) -> Result<Vec<SelectedLinearCurve
 
 struct ExplodeCommand;
 
+enum ExplodedParts {
+    Lines(Vec<LineSegment>),
+    Points(Vec<Point3>),
+}
+
 impl Command for ExplodeCommand {
     fn name(&self) -> &'static str {
         "Explode"
@@ -2663,8 +2715,7 @@ impl Command for ExplodeCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         require_consumed(arguments, 0, "Explode")?;
         let selected = document
-            .objects()
-            .filter(|object| document.is_selected(object.id()))
+            .selected_objects()
             .map(|object| {
                 (
                     object.id(),
@@ -2681,7 +2732,12 @@ impl Command for ExplodeCommand {
             .filter_map(|(id, geometry, attributes)| match geometry {
                 Geometry::Polyline(polyline) => Some((
                     *id,
-                    polyline.segments().collect::<Vec<_>>(),
+                    ExplodedParts::Lines(polyline.segments().collect()),
+                    attributes.clone(),
+                )),
+                Geometry::PointCloud(cloud) => Some((
+                    *id,
+                    ExplodedParts::Points(cloud.points().to_vec()),
                     attributes.clone(),
                 )),
                 _ => None,
@@ -2699,33 +2755,67 @@ impl Command for ExplodeCommand {
             .filter(|(id, _, _)| !exploded_ids.contains(id))
             .map(|(id, _, _)| *id)
             .collect::<Vec<_>>();
+        let polyline_count = exploded
+            .iter()
+            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Lines(_)))
+            .count();
+        let point_cloud_count = exploded.len() - polyline_count;
         let line_count = exploded
             .iter()
-            .map(|(_, segments, _)| segments.len())
+            .map(|(_, parts, _)| match parts {
+                ExplodedParts::Lines(lines) => lines.len(),
+                ExplodedParts::Points(_) => 0,
+            })
+            .sum::<usize>();
+        let point_count = exploded
+            .iter()
+            .map(|(_, parts, _)| match parts {
+                ExplodedParts::Lines(_) => 0,
+                ExplodedParts::Points(points) => points.len(),
+            })
             .sum::<usize>();
         for (id, _, _) in &exploded {
             document.delete_object(*id)?;
         }
-        let mut result_ids = Vec::with_capacity(line_count);
-        for (_, segments, attributes) in exploded {
-            for segment in segments {
-                result_ids.push(
-                    document.add_geometry_with_attributes(
-                        Geometry::Line(segment),
-                        attributes.clone(),
-                    )?,
-                );
+        let mut selected_result_ids = Vec::with_capacity(line_count);
+        for (_, parts, attributes) in exploded {
+            match parts {
+                ExplodedParts::Lines(lines) => {
+                    for line in lines {
+                        selected_result_ids.push(document.add_geometry_with_attributes(
+                            Geometry::Line(line),
+                            attributes.clone(),
+                        )?);
+                    }
+                }
+                ExplodedParts::Points(points) => {
+                    for point in points {
+                        document.add_geometry_with_attributes(
+                            Geometry::Point(point),
+                            attributes.clone(),
+                        )?;
+                    }
+                }
             }
         }
         replace_selection(
             document,
-            unchanged_ids.into_iter().chain(result_ids.iter().copied()),
+            unchanged_ids
+                .into_iter()
+                .chain(selected_result_ids.iter().copied()),
         )?;
-        Ok(format!(
-            "Exploded {} polyline(s) into {line_count} line(s); {} object(s) unchanged",
-            exploded_ids.len(),
-            selected.len() - exploded_ids.len()
-        ))
+        let unchanged_count = selected.len() - exploded_ids.len();
+        Ok(match (polyline_count, point_cloud_count) {
+            (0, _) => format!(
+                "Exploded {point_cloud_count} point cloud(s) into {point_count} point(s); {unchanged_count} object(s) unchanged"
+            ),
+            (_, 0) => format!(
+                "Exploded {polyline_count} polyline(s) into {line_count} line(s); {unchanged_count} object(s) unchanged"
+            ),
+            _ => format!(
+                "Exploded {polyline_count} polyline(s) into {line_count} line(s) and {point_cloud_count} point cloud(s) into {point_count} point(s); {unchanged_count} object(s) unchanged"
+            ),
+        })
     }
 }
 
@@ -3300,6 +3390,7 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError
 fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError> {
     Ok(match geometry {
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
+        Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
         Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(arc.to_nurbs()?),
@@ -3314,6 +3405,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError
 fn document_geometry_from_3dm(geometry: ThreeDmGeometry, tolerance: Tolerance) -> Geometry {
     match geometry {
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
+        ThreeDmGeometry::PointCloud(cloud) => Geometry::PointCloud(cloud),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
         ThreeDmGeometry::NurbsCurve(curve) => exported_polyline(&curve, tolerance)
             .map_or_else(|| Geometry::NurbsCurve(curve), Geometry::Polyline),
@@ -3511,7 +3603,7 @@ pub enum CommandError {
     #[error("the selected curves do not have endpoints within the document tolerance")]
     NoJoinableCurves,
 
-    #[error("none of the selected objects is an explodable polyline")]
+    #[error("none of the selected objects is an explodable polyline or point cloud")]
     NoExplodablePolylines,
 
     #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
@@ -3578,10 +3670,7 @@ pub enum CommandError {
     #[error("none of the selected objects has extractable defining points")]
     NoExtractablePoints,
 
-    #[error("ExtractPt point-cloud output is not available yet")]
-    UnsupportedExtractPointCloudOutput,
-
-    #[error("ExtractPt would create more than {maximum} point objects")]
+    #[error("ExtractPt would extract more than {maximum} points")]
     TooManyExtractedPoints { maximum: usize },
 
     #[error(
@@ -3644,7 +3733,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -4206,12 +4295,26 @@ mod tests {
             assert_eq!(object.attributes().layer_id(), output_layer);
         }
 
-        let object_count = document.objects().len();
-        assert!(matches!(
-            registry.execute(&mut document, "ExtractPt Output=PointCloud"),
-            Err(CommandError::UnsupportedExtractPointCloudOutput)
-        ));
-        assert_eq!(document.objects().len(), object_count);
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(source_ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractPt Output=PointCloud OutputLayer=Input",
+                )
+                .unwrap(),
+            "Extracted 24 point(s) from 6 of 7 selected object(s)"
+        );
+        assert_eq!(document.selected_object_count(), 1);
+        let cloud_object = document.selected_objects().next().unwrap();
+        assert_eq!(cloud_object.attributes().layer_id(), input_layer);
+        let Geometry::PointCloud(cloud) = cloud_object.geometry() else {
+            panic!("expected an extracted point cloud")
+        };
+        assert_eq!(cloud.points(), expected_points);
 
         let mut point_only = Document::default();
         registry.execute(&mut point_only, "Point 1,2,3").unwrap();
@@ -4223,6 +4326,121 @@ mod tests {
         ));
         assert_eq!(point_only.undo_label(), history.as_deref());
         assert_eq!(point_only.objects().len(), 1);
+        assert!(matches!(
+            registry.execute(&mut point_only, "ExtractPt Output=PointCloud"),
+            Err(CommandError::NoExtractablePoints)
+        ));
+    }
+
+    #[test]
+    fn point_cloud_extraction_selection_and_explode_match_rhino() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New First").unwrap();
+        let first_layer = document.current_layer_id();
+        registry.execute(&mut document, "Line 0,0 2,0").unwrap();
+        registry.execute(&mut document, "SelLast").unwrap();
+        registry
+            .execute(&mut document, "SetObjectName Guide")
+            .unwrap();
+        registry.execute(&mut document, "Layer New Second").unwrap();
+        let second_layer = document.current_layer_id();
+        registry
+            .execute(&mut document, "Polyline 10,0 12,0 10,2")
+            .unwrap();
+        let source_points = document
+            .objects()
+            .flat_map(|object| object.geometry().extract_point_locations().unwrap())
+            .collect::<Vec<_>>();
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let reversed_source_points = [source_ids[1], source_ids[0]]
+            .into_iter()
+            .flat_map(|id| {
+                document
+                    .object(id)
+                    .unwrap()
+                    .geometry()
+                    .extract_point_locations()
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        document
+            .select_object(source_ids[1], SelectionMode::Replace)
+            .unwrap();
+        document
+            .select_object(source_ids[0], SelectionMode::Add)
+            .unwrap();
+        registry
+            .execute(&mut document, "ExtractPt Output=PointCloud")
+            .unwrap();
+        let reversed_cloud = document.selected_objects().next().unwrap();
+        assert_eq!(reversed_cloud.attributes().layer_id(), second_layer);
+        assert_eq!(reversed_cloud.attributes().name(), None);
+        let Geometry::PointCloud(reversed_cloud) = reversed_cloud.geometry() else {
+            panic!("expected a reverse-selection point cloud")
+        };
+        assert_eq!(reversed_cloud.points(), reversed_source_points);
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "SelNone").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractPt Output=PointCloud")
+                .unwrap(),
+            "Extracted 5 point(s) from 2 of 2 selected object(s)"
+        );
+        let input_cloud_id = document.selected_object_ids().next().unwrap();
+        let input_cloud = document.object(input_cloud_id).unwrap();
+        assert_eq!(input_cloud.attributes().layer_id(), first_layer);
+        assert_eq!(input_cloud.attributes().name(), Some("Guide"));
+        let Geometry::PointCloud(cloud) = input_cloud.geometry() else {
+            panic!("expected a point cloud")
+        };
+        assert_eq!(cloud.points(), source_points);
+        assert_eq!(document.selected_object_count(), 1);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "ExtractPt OutputLayer=Current Output=PointCloud",
+            )
+            .unwrap();
+        let current_cloud_id = document.selected_object_ids().next().unwrap();
+        let current_cloud = document.object(current_cloud_id).unwrap();
+        assert_eq!(current_cloud.attributes().layer_id(), second_layer);
+        assert_eq!(current_cloud.attributes().name(), None);
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelPt").unwrap(),
+            "Selected 0 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelPtCloud").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "Explode").unwrap(),
+            "Exploded 1 point cloud(s) into 5 point(s); 0 object(s) unchanged"
+        );
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.objects().len(), 7);
+        assert!(document.objects().skip(2).all(|object| {
+            matches!(object.geometry(), Geometry::Point(_))
+                && object.attributes().layer_id() == second_layer
+                && object.attributes().name().is_none()
+        }));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(matches!(
+            document.object(current_cloud_id).unwrap().geometry(),
+            Geometry::PointCloud(_)
+        ));
     }
 
     #[test]
@@ -6867,6 +7085,16 @@ mod tests {
         registry
             .execute(&mut source, "SrfPt 0,0,0 2,0,0 2,2,1 0,2,1")
             .unwrap();
+        let point_cloud_locations = vec![
+            Point3::try_new(-3.0, 2.0, 7.0).unwrap(),
+            Point3::try_new(8.0, -1.0, 4.0).unwrap(),
+            Point3::try_new(-3.0, 2.0, 7.0).unwrap(),
+        ];
+        source
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(point_cloud_locations.clone()).unwrap(),
+            ))
+            .unwrap();
         let source_ids = source
             .objects()
             .map(|object| object.id())
@@ -6893,9 +7121,17 @@ mod tests {
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("8 objects"));
+        assert!(message.contains("9 objects"));
         assert!(message.contains("0 unsupported objects skipped"));
-        assert_eq!(imported.objects().len(), 8);
+        assert_eq!(imported.objects().len(), 9);
+        let imported_cloud = imported
+            .objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::PointCloud(cloud) => Some(cloud),
+                _ => None,
+            })
+            .unwrap();
+        assert_eq!(imported_cloud.points(), point_cloud_locations);
         assert!(
             imported
                 .objects()

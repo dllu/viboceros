@@ -43,6 +43,10 @@
       "id": "document-duplicate-selection-cycle"
     },
     {
+      "op": "document_point_cloud_cycle",
+      "id": "document-point-cloud-cycle"
+    },
+    {
       "op": "point_distance",
       "id": "point-distance",
       "a": [1.25, -2.5, 4.0],

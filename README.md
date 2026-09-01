@@ -9,6 +9,8 @@ analytic circles, circular arcs, and ellipses, validated open and closed
 polylines, planes, bounding boxes, rational NURBS curves with analytic first
 derivatives, rational NURBS surfaces with analytic partial derivatives,
 validated triangle meshes, layers, groups, and bounded undo/redo.
+Native point clouds preserve point order and duplicates, cache finite bounds,
+and use a balanced XY spatial index for top-view snapping and picking.
 The top viewport can pan and zoom in wireframe, shaded, or ghosted mode. Its
 command line currently accepts:
 
@@ -41,6 +43,7 @@ SelLine
 SelPolyline
 SelShortCrv 1.0
 SelPt
+SelPtCloud
 SelSrf
 SelMesh
 SelOpenMesh
@@ -71,6 +74,7 @@ Divide Length 2.5 MarkEnds
 CrvStart
 CrvEnd
 ExtractPt OutputLayer=Input Output=Points
+ExtractPt OutputLayer=Input Output=PointCloud
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
@@ -113,8 +117,9 @@ to pick a base and destination point, `Scale` or `Rotate` to pick
 center/reference/target points, or `Mirror` to pick a two-point axis. `Join`
 connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
-segments. `Length` measures analytic, polyline, and NURBS curves with controlled
-accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes.
+segments and frees point-cloud members as point objects. `Length` measures
+analytic, polyline, and NURBS curves with controlled accuracy; `Area` measures
+circles, ellipses, closed planar polylines, and meshes.
 `Volume` reports the accumulated signed volume of selected closed meshes;
 outward winding is positive and reversed winding is negative. The calculation
 is stabilized around each mesh bounding-box center and does not alter history.
@@ -128,9 +133,12 @@ loop remain unchanged. Open arcs and NURBS curves will be enabled once the
 document has an exact polycurve representation.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
-NURBS control rings follow Rhino ordering. Results default to each input layer;
-use `OutputLayer=Current` to place them on the active layer. Point-cloud output
-awaits a native point-cloud document type.
+NURBS control rings follow Rhino ordering. Point results default to each input
+layer; `OutputLayer=Current` puts them on the active layer with fresh
+attributes. `Output=PointCloud` merges the locations into one cloud in selection
+order, and selects the result while deselecting the sources. Input-layer output
+copies the first selected source's attributes when that source contributes
+locations; otherwise it uses fresh current-layer attributes.
 `Hide` and `Lock` change selected objects; `Show` and `Unlock` restore every
 object with the corresponding object-level state. Hidden objects neither render
 nor snap. Locked objects render in gray and remain available to osnap, but
@@ -142,9 +150,10 @@ unlocked layers and leave the third object mode unchanged.
 them; objects already hidden or locked and objects on hidden or locked layers
 are unchanged. Their `Unisolate` counterparts restore only modes introduced by
 the matching isolate command, with provenance preserved through undo and redo.
-Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
-filters add visible, unlocked objects of the requested type to the current
-selection. `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
+Rhino-compatible curve, line, polyline, point, point-cloud, surface, and
+open/closed mesh filters add visible, unlocked objects of the requested type to
+the current selection. `SelPtCloud` is separate from `SelPt`, matching Rhino.
+`SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
 exactly straight, single-span higher-degree NURBS curves, while excluding
 multi-span curves and polylines as Rhino does. `SelPolyline` includes native
 polylines and multi-segment degree-one NURBS curves, but excludes line objects
@@ -199,7 +208,7 @@ cyclic ordering, and winding; attributes and group membership are preserved.
 more faces into attribute- and group-preserving mesh objects. Options can limit
 the operation to hanging faces or raise the minimum incident-face count.
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
-features on locked objects and layers;
+indexed members of point clouds and features on locked objects and layers;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is
 active. Outside a drafting command, click geometry to select its connected
@@ -257,8 +266,9 @@ fixture construction, and JSON I/O; Rhino timings include its public
 Python/RhinoCommon bridge.
 
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
-OpenNURBS toolkit and preserves points, lines, NURBS curves, untrimmed NURBS
-surfaces, triangle meshes, layer state, and object state. Circles, arcs,
+OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
+curves, untrimmed NURBS surfaces, triangle meshes, layer state, and object
+state. Circles, arcs,
 ellipses, and polylines are exported without approximation as rational NURBS
 curves; canonical degree-one curves return as editable polylines. Unsupported
 trimmed B-rep and solid objects are counted and reported during import. Initial

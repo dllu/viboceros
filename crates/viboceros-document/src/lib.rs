@@ -11,7 +11,7 @@ use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
-    NurbsCurve, NurbsSurface, Point3, Polyline3, Tolerance, TriangleMesh,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh,
 };
 
 use duplicate::DuplicateGeometryFamily;
@@ -109,6 +109,7 @@ impl ColorRgb {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Geometry {
     Point(Point3),
+    PointCloud(PointCloud3),
     Line(LineSegment),
     Circle(Circle3),
     Arc(CircularArc3),
@@ -123,6 +124,7 @@ impl Geometry {
     pub fn bounds(&self) -> BoundingBox3 {
         match self {
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
+            Self::PointCloud(cloud) => cloud.bounds(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
             Self::Circle(circle) => circle.bounds(),
             Self::Arc(arc) => arc.bounds(),
@@ -141,6 +143,7 @@ impl Geometry {
     ) -> Result<Self, GeometryError> {
         Ok(match self {
             Self::Point(point) => Self::Point(transform.transform_point(*point)?),
+            Self::PointCloud(cloud) => Self::PointCloud(cloud.transformed(transform)?),
             Self::Line(line) => Self::Line(line.transformed(transform, tolerance)?),
             Self::Circle(circle) => match circle.transformed_similarity(transform, tolerance)? {
                 Some(circle) => Self::Circle(circle),
@@ -169,6 +172,7 @@ impl Geometry {
     pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
         Ok(match self {
             Self::Point(_) => Vec::new(),
+            Self::PointCloud(cloud) => cloud.points().to_vec(),
             Self::Line(line) => vec![line.start(), line.end()],
             Self::Circle(circle) => circle.to_nurbs()?.extract_point_locations()?,
             Self::Arc(arc) => arc.to_nurbs()?.extract_point_locations()?,
@@ -338,7 +342,9 @@ pub struct Document {
     objects: Vec<Object>,
     groups: Vec<Group>,
     selection: BTreeSet<ObjectId>,
+    selection_order: Vec<ObjectId>,
     previous_selection: BTreeSet<ObjectId>,
+    previous_selection_order: Vec<ObjectId>,
     last_changed_objects: BTreeSet<ObjectId>,
     history: History,
 }
@@ -360,7 +366,9 @@ impl Document {
             objects: Vec::new(),
             groups: Vec::new(),
             selection: BTreeSet::new(),
+            selection_order: Vec::new(),
             previous_selection: BTreeSet::new(),
+            previous_selection_order: Vec::new(),
             last_changed_objects: BTreeSet::new(),
             history: History::default(),
         }
@@ -383,7 +391,9 @@ impl Document {
             edits: Vec::new(),
             object_ids: BTreeSet::new(),
             selection_before: self.selection.clone(),
+            selection_order_before: self.selection_order.clone(),
             previous_selection_before: self.previous_selection.clone(),
+            previous_selection_order_before: self.previous_selection_order.clone(),
         });
         Ok(())
     }
@@ -397,8 +407,10 @@ impl Document {
             .ok_or(DocumentError::NoActiveTransaction)?;
         if transaction.selection_before.is_subset(&self.selection) {
             self.previous_selection = transaction.previous_selection_before;
+            self.previous_selection_order = transaction.previous_selection_order_before;
         } else {
             self.previous_selection = transaction.selection_before.clone();
+            self.previous_selection_order = transaction.selection_order_before.clone();
         }
         if transaction.edits.is_empty() {
             return Ok(false);
@@ -425,7 +437,9 @@ impl Document {
             .rev()
             .try_for_each(|edit| edit.undo(self));
         self.selection = transaction.selection_before;
+        self.selection_order = transaction.selection_order_before;
         self.previous_selection = transaction.previous_selection_before;
+        self.previous_selection_order = transaction.previous_selection_order_before;
         self.prune_selection();
         result?;
         Ok(changed)
@@ -687,12 +701,17 @@ impl Document {
                 .is_some_and(|layer| layer.visible && !layer.locked)
     }
 
+    /// Iterates the selection in user action order. Objects added together by
+    /// a filter or group expansion retain document order.
     pub fn selected_object_ids(&self) -> impl ExactSizeIterator<Item = ObjectId> + '_ {
-        self.selection.iter().copied()
+        self.selection_order.iter().copied()
     }
 
+    /// Iterates selected objects in the same order as [`Self::selected_object_ids`].
     pub fn selected_objects(&self) -> impl Iterator<Item = &Object> {
-        self.selection.iter().filter_map(|id| self.object(*id))
+        self.selection_order
+            .iter()
+            .filter_map(|id| self.object(*id))
     }
 
     pub fn selected_object_count(&self) -> usize {
@@ -920,6 +939,16 @@ impl Document {
     pub fn select_previous(&mut self, deselect_others: bool) -> usize {
         let targets = self.selectable_clusters(self.previous_selection.iter().copied());
         let current = self.selection.clone();
+        let current_order = self.selection_order.clone();
+        let target_order =
+            self.previous_selection_order
+                .iter()
+                .copied()
+                .filter(|id| targets.contains(id))
+                .chain(self.objects.iter().map(|object| object.id).filter(|id| {
+                    targets.contains(id) && !self.previous_selection_order.contains(id)
+                }))
+                .collect::<Vec<_>>();
         let next = if deselect_others {
             targets
         } else {
@@ -927,8 +956,18 @@ impl Document {
             next.extend(targets);
             next
         };
+        self.selection_order = if deselect_others {
+            target_order
+        } else {
+            current_order
+                .iter()
+                .copied()
+                .chain(target_order.into_iter().filter(|id| !current.contains(id)))
+                .collect()
+        };
         self.selection = next;
         self.previous_selection = current;
+        self.previous_selection_order = current_order;
         self.selection.len()
     }
 
@@ -1417,6 +1456,7 @@ impl Document {
         }
         let object = self.objects.remove(index);
         self.selection.remove(&id);
+        self.selection_order.retain(|selected| *selected != id);
         self.record_edit(
             "Delete object",
             Edit::ObjectRemoved {
@@ -1641,8 +1681,23 @@ impl Document {
         if self.selection != next {
             if !self.selection.is_subset(&next) {
                 self.previous_selection = self.selection.clone();
+                self.previous_selection_order = self.selection_order.clone();
             }
+            let mut ordered = self
+                .selection_order
+                .iter()
+                .copied()
+                .filter(|id| next.contains(id))
+                .collect::<Vec<_>>();
+            let retained = ordered.iter().copied().collect::<BTreeSet<_>>();
+            ordered.extend(
+                self.objects
+                    .iter()
+                    .map(|object| object.id)
+                    .filter(|id| next.contains(id) && !retained.contains(id)),
+            );
             self.selection = next;
+            self.selection_order = ordered;
         }
         self.selection.len()
     }
@@ -2046,6 +2101,47 @@ mod tests {
             !Geometry::Point(start)
                 .geometrically_equals(&Geometry::Point(point(f64::EPSILON, 0.0, 0.0)))
                 .unwrap()
+        );
+
+        let cloud = Geometry::PointCloud(
+            PointCloud3::try_new(vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)]).unwrap(),
+        );
+        let near_cloud = Geometry::PointCloud(
+            PointCloud3::try_new(vec![point(1.0 + 1.0e-8, 2.0, 3.0), point(4.0, 5.0, 6.0)])
+                .unwrap(),
+        );
+        let far_cloud = Geometry::PointCloud(
+            PointCloud3::try_new(vec![point(1.0 + 1.0e-7, 2.0, 3.0), point(4.0, 5.0, 6.0)])
+                .unwrap(),
+        );
+        let reversed_cloud = Geometry::PointCloud(
+            PointCloud3::try_new(vec![point(4.0, 5.0, 6.0), point(1.0, 2.0, 3.0)]).unwrap(),
+        );
+        assert!(cloud.geometrically_equals(&near_cloud).unwrap());
+        assert!(!cloud.geometrically_equals(&far_cloud).unwrap());
+        assert!(!cloud.geometrically_equals(&reversed_cloud).unwrap());
+    }
+
+    #[test]
+    fn point_cloud_duplicate_selection_is_ordered_and_scale_aware() {
+        let mut document = Document::default();
+        for points in [
+            vec![point(1.0, 2.0, 3.0), point(4.0, 5.0, 6.0)],
+            vec![point(1.0 + 1.0e-8, 2.0, 3.0), point(4.0, 5.0, 6.0)],
+            vec![point(4.0, 5.0, 6.0), point(1.0, 2.0, 3.0)],
+        ] {
+            document
+                .add_geometry(Geometry::PointCloud(PointCloud3::try_new(points).unwrap()))
+                .unwrap();
+        }
+        assert_eq!(document.select_duplicate_objects(true).unwrap(), 2);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            document
+                .objects()
+                .take(2)
+                .map(|object| object.id())
+                .collect::<Vec<_>>()
         );
     }
 
@@ -2789,6 +2885,52 @@ mod tests {
         assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [third]);
         assert_eq!(document.select_previous(true), 2);
         assert_eq!(selected(&document), BTreeSet::from([first, second]));
+    }
+
+    #[test]
+    fn selection_iteration_preserves_action_order_across_pruning_and_rollback() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(1.0, 0.0, 0.0)))
+            .unwrap();
+        let third = document
+            .add_geometry(Geometry::Point(point(2.0, 0.0, 0.0)))
+            .unwrap();
+
+        document
+            .select_object(third, SelectionMode::Replace)
+            .unwrap();
+        document.select_object(first, SelectionMode::Add).unwrap();
+        document.select_object(second, SelectionMode::Add).unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [third, first, second]
+        );
+
+        document.begin_transaction("Cancelled delete").unwrap();
+        document.delete_object(first).unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [third, second]
+        );
+        document.rollback_transaction().unwrap();
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [third, first, second]
+        );
+
+        document.clear_selection();
+        document.select_object(second, SelectionMode::Add).unwrap();
+        assert_eq!(document.select_previous(true), 3);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [third, first, second]
+        );
+        assert_eq!(document.select_previous(true), 1);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), [second]);
     }
 
     #[test]

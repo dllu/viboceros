@@ -13,16 +13,25 @@ impl Geometry {
     /// Curve direction is ignored, but the natural seam of a closed
     /// piecewise-linear or NURBS curve remains significant, matching Rhino's
     /// duplicate-object selection. Points and meshes compare stored values;
-    /// supported curves use OpenNURBS' scale-aware fixed zero policy rather
-    /// than document tolerance. Degree-one NURBS control polygons compare with
-    /// native lines and polylines because positive weights and knot spacing
-    /// change only parameterization, not the traced shape.
+    /// point-cloud locations and supported curves use OpenNURBS' scale-aware
+    /// fixed zero policy rather than document tolerance. Degree-one NURBS
+    /// control polygons compare with native lines and polylines because
+    /// positive weights and knot spacing change only parameterization, not the
+    /// traced shape.
     pub fn geometrically_equals(&self, other: &Self) -> Result<bool, GeometryError> {
         if let (Some(left), Some(right)) = (
             self.piecewise_linear_vertices(),
             other.piecewise_linear_vertices(),
         ) {
             return piecewise_linear_paths_equal(&left, &right);
+        }
+        if let (Self::PointCloud(left), Self::PointCloud(right)) = (self, other) {
+            return Ok(left.points().len() == right.points().len()
+                && left
+                    .points()
+                    .iter()
+                    .zip(right.points())
+                    .all(|(left, right)| points_equal_with_fixed_zero_policy(*left, *right)));
         }
         if let (Some(left), Some(right)) = (circle_components(self)?, circle_components(other)?) {
             let distance_tolerance =
@@ -50,6 +59,7 @@ impl Geometry {
     pub(super) fn duplicate_family(&self) -> DuplicateGeometryFamily {
         match self {
             Self::Point(_) => DuplicateGeometryFamily::Point,
+            Self::PointCloud(_) => DuplicateGeometryFamily::PointCloud,
             Self::Line(_) | Self::Polyline(_) => DuplicateGeometryFamily::PiecewiseLinear,
             Self::Circle(_) => DuplicateGeometryFamily::Circle,
             Self::Arc(_) => DuplicateGeometryFamily::Arc,
@@ -78,6 +88,9 @@ impl Geometry {
     fn duplicate_key(&self) -> Result<DuplicateGeometryKey, GeometryError> {
         Ok(match self {
             Self::Point(point) => DuplicateGeometryKey::Point(point_key(*point)),
+            Self::PointCloud(cloud) => DuplicateGeometryKey::PointCloud(
+                cloud.points().iter().copied().map(point_key).collect(),
+            ),
             Self::Line(line) => DuplicateGeometryKey::PiecewiseLinear(canonical_point_path(&[
                 line.start(),
                 line.end(),
@@ -135,9 +148,24 @@ impl Geometry {
     }
 }
 
+fn points_equal_with_fixed_zero_policy(left: Point3, right: Point3) -> bool {
+    [
+        (left.x(), right.x()),
+        (left.y(), right.y()),
+        (left.z(), right.z()),
+    ]
+    .into_iter()
+    .all(|(left, right)| {
+        let difference = (left - right).abs();
+        difference <= GEOMETRY_EQUALITY_SQRT_EPSILON
+            || difference <= (left.abs() + right.abs()) * GEOMETRY_EQUALITY_SQRT_EPSILON
+    })
+}
+
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
 pub(super) enum DuplicateGeometryFamily {
     Point,
+    PointCloud,
     PiecewiseLinear,
     Circle,
     Arc,
@@ -150,6 +178,7 @@ pub(super) enum DuplicateGeometryFamily {
 #[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 enum DuplicateGeometryKey {
     Point([u64; 3]),
+    PointCloud(Vec<[u64; 3]>),
     PiecewiseLinear(Vec<[u64; 3]>),
     Circle {
         center: [u64; 3],

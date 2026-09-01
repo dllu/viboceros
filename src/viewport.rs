@@ -282,6 +282,23 @@ impl Viewport {
                         });
                     (0, distance)
                 }
+                Geometry::PointCloud(cloud) => {
+                    let distance = self
+                        .unproject(pointer, rect, 0.0)
+                        .and_then(|query| {
+                            cloud
+                                .nearest_xy(
+                                    query,
+                                    Real::from(PICK_CAPTURE_PIXELS / self.pixels_per_unit),
+                                )
+                                .ok()
+                                .flatten()
+                        })
+                        .map_or(f32::INFINITY, |(_, _, distance)| {
+                            distance as f32 * self.pixels_per_unit
+                        });
+                    (0, distance)
+                }
                 Geometry::Line(line) => {
                     let distance = self
                         .project(line.start(), rect)
@@ -513,6 +530,16 @@ impl Viewport {
                     {
                         painter.circle_filled(center, 3.5, color);
                         painter.circle_stroke(center, 5.0, Stroke::new(1.0, color));
+                    }
+                }
+                Geometry::PointCloud(cloud) => {
+                    let radius = if selected { 3.5 } else { 2.5 };
+                    for point in cloud.points() {
+                        if let Some(center) = self.project(*point, rect)
+                            && rect.expand(radius).contains(center)
+                        {
+                            painter.circle_filled(center, radius, color);
+                        }
                     }
                 }
                 Geometry::Line(line) => {
@@ -1000,8 +1027,8 @@ mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
-        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, Polyline3,
-        Tolerance, TriangleMesh, UnitVector3,
+        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, PointCloud3,
+        Polyline3, Tolerance, TriangleMesh, UnitVector3,
     };
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
@@ -1047,7 +1074,7 @@ mod tests {
     }
 
     #[test]
-    fn picking_supports_points_lines_and_nurbs_curves() {
+    fn picking_supports_points_point_clouds_lines_and_nurbs_curves() {
         let viewport = Viewport::default();
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let mut document = Document::default();
@@ -1073,6 +1100,11 @@ mod tests {
                 .unwrap(),
             ))
             .unwrap();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![point(-5.0, 4.0, 8.0), point(2.0, 4.0, -3.0)]).unwrap(),
+            ))
+            .unwrap();
         document
             .add_geometry(Geometry::Point(point(0.0, 0.15, 0.0)))
             .unwrap();
@@ -1091,6 +1123,11 @@ mod tests {
         assert_eq!(
             viewport.pick_object(on_curve, rect, &document),
             Some(curve_id)
+        );
+        let near_cloud_point = viewport.project(point(2.1, 4.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(near_cloud_point, rect, &document),
+            Some(cloud_id)
         );
     }
 

@@ -6,8 +6,8 @@ use std::slice;
 
 use thiserror::Error;
 use viboceros_geometry::{
-    GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Tolerance, TriangleMesh,
-    WeightedPoint3,
+    GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Tolerance,
+    TriangleMesh, WeightedPoint3,
 };
 
 const ERROR_CAPACITY: usize = 4096;
@@ -16,6 +16,7 @@ const OBJECT_LINE: c_int = 2;
 const OBJECT_NURBS_CURVE: c_int = 3;
 const OBJECT_TRIANGLE_MESH: c_int = 4;
 const OBJECT_NURBS_SURFACE: c_int = 5;
+const OBJECT_POINT_CLOUD: c_int = 6;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -28,6 +29,7 @@ pub struct ThreeDmLayer {
 #[derive(Clone, Debug, PartialEq)]
 pub enum ThreeDmGeometry {
     Point(Point3),
+    PointCloud(PointCloud3),
     Line(LineSegment),
     NurbsCurve(NurbsCurve),
     NurbsSurface(NurbsSurface),
@@ -353,6 +355,24 @@ fn decode_object(
                 tolerance,
             )?)
         }
+        OBJECT_POINT_CLOUD
+            if info.degree_u == 0
+                && info.degree_v == 0
+                && info.control_point_count_u == 0
+                && info.control_point_count_v == 0
+                && !coordinates.is_empty()
+                && coordinates.len() % 3 == 0
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty() =>
+        {
+            ThreeDmGeometry::PointCloud(PointCloud3::try_new(
+                coordinates
+                    .chunks_exact(3)
+                    .map(point)
+                    .collect::<Result<Vec<_>, _>>()?,
+            )?)
+        }
         OBJECT_NURBS_CURVE
             if info.degree_u > 0
                 && info.degree_v == 0
@@ -506,6 +526,21 @@ impl ObjectPayload {
                     .to_array()
                     .into_iter()
                     .chain(line.end().to_array())
+                    .collect(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+            },
+            ThreeDmGeometry::PointCloud(cloud) => Self {
+                object_type: OBJECT_POINT_CLOUD,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: cloud
+                    .points()
+                    .iter()
+                    .flat_map(|point| point.to_array())
                     .collect(),
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
@@ -795,6 +830,12 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        let cloud = PointCloud3::try_new(vec![
+            Point3::try_new(-4.0, 2.0, 7.0).unwrap(),
+            Point3::try_new(8.0, -1.0, 3.0).unwrap(),
+            Point3::try_new(-4.0, 2.0, 7.0).unwrap(),
+        ])
+        .unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -812,6 +853,7 @@ mod tests {
             ],
             vec![
                 ThreeDmObject::new(ThreeDmGeometry::Point(point), 0),
+                ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud), 0),
                 ThreeDmObject {
                     geometry: ThreeDmGeometry::Line(line),
                     layer_index: 1,

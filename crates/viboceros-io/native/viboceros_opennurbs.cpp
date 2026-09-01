@@ -85,6 +85,23 @@ bool append_point(const ON_Point& point, BridgeObject& output) {
   return true;
 }
 
+bool append_point_cloud(const ON_PointCloud& cloud, BridgeObject& output) {
+  if (!cloud.IsValid() || cloud.PointCount() <= 0) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POINT_CLOUD;
+  output.coordinates.reserve(static_cast<size_t>(cloud.PointCount()) * 3);
+  for (int index = 0; index < cloud.PointCount(); ++index) {
+    const ON_3dPoint point = cloud[index];
+    if (!point.IsValid()) {
+      return false;
+    }
+    output.coordinates.insert(output.coordinates.end(),
+                              {point.x, point.y, point.z});
+  }
+  return true;
+}
+
 bool append_line(const ON_LineCurve& line, BridgeObject& output) {
   const ON_3dPoint start = line.PointAtStart();
   const ON_3dPoint end = line.PointAtEnd();
@@ -275,6 +292,26 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         return nullptr;
       }
       return line;
+    }
+    case VIBO_OBJECT_POINT_CLOUD: {
+      if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
+          source.coordinate_count / 3 >
+              static_cast<size_t>(std::numeric_limits<int>::max())) {
+        error = "point cloud dimensions are inconsistent";
+        return nullptr;
+      }
+      const size_t point_count = source.coordinate_count / 3;
+      auto* cloud = new ON_PointCloud(static_cast<int>(point_count));
+      for (size_t index = 0; index < point_count; ++index) {
+        const double* point = source.coordinates + index * 3;
+        cloud->AppendPoint(ON_3dPoint(point[0], point[1], point[2]));
+      }
+      if (!cloud->IsValid()) {
+        delete cloud;
+        error = "point cloud is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return cloud;
     }
     case VIBO_OBJECT_NURBS_CURVE: {
       if (source.degree_u == 0 ||
@@ -508,6 +545,8 @@ extern "C" int32_t vibo_3dm_read(const char* path,
       bool supported = false;
       if (const ON_Point* point = ON_Point::Cast(geometry)) {
         supported = append_point(*point, object);
+      } else if (const ON_PointCloud* cloud = ON_PointCloud::Cast(geometry)) {
+        supported = append_point_cloud(*cloud, object);
       } else if (const ON_LineCurve* line = ON_LineCurve::Cast(geometry)) {
         supported = append_line(*line, object);
       } else if (const ON_Mesh* mesh = ON_Mesh::Cast(geometry)) {

@@ -17,7 +17,9 @@ pub(super) struct PendingTransaction {
     pub edits: Vec<Edit>,
     pub object_ids: BTreeSet<ObjectId>,
     pub selection_before: BTreeSet<ObjectId>,
+    pub selection_order_before: Vec<ObjectId>,
     pub previous_selection_before: BTreeSet<ObjectId>,
+    pub previous_selection_order_before: Vec<ObjectId>,
 }
 
 #[derive(Clone, Debug, Default)]

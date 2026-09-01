@@ -133,6 +133,18 @@ pub fn nearest_object_snap(
                 ObjectSnapKind::Point,
                 *point,
             ),
+            Geometry::PointCloud(cloud) => {
+                if let Some((_, point, _)) = cloud.nearest_xy(cursor, capture_radius)? {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::Point,
+                        point,
+                    );
+                }
+            }
             Geometry::Line(line) => {
                 consider_candidate(
                     &mut best,
@@ -388,8 +400,8 @@ mod tests {
     use super::*;
     use viboceros_document::Geometry;
     use viboceros_geometry::{
-        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, Polyline3,
-        Tolerance, UnitVector3,
+        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, PointCloud3,
+        Polyline3, Tolerance, UnitVector3,
     };
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
@@ -446,6 +458,27 @@ mod tests {
         assert_eq!(snap.kind(), ObjectSnapKind::Point);
         assert_eq!(snap.object_id(), point_id);
         assert_eq!(snap.point().z(), 5.0);
+    }
+
+    #[test]
+    fn snaps_to_the_nearest_point_cloud_member_in_xy() {
+        let mut document = Document::default();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![
+                    point(-4.0, 2.0, 9.0),
+                    point(3.0, 5.0, -7.0),
+                    point(8.0, 1.0, 2.0),
+                ])
+                .unwrap(),
+            ))
+            .unwrap();
+        let snap = nearest_object_snap(&document, point(3.08, 5.02, 100.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(snap.object_id(), cloud_id);
+        assert_eq!(snap.kind(), ObjectSnapKind::Point);
+        assert_eq!(snap.point(), point(3.0, 5.0, -7.0));
     }
 
     #[test]

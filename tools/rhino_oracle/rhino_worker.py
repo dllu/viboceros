@@ -222,6 +222,282 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_point_cloud_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid()).replace("-", "")
+        default_layer_index = int(document.Layers.CurrentLayerIndex)
+        layer_indices = []
+        source_ids = []
+
+        def all_object_ids():
+            settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+            settings.NormalObjects = True
+            settings.LockedObjects = True
+            settings.HiddenObjects = True
+            return set(obj.Id for obj in document.Objects.GetObjectList(settings))
+
+        def layer_label(layer_index):
+            if layer_index == default_layer_index:
+                return "Current"
+            if layer_index == layer_indices[0]:
+                return "A"
+            if layer_index == layer_indices[1]:
+                return "B"
+            return "Unexpected"
+
+        def selected_labels():
+            labels = []
+            for label, object_id in zip(
+                ("line", "mesh", "cloud", "point"), source_ids
+            ):
+                rhino_object = document.Objects.FindId(object_id)
+                if (
+                    rhino_object is not None
+                    and rhino_object.IsSelected(False) != 0
+                ):
+                    labels.append(label)
+            return labels
+
+        def describe(ids):
+            values = []
+            for object_id in ids:
+                rhino_object = document.Objects.FindId(object_id)
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.PointCloud):
+                    geometry_type = "point_cloud"
+                    points = [_xyz(point) for point in geometry.GetPoints()]
+                elif isinstance(geometry, Rhino.Geometry.Point):
+                    geometry_type = "point"
+                    points = [_xyz(geometry.Location)]
+                else:
+                    geometry_type = str(rhino_object.ObjectType)
+                    points = []
+                values.append(
+                    {
+                        "layer": layer_label(
+                            int(rhino_object.Attributes.LayerIndex)
+                        ),
+                        "name": rhino_object.Attributes.Name,
+                        "points": points,
+                        "selected": rhino_object.IsSelected(False) != 0,
+                        "type": geometry_type,
+                    }
+                )
+            values.sort(
+                key=lambda value: (
+                    value["layer"],
+                    value["type"],
+                    value["points"],
+                )
+            )
+            return values
+
+        def delete_objects(ids):
+            document.Objects.UnselectAll()
+            for object_id in ids:
+                if not document.Objects.Delete(object_id, True):
+                    raise ValueError("could not delete point-cloud cycle output")
+
+        def run_extract(ids, output, output_layer):
+            document.Objects.UnselectAll()
+            before = all_object_ids()
+            command = (
+                "_-ExtractPt _OutputLayer=%s _Output=%s %s _Enter"
+                % (
+                    output_layer,
+                    output,
+                    " ".join("_SelID %s" % object_id for object_id in ids),
+                )
+            )
+            succeeded = bool(
+                Rhino.RhinoApp.RunScript(command, False)
+            )
+            new_ids = list(all_object_ids() - before)
+            value = {
+                "objects": describe(new_ids),
+                "source_selection": selected_labels(),
+                "succeeded": succeeded,
+            }
+            delete_objects(new_ids)
+            return value
+
+        try:
+            for label in ("A", "B"):
+                layer = Rhino.DocObjects.Layer()
+                layer.Name = "ViboPointCloud%s%s" % (label, suffix)
+                layer_index = document.Layers.Add(layer)
+                if layer_index < 0:
+                    raise ValueError("could not add point-cloud cycle layer")
+                layer_indices.append(layer_index)
+
+            line_attributes = Rhino.DocObjects.ObjectAttributes()
+            line_attributes.LayerIndex = layer_indices[0]
+            line_attributes.Name = "LineSource"
+            line_id = document.Objects.AddLine(
+                Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                Rhino.Geometry.Point3d(2.0, 0.0, 0.0),
+                line_attributes,
+            )
+            mesh_attributes = Rhino.DocObjects.ObjectAttributes()
+            mesh_attributes.LayerIndex = layer_indices[1]
+            mesh_attributes.Name = "MeshSource"
+            mesh_id = document.Objects.AddMesh(
+                _triangle_mesh(
+                    [[10.0, 0.0, 0.0], [12.0, 0.0, 0.0], [10.0, 2.0, 0.0]],
+                    [[0, 1, 2]],
+                ),
+                mesh_attributes,
+            )
+            cloud_attributes = Rhino.DocObjects.ObjectAttributes()
+            cloud_attributes.LayerIndex = layer_indices[0]
+            cloud_attributes.Name = "CloudSource"
+            cloud_id = document.Objects.AddPointCloud(
+                System.Array[Rhino.Geometry.Point3d](
+                    [
+                        Rhino.Geometry.Point3d(20.0, 0.0, 0.0),
+                        Rhino.Geometry.Point3d(21.0, 1.0, 0.0),
+                        Rhino.Geometry.Point3d(22.0, 0.0, 0.0),
+                    ]
+                ),
+                cloud_attributes,
+            )
+            point_attributes = Rhino.DocObjects.ObjectAttributes()
+            point_attributes.LayerIndex = layer_indices[1]
+            point_attributes.Name = "PointSource"
+            point_id = document.Objects.AddPoint(
+                Rhino.Geometry.Point3d(30.0, 0.0, 0.0), point_attributes
+            )
+            source_ids.extend([line_id, mesh_id, cloud_id, point_id])
+            if any(object_id == System.Guid.Empty for object_id in source_ids):
+                raise ValueError("could not add point-cloud cycle source")
+
+            value = {
+                "cloud_to_cloud_input": run_extract(
+                    [cloud_id], "_PointCloud", "_Input"
+                ),
+                "line_mesh_cloud_current": run_extract(
+                    [line_id, mesh_id, cloud_id], "_PointCloud", "_Current"
+                ),
+                "mesh_line_cloud_input": run_extract(
+                    [mesh_id, line_id], "_PointCloud", "_Input"
+                ),
+            }
+
+            document.Objects.UnselectAll()
+            value["sel_pt_succeeded"] = bool(
+                Rhino.RhinoApp.RunScript("_-SelPt", False)
+            )
+            value["sel_pt"] = selected_labels()
+            document.Objects.UnselectAll()
+            value["sel_pt_cloud_succeeded"] = bool(
+                Rhino.RhinoApp.RunScript("_-SelPtCloud", False)
+            )
+            value["sel_pt_cloud"] = selected_labels()
+
+            document.Objects.UnselectAll()
+            before_explode = all_object_ids()
+            value["explode_succeeded"] = bool(
+                Rhino.RhinoApp.RunScript(
+                    "_-Explode _SelID %s _Enter" % cloud_id, False
+                )
+            )
+            exploded_ids = list(all_object_ids() - before_explode)
+            value["explode"] = describe(exploded_ids)
+            value["explode_source_exists"] = document.Objects.FindId(cloud_id) is not None
+            delete_objects(exploded_ids)
+
+            equality_deltas = [
+                1.0e-16,
+                1.0e-15,
+                1.0e-14,
+                1.0e-13,
+                1.0e-12,
+                1.0e-11,
+                1.0e-10,
+                1.0e-9,
+                1.0e-8,
+                1.0e-7,
+            ]
+            equality_base = Rhino.Geometry.PointCloud(
+                [
+                    Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                    Rhino.Geometry.Point3d(4.0, 5.0, 6.0),
+                ]
+            )
+
+            def point_cloud_geometry_equals(left, right_points):
+                right = Rhino.Geometry.PointCloud(right_points)
+                try:
+                    return bool(
+                        Rhino.Geometry.GeometryBase.GeometryEquals(left, right)
+                    )
+                finally:
+                    right.Dispose()
+
+            try:
+                value["geometry_equals_delta"] = [
+                    point_cloud_geometry_equals(
+                        equality_base,
+                        [
+                            Rhino.Geometry.Point3d(1.0 + delta, 2.0, 3.0),
+                            Rhino.Geometry.Point3d(4.0, 5.0, 6.0),
+                        ],
+                    )
+                    for delta in equality_deltas
+                ]
+                value["geometry_equals_reversed"] = point_cloud_geometry_equals(
+                    equality_base,
+                    [
+                        Rhino.Geometry.Point3d(4.0, 5.0, 6.0),
+                        Rhino.Geometry.Point3d(1.0, 2.0, 3.0),
+                    ],
+                )
+                relative_equals = []
+                for scale in (1.0, 1.0e3, 1.0e6, 1.0e9):
+                    relative_base = Rhino.Geometry.PointCloud(
+                        [
+                            Rhino.Geometry.Point3d(scale, 0.0, 0.0),
+                            Rhino.Geometry.Point3d(0.0, scale, 0.0),
+                        ]
+                    )
+                    try:
+                        relative_equals.append(
+                            point_cloud_geometry_equals(
+                                relative_base,
+                                [
+                                    Rhino.Geometry.Point3d(
+                                        scale * (1.0 + 1.0e-10), 0.0, 0.0
+                                    ),
+                                    Rhino.Geometry.Point3d(0.0, scale, 0.0),
+                                ],
+                            )
+                        )
+                    finally:
+                        relative_base.Dispose()
+                value["geometry_equals_relative_delta"] = relative_equals
+            finally:
+                equality_base.Dispose()
+
+            query_cloud = Rhino.Geometry.PointCloud(
+                [
+                    Rhino.Geometry.Point3d(
+                        float(index % 64), float(index // 64), 0.0
+                    )
+                    for index in iteration_range(4096)
+                ]
+            )
+            query = Rhino.Geometry.Point3d(31.25, 27.75, 0.0)
+            _unused, elapsed = _measure(
+                iterations, lambda: query_cloud.ClosestPoint(query)
+            )
+            query_cloud.Dispose()
+            return value, elapsed
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in source_ids:
+                document.Objects.Delete(object_id, True)
+            for layer_index in reversed(layer_indices):
+                document.Layers.Delete(layer_index, True)
     if kind == "document_layer_assignment_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid()).replace("-", "")

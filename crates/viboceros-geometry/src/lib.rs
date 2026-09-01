@@ -16,6 +16,7 @@ mod nurbs;
 mod nurbs_surface;
 mod plane;
 mod point;
+mod point_cloud;
 mod polyline;
 mod tolerance;
 mod transform;
@@ -32,6 +33,7 @@ pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
+pub use point_cloud::PointCloud3;
 pub use polyline::{
     JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, PolylineClosure, join_polylines,
 };
