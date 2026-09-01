@@ -27,7 +27,7 @@ pub use curve::{CurveRef, MAX_CURVE_DIVISION_POINTS};
 pub use ellipse::Ellipse3;
 pub use error::GeometryError;
 pub use line::LineSegment;
-pub use mesh::TriangleMesh;
+pub use mesh::{MeshTopology, TriangleMesh};
 pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;
 pub use plane::{Plane, intersect_three_planes};

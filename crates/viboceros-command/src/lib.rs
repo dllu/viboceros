@@ -95,6 +95,8 @@ impl CommandRegistry {
             ("SelPt", GeometrySelectionFilter::Point),
             ("SelSrf", GeometrySelectionFilter::Surface),
             ("SelMesh", GeometrySelectionFilter::Mesh),
+            ("SelOpenMesh", GeometrySelectionFilter::OpenMesh),
+            ("SelClosedMesh", GeometrySelectionFilter::ClosedMesh),
         ] {
             registry
                 .register(SelectGeometryCommand { name, filter })
@@ -777,6 +779,8 @@ enum GeometrySelectionFilter {
     Point,
     Surface,
     Mesh,
+    OpenMesh,
+    ClosedMesh,
 }
 
 impl GeometrySelectionFilter {
@@ -796,6 +800,14 @@ impl GeometrySelectionFilter {
             Self::Point => matches!(geometry, Geometry::Point(_)),
             Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
+            Self::OpenMesh => match geometry {
+                Geometry::Mesh(mesh) => !mesh.topology().is_closed(),
+                _ => false,
+            },
+            Self::ClosedMesh => match geometry {
+                Geometry::Mesh(mesh) => mesh.topology().is_closed(),
+                _ => false,
+            },
         };
         Ok(matches)
     }
@@ -2405,7 +2417,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelPolyline, SelPt, SelSrf, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -3485,6 +3497,21 @@ mod tests {
                 .unwrap(),
             ))
             .unwrap();
+        document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        Point3::try_new(20.0, 10.0, 0.0).unwrap(),
+                        Point3::try_new(22.0, 10.0, 0.0).unwrap(),
+                        Point3::try_new(20.0, 12.0, 0.0).unwrap(),
+                        Point3::try_new(20.0, 10.0, 2.0).unwrap(),
+                    ],
+                    vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
         let history = document.undo_label().map(str::to_owned);
 
         assert_eq!(
@@ -3509,18 +3536,32 @@ mod tests {
         );
         assert_eq!(
             registry.execute(&mut document, "SelMesh").unwrap(),
-            "Selected 8 object(s)"
+            "Selected 9 object(s)"
         );
         assert_eq!(document.undo_label(), history.as_deref());
-        assert_eq!(document.objects().len(), 10);
+        assert_eq!(document.objects().len(), 11);
         assert_eq!(
             document
                 .objects()
                 .filter(|object| document.is_selected(object.id()))
                 .count(),
-            8
+            9
         );
 
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelOpenMesh").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelClosedMesh").unwrap(),
+            "Selected 2 object(s)"
+        );
+        assert!(
+            document
+                .selected_objects()
+                .all(|object| matches!(object.geometry(), Geometry::Mesh(_)))
+        );
         registry.execute(&mut document, "SelNone").unwrap();
         assert_eq!(
             registry.execute(&mut document, "SelLine").unwrap(),

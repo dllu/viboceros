@@ -36,6 +36,8 @@ SelPolyline
 SelPt
 SelSrf
 SelMesh
+SelOpenMesh
+SelClosedMesh
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
@@ -89,9 +91,10 @@ nearby ends are made identical, while wider gaps gain a straight segment unless
 `CloseWideGapsWithLine=No` is set. Lines that cannot form a valid three-segment
 loop remain unchanged. Open arcs and NURBS curves will be enabled once the
 document has an exact polycurve representation.
-Rhino-compatible `SelCrv`, open/closed curve, line, polyline, point, surface,
-and mesh filters add visible, unlocked objects of the requested type to the
-current selection.
+Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
+filters add visible, unlocked objects of the requested type to the current
+selection. Mesh closure uses exact location-welded edge topology, so indexed
+meshes and STL-style triangle soup classify consistently.
 `Flip` (aliases `Reverse` and `Rev`) reverses selected curve directions without
 changing object identities, attributes, groups, or closed-curve seams.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
