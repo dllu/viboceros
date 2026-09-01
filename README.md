@@ -48,6 +48,7 @@ SelSrf
 SelMesh
 SelOpenMesh
 SelClosedMesh
+SelColor 12,34,56
 SelName "Fastener *"
 SelLayer "Construction *"
 SelGroup Assembly
@@ -62,6 +63,8 @@ Mirror 0,-5 0,5
 Group Assembly
 Group All Everything
 SetObjectName "Fastener Part" AppendCounter=Yes
+SetObjectColor 12,34,56
+SetObjectColor ByLayer
 Ungroup
 Ungroup Assembly
 Join
@@ -171,6 +174,10 @@ expanding overlapping groups; `SelName ""` selects unnamed objects. `SelGroup`
 uses Rhino's exact, case-sensitive group names. Matching hidden or locked layers
 with `SelLayer` makes those layers visible and unlocked outside undo history,
 while object-level hidden and locked states remain untouched.
+`SelColor r,g,b` adds visible, unlocked, ungrouped objects with that resolved
+display color; as in Rhino, objects contained in groups are skipped. ByLayer
+objects use their layer color; material- and parent-sourced objects currently
+use the same documented fallback as the viewport.
 `SelDup` adds every visible, unlocked geometric copy except one deterministic
 document-order original per class; `SelDupAll` includes those originals.
 Equality is independent of object properties, groups, and document tolerance,
@@ -183,6 +190,12 @@ indexing, face order, and winding must match.
 `AppendCounter=Yes` for Rhino's zero-based suffixes in document order, or use
 `SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style
 `Group01`, `Group02`, ... names; explicit group names are case-sensitive.
+`SetObjectColor r,g,b` assigns Rhino-style per-object display color to the
+selection; `SetObjectColor ByLayer` restores layer-driven display while
+retaining the stored object color. Selection and locked-object colors still
+take visual precedence. Material- and parent-sourced colors are preserved in
+3DM files and currently fall back to layer color until materials and instance
+definitions are implemented.
 `ChangeLayer` moves selected objects without changing their identities, groups,
 or the current layer. `CopyToLayer` skips selected objects already on the target,
 copies each remaining group subset into a fresh automatic group, and leaves the
@@ -268,8 +281,9 @@ Python/RhinoCommon bridge.
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
 curves, untrimmed NURBS surfaces, triangle meshes, layer state, and object
-state. Named group definitions and ordered membership are preserved, including
-overlapping and empty groups. Circles, arcs,
+state, including the raw RGB display color and its layer/object/material/parent
+source. Named group definitions and ordered membership are preserved,
+including overlapping and empty groups. Circles, arcs,
 ellipses, and polylines are exported without approximation as rational NURBS
 curves; canonical degree-one curves return as editable polylines. Unsupported
 trimmed B-rep and solid objects are counted and reported during import. Initial

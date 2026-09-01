@@ -31,6 +31,15 @@ pub struct ThreeDmGroup {
     pub name: String,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[repr(u8)]
+pub enum ThreeDmColorSource {
+    Layer = 0,
+    Object = 1,
+    Material = 2,
+    Parent = 3,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum ThreeDmGeometry {
     Point(Point3),
@@ -48,6 +57,8 @@ pub struct ThreeDmObject {
     pub name: Option<String>,
     pub visible: bool,
     pub locked: bool,
+    pub object_color: [u8; 3],
+    pub color_source: ThreeDmColorSource,
     /// Indices into [`ThreeDmModel::groups`] in source-attribute order.
     pub group_indices: Vec<usize>,
 }
@@ -60,6 +71,8 @@ impl ThreeDmObject {
             name: None,
             visible: true,
             locked: false,
+            object_color: [0, 0, 0],
+            color_source: ThreeDmColorSource::Layer,
             group_indices: Vec::new(),
         }
     }
@@ -206,6 +219,10 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
             visible: u8::from(object.visible),
             locked: u8::from(object.locked),
+            color_source: object.color_source as u8,
+            color_red: object.object_color[0],
+            color_green: object.object_color[1],
+            color_blue: object.object_color[2],
             degree_u: payload.degree_u,
             degree_v: payload.degree_v,
             control_point_count_u: payload.control_point_count_u,
@@ -398,6 +415,13 @@ fn decode_object(
         let name = c_text(info.name)?;
         (!name.is_empty()).then_some(name)
     };
+    let color_source = match info.color_source {
+        0 => ThreeDmColorSource::Layer,
+        1 => ThreeDmColorSource::Object,
+        2 => ThreeDmColorSource::Material,
+        3 => ThreeDmColorSource::Parent,
+        _ => return Err(ThreeDmError::MalformedBridge("invalid object color source")),
+    };
 
     let geometry = match info.object_type {
         OBJECT_POINT
@@ -527,6 +551,8 @@ fn decode_object(
         name,
         visible: info.visible != 0,
         locked: info.locked != 0,
+        object_color: [info.color_red, info.color_green, info.color_blue],
+        color_source,
         group_indices,
     })
 }
@@ -784,6 +810,10 @@ mod ffi {
         pub name: *const c_char,
         pub visible: u8,
         pub locked: u8,
+        pub color_source: u8,
+        pub color_red: u8,
+        pub color_green: u8,
+        pub color_blue: u8,
         pub degree_u: u32,
         pub degree_v: u32,
         pub control_point_count_u: usize,
@@ -817,6 +847,10 @@ mod ffi {
         pub name: *const c_char,
         pub visible: u8,
         pub locked: u8,
+        pub color_source: u8,
+        pub color_red: u8,
+        pub color_green: u8,
+        pub color_blue: u8,
         pub degree_u: u32,
         pub degree_v: u32,
         pub control_point_count_u: usize,
@@ -973,10 +1007,13 @@ mod tests {
             vec![
                 ThreeDmObject {
                     group_indices: vec![0],
+                    object_color: [12, 34, 56],
+                    color_source: ThreeDmColorSource::Object,
                     ..ThreeDmObject::new(ThreeDmGeometry::Point(point), 0)
                 },
                 ThreeDmObject {
                     group_indices: vec![0, 1],
+                    object_color: [7, 8, 9],
                     ..ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud), 0)
                 },
                 ThreeDmObject {
@@ -985,9 +1022,15 @@ mod tests {
                     name: Some("guide".to_owned()),
                     visible: true,
                     locked: true,
+                    object_color: [90, 80, 70],
+                    color_source: ThreeDmColorSource::Parent,
                     group_indices: vec![1],
                 },
-                ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve), 0),
+                ThreeDmObject {
+                    object_color: [4, 5, 6],
+                    color_source: ThreeDmColorSource::Material,
+                    ..ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve), 0)
+                },
                 ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0),
             ],

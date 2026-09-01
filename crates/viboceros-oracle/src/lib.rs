@@ -19,8 +19,8 @@ use viboceros_geometry::{
     WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
-    ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject,
-    read_3dm_file, write_3dm_file,
+    ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
+    ThreeDmObject, read_3dm_file, write_3dm_file,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -1315,6 +1315,7 @@ fn document_attribute_selection_cycle(iterations: u32) -> Result<(Value, u64), P
     let default_layer = document.current_layer_id();
     let hidden_layer = document.add_layer("Hidden Parts", ColorRgb::new(10, 20, 30))?;
     let locked_layer = document.add_layer("Locked Parts", ColorRgb::new(40, 50, 60))?;
+    let selected_color = ColorRgb::new(10, 20, 30);
     let specifications = [
         (default_layer, None, true, false),
         (default_layer, Some("BoltA"), true, false),
@@ -1335,6 +1336,9 @@ fn document_attribute_selection_cycle(iterations: u32) -> Result<(Value, u64), P
             .with_locked(locked);
         if let Some(name) = name {
             attributes = attributes.with_name(name);
+        }
+        if [0, 1, 5, 6].contains(&index) {
+            attributes = attributes.with_object_color(selected_color);
         }
         object_ids.push(document.add_geometry_with_attributes(
             Geometry::Point(Point3::try_new(index as f64, 0.0, 0.0)?),
@@ -1381,9 +1385,17 @@ fn document_attribute_selection_cycle(iterations: u32) -> Result<(Value, u64), P
             .layer(locked_layer)
             .is_some_and(|layer| layer.is_locked());
         let all_layers_count = document.select_layer_objects_by_name_pattern("*")?;
+        let all_layers = document_selected_indices(&document, &object_ids);
+
+        document.clear_selection();
+        document.select_objects_direct([object_ids[9]], SelectionMode::Replace)?;
+        let color_count = document.select_objects_by_display_color(selected_color)?;
+        let color = document_selected_indices(&document, &object_ids);
         Ok(json!({
-            "all_layers": document_selected_indices(&document, &object_ids),
+            "all_layers": all_layers,
             "all_layers_count": all_layers_count,
+            "color": color,
+            "color_count": color_count,
             "group_lower": group_lower,
             "group_lower_count": group_lower_count,
             "group_upper": group_upper,
@@ -1595,22 +1607,50 @@ fn three_dm_group_round_trip(
 ) -> Result<(Value, u64), ProbeError> {
     let path = OracleTemporaryFile::new("groups");
     let objects = [
-        ("P0", [0.0, 0.0, 0.0], vec![0]),
-        ("P1", [1.0, 0.0, 0.0], vec![0, 1]),
-        ("P2", [2.0, 0.0, 0.0], vec![1]),
-        ("P3", [3.0, 0.0, 0.0], Vec::new()),
+        (
+            "P0",
+            [0.0, 0.0, 0.0],
+            vec![0],
+            [12, 34, 56],
+            ThreeDmColorSource::Object,
+        ),
+        (
+            "P1",
+            [1.0, 0.0, 0.0],
+            vec![0, 1],
+            [23, 45, 67],
+            ThreeDmColorSource::Layer,
+        ),
+        (
+            "P2",
+            [2.0, 0.0, 0.0],
+            vec![1],
+            [34, 56, 78],
+            ThreeDmColorSource::Material,
+        ),
+        (
+            "P3",
+            [3.0, 0.0, 0.0],
+            Vec::new(),
+            [45, 67, 89],
+            ThreeDmColorSource::Parent,
+        ),
     ]
     .into_iter()
-    .map(|(name, location, group_indices)| {
-        Ok::<_, GeometryError>(ThreeDmObject {
-            geometry: ThreeDmGeometry::Point(point(location)?),
-            layer_index: 0,
-            name: Some(name.to_owned()),
-            visible: true,
-            locked: false,
-            group_indices,
-        })
-    })
+    .map(
+        |(name, location, group_indices, object_color, color_source)| {
+            Ok::<_, GeometryError>(ThreeDmObject {
+                geometry: ThreeDmGeometry::Point(point(location)?),
+                layer_index: 0,
+                name: Some(name.to_owned()),
+                visible: true,
+                locked: false,
+                object_color,
+                color_source,
+                group_indices,
+            })
+        },
+    )
     .collect::<Result<Vec<_>, _>>()?;
     let source = ThreeDmModel::new(
         vec![ThreeDmLayer {
@@ -1666,9 +1706,26 @@ fn three_dm_group_round_trip(
                 .collect::<Vec<_>>()
         })
         .collect::<Vec<_>>();
+    let object_colors = decoded
+        .objects
+        .iter()
+        .map(|object| object.object_color)
+        .collect::<Vec<_>>();
+    let color_sources = decoded
+        .objects
+        .iter()
+        .map(|object| match object.color_source {
+            ThreeDmColorSource::Layer => "layer",
+            ThreeDmColorSource::Object => "object",
+            ThreeDmColorSource::Material => "material",
+            ThreeDmColorSource::Parent => "parent",
+        })
+        .collect::<Vec<_>>();
     let value = json!({
+        "color_sources": color_sources,
         "group_members": group_members,
         "group_names": group_names,
+        "object_colors": object_colors,
         "object_groups": object_groups,
         "unsupported_object_count": decoded.unsupported_object_count(),
     });
@@ -2612,6 +2669,8 @@ mod tests {
             json!({
                 "all_layers": [0, 1, 2, 3, 4, 7, 9],
                 "all_layers_count": 7,
+                "color": [0, 7, 9],
+                "color_count": 3,
                 "group_lower": [0, 1, 2, 4],
                 "group_lower_count": 4,
                 "group_upper": [0, 1, 4],
@@ -2751,8 +2810,15 @@ mod tests {
         assert_eq!(
             response.results[0].value,
             json!({
+                "color_sources": ["object", "layer", "material", "parent"],
                 "group_members": [[0, 1], [1, 2], []],
                 "group_names": ["Assembly α", "Inspection", "Empty Group"],
+                "object_colors": [
+                    [12, 34, 56],
+                    [23, 45, 67],
+                    [34, 56, 78],
+                    [45, 67, 89],
+                ],
                 "object_groups": [
                     ["Assembly α"],
                     ["Assembly α", "Inspection"],

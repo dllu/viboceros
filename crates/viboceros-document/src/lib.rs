@@ -106,6 +106,14 @@ impl ColorRgb {
     }
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ObjectColorSource {
+    Layer,
+    Object,
+    Material,
+    Parent,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum Geometry {
     Point(Point3),
@@ -194,6 +202,8 @@ impl Geometry {
 pub struct ObjectAttributes {
     name: Option<String>,
     layer_id: LayerId,
+    object_color: ColorRgb,
+    color_source: ObjectColorSource,
     visible: bool,
     locked: bool,
 }
@@ -203,6 +213,8 @@ impl ObjectAttributes {
         Self {
             name: None,
             layer_id,
+            object_color: ColorRgb::BLACK,
+            color_source: ObjectColorSource::Layer,
             visible: true,
             locked: false,
         }
@@ -216,6 +228,17 @@ impl ObjectAttributes {
         let name = name.into();
         let name = name.trim();
         self.name = (!name.is_empty()).then(|| name.to_owned());
+        self
+    }
+
+    pub const fn with_object_color(mut self, color: ColorRgb) -> Self {
+        self.object_color = color;
+        self.color_source = ObjectColorSource::Object;
+        self
+    }
+
+    pub const fn with_color_source(mut self, source: ObjectColorSource) -> Self {
+        self.color_source = source;
         self
     }
 
@@ -242,6 +265,25 @@ impl ObjectAttributes {
 
     pub const fn layer_id(&self) -> LayerId {
         self.layer_id
+    }
+
+    pub const fn object_color(&self) -> ColorRgb {
+        self.object_color
+    }
+
+    pub const fn color_source(&self) -> ObjectColorSource {
+        self.color_source
+    }
+
+    /// Resolves display color in the current material- and instance-free
+    /// document model. Material and parent sources fall back to the layer.
+    pub const fn display_color(&self, layer_color: ColorRgb) -> ColorRgb {
+        match self.color_source {
+            ObjectColorSource::Object => self.object_color,
+            ObjectColorSource::Layer | ObjectColorSource::Material | ObjectColorSource::Parent => {
+                layer_color
+            }
+        }
     }
 
     pub const fn is_visible(&self) -> bool {
@@ -809,6 +851,32 @@ impl Document {
         self.apply_selection_mode(matches, SelectionMode::Add)
     }
 
+    /// Adds selectable, ungrouped objects with the resolved display color.
+    /// Rhino's `SelColor` ignores every object contained in a group.
+    pub fn select_objects_by_display_color(
+        &mut self,
+        color: ColorRgb,
+    ) -> Result<usize, DocumentError> {
+        let grouped_objects = self
+            .groups
+            .iter()
+            .flat_map(|group| group.members.iter().copied())
+            .collect::<BTreeSet<_>>();
+        let mut matches = BTreeSet::new();
+        for object in &self.objects {
+            if grouped_objects.contains(&object.id) || !self.is_object_selectable(object.id) {
+                continue;
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if object.attributes.display_color(layer.color) == color {
+                matches.insert(object.id);
+            }
+        }
+        Ok(self.apply_selection_mode(matches, SelectionMode::Add))
+    }
+
     /// Directly adds the selectable members of an exact, case-sensitive named
     /// group without expanding any overlapping groups.
     pub fn select_group_objects_by_name(&mut self, name: &str) -> usize {
@@ -1050,53 +1118,29 @@ impl Document {
                 (id, name)
             })
             .collect::<BTreeMap<_, _>>();
-        if assignments.is_empty() {
-            return Ok(0);
-        }
-        if let Some(missing) = assignments.keys().find(|id| self.object(**id).is_none()) {
-            return Err(DocumentError::ObjectNotFound(*missing));
-        }
+        self.change_editable_objects(assignments.keys().copied(), "Set object name", |object| {
+            object.attributes.name = assignments
+                .get(&object.id)
+                .expect("the requested object id is retained")
+                .clone();
+        })
+    }
 
-        let mut staged = Vec::with_capacity(assignments.len());
-        for (index, object) in self.objects.iter().enumerate() {
-            let Some(name) = assignments.get(&object.id) else {
-                continue;
-            };
-            if object.attributes.locked {
-                return Err(DocumentError::ObjectLocked(object.id));
+    /// Atomically assigns an explicit display color, or restores layer color,
+    /// while retaining object identity, geometry, layers, groups, and selection.
+    pub fn set_objects_color(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        color: Option<ColorRgb>,
+    ) -> Result<usize, DocumentError> {
+        self.change_editable_objects(ids, "Set object color", |object| {
+            if let Some(color) = color {
+                object.attributes.object_color = color;
+                object.attributes.color_source = ObjectColorSource::Object;
+            } else {
+                object.attributes.color_source = ObjectColorSource::Layer;
             }
-            let layer = self
-                .layer(object.attributes.layer_id)
-                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
-            if layer.locked {
-                return Err(DocumentError::LayerLocked(layer.id));
-            }
-            if &object.attributes.name == name {
-                continue;
-            }
-            let before = object.clone();
-            let mut after = before.clone();
-            after.attributes.name = name.clone();
-            staged.push((index, before, after));
-        }
-        if staged.is_empty() {
-            return Ok(0);
-        }
-
-        let changed_count = staged.len();
-        let owns_transaction = self.history.active.is_none();
-        if owns_transaction {
-            self.begin_transaction("Set object name")?;
-        }
-        for (index, before, after) in staged {
-            let id = before.id;
-            self.objects[index] = after.clone();
-            self.record_edit("Set object name", Edit::ObjectChanged { id, before, after });
-        }
-        if owns_transaction {
-            self.commit_transaction()?;
-        }
-        Ok(changed_count)
+        })
     }
 
     /// Swaps normal and hidden object modes on visible, unlocked layers.
@@ -1759,6 +1803,61 @@ impl Document {
             self.record_edit(label, Edit::ObjectChanged { id, before, after });
         }
         self.prune_selection();
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(changed_count)
+    }
+
+    fn change_editable_objects(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        label: &'static str,
+        change: impl Fn(&mut Object),
+    ) -> Result<usize, DocumentError> {
+        let ids = ids.into_iter().collect::<BTreeSet<_>>();
+        if ids.is_empty() {
+            return Ok(0);
+        }
+        if let Some(missing) = ids.iter().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+
+        let mut staged = Vec::with_capacity(ids.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            if !ids.contains(&object.id) {
+                continue;
+            }
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            let before = object.clone();
+            let mut after = before.clone();
+            change(&mut after);
+            if before != after {
+                staged.push((index, before, after));
+            }
+        }
+        if staged.is_empty() {
+            return Ok(0);
+        }
+
+        let changed_count = staged.len();
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction(label)?;
+        }
+        for (index, before, after) in staged {
+            let id = before.id;
+            self.objects[index] = after.clone();
+            self.record_edit(label, Edit::ObjectChanged { id, before, after });
+        }
         if owns_transaction {
             self.commit_transaction()?;
         }
@@ -2644,6 +2743,82 @@ mod tests {
                 (first, Some("Changed".to_owned())),
                 (locked, Some("Locked".to_owned())),
             ]),
+            Err(DocumentError::ObjectLocked(locked))
+        );
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+    }
+
+    #[test]
+    fn object_colors_are_source_aware_atomic_and_reversible() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(point(1.0, 0.0, 0.0)))
+            .unwrap();
+        let locked = document
+            .add_geometry_with_attributes(
+                Geometry::Point(point(2.0, 0.0, 0.0)),
+                ObjectAttributes::on_layer(document.current_layer_id())
+                    .with_object_color(ColorRgb::new(7, 8, 9))
+                    .with_color_source(ObjectColorSource::Material),
+            )
+            .unwrap();
+        let group = document
+            .add_group(Some("Colors".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        let color = ColorRgb::new(120, 45, 210);
+        assert_eq!(
+            document
+                .set_objects_color([first, second], Some(color))
+                .unwrap(),
+            2
+        );
+        assert_eq!(document.undo_label(), Some("Set object color"));
+        for id in [first, second] {
+            let attributes = document.object(id).unwrap().attributes();
+            assert_eq!(attributes.object_color(), color);
+            assert_eq!(attributes.color_source(), ObjectColorSource::Object);
+        }
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+        assert_eq!(
+            document
+                .set_objects_color([first, second], Some(color))
+                .unwrap(),
+            0
+        );
+
+        assert_eq!(document.set_objects_color([first], None).unwrap(), 1);
+        let first_attributes = document.object(first).unwrap().attributes();
+        assert_eq!(first_attributes.color_source(), ObjectColorSource::Layer);
+        assert_eq!(first_attributes.object_color(), color);
+        document.undo().unwrap();
+        assert_eq!(
+            document.object(first).unwrap().attributes().color_source(),
+            ObjectColorSource::Object
+        );
+        document.redo().unwrap();
+        assert_eq!(
+            document.object(first).unwrap().attributes().color_source(),
+            ObjectColorSource::Layer
+        );
+
+        let locked_attributes = document.object(locked).unwrap().attributes();
+        assert_eq!(
+            locked_attributes.color_source(),
+            ObjectColorSource::Material
+        );
+        assert_eq!(locked_attributes.object_color(), ColorRgb::new(7, 8, 9));
+        document.set_objects_locked([locked], true).unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert_eq!(
+            document.set_objects_color([second, locked], Some(ColorRgb::new(1, 2, 3))),
             Err(DocumentError::ObjectLocked(locked))
         );
         assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);

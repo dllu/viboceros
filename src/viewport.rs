@@ -1,7 +1,7 @@
 use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
 };
-use viboceros_document::{Document, Geometry, ObjectId, SelectionMode};
+use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
@@ -501,11 +501,11 @@ impl Viewport {
                 continue;
             }
 
-            let layer_color = layer.color();
+            let display_color = resolved_display_color(attributes, layer.color());
             let mut color = if attributes.is_locked() || layer.is_locked() {
                 LOCKED_COLOR
             } else {
-                Color32::from_rgb(layer_color.red, layer_color.green, layer_color.blue)
+                display_color
             };
             if self.display_mode == DisplayMode::Ghosted {
                 color = Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 110);
@@ -1012,6 +1012,11 @@ fn blend_toward_white(color: Color32, amount: f32) -> Color32 {
     Color32::from_rgb(blend(color.r()), blend(color.g()), blend(color.b()))
 }
 
+fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) -> Color32 {
+    let color = attributes.display_color(layer_color);
+    Color32::from_rgb(color.red, color.green, color.blue)
+}
+
 fn shaded_color(color: Color32, normal: UnitVector3) -> Color32 {
     // A fixed camera-space key light keeps the placeholder top viewport
     // deterministic while making face orientation legible.
@@ -1052,6 +1057,29 @@ mod tests {
         let lit = shaded_color(Color32::BLACK, up);
         let unlit = shaded_color(Color32::BLACK, down);
         assert!(lit.r() > unlit.r());
+    }
+
+    #[test]
+    fn object_color_overrides_layer_color_only_for_object_source() {
+        let object = ColorRgb::new(12, 34, 56);
+        let layer = ColorRgb::new(78, 90, 123);
+        let document = Document::default();
+        let base =
+            ObjectAttributes::on_layer(document.current_layer_id()).with_object_color(object);
+        assert_eq!(
+            resolved_display_color(&base, layer),
+            Color32::from_rgb(12, 34, 56)
+        );
+        for source in [
+            viboceros_document::ObjectColorSource::Layer,
+            viboceros_document::ObjectColorSource::Material,
+            viboceros_document::ObjectColorSource::Parent,
+        ] {
+            assert_eq!(
+                resolved_display_color(&base.clone().with_color_source(source), layer),
+                Color32::from_rgb(78, 90, 123)
+            );
+        }
     }
 
     #[test]

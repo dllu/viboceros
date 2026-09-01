@@ -37,6 +37,10 @@ struct BridgeObject {
   std::string name;
   uint8_t visible = 1;
   uint8_t locked = 0;
+  uint8_t color_source = 0;
+  uint8_t color_red = 0;
+  uint8_t color_green = 0;
+  uint8_t color_blue = 0;
   uint32_t degree_u = 0;
   uint32_t degree_v = 0;
   size_t control_point_count_u = 0;
@@ -262,6 +266,10 @@ ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
   } else {
     attributes->SetMode(ON::normal_object);
   }
+  attributes->m_color =
+      ON_Color(source.color_red, source.color_green, source.color_blue);
+  attributes->SetColorSource(
+      static_cast<ON::object_color_source>(source.color_source));
   return attributes;
 }
 
@@ -556,6 +564,11 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         object.visible = static_cast<uint8_t>(attributes->IsVisible());
         object.locked = static_cast<uint8_t>(attributes->Mode() ==
                                              ON::locked_object);
+        object.color_source =
+            static_cast<uint8_t>(attributes->ColorSource());
+        object.color_red = static_cast<uint8_t>(attributes->m_color.Red());
+        object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
+        object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
         const int group_count = attributes->GroupCount();
         const int* group_list = attributes->GroupList();
         if (group_count > 0 && group_list == nullptr) {
@@ -673,6 +686,10 @@ extern "C" int32_t vibo_3dm_object(
            object.name.c_str(),
            object.visible,
            object.locked,
+           object.color_source,
+           object.color_red,
+           object.color_green,
+           object.color_blue,
            object.degree_u,
            object.degree_v,
            object.control_point_count_u,
@@ -781,6 +798,12 @@ extern "C" int32_t vibo_3dm_write(
       if (source.layer_index >= layer_indices.size()) {
         set_error(error, error_capacity,
                   "3DM object references a missing layer");
+        return 0;
+      }
+      if (source.color_source >
+          static_cast<uint8_t>(ON::color_from_parent)) {
+        set_error(error, error_capacity,
+                  "3DM object has an invalid color source");
         return 0;
       }
       if (source.group_index_count != 0 && source.group_indices == nullptr) {

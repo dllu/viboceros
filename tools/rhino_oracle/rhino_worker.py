@@ -263,10 +263,27 @@ def _execute(operation, iterations, tolerance):
                 _record_progress("three_dm_group_round_trip: group added")
 
             memberships = [[0], [0, 1], [1], []]
+            object_colors = [
+                [12, 34, 56],
+                [23, 45, 67],
+                [34, 56, 78],
+                [45, 67, 89],
+            ]
+            color_sources = [
+                Rhino.DocObjects.ObjectColorSource.ColorFromObject,
+                Rhino.DocObjects.ObjectColorSource.ColorFromLayer,
+                Rhino.DocObjects.ObjectColorSource.ColorFromMaterial,
+                Rhino.DocObjects.ObjectColorSource.ColorFromParent,
+            ]
             for object_index, membership in enumerate(memberships):
                 attributes = Rhino.DocObjects.ObjectAttributes()
                 attributes.LayerIndex = layer_index
                 attributes.Name = "P%d" % object_index
+                color = object_colors[object_index]
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(
+                    color[0], color[1], color[2]
+                )
+                attributes.ColorSource = color_sources[object_index]
                 for group_position in membership:
                     attributes.AddToGroup(group_indices[group_position])
                 object_id = model.Objects.AddPoint(
@@ -305,6 +322,8 @@ def _execute(operation, iterations, tolerance):
             # invert the persisted ObjectAttributes lists instead.
             group_members = [[] for _group in decoded_groups]
             object_groups = []
+            decoded_object_colors = []
+            decoded_color_sources = []
             for object_position, item in enumerate(decoded_objects):
                 _record_progress(
                     "three_dm_group_round_trip: reading object %s groups"
@@ -317,10 +336,27 @@ def _execute(operation, iterations, tolerance):
                 )
                 for index in indices:
                     group_members[group_positions_by_index[index]].append(object_position)
+                color = item.Attributes.ObjectColor
+                decoded_object_colors.append(
+                    [int(color.R), int(color.G), int(color.B)]
+                )
+                source = item.Attributes.ColorSource
+                if source == Rhino.DocObjects.ObjectColorSource.ColorFromLayer:
+                    decoded_color_sources.append("layer")
+                elif source == Rhino.DocObjects.ObjectColorSource.ColorFromObject:
+                    decoded_color_sources.append("object")
+                elif source == Rhino.DocObjects.ObjectColorSource.ColorFromMaterial:
+                    decoded_color_sources.append("material")
+                elif source == Rhino.DocObjects.ObjectColorSource.ColorFromParent:
+                    decoded_color_sources.append("parent")
+                else:
+                    raise ValueError("file group fixture has an unknown color source")
             _record_progress("three_dm_group_round_trip: memberships decoded")
             value = {
+                "color_sources": decoded_color_sources,
                 "group_members": group_members,
                 "group_names": decoded_group_names,
+                "object_colors": decoded_object_colors,
                 "object_groups": object_groups,
                 "unsupported_object_count": 0,
             }
@@ -1534,9 +1570,11 @@ def _execute(operation, iterations, tolerance):
         suffix = " " + str(System.Guid.NewGuid())
         hidden_layer = Rhino.DocObjects.Layer()
         hidden_layer.Name = "Hidden Parts" + suffix
+        hidden_layer.Color = System.Drawing.Color.FromArgb(10, 20, 30)
         hidden_layer_index = document.Layers.Add(hidden_layer)
         locked_layer = Rhino.DocObjects.Layer()
         locked_layer.Name = "Locked Parts" + suffix
+        locked_layer.Color = System.Drawing.Color.FromArgb(40, 50, 60)
         locked_layer_index = document.Layers.Add(locked_layer)
         if hidden_layer_index < 0 or locked_layer_index < 0:
             raise ValueError("could not add attribute-selection layers")
@@ -1581,6 +1619,13 @@ def _execute(operation, iterations, tolerance):
                 attributes = Rhino.DocObjects.ObjectAttributes()
                 attributes.LayerIndex = layer_index
                 attributes.Name = name
+                if index in (0, 1, 5, 6):
+                    attributes.ObjectColor = System.Drawing.Color.FromArgb(
+                        10, 20, 30
+                    )
+                    attributes.ColorSource = (
+                        Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                    )
                 object_id = document.Objects.AddPoint(
                     Rhino.Geometry.Point3d(float(index), 0.0, 0.0), attributes
                 )
@@ -1668,6 +1713,22 @@ def _execute(operation, iterations, tolerance):
                     in matching_layers
                 )
 
+            def select_color(red, green, blue):
+                matches = []
+                for object_id in object_ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    attributes = rhino_object.Attributes
+                    if int(attributes.GroupCount) > 0:
+                        continue
+                    color = attributes.DrawColor(document)
+                    if (int(color.R), int(color.G), int(color.B)) == (
+                        red,
+                        green,
+                        blue,
+                    ):
+                        matches.append(object_id)
+                return select_ids(matches)
+
             def seed_selection():
                 document.Objects.UnselectAll()
                 return select_ids([object_ids[0]])
@@ -1700,9 +1761,17 @@ def _execute(operation, iterations, tolerance):
                     document.Layers[locked_layer_index].IsLocked
                 )
                 all_layers_count = select_layers("*")
+                all_layers = selected_indices()
+
+                document.Objects.UnselectAll()
+                select_ids([object_ids[9]])
+                color_count = select_color(10, 20, 30)
+                color = selected_indices()
                 return {
-                    "all_layers": selected_indices(),
+                    "all_layers": all_layers,
                     "all_layers_count": all_layers_count,
+                    "color": color,
+                    "color_count": color_count,
                     "group_lower": group_lower,
                     "group_lower_count": group_lower_count,
                     "group_upper": group_upper,

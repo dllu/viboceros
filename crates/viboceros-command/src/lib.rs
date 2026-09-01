@@ -4,8 +4,8 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
 use viboceros_document::{
-    ColorRgb, Document, DocumentError, Geometry, GroupId, LayerId, ObjectAttributes, ObjectId,
-    SelectionMode,
+    ColorRgb, Document, DocumentError, Geometry, GroupId, LayerId, ObjectAttributes,
+    ObjectColorSource, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
@@ -14,9 +14,9 @@ use viboceros_geometry::{
     UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
-    StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer,
-    ThreeDmModel, ThreeDmObject, read_3dm_file, read_step_file, read_stl_file, write_3dm_file,
-    write_step_file, write_stl_file,
+    StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
+    ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_3dm_file, read_step_file,
+    read_stl_file, write_3dm_file, write_step_file, write_stl_file,
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
@@ -102,6 +102,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(SelNameCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SelColorCommand)
             .expect("unique built-in command");
         registry
             .register(SelLayerCommand)
@@ -192,6 +195,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(SetObjectNameCommand)
+            .expect("unique built-in command");
+        registry
+            .register(SetObjectColorCommand)
             .expect("unique built-in command");
         registry
             .register(UngroupCommand)
@@ -940,6 +946,30 @@ impl Command for SelNameCommand {
         let pattern = parse_attribute_pattern(arguments, "SelName name-pattern")?;
         let count = document.select_objects_by_name_pattern(&pattern);
         Ok(format!("Selected {count} object(s)"))
+    }
+}
+
+struct SelColorCommand;
+
+impl Command for SelColorCommand {
+    fn name(&self) -> &'static str {
+        "SelColor"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let [value] = arguments else {
+            return Err(CommandError::Usage("SelColor r,g,b"));
+        };
+        let color = parse_color(value)?;
+        let count = document.select_objects_by_display_color(color)?;
+        Ok(format!(
+            "Selected {count} object(s) with display color {},{},{}",
+            color.red, color.green, color.blue
+        ))
     }
 }
 
@@ -2384,6 +2414,36 @@ fn parse_set_object_name_arguments(
     Ok((name, append_counter))
 }
 
+struct SetObjectColorCommand;
+
+impl Command for SetObjectColorCommand {
+    fn name(&self) -> &'static str {
+        "SetObjectColor"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        const USAGE: &str = "SetObjectColor r,g,b | ByLayer";
+        let [value] = arguments else {
+            return Err(CommandError::Usage(USAGE));
+        };
+        let selected = selected_ids(document)?;
+        let value = value.trim_start_matches('_');
+        let color = if value.eq_ignore_ascii_case("ByLayer") {
+            None
+        } else {
+            Some(parse_color(value)?)
+        };
+        let changed = document.set_objects_color(selected, color)?;
+        Ok(match color {
+            Some(color) => format!(
+                "Set {} object color(s) to {},{},{}",
+                changed, color.red, color.green, color.blue
+            ),
+            None => format!("Set {changed} object color(s) to ByLayer"),
+        })
+    }
+}
+
 struct UngroupCommand;
 
 impl Command for UngroupCommand {
@@ -3307,6 +3367,12 @@ impl Command for ImportThreeDmCommand {
         for object in model.objects {
             let layer_id = imported_layers[object.layer_index];
             let mut attributes = ObjectAttributes::on_layer(layer_id)
+                .with_object_color(ColorRgb::new(
+                    object.object_color[0],
+                    object.object_color[1],
+                    object.object_color[2],
+                ))
+                .with_color_source(document_color_source_from_3dm(object.color_source))
                 .with_visibility(object.visible)
                 .with_locked(object.locked);
             if let Some(name) = object.name {
@@ -3422,6 +3488,13 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError
                 name: object.attributes().name().map(str::to_owned),
                 visible: object.attributes().is_visible(),
                 locked: object.attributes().is_locked(),
+                object_color: {
+                    let color = object.attributes().object_color();
+                    [color.red, color.green, color.blue]
+                },
+                color_source: three_dm_color_source_from_document(
+                    object.attributes().color_source(),
+                ),
                 group_indices: group_indices_by_object
                     .get(&object.id())
                     .cloned()
@@ -3440,6 +3513,24 @@ fn next_serialized_group_name(used: &mut BTreeSet<String>) -> String {
         }
     }
     unreachable!("the finite document cannot contain every numbered group name")
+}
+
+const fn document_color_source_from_3dm(source: ThreeDmColorSource) -> ObjectColorSource {
+    match source {
+        ThreeDmColorSource::Layer => ObjectColorSource::Layer,
+        ThreeDmColorSource::Object => ObjectColorSource::Object,
+        ThreeDmColorSource::Material => ObjectColorSource::Material,
+        ThreeDmColorSource::Parent => ObjectColorSource::Parent,
+    }
+}
+
+const fn three_dm_color_source_from_document(source: ObjectColorSource) -> ThreeDmColorSource {
+    match source {
+        ObjectColorSource::Layer => ThreeDmColorSource::Layer,
+        ObjectColorSource::Object => ThreeDmColorSource::Object,
+        ObjectColorSource::Material => ThreeDmColorSource::Material,
+        ObjectColorSource::Parent => ThreeDmColorSource::Parent,
+    }
 }
 
 fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError> {
@@ -3806,7 +3897,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5974,6 +6065,65 @@ mod tests {
     }
 
     #[test]
+    fn set_object_color_preserves_identity_groups_selection_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Group Colors").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "_SetObjectColor 12,34,56")
+                .unwrap(),
+            "Set 2 object color(s) to 12,34,56"
+        );
+        assert_eq!(document.undo_label(), Some("SetObjectColor"));
+        for id in &ids {
+            let attributes = document.object(*id).unwrap().attributes();
+            assert_eq!(attributes.color_source(), ObjectColorSource::Object);
+            assert_eq!(attributes.object_color(), ColorRgb::new(12, 34, 56));
+        }
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.group_by_name("Colors").unwrap().members().len(), 2);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(
+            document
+                .objects()
+                .all(|object| { object.attributes().color_source() == ObjectColorSource::Layer })
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "SetObjectColor _ByLayer")
+                .unwrap(),
+            "Set 2 object color(s) to ByLayer"
+        );
+        for object in document.objects() {
+            assert_eq!(object.attributes().color_source(), ObjectColorSource::Layer);
+            assert_eq!(
+                object.attributes().object_color(),
+                ColorRgb::new(12, 34, 56)
+            );
+        }
+
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "SetObjectColor 256,0,0"),
+            Err(CommandError::InvalidColor(_))
+        ));
+        assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
     fn selection_commands_drive_group_ungroup_and_delete() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -6550,6 +6700,103 @@ mod tests {
 
         let selection = document.selected_object_ids().collect::<BTreeSet<_>>();
         for command in ["SelName", "SelLayer", "SelGroup", "SelName \"unterminated"] {
+            assert!(registry.execute(&mut document, command).is_err());
+            assert_eq!(
+                document.selected_object_ids().collect::<BTreeSet<_>>(),
+                selection
+            );
+        }
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn sel_color_adds_resolved_selectable_matches_and_skips_group_members() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        let target = ColorRgb::new(200, 10, 20);
+        let target_layer = document.add_layer("Target", target).unwrap();
+        let add_point = |document: &mut Document, x, attributes: ObjectAttributes| {
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Point(Point3::try_new(x, 0.0, 0.0).unwrap()),
+                    attributes,
+                )
+                .unwrap()
+        };
+
+        let prior = add_point(&mut document, 0.0, ObjectAttributes::on_layer(default));
+        let by_layer = add_point(&mut document, 1.0, ObjectAttributes::on_layer(target_layer));
+        let by_object = add_point(
+            &mut document,
+            2.0,
+            ObjectAttributes::on_layer(default).with_object_color(target),
+        );
+        let by_material = add_point(
+            &mut document,
+            3.0,
+            ObjectAttributes::on_layer(target_layer)
+                .with_object_color(ColorRgb::new(1, 2, 3))
+                .with_color_source(ObjectColorSource::Material),
+        );
+        let by_parent = add_point(
+            &mut document,
+            4.0,
+            ObjectAttributes::on_layer(target_layer)
+                .with_object_color(ColorRgb::new(4, 5, 6))
+                .with_color_source(ObjectColorSource::Parent),
+        );
+        let grouped_match = add_point(
+            &mut document,
+            5.0,
+            ObjectAttributes::on_layer(default).with_object_color(target),
+        );
+        let grouped_peer = add_point(&mut document, 6.0, ObjectAttributes::on_layer(default));
+        let hidden = add_point(
+            &mut document,
+            7.0,
+            ObjectAttributes::on_layer(default)
+                .with_object_color(target)
+                .with_visibility(false),
+        );
+        let locked = add_point(
+            &mut document,
+            8.0,
+            ObjectAttributes::on_layer(default)
+                .with_object_color(target)
+                .with_locked(true),
+        );
+        document
+            .add_group(Some("Mixed".to_owned()), [grouped_match, grouped_peer])
+            .unwrap();
+        document
+            .select_objects_direct([prior], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "_SelColor 200,10,20")
+                .unwrap(),
+            "Selected 5 object(s) with display color 200,10,20"
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([prior, by_layer, by_object, by_material, by_parent])
+        );
+        assert!(!document.is_selected(grouped_match));
+        assert!(!document.is_selected(grouped_peer));
+        assert!(!document.is_selected(hidden));
+        assert!(!document.is_selected(locked));
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let selection = document.selected_object_ids().collect::<BTreeSet<_>>();
+        for command in [
+            "SelColor",
+            "SelColor 1,2",
+            "SelColor 256,0,0",
+            "SelColor ByLayer",
+        ] {
             assert!(registry.execute(&mut document, command).is_err());
             assert_eq!(
                 document.selected_object_ids().collect::<BTreeSet<_>>(),
@@ -7173,6 +7420,12 @@ mod tests {
             .map(|object| object.id())
             .collect::<Vec<_>>();
         source
+            .set_objects_color(
+                [source_ids[0], source_ids[1]],
+                Some(ColorRgb::new(201, 45, 67)),
+            )
+            .unwrap();
+        source
             .select_object(source_ids[1], SelectionMode::Replace)
             .unwrap();
         registry.execute(&mut source, "Hide").unwrap();
@@ -7298,6 +7551,11 @@ mod tests {
             .unwrap();
         assert!(!line.attributes().is_visible());
         assert!(!line.attributes().is_locked());
+        for id in [imported_ids[0], imported_ids[1]] {
+            let attributes = imported.object(id).unwrap().attributes();
+            assert_eq!(attributes.color_source(), ObjectColorSource::Object);
+            assert_eq!(attributes.object_color(), ColorRgb::new(201, 45, 67));
+        }
 
         assert_eq!(imported.undo_label(), Some("Import3dm"));
         registry
