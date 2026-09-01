@@ -1,6 +1,6 @@
 use eframe::egui::{self, Align2, Color32, FontId, Pos2, Rect, Sense, Stroke, Vec2};
 use viboceros_document::{Document, Geometry};
-use viboceros_geometry::Point3;
+use viboceros_geometry::{NurbsCurve, Point3, Real};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum DisplayMode {
@@ -172,6 +172,43 @@ impl Viewport {
                         painter.line_segment([start, end], Stroke::new(width, color));
                     }
                 }
+                Geometry::NurbsCurve(curve) => {
+                    self.paint_nurbs_curve(painter, rect, curve, Stroke::new(width, color));
+                }
+            }
+        }
+    }
+
+    fn paint_nurbs_curve(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        curve: &NurbsCurve,
+        stroke: Stroke,
+    ) {
+        const SAMPLES_PER_SPAN: usize = 16;
+
+        let domain_end = *curve.domain().end();
+        for (span_start, span_end) in curve.spans() {
+            let mut previous = None;
+            for sample in 0..=SAMPLES_PER_SPAN {
+                let fraction = sample as Real / SAMPLES_PER_SPAN as Real;
+                let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
+                // At a fully multiple interior knot, the curve has distinct
+                // left and right limits. Keep this span on its left side and
+                // begin the next polyline separately on the right side.
+                if sample == SAMPLES_PER_SPAN && span_end < domain_end {
+                    parameter = span_end.next_down().max(span_start);
+                }
+
+                let projected = curve
+                    .evaluate(parameter)
+                    .ok()
+                    .and_then(|point| self.project(point, rect));
+                if let (Some(start), Some(end)) = (previous, projected) {
+                    painter.line_segment([start, end], stroke);
+                }
+                previous = projected;
             }
         }
     }

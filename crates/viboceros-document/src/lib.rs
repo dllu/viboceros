@@ -5,7 +5,7 @@ use std::fmt;
 
 use thiserror::Error;
 use uuid::Uuid;
-use viboceros_geometry::{BoundingBox3, LineSegment, Point3, Tolerance};
+use viboceros_geometry::{BoundingBox3, LineSegment, NurbsCurve, Point3, Tolerance};
 
 macro_rules! id_type {
     ($name:ident) => {
@@ -49,6 +49,7 @@ impl ColorRgb {
 pub enum Geometry {
     Point(Point3),
     Line(LineSegment),
+    NurbsCurve(NurbsCurve),
 }
 
 impl Geometry {
@@ -56,6 +57,7 @@ impl Geometry {
         match self {
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
+            Self::NurbsCurve(curve) => curve.control_point_bounds(),
         }
     }
 }

@@ -7,6 +7,7 @@
 mod bounds;
 mod error;
 mod line;
+mod nurbs;
 mod plane;
 mod point;
 mod tolerance;
@@ -15,6 +16,7 @@ mod vector;
 pub use bounds::BoundingBox3;
 pub use error::GeometryError;
 pub use line::LineSegment;
+pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
 pub use tolerance::Tolerance;

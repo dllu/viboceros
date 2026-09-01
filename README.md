@@ -5,12 +5,14 @@ is organized around independent geometry, document, and command crates, with an
 egui interface rendered by wgpu.
 
 The current foundation supports finite 3D points, vectors, line segments,
-planes, bounding boxes, layers and groups. The top viewport can pan and zoom in
-wireframe, shaded, or ghosted mode. Its command line currently accepts:
+planes, bounding boxes, rational NURBS curves with analytic first derivatives,
+layers, and groups. The top viewport can pan and zoom in wireframe, shaded, or
+ghosted mode. Its command line currently accepts:
 
 ```text
 Point 1,2,0
 Line 0,0,0 10,5,0
+ControlPointCurve 3 0,0 2,3 5,3 8,0
 Layer Construction
 Clear
 Help

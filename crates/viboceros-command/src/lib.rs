@@ -4,7 +4,7 @@ use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry};
-use viboceros_geometry::{GeometryError, LineSegment, Point3, Real};
+use viboceros_geometry::{GeometryError, LineSegment, NurbsCurve, Point3, Real};
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -30,6 +30,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(LineCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ControlPointCurveCommand)
             .expect("unique built-in command");
         registry
             .register(LayerCommand)
@@ -128,6 +131,42 @@ impl Command for LineCommand {
 }
 
 struct LayerCommand;
+
+struct ControlPointCurveCommand;
+
+impl Command for ControlPointCurveCommand {
+    fn name(&self) -> &'static str {
+        "ControlPointCurve"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["CPCurve"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let degree_text = arguments.first().ok_or(CommandError::Usage(
+            "ControlPointCurve degree point1 point2 ...",
+        ))?;
+        let degree = degree_text
+            .parse::<usize>()
+            .map_err(|_| CommandError::InvalidInteger((*degree_text).to_owned()))?;
+
+        let mut control_points = Vec::new();
+        let mut consumed = 1;
+        while consumed < arguments.len() {
+            let (point, point_tokens) = parse_point(&arguments[consumed..])?;
+            control_points.push(point);
+            consumed += point_tokens;
+        }
+
+        let control_point_count = control_points.len();
+        let curve = NurbsCurve::try_clamped_uniform(degree, control_points)?;
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added degree {degree} control-point curve {id} ({control_point_count} control points)"
+        ))
+    }
+}
 
 impl Command for LayerCommand {
     fn name(&self) -> &'static str {
@@ -235,6 +274,9 @@ pub enum CommandError {
     #[error("'{0}' is not a valid finite number")]
     InvalidNumber(String),
 
+    #[error("'{0}' is not a valid non-negative integer")]
+    InvalidInteger(String),
+
     #[error(transparent)]
     Geometry(#[from] GeometryError),
 
@@ -277,7 +319,30 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, Layer, Line, Point"
+            "Commands: Clear, ControlPointCurve, Layer, Line, Point"
+        );
+    }
+
+    #[test]
+    fn creates_a_clamped_control_point_curve() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "ControlPointCurve 3 0,0 2,3 5,3 8,0")
+            .unwrap();
+        let object = document.objects().next().unwrap();
+        let Geometry::NurbsCurve(curve) = object.geometry() else {
+            panic!("expected a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(curve.control_points().len(), 4);
+        assert_eq!(
+            curve.evaluate(0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            curve.evaluate(1.0).unwrap(),
+            Point3::try_new(8.0, 0.0, 0.0).unwrap()
         );
     }
 }
