@@ -79,6 +79,9 @@ pub enum Operation {
     DocumentObjectNamingCycle {
         id: String,
     },
+    DocumentLayerAssignmentCycle {
+        id: String,
+    },
     DocumentDuplicateSelectionCycle {
         id: String,
     },
@@ -249,6 +252,7 @@ impl Operation {
             | Self::DocumentActionSelectionCycle { id }
             | Self::DocumentAttributeSelectionCycle { id }
             | Self::DocumentObjectNamingCycle { id }
+            | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
@@ -427,6 +431,9 @@ fn execute(
             document_attribute_selection_cycle(iterations)?
         }
         Operation::DocumentObjectNamingCycle { .. } => document_object_naming_cycle(iterations)?,
+        Operation::DocumentLayerAssignmentCycle { .. } => {
+            document_layer_assignment_cycle(iterations)?
+        }
         Operation::DocumentDuplicateSelectionCycle { .. } => {
             document_duplicate_selection_cycle(iterations, tolerance)?
         }
@@ -1404,6 +1411,134 @@ fn document_object_naming_cycle(iterations: u32) -> Result<(Value, u64), ProbeEr
     })
 }
 
+fn document_layer_assignment_cycle(iterations: u32) -> Result<(Value, u64), ProbeError> {
+    let mut document = Document::default();
+    let default_layer = document.current_layer_id();
+    let normal_layer = document.add_layer("Normal", ColorRgb::new(10, 20, 30))?;
+    let hidden_layer = document.add_layer("Hidden", ColorRgb::new(40, 50, 60))?;
+    let locked_layer = document.add_layer("Locked", ColorRgb::new(70, 80, 90))?;
+    let mut object_ids = Vec::with_capacity(5);
+    for index in 0..5 {
+        object_ids.push(document.add_geometry_with_attributes(
+            Geometry::Point(Point3::try_new(index as f64, 0.0, 0.0)?),
+            ObjectAttributes::on_layer(default_layer).with_name(format!("Part{index}")),
+        )?);
+    }
+    document.add_group(Some("Assembly".to_owned()), [object_ids[0], object_ids[1]])?;
+    document.set_layer_visibility(hidden_layer, false)?;
+    document.set_layer_locked(locked_layer, true)?;
+
+    let value = (|| -> Result<Value, DocumentError> {
+        document.select_objects_direct([object_ids[0], object_ids[1]], SelectionMode::Replace)?;
+        let change_count =
+            document.set_objects_layer([object_ids[0], object_ids[1]], normal_layer)?;
+        let change_layers = document_layer_names(&document, &object_ids[..2])?;
+        let change_selected = document_selected_indices(&document, &object_ids);
+        let change_group_sizes = document_group_sizes_for(&document, &object_ids[..2]);
+        let current_after_change = document
+            .layer(document.current_layer_id())
+            .ok_or(DocumentError::LayerNotFound(document.current_layer_id()))?
+            .name()
+            .to_owned();
+        undo_required(&mut document)?;
+
+        document.select_objects_direct([object_ids[0], object_ids[1]], SelectionMode::Replace)?;
+        let copies =
+            document.copy_objects_to_layer([object_ids[0], object_ids[1]], normal_layer)?;
+        let copy_layers = document_layer_names(&document, &copies)?;
+        let copy_names = document_object_names(&document, &copies)?;
+        let copy_group_sizes = document_group_sizes_for(&document, &copies);
+        let copy_selected = document_selected_indices(&document, &copies);
+        let original_selected_after_copy = document_selected_indices(&document, &object_ids);
+        let copy_count = copies.len();
+        undo_required(&mut document)?;
+
+        document.set_objects_layer([object_ids[0]], normal_layer)?;
+        document.select_objects_direct([object_ids[0], object_ids[1]], SelectionMode::Replace)?;
+        let mixed_copies =
+            document.copy_objects_to_layer([object_ids[0], object_ids[1]], normal_layer)?;
+        let mixed_copy_layers = document_layer_names(&document, &mixed_copies)?;
+        let mixed_copy_group_sizes = document_group_sizes_for(&document, &mixed_copies);
+        let mixed_copy_count = mixed_copies.len();
+        undo_required(&mut document)?;
+        undo_required(&mut document)?;
+
+        document.set_objects_layer([object_ids[0], object_ids[1]], normal_layer)?;
+        let same_layer_copy_count = document
+            .copy_objects_to_layer([object_ids[0], object_ids[1]], normal_layer)?
+            .len();
+        undo_required(&mut document)?;
+
+        document.select_objects_direct([object_ids[2]], SelectionMode::Replace)?;
+        let hidden_change_count = document.set_objects_layer([object_ids[2]], hidden_layer)?;
+        let hidden_change_selected = document_selected_indices(&document, &object_ids);
+        undo_required(&mut document)?;
+
+        document.select_objects_direct([object_ids[3]], SelectionMode::Replace)?;
+        let locked_change_count = document.set_objects_layer([object_ids[3]], locked_layer)?;
+        let locked_change_selected = document_selected_indices(&document, &object_ids);
+        undo_required(&mut document)?;
+
+        document.select_objects_direct([object_ids[2]], SelectionMode::Replace)?;
+        let hidden_copies = document.copy_objects_to_layer([object_ids[2]], hidden_layer)?;
+        let hidden_copy_layers = document_layer_names(&document, &hidden_copies)?;
+        let hidden_copy_selected = document_selected_indices(&document, &hidden_copies);
+        let hidden_copy_count = hidden_copies.len();
+        undo_required(&mut document)?;
+
+        document.select_objects_direct([object_ids[3]], SelectionMode::Replace)?;
+        let locked_copies = document.copy_objects_to_layer([object_ids[3]], locked_layer)?;
+        let locked_copy_layers = document_layer_names(&document, &locked_copies)?;
+        let locked_copy_selected = document_selected_indices(&document, &locked_copies);
+        let original_selected_after_destination_copies =
+            document_selected_indices(&document, &object_ids);
+        let locked_copy_count = locked_copies.len();
+        undo_required(&mut document)?;
+
+        Ok(json!({
+            "change_count": change_count,
+            "change_group_sizes": change_group_sizes,
+            "change_layers": change_layers,
+            "change_selected": change_selected,
+            "copy_count": copy_count,
+            "copy_group_sizes": copy_group_sizes,
+            "copy_layers": copy_layers,
+            "copy_names": copy_names,
+            "copy_selected": copy_selected,
+            "current_after_change": current_after_change,
+            "current_unchanged": document.current_layer_id() == default_layer,
+            "hidden_change_count": hidden_change_count,
+            "hidden_change_selected": hidden_change_selected,
+            "hidden_copy_count": hidden_copy_count,
+            "hidden_copy_layers": hidden_copy_layers,
+            "hidden_copy_selected": hidden_copy_selected,
+            "locked_change_count": locked_change_count,
+            "locked_change_selected": locked_change_selected,
+            "locked_copy_count": locked_copy_count,
+            "locked_copy_layers": locked_copy_layers,
+            "locked_copy_selected": locked_copy_selected,
+            "mixed_copy_count": mixed_copy_count,
+            "mixed_copy_group_sizes": mixed_copy_group_sizes,
+            "mixed_copy_layers": mixed_copy_layers,
+            "original_selected_after_copy": original_selected_after_copy,
+            "original_selected_after_destination_copies":
+                original_selected_after_destination_copies,
+            "same_layer_copy_count": same_layer_copy_count,
+        }))
+    })()?;
+
+    document.set_objects_layer([object_ids[0], object_ids[1]], normal_layer)?;
+    document.set_objects_layer([object_ids[0], object_ids[1]], default_layer)?;
+    let started = Instant::now();
+    for _ in 0..iterations {
+        black_box(document.set_objects_layer([object_ids[0], object_ids[1]], normal_layer)?);
+        black_box(document.set_objects_layer([object_ids[0], object_ids[1]], default_layer)?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 fn document_duplicate_selection_cycle(
     iterations: u32,
     tolerance: Tolerance,
@@ -1641,6 +1776,50 @@ fn document_object_names(
                 .ok_or(DocumentError::ObjectNotFound(*id))
         })
         .collect()
+}
+
+fn document_layer_names(
+    document: &Document,
+    object_ids: &[ObjectId],
+) -> Result<Vec<String>, DocumentError> {
+    object_ids
+        .iter()
+        .map(|id| {
+            let object = document
+                .object(*id)
+                .ok_or(DocumentError::ObjectNotFound(*id))?;
+            document
+                .layer(object.attributes().layer_id())
+                .map(|layer| layer.name().to_owned())
+                .ok_or(DocumentError::LayerNotFound(object.attributes().layer_id()))
+        })
+        .collect()
+}
+
+fn document_group_sizes_for(document: &Document, object_ids: &[ObjectId]) -> Vec<usize> {
+    let object_ids = object_ids.iter().copied().collect::<BTreeSet<_>>();
+    let mut sizes = document
+        .groups()
+        .filter_map(|group| {
+            let size = group
+                .members()
+                .filter(|member| object_ids.contains(member))
+                .count();
+            (size > 0).then_some(size)
+        })
+        .collect::<Vec<_>>();
+    sizes.sort_unstable();
+    sizes
+}
+
+fn undo_required(document: &mut Document) -> Result<(), DocumentError> {
+    if document.undo()?.is_some() {
+        Ok(())
+    } else {
+        Err(DocumentError::HistoryInvariant(
+            "oracle layer-assignment edit was missing",
+        ))
+    }
 }
 
 fn establish_previous_selection(
@@ -2061,6 +2240,46 @@ mod tests {
                 "counter_count": 3,
                 "shared": ["Sample", "Sample", "Sample"],
                 "shared_count": 3,
+            })
+        );
+    }
+
+    #[test]
+    fn moves_and_copies_objects_between_layers_with_rhino_scope() {
+        let response = run_request(&request(vec![Operation::DocumentLayerAssignmentCycle {
+            id: "layer-assignment".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "change_count": 2,
+                "change_group_sizes": [2],
+                "change_layers": ["Normal", "Normal"],
+                "change_selected": [0, 1],
+                "copy_count": 2,
+                "copy_group_sizes": [2],
+                "copy_layers": ["Normal", "Normal"],
+                "copy_names": ["Part0", "Part1"],
+                "copy_selected": [],
+                "current_after_change": "Default",
+                "current_unchanged": true,
+                "hidden_change_count": 1,
+                "hidden_change_selected": [],
+                "hidden_copy_count": 1,
+                "hidden_copy_layers": ["Hidden"],
+                "hidden_copy_selected": [],
+                "locked_change_count": 1,
+                "locked_change_selected": [],
+                "locked_copy_count": 1,
+                "locked_copy_layers": ["Locked"],
+                "locked_copy_selected": [],
+                "mixed_copy_count": 1,
+                "mixed_copy_group_sizes": [1],
+                "mixed_copy_layers": ["Normal"],
+                "original_selected_after_copy": [0, 1],
+                "original_selected_after_destination_copies": [3],
+                "same_layer_copy_count": 0,
             })
         );
     }

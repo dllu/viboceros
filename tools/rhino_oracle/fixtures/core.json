@@ -35,6 +35,10 @@
       "id": "document-object-naming-cycle"
     },
     {
+      "op": "document_layer_assignment_cycle",
+      "id": "document-layer-assignment-cycle"
+    },
+    {
       "op": "document_duplicate_selection_cycle",
       "id": "document-duplicate-selection-cycle"
     },

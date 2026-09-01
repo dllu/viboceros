@@ -2,6 +2,7 @@
 
 mod duplicate;
 mod history;
+mod object_layer;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;

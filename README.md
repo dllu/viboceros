@@ -27,6 +27,8 @@ Layer New Construction
 Layer Hide Construction
 Layer Show Construction
 Layer Current Default
+ChangeLayer Construction
+CopyToLayer Default
 SelAll
 SelLast
 SelPrev
@@ -172,6 +174,10 @@ indexing, face order, and winding must match.
 `AppendCounter=Yes` for Rhino's zero-based suffixes in document order, or use
 `SetObjectName ""` to clear names. Unnamed `Group` calls receive Rhino-style
 `Group01`, `Group02`, ... names; explicit group names are case-sensitive.
+`ChangeLayer` moves selected objects without changing their identities, groups,
+or the current layer. `CopyToLayer` skips selected objects already on the target,
+copies each remaining group subset into a fresh automatic group, and leaves the
+original selection unchanged. Hidden and locked target layers are supported.
 `UnifyMeshNormals` repairs inconsistent face winding across exact
 location-welded manifold edges, including STL-style triangle soup, and rejects
 non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)

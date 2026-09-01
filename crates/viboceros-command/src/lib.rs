@@ -80,6 +80,12 @@ impl CommandRegistry {
             .register(LayerCommand)
             .expect("unique built-in command");
         registry
+            .register(ChangeLayerCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CopyToLayerCommand)
+            .expect("unique built-in command");
+        registry
             .register(SelAllCommand)
             .expect("unique built-in command");
         registry
@@ -591,6 +597,41 @@ impl Command for PolygonCommand {
 }
 
 struct LayerCommand;
+
+struct ChangeLayerCommand;
+
+impl Command for ChangeLayerCommand {
+    fn name(&self) -> &'static str {
+        "ChangeLayer"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let name = joined_argument(arguments, "ChangeLayer layer-name")?;
+        let layer_id = named_layer_id(document, &name)?;
+        let count = document.set_objects_layer(selected, layer_id)?;
+        Ok(format!("Changed {count} object(s) to layer '{name}'"))
+    }
+}
+
+struct CopyToLayerCommand;
+
+impl Command for CopyToLayerCommand {
+    fn name(&self) -> &'static str {
+        "CopyToLayer"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let name = joined_argument(arguments, "CopyToLayer layer-name")?;
+        let layer_id = named_layer_id(document, &name)?;
+        let copies = document.copy_objects_to_layer(selected, layer_id)?;
+        Ok(format!(
+            "Copied {} object(s) to layer '{name}'",
+            copies.len()
+        ))
+    }
+}
 
 struct ControlPointCurveCommand;
 
@@ -3603,7 +3644,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelShortCrv, SelSrf, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -5408,6 +5449,79 @@ mod tests {
         registry
             .execute(&mut document, "Layer Current Reference Geometry")
             .unwrap();
+    }
+
+    #[test]
+    fn change_and_copy_to_layer_preserve_rhino_identity_selection_and_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let default = document.current_layer_id();
+        registry
+            .execute(&mut document, "Layer New Target Parts")
+            .unwrap();
+        let target = document.layer_by_name("Target Parts").unwrap().id();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Group Assembly").unwrap();
+        let original_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ChangeLayer target parts")
+                .unwrap(),
+            "Changed 1 object(s) to layer 'target parts'"
+        );
+        assert_eq!(document.undo_label(), Some("ChangeLayer"));
+        assert_eq!(document.current_layer_id(), default);
+        assert_eq!(document.selected_object_count(), 2);
+        assert!(
+            original_ids
+                .iter()
+                .all(|id| { document.object(*id).unwrap().attributes().layer_id() == target })
+        );
+        assert_eq!(
+            document.group_by_name("Assembly").unwrap().members().len(),
+            2
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "CopyToLayer Target Parts")
+                .unwrap(),
+            "Copied 1 object(s) to layer 'Target Parts'"
+        );
+        assert_eq!(document.undo_label(), Some("CopyToLayer"));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.selected_object_count(), 2);
+        assert!(original_ids.iter().all(|id| document.is_selected(*id)));
+        let copy = document
+            .objects()
+            .find(|object| !original_ids.contains(&object.id()))
+            .unwrap();
+        assert_eq!(copy.attributes().layer_id(), target);
+        assert!(!document.is_selected(copy.id()));
+        assert_eq!(
+            document.group_by_name("Group01").unwrap().members().len(),
+            1
+        );
+        assert_eq!(document.current_layer_id(), default);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert!(document.group_by_name("Group01").is_none());
+        document.clear_selection();
+        assert!(matches!(
+            registry.execute(&mut document, "ChangeLayer Target Parts"),
+            Err(CommandError::NoObjectsSelected)
+        ));
     }
 
     #[test]

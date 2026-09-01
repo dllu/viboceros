@@ -222,6 +222,343 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_layer_assignment_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid()).replace("-", "")
+        default_layer_index = int(document.Layers.CurrentLayerIndex)
+        layer_indices = []
+        object_ids = []
+        original_group_index = None
+
+        def set_layer_mode(layer_index, visible, locked):
+            layer = document.Layers[layer_index]
+            layer.IsVisible = visible
+            layer.IsLocked = locked
+            if not document.Layers.Modify(layer, layer_index, True):
+                raise ValueError("could not modify layer-assignment layer")
+
+        try:
+            for label, visible, locked in (
+                ("Normal", True, False),
+                ("Hidden", False, False),
+                ("Locked", True, True),
+            ):
+                layer = Rhino.DocObjects.Layer()
+                layer.Name = "ViboLayerAssignment%s%s" % (label, suffix)
+                layer.IsVisible = visible
+                layer.IsLocked = locked
+                layer_index = document.Layers.Add(layer)
+                if layer_index < 0:
+                    raise ValueError("could not add layer-assignment layer")
+                layer_indices.append(layer_index)
+
+            for index in range(5):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.LayerIndex = default_layer_index
+                attributes.Name = "Part%d" % index
+                object_id = document.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(index), 0.0, 0.0), attributes
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add layer-assignment point")
+                object_ids.append(object_id)
+            original_group_index = document.Groups.Add(
+                "ViboLayerAssignmentAssembly" + suffix, object_ids[:2]
+            )
+            if original_group_index < 0:
+                raise ValueError("could not add layer-assignment group")
+
+            layer_labels = {
+                default_layer_index: "Default",
+                layer_indices[0]: "Normal",
+                layer_indices[1]: "Hidden",
+                layer_indices[2]: "Locked",
+            }
+
+            def point_ids():
+                settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+                settings.NormalObjects = True
+                settings.LockedObjects = True
+                settings.HiddenObjects = True
+                settings.ObjectTypeFilter = Rhino.DocObjects.ObjectType.Point
+                return set(
+                    obj.Id for obj in document.Objects.GetObjectList(settings)
+                )
+
+            def selected_indices(ids):
+                return [
+                    index
+                    for index, object_id in enumerate(ids)
+                    if document.Objects.FindId(object_id).IsSelected(False) != 0
+                ]
+
+            def select_only(ids):
+                document.Objects.UnselectAll()
+                for object_id in ids:
+                    if not document.Objects.Select(object_id):
+                        raise ValueError(
+                            "could not preselect layer-assignment object"
+                        )
+
+            def object_layer_indices(ids):
+                return [
+                    int(document.Objects.FindId(object_id).Attributes.LayerIndex)
+                    for object_id in ids
+                ]
+
+            def object_layer_labels(ids):
+                labels = []
+                for layer_index in object_layer_indices(ids):
+                    if layer_index not in layer_labels:
+                        raise ValueError(
+                            "layer-assignment object used an unexpected layer"
+                        )
+                    labels.append(layer_labels[layer_index])
+                return labels
+
+            def group_indices_for(ids):
+                ids = set(ids)
+                result = []
+                for group_index in range(document.Groups.Count):
+                    members = document.Groups.GroupMembers(group_index)
+                    if members is None:
+                        continue
+                    if any(member.Id in ids for member in members):
+                        result.append(group_index)
+                return result
+
+            def group_sizes_for(ids):
+                ids = set(ids)
+                sizes = []
+                for group_index in group_indices_for(ids):
+                    members = document.Groups.GroupMembers(group_index)
+                    size = sum(1 for member in members if member.Id in ids)
+                    if size:
+                        sizes.append(size)
+                return sorted(sizes)
+
+            def modify_object_layers(ids, layer_index):
+                changed = 0
+                for object_id in ids:
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object is None:
+                        raise ValueError("layer-assignment object disappeared")
+                    if int(rhino_object.Attributes.LayerIndex) == layer_index:
+                        continue
+                    attributes = rhino_object.Attributes.Duplicate()
+                    attributes.LayerIndex = layer_index
+                    if not document.Objects.ModifyAttributes(
+                        rhino_object, attributes, True
+                    ):
+                        raise ValueError(
+                            "could not modify layer-assignment object"
+                        )
+                    changed += 1
+                return changed
+
+            def run_layer_command(command_name, layer_index):
+                layer_name = document.Layers[layer_index].Name
+                if not Rhino.RhinoApp.RunScript(
+                    "_-%s %s _Enter" % (command_name, layer_name), False
+                ):
+                    raise ValueError(
+                        "%s failed in layer-assignment cycle" % command_name
+                    )
+
+            def new_point_ids(before):
+                ids = list(point_ids() - before)
+                ids.sort(
+                    key=lambda object_id: document.Objects.FindId(
+                        object_id
+                    ).Geometry.Location.X
+                )
+                return ids
+
+            def reset_from_destination(ids, layer_index):
+                layer = document.Layers[layer_index]
+                visible = bool(layer.IsVisible)
+                locked = bool(layer.IsLocked)
+                if not visible or locked:
+                    set_layer_mode(layer_index, True, False)
+                modify_object_layers(ids, default_layer_index)
+                if not visible or locked:
+                    set_layer_mode(layer_index, visible, locked)
+
+            def delete_copies(ids, layer_index):
+                for group_index in reversed(group_indices_for(ids)):
+                    document.Groups.Delete(group_index)
+                layer = document.Layers[layer_index]
+                visible = bool(layer.IsVisible)
+                locked = bool(layer.IsLocked)
+                if not visible or locked:
+                    set_layer_mode(layer_index, True, False)
+                for object_id in ids:
+                    document.Objects.Show(object_id, True)
+                    document.Objects.Unlock(object_id, True)
+                    if not document.Objects.Delete(object_id, True):
+                        raise ValueError("could not delete layer-assignment copy")
+                if not visible or locked:
+                    set_layer_mode(layer_index, visible, locked)
+
+            current_before = int(document.Layers.CurrentLayerIndex)
+            select_only(object_ids[:2])
+            before_change_layers = object_layer_indices(object_ids[:2])
+            run_layer_command("ChangeLayer", layer_indices[0])
+            after_change_layers = object_layer_indices(object_ids[:2])
+            change_count = sum(
+                1
+                for before, after in zip(
+                    before_change_layers, after_change_layers
+                )
+                if before != after
+            )
+            change_layers = object_layer_labels(object_ids[:2])
+            change_selected = selected_indices(object_ids)
+            change_group_sizes = group_sizes_for(object_ids[:2])
+            current_after_change = (
+                "Default"
+                if int(document.Layers.CurrentLayerIndex)
+                == default_layer_index
+                else "Unexpected"
+            )
+            reset_from_destination(object_ids[:2], layer_indices[0])
+
+            before_copy = point_ids()
+            select_only(object_ids[:2])
+            run_layer_command("CopyToLayer", layer_indices[0])
+            copy_ids = new_point_ids(before_copy)
+            copy_count = len(copy_ids)
+            copy_layers = object_layer_labels(copy_ids)
+            copy_names = [
+                document.Objects.FindId(object_id).Attributes.Name
+                for object_id in copy_ids
+            ]
+            copy_group_sizes = group_sizes_for(copy_ids)
+            copy_selected = selected_indices(copy_ids)
+            original_selected_after_copy = selected_indices(object_ids)
+            delete_copies(copy_ids, layer_indices[0])
+
+            modify_object_layers([object_ids[0]], layer_indices[0])
+            before_mixed_copy = point_ids()
+            select_only(object_ids[:2])
+            run_layer_command("CopyToLayer", layer_indices[0])
+            mixed_copy_ids = new_point_ids(before_mixed_copy)
+            mixed_copy_count = len(mixed_copy_ids)
+            mixed_copy_layers = object_layer_labels(mixed_copy_ids)
+            mixed_copy_group_sizes = group_sizes_for(mixed_copy_ids)
+            delete_copies(mixed_copy_ids, layer_indices[0])
+            reset_from_destination([object_ids[0]], layer_indices[0])
+
+            modify_object_layers(object_ids[:2], layer_indices[0])
+            before_same_layer_copy = point_ids()
+            select_only(object_ids[:2])
+            run_layer_command("CopyToLayer", layer_indices[0])
+            same_layer_copy_ids = new_point_ids(before_same_layer_copy)
+            same_layer_copy_count = len(same_layer_copy_ids)
+            delete_copies(same_layer_copy_ids, layer_indices[0])
+            reset_from_destination(object_ids[:2], layer_indices[0])
+
+            select_only([object_ids[2]])
+            before_hidden_change = object_layer_indices([object_ids[2]])
+            run_layer_command("ChangeLayer", layer_indices[1])
+            hidden_change_count = int(
+                before_hidden_change
+                != object_layer_indices([object_ids[2]])
+            )
+            hidden_change_selected = selected_indices(object_ids)
+            reset_from_destination([object_ids[2]], layer_indices[1])
+
+            select_only([object_ids[3]])
+            before_locked_change = object_layer_indices([object_ids[3]])
+            run_layer_command("ChangeLayer", layer_indices[2])
+            locked_change_count = int(
+                before_locked_change
+                != object_layer_indices([object_ids[3]])
+            )
+            locked_change_selected = selected_indices(object_ids)
+            reset_from_destination([object_ids[3]], layer_indices[2])
+
+            before_hidden_copy = point_ids()
+            select_only([object_ids[2]])
+            run_layer_command("CopyToLayer", layer_indices[1])
+            hidden_copy_ids = new_point_ids(before_hidden_copy)
+            hidden_copy_count = len(hidden_copy_ids)
+            hidden_copy_layers = object_layer_labels(hidden_copy_ids)
+            hidden_copy_selected = selected_indices(hidden_copy_ids)
+            delete_copies(hidden_copy_ids, layer_indices[1])
+
+            before_locked_copy = point_ids()
+            select_only([object_ids[3]])
+            run_layer_command("CopyToLayer", layer_indices[2])
+            locked_copy_ids = new_point_ids(before_locked_copy)
+            locked_copy_count = len(locked_copy_ids)
+            locked_copy_layers = object_layer_labels(locked_copy_ids)
+            locked_copy_selected = selected_indices(locked_copy_ids)
+            original_selected_after_destination_copies = selected_indices(
+                object_ids
+            )
+            delete_copies(locked_copy_ids, layer_indices[2])
+
+            value = {
+                "change_count": change_count,
+                "change_group_sizes": change_group_sizes,
+                "change_layers": change_layers,
+                "change_selected": change_selected,
+                "copy_count": copy_count,
+                "copy_group_sizes": copy_group_sizes,
+                "copy_layers": copy_layers,
+                "copy_names": copy_names,
+                "copy_selected": copy_selected,
+                "current_after_change": current_after_change,
+                "current_unchanged": (
+                    int(document.Layers.CurrentLayerIndex) == current_before
+                ),
+                "hidden_change_count": hidden_change_count,
+                "hidden_change_selected": hidden_change_selected,
+                "hidden_copy_count": hidden_copy_count,
+                "hidden_copy_layers": hidden_copy_layers,
+                "hidden_copy_selected": hidden_copy_selected,
+                "locked_change_count": locked_change_count,
+                "locked_change_selected": locked_change_selected,
+                "locked_copy_count": locked_copy_count,
+                "locked_copy_layers": locked_copy_layers,
+                "locked_copy_selected": locked_copy_selected,
+                "mixed_copy_count": mixed_copy_count,
+                "mixed_copy_group_sizes": mixed_copy_group_sizes,
+                "mixed_copy_layers": mixed_copy_layers,
+                "original_selected_after_copy": original_selected_after_copy,
+                "original_selected_after_destination_copies": (
+                    original_selected_after_destination_copies
+                ),
+                "same_layer_copy_count": same_layer_copy_count,
+            }
+
+            modify_object_layers(object_ids[:2], layer_indices[0])
+            modify_object_layers(object_ids[:2], default_layer_index)
+            started = default_timer()
+            for _unused in iteration_range(iterations):
+                modify_object_layers(object_ids[:2], layer_indices[0])
+                modify_object_layers(object_ids[:2], default_layer_index)
+            elapsed_ns = int(
+                round((default_timer() - started) * 1000000000.0)
+            )
+            return value, max(0, elapsed_ns)
+        finally:
+            document.Objects.UnselectAll()
+            for layer_index in layer_indices:
+                layer = document.Layers[layer_index]
+                if layer is not None and (
+                    not layer.IsVisible or layer.IsLocked
+                ):
+                    set_layer_mode(layer_index, True, False)
+            if original_group_index is not None and original_group_index >= 0:
+                document.Groups.Delete(original_group_index)
+            for object_id in object_ids:
+                document.Objects.Show(object_id, True)
+                document.Objects.Unlock(object_id, True)
+                document.Objects.Delete(object_id, True)
+            for layer_index in reversed(layer_indices):
+                document.Layers.Delete(layer_index, True)
     if kind == "document_object_state_cycle":
         object_count_value = operation.get("object_count")
         if (
