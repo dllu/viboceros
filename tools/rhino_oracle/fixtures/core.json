@@ -47,6 +47,10 @@
       "id": "document-point-cloud-cycle"
     },
     {
+      "op": "three_dm_group_round_trip",
+      "id": "three-dm-group-round-trip"
+    },
+    {
       "op": "point_distance",
       "id": "point-distance",
       "a": [1.25, -2.5, 4.0],

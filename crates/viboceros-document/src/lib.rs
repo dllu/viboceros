@@ -1491,6 +1491,21 @@ impl Document {
         name: Option<String>,
         members: impl IntoIterator<Item = ObjectId>,
     ) -> Result<GroupId, DocumentError> {
+        let members: BTreeSet<_> = members.into_iter().collect();
+        self.insert_group(name, members, false)
+    }
+
+    /// Adds an empty group definition, as needed when importing file tables.
+    pub fn add_empty_group(&mut self, name: Option<String>) -> Result<GroupId, DocumentError> {
+        self.insert_group(name, BTreeSet::new(), true)
+    }
+
+    fn insert_group(
+        &mut self,
+        name: Option<String>,
+        members: BTreeSet<ObjectId>,
+        allow_empty: bool,
+    ) -> Result<GroupId, DocumentError> {
         let name = name
             .map(|name| name.trim().to_owned())
             .filter(|name| !name.is_empty());
@@ -1504,8 +1519,7 @@ impl Document {
         {
             return Err(DocumentError::DuplicateGroupName(name.clone()));
         }
-        let members: BTreeSet<_> = members.into_iter().collect();
-        if members.is_empty() {
+        if members.is_empty() && !allow_empty {
             return Err(DocumentError::EmptyGroup);
         }
         if let Some(missing) = members.iter().find(|id| self.object(**id).is_none()) {
@@ -2444,7 +2458,7 @@ mod tests {
     }
 
     #[test]
-    fn deleting_an_object_prunes_empty_groups() {
+    fn deleting_an_object_prunes_groups_losing_their_last_member() {
         let mut document = Document::default();
         let object = document
             .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
@@ -2453,6 +2467,26 @@ mod tests {
         document.delete_object(object).unwrap();
         assert_eq!(document.objects().len(), 0);
         assert_eq!(document.groups().len(), 0);
+    }
+
+    #[test]
+    fn empty_group_definitions_are_reversible_and_can_gain_members() {
+        let mut document = Document::default();
+        let object = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let group = document
+            .add_empty_group(Some("File Group".to_owned()))
+            .unwrap();
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
+        assert_eq!(document.add_group_members(group, [object]).unwrap(), 1);
+        assert_eq!(document.group(group).unwrap().members().len(), 1);
+        document.undo().unwrap();
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
+        document.undo().unwrap();
+        assert!(document.group(group).is_none());
+        document.redo().unwrap();
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
     }
 
     #[test]

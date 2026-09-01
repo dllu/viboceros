@@ -9,6 +9,7 @@ from pathlib import Path
 from .client import (
     OracleError,
     OracleProtocolError,
+    _read_optional_text,
     _run_logged,
     compare_responses,
     load_request,
@@ -91,6 +92,13 @@ class OracleClientTests(unittest.TestCase):
         self.assertEqual(completed.returncode, 0)
         self.assertEqual(completed.stdout, "standarderror")
         self.assertEqual(completed.stderr, "")
+
+    def test_optional_worker_diagnostic_is_trimmed_and_missing_safe(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            progress = Path(directory) / "progress.log"
+            self.assertEqual(_read_optional_text(progress), "")
+            progress.write_text("worker: started\n", encoding="utf-8")
+            self.assertEqual(_read_optional_text(progress), "worker: started")
 
 
 if __name__ == "__main__":

@@ -26,6 +26,11 @@ struct BridgeLayer {
   uint8_t locked = 0;
 };
 
+struct BridgeGroup {
+  int32_t source_index = 0;
+  std::string name;
+};
+
 struct BridgeObject {
   int32_t object_type = 0;
   int32_t source_layer_index = 0;
@@ -40,6 +45,7 @@ struct BridgeObject {
   std::vector<double> knots_u;
   std::vector<double> knots_v;
   std::vector<uint32_t> indices;
+  std::vector<int32_t> group_indices;
 };
 
 std::once_flag g_open_nurbs_once;
@@ -469,6 +475,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
 
 struct ViboThreeDmModel {
   std::vector<BridgeLayer> layers;
+  std::vector<BridgeGroup> groups;
   std::vector<BridgeObject> objects;
   size_t unsupported_object_count = 0;
 };
@@ -516,6 +523,15 @@ extern "C" int32_t vibo_3dm_read(const char* path,
            static_cast<uint8_t>(layer->IsLocked())});
     }
 
+    ONX_ModelComponentIterator group_iterator(
+        source, ON_ModelComponent::Type::Group);
+    for (const ON_Group* group =
+             ON_Group::Cast(group_iterator.FirstComponent());
+         group != nullptr;
+         group = ON_Group::Cast(group_iterator.NextComponent())) {
+      decoded->groups.push_back({group->Index(), utf8(group->Name())});
+    }
+
     ONX_ModelComponentIterator object_iterator(
         source, ON_ModelComponent::Type::ModelGeometry);
     for (const ON_ModelComponent* component = object_iterator.FirstComponent();
@@ -540,6 +556,18 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         object.visible = static_cast<uint8_t>(attributes->IsVisible());
         object.locked = static_cast<uint8_t>(attributes->Mode() ==
                                              ON::locked_object);
+        const int group_count = attributes->GroupCount();
+        const int* group_list = attributes->GroupList();
+        if (group_count > 0 && group_list == nullptr) {
+          ++decoded->unsupported_object_count;
+          continue;
+        }
+        object.group_indices.reserve(static_cast<size_t>(group_count));
+        for (int group_position = 0; group_position < group_count;
+             ++group_position) {
+          object.group_indices.push_back(
+              static_cast<int32_t>(group_list[group_position]));
+        }
       }
 
       bool supported = false;
@@ -604,6 +632,23 @@ extern "C" int32_t vibo_3dm_layer(
   return 1;
 }
 
+extern "C" size_t vibo_3dm_group_count(const ViboThreeDmModel* model) {
+  return model == nullptr ? 0 : model->groups.size();
+}
+
+extern "C" int32_t vibo_3dm_group(const ViboThreeDmModel* model,
+                                    size_t index, int32_t* source_index,
+                                    const char** name) {
+  if (model == nullptr || index >= model->groups.size() ||
+      source_index == nullptr || name == nullptr) {
+    return 0;
+  }
+  const BridgeGroup& group = model->groups[index];
+  *source_index = group.source_index;
+  *name = group.name.c_str();
+  return 1;
+}
+
 extern "C" size_t vibo_3dm_object_count(const ViboThreeDmModel* model) {
   return model == nullptr ? 0 : model->objects.size();
 }
@@ -616,10 +661,10 @@ extern "C" size_t vibo_3dm_unsupported_object_count(
 extern "C" int32_t vibo_3dm_object(
     const ViboThreeDmModel* model, size_t index, ViboObjectInfo* info,
     const double** coordinates, const double** knots_u, const double** knots_v,
-    const uint32_t** indices) {
+    const uint32_t** indices, const int32_t** group_indices) {
   if (model == nullptr || index >= model->objects.size() || info == nullptr ||
       coordinates == nullptr || knots_u == nullptr || knots_v == nullptr ||
-      indices == nullptr) {
+      indices == nullptr || group_indices == nullptr) {
     return 0;
   }
   const BridgeObject& object = model->objects[index];
@@ -635,20 +680,25 @@ extern "C" int32_t vibo_3dm_object(
            object.coordinates.size(),
            object.knots_u.size(),
            object.knots_v.size(),
-           object.indices.size()};
+           object.indices.size(),
+           object.group_indices.size()};
   *coordinates = object.coordinates.empty() ? nullptr : object.coordinates.data();
   *knots_u = object.knots_u.empty() ? nullptr : object.knots_u.data();
   *knots_v = object.knots_v.empty() ? nullptr : object.knots_v.data();
   *indices = object.indices.empty() ? nullptr : object.indices.data();
+  *group_indices =
+      object.group_indices.empty() ? nullptr : object.group_indices.data();
   return 1;
 }
 
 extern "C" int32_t vibo_3dm_write(
     const char* path, const ViboWriteLayer* layers, size_t layer_count,
+    const ViboWriteGroup* groups, size_t group_count,
     const ViboWriteObject* objects, size_t object_count, char* error,
     size_t error_capacity) {
   if (path == nullptr || path[0] == '\0' ||
       (layer_count != 0 && layers == nullptr) ||
+      (group_count != 0 && groups == nullptr) ||
       (object_count != 0 && objects == nullptr)) {
     set_error(error, error_capacity, "path and input arrays are required");
     return 0;
@@ -702,11 +752,53 @@ extern "C" int32_t vibo_3dm_write(
       }
     }
 
+    std::vector<int> group_indices;
+    group_indices.reserve(group_count);
+    for (size_t index = 0; index < group_count; ++index) {
+      const ViboWriteGroup& source = groups[index];
+      if (source.name == nullptr || source.name[0] == '\0') {
+        set_error(error, error_capacity, "3DM group names cannot be empty");
+        return 0;
+      }
+      ON_Group group;
+      if (!group.SetName(ON_wString(source.name))) {
+        set_error(error, error_capacity, "3DM group name is invalid");
+        return 0;
+      }
+      const ON_ModelComponentReference reference =
+          model.AddModelComponent(group, true);
+      const ON_Group* added = ON_Group::FromModelComponentRef(reference, nullptr);
+      if (added == nullptr || added->Index() < 0) {
+        set_error(error, error_capacity,
+                  "OpenNURBS could not add a group to the model");
+        return 0;
+      }
+      group_indices.push_back(added->Index());
+    }
+
     for (size_t index = 0; index < object_count; ++index) {
       const ViboWriteObject& source = objects[index];
       if (source.layer_index >= layer_indices.size()) {
         set_error(error, error_capacity,
                   "3DM object references a missing layer");
+        return 0;
+      }
+      if (source.group_index_count != 0 && source.group_indices == nullptr) {
+        set_error(error, error_capacity,
+                  "3DM object has a null group index array");
+        return 0;
+      }
+      bool valid_groups = true;
+      for (size_t group_position = 0;
+           group_position < source.group_index_count; ++group_position) {
+        if (source.group_indices[group_position] >= group_indices.size()) {
+          valid_groups = false;
+          break;
+        }
+      }
+      if (!valid_groups) {
+        set_error(error, error_capacity,
+                  "3DM object references a missing group");
         return 0;
       }
       std::string geometry_error;
@@ -724,6 +816,11 @@ extern "C" int32_t vibo_3dm_write(
                   "object " + std::to_string(index) +
                       ": object name is invalid");
         return 0;
+      }
+      for (size_t group_position = 0;
+           group_position < source.group_index_count; ++group_position) {
+        attributes->AddToGroup(
+            group_indices[source.group_indices[group_position]]);
       }
       const ON_ModelComponentReference reference =
           model.AddManagedModelGeometryComponent(geometry, attributes, true);

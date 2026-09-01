@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Standalone RhinoPython worker for the versioned compatibility oracle.
 
 This file is copied beside request.json and executed inside Rhino. Keep its
@@ -21,6 +22,7 @@ DEFAULT_TOLERANCE = {
     "relative": 1.0e-12,
     "angular": 1.0e-10,
 }
+LAST_PROGRESS_STAGE = "worker loading"
 try:
     string_types = (basestring,)
 except NameError:
@@ -29,6 +31,20 @@ try:
     iteration_range = xrange
 except NameError:
     iteration_range = range
+
+
+def _record_progress(stage):
+    global LAST_PROGRESS_STAGE
+    LAST_PROGRESS_STAGE = stage
+    path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)), "worker-progress.log"
+    )
+    try:
+        with open(path, "a") as stream:
+            stream.write(stage + "\n")
+            stream.flush()
+    except Exception:
+        pass
 
 
 def _point(coordinates):
@@ -222,6 +238,106 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "three_dm_group_round_trip":
+        _record_progress("three_dm_group_round_trip: start")
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "groups.3dm")
+        model = Rhino.FileIO.File3dm()
+        _record_progress("three_dm_group_round_trip: model created")
+        decoded = None
+        try:
+            layer_index = model.Layers.AddDefaultLayer(
+                "Default", System.Drawing.Color.Black
+            )
+            _record_progress("three_dm_group_round_trip: layer added")
+            if layer_index < 0:
+                raise ValueError("could not add file group fixture layer")
+            group_names = ["Assembly α", "Inspection", "Empty Group"]
+            group_indices = []
+            for name in group_names:
+                group_index = model.AllGroups.AddGroup()
+                group = model.AllGroups.FindIndex(group_index)
+                if group_index < 0 or group is None:
+                    raise ValueError("could not add file group fixture group")
+                group.Name = name
+                group_indices.append(group_index)
+                _record_progress("three_dm_group_round_trip: group added")
+
+            memberships = [[0], [0, 1], [1], []]
+            for object_index, membership in enumerate(memberships):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.LayerIndex = layer_index
+                attributes.Name = "P%d" % object_index
+                for group_position in membership:
+                    attributes.AddToGroup(group_indices[group_position])
+                object_id = model.Objects.AddPoint(
+                    Rhino.Geometry.Point3d(float(object_index), 0.0, 0.0),
+                    attributes,
+                )
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add file group fixture point")
+                _record_progress("three_dm_group_round_trip: object added")
+            if not model.Write(path, 8):
+                raise ValueError("could not write file group fixture")
+            _record_progress("three_dm_group_round_trip: model written")
+
+            decoded = Rhino.FileIO.File3dm.Read(path)
+            _record_progress("three_dm_group_round_trip: model read")
+            if decoded is None:
+                raise ValueError("could not read file group fixture")
+            decoded_objects = sorted(
+                list(decoded.Objects), key=lambda item: item.Attributes.Name
+            )
+            _record_progress("three_dm_group_round_trip: objects decoded")
+            decoded_groups = sorted(
+                list(decoded.AllGroups), key=lambda item: int(item.Index)
+            )
+            _record_progress("three_dm_group_round_trip: groups decoded")
+            decoded_group_names = [group.Name for group in decoded_groups]
+            group_names_by_index = {
+                int(group.Index): group.Name for group in decoded_groups
+            }
+            _record_progress("three_dm_group_round_trip: names decoded")
+            group_positions_by_index = {
+                int(group.Index): position
+                for position, group in enumerate(decoded_groups)
+            }
+            # File3dmGroupTable.GroupMembers throws on this Rhino/Wine host;
+            # invert the persisted ObjectAttributes lists instead.
+            group_members = [[] for _group in decoded_groups]
+            object_groups = []
+            for object_position, item in enumerate(decoded_objects):
+                _record_progress(
+                    "three_dm_group_round_trip: reading object %s groups"
+                    % item.Attributes.Name
+                )
+                indices = item.Attributes.GetGroupList()
+                indices = [] if indices is None else [int(index) for index in indices]
+                object_groups.append(
+                    [group_names_by_index[index] for index in indices]
+                )
+                for index in indices:
+                    group_members[group_positions_by_index[index]].append(object_position)
+            _record_progress("three_dm_group_round_trip: memberships decoded")
+            value = {
+                "group_members": group_members,
+                "group_names": decoded_group_names,
+                "object_groups": object_groups,
+                "unsupported_object_count": 0,
+            }
+            _unused, elapsed = _measure(
+                iterations,
+                lambda: sum(
+                    int(item.Attributes.GroupCount) for item in decoded_objects
+                ),
+            )
+            _record_progress("three_dm_group_round_trip: complete")
+            return value, elapsed
+        finally:
+            if decoded is not None:
+                decoded.Dispose()
+            model.Dispose()
+            if os.path.exists(path):
+                os.remove(path)
     if kind == "document_point_cloud_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid()).replace("-", "")
@@ -2476,6 +2592,10 @@ def _response(request):
         iterations, operations, tolerance = _validate_request(request)
         response["iterations"] = iterations
         for operation in operations:
+            _record_progress(
+                "operation %s: start"
+                % operation.get("id", operation.get("op", "unknown"))
+            )
             value, elapsed = _execute(operation, iterations, tolerance)
             response["results"].append(
                 {
@@ -2486,11 +2606,16 @@ def _response(request):
             )
     except Exception as error:
         response["results"] = []
-        response["error"] = "%s: %s" % (type(error).__name__, error)
+        response["error"] = "%s at %s: %s" % (
+            type(error).__name__,
+            LAST_PROGRESS_STAGE,
+            error,
+        )
     return response
 
 
 def _main():
+    _record_progress("worker: started")
     job_directory = os.path.dirname(os.path.abspath(__file__))
     request_path = os.path.join(job_directory, "request.json")
     response_path = os.path.join(job_directory, "response.json")
@@ -2499,7 +2624,9 @@ def _main():
     try:
         with open(request_path, "r") as stream:
             request = json.load(stream)
+        _record_progress("worker: request loaded")
         response = _response(request)
+        _record_progress("worker: response computed")
     except Exception as error:
         response = {
             "protocol_version": PROTOCOL_VERSION,
@@ -2515,6 +2642,7 @@ def _main():
     if os.path.exists(response_path):
         os.remove(response_path)
     os.rename(temporary_path, response_path)
+    _record_progress("worker: response published")
     host_options = {}
     if isinstance(request, dict):
         host_options = request.get("_host") or {}

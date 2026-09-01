@@ -3,8 +3,8 @@
 use std::collections::BTreeSet;
 use std::fs;
 use std::hint::black_box;
-use std::path::Path;
-use std::time::Instant;
+use std::path::{Path, PathBuf};
+use std::time::{Instant, SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
@@ -17,6 +17,10 @@ use viboceros_geometry::{
     Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
     NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3,
     WeightedPoint3, join_polylines,
+};
+use viboceros_io::{
+    ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject,
+    read_3dm_file, write_3dm_file,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -87,6 +91,9 @@ pub enum Operation {
         id: String,
     },
     DocumentPointCloudCycle {
+        id: String,
+    },
+    ThreeDmGroupRoundTrip {
         id: String,
     },
     PointDistance {
@@ -259,6 +266,7 @@ impl Operation {
             | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::DocumentPointCloudCycle { id }
+            | Self::ThreeDmGroupRoundTrip { id }
             | Self::PointDistance { id, .. }
             | Self::LinePoint { id, .. }
             | Self::CirclePoint { id, .. }
@@ -329,6 +337,9 @@ pub enum ProbeError {
 
     #[error(transparent)]
     Command(#[from] CommandError),
+
+    #[error(transparent)]
+    ThreeDm(#[from] ThreeDmError),
 
     #[error("unsupported oracle protocol version {actual}; expected {expected}")]
     ProtocolVersion { actual: u32, expected: u32 },
@@ -447,6 +458,9 @@ fn execute(
         }
         Operation::DocumentPointCloudCycle { .. } => {
             document_point_cloud_cycle(iterations, tolerance)?
+        }
+        Operation::ThreeDmGroupRoundTrip { .. } => {
+            three_dm_group_round_trip(iterations, tolerance)?
         }
         Operation::PointDistance { a, b, .. } => {
             let a = point(*a)?;
@@ -1550,6 +1564,125 @@ fn document_layer_assignment_cycle(iterations: u32) -> Result<(Value, u64), Prob
     Ok((value, elapsed_ns))
 }
 
+struct OracleTemporaryFile {
+    path: PathBuf,
+}
+
+impl OracleTemporaryFile {
+    fn new(label: &str) -> Self {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        Self {
+            path: std::env::temp_dir().join(format!(
+                "viboceros-oracle-{}-{nonce}-{label}.3dm",
+                std::process::id()
+            )),
+        }
+    }
+}
+
+impl Drop for OracleTemporaryFile {
+    fn drop(&mut self) {
+        let _ = fs::remove_file(&self.path);
+    }
+}
+
+fn three_dm_group_round_trip(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let path = OracleTemporaryFile::new("groups");
+    let objects = [
+        ("P0", [0.0, 0.0, 0.0], vec![0]),
+        ("P1", [1.0, 0.0, 0.0], vec![0, 1]),
+        ("P2", [2.0, 0.0, 0.0], vec![1]),
+        ("P3", [3.0, 0.0, 0.0], Vec::new()),
+    ]
+    .into_iter()
+    .map(|(name, location, group_indices)| {
+        Ok::<_, GeometryError>(ThreeDmObject {
+            geometry: ThreeDmGeometry::Point(point(location)?),
+            layer_index: 0,
+            name: Some(name.to_owned()),
+            visible: true,
+            locked: false,
+            group_indices,
+        })
+    })
+    .collect::<Result<Vec<_>, _>>()?;
+    let source = ThreeDmModel::new(
+        vec![ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        }],
+        vec![
+            ThreeDmGroup {
+                name: "Assembly α".to_owned(),
+            },
+            ThreeDmGroup {
+                name: "Inspection".to_owned(),
+            },
+            ThreeDmGroup {
+                name: "Empty Group".to_owned(),
+            },
+        ],
+        objects,
+    );
+    write_3dm_file(&path.path, &source)?;
+    let decoded = read_3dm_file(&path.path, tolerance)?;
+
+    let group_names = decoded
+        .groups
+        .iter()
+        .map(|group| group.name.clone())
+        .collect::<Vec<_>>();
+    let group_members = (0..decoded.groups.len())
+        .map(|group_index| {
+            decoded
+                .objects
+                .iter()
+                .enumerate()
+                .filter_map(|(object_index, object)| {
+                    object
+                        .group_indices
+                        .contains(&group_index)
+                        .then_some(object_index)
+                })
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    let object_groups = decoded
+        .objects
+        .iter()
+        .map(|object| {
+            object
+                .group_indices
+                .iter()
+                .map(|index| decoded.groups[*index].name.clone())
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    let value = json!({
+        "group_members": group_members,
+        "group_names": group_names,
+        "object_groups": object_groups,
+        "unsupported_object_count": decoded.unsupported_object_count(),
+    });
+
+    let (_, elapsed_ns) = measure(iterations, || {
+        Ok(decoded
+            .objects
+            .iter()
+            .map(|object| object.group_indices.len())
+            .sum::<usize>())
+    })?;
+    Ok((value, elapsed_ns))
+}
+
 #[derive(Clone, Copy)]
 struct PointCloudCycleIds {
     line: ObjectId,
@@ -2606,6 +2739,28 @@ mod tests {
                 .unwrap()
                 .iter()
                 .all(|point| point["selected"] == json!(false))
+        );
+    }
+
+    #[test]
+    fn round_trips_overlapping_and_empty_three_dm_groups() {
+        let response = run_request(&request(vec![Operation::ThreeDmGroupRoundTrip {
+            id: "three-dm-groups".to_owned(),
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "group_members": [[0, 1], [1, 2], []],
+                "group_names": ["Assembly α", "Inspection", "Empty Group"],
+                "object_groups": [
+                    ["Assembly α"],
+                    ["Assembly α", "Inspection"],
+                    ["Inspection"],
+                    [],
+                ],
+                "unsupported_object_count": 0,
+            })
         );
     }
 

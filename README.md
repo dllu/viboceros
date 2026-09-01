@@ -268,7 +268,8 @@ Python/RhinoCommon bridge.
 Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
 curves, untrimmed NURBS surfaces, triangle meshes, layer state, and object
-state. Circles, arcs,
+state. Named group definitions and ordered membership are preserved, including
+overlapping and empty groups. Circles, arcs,
 ellipses, and polylines are exported without approximation as rational NURBS
 curves; canonical degree-one curves return as editable polylines. Unsupported
 trimmed B-rep and solid objects are counted and reported during import. Initial
@@ -278,5 +279,5 @@ trimmed surfaces into validated display meshes. Parser, topology, and
 unsupported-representation losses are reported instead of being silent. STL and
 STEP export tessellate visible NURBS surfaces; STEP writes the results as faceted
 shells with shared topology and planar faces. Editable STEP B-reps, trimmed 3DM
-B-rep/solid interchange, groups in 3DM, and production surface and solid
-modelling are not implemented yet.
+B-rep/solid interchange, and production surface and solid modelling are not
+implemented yet.

@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::ffi::{CStr, CString, c_char, c_double, c_int};
 use std::path::Path;
 use std::ptr::NonNull;
@@ -26,6 +26,11 @@ pub struct ThreeDmLayer {
     pub locked: bool,
 }
 
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ThreeDmGroup {
+    pub name: String,
+}
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum ThreeDmGeometry {
     Point(Point3),
@@ -43,6 +48,8 @@ pub struct ThreeDmObject {
     pub name: Option<String>,
     pub visible: bool,
     pub locked: bool,
+    /// Indices into [`ThreeDmModel::groups`] in source-attribute order.
+    pub group_indices: Vec<usize>,
 }
 
 impl ThreeDmObject {
@@ -53,6 +60,7 @@ impl ThreeDmObject {
             name: None,
             visible: true,
             locked: false,
+            group_indices: Vec::new(),
         }
     }
 }
@@ -60,14 +68,20 @@ impl ThreeDmObject {
 #[derive(Clone, Debug, PartialEq)]
 pub struct ThreeDmModel {
     pub layers: Vec<ThreeDmLayer>,
+    pub groups: Vec<ThreeDmGroup>,
     pub objects: Vec<ThreeDmObject>,
     unsupported_object_count: usize,
 }
 
 impl ThreeDmModel {
-    pub fn new(layers: Vec<ThreeDmLayer>, objects: Vec<ThreeDmObject>) -> Self {
+    pub fn new(
+        layers: Vec<ThreeDmLayer>,
+        groups: Vec<ThreeDmGroup>,
+        objects: Vec<ThreeDmObject>,
+    ) -> Self {
         Self {
             layers,
+            groups,
             objects,
             unsupported_object_count: 0,
         }
@@ -153,6 +167,18 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
         })
         .collect::<Vec<_>>();
 
+    let group_names = model
+        .groups
+        .iter()
+        .map(|group| c_string(&group.name, "group name"))
+        .collect::<Result<Vec<_>, _>>()?;
+    let groups = group_names
+        .iter()
+        .map(|name| ffi::ViboWriteGroup {
+            name: name.as_ptr(),
+        })
+        .collect::<Vec<_>>();
+
     let object_names = model
         .objects
         .iter()
@@ -192,6 +218,8 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             knot_v_count: payload.knots_v.len(),
             indices: pointer_or_null(&payload.indices),
             index_count: payload.indices.len(),
+            group_indices: pointer_or_null(&object.group_indices),
+            group_index_count: object.group_indices.len(),
         })
         .collect::<Vec<_>>();
 
@@ -203,6 +231,8 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             native_path.as_ptr(),
             pointer_or_null(&layers),
             layers.len(),
+            pointer_or_null(&groups),
+            groups.len(),
             pointer_or_null(&objects),
             objects.len(),
             error.as_mut_ptr(),
@@ -267,12 +297,33 @@ fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmMod
     }
 
     // SAFETY: the handle owns a live bridge model.
+    let group_count = unsafe { ffi::vibo_3dm_group_count(handle.0.as_ptr()) };
+    let mut groups = Vec::with_capacity(group_count);
+    let mut group_positions = BTreeMap::new();
+    for index in 0..group_count {
+        let mut source_index = 0;
+        let mut name = std::ptr::null();
+        // SAFETY: all output pointers are valid and the index is in range.
+        let success =
+            unsafe { ffi::vibo_3dm_group(handle.0.as_ptr(), index, &mut source_index, &mut name) };
+        if success == 0 || name.is_null() {
+            return Err(ThreeDmError::MalformedBridge("invalid group record"));
+        }
+        if group_positions.insert(source_index, groups.len()).is_some() {
+            return Err(ThreeDmError::MalformedBridge("duplicate group index"));
+        }
+        groups.push(ThreeDmGroup {
+            name: c_text(name)?,
+        });
+    }
+
+    // SAFETY: the handle owns a live bridge model.
     let object_count = unsafe { ffi::vibo_3dm_object_count(handle.0.as_ptr()) };
     let mut objects = Vec::with_capacity(object_count);
     // SAFETY: the handle owns a live bridge model.
     let mut unsupported = unsafe { ffi::vibo_3dm_unsupported_object_count(handle.0.as_ptr()) };
     for index in 0..object_count {
-        match decode_object(handle, index, &layer_positions, tolerance) {
+        match decode_object(handle, index, &layer_positions, &group_positions, tolerance) {
             Ok(object) => objects.push(object),
             Err(ThreeDmError::Geometry(_)) => unsupported += 1,
             Err(error) => return Err(error),
@@ -280,6 +331,7 @@ fn decode_model(handle: &ModelHandle, tolerance: Tolerance) -> Result<ThreeDmMod
     }
     Ok(ThreeDmModel {
         layers,
+        groups,
         objects,
         unsupported_object_count: unsupported,
     })
@@ -289,6 +341,7 @@ fn decode_object(
     handle: &ModelHandle,
     index: usize,
     layer_positions: &BTreeMap<i32, usize>,
+    group_positions: &BTreeMap<i32, usize>,
     tolerance: Tolerance,
 ) -> Result<ThreeDmObject, ThreeDmError> {
     let mut info = ffi::ViboObjectInfo::default();
@@ -296,6 +349,7 @@ fn decode_object(
     let mut knots_u = std::ptr::null();
     let mut knots_v = std::ptr::null();
     let mut indices = std::ptr::null();
+    let mut group_indices = std::ptr::null();
     // SAFETY: output pointers are valid, the model is live, and index is in range.
     let success = unsafe {
         ffi::vibo_3dm_object(
@@ -306,6 +360,7 @@ fn decode_object(
             &mut knots_u,
             &mut knots_v,
             &mut indices,
+            &mut group_indices,
         )
     };
     if success == 0 {
@@ -315,6 +370,16 @@ fn decode_object(
     let knots_u = ffi_slice(handle, knots_u, info.knot_u_count)?;
     let knots_v = ffi_slice(handle, knots_v, info.knot_v_count)?;
     let indices = ffi_slice(handle, indices, info.index_count)?;
+    let group_indices = ffi_slice(handle, group_indices, info.group_index_count)?
+        .iter()
+        .map(|source_index| {
+            group_positions.get(source_index).copied().ok_or_else(|| {
+                ThreeDmError::InvalidModel(format!(
+                    "object {index} references unknown group index {source_index}"
+                ))
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
     let layer_index = layer_positions
         .get(&info.source_layer_index)
         .copied()
@@ -462,6 +527,7 @@ fn decode_object(
         name,
         visible: info.visible != 0,
         locked: info.locked != 0,
+        group_indices,
     })
 }
 
@@ -478,12 +544,39 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
             )));
         }
     }
+    let mut group_names = BTreeSet::new();
+    for (index, group) in model.groups.iter().enumerate() {
+        let name = group.name.trim();
+        if name.is_empty() {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "group {index} has an empty name"
+            )));
+        }
+        if !group_names.insert(name) {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "group {index} duplicates the name '{name}'"
+            )));
+        }
+    }
     for (index, object) in model.objects.iter().enumerate() {
         if object.layer_index >= model.layers.len() {
             return Err(ThreeDmError::InvalidModel(format!(
                 "object {index} references missing layer {}",
                 object.layer_index
             )));
+        }
+        let mut memberships = BTreeSet::new();
+        for group_index in &object.group_indices {
+            if *group_index >= model.groups.len() {
+                return Err(ThreeDmError::InvalidModel(format!(
+                    "object {index} references missing group {group_index}"
+                )));
+            }
+            if !memberships.insert(*group_index) {
+                return Err(ThreeDmError::InvalidModel(format!(
+                    "object {index} repeats group {group_index}"
+                )));
+            }
         }
     }
     Ok(())
@@ -699,6 +792,7 @@ mod ffi {
         pub knot_u_count: usize,
         pub knot_v_count: usize,
         pub index_count: usize,
+        pub group_index_count: usize,
     }
 
     #[repr(C)]
@@ -709,6 +803,11 @@ mod ffi {
         pub blue: u8,
         pub visible: u8,
         pub locked: u8,
+    }
+
+    #[repr(C)]
+    pub struct ViboWriteGroup {
+        pub name: *const c_char,
     }
 
     #[repr(C)]
@@ -730,6 +829,8 @@ mod ffi {
         pub knot_v_count: usize,
         pub indices: *const u32,
         pub index_count: usize,
+        pub group_indices: *const usize,
+        pub group_index_count: usize,
     }
 
     unsafe extern "C" {
@@ -752,6 +853,13 @@ mod ffi {
             visible: *mut u8,
             locked: *mut u8,
         ) -> c_int;
+        pub fn vibo_3dm_group_count(model: *const ViboThreeDmModel) -> usize;
+        pub fn vibo_3dm_group(
+            model: *const ViboThreeDmModel,
+            index: usize,
+            source_index: *mut i32,
+            name: *mut *const c_char,
+        ) -> c_int;
         pub fn vibo_3dm_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_unsupported_object_count(model: *const ViboThreeDmModel) -> usize;
         pub fn vibo_3dm_object(
@@ -762,11 +870,14 @@ mod ffi {
             knots_u: *mut *const c_double,
             knots_v: *mut *const c_double,
             indices: *mut *const u32,
+            group_indices: *mut *const i32,
         ) -> c_int;
         pub fn vibo_3dm_write(
             path: *const c_char,
             layers: *const ViboWriteLayer,
             layer_count: usize,
+            groups: *const ViboWriteGroup,
+            group_count: usize,
             objects: *const ViboWriteObject,
             object_count: usize,
             error: *mut c_char,
@@ -852,14 +963,29 @@ mod tests {
                 },
             ],
             vec![
-                ThreeDmObject::new(ThreeDmGeometry::Point(point), 0),
-                ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud), 0),
+                ThreeDmGroup {
+                    name: "Assembly α".to_owned(),
+                },
+                ThreeDmGroup {
+                    name: "Inspection".to_owned(),
+                },
+            ],
+            vec![
+                ThreeDmObject {
+                    group_indices: vec![0],
+                    ..ThreeDmObject::new(ThreeDmGeometry::Point(point), 0)
+                },
+                ThreeDmObject {
+                    group_indices: vec![0, 1],
+                    ..ThreeDmObject::new(ThreeDmGeometry::PointCloud(cloud), 0)
+                },
                 ThreeDmObject {
                     geometry: ThreeDmGeometry::Line(line),
                     layer_index: 1,
                     name: Some("guide".to_owned()),
                     visible: true,
                     locked: true,
+                    group_indices: vec![1],
                 },
                 ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve), 0),
                 ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface), 0),
@@ -869,7 +995,7 @@ mod tests {
     }
 
     #[test]
-    fn open_nurbs_round_trip_preserves_supported_geometry_and_layers() {
+    fn open_nurbs_round_trip_preserves_geometry_layers_and_groups() {
         let path = temporary_path("roundtrip.3dm");
         let original = sample_model();
         fs::write(&path, b"previous valid file remains until replacement").unwrap();
@@ -880,13 +1006,15 @@ mod tests {
         let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
         assert_eq!(decoded.unsupported_object_count(), 0);
         assert_eq!(decoded.layers, original.layers);
+        assert_eq!(decoded.groups, original.groups);
         assert_eq!(decoded.objects, original.objects);
         fs::remove_file(path).unwrap();
     }
 
     #[test]
-    fn rejects_invalid_layer_references_before_calling_native_code() {
+    fn rejects_invalid_layer_and_group_references_before_calling_native_code() {
         let model = ThreeDmModel::new(
+            Vec::new(),
             Vec::new(),
             vec![ThreeDmObject::new(
                 ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
@@ -895,6 +1023,49 @@ mod tests {
         );
         assert!(matches!(
             write_3dm_file(temporary_path("invalid.3dm"), &model),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+
+        let layer = ThreeDmLayer {
+            name: "Default".to_owned(),
+            color: [0, 0, 0],
+            visible: true,
+            locked: false,
+        };
+        let group = ThreeDmGroup {
+            name: "Assembly".to_owned(),
+        };
+        let invalid_membership = ThreeDmObject {
+            group_indices: vec![1],
+            ..ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )
+        };
+        assert!(matches!(
+            write_3dm_file(
+                temporary_path("invalid-group.3dm"),
+                &ThreeDmModel::new(
+                    vec![layer.clone()],
+                    vec![group.clone()],
+                    vec![invalid_membership],
+                ),
+            ),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+
+        let repeated_membership = ThreeDmObject {
+            group_indices: vec![0, 0],
+            ..ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )
+        };
+        assert!(matches!(
+            write_3dm_file(
+                temporary_path("repeated-group.3dm"),
+                &ThreeDmModel::new(vec![layer], vec![group], vec![repeated_membership],),
+            ),
             Err(ThreeDmError::InvalidModel(_))
         ));
     }
@@ -911,7 +1082,7 @@ mod tests {
     }
 
     #[test]
-    fn reads_official_old_archive_curve_and_surface_fixtures() {
+    fn reads_official_old_archive_curve_surface_and_group_fixtures() {
         let root =
             Path::new(env!("CARGO_MANIFEST_DIR")).join("../../third_party/opennurbs/example_files");
         let curves = read_3dm_file(root.join("V2/v2_my_curves.3dm"), Tolerance::DEFAULT).unwrap();
@@ -928,6 +1099,29 @@ mod tests {
                 .objects
                 .iter()
                 .any(|object| matches!(object.geometry, ThreeDmGeometry::NurbsSurface(_)))
+        );
+
+        let points = read_3dm_file(root.join("V7/v7_my_points.3dm"), Tolerance::DEFAULT).unwrap();
+        let group_index = points
+            .groups
+            .iter()
+            .position(|group| group.name == "group of points")
+            .unwrap();
+        let grouped = points
+            .objects
+            .iter()
+            .filter(|object| object.group_indices.contains(&group_index))
+            .collect::<Vec<_>>();
+        assert_eq!(grouped.len(), 2);
+        assert!(
+            grouped
+                .iter()
+                .any(|object| matches!(object.geometry, ThreeDmGeometry::Point(_)))
+        );
+        assert!(
+            grouped
+                .iter()
+                .any(|object| matches!(object.geometry, ThreeDmGeometry::PointCloud(_)))
         );
     }
 

@@ -210,7 +210,15 @@ class OracleClient:
                     time.sleep(0.05)
                 if not response_path.is_file():
                     details = _command_output(completed)
-                    suffix = f"\nLauncher output:\n{details}" if details else ""
+                    progress = _read_optional_text(job_path / "worker-progress.log")
+                    diagnostics = []
+                    if progress:
+                        diagnostics.append(f"Worker progress:\n{progress}")
+                    if details:
+                        diagnostics.append(f"Launcher output:\n{details}")
+                    suffix = (
+                        "\n" + "\n".join(diagnostics) if diagnostics else ""
+                    )
                     raise OracleError(
                         f"Rhino probe did not respond within {timeout:g} seconds "
                         f"(owned_pids={sorted(owned_pids)}, "
@@ -545,6 +553,13 @@ def _read_json(path: Path) -> dict[str, Any]:
     if not isinstance(value, dict):
         raise OracleProtocolError("oracle response root must be a JSON object")
     return value
+
+
+def _read_optional_text(path: Path) -> str:
+    try:
+        return path.read_text(encoding="utf-8", errors="replace").strip()
+    except OSError:
+        return ""
 
 
 def _validate_response(response: Mapping[str, Any], engine: str) -> None:

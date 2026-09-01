@@ -3689,6 +3689,7 @@ dependencies = [
  "viboceros-command",
  "viboceros-document",
  "viboceros-geometry",
+ "viboceros-io",
 ]
 
 [[package]]

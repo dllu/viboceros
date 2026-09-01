@@ -14,9 +14,9 @@ use viboceros_geometry::{
     UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
-    StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
-    ThreeDmObject, read_3dm_file, read_step_file, read_stl_file, write_3dm_file, write_step_file,
-    write_stl_file,
+    StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer,
+    ThreeDmModel, ThreeDmObject, read_3dm_file, read_step_file, read_stl_file, write_3dm_file,
+    write_step_file, write_stl_file,
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
@@ -3303,6 +3303,7 @@ impl Command for ImportThreeDmCommand {
             imported_layers.push(id);
         }
 
+        let mut imported_objects = Vec::with_capacity(object_count);
         for object in model.objects {
             let layer_id = imported_layers[object.layer_index];
             let mut attributes = ObjectAttributes::on_layer(layer_id)
@@ -3311,10 +3312,26 @@ impl Command for ImportThreeDmCommand {
             if let Some(name) = object.name {
                 attributes = attributes.with_name(name);
             }
-            document.add_geometry_with_attributes(
+            let id = document.add_geometry_with_attributes(
                 document_geometry_from_3dm(object.geometry, document.tolerance()),
                 attributes,
             )?;
+            imported_objects.push((id, object.group_indices));
+        }
+
+        let mut imported_group_count = 0;
+        for (group_index, group) in model.groups.iter().enumerate() {
+            let members = imported_objects
+                .iter()
+                .filter_map(|(id, groups)| groups.contains(&group_index).then_some(*id))
+                .collect::<Vec<_>>();
+            let name = unique_import_group_name(document, &group.name);
+            if members.is_empty() {
+                document.add_empty_group(Some(name))?;
+            } else {
+                document.add_group(Some(name), members)?;
+            }
+            imported_group_count += 1;
         }
 
         for (source, id) in model.layers.iter().zip(imported_layers) {
@@ -3323,7 +3340,7 @@ impl Command for ImportThreeDmCommand {
         }
 
         Ok(format!(
-            "Imported {object_count} objects on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped)"
+            "Imported {object_count} objects in {imported_group_count} groups on {layer_count} layers from '{path}' ({unsupported} unsupported objects skipped)"
         ))
     }
 }
@@ -3346,10 +3363,11 @@ impl Command for ExportThreeDmCommand {
         let path = arguments.join(" ");
         let model = document_3dm_model(document)?;
         let object_count = model.objects.len();
+        let group_count = model.groups.len();
         let layer_count = model.layers.len();
         write_3dm_file(&path, &model)?;
         Ok(format!(
-            "Exported {object_count} objects on {layer_count} layers to '{path}'"
+            "Exported {object_count} objects in {group_count} groups on {layer_count} layers to '{path}'"
         ))
     }
 }
@@ -3372,6 +3390,29 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError
         .enumerate()
         .map(|(index, layer)| (layer.id(), index))
         .collect();
+    let mut used_group_names = document
+        .groups()
+        .filter_map(|group| group.name().map(str::to_owned))
+        .collect::<BTreeSet<_>>();
+    let document_groups = document.groups().collect::<Vec<_>>();
+    let groups = document_groups
+        .iter()
+        .map(|group| ThreeDmGroup {
+            name: group.name().map_or_else(
+                || next_serialized_group_name(&mut used_group_names),
+                str::to_owned,
+            ),
+        })
+        .collect::<Vec<_>>();
+    let mut group_indices_by_object = BTreeMap::<ObjectId, Vec<usize>>::new();
+    for (group_index, group) in document_groups.iter().enumerate() {
+        for member in group.members() {
+            group_indices_by_object
+                .entry(member)
+                .or_default()
+                .push(group_index);
+        }
+    }
     let objects = document
         .objects()
         .map(|object| {
@@ -3381,10 +3422,24 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError
                 name: object.attributes().name().map(str::to_owned),
                 visible: object.attributes().is_visible(),
                 locked: object.attributes().is_locked(),
+                group_indices: group_indices_by_object
+                    .get(&object.id())
+                    .cloned()
+                    .unwrap_or_default(),
             })
         })
         .collect::<Result<_, GeometryError>>()?;
-    Ok(ThreeDmModel::new(layers, objects))
+    Ok(ThreeDmModel::new(layers, groups, objects))
+}
+
+fn next_serialized_group_name(used: &mut BTreeSet<String>) -> String {
+    for number in 1_u64..=u64::MAX {
+        let candidate = format!("Group{number:02}");
+        if used.insert(candidate.clone()) {
+            return candidate;
+        }
+    }
+    unreachable!("the finite document cannot contain every numbered group name")
 }
 
 fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError> {
@@ -3452,6 +3507,24 @@ fn unique_import_layer_name(document: &Document, source_name: &str) -> String {
         }
     }
     unreachable!("the finite document cannot contain every numbered layer name")
+}
+
+fn unique_import_group_name(document: &Document, source_name: &str) -> String {
+    let base = if source_name.trim().is_empty() {
+        "Imported Group"
+    } else {
+        source_name.trim()
+    };
+    if document.group_by_name(base).is_none() {
+        return base.to_owned();
+    }
+    for suffix in 1_u32.. {
+        let candidate = format!("{base} (Imported {suffix})");
+        if document.group_by_name(&candidate).is_none() {
+            return candidate;
+        }
+    }
+    unreachable!("the finite document cannot contain every numbered group name")
 }
 
 fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandError> {
@@ -7045,7 +7118,7 @@ mod tests {
     }
 
     #[test]
-    fn imports_and_exports_3dm_with_layers_as_one_undo_step() {
+    fn imports_and_exports_3dm_with_layers_and_groups_as_one_undo_step() {
         use std::fs;
         use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -7113,17 +7186,73 @@ mod tests {
         registry
             .execute(&mut source, "Layer Lock Reference")
             .unwrap();
-        registry
+        source
+            .add_group(
+                Some("Assembly".to_owned()),
+                [source_ids[0], source_ids[1], source_ids[8]],
+            )
+            .unwrap();
+        source
+            .add_group(
+                Some("Inspection".to_owned()),
+                [source_ids[1], source_ids[8]],
+            )
+            .unwrap();
+        source
+            .add_group(None, [source_ids[2], source_ids[8]])
+            .unwrap();
+        source
+            .add_empty_group(Some("Empty Fixture".to_owned()))
+            .unwrap();
+        let export_message = registry
             .execute(&mut source, &format!("Export3dm {}", path.display()))
             .unwrap();
+        assert!(export_message.contains("9 objects in 4 groups"));
 
         let mut imported = Document::default();
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("9 objects"));
+        assert!(message.contains("9 objects in 4 groups"));
         assert!(message.contains("0 unsupported objects skipped"));
         assert_eq!(imported.objects().len(), 9);
+        let imported_ids = imported
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        assert_eq!(imported.groups().len(), 4);
+        assert_eq!(
+            imported
+                .group_by_name("Assembly")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([imported_ids[0], imported_ids[1], imported_ids[8]])
+        );
+        assert_eq!(
+            imported
+                .group_by_name("Inspection")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([imported_ids[1], imported_ids[8]])
+        );
+        assert_eq!(
+            imported
+                .group_by_name("Group01")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([imported_ids[2], imported_ids[8]])
+        );
+        assert_eq!(
+            imported
+                .group_by_name("Empty Fixture")
+                .unwrap()
+                .members()
+                .len(),
+            0
+        );
         let imported_cloud = imported
             .objects()
             .find_map(|object| match object.geometry() {
@@ -7171,8 +7300,24 @@ mod tests {
         assert!(!line.attributes().is_locked());
 
         assert_eq!(imported.undo_label(), Some("Import3dm"));
+        registry
+            .execute(&mut imported, &format!("Import3dm {}", path.display()))
+            .unwrap();
+        assert_eq!(imported.objects().len(), 18);
+        assert!(imported.group_by_name("Assembly (Imported 1)").is_some());
+        assert!(imported.group_by_name("Inspection (Imported 1)").is_some());
+        assert!(imported.group_by_name("Group01 (Imported 1)").is_some());
+        assert!(
+            imported
+                .group_by_name("Empty Fixture (Imported 1)")
+                .is_some()
+        );
+        registry.execute(&mut imported, "Undo").unwrap();
+        assert_eq!(imported.objects().len(), 9);
+        assert_eq!(imported.groups().len(), 4);
         registry.execute(&mut imported, "Undo").unwrap();
         assert_eq!(imported.objects().len(), 0);
+        assert_eq!(imported.groups().len(), 0);
         assert_eq!(imported.layers().len(), 1);
         fs::remove_file(path).unwrap();
     }

@@ -33,6 +33,7 @@ typedef struct ViboObjectInfo {
   size_t knot_u_count;
   size_t knot_v_count;
   size_t index_count;
+  size_t group_index_count;
 } ViboObjectInfo;
 
 typedef struct ViboWriteLayer {
@@ -43,6 +44,10 @@ typedef struct ViboWriteLayer {
   uint8_t visible;
   uint8_t locked;
 } ViboWriteLayer;
+
+typedef struct ViboWriteGroup {
+  const char* name;
+} ViboWriteGroup;
 
 typedef struct ViboWriteObject {
   int32_t object_type;
@@ -62,6 +67,8 @@ typedef struct ViboWriteObject {
   size_t knot_v_count;
   const uint32_t* indices;
   size_t index_count;
+  const size_t* group_indices;
+  size_t group_index_count;
 } ViboWriteObject;
 
 int32_t vibo_3dm_read(const char* path, ViboThreeDmModel** output,
@@ -74,15 +81,21 @@ int32_t vibo_3dm_layer(const ViboThreeDmModel* model, size_t index,
                        uint8_t* green, uint8_t* blue, uint8_t* visible,
                        uint8_t* locked);
 
+size_t vibo_3dm_group_count(const ViboThreeDmModel* model);
+int32_t vibo_3dm_group(const ViboThreeDmModel* model, size_t index,
+                       int32_t* source_index, const char** name);
+
 size_t vibo_3dm_object_count(const ViboThreeDmModel* model);
 size_t vibo_3dm_unsupported_object_count(const ViboThreeDmModel* model);
 int32_t vibo_3dm_object(const ViboThreeDmModel* model, size_t index,
                         ViboObjectInfo* info, const double** coordinates,
                         const double** knots_u, const double** knots_v,
-                        const uint32_t** indices);
+                        const uint32_t** indices,
+                        const int32_t** group_indices);
 
 int32_t vibo_3dm_write(const char* path, const ViboWriteLayer* layers,
-                       size_t layer_count, const ViboWriteObject* objects,
+                       size_t layer_count, const ViboWriteGroup* groups,
+                       size_t group_count, const ViboWriteObject* objects,
                        size_t object_count, char* error,
                        size_t error_capacity);
 
