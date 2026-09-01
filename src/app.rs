@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use eframe::egui::{self, Color32, RichText};
 use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, GroupId, LayerId};
-use viboceros_geometry::{Point3, Tolerance};
+use viboceros_geometry::{CircularArc3, Point3, Tolerance};
 
 use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
 
@@ -36,6 +36,12 @@ enum InteractiveCommand {
     Line {
         start: Option<Point3>,
     },
+    Circle {
+        center: Option<Point3>,
+    },
+    Arc {
+        points: [Option<Point3>; 2],
+    },
     SrfPt {
         corners: [Option<Point3>; 3],
     },
@@ -63,6 +69,8 @@ impl InteractiveCommand {
         match self {
             Self::Point => "Point",
             Self::Line { .. } => "Line",
+            Self::Circle { .. } => "Circle",
+            Self::Arc { .. } => "Arc",
             Self::SrfPt { .. } => "SrfPt",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -81,6 +89,17 @@ impl InteractiveCommand {
             Self::Line { start: Some(_) } => {
                 "Line: pick the end point in the viewport (Esc to cancel)"
             }
+            Self::Circle { center: None } => {
+                "Circle: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::Circle { center: Some(_) } => {
+                "Circle: pick a point on the circle in the viewport (Esc to cancel)"
+            }
+            Self::Arc { points } => match points {
+                [None, _] => "Arc: pick the start point in the viewport (Esc to cancel)",
+                [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
+                [Some(_), Some(_)] => "Arc: pick the end point in the viewport (Esc to cancel)",
+            },
             Self::SrfPt { corners } => match corners {
                 [None, _, _] => "SrfPt: pick the first corner in the viewport (Esc to cancel)",
                 [Some(_), None, _] => {
@@ -138,6 +157,8 @@ impl InteractiveCommand {
         match self {
             Self::Point
             | Self::Line { start: None }
+            | Self::Circle { center: None }
+            | Self::Arc { points: [None, _] }
             | Self::SrfPt {
                 corners: [None, _, _],
             }
@@ -147,9 +168,16 @@ impl InteractiveCommand {
             | Self::Rotate { center: None, .. }
             | Self::Mirror { start: None } => None,
             Self::Line { start }
+            | Self::Circle { center: start }
             | Self::Move { start }
             | Self::Copy { start }
             | Self::Mirror { start } => start,
+            Self::Arc {
+                points: [_, Some(point)],
+            }
+            | Self::Arc {
+                points: [Some(point), None],
+            } => Some(point),
             Self::SrfPt {
                 corners: [_, _, Some(corner)],
             }
@@ -251,6 +279,8 @@ impl VibocerosApp {
         {
             "point" | "pt" => InteractiveCommand::Point,
             "line" | "l" => InteractiveCommand::Line { start: None },
+            "circle" | "c" => InteractiveCommand::Circle { center: None },
+            "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
             "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
             "move" | "m" => InteractiveCommand::Move { start: None },
             "copy" => InteractiveCommand::Copy { start: None },
@@ -322,6 +352,67 @@ impl VibocerosApp {
                     format_model_point(start),
                     format_model_point(point)
                 ));
+            }
+            InteractiveCommand::Circle { center: None } => {
+                let command = InteractiveCommand::Circle {
+                    center: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Circle {
+                center: Some(center),
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log("Error: circle point must differ from its center".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Circle {} {}",
+                    format_model_point(center),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Arc { mut points } => {
+                let point_count = points.iter().flatten().count();
+                if let Some(previous) = points.iter().flatten().next_back()
+                    && previous.is_near(point, self.document.tolerance())
+                {
+                    self.push_log("Error: consecutive arc points must differ".to_owned());
+                    return;
+                }
+                if point_count < points.len() {
+                    points[point_count] = Some(point);
+                    let command = InteractiveCommand::Arc { points };
+                    self.active_command = Some(command);
+                    let label = if point_count == 0 { "Start" } else { "Through" };
+                    self.push_log(format!("{label}: {}", format_model_point(point)));
+                    self.push_log(command.prompt().to_owned());
+                } else {
+                    let [Some(start), Some(through)] = points else {
+                        self.push_log("Error: arc point state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    if let Err(error) = CircularArc3::try_from_three_points(
+                        start,
+                        through,
+                        point,
+                        self.document.tolerance(),
+                    ) {
+                        self.push_log(format!("Error: {error}"));
+                        return;
+                    }
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "Arc {} {} {}",
+                        format_model_point(start),
+                        format_model_point(through),
+                        format_model_point(point)
+                    ));
+                }
             }
             InteractiveCommand::SrfPt { mut corners } => {
                 let corner_count = corners.iter().flatten().count();
@@ -927,6 +1018,47 @@ mod tests {
         );
         assert_eq!(app.document.objects().len(), 0);
         assert!(app.command_log.back().unwrap().contains("line end"));
+    }
+
+    #[test]
+    fn interactive_circle_and_arc_reject_degenerate_picks_and_use_history() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Circle"));
+        let center = point(0.0, 0.0, 2.0);
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(point(0.0, 0.0, 9.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Circle {
+                center: Some(center)
+            })
+        );
+        app.accept_drafting_point(point(2.0, 0.0, 2.0));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Circle(circle) if circle.center() == center && circle.radius() == 2.0
+        ));
+        assert_eq!(app.document.undo_label(), Some("Circle"));
+
+        assert!(app.try_start_interactive_command("A"));
+        app.accept_drafting_point(point(5.0, 0.0, 0.0));
+        app.accept_drafting_point(point(6.0, 0.0, 0.0));
+        app.accept_drafting_point(point(7.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Arc {
+                points: [Some(point(5.0, 0.0, 0.0)), Some(point(6.0, 0.0, 0.0))]
+            })
+        );
+        assert_eq!(app.document.objects().len(), 1);
+        app.accept_drafting_point(point(6.0, 1.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().nth(1).unwrap().geometry(),
+            Geometry::Arc(_)
+        ));
+        assert_eq!(app.document.undo_label(), Some("Arc"));
     }
 
     #[test]

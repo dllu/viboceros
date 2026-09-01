@@ -9,6 +9,8 @@ pub enum ObjectSnapKind {
     Point,
     End,
     Mid,
+    Center,
+    Quad,
 }
 
 impl ObjectSnapKind {
@@ -17,6 +19,8 @@ impl ObjectSnapKind {
             Self::Point => "Point",
             Self::End => "End",
             Self::Mid => "Mid",
+            Self::Center => "Center",
+            Self::Quad => "Quad",
         }
     }
 
@@ -25,6 +29,8 @@ impl ObjectSnapKind {
             Self::Point => 0,
             Self::End => 1,
             Self::Mid => 2,
+            Self::Center => 3,
+            Self::Quad => 4,
         }
     }
 }
@@ -98,8 +104,8 @@ pub enum DraftingError {
     Geometry(#[from] GeometryError),
 }
 
-/// Finds the closest visible Point, End, or Mid object snap in the top-view
-/// XY projection. Exact-distance ties prefer Point, then End, then Mid.
+/// Finds the closest visible feature snap in the top-view XY projection.
+/// Exact-distance ties use the stable priority encoded by [`ObjectSnapKind`].
 pub fn nearest_object_snap(
     document: &Document,
     cursor: Point3,
@@ -157,6 +163,58 @@ pub fn nearest_object_snap(
                         midpoint,
                     );
                 }
+            }
+            Geometry::Circle(circle) => {
+                consider_candidate(
+                    &mut best,
+                    cursor,
+                    capture_radius,
+                    object.id(),
+                    ObjectSnapKind::Center,
+                    circle.center(),
+                );
+                if let Ok(quadrants) = circle.quadrants() {
+                    for quadrant in quadrants {
+                        consider_candidate(
+                            &mut best,
+                            cursor,
+                            capture_radius,
+                            object.id(),
+                            ObjectSnapKind::Quad,
+                            quadrant,
+                        );
+                    }
+                }
+            }
+            Geometry::Arc(arc) => {
+                for point in [arc.start(), arc.end()].into_iter().flatten() {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::End,
+                        point,
+                    );
+                }
+                if let Ok(midpoint) = arc.point_at(0.5) {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::Mid,
+                        midpoint,
+                    );
+                }
+                consider_candidate(
+                    &mut best,
+                    cursor,
+                    capture_radius,
+                    object.id(),
+                    ObjectSnapKind::Center,
+                    arc.center(),
+                );
             }
             Geometry::NurbsCurve(curve) => {
                 let domain = curve.domain();
@@ -286,7 +344,9 @@ fn consider_candidate(
 mod tests {
     use super::*;
     use viboceros_document::Geometry;
-    use viboceros_geometry::{LineSegment, NurbsCurve, NurbsSurface, Tolerance};
+    use viboceros_geometry::{
+        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Tolerance, UnitVector3,
+    };
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -395,6 +455,52 @@ mod tests {
             .unwrap();
         assert_eq!(center.kind(), ObjectSnapKind::Mid);
         assert_eq!(center.point(), point(4.0, 4.0, 1.0));
+    }
+
+    #[test]
+    fn circle_and_arc_features_are_available_to_osnap() {
+        let mut document = Document::default();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let circle_id = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(point(0.0, 0.0, 3.0), 2.0, normal, Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let arc_id = document
+            .add_geometry(Geometry::Arc(
+                CircularArc3::try_from_three_points(
+                    point(9.0, 0.0, 4.0),
+                    point(10.0, 1.0, 4.0),
+                    point(11.0, 0.0, 4.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+
+        let center = nearest_object_snap(&document, point(0.02, -0.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(center.object_id(), circle_id);
+        assert_eq!(center.kind(), ObjectSnapKind::Center);
+        assert_eq!(center.point(), point(0.0, 0.0, 3.0));
+
+        let quadrant = nearest_object_snap(&document, point(2.02, 0.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(quadrant.kind(), ObjectSnapKind::Quad);
+        assert_eq!(quadrant.point(), point(2.0, 0.0, 3.0));
+
+        let midpoint = nearest_object_snap(&document, point(10.0, 1.02, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(midpoint.object_id(), arc_id);
+        assert_eq!(midpoint.kind(), ObjectSnapKind::Mid);
+        assert!(
+            midpoint
+                .point()
+                .is_near(point(10.0, 1.0, 4.0), Tolerance::DEFAULT)
+        );
     }
 
     #[test]

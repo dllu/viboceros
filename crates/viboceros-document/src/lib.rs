@@ -8,8 +8,8 @@ use std::fmt;
 use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3,
-    Tolerance, TriangleMesh,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve,
+    NurbsSurface, Point3, Tolerance, TriangleMesh,
 };
 
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
@@ -63,6 +63,8 @@ impl ColorRgb {
 pub enum Geometry {
     Point(Point3),
     Line(LineSegment),
+    Circle(Circle3),
+    Arc(CircularArc3),
     NurbsCurve(NurbsCurve),
     NurbsSurface(NurbsSurface),
     Mesh(TriangleMesh),
@@ -73,6 +75,8 @@ impl Geometry {
         match self {
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
             Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
+            Self::Circle(circle) => circle.bounds(),
+            Self::Arc(arc) => arc.bounds(),
             Self::NurbsCurve(curve) => curve.control_point_bounds(),
             Self::NurbsSurface(surface) => surface.control_point_bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
@@ -87,6 +91,14 @@ impl Geometry {
         Ok(match self {
             Self::Point(point) => Self::Point(transform.transform_point(*point)?),
             Self::Line(line) => Self::Line(line.transformed(transform, tolerance)?),
+            Self::Circle(circle) => match circle.transformed_similarity(transform, tolerance)? {
+                Some(circle) => Self::Circle(circle),
+                None => Self::NurbsCurve(circle.to_nurbs()?.transformed(transform)?),
+            },
+            Self::Arc(arc) => match arc.transformed_similarity(transform, tolerance)? {
+                Some(arc) => Self::Arc(arc),
+                None => Self::NurbsCurve(arc.to_nurbs()?.transformed(transform)?),
+            },
             Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
@@ -1468,6 +1480,64 @@ mod tests {
         assert!(matches!(
             document.object(first).unwrap().geometry(),
             Geometry::Point(point) if *point == Point3::try_new(14.0, 0.0, 7.0).unwrap()
+        ));
+    }
+
+    #[test]
+    fn circular_geometry_preserves_analytics_or_promotes_exactly() {
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let normal = viboceros_geometry::UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap();
+        let circle = Circle3::try_new(
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+            3.0,
+            normal,
+            tolerance,
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::Circle(circle)).unwrap();
+
+        document
+            .transform_objects(
+                [id],
+                AffineTransform3::from_translation(
+                    viboceros_geometry::Vector3::try_new(4.0, -1.0, 2.0).unwrap(),
+                ),
+            )
+            .unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Circle(circle)
+                if circle.center() == Point3::try_new(5.0, 1.0, 2.0).unwrap()
+                    && circle.radius() == 3.0
+        ));
+
+        document.undo().unwrap();
+        let shear = AffineTransform3::try_new(
+            [[1.0, 0.5, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]],
+            viboceros_geometry::Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+        )
+        .unwrap();
+        document.transform_objects([id], shear).unwrap();
+        let Geometry::NurbsCurve(ellipse) = document.object(id).unwrap().geometry() else {
+            panic!("a sheared circle must be promoted to an exact NURBS curve")
+        };
+        assert_eq!(ellipse.degree(), 2);
+        assert_eq!(ellipse.control_points().len(), 9);
+        let start = ellipse.evaluate(0.0).unwrap();
+        assert!(
+            start.is_near(
+                shear
+                    .transform_point(circle.point_at_angle(0.0).unwrap())
+                    .unwrap(),
+                tolerance
+            )
+        );
+
+        document.undo().unwrap();
+        assert!(matches!(
+            document.object(id).unwrap().geometry(),
+            Geometry::Circle(restored) if *restored == circle
         ));
     }
 

@@ -6,13 +6,15 @@ use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
 use viboceros_geometry::{
-    NurbsCurve, NurbsSurface, Point3, Real, Tolerance, TriangleMesh, UnitVector3,
+    Circle3, CircularArc3, NurbsCurve, NurbsSurface, Point3, Real, Tolerance, TriangleMesh,
+    UnitVector3,
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
 const PICK_CAPTURE_PIXELS: f32 = 8.0;
 const CURVE_SAMPLES_PER_SPAN: usize = 16;
+const CIRCLE_SAMPLES: usize = 64;
 const SURFACE_SAMPLES_PER_SPAN: usize = 8;
 const SURFACE_ISOCURVES_PER_SPAN: usize = 2;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
@@ -287,6 +289,8 @@ impl Viewport {
                         });
                     (1, distance)
                 }
+                Geometry::Circle(circle) => (1, self.circle_pick_distance(pointer, rect, circle)),
+                Geometry::Arc(arc) => (1, self.arc_pick_distance(pointer, rect, arc)),
                 Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
                 Geometry::NurbsSurface(surface) => (
                     2,
@@ -326,6 +330,38 @@ impl Viewport {
                 }
                 previous = projected;
             }
+        }
+        nearest
+    }
+
+    fn circle_pick_distance(&self, pointer: Pos2, rect: Rect, circle: &Circle3) -> f32 {
+        self.parametric_pick_distance(pointer, rect, CIRCLE_SAMPLES, |parameter| {
+            circle.point_at_angle(std::f64::consts::TAU * parameter)
+        })
+    }
+
+    fn arc_pick_distance(&self, pointer: Pos2, rect: Rect, arc: &CircularArc3) -> f32 {
+        let samples = circular_arc_samples(*arc);
+        self.parametric_pick_distance(pointer, rect, samples, |parameter| arc.point_at(parameter))
+    }
+
+    fn parametric_pick_distance(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        samples: usize,
+        mut evaluate: impl FnMut(Real) -> Result<Point3, viboceros_geometry::GeometryError>,
+    ) -> f32 {
+        let mut nearest = f32::INFINITY;
+        let mut previous = None;
+        for sample in 0..=samples {
+            let projected = evaluate(sample as Real / samples as Real)
+                .ok()
+                .and_then(|point| self.project(point, rect));
+            if let (Some(start), Some(end)) = (previous, projected) {
+                nearest = nearest.min(point_segment_distance(pointer, start, end));
+            }
+            previous = projected;
         }
         nearest
     }
@@ -458,6 +494,24 @@ impl Viewport {
                         painter.line_segment([start, end], Stroke::new(width, color));
                     }
                 }
+                Geometry::Circle(circle) => {
+                    self.paint_parametric_curve(
+                        painter,
+                        rect,
+                        CIRCLE_SAMPLES,
+                        Stroke::new(width, color),
+                        |parameter| circle.point_at_angle(std::f64::consts::TAU * parameter),
+                    );
+                }
+                Geometry::Arc(arc) => {
+                    self.paint_parametric_curve(
+                        painter,
+                        rect,
+                        circular_arc_samples(*arc),
+                        Stroke::new(width, color),
+                        |parameter| arc.point_at(parameter),
+                    );
+                }
                 Geometry::NurbsCurve(curve) => {
                     self.paint_nurbs_curve(painter, rect, curve, Stroke::new(width, color));
                 }
@@ -507,6 +561,26 @@ impl Viewport {
                 }
                 previous = projected;
             }
+        }
+    }
+
+    fn paint_parametric_curve(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        samples: usize,
+        stroke: Stroke,
+        mut evaluate: impl FnMut(Real) -> Result<Point3, viboceros_geometry::GeometryError>,
+    ) {
+        let mut previous = None;
+        for sample in 0..=samples {
+            let projected = evaluate(sample as Real / samples as Real)
+                .ok()
+                .and_then(|point| self.project(point, rect));
+            if let (Some(start), Some(end)) = (previous, projected) {
+                painter.line_segment([start, end], stroke);
+            }
+            previous = projected;
         }
     }
 
@@ -799,6 +873,10 @@ fn sampled_span_parameter(
     }
 }
 
+fn circular_arc_samples(arc: CircularArc3) -> usize {
+    ((arc.sweep_radians() / std::f64::consts::TAU * CIRCLE_SAMPLES as Real).ceil() as usize).max(2)
+}
+
 fn point_segment_distance(point: Pos2, start: Pos2, end: Pos2) -> f32 {
     let start_x = f64::from(start.x);
     let start_y = f64::from(start.y);
@@ -863,7 +941,10 @@ fn shaded_color(color: Color32, normal: UnitVector3) -> Color32 {
 mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
-    use viboceros_geometry::{LineSegment, NurbsCurve, NurbsSurface, Tolerance, TriangleMesh};
+    use viboceros_geometry::{
+        Circle3, CircularArc3, LineSegment, NurbsCurve, NurbsSurface, Tolerance, TriangleMesh,
+        UnitVector3,
+    };
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -953,6 +1034,40 @@ mod tests {
             viewport.pick_object(on_curve, rect, &document),
             Some(curve_id)
         );
+    }
+
+    #[test]
+    fn picking_supports_analytic_circles_and_arcs() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let circle_id = document
+            .add_geometry(Geometry::Circle(
+                Circle3::try_new(point(-3.0, 0.0, 0.0), 1.0, normal, Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let arc_id = document
+            .add_geometry(Geometry::Arc(
+                CircularArc3::try_from_three_points(
+                    point(2.0, 0.0, 0.0),
+                    point(3.0, 1.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+
+        let on_circle = viewport.project(point(-2.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            viewport.pick_object(on_circle, rect, &document),
+            Some(circle_id)
+        );
+        let on_arc = viewport.project(point(3.0, 1.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(on_arc, rect, &document), Some(arc_id));
+        let inside_circle = viewport.project(point(-3.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(viewport.pick_object(inside_circle, rect, &document), None);
     }
 
     #[test]

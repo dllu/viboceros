@@ -5,8 +5,8 @@ use std::collections::{BTreeMap, BTreeSet};
 use thiserror::Error;
 use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes};
 use viboceros_geometry::{
-    AffineTransform3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, Real,
-    Tolerance, TriangleMesh, UnitVector3, Vector3,
+    AffineTransform3, Circle3, CircularArc3, GeometryError, LineSegment, NurbsCurve, NurbsSurface,
+    Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -45,6 +45,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(LineCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CircleCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ArcCommand)
             .expect("unique built-in command");
         registry
             .register(ControlPointCurveCommand)
@@ -217,6 +223,66 @@ impl Command for LineCommand {
         let length = line.length()?;
         let id = document.add_geometry(Geometry::Line(line))?;
         Ok(format!("Added line {id} (length {length:.6})"))
+    }
+}
+
+struct CircleCommand;
+
+impl Command for CircleCommand {
+    fn name(&self) -> &'static str {
+        "Circle"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["C"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (center, consumed) = parse_point(arguments)?;
+        let remaining = &arguments[consumed..];
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
+        let circle = if remaining.len() == 1 && !remaining[0].contains(',') {
+            let radius = parse_finite_real(remaining[0])?;
+            Circle3::try_new(center, radius, normal, document.tolerance())?
+        } else {
+            let (point_on_circle, point_consumed) = parse_point(remaining)?;
+            require_consumed(
+                remaining,
+                point_consumed,
+                "Circle center radius | center point-on-circle",
+            )?;
+            Circle3::try_from_center_point(center, point_on_circle, normal, document.tolerance())?
+        };
+        let radius = circle.radius();
+        let id = document.add_geometry(Geometry::Circle(circle))?;
+        Ok(format!("Added circle {id} (radius {radius:.6})"))
+    }
+}
+
+struct ArcCommand;
+
+impl Command for ArcCommand {
+    fn name(&self) -> &'static str {
+        "Arc"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["A"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (start, start_consumed) = parse_point(arguments)?;
+        let (through, through_consumed) = parse_point(&arguments[start_consumed..])?;
+        let (end, end_consumed) = parse_point(&arguments[start_consumed + through_consumed..])?;
+        require_consumed(
+            arguments,
+            start_consumed + through_consumed + end_consumed,
+            "Arc start point-on-arc end",
+        )?;
+        let arc = CircularArc3::try_from_three_points(start, through, end, document.tolerance())?;
+        let sweep_degrees = arc.sweep_radians().to_degrees();
+        let id = document.add_geometry(Geometry::Arc(arc))?;
+        Ok(format!("Added arc {id} (sweep {sweep_degrees:.6}°)"))
     }
 }
 
@@ -1044,7 +1110,7 @@ impl Command for ExportThreeDmCommand {
             return Err(CommandError::Usage("Export3dm path"));
         }
         let path = arguments.join(" ");
-        let model = document_3dm_model(document);
+        let model = document_3dm_model(document)?;
         let object_count = model.objects.len();
         let layer_count = model.layers.len();
         write_3dm_file(&path, &model)?;
@@ -1054,7 +1120,7 @@ impl Command for ExportThreeDmCommand {
     }
 }
 
-fn document_3dm_model(document: &Document) -> ThreeDmModel {
+fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError> {
     let layers = document
         .layers()
         .map(|layer| {
@@ -1074,25 +1140,29 @@ fn document_3dm_model(document: &Document) -> ThreeDmModel {
         .collect();
     let objects = document
         .objects()
-        .map(|object| ThreeDmObject {
-            geometry: geometry_to_3dm(object.geometry()),
-            layer_index: layer_indices[&object.attributes().layer_id()],
-            name: object.attributes().name().map(str::to_owned),
-            visible: object.attributes().is_visible(),
-            locked: object.attributes().is_locked(),
+        .map(|object| {
+            Ok(ThreeDmObject {
+                geometry: geometry_to_3dm(object.geometry())?,
+                layer_index: layer_indices[&object.attributes().layer_id()],
+                name: object.attributes().name().map(str::to_owned),
+                visible: object.attributes().is_visible(),
+                locked: object.attributes().is_locked(),
+            })
         })
-        .collect();
-    ThreeDmModel::new(layers, objects)
+        .collect::<Result<_, GeometryError>>()?;
+    Ok(ThreeDmModel::new(layers, objects))
 }
 
-fn geometry_to_3dm(geometry: &Geometry) -> ThreeDmGeometry {
-    match geometry {
+fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError> {
+    Ok(match geometry {
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
+        Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
+        Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(arc.to_nurbs()?),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
-    }
+    })
 }
 
 fn document_geometry_from_3dm(geometry: ThreeDmGeometry) -> Geometry {
@@ -1315,8 +1385,45 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
+    }
+
+    #[test]
+    fn creates_exact_circles_and_oriented_three_point_arcs_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 1,2,3 5").unwrap();
+        registry
+            .execute(&mut document, "Arc 1,0,0 0,-1,0 -1,0,0")
+            .unwrap();
+
+        let mut objects = document.objects();
+        let Geometry::Circle(circle) = objects.next().unwrap().geometry() else {
+            panic!("expected a circle")
+        };
+        assert_eq!(circle.center(), Point3::try_new(1.0, 2.0, 3.0).unwrap());
+        assert_eq!(circle.radius(), 5.0);
+        let Geometry::Arc(arc) = objects.next().unwrap().geometry() else {
+            panic!("expected an arc")
+        };
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(arc.sweep_radians(), std::f64::consts::PI)
+        );
+        assert!(arc.point_at(0.5).unwrap().is_near(
+            Point3::try_new(0.0, -1.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        drop(objects);
+        assert_eq!(document.undo_label(), Some("Arc"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+
+        assert!(registry.execute(&mut document, "Arc 0,0 1,0 2,0").is_err());
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Circle"));
     }
 
     #[test]
@@ -1837,6 +1944,10 @@ mod tests {
             .execute(&mut source, "Layer Current Default")
             .unwrap();
         registry.execute(&mut source, "Line 0,0,0 4,0,0").unwrap();
+        registry.execute(&mut source, "Circle 6,0,0 2").unwrap();
+        registry
+            .execute(&mut source, "Arc 9,0,0 10,1,0 11,0,0")
+            .unwrap();
         registry
             .execute(&mut source, "SrfPt 0,0,0 2,0,0 2,2,1 0,2,1")
             .unwrap();
@@ -1854,13 +1965,20 @@ mod tests {
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("3 objects"));
+        assert!(message.contains("5 objects"));
         assert!(message.contains("0 unsupported objects skipped"));
-        assert_eq!(imported.objects().len(), 3);
+        assert_eq!(imported.objects().len(), 5);
         assert!(
             imported
                 .objects()
                 .any(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)))
+        );
+        assert_eq!(
+            imported
+                .objects()
+                .filter(|object| matches!(object.geometry(), Geometry::NurbsCurve(_)))
+                .count(),
+            2
         );
         assert_eq!(imported.layers().len(), 3);
         let reference = imported.layer_by_name("Reference").unwrap();
