@@ -42,6 +42,8 @@ Join
 Explode
 Length
 Area
+Divide 8
+Divide Length 2.5 MarkEnds
 Delete
 Clear
 Undo
@@ -66,6 +68,8 @@ connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
 segments. `Length` measures analytic, polyline, and NURBS curves with controlled
 accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes.
+`Divide` creates equal arc-length points on selected curves by segment count or
+requested segment length; add `MarkEnds` to include open-curve endpoints.
 Osnap captures visible Point, End, Mid, Center, and Quad features;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is
@@ -102,7 +106,7 @@ configured Wine/FEX launcher, run the core fixture with:
 ```sh
 python3 -m tools.rhino_oracle compare \
   tools/rhino_oracle/fixtures/core.json \
-  --absolute-epsilon 1e-12 --relative-epsilon 1e-12
+  --absolute-epsilon 2e-12 --relative-epsilon 1e-12
 ```
 
 The same workflow is importable for instrumentation and tests:

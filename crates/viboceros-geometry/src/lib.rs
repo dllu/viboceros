@@ -6,6 +6,7 @@
 
 mod bounds;
 mod circular;
+mod curve;
 mod ellipse;
 mod error;
 mod integration;
@@ -22,6 +23,7 @@ mod vector;
 
 pub use bounds::BoundingBox3;
 pub use circular::{Circle3, CircularArc3};
+pub use curve::{CurveRef, MAX_CURVE_DIVISION_POINTS};
 pub use ellipse::Ellipse3;
 pub use error::GeometryError;
 pub use line::LineSegment;

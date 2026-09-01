@@ -7,9 +7,9 @@ use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
-    AffineTransform3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
-    MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, join_polylines,
+    AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
+    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsSurface, Point3,
+    Polyline3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -90,6 +90,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(AreaCommand)
+            .expect("unique built-in command");
+        registry
+            .register(DivideCommand)
             .expect("unique built-in command");
         registry
             .register(GroupCommand)
@@ -792,6 +795,167 @@ fn selected_measurement(
         .into());
     }
     Ok((selected.len(), total))
+}
+
+struct DivideCommand;
+
+impl Command for DivideCommand {
+    fn name(&self) -> &'static str {
+        "Divide"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Div"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (specification, mark_ends) = parse_division_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.geometry().clone(), object.attributes().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut output = Vec::new();
+        for (geometry, attributes) in &selected {
+            let curve = geometry_curve_ref(geometry)?;
+            let points =
+                command_division_points(curve, specification, mark_ends, document.tolerance())?;
+            let output_count = output.len().checked_add(points.len()).ok_or(
+                GeometryError::TooManyCurveDivisionPoints {
+                    maximum: MAX_CURVE_DIVISION_POINTS,
+                },
+            )?;
+            if output_count > MAX_CURVE_DIVISION_POINTS {
+                return Err(GeometryError::TooManyCurveDivisionPoints {
+                    maximum: MAX_CURVE_DIVISION_POINTS,
+                }
+                .into());
+            }
+            output.extend(points.into_iter().map(|point| (point, attributes.clone())));
+        }
+        if output.is_empty() {
+            return Err(CommandError::NoCurveDivisionPoints);
+        }
+
+        let mut ids = Vec::with_capacity(output.len());
+        for (point, attributes) in output {
+            ids.push(document.add_geometry_with_attributes(Geometry::Point(point), attributes)?);
+        }
+        replace_selection(document, ids.iter().copied())?;
+        Ok(format!(
+            "Divided {} curve(s), adding {} point(s)",
+            selected.len(),
+            ids.len()
+        ))
+    }
+}
+
+#[derive(Clone, Copy)]
+enum DivisionSpecification {
+    Count(usize),
+    Length(Real),
+}
+
+fn parse_division_arguments(
+    arguments: &[&str],
+) -> Result<(DivisionSpecification, bool), CommandError> {
+    let Some(first) = arguments.first() else {
+        return Err(CommandError::Usage(
+            "Divide segment-count [MarkEnds] | Divide Length segment-length [MarkEnds]",
+        ));
+    };
+    let (specification, option_index) = if first.eq_ignore_ascii_case("length") {
+        let value = arguments.get(1).ok_or(CommandError::Usage(
+            "Divide Length segment-length [MarkEnds]",
+        ))?;
+        (DivisionSpecification::Length(parse_finite_real(value)?), 2)
+    } else {
+        let count = first
+            .parse::<usize>()
+            .map_err(|_| CommandError::InvalidInteger((*first).to_owned()))?;
+        (DivisionSpecification::Count(count), 1)
+    };
+    let mark_ends = match &arguments[option_index..] {
+        [] => false,
+        [option] if option.eq_ignore_ascii_case("MarkEnds") => true,
+        _ => {
+            return Err(CommandError::Usage(
+                "Divide segment-count [MarkEnds] | Divide Length segment-length [MarkEnds]",
+            ));
+        }
+    };
+    Ok((specification, mark_ends))
+}
+
+fn geometry_curve_ref(geometry: &Geometry) -> Result<CurveRef<'_>, CommandError> {
+    match geometry {
+        Geometry::Line(line) => Ok(CurveRef::Line(line)),
+        Geometry::Circle(circle) => Ok(CurveRef::Circle(circle)),
+        Geometry::Arc(arc) => Ok(CurveRef::Arc(arc)),
+        Geometry::Ellipse(ellipse) => Ok(CurveRef::Ellipse(ellipse)),
+        Geometry::Polyline(polyline) => Ok(CurveRef::Polyline(polyline)),
+        Geometry::NurbsCurve(curve) => Ok(CurveRef::NurbsCurve(curve)),
+        _ => Err(CommandError::UnsupportedDivideGeometry),
+    }
+}
+
+fn command_division_points(
+    curve: CurveRef<'_>,
+    specification: DivisionSpecification,
+    mark_ends: bool,
+    tolerance: Tolerance,
+) -> Result<Vec<Point3>, CommandError> {
+    let closed = curve.is_closed(tolerance)?;
+    let mut points = match specification {
+        DivisionSpecification::Count(count) => {
+            let mut points = curve.divide_by_count(count, true, tolerance)?;
+            if closed {
+                points.pop();
+            } else if !mark_ends {
+                points.remove(0);
+                points.pop();
+            }
+            return Ok(points);
+        }
+        DivisionSpecification::Length(length) => curve.divide_by_length(length, true, tolerance)?,
+    };
+
+    let start = curve.start_point()?;
+    let end = curve.end_point()?;
+    if closed {
+        if points.len() > 1
+            && points
+                .last()
+                .is_some_and(|point| point.is_near(start, tolerance))
+        {
+            points.pop();
+        }
+    } else if mark_ends {
+        if let Some(last) = points.last_mut()
+            && last.is_near(end, tolerance)
+        {
+            *last = end;
+        } else {
+            points.push(end);
+        }
+    } else {
+        if points
+            .last()
+            .is_some_and(|point| point.is_near(end, tolerance))
+        {
+            points.pop();
+        }
+        if points
+            .first()
+            .is_some_and(|point| point.is_near(start, tolerance))
+        {
+            points.remove(0);
+        }
+    }
+    Ok(points)
 }
 
 struct GroupCommand;
@@ -1838,6 +2002,12 @@ pub enum CommandError {
     #[error("Area supports selected circles, ellipses, closed planar polylines, and meshes only")]
     UnsupportedAreaGeometry,
 
+    #[error("Divide supports selected lines, analytic curves, polylines, and NURBS curves only")]
+    UnsupportedDivideGeometry,
+
+    #[error("the requested division creates no point objects")]
+    NoCurveDivisionPoints,
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -1893,7 +2063,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, ControlPointCurve, Copy, Delete, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, ControlPointCurve, Copy, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -2092,6 +2262,106 @@ mod tests {
             Err(CommandError::UnsupportedAreaGeometry)
         ));
         assert_eq!(document.undo_label(), Some("Point"));
+    }
+
+    #[test]
+    fn divides_selected_curves_by_count_or_length_and_preserves_attributes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Construction")
+            .unwrap();
+        let source_layer = document.current_layer_id();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Div 5").unwrap(),
+            "Divided 1 curve(s), adding 4 point(s)"
+        );
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.selected_object_count(), 4);
+        let mut points = document
+            .selected_objects()
+            .map(|object| {
+                assert_eq!(object.attributes().layer_id(), source_layer);
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!("expected a division point")
+                };
+                *point
+            })
+            .collect::<Vec<_>>();
+        points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(
+            points,
+            [2.0, 4.0, 6.0, 8.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+        );
+        assert_eq!(document.undo_label(), Some("Divide"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+
+        registry.execute(&mut document, "SelAll").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "Divide Length 3 MarkEnds")
+                .unwrap(),
+            "Divided 1 curve(s), adding 5 point(s)"
+        );
+        let mut points = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected a division point"),
+            })
+            .collect::<Vec<_>>();
+        points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(
+            points,
+            [0.0, 3.0, 6.0, 9.0, 10.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+        );
+    }
+
+    #[test]
+    fn divides_closed_curves_once_at_the_seam_and_rolls_back_errors() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 0,0 2").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Divide 4").unwrap();
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.selected_object_count(), 4);
+        let points = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected a division point"),
+            })
+            .collect::<Vec<_>>();
+        let Geometry::Circle(circle) = document.objects().next().unwrap().geometry() else {
+            panic!("expected source circle")
+        };
+        for expected in circle.quadrants().unwrap() {
+            assert!(
+                points
+                    .iter()
+                    .any(|actual| actual.is_near(expected, document.tolerance()))
+            );
+        }
+
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let object_count = document.objects().len();
+        assert!(matches!(
+            registry.execute(&mut document, "Divide 3"),
+            Err(CommandError::UnsupportedDivideGeometry)
+        ));
+        assert_eq!(document.objects().len(), object_count);
+        assert!(registry.execute(&mut document, "Divide 0").is_err());
+        assert!(registry.execute(&mut document, "Divide Length -1").is_err());
+        assert_eq!(document.objects().len(), object_count);
     }
 
     #[test]

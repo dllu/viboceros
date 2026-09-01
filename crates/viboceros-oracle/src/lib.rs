@@ -10,8 +10,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use thiserror::Error;
 use viboceros_geometry::{
-    Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3,
-    Polyline3, Tolerance, UnitVector3, WeightedPoint3, join_polylines,
+    Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve,
+    NurbsSurface, Point3, Polyline3, Tolerance, UnitVector3, WeightedPoint3, join_polylines,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -111,6 +111,14 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
     },
+    NurbsCurveDivide {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+        segment_count: usize,
+        include_start: bool,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -138,6 +146,7 @@ impl Operation {
             | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
             | Self::NurbsCurveLength { id, .. }
+            | Self::NurbsCurveDivide { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -422,6 +431,31 @@ fn execute(
             let (length, elapsed) = measure(iterations, || black_box(&curve).length(tolerance))?;
             (json!(length), elapsed)
         }
+        Operation::NurbsCurveDivide {
+            degree,
+            control_points,
+            knots,
+            segment_count,
+            include_start,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let (points, elapsed) = measure(iterations, || {
+                CurveRef::NurbsCurve(black_box(&curve)).divide_by_count(
+                    black_box(*segment_count),
+                    black_box(*include_start),
+                    tolerance,
+                )
+            })?;
+            (
+                json!(points.into_iter().map(Point3::to_array).collect::<Vec<_>>()),
+                elapsed,
+            )
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -645,6 +679,27 @@ mod tests {
                 ],
                 knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
             },
+            Operation::NurbsCurveDivide {
+                id: "division".to_owned(),
+                degree: 2,
+                control_points: vec![
+                    ControlPoint {
+                        point: [1.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                    ControlPoint {
+                        point: [1.0, 1.0, 0.0],
+                        weight: std::f64::consts::FRAC_1_SQRT_2,
+                    },
+                    ControlPoint {
+                        point: [0.0, 1.0, 0.0],
+                        weight: 1.0,
+                    },
+                ],
+                knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                segment_count: 4,
+                include_start: true,
+            },
         ]))
         .unwrap();
         let tolerance = Tolerance::try_new(1.0e-10, 1.0e-12, 1.0e-12).unwrap();
@@ -656,6 +711,15 @@ mod tests {
             response.results[1].value.as_f64().unwrap(),
             std::f64::consts::FRAC_PI_2
         ));
+        let divided = response.results[2].value.as_array().unwrap();
+        assert_eq!(divided.len(), 5);
+        for (index, actual) in divided.iter().enumerate() {
+            let angle = std::f64::consts::FRAC_PI_2 * index as f64 / 4.0;
+            let actual = actual.as_array().unwrap();
+            assert!(tolerance.approx_eq(actual[0].as_f64().unwrap(), angle.cos()));
+            assert!(tolerance.approx_eq(actual[1].as_f64().unwrap(), angle.sin()));
+            assert_eq!(actual[2], json!(0.0));
+        }
     }
 
     #[test]

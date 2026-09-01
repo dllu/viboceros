@@ -74,6 +74,18 @@ pub enum GeometryError {
     #[error("adaptive numerical integration did not converge at the requested tolerance")]
     NumericalIntegrationDidNotConverge,
 
+    #[error("a curve division count must be from 1 through {maximum}, got {actual}")]
+    InvalidCurveDivisionCount { actual: usize, maximum: usize },
+
+    #[error("a curve division length must be finite and strictly positive")]
+    InvalidCurveDivisionLength,
+
+    #[error("curve division would create more than {maximum} points")]
+    TooManyCurveDivisionPoints { maximum: usize },
+
+    #[error("arc-length distance {distance} is outside [0, {length}]")]
+    ArcLengthOutOfDomain { distance: f64, length: f64 },
+
     #[error("planar area requires a closed polyline")]
     OpenPolylineArea,
 

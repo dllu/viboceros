@@ -99,6 +99,19 @@
       "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
     },
     {
+      "op": "nurbs_curve_divide",
+      "id": "rational-curve-division",
+      "degree": 2,
+      "control_points": [
+        {"point": [1.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 1.0, 0.0], "weight": 0.7071067811865476},
+        {"point": [0.0, 1.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+      "segment_count": 8,
+      "include_start": true
+    },
+    {
       "op": "nurbs_surface_evaluate",
       "id": "rational-surface",
       "degree_u": 2,

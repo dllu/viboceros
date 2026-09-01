@@ -10,6 +10,7 @@ import os
 from timeit import default_timer
 
 import Rhino
+import System
 
 
 PROTOCOL_VERSION = 1
@@ -290,6 +291,44 @@ def _execute(operation, iterations, tolerance):
             iterations, lambda: curve.GetLength(tolerance["relative"])
         )
         return float(value), elapsed
+
+    if kind == "nurbs_curve_divide":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        segment_count = int(operation["segment_count"])
+        include_start = bool(operation["include_start"])
+        first_index = 0 if include_start else 1
+        fractions = System.Array[System.Double](
+            [
+                float(index) / float(segment_count)
+                for index in iteration_range(first_index, segment_count + 1)
+            ]
+        )
+        default_parameters = curve.DivideByCount(segment_count, include_start)
+        if default_parameters is None or len(default_parameters) != len(fractions):
+            raise ValueError("NURBS curve division returned an unexpected point count")
+
+        def divide_curve():
+            parameters = []
+            for fraction in fractions:
+                # DivideByCount uses RhinoCommon's fixed 1e-8 fractional
+                # tolerance. Its point count is checked above; use the public
+                # tolerance-bearing solver for coordinate comparisons and
+                # leave margin for the external epsilon check.
+                success, parameter = curve.NormalizedLengthParameter(
+                    fraction, tolerance["relative"] * 0.001
+                )
+                if not success:
+                    raise ValueError("NURBS curve division failed")
+                parameters.append(parameter)
+            return [_xyz(curve.PointAt(parameter)) for parameter in parameters]
+
+        return _measure(iterations, divide_curve)
 
     if kind == "nurbs_surface_evaluate":
         degree_u = int(operation["degree_u"])
