@@ -124,6 +124,44 @@
       "knots": [-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
     },
     {
+      "op": "nurbs_curve_extract_points",
+      "id": "closed-curve-extract-points",
+      "degree": 2,
+      "control_points": [
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [3.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [3.0, 2.0, 0.0], "weight": 1.0},
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0]
+    },
+    {
+      "op": "nurbs_curve_extract_points",
+      "id": "periodic-curve-extract-points",
+      "degree": 2,
+      "control_points": [
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [2.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 2.0, 0.0], "weight": 1.0},
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [2.0, 0.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    },
+    {
+      "op": "nurbs_curve_extract_points",
+      "id": "weighted-periodic-curve-extract-points",
+      "degree": 2,
+      "control_points": [
+        {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [2.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 2.0, 0.0], "weight": 1.0},
+        {"point": [0.0, 0.0, 0.0], "weight": 2.0},
+        {"point": [2.0, 0.0, 0.0], "weight": 3.0}
+      ],
+      "knots": [-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+    },
+    {
       "op": "nurbs_curve_divide",
       "id": "rational-curve-division",
       "degree": 2,
@@ -266,6 +304,48 @@
         [0, 0, 0], [2, 0, 0], [0, 2, 0], [0, 0, 1]
       ],
       "triangles": [[0, 1, 2], [0, 1, 6], [3, 5, 4]]
+    },
+    {
+      "op": "nurbs_surface_extract_points",
+      "id": "periodic-surface-extract-points",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 5,
+      "control_point_count_v": 2,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 1},
+        {"point": [2, 0, 0], "weight": 1},
+        {"point": [1, 2, 0], "weight": 1},
+        {"point": [0, 0, 0], "weight": 1},
+        {"point": [2, 0, 0], "weight": 1},
+        {"point": [0, 0, 3], "weight": 1},
+        {"point": [2, 0, 3], "weight": 1},
+        {"point": [1, 2, 3], "weight": 1},
+        {"point": [0, 0, 3], "weight": 1},
+        {"point": [2, 0, 3], "weight": 1}
+      ],
+      "knots_u": [-2, -1, 0, 1, 2, 3, 4, 5],
+      "knots_v": [0, 0, 1, 1]
+    },
+    {
+      "op": "nurbs_surface_extract_points",
+      "id": "closed-surface-extract-points",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 4,
+      "control_point_count_v": 2,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 1},
+        {"point": [3, 0, 0], "weight": 1},
+        {"point": [3, 2, 0], "weight": 1},
+        {"point": [0, 0, 0], "weight": 1},
+        {"point": [0, 0, 4], "weight": 1},
+        {"point": [3, 0, 4], "weight": 1},
+        {"point": [3, 2, 4], "weight": 1},
+        {"point": [0, 0, 4], "weight": 1}
+      ],
+      "knots_u": [0, 0, 0, 1, 2, 2, 2],
+      "knots_v": [0, 0, 1, 1]
     },
     {
       "op": "nurbs_surface_evaluate",

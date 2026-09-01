@@ -1,8 +1,8 @@
 use std::ops::RangeInclusive;
 
 use crate::nurbs::{
-    clamped_uniform_knots, de_boor, project_homogeneous, stable_divided_difference,
-    validate_direction,
+    clamped_uniform_knots, curve_points_coincident, de_boor, knot_vector_is_periodic,
+    project_homogeneous, stable_divided_difference, validate_direction,
 };
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, TriangleMesh,
@@ -177,6 +177,89 @@ impl NurbsSurface {
     #[inline]
     pub const fn is_rational(&self) -> bool {
         self.rational
+    }
+
+    /// Returns whether the U knot vector and repeated end controls form an
+    /// OpenNURBS-style periodic surface direction.
+    pub fn is_periodic_u(&self) -> bool {
+        if !knot_vector_is_periodic(
+            self.degree_u + 1,
+            self.control_point_count_u,
+            &self.knots_u[1..self.knots_u.len() - 1],
+        ) {
+            return false;
+        }
+        (0..self.control_point_count_v).all(|v| {
+            (0..self.degree_u).all(|u| {
+                let repeated = self.control_point_count_u - self.degree_u + u;
+                curve_points_coincident(
+                    self.control_points[self.control_index(u, v)].point(),
+                    self.control_points[self.control_index(repeated, v)].point(),
+                )
+            })
+        })
+    }
+
+    /// Returns whether the V knot vector and repeated end controls form an
+    /// OpenNURBS-style periodic surface direction.
+    pub fn is_periodic_v(&self) -> bool {
+        if !knot_vector_is_periodic(
+            self.degree_v + 1,
+            self.control_point_count_v,
+            &self.knots_v[1..self.knots_v.len() - 1],
+        ) {
+            return false;
+        }
+        (0..self.control_point_count_u).all(|u| {
+            (0..self.degree_v).all(|v| {
+                let repeated = self.control_point_count_v - self.degree_v + v;
+                curve_points_coincident(
+                    self.control_points[self.control_index(u, v)].point(),
+                    self.control_points[self.control_index(u, repeated)].point(),
+                )
+            })
+        })
+    }
+
+    /// Returns control-net locations in Rhino `ExtractPt` grip order. Repeated
+    /// periodic controls and exact clamped closing seams are represented by a
+    /// single grip in each direction.
+    pub fn extract_point_locations(&self) -> Vec<Point3> {
+        let periodic_u = self.is_periodic_u();
+        let periodic_v = self.is_periodic_v();
+        let repeated_u_seam = !periodic_u
+            && knots_are_clamped(self.degree_u, &self.knots_u)
+            && (0..self.control_point_count_v).all(|v| {
+                self.control_points[self.control_index(0, v)].point()
+                    == self.control_points[self.control_index(self.control_point_count_u - 1, v)]
+                        .point()
+            });
+        let repeated_v_seam = !periodic_v
+            && knots_are_clamped(self.degree_v, &self.knots_v)
+            && (0..self.control_point_count_u).all(|u| {
+                self.control_points[self.control_index(u, 0)].point()
+                    == self.control_points[self.control_index(u, self.control_point_count_v - 1)]
+                        .point()
+            });
+        let retained_u = self.control_point_count_u
+            - if periodic_u {
+                self.degree_u
+            } else {
+                usize::from(repeated_u_seam)
+            };
+        let retained_v = self.control_point_count_v
+            - if periodic_v {
+                self.degree_v
+            } else {
+                usize::from(repeated_v_seam)
+            };
+        let mut points = Vec::with_capacity(retained_u * retained_v);
+        for u in 0..retained_u {
+            for v in 0..retained_v {
+                points.push(self.control_points[self.control_index(u, v)].point());
+            }
+        }
+        points
     }
 
     pub fn domain_u(&self) -> RangeInclusive<Real> {
@@ -455,6 +538,13 @@ impl NurbsSurface {
     fn control_index(&self, u: usize, v: usize) -> usize {
         v * self.control_point_count_u + u
     }
+}
+
+fn knots_are_clamped(degree: usize, knots: &[Real]) -> bool {
+    knots[..=degree].iter().all(|knot| *knot == knots[0])
+        && knots[knots.len() - degree - 1..]
+            .iter()
+            .all(|knot| *knot == knots[knots.len() - 1])
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -922,6 +1012,101 @@ mod tests {
         );
         assert_eq!(transformed.knots_u(), surface.knots_u());
         assert_eq!(transformed.knots_v(), surface.knots_v());
+    }
+
+    #[test]
+    fn extracts_closed_and_periodic_surface_grips_without_repeated_seams() {
+        let periodic_u = NurbsSurface::try_new(
+            2,
+            1,
+            5,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(1.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 3.0),
+                point(2.0, 0.0, 3.0),
+                point(1.0, 2.0, 3.0),
+                point(0.0, 0.0, 3.0),
+                point(2.0, 0.0, 3.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(periodic_u.is_periodic_u());
+        assert!(!periodic_u.is_periodic_v());
+        assert_eq!(
+            periodic_u.extract_point_locations(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 3.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 0.0, 3.0),
+                point(1.0, 2.0, 0.0),
+                point(1.0, 2.0, 3.0),
+            ]
+        );
+
+        let closed_u = NurbsSurface::try_new(
+            2,
+            1,
+            4,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 4.0),
+                point(3.0, 0.0, 4.0),
+                point(3.0, 2.0, 4.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(!closed_u.is_periodic_u());
+        assert_eq!(
+            closed_u.extract_point_locations(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 4.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 0.0, 4.0),
+                point(3.0, 2.0, 0.0),
+                point(3.0, 2.0, 4.0),
+            ]
+        );
+
+        let periodic_v = NurbsSurface::try_new(
+            1,
+            2,
+            2,
+            5,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(3.0, 2.0, 0.0),
+                point(0.0, 1.0, 2.0),
+                point(3.0, 1.0, 2.0),
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(3.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        assert!(!periodic_v.is_periodic_u());
+        assert!(periodic_v.is_periodic_v());
+        assert_eq!(periodic_v.extract_point_locations().len(), 6);
     }
 
     #[test]

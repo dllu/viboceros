@@ -133,6 +133,12 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
     },
+    NurbsCurveExtractPoints {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+    },
     MeshUnifyNormals {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -169,6 +175,16 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    NurbsSurfaceExtractPoints {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+    },
     NurbsSurfaceEvaluate {
         id: String,
         degree_u: usize,
@@ -199,6 +215,7 @@ impl Operation {
             | Self::NurbsCurveDivide { id, .. }
             | Self::NurbsCurveReverse { id, .. }
             | Self::NurbsCurveTopology { id, .. }
+            | Self::NurbsCurveExtractPoints { id, .. }
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
@@ -206,6 +223,7 @@ impl Operation {
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
             | Self::MeshExtractDuplicateFaces { id, .. }
+            | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -562,6 +580,24 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::NurbsCurveExtractPoints {
+            degree,
+            control_points,
+            knots,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let (points, elapsed) =
+                measure(iterations, || black_box(&curve).extract_point_locations())?;
+            (
+                json!(points.into_iter().map(Point3::to_array).collect::<Vec<_>>()),
+                elapsed,
+            )
+        }
         Operation::MeshUnifyNormals {
             vertices,
             triangles,
@@ -735,6 +771,33 @@ fn execute(
             };
             (value, elapsed)
         }
+        Operation::NurbsSurfaceExtractPoints {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            ..
+        } => {
+            let surface = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (points, elapsed) = measure(iterations, || {
+                Ok(black_box(&surface).extract_point_locations())
+            })?;
+            (
+                json!(points.into_iter().map(Point3::to_array).collect::<Vec<_>>()),
+                elapsed,
+            )
+        }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
             degree_v,
@@ -868,6 +931,10 @@ const fn unit_weight() -> f64 {
 mod tests {
     use super::*;
 
+    fn control(point: [f64; 3], weight: f64) -> ControlPoint {
+        ControlPoint { point, weight }
+    }
+
     fn request(operations: Vec<Operation>) -> ProbeRequest {
         ProbeRequest {
             protocol_version: PROTOCOL_VERSION,
@@ -933,6 +1000,97 @@ mod tests {
         assert_eq!(
             response.results[0].value,
             json!({"is_closed": true, "is_periodic": true})
+        );
+    }
+
+    #[test]
+    fn extracts_unique_nurbs_controls_in_rhino_grip_order() {
+        let response = run_request(&request(vec![
+            Operation::NurbsCurveExtractPoints {
+                id: "closed".to_owned(),
+                degree: 2,
+                control_points: vec![
+                    control([0.0, 0.0, 0.0], 1.0),
+                    control([3.0, 0.0, 0.0], 1.0),
+                    control([3.0, 2.0, 0.0], 1.0),
+                    control([0.0, 0.0, 0.0], 1.0),
+                ],
+                knots: vec![0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0],
+            },
+            Operation::NurbsCurveExtractPoints {
+                id: "periodic".to_owned(),
+                degree: 2,
+                control_points: vec![
+                    control([0.0, 0.0, 0.0], 1.0),
+                    control([2.0, 0.0, 0.0], 1.0),
+                    control([1.0, 2.0, 0.0], 1.0),
+                    control([0.0, 0.0, 0.0], 1.0),
+                    control([2.0, 0.0, 0.0], 1.0),
+                ],
+                knots: vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            },
+            Operation::NurbsCurveExtractPoints {
+                id: "weighted-periodic".to_owned(),
+                degree: 2,
+                control_points: vec![
+                    control([0.0, 0.0, 0.0], 1.0),
+                    control([2.0, 0.0, 0.0], 1.0),
+                    control([1.0, 2.0, 0.0], 1.0),
+                    control([0.0, 0.0, 0.0], 2.0),
+                    control([2.0, 0.0, 0.0], 3.0),
+                ],
+                knots: vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!([[0.0, 0.0, 0.0], [3.0, 0.0, 0.0], [3.0, 2.0, 0.0]])
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!([[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [1.0, 2.0, 0.0]])
+        );
+        assert_eq!(
+            response.results[2].value,
+            json!([[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [1.0, 2.0, 0.0]])
+        );
+    }
+
+    #[test]
+    fn extracts_unique_periodic_surface_controls_in_grip_order() {
+        let response = run_request(&request(vec![Operation::NurbsSurfaceExtractPoints {
+            id: "periodic-surface".to_owned(),
+            degree_u: 2,
+            degree_v: 1,
+            control_point_count_u: 5,
+            control_point_count_v: 2,
+            control_points: vec![
+                control([0.0, 0.0, 0.0], 1.0),
+                control([2.0, 0.0, 0.0], 1.0),
+                control([1.0, 2.0, 0.0], 1.0),
+                control([0.0, 0.0, 0.0], 1.0),
+                control([2.0, 0.0, 0.0], 1.0),
+                control([0.0, 0.0, 3.0], 1.0),
+                control([2.0, 0.0, 3.0], 1.0),
+                control([1.0, 2.0, 3.0], 1.0),
+                control([0.0, 0.0, 3.0], 1.0),
+                control([2.0, 0.0, 3.0], 1.0),
+            ],
+            knots_u: vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!([
+                [0.0, 0.0, 0.0],
+                [0.0, 0.0, 3.0],
+                [2.0, 0.0, 0.0],
+                [2.0, 0.0, 3.0],
+                [1.0, 2.0, 0.0],
+                [1.0, 2.0, 3.0]
+            ])
         );
     }
 

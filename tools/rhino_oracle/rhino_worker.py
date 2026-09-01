@@ -352,6 +352,32 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, curve_topology)
 
+    if kind == "nurbs_curve_extract_points":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_id = document.Objects.AddCurve(curve)
+        if object_id == System.Guid.Empty:
+            raise ValueError("could not add NURBS curve grip probe")
+        curve_object = document.Objects.FindId(object_id)
+        try:
+            curve_object.GripsOn = True
+            grips = curve_object.GetGrips()
+            if grips is None:
+                raise ValueError("could not enable NURBS curve grips")
+            return _measure(
+                iterations,
+                lambda: [_xyz(grip.CurrentLocation) for grip in grips],
+            )
+        finally:
+            curve_object.GripsOn = False
+            document.Objects.Delete(object_id, True)
+
     if kind == "nurbs_curve_divide":
         degree = int(operation["degree"])
         controls = operation["control_points"]
@@ -574,6 +600,44 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, extract_non_manifold)
         finally:
             source.Dispose()
+
+    if kind == "nurbs_surface_extract_points":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        surface = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if surface is None:
+            raise ValueError("could not allocate NURBS surface")
+        _set_surface_controls(
+            surface, operation["control_points"], count_u, count_v
+        )
+        _set_knots(surface.KnotsU, operation["knots_u"], "surface U knot")
+        _set_knots(surface.KnotsV, operation["knots_v"], "surface V knot")
+        if not surface.IsValid:
+            surface.Dispose()
+            raise ValueError("NURBS surface is invalid")
+        document = Rhino.RhinoDoc.ActiveDoc
+        object_id = document.Objects.AddSurface(surface)
+        if object_id == System.Guid.Empty:
+            surface.Dispose()
+            raise ValueError("could not add NURBS surface grip probe")
+        surface_object = document.Objects.FindId(object_id)
+        try:
+            surface_object.GripsOn = True
+            grips = surface_object.GetGrips()
+            if grips is None:
+                raise ValueError("could not enable NURBS surface grips")
+            return _measure(
+                iterations,
+                lambda: [_xyz(grip.CurrentLocation) for grip in grips],
+            )
+        finally:
+            surface_object.GripsOn = False
+            document.Objects.Delete(object_id, True)
+            surface.Dispose()
 
     if kind == "nurbs_surface_evaluate":
         degree_u = int(operation["degree_u"])

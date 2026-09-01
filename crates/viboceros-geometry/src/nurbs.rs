@@ -168,6 +168,24 @@ impl NurbsCurve {
         })
     }
 
+    /// Returns control-point locations in Rhino `ExtractPt` grip order.
+    /// Periodic curves omit their repeated tail controls. Non-periodic closed
+    /// curves omit an exactly duplicated final seam control, while
+    /// near-coincident controls remain distinct.
+    pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+        let mut points = self
+            .control_points
+            .iter()
+            .map(|control_point| control_point.point)
+            .collect::<Vec<_>>();
+        if self.is_periodic() {
+            points.truncate(points.len() - self.degree);
+        } else if self.is_closed()? && points.len() > 1 && points.first() == points.last() {
+            points.pop();
+        }
+        Ok(points)
+    }
+
     pub fn control_point_bounds(&self) -> BoundingBox3 {
         BoundingBox3::from_points(
             self.control_points
@@ -384,7 +402,7 @@ impl NurbsCurve {
     }
 }
 
-fn curve_points_coincident(left: Point3, right: Point3) -> bool {
+pub(crate) fn curve_points_coincident(left: Point3, right: Point3) -> bool {
     left.to_array()
         .into_iter()
         .zip(right.to_array())
@@ -395,7 +413,7 @@ fn curve_points_coincident(left: Point3, right: Point3) -> bool {
         })
 }
 
-fn knot_vector_is_periodic(order: usize, control_count: usize, knots: &[Real]) -> bool {
+pub(crate) fn knot_vector_is_periodic(order: usize, control_count: usize, knots: &[Real]) -> bool {
     if order < 2 || control_count < order || knots.len() != order + control_count - 2 {
         return false;
     }
@@ -696,6 +714,10 @@ mod tests {
         )
         .unwrap();
         assert!(closed.is_closed().unwrap());
+        assert_eq!(
+            closed.extract_point_locations().unwrap(),
+            vec![point(0.0, 0.0), point(3.0, 0.0), point(3.0, 2.0)]
+        );
 
         let nearly_closed = NurbsCurve::try_new(
             2,
@@ -709,6 +731,15 @@ mod tests {
         )
         .unwrap();
         assert!(nearly_closed.is_closed().unwrap());
+        assert_eq!(
+            nearly_closed.extract_point_locations().unwrap(),
+            vec![
+                point(0.0, 0.0),
+                point(3.0, 0.0),
+                point(3.0, 2.0),
+                point(1.0e-10, 0.0),
+            ]
+        );
 
         let open = NurbsCurve::try_new(
             2,
@@ -745,6 +776,10 @@ mod tests {
         .unwrap();
         assert!(periodic.is_periodic());
         assert!(periodic.is_closed().unwrap());
+        assert_eq!(
+            periodic.extract_point_locations().unwrap(),
+            vec![point(0.0, 0.0), point(2.0, 0.0), point(1.0, 2.0)]
+        );
     }
 
     #[test]

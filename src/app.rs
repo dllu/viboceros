@@ -833,6 +833,7 @@ impl VibocerosApp {
         let mut close_curve_clicked = false;
         let mut curve_start_clicked = false;
         let mut curve_end_clicked = false;
+        let mut extract_points_clicked = false;
         let mut length_clicked = false;
         let mut area_clicked = false;
         let mut volume_clicked = false;
@@ -913,6 +914,10 @@ impl VibocerosApp {
                 curve_end_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("End Pt"))
                     .on_hover_text("Place points at selected curve ends")
+                    .clicked();
+                extract_points_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract Pts"))
+                    .on_hover_text("Duplicate defining points and raw mesh vertices")
                     .clicked();
                 length_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Length"))
@@ -1005,6 +1010,8 @@ impl VibocerosApp {
             self.execute_command("CrvStart");
         } else if curve_end_clicked {
             self.execute_command("CrvEnd");
+        } else if extract_points_clicked {
+            self.execute_command("ExtractPt");
         } else if length_clicked {
             self.execute_command("Length");
         } else if area_clicked {

@@ -115,6 +115,29 @@ impl Geometry {
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
         })
     }
+
+    /// Returns the defining locations duplicated by Rhino's `ExtractPt`
+    /// command. Point objects produce no new points; closed curve seams and
+    /// periodic NURBS controls follow Rhino's unique-grip ordering.
+    pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+        Ok(match self {
+            Self::Point(_) => Vec::new(),
+            Self::Line(line) => vec![line.start(), line.end()],
+            Self::Circle(circle) => circle.to_nurbs()?.extract_point_locations()?,
+            Self::Arc(arc) => arc.to_nurbs()?.extract_point_locations()?,
+            Self::Ellipse(ellipse) => ellipse.to_nurbs()?.extract_point_locations()?,
+            Self::Polyline(polyline) => {
+                let mut points = polyline.vertices().to_vec();
+                if polyline.is_closed() {
+                    points.pop();
+                }
+                points
+            }
+            Self::NurbsCurve(curve) => curve.extract_point_locations()?,
+            Self::NurbsSurface(surface) => surface.extract_point_locations(),
+            Self::Mesh(mesh) => mesh.vertices().to_vec(),
+        })
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -153,6 +176,11 @@ impl ObjectAttributes {
 
     pub const fn with_locked(mut self, locked: bool) -> Self {
         self.locked = locked;
+        self
+    }
+
+    pub const fn with_layer(mut self, layer_id: LayerId) -> Self {
+        self.layer_id = layer_id;
         self
     }
 
@@ -1265,6 +1293,101 @@ pub enum DocumentError {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn point(x: f64, y: f64, z: f64) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn extracts_rhino_defining_points_across_supported_geometry() {
+        let tolerance = Tolerance::DEFAULT;
+        assert!(
+            Geometry::Point(point(1.0, 2.0, 3.0))
+                .extract_point_locations()
+                .unwrap()
+                .is_empty()
+        );
+
+        let line =
+            LineSegment::try_new(point(0.0, 0.0, 0.0), point(2.0, 3.0, 4.0), tolerance).unwrap();
+        assert_eq!(
+            Geometry::Line(line).extract_point_locations().unwrap(),
+            vec![point(0.0, 0.0, 0.0), point(2.0, 3.0, 4.0)]
+        );
+
+        let circle = Circle3::try_new(
+            point(0.0, 0.0, 0.0),
+            2.0,
+            viboceros_geometry::UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let circle_points = Geometry::Circle(circle).extract_point_locations().unwrap();
+        assert_eq!(circle_points.len(), 8);
+        assert_eq!(circle_points[0], point(2.0, 0.0, 0.0));
+        assert_ne!(circle_points.first(), circle_points.last());
+
+        let closed_polyline = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        assert_eq!(
+            Geometry::Polyline(closed_polyline)
+                .extract_point_locations()
+                .unwrap(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+            ]
+        );
+
+        let surface_corners = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 1.0),
+            point(2.0, 3.0, 3.0),
+            point(0.0, 3.0, 2.0),
+        ];
+        let surface = NurbsSurface::try_bilinear(surface_corners).unwrap();
+        assert_eq!(
+            Geometry::NurbsSurface(surface)
+                .extract_point_locations()
+                .unwrap(),
+            vec![
+                surface_corners[0],
+                surface_corners[3],
+                surface_corners[1],
+                surface_corners[2],
+            ]
+        );
+
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(99.0, 99.0, 99.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ],
+            vec![[1, 2, 3]],
+            tolerance,
+        )
+        .unwrap();
+        assert_eq!(
+            Geometry::Mesh(mesh).extract_point_locations().unwrap(),
+            vec![
+                point(99.0, 99.0, 99.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ]
+        );
+    }
 
     #[test]
     fn starts_with_one_current_default_layer() {

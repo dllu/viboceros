@@ -20,6 +20,7 @@ use viboceros_io::{
 };
 
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
+const MAX_EXTRACTED_POINT_OBJECTS: usize = 1_000_000;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -120,6 +121,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CrvEndCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExtractPtCommand)
             .expect("unique built-in command");
         registry
             .register(CloseCrvCommand)
@@ -1204,6 +1208,123 @@ fn mark_selected_curve_endpoints(
         CurveEndpoint::End => "ends",
     };
     Ok(format!("Added {} point(s) at curve {location}", ids.len()))
+}
+
+const EXTRACT_PT_USAGE: &str = "ExtractPt [OutputLayer=Input|Current] [Output=Points]";
+
+struct ExtractPtCommand;
+
+impl Command for ExtractPtCommand {
+    fn name(&self) -> &'static str {
+        "ExtractPt"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let output_layer = parse_extract_point_arguments(arguments)?;
+        let selected = document
+            .objects()
+            .filter(|object| document.is_selected(object.id()))
+            .map(|object| (object.geometry().clone(), object.attributes().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let current_layer = document.current_layer_id();
+        let mut output = Vec::new();
+        let mut source_with_points = 0;
+        for (geometry, attributes) in &selected {
+            let points = geometry.extract_point_locations()?;
+            if points.is_empty() {
+                continue;
+            }
+            source_with_points += 1;
+            let output_count = output.len().checked_add(points.len()).ok_or(
+                CommandError::TooManyExtractedPoints {
+                    maximum: MAX_EXTRACTED_POINT_OBJECTS,
+                },
+            )?;
+            if output_count > MAX_EXTRACTED_POINT_OBJECTS {
+                return Err(CommandError::TooManyExtractedPoints {
+                    maximum: MAX_EXTRACTED_POINT_OBJECTS,
+                });
+            }
+            output
+                .try_reserve(points.len())
+                .map_err(|_| CommandError::TooManyExtractedPoints {
+                    maximum: MAX_EXTRACTED_POINT_OBJECTS,
+                })?;
+            let attributes = match output_layer {
+                ExtractPointOutputLayer::Input => attributes.clone(),
+                ExtractPointOutputLayer::Current => attributes.clone().with_layer(current_layer),
+            };
+            output.extend(points.into_iter().map(|point| (point, attributes.clone())));
+        }
+        if output.is_empty() {
+            return Err(CommandError::NoExtractablePoints);
+        }
+
+        let mut ids = Vec::with_capacity(output.len());
+        for (point, attributes) in output {
+            ids.push(document.add_geometry_with_attributes(Geometry::Point(point), attributes)?);
+        }
+        replace_selection(document, ids.iter().copied())?;
+        Ok(format!(
+            "Extracted {} point(s) from {source_with_points} of {} selected object(s)",
+            ids.len(),
+            selected.len()
+        ))
+    }
+}
+
+#[derive(Clone, Copy)]
+enum ExtractPointOutputLayer {
+    Input,
+    Current,
+}
+
+fn parse_extract_point_arguments(
+    arguments: &[&str],
+) -> Result<ExtractPointOutputLayer, CommandError> {
+    let mut output_layer = ExtractPointOutputLayer::Input;
+    let mut output_layer_seen = false;
+    let mut output_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_PT_USAGE))?;
+            (argument, *value, 2)
+        };
+        let name = name.trim_start_matches('_');
+        let value = value.trim_start_matches('_');
+        if name.eq_ignore_ascii_case("OutputLayer") && !output_layer_seen {
+            output_layer = if value.eq_ignore_ascii_case("Input") {
+                ExtractPointOutputLayer::Input
+            } else if value.eq_ignore_ascii_case("Current") {
+                ExtractPointOutputLayer::Current
+            } else {
+                return Err(CommandError::Usage(EXTRACT_PT_USAGE));
+            };
+            output_layer_seen = true;
+        } else if name.eq_ignore_ascii_case("Output") && !output_seen {
+            if value.eq_ignore_ascii_case("PointCloud") {
+                return Err(CommandError::UnsupportedExtractPointCloudOutput);
+            }
+            if !value.eq_ignore_ascii_case("Points") {
+                return Err(CommandError::Usage(EXTRACT_PT_USAGE));
+            }
+            output_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTRACT_PT_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(output_layer)
 }
 
 const CLOSE_CRV_USAGE: &str = "CloseCrv [CloseWideGapsWithLine=Yes|No] [Tolerance=value]";
@@ -2896,6 +3017,15 @@ pub enum CommandError {
     )]
     UnsupportedCurveEndpointGeometry,
 
+    #[error("none of the selected objects has extractable defining points")]
+    NoExtractablePoints,
+
+    #[error("ExtractPt point-cloud output is not available yet")]
+    UnsupportedExtractPointCloudOutput,
+
+    #[error("ExtractPt would create more than {maximum} point objects")]
+    TooManyExtractedPoints { maximum: usize },
+
     #[error(
         "CloseCrv currently supports line and polyline inputs only; open arcs and NURBS curves require polycurve support"
     )]
@@ -2956,7 +3086,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
         );
     }
 
@@ -3407,6 +3537,134 @@ mod tests {
             Err(CommandError::UnsupportedCurveEndpointGeometry)
         ));
         assert_eq!(document.objects().len(), object_count);
+    }
+
+    #[test]
+    fn extracts_defining_points_in_rhino_order_with_layers_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Input").unwrap();
+        let input_layer = document.current_layer_id();
+        registry.execute(&mut document, "Line 0,0,0 2,3,4").unwrap();
+        registry.execute(&mut document, "Circle 10,0,0 2").unwrap();
+        registry
+            .execute(&mut document, "Polyline 0,0 2,0 2,2 0,0")
+            .unwrap();
+        let periodic = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsCurve(periodic))
+            .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 2.0).unwrap(),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap(),
+            Point3::try_new(0.0, 3.0, 3.0).unwrap(),
+        ])
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 5.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 5.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 5.0).unwrap(),
+            ],
+            vec![[1, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        registry.execute(&mut document, "Point 8,8,8").unwrap();
+
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let expected_points = document
+            .objects()
+            .map(|object| object.geometry().extract_point_locations().unwrap())
+            .collect::<Vec<_>>()
+            .concat();
+        assert_eq!(expected_points.len(), 24);
+        registry.execute(&mut document, "Layer New Output").unwrap();
+        let output_layer = document.current_layer_id();
+        registry.execute(&mut document, "SelAll").unwrap();
+        registry.execute(&mut document, "Group Sources").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractPt OutputLayer=Input Output Points",)
+                .unwrap(),
+            "Extracted 24 point(s) from 6 of 7 selected object(s)"
+        );
+        assert_eq!(document.undo_label(), Some("ExtractPt"));
+        assert_eq!(document.selected_object_count(), 24);
+        let extracted = document
+            .objects()
+            .skip(source_ids.len())
+            .map(|object| {
+                assert_eq!(object.attributes().layer_id(), input_layer);
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!("expected an extracted point")
+                };
+                *point
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(extracted, expected_points);
+        assert_eq!(
+            document
+                .group_by_name("Sources")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            source_ids.iter().copied().collect()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), source_ids.len());
+        document
+            .select_object(source_ids[0], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractPt OutputLayer Current")
+                .unwrap(),
+            "Extracted 24 point(s) from 6 of 7 selected object(s)"
+        );
+        for object in document.objects().skip(source_ids.len()) {
+            assert_eq!(object.attributes().layer_id(), output_layer);
+        }
+
+        let object_count = document.objects().len();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractPt Output=PointCloud"),
+            Err(CommandError::UnsupportedExtractPointCloudOutput)
+        ));
+        assert_eq!(document.objects().len(), object_count);
+
+        let mut point_only = Document::default();
+        registry.execute(&mut point_only, "Point 1,2,3").unwrap();
+        registry.execute(&mut point_only, "SelAll").unwrap();
+        let history = point_only.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut point_only, "ExtractPt"),
+            Err(CommandError::NoExtractablePoints)
+        ));
+        assert_eq!(point_only.undo_label(), history.as_deref());
+        assert_eq!(point_only.objects().len(), 1);
     }
 
     #[test]

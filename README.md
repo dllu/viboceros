@@ -57,6 +57,7 @@ Divide 8
 Divide Length 2.5 MarkEnds
 CrvStart
 CrvEnd
+ExtractPt OutputLayer=Input Output=Points
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
@@ -102,6 +103,11 @@ nearby ends are made identical, while wider gaps gain a straight segment unless
 `CloseWideGapsWithLine=No` is set. Lines that cannot form a valid three-segment
 loop remain unchanged. Open arcs and NURBS curves will be enabled once the
 document has an exact polycurve representation.
+`ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
+vertex (including unused and coincident vertices). Closed seams and periodic
+NURBS control rings follow Rhino ordering. Results default to each input layer;
+use `OutputLayer=Current` to place them on the active layer. Point-cloud output
+awaits a native point-cloud document type.
 Rhino-compatible curve, line, polyline, point, surface, and open/closed mesh
 filters add visible, unlocked objects of the requested type to the current
 selection. Mesh closure uses exact location-welded edge topology, so indexed
