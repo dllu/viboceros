@@ -2,7 +2,8 @@ use std::f64::consts::{FRAC_1_SQRT_2, FRAC_PI_2};
 
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Real, Tolerance,
-    UnitVector3, Vector3, WeightedPoint3, require_finite,
+    UnitVector3, Vector3, WeightedPoint3, integration::integrate_adaptive, require_finite,
+    vector::product_three,
 };
 
 /// A finite planar ellipse with two orthonormal principal-axis directions.
@@ -116,6 +117,40 @@ impl Ellipse3 {
             self.frame_point(-1.0, 0.0, 1.0)?,
             self.frame_point(0.0, -1.0, 1.0)?,
         ])
+    }
+
+    pub fn length(self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        if self.radius_x == self.radius_y {
+            let length = std::f64::consts::TAU * self.radius_x;
+            require_finite([length], "ellipse length")?;
+            return Ok(length);
+        }
+        let quadrant = integrate_adaptive(
+            0.0,
+            FRAC_PI_2,
+            tolerance.absolute() * 0.25,
+            tolerance.relative(),
+            |angle| {
+                let (sine, cosine) = angle.sin_cos();
+                let speed = (self.radius_x * sine).hypot(self.radius_y * cosine);
+                require_finite([speed], "ellipse speed")?;
+                Ok(speed)
+            },
+        )?;
+        let length = quadrant * 4.0;
+        require_finite([length], "ellipse length")?;
+        Ok(length)
+    }
+
+    pub fn area(self) -> Result<Real, GeometryError> {
+        let area = product_three(
+            std::f64::consts::PI,
+            self.radius_x,
+            self.radius_y,
+            "ellipse area",
+        )?;
+        require_finite([area], "ellipse area")?;
+        Ok(area)
     }
 
     pub fn bounds(self) -> BoundingBox3 {
@@ -313,6 +348,57 @@ mod tests {
             assert!(Tolerance::DEFAULT.approx_eq(x.mul_add(x, y * y), 1.0));
             assert!(Tolerance::DEFAULT.approx_eq(point.z(), 3.0));
         }
+    }
+
+    #[test]
+    fn computes_perimeter_and_area_to_requested_accuracy() {
+        let ellipse = Ellipse3::try_new(
+            point(1.0, -2.0, 3.0),
+            5.0,
+            2.0,
+            axis(1.0, 0.0, 0.0),
+            axis(0.0, 1.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            Tolerance::try_new(1.0e-11, 1.0e-12, 1.0e-12)
+                .unwrap()
+                .approx_eq(
+                    ellipse.length(Tolerance::DEFAULT).unwrap(),
+                    23.013_112_595_664_843
+                )
+        );
+        assert!(Tolerance::DEFAULT.approx_eq(ellipse.area().unwrap(), 10.0 * std::f64::consts::PI));
+
+        let circle = Ellipse3::try_new(
+            point(0.0, 0.0, 0.0),
+            3.0,
+            3.0,
+            axis(1.0, 0.0, 0.0),
+            axis(0.0, 1.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            circle.length(Tolerance::DEFAULT).unwrap(),
+            std::f64::consts::TAU * 3.0
+        );
+
+        let slender = Ellipse3::try_new(
+            point(0.0, 0.0, 0.0),
+            1.0e307,
+            2.0e-9,
+            axis(1.0, 0.0, 0.0),
+            axis(0.0, 1.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(slender.area().unwrap().is_finite());
+        assert!(Tolerance::DEFAULT.approx_eq(
+            slender.area().unwrap() / 1.0e298,
+            2.0 * std::f64::consts::PI
+        ));
     }
 
     #[test]

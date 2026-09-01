@@ -823,6 +823,8 @@ impl VibocerosApp {
         let mut delete_clicked = false;
         let mut join_clicked = false;
         let mut explode_clicked = false;
+        let mut length_clicked = false;
+        let mut area_clicked = false;
         let mut move_clicked = false;
         let mut copy_clicked = false;
         let mut scale_clicked = false;
@@ -860,6 +862,14 @@ impl VibocerosApp {
                 explode_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Explode"))
                     .on_hover_text("Explode selected polylines into line segments")
+                    .clicked();
+                length_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Length"))
+                    .on_hover_text("Measure selected curve length")
+                    .clicked();
+                area_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Area"))
+                    .on_hover_text("Measure selected planar or mesh area")
                     .clicked();
                 move_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Move"))
@@ -920,6 +930,10 @@ impl VibocerosApp {
             self.execute_command("Join");
         } else if explode_clicked {
             self.execute_command("Explode");
+        } else if length_clicked {
+            self.execute_command("Length");
+        } else if area_clicked {
+            self.execute_command("Area");
         } else if move_clicked {
             self.try_start_interactive_command("Move");
         } else if copy_clicked {

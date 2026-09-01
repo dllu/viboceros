@@ -154,6 +154,12 @@ impl Circle3 {
         Ok(length)
     }
 
+    pub fn area(self) -> Result<Real, GeometryError> {
+        let area = PI * self.radius * self.radius;
+        require_finite([area], "circle area")?;
+        Ok(area)
+    }
+
     pub fn bounds(self) -> BoundingBox3 {
         self.checked_bounds()
             .expect("a validated circle has finite bounds")
@@ -505,6 +511,8 @@ mod tests {
         );
         assert_eq!(circle.bounds().min(), point(-4.0, -3.0, 3.0));
         assert_eq!(circle.bounds().max(), point(6.0, 7.0, 3.0));
+        assert_eq!(circle.length().unwrap(), TAU * 5.0);
+        assert_eq!(circle.area().unwrap(), PI * 25.0);
     }
 
     #[test]

@@ -1,6 +1,9 @@
 use std::ops::RangeInclusive;
 
-use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Vector3, require_finite};
+use crate::{
+    AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, Vector3,
+    integration::integrate_adaptive, require_finite,
+};
 
 /// A Euclidean control point paired with a strictly positive rational weight.
 ///
@@ -214,6 +217,37 @@ impl NurbsCurve {
     pub fn derivative_at(&self, parameter: Real) -> Result<Vector3, GeometryError> {
         self.evaluate_with_derivative(parameter)
             .map(|(_, derivative)| derivative)
+    }
+
+    /// Computes arc length span by span with adaptive Gauss-Kronrod
+    /// integration of the exact first derivative.
+    pub fn length(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        let spans = self.spans().collect::<Vec<_>>();
+        let absolute_per_span = tolerance.absolute() / spans.len() as Real;
+        if absolute_per_span <= 0.0 {
+            return Err(GeometryError::NumericalIntegrationDidNotConverge);
+        }
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for (start, end) in spans {
+            let length = integrate_adaptive(
+                start,
+                end,
+                absolute_per_span,
+                tolerance.relative(),
+                |parameter| self.derivative_at(parameter)?.length(),
+            )?;
+            let next = sum + length;
+            if sum.abs() >= length.abs() {
+                correction += (sum - next) + length;
+            } else {
+                correction += (length - next) + sum;
+            }
+            sum = next;
+        }
+        let length = sum + correction;
+        require_finite([length], "NURBS curve length")?;
+        Ok(length)
     }
 
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
@@ -593,6 +627,14 @@ mod tests {
         assert!(Tolerance::DEFAULT.approx_eq(tangent.x() + tangent.y(), 0.0));
         let radius = Vector3::try_new(midpoint.x(), midpoint.y(), 0.0).unwrap();
         assert!(Tolerance::DEFAULT.approx_eq(radius.dot(tangent).unwrap(), 0.0));
+        assert!(
+            Tolerance::try_new(1.0e-11, 1.0e-12, 1.0e-12)
+                .unwrap()
+                .approx_eq(
+                    curve.length(Tolerance::DEFAULT).unwrap(),
+                    std::f64::consts::FRAC_PI_2
+                )
+        );
     }
 
     #[test]

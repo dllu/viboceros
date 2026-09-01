@@ -86,6 +86,12 @@ impl CommandRegistry {
             .register(InvertCommand)
             .expect("unique built-in command");
         registry
+            .register(LengthCommand)
+            .expect("unique built-in command");
+        registry
+            .register(AreaCommand)
+            .expect("unique built-in command");
+        registry
             .register(GroupCommand)
             .expect("unique built-in command");
         registry
@@ -690,6 +696,102 @@ impl Command for InvertCommand {
         let count = document.invert_selection();
         Ok(format!("Selected {count} object(s)"))
     }
+}
+
+struct LengthCommand;
+
+impl Command for LengthCommand {
+    fn name(&self) -> &'static str {
+        "Length"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Len"]
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Length")?;
+        let (count, total) =
+            selected_measurement(document, |geometry, tolerance| match geometry {
+                Geometry::Line(line) => Ok(line.length()?),
+                Geometry::Circle(circle) => Ok(circle.length()?),
+                Geometry::Arc(arc) => Ok(arc.length()?),
+                Geometry::Ellipse(ellipse) => Ok(ellipse.length(tolerance)?),
+                Geometry::Polyline(polyline) => Ok(polyline.length()?),
+                Geometry::NurbsCurve(curve) => Ok(curve.length(tolerance)?),
+                _ => Err(CommandError::UnsupportedLengthGeometry),
+            })?;
+        Ok(format!(
+            "Measured {count} curve(s): total length {total:.12}"
+        ))
+    }
+}
+
+struct AreaCommand;
+
+impl Command for AreaCommand {
+    fn name(&self) -> &'static str {
+        "Area"
+    }
+
+    fn records_history(&self) -> bool {
+        false
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Area")?;
+        let (count, total) =
+            selected_measurement(document, |geometry, tolerance| match geometry {
+                Geometry::Circle(circle) => Ok(circle.area()?),
+                Geometry::Ellipse(ellipse) => Ok(ellipse.area()?),
+                Geometry::Polyline(polyline) => Ok(polyline.planar_area(tolerance)?),
+                Geometry::Mesh(mesh) => Ok(mesh.area()?),
+                _ => Err(CommandError::UnsupportedAreaGeometry),
+            })?;
+        Ok(format!(
+            "Measured {count} object(s): total area {total:.12}"
+        ))
+    }
+}
+
+fn selected_measurement(
+    document: &Document,
+    mut measure: impl FnMut(&Geometry, Tolerance) -> Result<Real, CommandError>,
+) -> Result<(usize, Real), CommandError> {
+    let selected = document.selected_objects().collect::<Vec<_>>();
+    if selected.is_empty() {
+        return Err(CommandError::NoObjectsSelected);
+    }
+    let mut sum = 0.0;
+    let mut correction = 0.0;
+    for object in &selected {
+        let value = measure(object.geometry(), document.tolerance())?;
+        if !value.is_finite() || value < 0.0 {
+            return Err(GeometryError::NonFinite {
+                context: "geometry measurement",
+            }
+            .into());
+        }
+        let next = sum + value;
+        if sum.abs() >= value.abs() {
+            correction += (sum - next) + value;
+        } else {
+            correction += (value - next) + sum;
+        }
+        sum = next;
+    }
+    let total = sum + correction;
+    if !total.is_finite() {
+        return Err(GeometryError::NonFinite {
+            context: "measurement total",
+        }
+        .into());
+    }
+    Ok((selected.len(), total))
 }
 
 struct GroupCommand;
@@ -1730,6 +1832,12 @@ pub enum CommandError {
     #[error("none of the selected objects is an explodable polyline")]
     NoExplodablePolylines,
 
+    #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
+    UnsupportedLengthGeometry,
+
+    #[error("Area supports selected circles, ellipses, closed planar polylines, and meshes only")]
+    UnsupportedAreaGeometry,
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -1785,7 +1893,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Area, Circle, Clear, ControlPointCurve, Copy, Delete, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -1929,6 +2037,61 @@ mod tests {
         assert!(registry.execute(&mut document, "Polygon 2 0,0 5").is_err());
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.undo_label(), Some("Polygon"));
+    }
+
+    #[test]
+    fn length_and_area_measure_mixed_selected_geometry_without_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 0,0 2").unwrap();
+        registry
+            .execute(&mut document, "Rectangle 0,0 3,4")
+            .unwrap();
+        registry
+            .execute(&mut document, "Ellipse 0,0 3,0 0,2")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        let length_message = registry.execute(&mut document, "Len").unwrap();
+        let length = length_message
+            .split_whitespace()
+            .next_back()
+            .unwrap()
+            .parse::<Real>()
+            .unwrap();
+        let expected_length = 4.0 * std::f64::consts::PI + 14.0 + 15.865_439_589_290_588;
+        assert!(
+            Tolerance::try_new(1.0e-10, 1.0e-12, 1.0e-12)
+                .unwrap()
+                .approx_eq(length, expected_length)
+        );
+
+        let area_message = registry.execute(&mut document, "Area").unwrap();
+        let area = area_message
+            .split_whitespace()
+            .next_back()
+            .unwrap()
+            .parse::<Real>()
+            .unwrap();
+        assert!(
+            Tolerance::try_new(1.0e-10, 1.0e-12, 1.0e-12)
+                .unwrap()
+                .approx_eq(area, 10.0 * std::f64::consts::PI + 12.0)
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Length"),
+            Err(CommandError::UnsupportedLengthGeometry)
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "Area"),
+            Err(CommandError::UnsupportedAreaGeometry)
+        ));
+        assert_eq!(document.undo_label(), Some("Point"));
     }
 
     #[test]

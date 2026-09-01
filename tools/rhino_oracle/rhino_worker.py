@@ -225,6 +225,25 @@ def _execute(operation, iterations, tolerance):
         value, elapsed = _measure(iterations, lambda: polyline.Length)
         return float(value), elapsed
 
+    if kind == "polyline_area":
+        polyline = Rhino.Geometry.Polyline(
+            [_point(vertex) for vertex in operation["vertices"]]
+        )
+        if not polyline.IsValid or not polyline.IsClosed:
+            raise ValueError("area polyline must be valid and closed")
+        curve = Rhino.Geometry.PolylineCurve(polyline)
+
+        def polyline_area():
+            properties = Rhino.Geometry.AreaMassProperties.Compute(curve)
+            if properties is None:
+                raise ValueError("could not compute polyline area")
+            area = float(properties.Area)
+            properties.Dispose()
+            return area
+
+        value, elapsed = _measure(iterations, polyline_area)
+        return value, elapsed
+
     if kind == "polyline_join":
         curves = []
         for vertices in operation["polylines"]:
@@ -258,6 +277,19 @@ def _execute(operation, iterations, tolerance):
         if value is None or len(value) < 2:
             raise ValueError("NURBS curve evaluation failed")
         return {"point": _xyz(value[0]), "derivative": _xyz(value[1])}, elapsed
+
+    if kind == "nurbs_curve_length":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        value, elapsed = _measure(
+            iterations, lambda: curve.GetLength(tolerance["relative"])
+        )
+        return float(value), elapsed
 
     if kind == "nurbs_surface_evaluate":
         degree_u = int(operation["degree_u"])

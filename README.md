@@ -40,6 +40,8 @@ Ungroup
 Ungroup Assembly
 Join
 Explode
+Length
+Area
 Delete
 Clear
 Undo
@@ -62,7 +64,9 @@ to pick a base and destination point, `Scale` or `Rotate` to pick
 center/reference/target points, or `Mirror` to pick a two-point axis. `Join`
 connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
-segments. Osnap captures visible Point, End, Mid, Center, and Quad features;
+segments. `Length` measures analytic, polyline, and NURBS curves with controlled
+accuracy; `Area` measures circles, ellipses, closed planar polylines, and meshes.
+Osnap captures visible Point, End, Mid, Center, and Quad features;
 SmartTrack captures horizontal and vertical alignment from the first picked
 point. Drag with the middle mouse button to pan while a drafting command is
 active. Outside a drafting command, click geometry to select its connected

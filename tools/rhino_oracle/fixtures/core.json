@@ -56,6 +56,17 @@
       ]
     },
     {
+      "op": "polyline_area",
+      "id": "rotated-polyline-area",
+      "vertices": [
+        [0.0, 0.0, 0.0],
+        [3.0, 0.0, 3.0],
+        [3.0, 4.0, 3.0],
+        [0.0, 4.0, 0.0],
+        [0.0, 0.0, 0.0]
+      ]
+    },
+    {
       "op": "polyline_join",
       "id": "shuffled-polyline-join",
       "polylines": [
@@ -75,6 +86,17 @@
       ],
       "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
       "parameter": 0.35
+    },
+    {
+      "op": "nurbs_curve_length",
+      "id": "rational-curve-length",
+      "degree": 2,
+      "control_points": [
+        {"point": [1.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 1.0, 0.0], "weight": 0.7071067811865476},
+        {"point": [0.0, 1.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
     },
     {
       "op": "nurbs_surface_evaluate",

@@ -62,6 +62,15 @@ impl Vector3 {
             return Self::try_new(0.0, 0.0, 0.0);
         }
 
+        let direct = [
+            direct_determinant(self.y(), other.z(), self.z(), other.y()),
+            direct_determinant(self.z(), other.x(), self.x(), other.z()),
+            direct_determinant(self.x(), other.y(), self.y(), other.x()),
+        ];
+        if direct.iter().all(Option::is_some) {
+            return Self::try_new(direct[0].unwrap(), direct[1].unwrap(), direct[2].unwrap());
+        }
+
         let left = self.to_array().map(|value| value / left_scale);
         let right = other.to_array().map(|value| value / right_scale);
         let normalized = [
@@ -128,7 +137,25 @@ impl Vector3 {
     }
 }
 
-fn product_three(
+fn direct_determinant(left_a: Real, right_a: Real, left_b: Real, right_b: Real) -> Option<Real> {
+    let second = left_b * right_b;
+    if second.is_finite() {
+        let value = left_a.mul_add(right_a, -second);
+        if value.is_finite() {
+            return Some(value);
+        }
+    }
+    let first = left_a * right_a;
+    if first.is_finite() {
+        let value = (-left_b).mul_add(right_b, first);
+        if value.is_finite() {
+            return Some(value);
+        }
+    }
+    None
+}
+
+pub(crate) fn product_three(
     first: Real,
     second: Real,
     third: Real,
@@ -257,5 +284,11 @@ mod tests {
             y.cross(x).unwrap(),
             Vector3::try_new(0.0, 0.0, -Real::MAX).unwrap()
         );
+        let slender_left = Vector3::try_new(1.0e307, 0.0, 0.0).unwrap();
+        let slender_right = Vector3::try_new(1.0e307, 2.0e-9, 0.0).unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(
+            slender_left.cross(slender_right).unwrap().z() / 1.0e298,
+            2.0
+        ));
     }
 }

@@ -8,6 +8,7 @@ mod bounds;
 mod circular;
 mod ellipse;
 mod error;
+mod integration;
 mod line;
 mod mesh;
 mod nurbs;

@@ -3,7 +3,7 @@ use std::f64::consts::TAU;
 
 use crate::{
     AffineTransform3, BoundingBox3, Circle3, GeometryError, LineSegment, NurbsCurve, Point3, Real,
-    Tolerance, UnitVector3, require_finite,
+    Tolerance, UnitVector3, Vector3, require_finite, vector::product_three,
 };
 
 /// Allocation guard for regular-polygon construction.
@@ -127,6 +127,94 @@ impl Polyline3 {
         Ok(length)
     }
 
+    /// Returns the absolute algebraic area of a closed planar polyline.
+    /// Self-intersecting regions follow the usual signed-boundary convention.
+    pub fn planar_area(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        if !self.is_closed() {
+            return Err(GeometryError::OpenPolylineArea);
+        }
+        let origin = self.vertices[0];
+        let relative = self
+            .vertices
+            .iter()
+            .map(|point| origin.vector_to(*point))
+            .collect::<Result<Vec<_>, _>>()?;
+        let first_direction = relative
+            .iter()
+            .find_map(|vector| vector.normalized(tolerance).ok())
+            .ok_or(GeometryError::DegeneratePlanarRegion)?;
+        let normal = relative
+            .iter()
+            .filter_map(|vector| vector.normalized(tolerance).ok())
+            .find_map(|direction| {
+                first_direction
+                    .as_vector()
+                    .cross(direction.as_vector())
+                    .ok()
+                    .filter(|cross| cross.length().is_ok_and(|sine| sine > tolerance.angular()))
+                    .and_then(|cross| cross.normalized_nonzero().ok())
+            })
+            .ok_or(GeometryError::DegeneratePlanarRegion)?;
+
+        let mut scale = 0.0_f64;
+        let mut maximum_radius = 0.0_f64;
+        for vector in &relative {
+            scale = vector
+                .to_array()
+                .into_iter()
+                .map(Real::abs)
+                .fold(scale, Real::max);
+            maximum_radius = maximum_radius.max(vector.length()?);
+        }
+        let planar_tolerance = tolerance
+            .absolute()
+            .max(tolerance.relative() * maximum_radius);
+        for vector in &relative {
+            if vector.dot(normal.as_vector())?.abs() > planar_tolerance {
+                return Err(GeometryError::NonPlanarPolyline);
+            }
+        }
+        if let Some(area) = direct_planar_area(&relative, normal) {
+            return Ok(area);
+        }
+
+        let mut sum = [0.0; 3];
+        let mut correction = [0.0; 3];
+        for vectors in relative.windows(2) {
+            let left = vectors[0].to_array().map(|coordinate| coordinate / scale);
+            let right = vectors[1].to_array().map(|coordinate| coordinate / scale);
+            let cross = [
+                left[1].mul_add(right[2], -left[2] * right[1]),
+                left[2].mul_add(right[0], -left[0] * right[2]),
+                left[0].mul_add(right[1], -left[1] * right[0]),
+            ];
+            for coordinate in 0..3 {
+                let next = sum[coordinate] + cross[coordinate];
+                if sum[coordinate].abs() >= cross[coordinate].abs() {
+                    correction[coordinate] += (sum[coordinate] - next) + cross[coordinate];
+                } else {
+                    correction[coordinate] += (cross[coordinate] - next) + sum[coordinate];
+                }
+                sum[coordinate] = next;
+            }
+        }
+        let sum =
+            std::array::from_fn::<_, 3, _>(|coordinate| sum[coordinate] + correction[coordinate]);
+        let normal = normal.as_vector().to_array();
+        let unit_area = 0.5
+            * sum
+                .into_iter()
+                .zip(normal)
+                .map(|(component, normal)| component * normal)
+                .sum::<Real>()
+                .abs();
+        require_finite([unit_area], "polyline area")?;
+        if unit_area == 0.0 {
+            return Ok(0.0);
+        }
+        product_three(unit_area, scale, scale, "polyline area")
+    }
+
     pub fn transformed(
         &self,
         transform: AffineTransform3,
@@ -144,6 +232,31 @@ impl Polyline3 {
     pub fn to_nurbs(&self) -> Result<NurbsCurve, GeometryError> {
         NurbsCurve::try_clamped_uniform(1, self.vertices.clone())
     }
+}
+
+fn direct_planar_area(relative: &[Vector3], normal: UnitVector3) -> Option<Real> {
+    let mut sum = [0.0; 3];
+    let mut correction = [0.0; 3];
+    for vectors in relative.windows(2) {
+        let cross = vectors[0].cross(vectors[1]).ok()?.to_array();
+        for coordinate in 0..3 {
+            let next = sum[coordinate] + cross[coordinate];
+            if !next.is_finite() {
+                return None;
+            }
+            if sum[coordinate].abs() >= cross[coordinate].abs() {
+                correction[coordinate] += (sum[coordinate] - next) + cross[coordinate];
+            } else {
+                correction[coordinate] += (cross[coordinate] - next) + sum[coordinate];
+            }
+            sum[coordinate] = next;
+        }
+    }
+    let normal = normal.as_vector().to_array();
+    let twice_area = (0..3)
+        .map(|coordinate| (sum[coordinate] + correction[coordinate]) * normal[coordinate])
+        .sum::<Real>();
+    twice_area.is_finite().then(|| 0.5 * twice_area.abs())
 }
 
 /// Joins every unambiguous connected component of open polylines.
@@ -557,6 +670,66 @@ mod tests {
         assert_eq!(curve.evaluate(0.0).unwrap(), point(-2.0, 1.0, 3.0));
         assert_eq!(curve.evaluate(0.5).unwrap(), point(1.0, 5.0, 3.0));
         assert_eq!(curve.evaluate(1.0).unwrap(), point(1.0, 5.0, 15.0));
+    }
+
+    #[test]
+    fn computes_rotated_planar_area_and_rejects_invalid_regions() {
+        let rectangle = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 3.0),
+                point(3.0, 4.0, 3.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(
+            rectangle.planar_area(Tolerance::DEFAULT).unwrap(),
+            12.0 * 2.0_f64.sqrt()
+        ));
+
+        let slender = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0e307, 0.0, 0.0),
+                point(1.0e307, 2.0e-9, 0.0),
+                point(0.0, 2.0e-9, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(
+            slender.planar_area(Tolerance::DEFAULT).unwrap() / 1.0e298,
+            2.0
+        ));
+
+        let open = Polyline3::try_new(
+            vec![point(0.0, 0.0, 0.0), point(1.0, 0.0, 0.0)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            open.planar_area(Tolerance::DEFAULT),
+            Err(GeometryError::OpenPolylineArea)
+        );
+        let nonplanar = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 1.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            nonplanar.planar_area(Tolerance::DEFAULT),
+            Err(GeometryError::NonPlanarPolyline)
+        );
     }
 
     #[test]

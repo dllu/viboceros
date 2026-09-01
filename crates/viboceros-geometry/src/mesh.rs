@@ -1,4 +1,7 @@
-use crate::{AffineTransform3, BoundingBox3, GeometryError, Point3, Tolerance, UnitVector3};
+use crate::{
+    AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, UnitVector3,
+    require_finite,
+};
 
 /// An indexed, oriented triangle mesh with validated finite vertices and
 /// non-degenerate faces.
@@ -99,6 +102,30 @@ impl TriangleMesh {
             .normalized_nonzero()
     }
 
+    pub fn area(&self) -> Result<Real, GeometryError> {
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for index in 0..self.triangles.len() {
+            let points = self
+                .triangle_points(index)
+                .expect("a validated mesh has valid triangle indices");
+            let first = points[0].vector_to(points[1])?;
+            let second = points[0].vector_to(points[2])?;
+            let area = first.cross(second)?.length()? * 0.5;
+            require_finite([area], "mesh face area")?;
+            let next = sum + area;
+            if sum.abs() >= area.abs() {
+                correction += (sum - next) + area;
+            } else {
+                correction += (area - next) + sum;
+            }
+            sum = next;
+        }
+        let area = sum + correction;
+        require_finite([area], "mesh area")?;
+        Ok(area)
+    }
+
     pub fn bounds(&self) -> BoundingBox3 {
         BoundingBox3::from_points(self.vertices.iter().copied())
             .expect("a validated mesh has triangle vertices")
@@ -153,6 +180,19 @@ mod tests {
                 vertex: 0
             })
         ));
+
+        let square = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(square.area().unwrap(), 1.0);
     }
 
     #[test]

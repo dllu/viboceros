@@ -71,6 +71,18 @@ pub enum GeometryError {
     )]
     AmbiguousPolylineJoin { endpoint_count: usize },
 
+    #[error("adaptive numerical integration did not converge at the requested tolerance")]
+    NumericalIntegrationDidNotConverge,
+
+    #[error("planar area requires a closed polyline")]
+    OpenPolylineArea,
+
+    #[error("the polyline does not define a non-degenerate planar region")]
+    DegeneratePlanarRegion,
+
+    #[error("the polyline is not planar at the requested tolerance")]
+    NonPlanarPolyline,
+
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
 

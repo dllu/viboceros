@@ -90,6 +90,10 @@ pub enum Operation {
         id: String,
         vertices: Vec<[f64; 3]>,
     },
+    PolylineArea {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+    },
     PolylineJoin {
         id: String,
         polylines: Vec<Vec<[f64; 3]>>,
@@ -100,6 +104,12 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
         parameter: f64,
+    },
+    NurbsCurveLength {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
     },
     NurbsSurfaceEvaluate {
         id: String,
@@ -124,8 +134,10 @@ impl Operation {
             | Self::ArcThreePoint { id, .. }
             | Self::EllipseThreePoint { id, .. }
             | Self::PolylineLength { id, .. }
+            | Self::PolylineArea { id, .. }
             | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
+            | Self::NurbsCurveLength { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
     }
@@ -343,6 +355,18 @@ fn execute(
             let (length, elapsed) = measure(iterations, || black_box(&polyline).length())?;
             (json!(length), elapsed)
         }
+        Operation::PolylineArea { vertices, .. } => {
+            let polyline = Polyline3::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                tolerance,
+            )?;
+            let (area, elapsed) =
+                measure(iterations, || black_box(&polyline).planar_area(tolerance))?;
+            (json!(area), elapsed)
+        }
         Operation::PolylineJoin { polylines, .. } => {
             let polylines = polylines
                 .iter()
@@ -383,6 +407,20 @@ fn execute(
                 }),
                 elapsed,
             )
+        }
+        Operation::NurbsCurveLength {
+            degree,
+            control_points,
+            knots,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let (length, elapsed) = measure(iterations, || black_box(&curve).length(tolerance))?;
+            (json!(length), elapsed)
         }
         Operation::NurbsSurfaceEvaluate {
             degree_u,
@@ -573,6 +611,51 @@ mod tests {
                 [[3.0, 0.0, 0.0], [4.0, 0.0, 0.0]]
             ]])
         );
+    }
+
+    #[test]
+    fn measures_rotated_area_and_rational_curve_length() {
+        let response = run_request(&request(vec![
+            Operation::PolylineArea {
+                id: "area".to_owned(),
+                vertices: vec![
+                    [0.0, 0.0, 0.0],
+                    [3.0, 0.0, 3.0],
+                    [3.0, 4.0, 3.0],
+                    [0.0, 4.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                ],
+            },
+            Operation::NurbsCurveLength {
+                id: "length".to_owned(),
+                degree: 2,
+                control_points: vec![
+                    ControlPoint {
+                        point: [1.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                    ControlPoint {
+                        point: [1.0, 1.0, 0.0],
+                        weight: std::f64::consts::FRAC_1_SQRT_2,
+                    },
+                    ControlPoint {
+                        point: [0.0, 1.0, 0.0],
+                        weight: 1.0,
+                    },
+                ],
+                knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            },
+        ]))
+        .unwrap();
+        let tolerance = Tolerance::try_new(1.0e-10, 1.0e-12, 1.0e-12).unwrap();
+        assert!(tolerance.approx_eq(
+            response.results[0].value.as_f64().unwrap(),
+            12.0 * 2.0_f64.sqrt()
+        ));
+        assert!(tolerance.approx_eq(
+            response.results[1].value.as_f64().unwrap(),
+            std::f64::consts::FRAC_PI_2
+        ));
     }
 
     #[test]
