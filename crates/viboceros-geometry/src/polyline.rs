@@ -1,3 +1,4 @@
+use std::collections::{BTreeMap, HashMap};
 use std::f64::consts::TAU;
 
 use crate::{
@@ -7,6 +8,26 @@ use crate::{
 
 /// Allocation guard for regular-polygon construction.
 pub const MAX_REGULAR_POLYGON_SIDES: usize = 100_000;
+
+/// One connected result from [`join_polylines`].
+#[derive(Clone, Debug, PartialEq)]
+pub struct JoinedPolyline3 {
+    polyline: Polyline3,
+    source_indices: Vec<usize>,
+}
+
+impl JoinedPolyline3 {
+    #[inline]
+    pub const fn polyline(&self) -> &Polyline3 {
+        &self.polyline
+    }
+
+    /// Indices into the input slice, sorted into input order.
+    #[inline]
+    pub fn source_indices(&self) -> &[usize] {
+        &self.source_indices
+    }
+}
 
 /// A finite piecewise-linear curve with validated, non-degenerate segments.
 ///
@@ -122,6 +143,355 @@ impl Polyline3 {
     /// Returns the exact degree-one NURBS representation.
     pub fn to_nurbs(&self) -> Result<NurbsCurve, GeometryError> {
         NurbsCurve::try_clamped_uniform(1, self.vertices.clone())
+    }
+}
+
+/// Joins every unambiguous connected component of open polylines.
+///
+/// Input order does not need to follow the curve chain, and individual curves
+/// may be reversed. Endpoints within the absolute tolerance are represented by
+/// their midpoint. Closed and disconnected inputs are returned as separate
+/// components. A junction of three or more endpoints is rejected because it
+/// has no unique single-polyline traversal.
+pub fn join_polylines(
+    polylines: &[Polyline3],
+    tolerance: Tolerance,
+) -> Result<Vec<JoinedPolyline3>, GeometryError> {
+    if polylines.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let mut endpoints = Vec::with_capacity(polylines.len().saturating_mul(2));
+    let mut curve_endpoints = vec![None; polylines.len()];
+    for (curve_index, polyline) in polylines.iter().enumerate() {
+        if polyline.is_closed() {
+            continue;
+        }
+        let start = endpoints.len();
+        endpoints.push(JoinEndpoint {
+            point: polyline.vertices[0],
+            curve_index,
+            is_start: true,
+        });
+        let end = endpoints.len();
+        endpoints.push(JoinEndpoint {
+            point: *polyline.vertices.last().expect("a polyline has vertices"),
+            curve_index,
+            is_start: false,
+        });
+        curve_endpoints[curve_index] = Some([start, end]);
+    }
+
+    let mut sets = DisjointSets::new(endpoints.len());
+    union_near_endpoints(&endpoints, tolerance, &mut sets);
+    let roots = (0..endpoints.len())
+        .map(|endpoint| sets.root(endpoint))
+        .collect::<Vec<_>>();
+    let mut nodes = BTreeMap::<usize, JoinNode>::new();
+    for (endpoint_index, root) in roots.iter().copied().enumerate() {
+        nodes
+            .entry(root)
+            .or_default()
+            .endpoint_indices
+            .push(endpoint_index);
+    }
+    for node in nodes.values_mut() {
+        if node.endpoint_indices.len() > 2 {
+            return Err(GeometryError::AmbiguousPolylineJoin {
+                endpoint_count: node.endpoint_indices.len(),
+            });
+        }
+        node.representative = Some(join_node_representative(node, &endpoints)?);
+    }
+
+    let mut neighbors = vec![Vec::new(); polylines.len()];
+    for node in nodes.values() {
+        if let [left, right] = node.endpoint_indices.as_slice() {
+            let left_curve = endpoints[*left].curve_index;
+            let right_curve = endpoints[*right].curve_index;
+            if left_curve != right_curve {
+                neighbors[left_curve].push(right_curve);
+                neighbors[right_curve].push(left_curve);
+            }
+        }
+    }
+
+    let mut visited = vec![false; polylines.len()];
+    let mut results = Vec::new();
+    for first_curve in 0..polylines.len() {
+        if visited[first_curve] {
+            continue;
+        }
+        if curve_endpoints[first_curve].is_none() {
+            visited[first_curve] = true;
+            results.push(JoinedPolyline3 {
+                polyline: polylines[first_curve].clone(),
+                source_indices: vec![first_curve],
+            });
+            continue;
+        }
+
+        let component = connected_component(first_curve, &neighbors, &visited);
+        if component.len() == 1 {
+            visited[first_curve] = true;
+            results.push(JoinedPolyline3 {
+                polyline: polylines[first_curve].clone(),
+                source_indices: vec![first_curve],
+            });
+            continue;
+        }
+        let joined = join_component(
+            polylines,
+            &component,
+            &endpoints,
+            &curve_endpoints,
+            &roots,
+            &nodes,
+            tolerance,
+            &mut visited,
+        )?;
+        results.push(joined);
+    }
+    Ok(results)
+}
+
+#[derive(Clone, Copy)]
+struct JoinEndpoint {
+    point: Point3,
+    curve_index: usize,
+    is_start: bool,
+}
+
+#[derive(Default)]
+struct JoinNode {
+    endpoint_indices: Vec<usize>,
+    representative: Option<Point3>,
+}
+
+impl JoinNode {
+    fn point(&self) -> Point3 {
+        self.representative
+            .expect("join nodes receive a representative before traversal")
+    }
+}
+
+fn join_node_representative(
+    node: &JoinNode,
+    endpoints: &[JoinEndpoint],
+) -> Result<Point3, GeometryError> {
+    let first = endpoints[node.endpoint_indices[0]].point;
+    if node.endpoint_indices.len() == 1 {
+        return Ok(first);
+    }
+    let second = endpoints[node.endpoint_indices[1]].point;
+    first.translated(first.vector_to(second)?.scaled(0.5)?)
+}
+
+fn connected_component(first: usize, neighbors: &[Vec<usize>], visited: &[bool]) -> Vec<usize> {
+    let mut component = Vec::new();
+    let mut discovered = std::collections::BTreeSet::new();
+    let mut pending = vec![first];
+    discovered.insert(first);
+    while let Some(curve) = pending.pop() {
+        if visited[curve] {
+            continue;
+        }
+        component.push(curve);
+        for neighbor in neighbors[curve].iter().copied() {
+            if discovered.insert(neighbor) {
+                pending.push(neighbor);
+            }
+        }
+    }
+    component.sort_unstable();
+    component
+}
+
+#[allow(clippy::too_many_arguments)]
+fn join_component(
+    polylines: &[Polyline3],
+    component: &[usize],
+    endpoints: &[JoinEndpoint],
+    curve_endpoints: &[Option<[usize; 2]>],
+    roots: &[usize],
+    nodes: &BTreeMap<usize, JoinNode>,
+    tolerance: Tolerance,
+    visited: &mut [bool],
+) -> Result<JoinedPolyline3, GeometryError> {
+    let start_endpoint = component
+        .iter()
+        .flat_map(|curve| curve_endpoints[*curve].expect("component curves are open"))
+        .filter(|endpoint| nodes[&roots[*endpoint]].endpoint_indices.len() == 1)
+        .min_by_key(|endpoint| {
+            let endpoint = endpoints[*endpoint];
+            (endpoint.curve_index, !endpoint.is_start)
+        })
+        .unwrap_or_else(|| curve_endpoints[component[0]].expect("component curves are open")[0]);
+
+    let mut entered_at = start_endpoint;
+    let mut joined_vertices = Vec::new();
+    let mut source_indices = Vec::with_capacity(component.len());
+    loop {
+        let endpoint = endpoints[entered_at];
+        let curve_index = endpoint.curve_index;
+        if visited[curve_index] {
+            break;
+        }
+        visited[curve_index] = true;
+        source_indices.push(curve_index);
+
+        let [curve_start, curve_end] =
+            curve_endpoints[curve_index].expect("component curves are open");
+        let leaving_at = if endpoint.is_start {
+            curve_end
+        } else {
+            curve_start
+        };
+        let start_root = roots[entered_at];
+        let end_root = roots[leaving_at];
+        let mut vertices = if endpoint.is_start {
+            polylines[curve_index].vertices.clone()
+        } else {
+            polylines[curve_index]
+                .vertices
+                .iter()
+                .rev()
+                .copied()
+                .collect()
+        };
+        vertices[0] = nodes[&start_root].point();
+        *vertices.last_mut().expect("a polyline has vertices") = nodes[&end_root].point();
+        if joined_vertices.is_empty() {
+            joined_vertices.extend(vertices);
+        } else {
+            joined_vertices.extend(vertices.into_iter().skip(1));
+        }
+
+        let next = nodes[&end_root]
+            .endpoint_indices
+            .iter()
+            .copied()
+            .find(|candidate| {
+                let curve = endpoints[*candidate].curve_index;
+                curve != curve_index && !visited[curve]
+            });
+        let Some(next) = next else {
+            break;
+        };
+        entered_at = next;
+    }
+
+    if source_indices.len() != component.len() {
+        return Err(GeometryError::AmbiguousPolylineJoin {
+            endpoint_count: component.len(),
+        });
+    }
+    source_indices.sort_unstable();
+    Ok(JoinedPolyline3 {
+        polyline: Polyline3::try_new(joined_vertices, tolerance)?,
+        source_indices,
+    })
+}
+
+fn union_near_endpoints(endpoints: &[JoinEndpoint], tolerance: Tolerance, sets: &mut DisjointSets) {
+    let cell_size = tolerance.absolute();
+    let cells = endpoints
+        .iter()
+        .map(|endpoint| join_cell(endpoint.point, cell_size))
+        .collect::<Option<Vec<_>>>();
+    let Some(cells) = cells else {
+        for right in 0..endpoints.len() {
+            for left in 0..right {
+                if endpoints[left]
+                    .point
+                    .is_near(endpoints[right].point, tolerance)
+                {
+                    sets.union(left, right);
+                }
+            }
+        }
+        return;
+    };
+
+    let mut grid = HashMap::<[i64; 3], Vec<usize>>::new();
+    for (endpoint_index, cell) in cells.into_iter().enumerate() {
+        for x_offset in -1_i64..=1 {
+            for y_offset in -1_i64..=1 {
+                for z_offset in -1_i64..=1 {
+                    let Some(neighbor) = offset_cell(cell, [x_offset, y_offset, z_offset]) else {
+                        continue;
+                    };
+                    if let Some(candidates) = grid.get(&neighbor) {
+                        for candidate in candidates.iter().copied() {
+                            if endpoints[candidate]
+                                .point
+                                .is_near(endpoints[endpoint_index].point, tolerance)
+                            {
+                                sets.union(candidate, endpoint_index);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        grid.entry(cell).or_default().push(endpoint_index);
+    }
+}
+
+fn join_cell(point: Point3, cell_size: Real) -> Option<[i64; 3]> {
+    let mut cell = [0_i64; 3];
+    for (target, coordinate) in cell.iter_mut().zip(point.to_array()) {
+        let scaled = (coordinate / cell_size).floor();
+        if !scaled.is_finite() || scaled < i64::MIN as Real || scaled > i64::MAX as Real {
+            return None;
+        }
+        *target = scaled as i64;
+    }
+    Some(cell)
+}
+
+fn offset_cell(cell: [i64; 3], offset: [i64; 3]) -> Option<[i64; 3]> {
+    Some([
+        cell[0].checked_add(offset[0])?,
+        cell[1].checked_add(offset[1])?,
+        cell[2].checked_add(offset[2])?,
+    ])
+}
+
+struct DisjointSets {
+    parent: Vec<usize>,
+    rank: Vec<u8>,
+}
+
+impl DisjointSets {
+    fn new(count: usize) -> Self {
+        Self {
+            parent: (0..count).collect(),
+            rank: vec![0; count],
+        }
+    }
+
+    fn root(&mut self, item: usize) -> usize {
+        if self.parent[item] != item {
+            self.parent[item] = self.root(self.parent[item]);
+        }
+        self.parent[item]
+    }
+
+    fn union(&mut self, left: usize, right: usize) {
+        let left = self.root(left);
+        let right = self.root(right);
+        if left == right {
+            return;
+        }
+        match self.rank[left].cmp(&self.rank[right]) {
+            std::cmp::Ordering::Less => self.parent[left] = right,
+            std::cmp::Ordering::Greater => self.parent[right] = left,
+            std::cmp::Ordering::Equal => {
+                self.parent[right] = left;
+                self.rank[left] += 1;
+            }
+        }
     }
 }
 
@@ -260,6 +630,161 @@ mod tests {
                 Tolerance::DEFAULT,
             )
             .is_err()
+        );
+    }
+
+    #[test]
+    fn joins_shuffled_reversed_chains_and_retains_disconnected_curves() {
+        let curves = vec![
+            Polyline3::try_new(
+                vec![point(1.0, 0.0, 0.0), point(2.0, 0.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            Polyline3::try_new(
+                vec![point(4.0, 0.0, 0.0), point(3.0, 0.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            Polyline3::try_new(
+                vec![point(3.0, 0.0, 0.0), point(2.0, 0.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            Polyline3::try_new(
+                vec![point(10.0, 0.0, 0.0), point(11.0, 0.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        ];
+        let joined = join_polylines(&curves, Tolerance::DEFAULT).unwrap();
+        assert_eq!(joined.len(), 2);
+        assert_eq!(joined[0].source_indices(), &[0, 1, 2]);
+        assert_eq!(
+            joined[0].polyline().vertices(),
+            &[
+                point(1.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(joined[1].source_indices(), &[3]);
+        assert_eq!(joined[1].polyline(), &curves[3]);
+    }
+
+    #[test]
+    fn joins_closed_loops_and_reconciles_near_seams_once() {
+        let tolerance = Tolerance::try_new(1.0e-6, 1.0e-12, 1.0e-10).unwrap();
+        let curves = vec![
+            Polyline3::try_new(vec![point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0)], tolerance)
+                .unwrap(),
+            Polyline3::try_new(vec![point(1.0, 2.0, 0.0), point(0.0, 0.0, 0.0)], tolerance)
+                .unwrap(),
+            Polyline3::try_new(
+                vec![point(2.0 + 4.0e-7, 0.0, 0.0), point(1.0, 2.0, 0.0)],
+                tolerance,
+            )
+            .unwrap(),
+        ];
+        let joined = join_polylines(&curves, tolerance).unwrap();
+        assert_eq!(joined.len(), 1);
+        assert_eq!(joined[0].source_indices(), &[0, 1, 2]);
+        assert!(joined[0].polyline().is_closed());
+        assert_eq!(joined[0].polyline().segment_count(), 3);
+        assert!(joined[0].polyline().vertices()[1].is_near(
+            point(2.0 + 2.0e-7, 0.0, 0.0),
+            Tolerance::try_new(1.0e-14, 1.0e-14, 1.0e-14).unwrap(),
+        ));
+    }
+
+    #[test]
+    fn joins_across_negative_spatial_hash_cell_boundaries() {
+        let tolerance = Tolerance::try_new(1.0e-6, 1.0e-12, 1.0e-10).unwrap();
+        let curves = vec![
+            Polyline3::try_new(
+                vec![point(-2.0, 0.0, 0.0), point(-2.5e-7, 0.0, 0.0)],
+                tolerance,
+            )
+            .unwrap(),
+            Polyline3::try_new(
+                vec![point(2.5e-7, 0.0, 0.0), point(2.0, 0.0, 0.0)],
+                tolerance,
+            )
+            .unwrap(),
+        ];
+        let joined = join_polylines(&curves, tolerance).unwrap();
+        assert_eq!(joined.len(), 1);
+        assert_eq!(joined[0].polyline().vertices()[1], point(0.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn rejects_branch_nodes_instead_of_choosing_an_arbitrary_path() {
+        let curves = vec![
+            Polyline3::try_new(
+                vec![point(-1.0, 0.0, 0.0), point(0.0, 0.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            Polyline3::try_new(
+                vec![point(0.0, 0.0, 0.0), point(1.0, 0.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            Polyline3::try_new(
+                vec![point(0.0, 0.0, 0.0), point(0.0, 1.0, 0.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        ];
+        assert_eq!(
+            join_polylines(&curves, Tolerance::DEFAULT),
+            Err(GeometryError::AmbiguousPolylineJoin { endpoint_count: 3 })
+        );
+    }
+
+    #[test]
+    fn join_handles_empty_closed_and_extreme_coordinate_inputs() {
+        assert!(join_polylines(&[], Tolerance::DEFAULT).unwrap().is_empty());
+        let closed = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let extreme_first = Polyline3::try_new(
+            vec![point(1.0e200, 0.0, 0.0), point(1.0e200, 1.0e190, 0.0)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let extreme_second = Polyline3::try_new(
+            vec![point(1.0e200, 1.0e190, 0.0), point(1.0e200, 2.0e190, 0.0)],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let joined = join_polylines(
+            &[
+                closed.clone(),
+                extreme_first.clone(),
+                extreme_second.clone(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(joined.len(), 2);
+        assert_eq!(joined[0].polyline(), &closed);
+        assert_eq!(joined[1].source_indices(), &[1, 2]);
+        assert_eq!(joined[1].polyline().segment_count(), 2);
+        assert_eq!(
+            joined[1].polyline().vertices(),
+            &[
+                extreme_first.vertices()[0],
+                extreme_first.vertices()[1],
+                extreme_second.vertices()[1],
+            ]
         );
     }
 }

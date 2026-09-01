@@ -66,6 +66,11 @@ pub enum GeometryError {
     #[error("a regular polygon requires from 3 through {maximum} sides, got {actual}")]
     InvalidRegularPolygonSides { actual: usize, maximum: usize },
 
+    #[error(
+        "cannot join linear curves unambiguously where {endpoint_count} endpoints meet within tolerance"
+    )]
+    AmbiguousPolylineJoin { endpoint_count: usize },
+
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
 

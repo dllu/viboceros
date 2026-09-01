@@ -56,6 +56,15 @@
       ]
     },
     {
+      "op": "polyline_join",
+      "id": "shuffled-polyline-join",
+      "polylines": [
+        [[4.0, 0.0, 0.0], [3.0, 0.0, 0.0]],
+        [[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+        [[3.0000000004, 0.0, 0.0], [2.0, 0.0, 0.0]]
+      ]
+    },
+    {
       "op": "nurbs_curve_evaluate",
       "id": "rational-curve",
       "degree": 2,

@@ -38,6 +38,8 @@ Group Assembly
 Group All Everything
 Ungroup
 Ungroup Assembly
+Join
+Explode
 Delete
 Clear
 Undo
@@ -57,13 +59,16 @@ Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Rectangle`,
 press Enter to finish a polyline. `Polygon` defaults to four sides, or accepts
 a side count such as `Polygon 6`. With objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale` or `Rotate` to pick
-center/reference/target points, or `Mirror` to pick a two-point axis. Osnap
-captures visible Point, End, Mid, Center, and Quad features; SmartTrack captures
-horizontal and vertical alignment from the first picked point. Drag with the
-middle mouse button to pan while a drafting command is active. Outside a
-drafting command, click geometry to select its connected group, Shift-click to
-add, and Ctrl-click or Command-click to toggle. Click empty space or press Esc
-to clear the selection; press Delete to remove selected objects.
+center/reference/target points, or `Mirror` to pick a two-point axis. `Join`
+connects unambiguous line/polyline endpoint chains within the document
+tolerance, while `Explode` turns polylines back into attribute-preserving line
+segments. Osnap captures visible Point, End, Mid, Center, and Quad features;
+SmartTrack captures horizontal and vertical alignment from the first picked
+point. Drag with the middle mouse button to pan while a drafting command is
+active. Outside a drafting command, click geometry to select its connected
+group, Shift-click to add, and Ctrl-click or Command-click to toggle. Click
+empty space or press Esc to clear the selection; press Delete to remove
+selected objects.
 
 ## Build and run
 
@@ -119,10 +124,9 @@ OpenNURBS toolkit and preserves points, lines, NURBS curves, untrimmed NURBS
 surfaces, triangle meshes, layer state, and object state. Circles, arcs,
 ellipses, and polylines are exported without approximation as rational NURBS
 curves; canonical degree-one curves return as editable polylines. Unsupported
-trimmed
-B-rep and solid objects are counted and reported during import. Initial STEP
-interchange uses the Apache-2.0 Monstertruck kernel to read solid/shell B-reps
-and assemblies, apply instance transforms, and robustly tessellate exact
+trimmed B-rep and solid objects are counted and reported during import. Initial
+STEP interchange uses the Apache-2.0 Monstertruck kernel to read solid/shell
+B-reps and assemblies, apply instance transforms, and robustly tessellate exact
 trimmed surfaces into validated display meshes. Parser, topology, and
 unsupported-representation losses are reported instead of being silent. STL and
 STEP export tessellate visible NURBS surfaces; STEP writes the results as faceted

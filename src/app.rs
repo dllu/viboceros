@@ -821,6 +821,8 @@ impl VibocerosApp {
         let mut select_all_clicked = false;
         let mut select_none_clicked = false;
         let mut delete_clicked = false;
+        let mut join_clicked = false;
+        let mut explode_clicked = false;
         let mut move_clicked = false;
         let mut copy_clicked = false;
         let mut scale_clicked = false;
@@ -850,6 +852,14 @@ impl VibocerosApp {
                 delete_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Delete"))
                     .on_hover_text("Delete selected objects")
+                    .clicked();
+                join_clicked = ui
+                    .add_enabled(selected > 1, egui::Button::new("Join"))
+                    .on_hover_text("Join selected endpoint-connected lines and polylines")
+                    .clicked();
+                explode_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Explode"))
+                    .on_hover_text("Explode selected polylines into line segments")
                     .clicked();
                 move_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Move"))
@@ -906,6 +916,10 @@ impl VibocerosApp {
             self.execute_command("SelNone");
         } else if delete_clicked {
             self.execute_command("Delete");
+        } else if join_clicked {
+            self.execute_command("Join");
+        } else if explode_clicked {
+            self.execute_command("Explode");
         } else if move_clicked {
             self.try_start_interactive_command("Move");
         } else if copy_clicked {

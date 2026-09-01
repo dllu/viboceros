@@ -3,11 +3,13 @@
 use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
-use viboceros_document::{ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes};
+use viboceros_document::{
+    ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
+};
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
     MAX_REGULAR_POLYGON_SIDES, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
-    TriangleMesh, UnitVector3, Vector3,
+    TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmError, ThreeDmGeometry, ThreeDmLayer, ThreeDmModel,
@@ -91,6 +93,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(DeleteCommand)
+            .expect("unique built-in command");
+        registry
+            .register(JoinCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExplodeCommand)
             .expect("unique built-in command");
         registry
             .register(MoveCommand)
@@ -768,6 +776,193 @@ impl Command for DeleteCommand {
         }
         Ok(format!("Deleted {} object(s)", selected.len()))
     }
+}
+
+struct JoinCommand;
+
+impl Command for JoinCommand {
+    fn name(&self) -> &'static str {
+        "Join"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Join")?;
+        let inputs = selected_linear_curves(document)?;
+        if inputs.len() < 2 {
+            return Err(CommandError::NotEnoughCurvesToJoin);
+        }
+        let polylines = inputs
+            .iter()
+            .map(|input| input.polyline.clone())
+            .collect::<Vec<_>>();
+        let components = join_polylines(&polylines, document.tolerance())?;
+        let replacements = components
+            .iter()
+            .filter(|component| component.source_indices().len() > 1)
+            .map(|component| {
+                let source_indices = component.source_indices().to_vec();
+                let attributes = inputs[source_indices[0]].attributes.clone();
+                (source_indices, component.polyline().clone(), attributes)
+            })
+            .collect::<Vec<_>>();
+        if replacements.is_empty() {
+            return Err(CommandError::NoJoinableCurves);
+        }
+
+        let joined_curve_count = replacements
+            .iter()
+            .map(|(sources, _, _)| sources.len())
+            .sum::<usize>();
+        let unchanged = inputs.len() - joined_curve_count;
+        let unchanged_ids = components
+            .iter()
+            .filter(|component| component.source_indices().len() == 1)
+            .map(|component| inputs[component.source_indices()[0]].id)
+            .collect::<Vec<_>>();
+        for (sources, _, _) in &replacements {
+            for source in sources {
+                document.delete_object(inputs[*source].id)?;
+            }
+        }
+        let mut result_ids = Vec::with_capacity(replacements.len());
+        for (_, polyline, attributes) in replacements {
+            result_ids.push(
+                document.add_geometry_with_attributes(Geometry::Polyline(polyline), attributes)?,
+            );
+        }
+        replace_selection(
+            document,
+            unchanged_ids.into_iter().chain(result_ids.iter().copied()),
+        )?;
+        Ok(format!(
+            "Joined {joined_curve_count} curve(s) into {} polyline(s); {unchanged} curve(s) unchanged",
+            result_ids.len()
+        ))
+    }
+}
+
+#[derive(Clone)]
+struct SelectedLinearCurve {
+    id: ObjectId,
+    polyline: Polyline3,
+    attributes: ObjectAttributes,
+}
+
+fn selected_linear_curves(document: &Document) -> Result<Vec<SelectedLinearCurve>, CommandError> {
+    let mut inputs = Vec::new();
+    for object in document
+        .objects()
+        .filter(|object| document.is_selected(object.id()))
+    {
+        let polyline = match object.geometry() {
+            Geometry::Line(line) => {
+                Polyline3::try_new(vec![line.start(), line.end()], document.tolerance())?
+            }
+            Geometry::Polyline(polyline) => polyline.clone(),
+            _ => return Err(CommandError::UnsupportedJoinGeometry),
+        };
+        inputs.push(SelectedLinearCurve {
+            id: object.id(),
+            polyline,
+            attributes: object.attributes().clone(),
+        });
+    }
+    if inputs.is_empty() {
+        Err(CommandError::NoObjectsSelected)
+    } else {
+        Ok(inputs)
+    }
+}
+
+struct ExplodeCommand;
+
+impl Command for ExplodeCommand {
+    fn name(&self) -> &'static str {
+        "Explode"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["X"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "Explode")?;
+        let selected = document
+            .objects()
+            .filter(|object| document.is_selected(object.id()))
+            .map(|object| {
+                (
+                    object.id(),
+                    object.geometry().clone(),
+                    object.attributes().clone(),
+                )
+            })
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let exploded = selected
+            .iter()
+            .filter_map(|(id, geometry, attributes)| match geometry {
+                Geometry::Polyline(polyline) => Some((
+                    *id,
+                    polyline.segments().collect::<Vec<_>>(),
+                    attributes.clone(),
+                )),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        if exploded.is_empty() {
+            return Err(CommandError::NoExplodablePolylines);
+        }
+        let exploded_ids = exploded
+            .iter()
+            .map(|(id, _, _)| *id)
+            .collect::<BTreeSet<_>>();
+        let unchanged_ids = selected
+            .iter()
+            .filter(|(id, _, _)| !exploded_ids.contains(id))
+            .map(|(id, _, _)| *id)
+            .collect::<Vec<_>>();
+        let line_count = exploded
+            .iter()
+            .map(|(_, segments, _)| segments.len())
+            .sum::<usize>();
+        for (id, _, _) in &exploded {
+            document.delete_object(*id)?;
+        }
+        let mut result_ids = Vec::with_capacity(line_count);
+        for (_, segments, attributes) in exploded {
+            for segment in segments {
+                result_ids.push(
+                    document.add_geometry_with_attributes(
+                        Geometry::Line(segment),
+                        attributes.clone(),
+                    )?,
+                );
+            }
+        }
+        replace_selection(
+            document,
+            unchanged_ids.into_iter().chain(result_ids.iter().copied()),
+        )?;
+        Ok(format!(
+            "Exploded {} polyline(s) into {line_count} line(s); {} object(s) unchanged",
+            exploded_ids.len(),
+            selected.len() - exploded_ids.len()
+        ))
+    }
+}
+
+fn replace_selection(
+    document: &mut Document,
+    ids: impl IntoIterator<Item = ObjectId>,
+) -> Result<(), DocumentError> {
+    document.clear_selection();
+    for id in ids {
+        document.select_object(id, SelectionMode::Add)?;
+    }
+    Ok(())
 }
 
 struct MoveCommand;
@@ -1523,6 +1718,18 @@ pub enum CommandError {
     #[error("no objects are selected")]
     NoObjectsSelected,
 
+    #[error("Join requires at least two selected lines or polylines")]
+    NotEnoughCurvesToJoin,
+
+    #[error("Join currently supports selected lines and polylines only")]
+    UnsupportedJoinGeometry,
+
+    #[error("the selected curves do not have endpoints within the document tolerance")]
+    NoJoinableCurves,
+
+    #[error("none of the selected objects is an explodable polyline")]
+    NoExplodablePolylines,
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -1578,7 +1785,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Ellipse, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Layer, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
+            "Commands: Arc, Circle, Clear, ControlPointCurve, Copy, Delete, Ellipse, Explode, Export3dm, ExportStep, ExportStl, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelNone, SrfPt, Undo, Ungroup"
         );
     }
 
@@ -1722,6 +1929,155 @@ mod tests {
         assert!(registry.execute(&mut document, "Polygon 2 0,0 5").is_err());
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.undo_label(), Some("Polygon"));
+    }
+
+    #[test]
+    fn joins_selected_linear_chains_and_preserves_disconnected_inputs() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Line 1,0 2,0",
+            "Line 4,0 3,0",
+            "Line 3,0 2,0",
+            "Line 10,0 11,0",
+        ] {
+            registry.execute(&mut document, command).unwrap();
+        }
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        for id in &ids {
+            document.select_object(*id, SelectionMode::Add).unwrap();
+        }
+
+        assert_eq!(
+            registry.execute(&mut document, "Join").unwrap(),
+            "Joined 3 curve(s) into 1 polyline(s); 1 curve(s) unchanged"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert!(document.object(ids[3]).is_some());
+        let Geometry::Polyline(joined) = document
+            .objects()
+            .find(|object| object.id() != ids[3])
+            .unwrap()
+            .geometry()
+        else {
+            panic!("expected a joined polyline")
+        };
+        assert_eq!(
+            joined.vertices(),
+            &[
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), Some("Join"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 4);
+        assert!(ids.iter().all(|id| document.object(*id).is_some()));
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+    }
+
+    #[test]
+    fn join_rejects_branches_and_unsupported_geometry_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in ["Line -1,0 0,0", "Line 0,0 1,0", "Line 0,0 0,1"] {
+            registry.execute(&mut document, command).unwrap();
+        }
+        registry.execute(&mut document, "SelAll").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Join"),
+            Err(CommandError::Geometry(
+                GeometryError::AmbiguousPolylineJoin { endpoint_count: 3 }
+            ))
+        ));
+        assert_eq!(
+            document
+                .objects()
+                .map(|object| object.id())
+                .collect::<Vec<_>>(),
+            ids
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "Point 5,5").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Join"),
+            Err(CommandError::UnsupportedJoinGeometry)
+        ));
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.undo_label(), Some("Point"));
+    }
+
+    #[test]
+    fn explodes_selected_polylines_into_attribute_preserving_lines() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Construction")
+            .unwrap();
+        let construction = document.current_layer_id();
+        registry
+            .execute(&mut document, "Rectangle 0,0 4,3")
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        registry.execute(&mut document, "Point 9,9").unwrap();
+        let point_id = document.objects().nth(1).unwrap().id();
+        registry.execute(&mut document, "SelAll").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "X").unwrap(),
+            "Exploded 1 polyline(s) into 4 line(s); 1 object(s) unchanged"
+        );
+        assert_eq!(document.objects().len(), 5);
+        assert!(document.object(point_id).is_some());
+        assert_eq!(
+            document
+                .objects()
+                .filter(|object| matches!(object.geometry(), Geometry::Line(_)))
+                .count(),
+            4
+        );
+        assert!(
+            document
+                .objects()
+                .filter(|object| matches!(object.geometry(), Geometry::Line(_)))
+                .all(|object| object.attributes().layer_id() == construction)
+        );
+        assert_eq!(document.selected_object_count(), 5);
+        assert_eq!(document.undo_label(), Some("Explode"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document
+                .objects()
+                .filter(|object| matches!(object.geometry(), Geometry::Polyline(_)))
+                .count(),
+            1
+        );
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Explode"),
+            Err(CommandError::NoExplodablePolylines)
+        ));
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

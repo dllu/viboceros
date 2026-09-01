@@ -71,6 +71,29 @@ def _measure(iterations, operation):
     return value, max(0, elapsed_ns)
 
 
+def _canonical_join_segments(curves):
+    polylines = []
+    for curve in curves:
+        segments = curve.DuplicateSegments()
+        if segments is None or len(segments) == 0:
+            values = [[_xyz(curve.PointAtStart), _xyz(curve.PointAtEnd)]]
+        else:
+            values = [
+                [_xyz(segment.PointAtStart), _xyz(segment.PointAtEnd)]
+                for segment in segments
+            ]
+        if tuple(values[-1][1]) < tuple(values[0][0]):
+            values.reverse()
+            values = [[segment[1], segment[0]] for segment in values]
+        polylines.append(values)
+    polylines.sort(
+        key=lambda segments: tuple(
+            tuple(point) for segment in segments for point in segment
+        )
+    )
+    return polylines
+
+
 def _set_knots(target, full_knots, context):
     values = [_finite(value, context) for value in full_knots]
     if len(values) != target.Count + 2:
@@ -201,6 +224,24 @@ def _execute(operation, iterations, tolerance):
             raise ValueError("polyline is invalid")
         value, elapsed = _measure(iterations, lambda: polyline.Length)
         return float(value), elapsed
+
+    if kind == "polyline_join":
+        curves = []
+        for vertices in operation["polylines"]:
+            polyline = Rhino.Geometry.Polyline(
+                [_point(vertex) for vertex in vertices]
+            )
+            if not polyline.IsValid:
+                raise ValueError("polyline to join is invalid")
+            curves.append(Rhino.Geometry.PolylineCurve(polyline))
+
+        def join_curves():
+            return Rhino.Geometry.Curve.JoinCurves(
+                curves, tolerance["absolute"], False
+            )
+
+        value, elapsed = _measure(iterations, join_curves)
+        return _canonical_join_segments(value), elapsed
 
     if kind == "nurbs_curve_evaluate":
         degree = int(operation["degree"])

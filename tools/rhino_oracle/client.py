@@ -15,6 +15,7 @@ from typing import Any, Mapping, Sequence
 
 PROTOCOL_VERSION = 1
 DEFAULT_LAUNCHER = Path.home() / "wines/prefixes/rhino/launch.sh"
+RHINO_EXIT_GRACE_SECONDS = 15.0
 
 
 class OracleError(RuntimeError):
@@ -213,7 +214,9 @@ class OracleClient:
                 response = _read_json(response_path)
             finally:
                 owned_pids.update(_rhino_process_ids(windows_worker) - existing_pids)
-                if response_path.is_file() and _wait_for_process_exit(owned_pids, 5.0):
+                if response_path.is_file() and _wait_for_process_exit(
+                    owned_pids, RHINO_EXIT_GRACE_SECONDS
+                ):
                     owned_window = None
                 if owned_window is None:
                     owned_window = _rhino_window_for_pids(owned_pids)

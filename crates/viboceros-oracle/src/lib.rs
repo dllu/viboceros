@@ -11,7 +11,7 @@ use serde_json::{Value, json};
 use thiserror::Error;
 use viboceros_geometry::{
     Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3,
-    Polyline3, Tolerance, UnitVector3, WeightedPoint3,
+    Polyline3, Tolerance, UnitVector3, WeightedPoint3, join_polylines,
 };
 
 pub const PROTOCOL_VERSION: u32 = 1;
@@ -90,6 +90,10 @@ pub enum Operation {
         id: String,
         vertices: Vec<[f64; 3]>,
     },
+    PolylineJoin {
+        id: String,
+        polylines: Vec<Vec<[f64; 3]>>,
+    },
     NurbsCurveEvaluate {
         id: String,
         degree: usize,
@@ -120,6 +124,7 @@ impl Operation {
             | Self::ArcThreePoint { id, .. }
             | Self::EllipseThreePoint { id, .. }
             | Self::PolylineLength { id, .. }
+            | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -338,6 +343,24 @@ fn execute(
             let (length, elapsed) = measure(iterations, || black_box(&polyline).length())?;
             (json!(length), elapsed)
         }
+        Operation::PolylineJoin { polylines, .. } => {
+            let polylines = polylines
+                .iter()
+                .map(|vertices| {
+                    Polyline3::try_new(
+                        vertices
+                            .iter()
+                            .map(|coordinates| point(*coordinates))
+                            .collect::<Result<Vec<_>, _>>()?,
+                        tolerance,
+                    )
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let (joined, elapsed) = measure(iterations, || {
+                join_polylines(black_box(&polylines), tolerance)
+            })?;
+            (json!(canonical_join_segments(&joined)), elapsed)
+        }
         Operation::NurbsCurveEvaluate {
             degree,
             control_points,
@@ -419,6 +442,47 @@ fn weighted_points(points: &[ControlPoint]) -> Result<Vec<WeightedPoint3>, Geome
         .collect()
 }
 
+fn canonical_join_segments(
+    joined: &[viboceros_geometry::JoinedPolyline3],
+) -> Vec<Vec<[[f64; 3]; 2]>> {
+    let mut polylines = joined
+        .iter()
+        .map(|component| {
+            let mut segments = component
+                .polyline()
+                .segments()
+                .map(|segment| [segment.start().to_array(), segment.end().to_array()])
+                .collect::<Vec<_>>();
+            if compare_point(&segments.last().unwrap()[1], &segments.first().unwrap()[0]).is_lt() {
+                segments.reverse();
+                for segment in &mut segments {
+                    segment.swap(0, 1);
+                }
+            }
+            segments
+        })
+        .collect::<Vec<_>>();
+    polylines.sort_by(|left, right| compare_segments(left, right));
+    polylines
+}
+
+fn compare_segments(left: &[[[f64; 3]; 2]], right: &[[[f64; 3]; 2]]) -> std::cmp::Ordering {
+    left.iter()
+        .flatten()
+        .zip(right.iter().flatten())
+        .map(|(left, right)| compare_point(left, right))
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or_else(|| left.len().cmp(&right.len()))
+}
+
+fn compare_point(left: &[f64; 3], right: &[f64; 3]) -> std::cmp::Ordering {
+    left.iter()
+        .zip(right)
+        .map(|(left, right)| left.total_cmp(right))
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or(std::cmp::Ordering::Equal)
+}
+
 fn measure<T>(
     iterations: u32,
     mut operation: impl FnMut() -> Result<T, GeometryError>,
@@ -487,6 +551,27 @@ mod tests {
         assert_eq!(
             response.results[2].value["radius_y"],
             json!(40.0_f64.sqrt())
+        );
+    }
+
+    #[test]
+    fn joins_shuffled_polylines_into_canonical_oracle_output() {
+        let response = run_request(&request(vec![Operation::PolylineJoin {
+            id: "join".to_owned(),
+            polylines: vec![
+                vec![[4.0, 0.0, 0.0], [3.0, 0.0, 0.0]],
+                vec![[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+                vec![[3.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+            ],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!([[
+                [[1.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+                [[2.0, 0.0, 0.0], [3.0, 0.0, 0.0]],
+                [[3.0, 0.0, 0.0], [4.0, 0.0, 0.0]]
+            ]])
         );
     }
 

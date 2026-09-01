@@ -29,7 +29,7 @@ pub use nurbs::{NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
-pub use polyline::{MAX_REGULAR_POLYGON_SIDES, Polyline3};
+pub use polyline::{JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, join_polylines};
 pub use tolerance::Tolerance;
 pub use transform::AffineTransform3;
 pub use vector::{UnitVector3, Vector3};
