@@ -148,6 +148,11 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    MeshCullUnusedVertices {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+    },
     MeshVolume {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -197,6 +202,7 @@ impl Operation {
             | Self::MeshUnifyNormals { id, .. }
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
+            | Self::MeshCullUnusedVertices { id, .. }
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
             | Self::MeshExtractDuplicateFaces { id, .. }
@@ -626,6 +632,30 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::MeshCullUnusedVertices {
+            vertices,
+            triangles,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let ((culled, removed_vertices), elapsed) =
+                measure(iterations, || Ok(black_box(&mesh).culled_unused_vertices()))?;
+            (
+                json!({
+                    "changed": removed_vertices > 0,
+                    "removed_vertices": removed_vertices,
+                    "mesh": mesh_value(&culled),
+                }),
+                elapsed,
+            )
+        }
         Operation::MeshVolume {
             vertices,
             triangles,
@@ -1006,6 +1036,40 @@ mod tests {
                         [0.0, 2.0, 0.0],
                         [0.0, 0.0, 0.0],
                         [0.0, -2.0, 0.0],
+                    ],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn culls_unused_mesh_vertices_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshCullUnusedVertices {
+            id: "culled".to_owned(),
+            vertices: vec![
+                [99.0, 99.0, 99.0],
+                [0.0, 0.0, 0.0],
+                [98.0, 98.0, 98.0],
+                [2.0, 0.0, 0.0],
+                [0.0, 2.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [97.0, 97.0, 97.0],
+            ],
+            triangles: vec![[1, 3, 4], [3, 5, 4]],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "changed": true,
+                "removed_vertices": 3,
+                "mesh": {
+                    "triangles": [[0, 1, 2], [1, 3, 2]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
+                        [0.0, 0.0, 0.0],
                     ],
                 },
             })

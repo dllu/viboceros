@@ -826,6 +826,7 @@ impl VibocerosApp {
         let mut flip_clicked = false;
         let mut unify_mesh_normals_clicked = false;
         let mut combine_mesh_vertices_clicked = false;
+        let mut cull_unused_mesh_vertices_clicked = false;
         let mut split_disjoint_mesh_clicked = false;
         let mut extract_non_manifold_clicked = false;
         let mut extract_duplicate_faces_clicked = false;
@@ -884,6 +885,10 @@ impl VibocerosApp {
                 combine_mesh_vertices_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Combine Vertices"))
                     .on_hover_text("Merge exactly identical selected-mesh vertices")
+                    .clicked();
+                cull_unused_mesh_vertices_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Cull Unused"))
+                    .on_hover_text("Remove unreferenced vertices from selected meshes")
                     .clicked();
                 split_disjoint_mesh_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Split Pieces"))
@@ -986,6 +991,8 @@ impl VibocerosApp {
             self.execute_command("UnifyMeshNormals");
         } else if combine_mesh_vertices_clicked {
             self.execute_command("CombineIdenticalMeshVertices");
+        } else if cull_unused_mesh_vertices_clicked {
+            self.execute_command("CullUnusedMeshVertices");
         } else if split_disjoint_mesh_clicked {
             self.execute_command("SplitDisjointMesh");
         } else if extract_non_manifold_clicked {

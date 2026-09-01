@@ -62,6 +62,7 @@ CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
 CombineIdenticalMeshVertices
+CullUnusedMeshVertices
 SplitDisjointMesh
 ExtractDuplicateMeshFaces
 ExtractNonManifoldMeshEdges
@@ -113,6 +114,9 @@ changing object identities, attributes, groups, or closed-curve seams.
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,
 face order, and winding.
+`CullUnusedMeshVertices` removes raw vertices not referenced by any face while
+preserving the source order and identity of every referenced vertex, including
+coincident vertices, as well as object metadata, face order, and winding.
 `SplitDisjointMesh` separates exact-location edge-connected components (a lone
 shared vertex does not connect them), retaining the first object identity and
 copying attributes and group membership to additional pieces.

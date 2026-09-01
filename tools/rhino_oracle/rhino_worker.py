@@ -488,6 +488,28 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_cull_unused_vertices":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        def cull_unused_vertices():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                removed_vertices = int(mesh.Vertices.CullUnused())
+                if removed_vertices < 0:
+                    raise ValueError("mesh vertex culling failed")
+                return {
+                    "changed": removed_vertices > 0,
+                    "removed_vertices": removed_vertices,
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, cull_unused_vertices)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_volume":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         try:

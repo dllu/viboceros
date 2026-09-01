@@ -487,6 +487,47 @@ impl TriangleMesh {
         )
     }
 
+    /// Removes vertices that are not referenced by any face. Referenced
+    /// vertices retain their relative source order, and coincident referenced
+    /// vertices remain distinct. Face order and winding are unchanged.
+    pub fn culled_unused_vertices(&self) -> (Self, usize) {
+        let mut used = vec![false; self.vertices.len()];
+        for triangle in &self.triangles {
+            for &vertex in triangle {
+                used[vertex as usize] = true;
+            }
+        }
+
+        let retained_vertex_count = used.iter().filter(|&&is_used| is_used).count();
+        let removed_vertex_count = self.vertices.len() - retained_vertex_count;
+        if removed_vertex_count == 0 {
+            return (self.clone(), 0);
+        }
+
+        let mut vertex_remap = vec![0_u32; self.vertices.len()];
+        let mut vertices = Vec::with_capacity(retained_vertex_count);
+        for (source, (&point, is_used)) in self.vertices.iter().zip(used).enumerate() {
+            if !is_used {
+                continue;
+            }
+            vertex_remap[source] = u32::try_from(vertices.len())
+                .expect("a culled mesh cannot have more vertices than its source");
+            vertices.push(point);
+        }
+        let triangles = self
+            .triangles
+            .iter()
+            .map(|triangle| triangle.map(|vertex| vertex_remap[vertex as usize]))
+            .collect();
+        (
+            Self {
+                vertices,
+                triangles,
+            },
+            removed_vertex_count,
+        )
+    }
+
     fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
         let mut used = vec![false; self.vertices.len()];
         for &face in faces {
@@ -1256,6 +1297,52 @@ mod tests {
         )
         .unwrap();
         assert_eq!(near.combined_identical_vertices(), (near.clone(), 0));
+    }
+
+    #[test]
+    fn culls_only_unused_vertices_in_source_order() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(99.0, 99.0, 99.0),
+                point(0.0, 0.0, 0.0),
+                point(98.0, 98.0, 98.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(97.0, 97.0, 97.0),
+            ],
+            vec![[1, 3, 4], [3, 5, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let (culled, removed) = mesh.culled_unused_vertices();
+        assert_eq!(removed, 3);
+        assert_eq!(
+            culled.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(culled.triangles(), &[[0, 1, 2], [1, 3, 2]]);
+
+        let already_compact = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            already_compact.culled_unused_vertices(),
+            (already_compact.clone(), 0)
+        );
     }
 
     #[test]

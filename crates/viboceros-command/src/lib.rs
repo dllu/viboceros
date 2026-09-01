@@ -134,6 +134,9 @@ impl CommandRegistry {
             .register(CombineIdenticalMeshVerticesCommand)
             .expect("unique built-in command");
         registry
+            .register(CullUnusedMeshVerticesCommand)
+            .expect("unique built-in command");
+        registry
             .register(SplitDisjointMeshCommand)
             .expect("unique built-in command");
         registry
@@ -1441,6 +1444,46 @@ impl Command for CombineIdenticalMeshVerticesCommand {
         let changed_mesh_count = document.replace_object_geometries(replacements)?;
         Ok(format!(
             "Combined {removed_vertex_count} identical vertex occurrence(s) in {changed_mesh_count} mesh(es); {} mesh(es) unchanged",
+            mesh_count - changed_mesh_count
+        ))
+    }
+}
+
+struct CullUnusedMeshVerticesCommand;
+
+impl Command for CullUnusedMeshVerticesCommand {
+    fn name(&self) -> &'static str {
+        "CullUnusedMeshVertices"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "CullUnusedMeshVertices")?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let mesh_count = selected.len();
+        let mut removed_vertex_count = 0;
+        let mut replacements = Vec::new();
+        for (id, geometry) in selected {
+            let Geometry::Mesh(mesh) = geometry else {
+                return Err(CommandError::UnsupportedCullUnusedMeshVerticesGeometry);
+            };
+            let (culled, removed) = mesh.culled_unused_vertices();
+            removed_vertex_count += removed;
+            if removed > 0 {
+                replacements.push((id, Geometry::Mesh(culled)));
+            }
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoUnusedMeshVertices);
+        }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Culled {removed_vertex_count} unused vertex occurrence(s) in {changed_mesh_count} mesh(es); {} mesh(es) unchanged",
             mesh_count - changed_mesh_count
         ))
     }
@@ -2824,6 +2867,12 @@ pub enum CommandError {
     #[error("none of the selected meshes contains identical vertex locations")]
     NoIdenticalMeshVertices,
 
+    #[error("CullUnusedMeshVertices supports selected meshes only")]
+    UnsupportedCullUnusedMeshVerticesGeometry,
+
+    #[error("none of the selected meshes contains unused vertices")]
+    NoUnusedMeshVertices,
+
     #[error("SplitDisjointMesh supports selected meshes only")]
     UnsupportedSplitDisjointMeshGeometry,
 
@@ -2907,7 +2956,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
+            "Commands: Arc, Area, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, Flip, Group, Import3dm, ImportStep, ImportStl, Invert, Join, Layer, Length, Line, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelCrv, SelLine, SelMesh, SelNone, SelOpenCrv, SelOpenMesh, SelPolyline, SelPt, SelSrf, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Volume"
         );
     }
 
@@ -3769,6 +3818,119 @@ mod tests {
         ));
         assert_eq!(
             unique_only.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn culls_unused_mesh_vertices_with_identity_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Cleanup")
+            .unwrap();
+        let with_unused = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(98.0, 98.0, 98.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(97.0, 97.0, 97.0).unwrap(),
+            ],
+            vec![[1, 3, 4], [3, 5, 4]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let compact = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry(Geometry::Mesh(with_unused.clone()))
+            .unwrap();
+        let compact_id = document
+            .add_geometry(Geometry::Mesh(compact.clone()))
+            .unwrap();
+        let attributes = document.object(source).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry.execute(&mut document, "Group CleanupSet").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "CullUnusedMeshVertices")
+                .unwrap(),
+            "Culled 3 unused vertex occurrence(s) in 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("CullUnusedMeshVertices"));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        let Geometry::Mesh(culled) = document.object(source).unwrap().geometry() else {
+            panic!("expected culled mesh")
+        };
+        assert_eq!(
+            culled.vertices(),
+            &[
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+        assert_eq!(culled.triangles(), &[[0, 1, 2], [1, 3, 2]]);
+        assert_eq!(
+            document.object(compact_id).unwrap().geometry(),
+            &Geometry::Mesh(compact.clone())
+        );
+        assert_eq!(
+            document
+                .group_by_name("CleanupSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, compact_id])
+        );
+        assert_eq!(document.selected_object_count(), 2);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(with_unused.clone())
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.undo_label(), Some("CullUnusedMeshVertices"));
+
+        let mut compact_only = Document::default();
+        let compact_only_id = compact_only
+            .add_geometry(Geometry::Mesh(compact.clone()))
+            .unwrap();
+        compact_only
+            .select_object(compact_only_id, SelectionMode::Replace)
+            .unwrap();
+        let history = compact_only.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut compact_only, "CullUnusedMeshVertices"),
+            Err(CommandError::NoUnusedMeshVertices)
+        ));
+        assert_eq!(compact_only.undo_label(), history.as_deref());
+
+        let mut mixed = Document::default();
+        mixed.add_geometry(Geometry::Mesh(with_unused)).unwrap();
+        registry.execute(&mut mixed, "Point 9,9").unwrap();
+        registry.execute(&mut mixed, "SelAll").unwrap();
+        let before = mixed.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut mixed, "CullUnusedMeshVertices"),
+            Err(CommandError::UnsupportedCullUnusedMeshVerticesGeometry)
+        ));
+        assert_eq!(
+            mixed.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
     }
