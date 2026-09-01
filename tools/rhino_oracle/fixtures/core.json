@@ -43,6 +43,10 @@
       "id": "document-linear-array-cycle"
     },
     {
+      "op": "document_rectangular_array_cycle",
+      "id": "document-rectangular-array-cycle"
+    },
+    {
       "op": "document_polar_array_cycle",
       "id": "document-polar-array-cycle"
     },

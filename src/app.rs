@@ -47,6 +47,12 @@ enum InteractiveCommand {
         item_count: usize,
         start: Option<Point3>,
     },
+    Array {
+        counts: [usize; 3],
+        fill: bool,
+        z_distance: f64,
+        start: Option<Point3>,
+    },
     ArrayPolar {
         item_count: usize,
         fill_angle_degrees: f64,
@@ -81,6 +87,7 @@ impl InteractiveCommand {
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
+            Self::Array { .. } => "Array",
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { .. } => "Scale",
             Self::Rotate { .. } => "Rotate",
@@ -162,6 +169,19 @@ impl InteractiveCommand {
             Self::ArrayLinear { start: Some(_), .. } => {
                 "ArrayLinear: pick the spacing point in the viewport (Esc to cancel)"
             }
+            Self::Array { start: None, .. } => {
+                "Array: pick the first cell corner in the viewport (Esc to cancel)"
+            }
+            Self::Array {
+                fill: false,
+                start: Some(_),
+                ..
+            } => "Array: pick the opposite UnitCell corner in the viewport (Esc to cancel)",
+            Self::Array {
+                fill: true,
+                start: Some(_),
+                ..
+            } => "Array: pick the opposite Fill corner in the viewport (Esc to cancel)",
             Self::ArrayPolar { .. } => {
                 "ArrayPolar: pick the array center in the viewport (Esc to cancel)"
             }
@@ -210,6 +230,7 @@ impl InteractiveCommand {
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
+            | Self::Array { start: None, .. }
             | Self::ArrayPolar { .. }
             | Self::Scale { center: None, .. }
             | Self::Rotate { center: None, .. }
@@ -220,6 +241,7 @@ impl InteractiveCommand {
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
+            | Self::Array { start, .. }
             | Self::Mirror { start } => start,
             Self::Ellipse { center, .. } | Self::Polygon { center, .. } => center,
             Self::Arc {
@@ -344,6 +366,74 @@ impl VibocerosApp {
                 side_count,
                 center: None,
             }
+        } else if matches!(normalized.as_str(), "array" | "arrayrectangular") {
+            if arguments.len() < 2 {
+                return false;
+            }
+            let Ok(x_count) = arguments[0].parse::<usize>() else {
+                return false;
+            };
+            let Ok(y_count) = arguments[1].parse::<usize>() else {
+                return false;
+            };
+            if x_count == 0 || y_count == 0 {
+                return false;
+            }
+            let mut z_count = 1;
+            let mut remaining = &arguments[2..];
+            if let Some(z_count_text) = remaining.first()
+                && !z_count_text.contains('=')
+            {
+                let Ok(parsed) = z_count_text.parse::<usize>() else {
+                    return false;
+                };
+                if parsed == 0 {
+                    return false;
+                }
+                z_count = parsed;
+                remaining = &remaining[1..];
+            }
+            let mut fill = false;
+            let mut z_distance = 0.0;
+            let mut mode_seen = false;
+            let mut z_distance_seen = false;
+            for option in remaining {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches('_');
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Mode") && !mode_seen {
+                    if value.eq_ignore_ascii_case("UnitCell") {
+                        fill = false;
+                    } else if value.eq_ignore_ascii_case("Fill") {
+                        fill = true;
+                    } else {
+                        return false;
+                    }
+                    mode_seen = true;
+                } else if name.eq_ignore_ascii_case("ZDistance") && !z_distance_seen {
+                    let Ok(distance) = value.parse::<f64>() else {
+                        return false;
+                    };
+                    if !distance.is_finite() {
+                        return false;
+                    }
+                    z_distance = distance;
+                    z_distance_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            if z_count > 1 && !z_distance_seen {
+                return false;
+            }
+            InteractiveCommand::Array {
+                counts: [x_count, y_count, z_count],
+                fill,
+                z_distance,
+                start: None,
+            }
         } else if normalized == "arraylinear" {
             let [item_count] = arguments.as_slice() else {
                 return false;
@@ -457,6 +547,7 @@ impl VibocerosApp {
             command,
             InteractiveCommand::Move { .. }
                 | InteractiveCommand::Copy { .. }
+                | InteractiveCommand::Array { .. }
                 | InteractiveCommand::ArrayLinear { .. }
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
@@ -753,6 +844,40 @@ impl VibocerosApp {
                     "Copy {} {}",
                     format_model_point(start),
                     format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Array {
+                counts,
+                fill,
+                z_distance,
+                start: None,
+            } => {
+                let command = InteractiveCommand::Array {
+                    counts,
+                    fill,
+                    z_distance,
+                    start: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("First corner: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Array {
+                counts,
+                fill,
+                z_distance,
+                start: Some(start),
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Array {} {} {} {} {} {} Mode={}",
+                    counts[0],
+                    counts[1],
+                    counts[2],
+                    point.x() - start.x(),
+                    point.y() - start.y(),
+                    z_distance,
+                    if fill { "Fill" } else { "UnitCell" }
                 ));
             }
             InteractiveCommand::ArrayLinear {
@@ -1825,6 +1950,68 @@ mod tests {
     }
 
     #[test]
+    fn interactive_rectangular_array_uses_counts_options_and_two_corners() {
+        let mut app = test_app();
+        let original = app
+            .document
+            .add_geometry(Geometry::Point(point(1.0, 2.0, 0.0)))
+            .unwrap();
+        app.document
+            .select_object(original, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("Array 2 2 2 Mode=UnitCell ZDistance=4"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Array {
+                counts: [2, 2, 2],
+                fill: false,
+                z_distance: 4.0,
+                start: None,
+            })
+        );
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Array {
+                counts: [2, 2, 2],
+                fill: false,
+                z_distance: 4.0,
+                start: Some(point(0.0, 0.0, 0.0)),
+            })
+        );
+        app.accept_drafting_point(point(2.0, -1.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.undo_label(), Some("Array"));
+        assert!(app.document.is_selected(original));
+        let mut locations = app
+            .document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => point.to_array(),
+                _ => panic!("expected rectangular-array points"),
+            })
+            .collect::<Vec<_>>();
+        locations.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        let mut expected = Vec::new();
+        for z in [0.0, 4.0] {
+            for y in [0.0, -1.0] {
+                for x in [0.0, 2.0] {
+                    expected.push([1.0 + x, 2.0 + y, z]);
+                }
+            }
+        }
+        expected.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        assert_eq!(locations, expected);
+
+        assert!(!app.try_start_interactive_command("Array"));
+        assert!(!app.try_start_interactive_command("Array 0 2"));
+        assert!(!app.try_start_interactive_command("Array 2 2 2"));
+        assert!(!app.try_start_interactive_command("Array 2 2 Mode=Maybe"));
+        assert!(!app.try_start_interactive_command("Array 3 2 2 2 -1 4"));
+    }
+
+    #[test]
     fn interactive_polar_array_uses_a_count_angle_options_and_center() {
         let mut app = test_app();
         let original = app
@@ -1881,6 +2068,7 @@ mod tests {
         for command in [
             "M",
             "Copy",
+            "Array 3 2",
             "ArrayLinear 3",
             "ArrayPolar 4",
             "Scale",

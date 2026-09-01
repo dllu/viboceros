@@ -16,7 +16,7 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
     NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3,
-    WeightedPoint3, join_polylines,
+    Vector3, WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -88,6 +88,9 @@ pub enum Operation {
         id: String,
     },
     DocumentLinearArrayCycle {
+        id: String,
+    },
+    DocumentRectangularArrayCycle {
         id: String,
     },
     DocumentPolarArrayCycle {
@@ -271,6 +274,7 @@ impl Operation {
             | Self::DocumentObjectNamingCycle { id }
             | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentLinearArrayCycle { id }
+            | Self::DocumentRectangularArrayCycle { id }
             | Self::DocumentPolarArrayCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::DocumentPointCloudCycle { id }
@@ -466,6 +470,9 @@ fn execute(
         }
         Operation::DocumentLinearArrayCycle { .. } => {
             document_linear_array_cycle(iterations, tolerance)?
+        }
+        Operation::DocumentRectangularArrayCycle { .. } => {
+            document_rectangular_array_cycle(iterations, tolerance)?
         }
         Operation::DocumentPolarArrayCycle { .. } => {
             document_polar_array_cycle(iterations, tolerance)?
@@ -1660,6 +1667,111 @@ fn document_linear_array_cycle(
     Ok((value, elapsed_ns))
 }
 
+fn document_rectangular_array_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let fill = document_rectangular_array_scenario(
+        tolerance,
+        &registry,
+        "fill",
+        "Array 3 2 1 10 -6 0 Mode=Fill",
+    )?;
+    let unit_cell = document_rectangular_array_scenario(
+        tolerance,
+        &registry,
+        "unit-cell",
+        "Array 3 2 2 2 -1 4 Mode=UnitCell",
+    )?;
+    let value = json!({
+        "fill": fill,
+        "unit_cell": unit_cell,
+    });
+
+    let source_points = [
+        Point3::try_new(1.0, 2.0, 3.0)?,
+        Point3::try_new(4.0, 2.0, 3.0)?,
+    ];
+    let translations = (0..2)
+        .flat_map(|z_index| {
+            (0..2).flat_map(move |y_index| {
+                (0..3)
+                    .filter(move |x_index| *x_index != 0 || y_index != 0 || z_index != 0)
+                    .map(move |x_index| {
+                        Vector3::try_new(
+                            2.0 * x_index as f64,
+                            -y_index as f64,
+                            4.0 * z_index as f64,
+                        )
+                    })
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        translations
+            .iter()
+            .flat_map(|translation| {
+                source_points
+                    .iter()
+                    .map(|source| source.translated(*translation))
+            })
+            .collect::<Result<Vec<_>, _>>()
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+fn document_rectangular_array_scenario(
+    tolerance: Tolerance,
+    registry: &CommandRegistry,
+    label: &str,
+    command: &str,
+) -> Result<Value, ProbeError> {
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let source_points = [
+        Point3::try_new(1.0, 2.0, 3.0)?,
+        Point3::try_new(4.0, 2.0, 3.0)?,
+    ];
+    let mut original_ids = Vec::with_capacity(source_points.len());
+    for (index, point) in source_points.iter().enumerate() {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Point(*point),
+            ObjectAttributes::on_layer(layer).with_name(format!("{label} {index}")),
+        )?);
+    }
+    document.add_group(
+        Some(format!("Viboceros Rectangular Array Group {label}")),
+        original_ids.iter().copied(),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(&mut document, command)?;
+
+    let records = sorted_document_point_records(&document)?;
+    Ok(json!({
+        "command_succeeded": true,
+        "groups_after_array": document_group_point_locations(&document)?,
+        "locations_after_array": records
+            .iter()
+            .map(|(_, coordinates, _)| *coordinates)
+            .collect::<Vec<_>>(),
+        "names_after_array": records
+            .iter()
+            .map(|(_, _, name)| name.clone())
+            .collect::<Vec<_>>(),
+        "originals_selected_after_array": original_ids
+            .iter()
+            .enumerate()
+            .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+            .collect::<Vec<_>>(),
+        "selected_after_array": records
+            .iter()
+            .filter(|(id, _, _)| document.is_selected(*id))
+            .map(|(_, coordinates, _)| *coordinates)
+            .collect::<Vec<_>>(),
+    }))
+}
+
 fn document_polar_array_cycle(
     iterations: u32,
     tolerance: Tolerance,
@@ -1901,7 +2013,7 @@ fn sorted_document_point_records(
     for object in document.objects() {
         let Geometry::Point(point) = object.geometry() else {
             return Err(ProbeError::FixtureInvariant(
-                "linear-array fixture contains a non-point object",
+                "array fixture contains a non-point object",
             ));
         };
         records.push((
@@ -1925,7 +2037,7 @@ fn document_group_point_locations(document: &Document) -> Result<Vec<Vec<[f64; 3
                 .ok_or(DocumentError::ObjectNotFound(id))?;
             let Geometry::Point(point) = object.geometry() else {
                 return Err(ProbeError::FixtureInvariant(
-                    "linear-array group contains a non-point object",
+                    "array group contains a non-point object",
                 ));
             };
             points.push(point.to_array());
@@ -3147,6 +3259,52 @@ mod tests {
                 "originals_selected_after_array": [0, 1],
                 "selected_after_array": [[1.0, 2.0, 3.0], [4.0, 2.0, 3.0]],
             })
+        );
+    }
+
+    #[test]
+    fn rectangularly_arrays_grouped_objects_with_rhino_unit_cell_and_fill_scope() {
+        let response = run_request(&request(vec![Operation::DocumentRectangularArrayCycle {
+            id: "rectangular-array".to_owned(),
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        for (scenario, object_count, group_count) in [("fill", 12, 6), ("unit_cell", 24, 12)] {
+            assert_eq!(value[scenario]["command_succeeded"], json!(true));
+            assert_eq!(
+                value[scenario]["locations_after_array"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                object_count
+            );
+            assert_eq!(
+                value[scenario]["groups_after_array"]
+                    .as_array()
+                    .unwrap()
+                    .len(),
+                group_count
+            );
+            assert_eq!(
+                value[scenario]["originals_selected_after_array"],
+                json!([0, 1])
+            );
+            assert_eq!(
+                value[scenario]["selected_after_array"],
+                json!([[1.0, 2.0, 3.0], [4.0, 2.0, 3.0]])
+            );
+        }
+        assert!(
+            value["fill"]["locations_after_array"]
+                .as_array()
+                .unwrap()
+                .contains(&json!([11.0, -4.0, 3.0]))
+        );
+        assert!(
+            value["unit_cell"]["locations_after_array"]
+                .as_array()
+                .unwrap()
+                .contains(&json!([8.0, 1.0, 7.0]))
         );
     }
 

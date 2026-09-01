@@ -59,6 +59,8 @@ SelDupAll
 Invert
 Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
+Array 3 2 2 4 -3 5
+Array 3 2 1 20 12 0 Mode=Fill
 ArrayLinear 4 0,0,0 2,1,0
 ArrayPolar 6 0,0,0 360 Rotate=Yes ZOffset=0
 Scale 0,0 2
@@ -124,7 +126,9 @@ to pick a base and destination point, `Scale` or `Rotate` to pick
 center/reference/target points, `Mirror` to pick a two-point axis, or
 `ArrayLinear 4` to pick its two spacing references. `ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
-settings can follow the count. `Join`
+settings can follow the count. `Array 3 2` picks two top-view corners for a
+rectangular array. A third count adds Z levels and requires `ZDistance=...`;
+`Mode=Fill` treats the picked rectangle as the outside array span. `Join`
 connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
 segments and frees point-cloud members as point objects. `Length` measures
@@ -207,6 +211,11 @@ definitions are implemented.
 or the current layer. `CopyToLayer` skips selected objects already on the target,
 copies each remaining group subset into a fresh automatic group, and leaves the
 original selection unchanged. Hidden and locked target layers are supported.
+`Array` takes X/Y/Z counts followed by signed world-axis distances. Its default
+`UnitCell` mode uses those values as successive spacing. `Mode=Fill` treats them
+as outside dimensions and accounts for the selected geometry's bounding-box
+extent, matching Rhino's fit-within-span behavior. Counts of one create no
+copies on that axis.
 `ArrayLinear` takes Rhino's total item count followed by two reference points;
 their vector is the spacing between successive items. It retains the originals
 as the selection, preserves object attributes, and recreates every selected

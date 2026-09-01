@@ -8,10 +8,10 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment,
-    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve,
-    NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure, Real, Tolerance, TriangleMesh,
-    UnitVector3, Vector3, join_polylines,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError,
+    LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure, Real, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -247,6 +247,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CopyCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ArrayCommand)
             .expect("unique built-in command");
         registry
             .register(ArrayLinearCommand)
@@ -2937,6 +2940,175 @@ impl Command for CopyCommand {
     }
 }
 
+const ARRAY_USAGE: &str =
+    "Array x-count y-count z-count x-distance y-distance z-distance [Mode=UnitCell|Fill]";
+
+struct ArrayCommand;
+
+impl Command for ArrayCommand {
+    fn name(&self) -> &'static str {
+        "Array"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["ArrayRectangular"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        if arguments.len() < 6 {
+            return Err(CommandError::Usage(ARRAY_USAGE));
+        }
+        let counts = [
+            parse_array_dimension_count(arguments[0])?,
+            parse_array_dimension_count(arguments[1])?,
+            parse_array_dimension_count(arguments[2])?,
+        ];
+        let distances = [
+            parse_finite_real(arguments[3])?,
+            parse_finite_real(arguments[4])?,
+            parse_finite_real(arguments[5])?,
+        ];
+        let mode = parse_rectangular_array_mode(&arguments[6..])?;
+        let selected = selected_ids(document)?;
+        let source_count = selected.len();
+        let cell_count = counts
+            .into_iter()
+            .try_fold(1_usize, |product, count| product.checked_mul(count))
+            .ok_or(CommandError::TooManyArrayObjects {
+                maximum: MAX_ARRAY_OBJECTS,
+            })?;
+        let copy_instance_count = cell_count - 1;
+        let copy_count = selected
+            .len()
+            .checked_mul(copy_instance_count)
+            .filter(|count| *count <= MAX_ARRAY_OBJECTS)
+            .ok_or(CommandError::TooManyArrayObjects {
+                maximum: MAX_ARRAY_OBJECTS,
+            })?;
+        let spacing = match mode {
+            RectangularArrayMode::UnitCell => distances,
+            RectangularArrayMode::Fill => rectangular_fill_spacing(
+                selected_geometry_bounds(document, &selected)?,
+                counts,
+                distances,
+            )?,
+        };
+        let mut transforms = Vec::new();
+        transforms
+            .try_reserve_exact(copy_instance_count)
+            .map_err(|_| CommandError::TooManyArrayObjects {
+                maximum: MAX_ARRAY_OBJECTS,
+            })?;
+        for z_index in 0..counts[2] {
+            for y_index in 0..counts[1] {
+                for x_index in 0..counts[0] {
+                    if x_index == 0 && y_index == 0 && z_index == 0 {
+                        continue;
+                    }
+                    transforms.push(AffineTransform3::from_translation(Vector3::try_new(
+                        spacing[0] * x_index as Real,
+                        spacing[1] * y_index as Real,
+                        spacing[2] * z_index as Real,
+                    )?));
+                }
+            }
+        }
+        let copies = document
+            .copy_objects_with_transforms(selected.iter().copied(), transforms.as_slice())?;
+        document.select_objects_direct(selected, SelectionMode::Replace)?;
+        debug_assert_eq!(copies.len(), copy_count);
+        Ok(format!(
+            "Arrayed {} object(s) into {}×{}×{} cells using {} distances {:.6},{:.6},{:.6}, creating {copy_count} copy object(s)",
+            source_count,
+            counts[0],
+            counts[1],
+            counts[2],
+            mode.name(),
+            distances[0],
+            distances[1],
+            distances[2],
+        ))
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RectangularArrayMode {
+    UnitCell,
+    Fill,
+}
+
+impl RectangularArrayMode {
+    const fn name(self) -> &'static str {
+        match self {
+            Self::UnitCell => "UnitCell",
+            Self::Fill => "Fill",
+        }
+    }
+}
+
+fn parse_rectangular_array_mode(arguments: &[&str]) -> Result<RectangularArrayMode, CommandError> {
+    if arguments.is_empty() {
+        return Ok(RectangularArrayMode::UnitCell);
+    }
+    let (name, value) = match arguments {
+        [option] => option
+            .split_once('=')
+            .ok_or(CommandError::Usage(ARRAY_USAGE))?,
+        [name, value] => (*name, *value),
+        _ => return Err(CommandError::Usage(ARRAY_USAGE)),
+    };
+    if !name.trim_start_matches('_').eq_ignore_ascii_case("Mode") {
+        return Err(CommandError::Usage(ARRAY_USAGE));
+    }
+    let value = value.trim_start_matches('_');
+    if value.eq_ignore_ascii_case("UnitCell") {
+        Ok(RectangularArrayMode::UnitCell)
+    } else if value.eq_ignore_ascii_case("Fill") {
+        Ok(RectangularArrayMode::Fill)
+    } else {
+        Err(CommandError::Usage(ARRAY_USAGE))
+    }
+}
+
+fn parse_array_dimension_count(value: &str) -> Result<usize, CommandError> {
+    value
+        .parse::<usize>()
+        .ok()
+        .filter(|count| *count >= 1)
+        .ok_or_else(|| CommandError::InvalidArrayDimensionCount(value.to_owned()))
+}
+
+fn rectangular_fill_spacing(
+    bounds: BoundingBox3,
+    counts: [usize; 3],
+    lengths: [Real; 3],
+) -> Result<[Real; 3], CommandError> {
+    let min = bounds.min().to_array();
+    let max = bounds.max().to_array();
+    let mut spacing = [0.0; 3];
+    for axis in 0..3 {
+        if counts[axis] == 1 {
+            continue;
+        }
+        let object_extent = max[axis] - min[axis];
+        if !object_extent.is_finite() {
+            return Err(GeometryError::NonFinite {
+                context: "rectangular array bounds",
+            }
+            .into());
+        }
+        if lengths[axis].abs() < object_extent {
+            return Err(CommandError::ArrayFillLengthTooSmall {
+                axis: ["X", "Y", "Z"][axis],
+                minimum: object_extent,
+            });
+        }
+        spacing[axis] = lengths[axis].signum() * (lengths[axis].abs() - object_extent)
+            / (counts[axis] - 1) as Real;
+    }
+    Ok(spacing)
+}
+
 struct ArrayLinearCommand;
 
 impl Command for ArrayLinearCommand {
@@ -3031,20 +3203,7 @@ impl Command for ArrayPolarCommand {
         let anchor = if options.rotate {
             None
         } else {
-            let mut objects = selected.iter().map(|id| {
-                document
-                    .object(*id)
-                    .expect("selected object identifiers are present")
-            });
-            let first = objects
-                .next()
-                .expect("selected_ids rejects an empty selection")
-                .geometry()
-                .bounds();
-            let bounds = objects.try_fold(first, |bounds, object| {
-                bounds.union(object.geometry().bounds())
-            })?;
-            Some(bounds.center()?)
+            Some(selected_geometry_bounds(document, &selected)?.center()?)
         };
         let transforms = (1..item_count)
             .map(|index| {
@@ -3280,6 +3439,25 @@ fn selected_ids(document: &Document) -> Result<Vec<viboceros_document::ObjectId>
     } else {
         Ok(selected)
     }
+}
+
+fn selected_geometry_bounds(
+    document: &Document,
+    ids: &[ObjectId],
+) -> Result<BoundingBox3, CommandError> {
+    let mut objects = ids.iter().map(|id| {
+        document
+            .object(*id)
+            .expect("selected object identifiers are present")
+    });
+    let first = objects
+        .next()
+        .ok_or(CommandError::NoObjectsSelected)?
+        .geometry()
+        .bounds();
+    Ok(objects.try_fold(first, |bounds, object| {
+        bounds.union(object.geometry().bounds())
+    })?)
 }
 
 fn parse_finite_real(value: &str) -> Result<Real, CommandError> {
@@ -3941,6 +4119,12 @@ pub enum CommandError {
     #[error("'{0}' is not a valid array item count of 2 or more")]
     InvalidArrayItemCount(String),
 
+    #[error("'{0}' is not a valid rectangular-array dimension count of 1 or more")]
+    InvalidArrayDimensionCount(String),
+
+    #[error("rectangular-array {axis} fill length is smaller than the selected extent {minimum}")]
+    ArrayFillLengthTooSmall { axis: &'static str, minimum: Real },
+
     #[error("'{0}' is not a valid non-zero polar-array angle")]
     InvalidPolarArrayAngle(String),
 
@@ -4098,7 +4282,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7366,6 +7550,212 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 1);
         assert!(document.object(original).is_some());
+    }
+
+    #[test]
+    fn rectangular_array_matches_rhino_unit_cell_selection_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let first = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("First"),
+            )
+            .unwrap();
+        let second = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(4.0, 2.0, 3.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Second"),
+            )
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(&mut document, "Array 3 2 2 2 -1 4 Mode=_UnitCell")
+            .unwrap();
+        assert!(message.contains("creating 22 copy object(s)"));
+        assert_eq!(document.objects().len(), 24);
+        assert_eq!(document.groups().len(), 12);
+        assert_eq!(document.undo_label(), Some("Array"));
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+
+        let mut expected_named_points = Vec::new();
+        let mut expected_groups = Vec::new();
+        for z_index in 0..2 {
+            for y_index in 0..2 {
+                for x_index in 0..3 {
+                    let translation = [
+                        2.0 * f64::from(x_index),
+                        -f64::from(y_index),
+                        4.0 * f64::from(z_index),
+                    ];
+                    let group = vec![
+                        [
+                            1.0 + translation[0],
+                            2.0 + translation[1],
+                            3.0 + translation[2],
+                        ],
+                        [
+                            4.0 + translation[0],
+                            2.0 + translation[1],
+                            3.0 + translation[2],
+                        ],
+                    ];
+                    expected_named_points.push((group[0], "First".to_owned()));
+                    expected_named_points.push((group[1], "Second".to_owned()));
+                    expected_groups.push(group);
+                }
+            }
+        }
+        expected_named_points.sort_by(|left, right| left.0.partial_cmp(&right.0).unwrap());
+        expected_groups.sort_by(|left, right| left.partial_cmp(right).unwrap());
+
+        let mut actual_named_points = document
+            .objects()
+            .map(|object| {
+                let Geometry::Point(point) = object.geometry() else {
+                    panic!("expected rectangular-array points")
+                };
+                (
+                    point.to_array(),
+                    object.attributes().name().unwrap().to_owned(),
+                )
+            })
+            .collect::<Vec<_>>();
+        actual_named_points.sort_by(|left, right| left.0.partial_cmp(&right.0).unwrap());
+        assert_eq!(actual_named_points, expected_named_points);
+
+        let mut actual_groups = document
+            .groups()
+            .map(|group| {
+                let mut points = group
+                    .members()
+                    .map(|id| match document.object(id).unwrap().geometry() {
+                        Geometry::Point(point) => point.to_array(),
+                        _ => panic!("expected grouped rectangular-array points"),
+                    })
+                    .collect::<Vec<_>>();
+                points.sort_by(|left, right| left.partial_cmp(right).unwrap());
+                points
+            })
+            .collect::<Vec<_>>();
+        actual_groups.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        assert_eq!(actual_groups, expected_groups);
+
+        let copy_ids = document
+            .objects()
+            .map(|object| object.id())
+            .filter(|id| ![first, second].contains(id))
+            .collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(copy_ids.iter().all(|id| document.object(*id).is_some()));
+        assert_eq!(document.groups().len(), 12);
+    }
+
+    #[test]
+    fn rectangular_array_fill_uses_the_selected_extents() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let first = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(1.0, 2.0, 3.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("First"),
+            )
+            .unwrap();
+        let second = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(4.0, 2.0, 3.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Second"),
+            )
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "Array 3 2 1 10 -6 0 Mode Fill")
+            .unwrap();
+        assert_eq!(document.objects().len(), 12);
+        assert_eq!(document.groups().len(), 6);
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+
+        let mut actual = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => point.to_array(),
+                _ => panic!("expected rectangular-array points"),
+            })
+            .collect::<Vec<_>>();
+        actual.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        let mut expected = Vec::new();
+        for y in [0.0, -6.0] {
+            for x in [0.0, 3.5, 7.0] {
+                expected.push([1.0 + x, 2.0 + y, 3.0]);
+                expected.push([4.0 + x, 2.0 + y, 3.0]);
+            }
+        }
+        expected.sort_by(|left, right| left.partial_cmp(right).unwrap());
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn rectangular_array_rejects_invalid_or_unbounded_output_without_partial_copies() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 0,0,0").unwrap();
+        registry.execute(&mut document, "Point 1,0,0").unwrap();
+        document.select_all();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert!(matches!(
+            registry.execute(&mut document, "Array 0 2 1 1 1 0"),
+            Err(CommandError::InvalidArrayDimensionCount(value)) if value == "0"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "Array 1000001 2 1 1 1 0"),
+            Err(CommandError::TooManyArrayObjects { maximum })
+                if maximum == MAX_ARRAY_OBJECTS
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "Array 2 1 1 1 0 0 Mode=Maybe"),
+            Err(CommandError::Usage(ARRAY_USAGE))
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "Array 2 1 1 0.5 0 0 Mode=Fill"),
+            Err(CommandError::ArrayFillLengthTooSmall { axis: "X", minimum })
+                if minimum == 1.0
+        ));
+        assert!(
+            registry
+                .execute(&mut document, "Array 3 1 1 1e308 0 0")
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
