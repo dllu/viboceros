@@ -8,10 +8,10 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError,
-    LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure, Real, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, join_polylines,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, CurveSample, Ellipse3,
+    GeometryError, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES,
+    MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure,
+    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -250,6 +250,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ArrayCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ArrayCurveCommand)
             .expect("unique built-in command");
         registry
             .register(ArrayLinearCommand)
@@ -3109,6 +3112,559 @@ fn rectangular_fill_spacing(
     Ok(spacing)
 }
 
+const ARRAY_CURVE_USAGE: &str = "ArrayCrv item-count | ArrayCrv Items item-count | \
+    ArrayCrv Distance spacing [Orientation=Freeform|Roadlike|Stairlike|NoRotation] \
+    [BasePoint=x,y,z] [PathName=name]";
+
+struct ArrayCurveCommand;
+
+impl Command for ArrayCurveCommand {
+    fn name(&self) -> &'static str {
+        "ArrayCrv"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["ArrayCurve"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_curve_array_options(arguments)?;
+        let (path_geometry, path_id, sources) =
+            curve_array_inputs(document, options.path_name.as_deref())?;
+        let tolerance = document.tolerance();
+        let curve = geometry_curve_ref(&path_geometry)
+            .expect("curve-array input resolution validates the path geometry");
+        let samples = curve_array_samples(curve, options.spacing, tolerance)?;
+        let retained_source_instance = usize::from(options.base_point.is_none());
+        let copy_instance_count = samples.len() - retained_source_instance;
+        let copy_count = sources
+            .len()
+            .checked_mul(copy_instance_count)
+            .filter(|count| *count <= MAX_ARRAY_OBJECTS)
+            .ok_or(CommandError::TooManyArrayObjects {
+                maximum: MAX_ARRAY_OBJECTS,
+            })?;
+        let base_point = options.base_point.unwrap_or_else(|| samples[0].point());
+        let transforms = curve_array_transforms(
+            curve,
+            &samples,
+            base_point,
+            options.orientation,
+            retained_source_instance,
+            tolerance,
+        )?;
+        debug_assert_eq!(transforms.len(), copy_instance_count);
+        let copies = document
+            .copy_objects_with_transforms(sources.iter().copied(), transforms.as_slice())?;
+        document.select_objects_direct(sources.iter().copied(), SelectionMode::Replace)?;
+        debug_assert!(!document.is_selected(path_id));
+        debug_assert_eq!(copies.len(), copy_count);
+        Ok(format!(
+            "Arrayed {} object(s) at {} {} location(s) with {} orientation, creating {copy_count} copy object(s)",
+            sources.len(),
+            samples.len(),
+            options.spacing.name(),
+            options.orientation.name(),
+        ))
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum CurveArraySpacing {
+    Items(usize),
+    Distance(Real),
+}
+
+impl CurveArraySpacing {
+    const fn name(self) -> &'static str {
+        match self {
+            Self::Items(_) => "item",
+            Self::Distance(_) => "distance",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum CurveArrayOrientation {
+    Freeform,
+    Roadlike,
+    Stairlike,
+    NoRotation,
+}
+
+impl CurveArrayOrientation {
+    const fn name(self) -> &'static str {
+        match self {
+            Self::Freeform => "Freeform",
+            Self::Roadlike => "Roadlike",
+            Self::Stairlike => "Stairlike",
+            Self::NoRotation => "NoRotation",
+        }
+    }
+}
+
+#[derive(Debug, PartialEq)]
+struct CurveArrayOptions {
+    spacing: CurveArraySpacing,
+    orientation: CurveArrayOrientation,
+    base_point: Option<Point3>,
+    path_name: Option<String>,
+}
+
+fn parse_curve_array_options(arguments: &[&str]) -> Result<CurveArrayOptions, CommandError> {
+    let first = arguments
+        .first()
+        .ok_or(CommandError::Usage(ARRAY_CURVE_USAGE))?;
+    let (spacing, mut index) = if let Some((name, value)) = first.split_once('=') {
+        (parse_curve_array_spacing(name, value)?, 1)
+    } else if option_name_eq(first, "Items") || option_name_eq(first, "Distance") {
+        let value = arguments
+            .get(1)
+            .ok_or(CommandError::Usage(ARRAY_CURVE_USAGE))?;
+        (parse_curve_array_spacing(first, value)?, 2)
+    } else {
+        (
+            CurveArraySpacing::Items(parse_curve_array_item_count(first)?),
+            1,
+        )
+    };
+    let mut orientation = CurveArrayOrientation::Freeform;
+    let mut base_point = None;
+    let mut path_name = None;
+    let mut orientation_seen = false;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(ARRAY_CURVE_USAGE))?;
+            (argument, *value, 2)
+        };
+        if option_name_eq(name, "Orientation") && !orientation_seen {
+            orientation = parse_curve_array_orientation(value)?;
+            orientation_seen = true;
+        } else if option_name_eq(name, "BasePoint") && base_point.is_none() {
+            let (point, point_consumed) = parse_point(&[value])?;
+            if point_consumed != 1 {
+                return Err(CommandError::Usage(ARRAY_CURVE_USAGE));
+            }
+            base_point = Some(point);
+        } else if option_name_eq(name, "PathName") && path_name.is_none() && !value.is_empty() {
+            path_name = Some(value.to_owned());
+        } else {
+            return Err(CommandError::Usage(ARRAY_CURVE_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(CurveArrayOptions {
+        spacing,
+        orientation,
+        base_point,
+        path_name,
+    })
+}
+
+fn option_name_eq(actual: &str, expected: &str) -> bool {
+    actual
+        .trim_start_matches(['_', '-'])
+        .eq_ignore_ascii_case(expected)
+}
+
+fn parse_curve_array_spacing(name: &str, value: &str) -> Result<CurveArraySpacing, CommandError> {
+    if option_name_eq(name, "Items") {
+        Ok(CurveArraySpacing::Items(parse_curve_array_item_count(
+            value,
+        )?))
+    } else if option_name_eq(name, "Distance") {
+        let distance = parse_finite_real(value)?;
+        if distance <= 0.0 {
+            return Err(CommandError::InvalidCurveArrayDistance(value.to_owned()));
+        }
+        Ok(CurveArraySpacing::Distance(distance))
+    } else {
+        Err(CommandError::Usage(ARRAY_CURVE_USAGE))
+    }
+}
+
+fn parse_curve_array_item_count(value: &str) -> Result<usize, CommandError> {
+    value
+        .parse::<usize>()
+        .ok()
+        .filter(|count| *count >= 1)
+        .ok_or_else(|| CommandError::InvalidCurveArrayItemCount(value.to_owned()))
+}
+
+fn parse_curve_array_orientation(value: &str) -> Result<CurveArrayOrientation, CommandError> {
+    let value = value.trim_start_matches(['_', '-']);
+    if value.eq_ignore_ascii_case("Freeform") {
+        Ok(CurveArrayOrientation::Freeform)
+    } else if value.eq_ignore_ascii_case("Roadlike") {
+        Ok(CurveArrayOrientation::Roadlike)
+    } else if value.eq_ignore_ascii_case("Stairlike") {
+        Ok(CurveArrayOrientation::Stairlike)
+    } else if value.eq_ignore_ascii_case("NoRotation") {
+        Ok(CurveArrayOrientation::NoRotation)
+    } else {
+        Err(CommandError::Usage(ARRAY_CURVE_USAGE))
+    }
+}
+
+fn curve_array_inputs(
+    document: &Document,
+    path_name: Option<&str>,
+) -> Result<(Geometry, ObjectId, Vec<ObjectId>), CommandError> {
+    let selected = selected_ids(document)?;
+    let path_id = if let Some(name) = path_name {
+        let matches = document
+            .objects()
+            .filter(|object| {
+                object
+                    .attributes()
+                    .name()
+                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
+            })
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        match matches.as_slice() {
+            [] => return Err(CommandError::CurveArrayPathNotFound(name.to_owned())),
+            [id] => *id,
+            _ => return Err(CommandError::AmbiguousCurveArrayPath(name.to_owned())),
+        }
+    } else {
+        *selected
+            .last()
+            .ok_or(CommandError::CurveArrayPathRequired)?
+    };
+    let path = document
+        .object(path_id)
+        .expect("resolved curve-array path identifiers are present");
+    if geometry_curve_ref(path.geometry()).is_none() {
+        return Err(CommandError::CurveArrayPathNotCurve);
+    }
+    let sources = selected
+        .into_iter()
+        .filter(|id| *id != path_id)
+        .collect::<Vec<_>>();
+    if sources.is_empty() {
+        return Err(CommandError::CurveArraySourcesRequired);
+    }
+    Ok((path.geometry().clone(), path_id, sources))
+}
+
+fn curve_array_samples(
+    curve: CurveRef<'_>,
+    spacing: CurveArraySpacing,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveSample>, CommandError> {
+    let closed = curve.is_closed()?;
+    let mut samples = match spacing {
+        CurveArraySpacing::Items(1) => vec![curve.start_sample(tolerance)?],
+        CurveArraySpacing::Items(item_count) if closed => {
+            let mut samples = curve.divide_by_count_samples(item_count, true, tolerance)?;
+            samples.pop();
+            samples
+        }
+        CurveArraySpacing::Items(item_count) => {
+            curve.divide_by_count_samples(item_count - 1, true, tolerance)?
+        }
+        CurveArraySpacing::Distance(distance) => {
+            let mut samples = curve.divide_by_length_samples(distance, true, tolerance)?;
+            if closed
+                && samples.len() > 1
+                && samples[0].point().is_near(
+                    samples.last().expect("the start sample is present").point(),
+                    tolerance,
+                )
+            {
+                samples.pop();
+            }
+            samples
+        }
+    };
+    if samples.is_empty() {
+        samples.push(curve.start_sample(tolerance)?);
+    }
+    Ok(samples)
+}
+
+fn curve_array_transforms(
+    curve: CurveRef<'_>,
+    samples: &[CurveSample],
+    base_point: Point3,
+    orientation: CurveArrayOrientation,
+    skip: usize,
+    tolerance: Tolerance,
+) -> Result<Vec<AffineTransform3>, GeometryError> {
+    if orientation == CurveArrayOrientation::NoRotation {
+        return samples[skip..]
+            .iter()
+            .map(|sample| {
+                base_point
+                    .vector_to(sample.point())
+                    .map(AffineTransform3::from_translation)
+            })
+            .collect();
+    }
+    let frames = curve_array_frames(curve, samples, orientation, tolerance)?;
+    let source_frame = frames[0];
+    samples[skip..]
+        .iter()
+        .zip(&frames[skip..])
+        .map(|(sample, frame)| {
+            curve_array_frame_transform(base_point, source_frame, sample.point(), *frame)
+        })
+        .collect()
+}
+
+#[derive(Clone, Copy, Debug)]
+struct CurveArrayFrame {
+    x: UnitVector3,
+    y: UnitVector3,
+    z: UnitVector3,
+}
+
+fn curve_array_frames(
+    curve: CurveRef<'_>,
+    samples: &[CurveSample],
+    orientation: CurveArrayOrientation,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveArrayFrame>, GeometryError> {
+    match orientation {
+        CurveArrayOrientation::Freeform => freeform_curve_array_frames(curve, samples),
+        CurveArrayOrientation::Roadlike => {
+            let mut previous = None;
+            samples
+                .iter()
+                .map(|sample| {
+                    let frame = roadlike_curve_array_frame(sample.tangent(), previous, tolerance)?;
+                    previous = Some(frame);
+                    Ok(frame)
+                })
+                .collect()
+        }
+        CurveArrayOrientation::Stairlike => {
+            let mut previous = None;
+            samples
+                .iter()
+                .map(|sample| {
+                    let frame = stairlike_curve_array_frame(sample.tangent(), previous, tolerance)?;
+                    previous = Some(frame);
+                    Ok(frame)
+                })
+                .collect()
+        }
+        CurveArrayOrientation::NoRotation => unreachable!("handled before frame construction"),
+    }
+}
+
+fn freeform_curve_array_frames(
+    curve: CurveRef<'_>,
+    samples: &[CurveSample],
+) -> Result<Vec<CurveArrayFrame>, GeometryError> {
+    let mut frame = stable_curve_array_frame(samples[0].tangent())?;
+    let mut previous_sample = samples[0];
+    let mut frames = Vec::with_capacity(samples.len());
+    frames.push(frame);
+    let interval_count = samples.len().saturating_sub(1);
+    if interval_count == 0 {
+        return Ok(frames);
+    }
+    // The method has fourth-order global error. Keep roughly 256 transport
+    // steps for sparse arrays without multiplying already-dense arrays.
+    let subdivisions = 256_usize.div_ceil(interval_count).clamp(1, 64);
+    for pair in samples.windows(2) {
+        for step in 1..=subdivisions {
+            let next_sample = if step == subdivisions {
+                pair[1]
+            } else {
+                let fraction = step as Real / subdivisions as Real;
+                let parameter = pair[0]
+                    .parameter()
+                    .mul_add(1.0 - fraction, pair[1].parameter() * fraction);
+                curve.evaluate_with_tangent(parameter)?
+            };
+            frame = double_reflect_curve_array_frame(frame, previous_sample, next_sample)?;
+            previous_sample = next_sample;
+        }
+        frames.push(frame);
+    }
+    Ok(frames)
+}
+
+fn stable_curve_array_frame(tangent: UnitVector3) -> Result<CurveArrayFrame, GeometryError> {
+    let [x, y, z] = tangent.as_vector().to_array().map(Real::abs);
+    let reference = if x <= y && x <= z {
+        Vector3::try_new(1.0, 0.0, 0.0)?
+    } else if y <= z {
+        Vector3::try_new(0.0, 1.0, 0.0)?
+    } else {
+        Vector3::try_new(0.0, 0.0, 1.0)?
+    };
+    let frame_x = reference.cross(tangent.as_vector())?.normalized_nonzero()?;
+    let frame_y = tangent
+        .as_vector()
+        .cross(frame_x.as_vector())?
+        .normalized_nonzero()?;
+    Ok(CurveArrayFrame {
+        x: frame_x,
+        y: frame_y,
+        z: tangent,
+    })
+}
+
+/// Advances a rotation-minimizing frame with the two plane reflections from
+/// Wang et al. The chord reflection maps the old frame to a left-handed one;
+/// the tangent-bisector reflection restores handedness at the new tangent.
+fn double_reflect_curve_array_frame(
+    previous: CurveArrayFrame,
+    previous_sample: CurveSample,
+    next_sample: CurveSample,
+) -> Result<CurveArrayFrame, GeometryError> {
+    let chord = previous_sample.point().vector_to(next_sample.point())?;
+    let reflected_x = reflect_curve_array_vector(previous.x.as_vector(), chord)?;
+    let reflected_tangent = reflect_curve_array_vector(previous.z.as_vector(), chord)?;
+    let tangent = next_sample.tangent();
+    let tangent_bisector = subtract_vectors(tangent.as_vector(), reflected_tangent)?;
+    let transported_x = if vector_is_zero(tangent_bisector) {
+        // The second reflection is undefined only for degenerate local data.
+        // Sufficiently dense regular-curve samples avoid it, but retaining the
+        // first reflected reference vector gives a deterministic safe limit.
+        reflected_x
+    } else {
+        reflect_curve_array_vector(reflected_x, tangent_bisector)?
+    };
+    let provisional_x = transported_x.normalized_nonzero()?;
+    let frame_y = tangent
+        .as_vector()
+        .cross(provisional_x.as_vector())?
+        .normalized_nonzero()?;
+    let frame_x = frame_y
+        .as_vector()
+        .cross(tangent.as_vector())?
+        .normalized_nonzero()?;
+    Ok(CurveArrayFrame {
+        x: frame_x,
+        y: frame_y,
+        z: tangent,
+    })
+}
+
+fn reflect_curve_array_vector(
+    vector: Vector3,
+    reflection_normal: Vector3,
+) -> Result<Vector3, GeometryError> {
+    let scale = reflection_normal
+        .x()
+        .abs()
+        .max(reflection_normal.y().abs())
+        .max(reflection_normal.z().abs());
+    if scale == 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "curve-array reflection",
+        });
+    }
+    let normal = Vector3::try_new(
+        reflection_normal.x() / scale,
+        reflection_normal.y() / scale,
+        reflection_normal.z() / scale,
+    )?;
+    let denominator = normal.dot(normal)?;
+    let projection_scale = 2.0 * vector.dot(normal)? / denominator;
+    subtract_vectors(vector, normal.scaled(projection_scale)?)
+}
+
+fn vector_is_zero(vector: Vector3) -> bool {
+    vector.x() == 0.0 && vector.y() == 0.0 && vector.z() == 0.0
+}
+
+fn subtract_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryError> {
+    Vector3::try_new(
+        left.x() - right.x(),
+        left.y() - right.y(),
+        left.z() - right.z(),
+    )
+}
+
+fn roadlike_curve_array_frame(
+    tangent: UnitVector3,
+    previous: Option<CurveArrayFrame>,
+    tolerance: Tolerance,
+) -> Result<CurveArrayFrame, GeometryError> {
+    let up = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
+    let horizontal_y = up.as_vector().cross(tangent.as_vector())?;
+    let provisional_y = if horizontal_y.length()? > tolerance.angular() {
+        horizontal_y.normalized_nonzero()?
+    } else if let Some(frame) = previous {
+        frame.y
+    } else {
+        Vector3::try_new(0.0, 1.0, 0.0)?.normalized_nonzero()?
+    };
+    let frame_x = provisional_y
+        .as_vector()
+        .cross(tangent.as_vector())?
+        .normalized_nonzero()?;
+    let frame_y = tangent
+        .as_vector()
+        .cross(frame_x.as_vector())?
+        .normalized_nonzero()?;
+    Ok(CurveArrayFrame {
+        x: frame_x,
+        y: frame_y,
+        z: tangent,
+    })
+}
+
+fn stairlike_curve_array_frame(
+    tangent: UnitVector3,
+    previous: Option<CurveArrayFrame>,
+    tolerance: Tolerance,
+) -> Result<CurveArrayFrame, GeometryError> {
+    let up = Vector3::try_new(0.0, 0.0, 1.0)?.normalized_nonzero()?;
+    let horizontal_tangent = Vector3::try_new(tangent.x(), tangent.y(), 0.0)?;
+    let frame_x = if horizontal_tangent.length()? > tolerance.angular() {
+        horizontal_tangent.normalized_nonzero()?
+    } else if let Some(frame) = previous {
+        frame.x
+    } else {
+        Vector3::try_new(1.0, 0.0, 0.0)?.normalized_nonzero()?
+    };
+    let frame_y = up
+        .as_vector()
+        .cross(frame_x.as_vector())?
+        .normalized_nonzero()?;
+    Ok(CurveArrayFrame {
+        x: frame_x,
+        y: frame_y,
+        z: up,
+    })
+}
+
+fn curve_array_frame_transform(
+    base_point: Point3,
+    source: CurveArrayFrame,
+    target_point: Point3,
+    target: CurveArrayFrame,
+) -> Result<AffineTransform3, GeometryError> {
+    let source_axes = [source.x, source.y, source.z];
+    let target_axes = [target.x, target.y, target.z];
+    let linear_rows = std::array::from_fn(|row| {
+        std::array::from_fn(|column| {
+            (0..3)
+                .map(|axis| {
+                    target_axes[axis].as_vector().to_array()[row]
+                        * source_axes[axis].as_vector().to_array()[column]
+                })
+                .sum()
+        })
+    });
+    let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
+    let linear = AffineTransform3::try_new(linear_rows, zero)?;
+    let mapped_base = linear.transform_point(base_point)?;
+    AffineTransform3::try_new(linear_rows, mapped_base.vector_to(target_point)?)
+}
+
 struct ArrayLinearCommand;
 
 impl Command for ArrayLinearCommand {
@@ -4119,6 +4675,27 @@ pub enum CommandError {
     #[error("'{0}' is not a valid array item count of 2 or more")]
     InvalidArrayItemCount(String),
 
+    #[error("'{0}' is not a valid curve-array item count of 1 or more")]
+    InvalidCurveArrayItemCount(String),
+
+    #[error("'{0}' is not a valid finite, strictly positive curve-array distance")]
+    InvalidCurveArrayDistance(String),
+
+    #[error("no object named '{0}' was found for the curve-array path")]
+    CurveArrayPathNotFound(String),
+
+    #[error("more than one object named '{0}' could be the curve-array path")]
+    AmbiguousCurveArrayPath(String),
+
+    #[error("ArrayCrv requires a named path or a selected path as the last selected object")]
+    CurveArrayPathRequired,
+
+    #[error("the curve-array path must be a line, analytic curve, polyline, or NURBS curve")]
+    CurveArrayPathNotCurve,
+
+    #[error("ArrayCrv requires at least one selected source object besides the path")]
+    CurveArraySourcesRequired,
+
     #[error("'{0}' is not a valid rectangular-array dimension count of 1 or more")]
     InvalidArrayDimensionCount(String),
 
@@ -4282,7 +4859,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7550,6 +8127,376 @@ mod tests {
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 1);
         assert!(document.object(original).is_some());
+    }
+
+    #[test]
+    fn curve_array_items_match_rhino_selection_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let tolerance = document.tolerance();
+        let first = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("First"),
+            )
+            .unwrap();
+        let second = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(0.0, 2.0, 0.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Second"),
+            )
+            .unwrap();
+        document
+            .add_group(Some("Pair".to_owned()), [first, second])
+            .unwrap();
+        let path = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("Rail"),
+            )
+            .unwrap();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(
+                &mut document,
+                "ArrayCrv Items=4 Orientation=_NoRotation PathName=rail",
+            )
+            .unwrap();
+        assert!(message.contains("creating 6 copy object(s)"));
+        assert_eq!(document.objects().len(), 9);
+        assert_eq!(document.groups().len(), 4);
+        assert_eq!(document.undo_label(), Some("ArrayCrv"));
+        assert!(!document.is_selected(path));
+        assert_eq!(
+            document.selected_object_ids().collect::<BTreeSet<_>>(),
+            BTreeSet::from([first, second])
+        );
+
+        let mut first_points = document
+            .objects()
+            .filter(|object| object.attributes().name() == Some("First"))
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected curve-array points"),
+            })
+            .collect::<Vec<_>>();
+        first_points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        for (actual, expected_x) in
+            first_points
+                .into_iter()
+                .zip([0.0, 10.0 / 3.0, 20.0 / 3.0, 10.0])
+        {
+            assert!(actual.is_near(Point3::try_new(expected_x, 0.0, 0.0).unwrap(), tolerance));
+        }
+
+        let copy_ids = document
+            .objects()
+            .map(|object| object.id())
+            .filter(|id| ![first, second, path].contains(id))
+            .collect::<Vec<_>>();
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.groups().len(), 1);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert!(copy_ids.iter().all(|id| document.object(*id).is_some()));
+        assert_eq!(document.groups().len(), 4);
+    }
+
+    #[test]
+    fn curve_array_distance_basepoint_and_closed_path_match_rhino() {
+        let registry = CommandRegistry::with_builtins();
+
+        let mut distance_document = Document::default();
+        let layer = distance_document.current_layer_id();
+        let tolerance = distance_document.tolerance();
+        let source = distance_document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Source"),
+            )
+            .unwrap();
+        distance_document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("Rail"),
+            )
+            .unwrap();
+        distance_document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut distance_document,
+                "ArrayCrv Distance 3 Orientation NoRotation PathName Rail",
+            )
+            .unwrap();
+        let mut distance_points = named_curve_array_points(&distance_document, "Source");
+        distance_points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(
+            distance_points,
+            [0.0, 3.0, 6.0, 9.0].map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+        );
+
+        let mut base_document = Document::default();
+        let layer = base_document.current_layer_id();
+        let tolerance = base_document.tolerance();
+        let base_source = base_document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Source"),
+            )
+            .unwrap();
+        base_document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("Rail"),
+            )
+            .unwrap();
+        base_document
+            .select_object(base_source, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut base_document,
+                "ArrayCurve 4 BasePoint=20,0,0 Orientation=NoRotation PathName=Rail",
+            )
+            .unwrap();
+        let mut base_points = named_curve_array_points(&base_document, "Source");
+        base_points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(base_points.len(), 5);
+        for (actual, expected_x) in
+            base_points
+                .into_iter()
+                .zip([0.0, 10.0 / 3.0, 20.0 / 3.0, 10.0, 20.0])
+        {
+            assert!(actual.is_near(Point3::try_new(expected_x, 0.0, 0.0).unwrap(), tolerance));
+        }
+        assert!(base_document.is_selected(base_source));
+
+        let mut closed_document = Document::default();
+        let layer = closed_document.current_layer_id();
+        let tolerance = closed_document.tolerance();
+        let closed_source = closed_document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(10.0, 0.0, 0.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Source"),
+            )
+            .unwrap();
+        closed_document
+            .add_geometry_with_attributes(
+                Geometry::Circle(
+                    Circle3::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        10.0,
+                        UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("Rail"),
+            )
+            .unwrap();
+        closed_document
+            .select_object(closed_source, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut closed_document,
+                "ArrayCrv 4 Orientation=NoRotation PathName=Rail",
+            )
+            .unwrap();
+        let closed_points = named_curve_array_points(&closed_document, "Source");
+        assert_eq!(closed_points.len(), 4);
+        for expected in [
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 10.0, 0.0).unwrap(),
+            Point3::try_new(-10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, -10.0, 0.0).unwrap(),
+        ] {
+            assert!(
+                closed_points
+                    .iter()
+                    .any(|actual| actual.is_near(expected, tolerance))
+            );
+        }
+    }
+
+    fn named_curve_array_points(document: &Document, name: &str) -> Vec<Point3> {
+        document
+            .objects()
+            .filter(|object| object.attributes().name() == Some(name))
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("expected named curve-array points"),
+            })
+            .collect()
+    }
+
+    #[test]
+    fn curve_array_orientation_policies_match_planar_rhino_frames() {
+        let registry = CommandRegistry::with_builtins();
+        for (orientation, rotates) in [
+            ("NoRotation", false),
+            ("Freeform", true),
+            ("Roadlike", true),
+            ("Stairlike", true),
+        ] {
+            let mut document = Document::default();
+            let layer = document.current_layer_id();
+            let tolerance = document.tolerance();
+            let source = document
+                .add_geometry_with_attributes(
+                    Geometry::Line(
+                        LineSegment::try_new(
+                            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                            Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                            tolerance,
+                        )
+                        .unwrap(),
+                    ),
+                    ObjectAttributes::on_layer(layer).with_name("Source"),
+                )
+                .unwrap();
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Arc(
+                        CircularArc3::try_from_three_points(
+                            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                            Point3::try_new(5.0 * 2.0_f64.sqrt(), 5.0 * 2.0_f64.sqrt(), 0.0)
+                                .unwrap(),
+                            Point3::try_new(0.0, 10.0, 0.0).unwrap(),
+                            tolerance,
+                        )
+                        .unwrap(),
+                    ),
+                    ObjectAttributes::on_layer(layer).with_name("Rail"),
+                )
+                .unwrap();
+            document
+                .select_object(source, SelectionMode::Replace)
+                .unwrap();
+            registry
+                .execute(
+                    &mut document,
+                    &format!("ArrayCrv 2 Orientation={orientation} PathName=Rail"),
+                )
+                .unwrap();
+            let copy = document
+                .objects()
+                .filter(|object| object.attributes().name() == Some("Source"))
+                .find(|object| object.id() != source)
+                .unwrap();
+            let Geometry::Line(line) = copy.geometry() else {
+                panic!("expected an oriented line copy")
+            };
+            assert!(
+                line.start()
+                    .is_near(Point3::try_new(0.0, 10.0, 0.0).unwrap(), tolerance)
+            );
+            let expected_end = if rotates {
+                Point3::try_new(0.0, 11.0, 0.0).unwrap()
+            } else {
+                Point3::try_new(1.0, 10.0, 0.0).unwrap()
+            };
+            assert!(
+                line.end().is_near(expected_end, tolerance),
+                "{orientation} ended at {:?}, expected {expected_end:?}",
+                line.end()
+            );
+        }
+    }
+
+    #[test]
+    fn curve_array_uses_last_selected_path_and_rejects_bad_inputs_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document.current_layer_id();
+        let tolerance = document.tolerance();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                ObjectAttributes::on_layer(layer).with_name("Source"),
+            )
+            .unwrap();
+        let path = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(layer).with_name("Rail"),
+            )
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        document.select_object(path, SelectionMode::Add).unwrap();
+        registry
+            .execute(&mut document, "ArrayCrv 2 Orientation=NoRotation")
+            .unwrap();
+        assert_eq!(named_curve_array_points(&document, "Source").len(), 2);
+        assert!(document.is_selected(source));
+        assert!(!document.is_selected(path));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        let object_count = document.objects().len();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayCrv 0 PathName=Rail"),
+            Err(CommandError::InvalidCurveArrayItemCount(value)) if value == "0"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayCrv Distance=0 PathName=Rail"),
+            Err(CommandError::InvalidCurveArrayDistance(value)) if value == "0"
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "ArrayCrv 2 PathName=Missing"),
+            Err(CommandError::CurveArrayPathNotFound(name)) if name == "Missing"
+        ));
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "ArrayCrv 1000002 Orientation=NoRotation PathName=Rail"
+            ),
+            Err(CommandError::Geometry(
+                GeometryError::TooManyCurveDivisionPoints { .. }
+            ))
+        ));
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert!(document.is_selected(source));
     }
 
     #[test]

@@ -2,7 +2,7 @@ use std::f64::consts::FRAC_PI_2;
 
 use crate::{
     Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, Point3, Polyline3,
-    Real, Tolerance,
+    Real, Tolerance, UnitVector3, Vector3,
     integration::integrate_adaptive,
     nurbs::{CURVE_COINCIDENCE_ABSOLUTE, curve_points_coincident},
     require_finite,
@@ -10,6 +10,40 @@ use crate::{
 
 /// Allocation guard for commands that create arc-length division points.
 pub const MAX_CURVE_DIVISION_POINTS: usize = 1_000_000;
+
+/// A point on a curve paired with its natural parameter and unit tangent.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurveSample {
+    parameter: Real,
+    point: Point3,
+    tangent: UnitVector3,
+}
+
+impl CurveSample {
+    #[inline]
+    pub const fn parameter(self) -> Real {
+        self.parameter
+    }
+
+    #[inline]
+    pub const fn point(self) -> Point3 {
+        self.point
+    }
+
+    #[inline]
+    pub const fn tangent(self) -> UnitVector3 {
+        self.tangent
+    }
+
+    /// Keeps the sampled location while reversing the curve direction.
+    #[inline]
+    pub fn reversed_direction(self) -> Self {
+        Self {
+            tangent: self.tangent.opposite(),
+            ..self
+        }
+    }
+}
 
 /// A borrowed reference to any curve representation supported by the core.
 #[derive(Clone, Copy, Debug)]
@@ -181,6 +215,187 @@ impl CurveRef<'_> {
         }
         Ok(points)
     }
+
+    /// Divides by equal arc length and returns each point's unit tangent.
+    pub fn divide_by_count_samples(
+        self,
+        segment_count: usize,
+        include_start: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<CurveSample>, GeometryError> {
+        if segment_count == 0 {
+            return Err(GeometryError::InvalidCurveDivisionCount {
+                actual: segment_count,
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            });
+        }
+        let sample_count = segment_count
+            .checked_add(usize::from(include_start))
+            .ok_or(GeometryError::InvalidCurveDivisionCount {
+                actual: segment_count,
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            })?;
+        require_division_capacity(sample_count)?;
+
+        let sampler = ArcLengthSampler::try_new(self, tolerance)?;
+        let first_index = usize::from(!include_start);
+        let mut samples = Vec::with_capacity(sample_count);
+        for index in first_index..=segment_count {
+            let distance = if index == segment_count {
+                sampler.total_length
+            } else {
+                sampler.total_length * (index as Real / segment_count as Real)
+            };
+            samples.push(sampler.sample_at_distance(distance)?);
+        }
+        Ok(samples)
+    }
+
+    /// Returns the natural start point and its forward unit tangent.
+    pub fn start_sample(self, tolerance: Tolerance) -> Result<CurveSample, GeometryError> {
+        ArcLengthSampler::try_new(self, tolerance)?.sample_at_distance(0.0)
+    }
+
+    /// Samples at a fixed arc-length interval and returns unit tangents.
+    pub fn divide_by_length_samples(
+        self,
+        segment_length: Real,
+        include_start: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<CurveSample>, GeometryError> {
+        require_finite([segment_length], "curve division length")?;
+        if segment_length <= 0.0 {
+            return Err(GeometryError::InvalidCurveDivisionLength);
+        }
+        let sampler = ArcLengthSampler::try_new(self, tolerance)?;
+        let quotient = (sampler.total_length / segment_length).floor();
+        if !quotient.is_finite() || quotient > MAX_CURVE_DIVISION_POINTS as Real {
+            return Err(GeometryError::TooManyCurveDivisionPoints {
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            });
+        }
+        let division_count = quotient as usize;
+        let requested_capacity = division_count
+            .checked_add(usize::from(include_start))
+            .ok_or(GeometryError::TooManyCurveDivisionPoints {
+                maximum: MAX_CURVE_DIVISION_POINTS,
+            })?;
+        require_division_capacity(requested_capacity)?;
+
+        let mut samples = Vec::with_capacity(requested_capacity);
+        if include_start {
+            samples.push(sampler.sample_at_distance(0.0)?);
+        }
+        for index in 1..=division_count {
+            let mut distance = segment_length * index as Real;
+            require_finite([distance], "curve division distance")?;
+            if distance > sampler.total_length {
+                if tolerance.approx_eq(distance, sampler.total_length) {
+                    distance = sampler.total_length;
+                } else {
+                    break;
+                }
+            }
+            samples.push(sampler.sample_at_distance(distance)?);
+        }
+        Ok(samples)
+    }
+
+    /// Evaluates a point and a unit tangent in the natural curve domain.
+    pub fn evaluate_with_tangent(self, parameter: Real) -> Result<CurveSample, GeometryError> {
+        let point = match self {
+            Self::Line(line) => line.point_at(parameter)?,
+            Self::Circle(circle) => {
+                require_periodic_parameter(parameter, std::f64::consts::TAU)?;
+                circle.point_at_angle(parameter)?
+            }
+            Self::Arc(arc) => arc.point_at(parameter)?,
+            Self::Ellipse(ellipse) => {
+                require_periodic_parameter(parameter, std::f64::consts::TAU)?;
+                ellipse.point_at_angle(parameter)?
+            }
+            Self::Polyline(polyline) => {
+                let end = polyline.segment_count() as Real;
+                if !(0.0..=end).contains(&parameter) {
+                    return Err(GeometryError::ParameterOutOfDomain {
+                        parameter,
+                        domain_start: 0.0,
+                        domain_end: end,
+                    });
+                }
+                if parameter == end {
+                    *polyline.vertices().last().expect("a polyline has vertices")
+                } else {
+                    let index = parameter.floor() as usize;
+                    LineSegment::from_validated(
+                        polyline.vertices()[index],
+                        polyline.vertices()[index + 1],
+                    )
+                    .point_at(parameter - index as Real)?
+                }
+            }
+            Self::NurbsCurve(curve) => curve.evaluate(parameter)?,
+        };
+        let derivative = match self {
+            Self::Line(line) => line.start().vector_to(line.end())?,
+            Self::Circle(circle) => periodic_derivative(
+                circle.x_axis().as_vector(),
+                circle.y_axis().as_vector(),
+                circle.radius(),
+                circle.radius(),
+                parameter,
+            )?,
+            Self::Arc(arc) => arc
+                .normal()?
+                .as_vector()
+                .cross(arc.center().vector_to(point)?)?,
+            Self::Ellipse(ellipse) => periodic_derivative(
+                ellipse.x_axis().as_vector(),
+                ellipse.y_axis().as_vector(),
+                ellipse.radius_x(),
+                ellipse.radius_y(),
+                parameter,
+            )?,
+            Self::Polyline(polyline) => {
+                let index = (parameter.floor() as usize).min(polyline.segment_count() - 1);
+                polyline.vertices()[index].vector_to(polyline.vertices()[index + 1])?
+            }
+            Self::NurbsCurve(curve) => curve.derivative_at(parameter)?,
+        };
+        Ok(CurveSample {
+            parameter,
+            point,
+            // A derivative's magnitude depends on parameter scaling, so model
+            // distance tolerance must not decide whether its direction exists.
+            tangent: derivative.normalized_nonzero()?,
+        })
+    }
+}
+
+fn require_periodic_parameter(parameter: Real, domain_end: Real) -> Result<(), GeometryError> {
+    require_finite([parameter], "curve parameter")?;
+    if (0.0..=domain_end).contains(&parameter) {
+        Ok(())
+    } else {
+        Err(GeometryError::ParameterOutOfDomain {
+            parameter,
+            domain_start: 0.0,
+            domain_end,
+        })
+    }
+}
+
+fn periodic_derivative(
+    x_axis: Vector3,
+    y_axis: Vector3,
+    radius_x: Real,
+    radius_y: Real,
+    parameter: Real,
+) -> Result<Vector3, GeometryError> {
+    let (sine, cosine) = parameter.sin_cos();
+    let x = x_axis.scaled(-radius_x * sine)?;
+    let y = y_axis.scaled(radius_y * cosine)?;
+    Vector3::try_new(x.x() + y.x(), x.y() + y.y(), x.z() + y.z())
 }
 
 impl NurbsCurve {
@@ -472,6 +687,47 @@ impl<'a> ArcLengthSampler<'a> {
 
         let parameter = self.parameter_at_span_distance(span, local_distance)?;
         self.evaluate(parameter)
+    }
+
+    fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
+        require_finite([distance], "curve arc-length distance")?;
+        if distance < 0.0 || distance > self.total_length {
+            return Err(GeometryError::ArcLengthOutOfDomain {
+                distance,
+                length: self.total_length,
+            });
+        }
+        if distance == 0.0 {
+            return self.curve.evaluate_with_tangent(self.parameter_start());
+        }
+        if distance == self.total_length {
+            let parameter = self.spans.last().expect("a sampler has spans").end;
+            let mut sample = self.curve.evaluate_with_tangent(parameter)?;
+            sample.point = self.curve.end_point()?;
+            return Ok(sample);
+        }
+
+        let span_index = self
+            .spans
+            .partition_point(|span| span.cumulative_end < distance)
+            .min(self.spans.len() - 1);
+        let span = self.spans[span_index];
+        let local_distance = (distance - span.cumulative_start).clamp(0.0, span.length);
+        if local_distance == 0.0 {
+            return self.curve.evaluate_with_tangent(span.start);
+        }
+        if local_distance == span.length {
+            return self.curve.evaluate_with_tangent(span.end);
+        }
+        if !span.variable_speed {
+            let fraction = local_distance / span.length;
+            return self
+                .curve
+                .evaluate_with_tangent(stable_lerp(span.start, span.end, fraction));
+        }
+
+        let parameter = self.parameter_at_span_distance(span, local_distance)?;
+        self.curve.evaluate_with_tangent(parameter)
     }
 
     fn parameter_at_span_distance(
@@ -882,6 +1138,124 @@ mod tests {
                 Tolerance::try_new(1.0e-11, 1.0e-12, 1.0e-12).unwrap()
             ));
         }
+    }
+
+    #[test]
+    fn samples_equal_arc_lengths_with_natural_parameters_and_unit_tangents() {
+        let circle = Circle3::try_from_center_point(
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            axis(0.0, 0.0, 1.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let samples = CurveRef::Circle(&circle)
+            .divide_by_count_samples(4, true, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(samples.len(), 5);
+        let expected_tangents = [
+            axis(0.0, 1.0, 0.0),
+            axis(-1.0, 0.0, 0.0),
+            axis(0.0, -1.0, 0.0),
+            axis(1.0, 0.0, 0.0),
+            axis(0.0, 1.0, 0.0),
+        ];
+        for ((sample, expected_point), expected_tangent) in samples
+            .iter()
+            .zip([
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(-2.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+                point(2.0, 0.0, 0.0),
+            ])
+            .zip(expected_tangents)
+        {
+            assert!(sample.point().is_near(expected_point, Tolerance::DEFAULT));
+            for (actual, expected) in sample
+                .tangent()
+                .as_vector()
+                .to_array()
+                .into_iter()
+                .zip(expected_tangent.as_vector().to_array())
+            {
+                assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+            }
+        }
+        assert_eq!(samples[0].parameter(), 0.0);
+        assert_eq!(samples[4].point(), samples[0].point());
+        assert_eq!(
+            samples[1].reversed_direction().tangent(),
+            samples[1].tangent().opposite()
+        );
+
+        let line = LineSegment::try_new(
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let samples = CurveRef::Line(&line)
+            .divide_by_length_samples(3.0, true, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(
+            samples
+                .iter()
+                .map(|sample| sample.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(6.0, 0.0, 0.0),
+                point(9.0, 0.0, 0.0),
+            ]
+        );
+        assert!(
+            samples
+                .iter()
+                .all(|sample| sample.tangent() == axis(1.0, 0.0, 0.0))
+        );
+        assert!(matches!(
+            CurveRef::Circle(&circle).evaluate_with_tangent(-1.0),
+            Err(GeometryError::ParameterOutOfDomain { .. })
+        ));
+
+        // Point-only division remains valid at a stationary curve endpoint;
+        // only the tangent-bearing API requires a regular sample there.
+        let stationary_start = clamped_curve(
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+            ],
+        );
+        assert_eq!(
+            CurveRef::NurbsCurve(&stationary_start)
+                .divide_by_count(1, true, Tolerance::DEFAULT)
+                .unwrap(),
+            vec![point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0)]
+        );
+        assert!(matches!(
+            CurveRef::NurbsCurve(&stationary_start).start_sample(Tolerance::DEFAULT),
+            Err(GeometryError::Degenerate { .. })
+        ));
+
+        let slowly_parameterized = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(1.0, 0.0, 0.0)],
+            vec![0.0, 0.0, 1.0e20, 1.0e20],
+        )
+        .unwrap();
+        let sample = CurveRef::NurbsCurve(&slowly_parameterized)
+            .evaluate_with_tangent(5.0e19)
+            .unwrap();
+        assert!(
+            sample
+                .point()
+                .is_near(point(0.5, 0.0, 0.0), Tolerance::DEFAULT)
+        );
+        assert_eq!(sample.tangent(), axis(1.0, 0.0, 0.0));
     }
 
     #[test]

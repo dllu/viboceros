@@ -93,6 +93,9 @@ pub enum Operation {
     DocumentRectangularArrayCycle {
         id: String,
     },
+    DocumentCurveArrayCycle {
+        id: String,
+    },
     DocumentPolarArrayCycle {
         id: String,
     },
@@ -275,6 +278,7 @@ impl Operation {
             | Self::DocumentLayerAssignmentCycle { id }
             | Self::DocumentLinearArrayCycle { id }
             | Self::DocumentRectangularArrayCycle { id }
+            | Self::DocumentCurveArrayCycle { id }
             | Self::DocumentPolarArrayCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
             | Self::DocumentPointCloudCycle { id }
@@ -473,6 +477,9 @@ fn execute(
         }
         Operation::DocumentRectangularArrayCycle { .. } => {
             document_rectangular_array_cycle(iterations, tolerance)?
+        }
+        Operation::DocumentCurveArrayCycle { .. } => {
+            document_curve_array_cycle(iterations, tolerance)?
         }
         Operation::DocumentPolarArrayCycle { .. } => {
             document_polar_array_cycle(iterations, tolerance)?
@@ -1772,6 +1779,245 @@ fn document_rectangular_array_scenario(
     }))
 }
 
+fn document_curve_array_cycle(
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let no_rotation_items = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "no-rotation-items",
+        CurveArrayFixturePath::Line,
+        [0.0, 0.0, 0.0],
+        "ArrayCrv 4 Orientation=NoRotation PathName=Rail",
+    )?;
+    let no_rotation_distance = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "no-rotation-distance",
+        CurveArrayFixturePath::Line,
+        [0.0, 0.0, 0.0],
+        "ArrayCrv Distance=3 Orientation=NoRotation PathName=Rail",
+    )?;
+    let base_point = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "base-point",
+        CurveArrayFixturePath::Line,
+        [20.0, 0.0, 0.0],
+        "ArrayCrv 4 BasePoint=20,0,0 Orientation=NoRotation PathName=Rail",
+    )?;
+    let freeform = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "freeform",
+        CurveArrayFixturePath::TiltedArc,
+        [5.0, 0.0, 0.0],
+        "ArrayCrv 4 Orientation=Freeform PathName=Rail",
+    )?;
+    let freeform_nurbs = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "freeform-nurbs",
+        CurveArrayFixturePath::SpatialNurbs,
+        [0.0, 0.0, 0.0],
+        "ArrayCrv 5 Orientation=Freeform PathName=Rail",
+    )?;
+    let roadlike = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "roadlike",
+        CurveArrayFixturePath::TiltedArc,
+        [5.0, 0.0, 0.0],
+        "ArrayCrv 4 Orientation=Roadlike PathName=Rail",
+    )?;
+    let stairlike = document_curve_array_scenario(
+        tolerance,
+        &registry,
+        "stairlike",
+        CurveArrayFixturePath::TiltedArc,
+        [5.0, 0.0, 0.0],
+        "ArrayCrv 4 Orientation=Stairlike PathName=Rail",
+    )?;
+    let value = json!({
+        "base_point": base_point,
+        "freeform": freeform,
+        "freeform_nurbs": freeform_nurbs,
+        "no_rotation_distance": no_rotation_distance,
+        "no_rotation_items": no_rotation_items,
+        "roadlike": roadlike,
+        "stairlike": stairlike,
+    });
+
+    let line = LineSegment::try_new(
+        Point3::try_new(0.0, 0.0, 0.0)?,
+        Point3::try_new(10.0, 0.0, 0.0)?,
+        tolerance,
+    )?;
+    let (_, elapsed_ns) = measure(iterations, || {
+        CurveRef::Line(&line).divide_by_count_samples(3, true, tolerance)
+    })?;
+    Ok((value, elapsed_ns))
+}
+
+#[derive(Clone, Copy)]
+enum CurveArrayFixturePath {
+    Line,
+    TiltedArc,
+    SpatialNurbs,
+}
+
+impl CurveArrayFixturePath {
+    fn geometry(self, tolerance: Tolerance) -> Result<Geometry, GeometryError> {
+        match self {
+            Self::Line => Ok(Geometry::Line(LineSegment::try_new(
+                Point3::try_new(0.0, 0.0, 0.0)?,
+                Point3::try_new(10.0, 0.0, 0.0)?,
+                tolerance,
+            )?)),
+            Self::TiltedArc => Ok(Geometry::Arc(CircularArc3::try_from_three_points(
+                Point3::try_new(5.0, 0.0, 0.0)?,
+                Point3::try_new(0.0, 3.0, 4.0)?,
+                Point3::try_new(-5.0, 0.0, 0.0)?,
+                tolerance,
+            )?)),
+            Self::SpatialNurbs => Ok(Geometry::NurbsCurve(NurbsCurve::try_new(
+                3,
+                [
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 3.0],
+                    [4.0, 3.0, -1.0],
+                    [7.0, 5.0, 4.0],
+                    [10.0, 8.0, 6.0],
+                ]
+                .into_iter()
+                .map(Point3::try_from)
+                .collect::<Result<Vec<_>, _>>()?,
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+            )?)),
+        }
+    }
+}
+
+fn document_curve_array_scenario(
+    tolerance: Tolerance,
+    registry: &CommandRegistry,
+    label: &str,
+    path: CurveArrayFixturePath,
+    source_anchor: [f64; 3],
+    command: &str,
+) -> Result<Value, ProbeError> {
+    let mut document = Document::new(tolerance);
+    let layer = document.current_layer_id();
+    let anchor = Point3::try_from(source_anchor)?;
+    // Keep the spatial-frame endpoints away from half-micro rounding
+    // boundaries while retaining a longer-than-unit orientation witness.
+    let source_axis_length = match path {
+        CurveArrayFixturePath::SpatialNurbs => 1.25,
+        CurveArrayFixturePath::Line | CurveArrayFixturePath::TiltedArc => 1.0,
+    };
+    let mut original_ids = Vec::with_capacity(3);
+    for (axis, offset) in [
+        ("x", [source_axis_length, 0.0, 0.0]),
+        ("y", [0.0, source_axis_length, 0.0]),
+        ("z", [0.0, 0.0, source_axis_length]),
+    ] {
+        original_ids.push(document.add_geometry_with_attributes(
+            Geometry::Line(LineSegment::try_new(
+                anchor,
+                anchor.translated(Vector3::try_from(offset)?)?,
+                tolerance,
+            )?),
+            ObjectAttributes::on_layer(layer).with_name(format!("{label} {axis}")),
+        )?);
+    }
+    document.add_group(
+        Some(format!("Viboceros Curve Array Group {label}")),
+        original_ids.iter().copied(),
+    )?;
+    let path_id = document.add_geometry_with_attributes(
+        path.geometry(tolerance)?,
+        ObjectAttributes::on_layer(layer).with_name("Rail"),
+    )?;
+    document.select_object(original_ids[0], SelectionMode::Replace)?;
+    registry.execute(&mut document, command)?;
+
+    let name_prefix = format!("{label} ");
+    let object_ids = document
+        .objects()
+        .filter(|object| {
+            object
+                .attributes()
+                .name()
+                .is_some_and(|name| name.starts_with(&name_prefix))
+        })
+        .map(|object| object.id())
+        .collect::<BTreeSet<_>>();
+    let mut objects = object_ids
+        .iter()
+        .map(|id| array_line_record(&document, *id))
+        .collect::<Result<Vec<_>, _>>()?;
+    objects.sort_by(compare_array_line_records);
+    let mut groups = document
+        .groups()
+        .filter_map(|group| {
+            let members = group
+                .members()
+                .filter(|id| object_ids.contains(id))
+                .collect::<Vec<_>>();
+            (!members.is_empty()).then_some(members)
+        })
+        .map(|members| {
+            let mut records = members
+                .into_iter()
+                .map(|id| array_line_record(&document, id))
+                .collect::<Result<Vec<_>, _>>()?;
+            records.sort_by(compare_array_line_records);
+            Ok::<_, ProbeError>(records)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    groups.sort_by(|left, right| compare_array_line_record_lists(left, right));
+
+    Ok(json!({
+        "command_succeeded": true,
+        "groups": groups
+            .iter()
+            .map(|records| curve_array_line_records_value(records))
+            .collect::<Vec<_>>(),
+        "objects": curve_array_line_records_value(&objects),
+        "originals_selected": original_ids
+            .iter()
+            .enumerate()
+            .filter_map(|(index, id)| document.is_selected(*id).then_some(index))
+            .collect::<Vec<_>>(),
+        "path_selected": document.is_selected(path_id),
+    }))
+}
+
+fn curve_array_line_records_value(records: &[ArrayLineRecord]) -> Value {
+    fn rounded_point(point: [f64; 3]) -> [f64; 3] {
+        point.map(|coordinate| {
+            let rounded = (coordinate * 1.0e6).round() / 1.0e6;
+            if rounded == 0.0 { 0.0 } else { rounded }
+        })
+    }
+
+    Value::Array(
+        records
+            .iter()
+            .map(|record| {
+                json!({
+                    "end": rounded_point(record.end),
+                    "name": record.name,
+                    "selected": record.selected,
+                    "start": rounded_point(record.start),
+                })
+            })
+            .collect(),
+    )
+}
+
 fn document_polar_array_cycle(
     iterations: u32,
     tolerance: Tolerance,
@@ -1889,9 +2135,9 @@ fn document_polar_array_scenario(
         .collect::<BTreeSet<_>>();
     let mut objects = object_ids
         .iter()
-        .map(|id| polar_array_line_record(document, *id))
+        .map(|id| array_line_record(document, *id))
         .collect::<Result<Vec<_>, _>>()?;
-    objects.sort_by(compare_polar_array_line_records);
+    objects.sort_by(compare_array_line_records);
 
     let mut groups = document
         .groups()
@@ -1905,21 +2151,21 @@ fn document_polar_array_scenario(
         .map(|members| {
             let mut records = members
                 .into_iter()
-                .map(|id| polar_array_line_record(document, id))
+                .map(|id| array_line_record(document, id))
                 .collect::<Result<Vec<_>, _>>()?;
-            records.sort_by(compare_polar_array_line_records);
+            records.sort_by(compare_array_line_records);
             Ok::<_, ProbeError>(records)
         })
         .collect::<Result<Vec<_>, _>>()?;
-    groups.sort_by(|left, right| compare_polar_array_line_record_lists(left, right));
+    groups.sort_by(|left, right| compare_array_line_record_lists(left, right));
 
     Ok(json!({
         "command_succeeded": true,
         "groups": groups
             .iter()
-            .map(|records| polar_array_line_records_value(records))
+            .map(|records| array_line_records_value(records))
             .collect::<Vec<_>>(),
-        "objects": polar_array_line_records_value(&objects),
+        "objects": array_line_records_value(&objects),
         "originals_selected": original_ids
             .iter()
             .enumerate()
@@ -1929,26 +2175,23 @@ fn document_polar_array_scenario(
 }
 
 #[derive(Clone)]
-struct PolarArrayLineRecord {
+struct ArrayLineRecord {
     start: [f64; 3],
     end: [f64; 3],
     name: String,
     selected: bool,
 }
 
-fn polar_array_line_record(
-    document: &Document,
-    id: ObjectId,
-) -> Result<PolarArrayLineRecord, ProbeError> {
+fn array_line_record(document: &Document, id: ObjectId) -> Result<ArrayLineRecord, ProbeError> {
     let object = document
         .object(id)
         .ok_or(DocumentError::ObjectNotFound(id))?;
     let Geometry::Line(line) = object.geometry() else {
         return Err(ProbeError::FixtureInvariant(
-            "polar-array fixture contains a non-line object",
+            "array fixture contains a non-line object",
         ));
     };
-    Ok(PolarArrayLineRecord {
+    Ok(ArrayLineRecord {
         start: line.start().to_array(),
         end: line.end().to_array(),
         name: object.attributes().name().unwrap_or_default().to_owned(),
@@ -1956,16 +2199,16 @@ fn polar_array_line_record(
     })
 }
 
-fn compare_polar_array_line_records(
-    left: &PolarArrayLineRecord,
-    right: &PolarArrayLineRecord,
+fn compare_array_line_records(
+    left: &ArrayLineRecord,
+    right: &ArrayLineRecord,
 ) -> std::cmp::Ordering {
-    compare_polar_array_sort_point(&left.start, &right.start)
-        .then_with(|| compare_polar_array_sort_point(&left.end, &right.end))
+    compare_array_sort_point(&left.start, &right.start)
+        .then_with(|| compare_array_sort_point(&left.end, &right.end))
         .then_with(|| left.name.cmp(&right.name))
 }
 
-fn compare_polar_array_sort_point(left: &[f64; 3], right: &[f64; 3]) -> std::cmp::Ordering {
+fn compare_array_sort_point(left: &[f64; 3], right: &[f64; 3]) -> std::cmp::Ordering {
     left.iter()
         .zip(right)
         .map(|(left, right)| {
@@ -1979,18 +2222,18 @@ fn compare_polar_array_sort_point(left: &[f64; 3], right: &[f64; 3]) -> std::cmp
         .unwrap_or(std::cmp::Ordering::Equal)
 }
 
-fn compare_polar_array_line_record_lists(
-    left: &[PolarArrayLineRecord],
-    right: &[PolarArrayLineRecord],
+fn compare_array_line_record_lists(
+    left: &[ArrayLineRecord],
+    right: &[ArrayLineRecord],
 ) -> std::cmp::Ordering {
     left.iter()
         .zip(right)
-        .map(|(left, right)| compare_polar_array_line_records(left, right))
+        .map(|(left, right)| compare_array_line_records(left, right))
         .find(|ordering| !ordering.is_eq())
         .unwrap_or_else(|| left.len().cmp(&right.len()))
 }
 
-fn polar_array_line_records_value(records: &[PolarArrayLineRecord]) -> Value {
+fn array_line_records_value(records: &[ArrayLineRecord]) -> Value {
     Value::Array(
         records
             .iter()
@@ -3306,6 +3549,45 @@ mod tests {
                 .unwrap()
                 .contains(&json!([8.0, 1.0, 7.0]))
         );
+    }
+
+    #[test]
+    fn arrays_grouped_triads_along_curves_with_rhino_orientation_scope() {
+        let response = run_request(&request(vec![Operation::DocumentCurveArrayCycle {
+            id: "curve-array".to_owned(),
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        for (scenario, object_count, group_count) in [
+            ("base_point", 15, 5),
+            ("freeform", 12, 4),
+            ("freeform_nurbs", 15, 5),
+            ("no_rotation_distance", 12, 4),
+            ("no_rotation_items", 12, 4),
+            ("roadlike", 12, 4),
+            ("stairlike", 12, 4),
+        ] {
+            assert_eq!(value[scenario]["command_succeeded"], json!(true));
+            assert_eq!(
+                value[scenario]["objects"].as_array().unwrap().len(),
+                object_count
+            );
+            assert_eq!(
+                value[scenario]["groups"].as_array().unwrap().len(),
+                group_count
+            );
+            assert_eq!(value[scenario]["originals_selected"], json!([0, 1, 2]));
+            assert_eq!(value[scenario]["path_selected"], json!(false));
+            assert_eq!(
+                value[scenario]["objects"]
+                    .as_array()
+                    .unwrap()
+                    .iter()
+                    .filter(|record| record["selected"] == json!(true))
+                    .count(),
+                3
+            );
+        }
     }
 
     #[test]

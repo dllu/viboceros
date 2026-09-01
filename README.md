@@ -61,6 +61,8 @@ Move 0,0,0 5,0,0
 Copy 5,0,0 5,5,0
 Array 3 2 2 4 -3 5
 Array 3 2 1 20 12 0 Mode=Fill
+ArrayCrv 8 Orientation=Freeform PathName=Rail
+ArrayCrv Distance=2.5 Orientation=Roadlike BasePoint=0,0,0 PathName=Rail
 ArrayLinear 4 0,0,0 2,1,0
 ArrayPolar 6 0,0,0 360 Rotate=Yes ZOffset=0
 Scale 0,0 2
@@ -220,6 +222,17 @@ copies on that axis.
 their vector is the spacing between successive items. It retains the originals
 as the selection, preserves object attributes, and recreates every selected
 group topology independently for each copy as one bounded, atomic undo step.
+`ArrayCrv` places the selected sources at equal arc-length positions on a line,
+analytic curve, polyline, or NURBS rail. Name a unique rail with the single-token
+`PathName=` option, or omit it and make the rail the last selected object.
+An item count includes both endpoints of an open rail and omits a duplicate
+closed seam; `Distance=` uses a fixed spacing and leaves any shorter remainder.
+`Freeform` is the default rotation-minimizing orientation. `Roadlike` keeps its
+Y axis parallel to the world XY construction plane, `Stairlike` applies yaw
+only, and `NoRotation` translates without rotating. `BasePoint=` uses an
+explicit source anchor and, as in Rhino, retains the originals in addition to
+all requested rail items. Without it, the originals are the first item. Use
+`Flip` on the rail to reverse its travel direction.
 `ArrayPolar` uses the same total-item and preservation rules around a top-view
 center. Exactly 360 degrees omits a duplicate endpoint; other positive,
 negative, and multi-turn sweeps include both endpoints. `Rotate=No` keeps object

@@ -112,7 +112,7 @@ impl Vector3 {
     /// Geometry constructors should normally use [`Self::normalized`] so they
     /// honor model tolerance; this is for recomputing derived data from an
     /// object that has already been validated.
-    pub(crate) fn normalized_nonzero(self) -> Result<UnitVector3, GeometryError> {
+    pub fn normalized_nonzero(self) -> Result<UnitVector3, GeometryError> {
         let scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
         if scale == 0.0 {
             return Err(GeometryError::Degenerate { context: "vector" });

@@ -65,6 +65,49 @@ impl AffineTransform3 {
         Self::try_with_fixed_point(linear, fixed_point)
     }
 
+    /// Returns the shortest proper rotation that maps one unit direction to
+    /// another. Antiparallel inputs use a deterministic perpendicular axis.
+    pub fn try_rotation_between(
+        from: UnitVector3,
+        to: UnitVector3,
+        tolerance: crate::Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let from_vector = from.as_vector();
+        let to_vector = to.as_vector();
+        let cosine = from_vector.dot(to_vector)?.clamp(-1.0, 1.0);
+        let cross = from_vector.cross(to_vector)?;
+        let sine = cross.length()?.clamp(0.0, 1.0);
+        if sine > tolerance.angular() {
+            let axis = cross.normalized_nonzero()?;
+            let origin = Point3::try_new(0.0, 0.0, 0.0)?;
+            return Self::try_rotation(origin, axis, sine.atan2(cosine));
+        }
+        if cosine >= 0.0 {
+            return Ok(Self::identity());
+        }
+        let linear = {
+            let [fx, fy, fz] = from_vector.to_array().map(Real::abs);
+            let reference = if fx <= fy && fx <= fz {
+                Vector3::try_new(1.0, 0.0, 0.0)?
+            } else if fy <= fz {
+                Vector3::try_new(0.0, 1.0, 0.0)?
+            } else {
+                Vector3::try_new(0.0, 0.0, 1.0)?
+            };
+            let axis = from_vector.cross(reference)?.normalized_nonzero()?;
+            let [x, y, z] = axis.as_vector().to_array();
+            [
+                [2.0 * x * x - 1.0, 2.0 * x * y, 2.0 * x * z],
+                [2.0 * y * x, 2.0 * y * y - 1.0, 2.0 * y * z],
+                [2.0 * z * x, 2.0 * z * y, 2.0 * z * z - 1.0],
+            ]
+        };
+        Self::try_new(
+            linear,
+            Vector3::try_new(0.0, 0.0, 0.0).expect("the zero translation is finite"),
+        )
+    }
+
     pub fn try_reflection(
         point_on_plane: Point3,
         plane_normal: UnitVector3,
@@ -254,6 +297,46 @@ mod tests {
                 .is_near(point(1.0, 2.0, 0.0), Tolerance::DEFAULT)
         );
         assert!(AffineTransform3::try_rotation(center, axis, Real::INFINITY).is_err());
+    }
+
+    #[test]
+    fn shortest_rotation_maps_parallel_oblique_and_antiparallel_directions() {
+        let directions = [
+            (
+                UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap(),
+                UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            ),
+            (
+                UnitVector3::try_new(1.0, 2.0, 3.0, Tolerance::DEFAULT).unwrap(),
+                UnitVector3::try_new(-2.0, 4.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            ),
+            (
+                UnitVector3::try_new(0.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap(),
+                UnitVector3::try_new(0.0, -1.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            ),
+            (
+                UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap(),
+                UnitVector3::try_new(-1.0, 1.0e-8, 0.0, Tolerance::DEFAULT).unwrap(),
+            ),
+        ];
+        for (from, to) in directions {
+            let rotation =
+                AffineTransform3::try_rotation_between(from, to, Tolerance::DEFAULT).unwrap();
+            let actual = rotation.transform_vector(from.as_vector()).unwrap();
+            for (actual, expected) in actual.to_array().into_iter().zip(to.as_vector().to_array()) {
+                assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+            }
+            let rows = rotation.linear_rows();
+            for row in 0..3 {
+                for column in 0..3 {
+                    let dot = (0..3)
+                        .map(|index| rows[row][index] * rows[column][index])
+                        .sum::<Real>();
+                    let expected = if row == column { 1.0 } else { 0.0 };
+                    assert!(Tolerance::DEFAULT.approx_eq(dot, expected));
+                }
+            }
+        }
     }
 
     #[test]

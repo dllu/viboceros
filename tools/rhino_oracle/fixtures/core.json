@@ -47,6 +47,10 @@
       "id": "document-rectangular-array-cycle"
     },
     {
+      "op": "document_curve_array_cycle",
+      "id": "document-curve-array-cycle"
+    },
+    {
       "op": "document_polar_array_cycle",
       "id": "document-polar-array-cycle"
     },

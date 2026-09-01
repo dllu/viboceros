@@ -238,10 +238,297 @@ def _mesh_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "document_curve_array_cycle":
+        document = Rhino.RhinoDoc.ActiveDoc
+        suffix = str(System.Guid.NewGuid())
+        name_prefix = "Viboceros Curve Array " + suffix + " "
+        path_ids = []
+        fixture_group_indices = set()
+
+        def fixture_objects():
+            objects = []
+            for rhino_object in document.Objects:
+                name = rhino_object.Attributes.Name
+                if name is not None and name.startswith(name_prefix):
+                    objects.append(rhino_object)
+            return objects
+
+        def fixture_xyz(value):
+            coordinates = [round(float(component), 6) for component in value]
+            return [0.0 if component == 0.0 else component for component in coordinates]
+
+        def line_record(rhino_object):
+            geometry = rhino_object.Geometry
+            return {
+                "end": fixture_xyz(geometry.PointAtEnd),
+                "name": rhino_object.Attributes.Name[len(name_prefix):],
+                "selected": rhino_object.IsSelected(False) > 0,
+                "start": fixture_xyz(geometry.PointAtStart),
+            }
+
+        def record_key(record):
+            coordinates = record["start"] + record["end"]
+            rounded = [round(value, 12) for value in coordinates]
+            return tuple(rounded + [record["name"]])
+
+        def scenario_objects(label):
+            prefix = name_prefix + label + " "
+            objects = [
+                item
+                for item in fixture_objects()
+                if item.Attributes.Name.startswith(prefix)
+            ]
+            objects.sort(key=lambda item: record_key(line_record(item)))
+            return objects
+
+        def scenario_groups(objects):
+            fixture_ids = set(item.Id for item in objects)
+            groups = []
+            for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
+                members = document.Groups.GroupMembers(group_index)
+                if members is None:
+                    continue
+                records = [
+                    line_record(member)
+                    for member in members
+                    if member.Id in fixture_ids
+                ]
+                if records:
+                    fixture_group_indices.add(group_index)
+                    records.sort(key=record_key)
+                    groups.append(records)
+            groups.sort(
+                key=lambda group: tuple(record_key(record) for record in group)
+            )
+            return groups
+
+        def add_path(path_kind):
+            if path_kind == "line":
+                return document.Objects.AddLine(
+                    Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(10.0, 0.0, 0.0),
+                )
+            if path_kind == "nurbs":
+                curve = Rhino.Geometry.NurbsCurve(3, True, 4, 5)
+                _set_curve_controls(
+                    curve,
+                    [
+                        {"point": [0.0, 0.0, 0.0]},
+                        {"point": [2.0, 0.0, 3.0]},
+                        {"point": [4.0, 3.0, -1.0]},
+                        {"point": [7.0, 5.0, 4.0]},
+                        {"point": [10.0, 8.0, 6.0]},
+                    ],
+                )
+                _set_knots(
+                    curve.Knots,
+                    [0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+                    "curve-array NURBS knot",
+                )
+                if not curve.IsValid:
+                    raise ValueError("curve-array NURBS path is invalid")
+                return document.Objects.AddCurve(curve)
+            return document.Objects.AddArc(
+                Rhino.Geometry.Arc(
+                    Rhino.Geometry.Point3d(5.0, 0.0, 0.0),
+                    Rhino.Geometry.Point3d(0.0, 3.0, 4.0),
+                    Rhino.Geometry.Point3d(-5.0, 0.0, 0.0),
+                )
+            )
+
+        def run_scenario(
+            label,
+            path_kind,
+            source_anchor,
+            command_template,
+            expected_instance_count,
+        ):
+            _record_progress("document_curve_array_cycle: %s start" % label)
+            anchor = _point(source_anchor)
+            source_ids = []
+            # Keep the spatial endpoints away from half-micro rounding
+            # boundaries while retaining a longer-than-unit frame witness.
+            source_axis_length = 1.25 if path_kind == "nurbs" else 1.0
+            for axis, offset in (
+                ("x", Rhino.Geometry.Vector3d(source_axis_length, 0.0, 0.0)),
+                ("y", Rhino.Geometry.Vector3d(0.0, source_axis_length, 0.0)),
+                ("z", Rhino.Geometry.Vector3d(0.0, 0.0, source_axis_length)),
+            ):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = name_prefix + label + " " + axis
+                source_id = document.Objects.AddLine(
+                    anchor, anchor + offset, attributes
+                )
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add curve-array fixture line")
+                source_ids.append(source_id)
+            group_index = document.Groups.Add(
+                "Viboceros Curve Array Group " + suffix + " " + label,
+                source_ids,
+            )
+            if group_index < 0:
+                raise ValueError("could not group curve-array fixture objects")
+            fixture_group_indices.add(group_index)
+            path_id = add_path(path_kind)
+            if path_id == System.Guid.Empty:
+                raise ValueError("could not add curve-array fixture path")
+            path_ids.append(path_id)
+            document.Objects.UnselectAll()
+            for source_id in source_ids:
+                if not document.Objects.Select(source_id):
+                    raise ValueError("could not select curve-array fixture object")
+
+            command = command_template.replace("{path_id}", str(path_id))
+            command_succeeded = Rhino.RhinoApp.RunScript(command, False)
+            _record_progress(
+                "document_curve_array_cycle: %s command complete" % label
+            )
+            objects = scenario_objects(label)
+            expected_count = len(source_ids) * expected_instance_count
+            if len(objects) != expected_count:
+                history = Rhino.RhinoApp.CommandHistoryWindowText
+                raise ValueError(
+                    "ArrayCrv macro %r returned %r and left %d fixture objects; "
+                    "history tail: %s"
+                    % (
+                        command,
+                        command_succeeded,
+                        len(objects),
+                        history[-2000:],
+                    )
+                )
+            records = [line_record(item) for item in objects]
+            records.sort(key=record_key)
+            _record_progress(
+                "document_curve_array_cycle: %s objects captured" % label
+            )
+            groups = scenario_groups(objects)
+            _record_progress(
+                "document_curve_array_cycle: %s groups captured" % label
+            )
+            originals_selected = []
+            for index, source_id in enumerate(source_ids):
+                source_object = document.Objects.FindId(source_id)
+                if (
+                    source_object is not None
+                    and source_object.IsSelected(False) > 0
+                ):
+                    originals_selected.append(index)
+            path_object = document.Objects.FindId(path_id)
+            _record_progress(
+                "document_curve_array_cycle: %s selection captured" % label
+            )
+            result = {
+                "command_succeeded": bool(command_succeeded),
+                "groups": groups,
+                "objects": records,
+                "originals_selected": originals_selected,
+                "path_selected": (
+                    path_object is not None and path_object.IsSelected(False) > 0
+                ),
+            }
+            return result
+
+        try:
+            value = {
+                "base_point": run_scenario(
+                    "base-point",
+                    "line",
+                    [20.0, 0.0, 0.0],
+                    "_-ArrayCrv _Basepoint 20,0,0 "
+                    "'_-SelID {path_id} _Orientation _NoRotation 4",
+                    5,
+                ),
+                "freeform": run_scenario(
+                    "freeform",
+                    "tilted-arc",
+                    [5.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Freeform 4",
+                    4,
+                ),
+                "freeform_nurbs": run_scenario(
+                    "freeform-nurbs",
+                    "nurbs",
+                    [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Freeform 5",
+                    5,
+                ),
+                "no_rotation_distance": run_scenario(
+                    "no-rotation-distance",
+                    "line",
+                    [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _NoRotation _Distance 3 _Enter",
+                    4,
+                ),
+                "no_rotation_items": run_scenario(
+                    "no-rotation-items",
+                    "line",
+                    [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _NoRotation 4",
+                    4,
+                ),
+                "roadlike": run_scenario(
+                    "roadlike",
+                    "tilted-arc",
+                    [5.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Roadlike 4",
+                    4,
+                ),
+                "stairlike": run_scenario(
+                    "stairlike",
+                    "tilted-arc",
+                    [5.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} "
+                    "_Orientation _Stairlike 4",
+                    4,
+                ),
+            }
+            timing_curve = Rhino.Geometry.LineCurve(
+                Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
+                Rhino.Geometry.Point3d(10.0, 0.0, 0.0),
+            )
+            _unused, elapsed = _measure(
+                iterations, lambda: timing_curve.DivideByCount(3, True)
+            )
+            _record_progress("document_curve_array_cycle: timing complete")
+            return value, elapsed
+        finally:
+            _record_progress("document_curve_array_cycle: cleanup start")
+            try:
+                document.Objects.UnselectAll()
+            except Exception:
+                pass
+            try:
+                objects = fixture_objects()
+                for group_index in sorted(fixture_group_indices, reverse=True):
+                    try:
+                        document.Groups.Delete(group_index)
+                    except Exception:
+                        pass
+                for item in objects:
+                    try:
+                        document.Objects.Delete(item.Id, True)
+                    except Exception:
+                        pass
+            except Exception:
+                pass
+            for path_id in path_ids:
+                try:
+                    document.Objects.Delete(path_id, True)
+                except Exception:
+                    pass
     if kind == "document_rectangular_array_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())
         name_prefix = "Viboceros Rectangular Array " + suffix + " "
+        fixture_group_indices = set()
 
         def fixture_objects():
             objects = []
@@ -279,6 +566,8 @@ def _execute(operation, iterations, tolerance):
             fixture_ids = set(item.Id for item in objects)
             groups = []
             for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
                 members = document.Groups.GroupMembers(group_index)
                 if members is None:
                     continue
@@ -286,6 +575,7 @@ def _execute(operation, iterations, tolerance):
                     member for member in members if member.Id in fixture_ids
                 ]
                 if fixture_members:
+                    fixture_group_indices.add(group_index)
                     fixture_members.sort(key=point_key)
                     groups.append(locations(fixture_members))
             groups.sort(
@@ -315,6 +605,7 @@ def _execute(operation, iterations, tolerance):
             )
             if original_group_index < 0:
                 raise ValueError("could not group rectangular-array fixture objects")
+            fixture_group_indices.add(original_group_index)
             document.Objects.UnselectAll()
             for object_id in original_ids:
                 if not document.Objects.Select(object_id):
@@ -389,15 +680,7 @@ def _execute(operation, iterations, tolerance):
         finally:
             document.Objects.UnselectAll()
             objects = fixture_objects()
-            fixture_ids = set(item.Id for item in objects)
-            group_indices = []
-            for group_index in range(document.Groups.Count):
-                members = document.Groups.GroupMembers(group_index)
-                if members is not None and any(
-                    member.Id in fixture_ids for member in members
-                ):
-                    group_indices.append(group_index)
-            for group_index in reversed(group_indices):
+            for group_index in sorted(fixture_group_indices, reverse=True):
                 document.Groups.Delete(group_index)
             for item in objects:
                 document.Objects.Delete(item.Id, True)
@@ -405,6 +688,7 @@ def _execute(operation, iterations, tolerance):
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())
         name_prefix = "Viboceros Polar Array " + suffix + " "
+        fixture_group_indices = set()
 
         def fixture_objects():
             objects = []
@@ -441,6 +725,8 @@ def _execute(operation, iterations, tolerance):
             fixture_ids = set(item.Id for item in objects)
             groups = []
             for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
                 members = document.Groups.GroupMembers(group_index)
                 if members is None:
                     continue
@@ -450,6 +736,7 @@ def _execute(operation, iterations, tolerance):
                     if member.Id in fixture_ids
                 ]
                 if records:
+                    fixture_group_indices.add(group_index)
                     records.sort(key=record_key)
                     groups.append(records)
             groups.sort(key=lambda group: tuple(record_key(record) for record in group))
@@ -482,6 +769,7 @@ def _execute(operation, iterations, tolerance):
             )
             if group_index < 0:
                 raise ValueError("could not group polar-array fixture objects")
+            fixture_group_indices.add(group_index)
             document.Objects.UnselectAll()
             for object_id in original_ids:
                 if not document.Objects.Select(object_id):
@@ -561,15 +849,7 @@ def _execute(operation, iterations, tolerance):
         finally:
             document.Objects.UnselectAll()
             objects = fixture_objects()
-            fixture_ids = set(item.Id for item in objects)
-            group_indices = []
-            for group_index in range(document.Groups.Count):
-                members = document.Groups.GroupMembers(group_index)
-                if members is not None and any(
-                    member.Id in fixture_ids for member in members
-                ):
-                    group_indices.append(group_index)
-            for group_index in reversed(group_indices):
+            for group_index in sorted(fixture_group_indices, reverse=True):
                 document.Groups.Delete(group_index)
             for item in objects:
                 document.Objects.Delete(item.Id, True)
@@ -578,6 +858,7 @@ def _execute(operation, iterations, tolerance):
         suffix = str(System.Guid.NewGuid())
         name_prefix = "Viboceros Linear Array " + suffix + " "
         original_ids = []
+        fixture_group_indices = set()
 
         def fixture_objects():
             objects = []
@@ -605,6 +886,8 @@ def _execute(operation, iterations, tolerance):
             fixture_ids = set(item.Id for item in objects)
             groups = []
             for group_index in range(document.Groups.Count):
+                if document.Groups.IsDeleted(group_index):
+                    continue
                 members = document.Groups.GroupMembers(group_index)
                 if members is None:
                     continue
@@ -612,6 +895,7 @@ def _execute(operation, iterations, tolerance):
                     member for member in members if member.Id in fixture_ids
                 ]
                 if fixture_members:
+                    fixture_group_indices.add(group_index)
                     fixture_members.sort(
                         key=lambda item: (
                             float(item.Geometry.Location.X),
@@ -638,6 +922,7 @@ def _execute(operation, iterations, tolerance):
             )
             if original_group_index < 0:
                 raise ValueError("could not group linear-array fixture objects")
+            fixture_group_indices.add(original_group_index)
             document.Objects.UnselectAll()
             for object_id in original_ids:
                 if not document.Objects.Select(object_id):
@@ -685,15 +970,7 @@ def _execute(operation, iterations, tolerance):
         finally:
             document.Objects.UnselectAll()
             objects = fixture_objects()
-            fixture_ids = set(item.Id for item in objects)
-            group_indices = []
-            for group_index in range(document.Groups.Count):
-                members = document.Groups.GroupMembers(group_index)
-                if members is not None and any(
-                    member.Id in fixture_ids for member in members
-                ):
-                    group_indices.append(group_index)
-            for group_index in reversed(group_indices):
+            for group_index in sorted(fixture_group_indices, reverse=True):
                 document.Groups.Delete(group_index)
             for item in objects:
                 document.Objects.Delete(item.Id, True)
