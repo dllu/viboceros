@@ -327,6 +327,13 @@ pub enum Operation {
         faces: Vec<Vec<u32>>,
         edge_points: [[f64; 3]; 2],
     },
+    MeshSplitEdge {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        edge_points: [[f64; 3]; 2],
+        parameter: f64,
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -406,6 +413,7 @@ impl Operation {
             | Self::MeshTriangulate { id, .. }
             | Self::MeshSwapEdge { id, .. }
             | Self::MeshCollapseEdge { id, .. }
+            | Self::MeshSplitEdge { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1424,6 +1432,48 @@ fn execute(
                 json!({
                     "accepted": true,
                     "mesh": collapsed.as_ref().map(polygon_mesh_value),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshSplitEdge {
+            vertices,
+            faces,
+            edge_points,
+            parameter,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let endpoints = [point(edge_points[0])?, point(edge_points[1])?];
+            let edge_index = mesh
+                .wireframe_lines(tolerance)?
+                .into_iter()
+                .position(|edge| {
+                    (edge.start() == endpoints[0] && edge.end() == endpoints[1])
+                        || (edge.start() == endpoints[1] && edge.end() == endpoints[0])
+                })
+                .ok_or(ProbeError::FixtureInvariant(
+                    "mesh split endpoints do not identify a topology edge",
+                ))?;
+            let (split, elapsed) = measure(iterations, || {
+                black_box(&mesh).split_topology_edge(
+                    black_box(edge_index),
+                    black_box(*parameter),
+                    tolerance,
+                )
+            })?;
+            let accepted = split.is_some();
+            (
+                json!({
+                    "accepted": accepted,
+                    "mesh": polygon_mesh_value(split.as_ref().unwrap_or(&mesh)),
                 }),
                 elapsed,
             )
@@ -6004,6 +6054,48 @@ mod tests {
             json!({
                 "accepted": true,
                 "mesh": null,
+            })
+        );
+    }
+
+    #[test]
+    fn splits_mesh_edges_for_oracle_comparison() {
+        let vertices = vec![[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 4.0, 0.0]];
+        let response = run_request(&request(vec![
+            Operation::MeshSplitEdge {
+                id: "split".to_owned(),
+                vertices: vertices.clone(),
+                faces: vec![vec![0, 1, 2]],
+                edge_points: [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]],
+                parameter: 0.25,
+            },
+            Operation::MeshSplitEdge {
+                id: "outside".to_owned(),
+                vertices: vertices.clone(),
+                faces: vec![vec![0, 1, 2]],
+                edge_points: [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]],
+                parameter: -0.25,
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "mesh": {
+                    "faces": [[2, 0, 3], [2, 3, 1]],
+                    "vertices": [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 4.0, 0.0], [1.0, 0.0, 0.0]],
+                },
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "accepted": false,
+                "mesh": {
+                    "faces": [[0, 1, 2]],
+                    "vertices": vertices,
+                },
             })
         );
     }

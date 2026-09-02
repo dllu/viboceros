@@ -103,6 +103,9 @@ enum InteractiveCommand {
     DeleteFaces,
     SwapMeshEdge,
     CollapseMeshEdge,
+    SplitMeshEdge {
+        edge_point: Option<Point3>,
+    },
     WeldEdge,
     WeldVertices,
     UnweldEdge {
@@ -200,6 +203,7 @@ impl InteractiveCommand {
             Self::DeleteFaces => "DeleteFaces",
             Self::SwapMeshEdge => "SwapMeshEdge",
             Self::CollapseMeshEdge => "CollapseMeshEdge",
+            Self::SplitMeshEdge { .. } => "SplitMeshEdge",
             Self::WeldEdge => "WeldEdge",
             Self::WeldVertices => "WeldVertices",
             Self::UnweldEdge { .. } => "UnweldEdge",
@@ -324,6 +328,12 @@ impl InteractiveCommand {
             Self::CollapseMeshEdge => {
                 "CollapseMeshEdge: pick a topology edge on a selected mesh (Esc to cancel)"
             }
+            Self::SplitMeshEdge { edge_point: None } => {
+                "SplitMeshEdge: pick a topology edge on a selected mesh (Esc to cancel)"
+            }
+            Self::SplitMeshEdge {
+                edge_point: Some(_),
+            } => "SplitMeshEdge: pick the split location along the edge (Esc to cancel)",
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
             }
@@ -503,6 +513,7 @@ impl InteractiveCommand {
             | Self::DeleteFaces
             | Self::SwapMeshEdge
             | Self::CollapseMeshEdge
+            | Self::SplitMeshEdge { edge_point: None }
             | Self::WeldEdge
             | Self::WeldVertices
             | Self::UnweldEdge { .. }
@@ -540,6 +551,7 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::SplitMeshEdge { edge_point } => edge_point,
             Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
             | Self::Ellipsoid {
@@ -973,6 +985,11 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::CollapseMeshEdge
+        } else if normalized == "splitmeshedge" {
+            if !arguments.is_empty() {
+                return false;
+            }
+            InteractiveCommand::SplitMeshEdge { edge_point: None }
         } else if matches!(normalized.as_str(), "weldedge" | "weldmeshedge") {
             if !arguments.is_empty() {
                 return false;
@@ -1339,6 +1356,7 @@ impl VibocerosApp {
                 | InteractiveCommand::DeleteFaces
                 | InteractiveCommand::SwapMeshEdge
                 | InteractiveCommand::CollapseMeshEdge
+                | InteractiveCommand::SplitMeshEdge { .. }
                 | InteractiveCommand::WeldEdge
                 | InteractiveCommand::WeldVertices
                 | InteractiveCommand::UnweldEdge { .. }
@@ -1783,6 +1801,23 @@ impl VibocerosApp {
             InteractiveCommand::CollapseMeshEdge => {
                 self.active_command = None;
                 self.execute_command(&format!("CollapseMeshEdge {}", format_model_point(point)));
+            }
+            InteractiveCommand::SplitMeshEdge { edge_point: None } => {
+                let command = InteractiveCommand::SplitMeshEdge {
+                    edge_point: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::SplitMeshEdge {
+                edge_point: Some(edge_point),
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "SplitMeshEdge {} {}",
+                    format_model_point(edge_point),
+                    format_model_point(point)
+                ));
             }
             InteractiveCommand::WeldEdge => {
                 self.active_command = None;
@@ -2352,6 +2387,7 @@ impl VibocerosApp {
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
         let mut collapse_mesh_edge_clicked = false;
+        let mut split_mesh_edge_clicked = false;
         let mut extract_mesh_edges_clicked = false;
         let mut extract_mesh_faces_clicked = false;
         let mut delete_faces_clicked = false;
@@ -2555,6 +2591,10 @@ impl VibocerosApp {
                 collapse_mesh_edge_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Collapse Mesh Edge"))
                     .on_hover_text("Pick a selected-mesh topology edge to collapse to its midpoint")
+                    .clicked();
+                split_mesh_edge_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Split Mesh Edge"))
+                    .on_hover_text("Pick a selected-mesh topology edge, then its split location")
                     .clicked();
                 extract_mesh_edges_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Mesh Edges"))
@@ -2841,6 +2881,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("SwapMeshEdge");
         } else if collapse_mesh_edge_clicked {
             self.try_start_interactive_command("CollapseMeshEdge");
+        } else if split_mesh_edge_clicked {
+            self.try_start_interactive_command("SplitMeshEdge");
         } else if extract_mesh_edges_clicked {
             self.execute_command("ExtractMeshEdges");
         } else if extract_mesh_faces_clicked {
@@ -4209,6 +4251,61 @@ mod tests {
     }
 
     #[test]
+    fn interactive_split_mesh_edge_uses_edge_and_location_picks() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("SplitMeshEdge"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SplitMeshEdge { edge_point: None })
+        );
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SplitMeshEdge {
+                edge_point: Some(point(2.0, 0.0, 0.0)),
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("split location"));
+        app.accept_drafting_point(point(1.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.is_selected(source));
+        let Geometry::Mesh(split) = app.document.object(source).unwrap().geometry() else {
+            panic!("expected edge-split mesh")
+        };
+        assert_eq!(split.vertices()[4], point(1.0, 0.0, 0.0));
+        assert_eq!(
+            split.triangles(),
+            &[
+                [1, 2, 3],
+                [2, 0, 3],
+                [2, 4, 0],
+                [2, 1, 4],
+                [3, 0, 4],
+                [3, 4, 1],
+            ]
+        );
+        assert_eq!(app.document.undo_label(), Some("SplitMeshEdge"));
+        assert!(!app.try_start_interactive_command("SplitMeshEdge Edge=0 Parameter=0.5"));
+    }
+
+    #[test]
     fn interactive_weld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -4735,6 +4832,7 @@ mod tests {
             "DeleteFaces",
             "SwapMeshEdge",
             "CollapseMeshEdge",
+            "SplitMeshEdge",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
             "WeldEdge",

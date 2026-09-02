@@ -4455,6 +4455,47 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_split_edge":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        edge_points = [_point(point) for point in operation["edge_points"]]
+        if len(edge_points) != 2:
+            source.Dispose()
+            raise ValueError("mesh split edge requires two endpoint locations")
+        topology_edge_index = -1
+        for edge_index in range(source.TopologyEdges.Count):
+            line = source.TopologyEdges.EdgeLine(edge_index)
+            if (
+                (line.From == edge_points[0] and line.To == edge_points[1])
+                or (line.From == edge_points[1] and line.To == edge_points[0])
+            ):
+                topology_edge_index = edge_index
+                break
+        if topology_edge_index < 0:
+            source.Dispose()
+            raise ValueError("mesh split edge endpoints do not identify an edge")
+
+        def split_mesh_edge():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                accepted = bool(
+                    mesh.TopologyEdges.SplitEdge(
+                        topology_edge_index, float(operation["parameter"])
+                    )
+                )
+                return {
+                    "accepted": accepted,
+                    "mesh": _polygon_mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, split_mesh_edge)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_extract_non_manifold":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         selective = operation["selective"]

@@ -1,0 +1,198 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_split_edge",
+      "id": "tetrahedron-quarter",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [0, 0, 4]],
+      "faces": [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "single-triangle-quarter",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "square-diagonal-quarter",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 4, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "square-boundary-quarter",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "quad-first-side",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "quad-second-side",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 4, 0], [0, 0, 0], [4, 0, 0], [4, 4, 0]],
+      "faces": [[0, 1, 2, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "triangle-quad-shared-edge",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [4, -4, 0], [0, -4, 0]],
+      "faces": [[0, 1, 2], [1, 0, 4, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "quad-quad-shared-edge",
+      "parameter": 0.25,
+      "edge_points": [[4, 0, 0], [4, 4, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [8, 0, 0], [0, 4, 0], [4, 4, 0], [8, 4, 0]],
+      "faces": [[0, 1, 4, 3], [1, 2, 5, 4]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "unwelded-shared-edge",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [4, 0, 0], [0, 0, 0], [0, -4, 0]],
+      "faces": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "partially-welded-edge",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [4, 0, 0], [0, -4, 0]],
+      "faces": [[0, 1, 2], [3, 0, 4]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "non-manifold-edge",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [0, -4, 0], [2, 0, 4]],
+      "faces": [[0, 1, 2], [1, 0, 3], [0, 1, 4]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "unused-and-disjoint",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[99, 99, 99], [0, 0, 0], [4, 0, 0], [0, 4, 0], [10, 0, 0], [14, 0, 0], [10, 4, 0], [88, 88, 88]],
+      "faces": [[1, 2, 3], [4, 5, 6]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "endpoint-fans",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [0, 3, 0], [-2, 1, 0], [6, 1, 0], [4, 3, 0]],
+      "faces": [[0, 1, 2], [0, 3, 4], [1, 5, 6]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "unwelded-edge-with-surviving-fans",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [4, 0, 0], [0, 0, 0], [0, -4, 0], [-2, 1, 0], [6, -1, 0]],
+      "faces": [[0, 1, 2], [3, 4, 5], [0, 6, 2], [3, 5, 7]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "unwelded-triangle-quad-edge",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [4, 0, 0], [0, 0, 0], [4, -4, 0], [0, -4, 0]],
+      "faces": [[0, 1, 2], [3, 4, 6, 5]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "orientation-conflict",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [0, -4, 0]],
+      "faces": [[0, 1, 2], [0, 1, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "reversed-raw-endpoints",
+      "parameter": 0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[4, 0, 0], [0, 0, 0], [0, 4, 0]],
+      "faces": [[1, 0, 2]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "endpoint-zero",
+      "parameter": 0.0,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "endpoint-one",
+      "parameter": 1.0,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "tetrahedron-endpoint-zero",
+      "parameter": 0.0,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [0, 0, 4]],
+      "faces": [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "quad-endpoint-zero",
+      "parameter": 0.0,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [4, 4, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2, 3]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "unwelded-endpoint-zero",
+      "parameter": 0.0,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0], [4, 0, 0], [0, 0, 0], [0, -4, 0]],
+      "faces": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "outside-negative",
+      "parameter": -0.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2]]
+    },
+    {
+      "op": "mesh_split_edge",
+      "id": "outside-positive",
+      "parameter": 1.25,
+      "edge_points": [[0, 0, 0], [4, 0, 0]],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 4, 0]],
+      "faces": [[0, 1, 2]]
+    }
+  ]
+}

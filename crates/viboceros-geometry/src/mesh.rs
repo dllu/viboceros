@@ -522,6 +522,162 @@ impl TriangleMesh {
         Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
     }
 
+    /// Divides one exact-location topology edge at a normalized parameter.
+    ///
+    /// The parameter follows the direction returned by [`Self::wireframe_lines`]
+    /// and values outside `[0, 1]` are rejected with `None`, matching
+    /// RhinoCommon's `MeshTopologyEdgeList::SplitEdge`. Unaffected faces come
+    /// first in source order and replacement triangles append in incident-face
+    /// order. A welded edge shares one appended split vertex. Splitting an
+    /// unwelded edge fully separates every replacement triangle, preserving
+    /// Rhino's raw-vertex and seam behavior. Exact endpoint splits retain
+    /// source triangles and append their coincident replacement.
+    pub fn split_topology_edge(
+        &self,
+        edge_index: usize,
+        parameter: Real,
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, GeometryError> {
+        let data = self.topology_data();
+        let edge_count = data.edges.len();
+        let Some((&(first_topology_vertex, second_topology_vertex), incidence)) =
+            data.edges.iter().nth(edge_index)
+        else {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_index,
+                edge_count,
+            });
+        };
+        if !parameter.is_finite() || !(0.0..=1.0).contains(&parameter) {
+            return Ok(None);
+        }
+
+        let first = data.topological_points[first_topology_vertex];
+        let second = data.topological_points[second_topology_vertex];
+        let edge = LineSegment::try_new(first, second, tolerance)?;
+        let split_point = if parameter < 0.5 {
+            edge.point_at(parameter)?
+        } else {
+            edge.reversed().point_at(1.0 - parameter)?
+        };
+        let split_at_endpoint = split_point == first || split_point == second;
+        let edge_uses = incidence.uses().collect::<Vec<_>>();
+        let first_raw_edge = edge_uses
+            .first()
+            .expect("a topology edge records at least one face use")
+            .raw_vertices;
+        let welded = edge_uses
+            .iter()
+            .all(|edge_use| edge_use.raw_vertices == first_raw_edge);
+        let mut affected_faces = vec![false; self.faces.len()];
+        let mut generated = Vec::<([Option<u32>; 3], bool)>::new();
+        for edge_use in &edge_uses {
+            affected_faces[edge_use.face] = true;
+            let [from, to] = edge_use.raw_vertices;
+            match self.faces[edge_use.face] {
+                MeshFace::Triangle(indices) => {
+                    let opposite = indices[(edge_use.side + 2) % 3];
+                    generated.extend([
+                        ([Some(opposite), Some(from), None], edge_use.forward),
+                        ([Some(opposite), None, Some(to)], edge_use.forward),
+                    ]);
+                }
+                MeshFace::Quad(indices) => {
+                    let after_edge = indices[(edge_use.side + 2) % 4];
+                    let before_edge = indices[(edge_use.side + 3) % 4];
+                    let (from_opposite, to_opposite) = if edge_use.forward {
+                        (before_edge, after_edge)
+                    } else {
+                        (after_edge, before_edge)
+                    };
+                    generated.extend([
+                        (
+                            [Some(from_opposite), None, Some(to_opposite)],
+                            edge_use.forward,
+                        ),
+                        ([Some(from_opposite), Some(from), None], edge_use.forward),
+                        ([Some(to_opposite), None, Some(to)], edge_use.forward),
+                    ]);
+                }
+            }
+        }
+        generated.retain(|(vertices, _)| {
+            let [a, b, c] =
+                vertices.map(|raw| raw.map_or(split_point, |raw| self.vertices[raw as usize]));
+            a != b && b != c && c != a
+        });
+
+        let retained_faces = self
+            .faces
+            .iter()
+            .copied()
+            .enumerate()
+            .filter_map(|(face_index, face)| {
+                (!affected_faces[face_index]
+                    || (split_at_endpoint && matches!(face, MeshFace::Triangle(_))))
+                .then_some(face)
+            })
+            .collect::<Vec<_>>();
+        let mut used = vec![false; self.vertices.len()];
+        for face in &retained_faces {
+            for &raw in face.indices() {
+                used[raw as usize] = true;
+            }
+        }
+        if welded {
+            for (vertices, _) in &generated {
+                for raw in vertices.iter().flatten() {
+                    used[*raw as usize] = true;
+                }
+            }
+        }
+
+        let retained_vertex_count = used.iter().filter(|&&retain| retain).count();
+        let mut raw_remap = vec![0_u32; self.vertices.len()];
+        let mut vertices =
+            Vec::with_capacity(retained_vertex_count.saturating_add(usize::from(welded)));
+        for (raw, (&point, retain)) in self.vertices.iter().zip(used).enumerate() {
+            if !retain {
+                continue;
+            }
+            raw_remap[raw] =
+                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            vertices.push(point);
+        }
+        let mut faces = retained_faces
+            .into_iter()
+            .map(|face| face.remapped(|raw| raw_remap[raw as usize]))
+            .collect::<Vec<_>>();
+
+        if welded {
+            let split_vertex =
+                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            vertices.push(split_point);
+            faces.extend(generated.into_iter().map(|(canonical, forward)| {
+                let mut triangle =
+                    canonical.map(|raw| raw.map_or(split_vertex, |raw| raw_remap[raw as usize]));
+                if !forward {
+                    triangle.swap(1, 2);
+                }
+                MeshFace::Triangle(triangle)
+            }));
+        } else {
+            for (canonical, forward) in generated {
+                let mut triangle = [0_u32; 3];
+                for (target, raw) in triangle.iter_mut().zip(canonical) {
+                    *target = u32::try_from(vertices.len())
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                    vertices.push(raw.map_or(split_point, |raw| self.vertices[raw as usize]));
+                }
+                if !forward {
+                    triangle.swap(1, 2);
+                }
+                faces.push(MeshFace::Triangle(triangle));
+            }
+        }
+        Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
+    }
+
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
         let triangle = *self.triangles.get(index)?;
         Some([
@@ -3424,6 +3580,174 @@ mod tests {
         assert_eq!(
             disconnected_quad.collapse_topology_edge(edge, Tolerance::DEFAULT),
             Err(GeometryError::DegenerateQuad { face: 0 })
+        );
+    }
+
+    #[test]
+    fn splits_welded_mesh_edges_in_rhino_face_and_vertex_order() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
+        let split = mesh
+            .split_topology_edge(edge, 0.25, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            split.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+                point(1.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(
+            split.triangles(),
+            &[
+                [1, 2, 3],
+                [2, 0, 3],
+                [2, 4, 0],
+                [2, 1, 4],
+                [3, 0, 4],
+                [3, 4, 1],
+            ]
+        );
+
+        let quad = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&quad, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
+        let split = quad
+            .split_topology_edge(edge, 0.25, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            split.faces(),
+            &[
+                MeshFace::Triangle([0, 4, 3]),
+                MeshFace::Triangle([0, 1, 4]),
+                MeshFace::Triangle([3, 4, 2]),
+            ]
+        );
+    }
+
+    #[test]
+    fn split_mesh_edge_fully_separates_unwelded_replacement_faces() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -4.0, 0.0),
+                point(-2.0, 1.0, 0.0),
+                point(6.0, -1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [0, 6, 2], [3, 5, 7]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
+        let split = mesh
+            .split_topology_edge(edge, 0.25, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            split.faces(),
+            &[
+                MeshFace::Triangle([0, 4, 1]),
+                MeshFace::Triangle([2, 3, 5]),
+                MeshFace::Triangle([6, 7, 8]),
+                MeshFace::Triangle([9, 10, 11]),
+                MeshFace::Triangle([12, 14, 13]),
+                MeshFace::Triangle([15, 17, 16]),
+            ]
+        );
+        assert_eq!(split.vertices().len(), 18);
+        assert_eq!(split.vertices()[6], point(0.0, 4.0, 0.0));
+        assert_eq!(split.vertices()[7], point(0.0, 0.0, 0.0));
+        assert_eq!(split.vertices()[8], point(1.0, 0.0, 0.0));
+        assert_eq!(split.vertices()[12], point(0.0, -4.0, 0.0));
+        assert_eq!(split.vertices()[13], point(0.0, 0.0, 0.0));
+        assert_eq!(split.vertices()[14], point(1.0, 0.0, 0.0));
+    }
+
+    #[test]
+    fn split_mesh_edge_matches_endpoint_rejection_and_validation_behavior() {
+        let triangle = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&triangle, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
+        let endpoint = triangle
+            .split_topology_edge(edge, 0.0, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            endpoint.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(endpoint.triangles(), &[[0, 1, 2], [2, 3, 1]]);
+        assert_eq!(
+            triangle
+                .split_topology_edge(edge, -0.25, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+        assert_eq!(
+            triangle
+                .split_topology_edge(edge, 1.25, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+        assert_eq!(
+            triangle
+                .split_topology_edge(edge, f64::NAN, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+        assert_eq!(
+            triangle.split_topology_edge(edge, 1.0e-12, Tolerance::DEFAULT),
+            Err(GeometryError::DegenerateTriangle { triangle: 0 })
+        );
+        let edge_count = triangle.topology().edge_count();
+        assert_eq!(
+            triangle.split_topology_edge(edge_count, 0.5, Tolerance::DEFAULT),
+            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_count,
+                edge_count,
+            })
         );
     }
 

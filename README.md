@@ -133,6 +133,7 @@ DeleteFaces Faces=2,0
 TriangulateMesh
 SwapMeshEdge Edge=1
 CollapseMeshEdge Edge=1
+SplitMeshEdge Edge=1 Parameter=0.25
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -308,6 +309,15 @@ components remain distinct, and surviving faces and vertices retain source
 order. Surviving objects keep identity, attributes, groups, and selection; an
 empty result deletes the object. A collapse that would leave a zero-area face
 is rejected atomically to preserve the validated-mesh invariant.
+`SplitMeshEdge` divides a selected topology edge at a normalized parameter in
+its deterministic wireframe direction. Use `Edge=1 Parameter=0.25`, provide an
+edge point followed by a split point, or enter the bare command for the same
+two-pick viewport workflow. Affected triangles become two triangles and quads
+become three; unaffected faces stay first and replacements append in Rhino
+order. Welded faces share one appended split vertex, while unwelded replacement
+triangles remain fully separated. Exact endpoint parameters preserve Rhino's
+coincident topology behavior. Object identity, attributes, groups, selection,
+and undo are retained; tolerance-degenerate results are rejected atomically.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

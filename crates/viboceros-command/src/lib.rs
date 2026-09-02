@@ -332,6 +332,9 @@ impl CommandRegistry {
             .register(CollapseMeshEdgeCommand)
             .expect("unique built-in command");
         registry
+            .register(SplitMeshEdgeCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractNonManifoldMeshEdgesCommand)
             .expect("unique built-in command");
         registry
@@ -7559,6 +7562,168 @@ fn selected_collapse_mesh_edges(
     }
 }
 
+const SPLIT_MESH_EDGE_USAGE: &str =
+    "SplitMeshEdge (edge-point split-point|Edge=index Parameter=number)";
+
+#[derive(Clone, Debug, PartialEq)]
+enum SplitMeshEdgeSelection {
+    Points {
+        edge_point: Point3,
+        split_point: Point3,
+    },
+    Edge {
+        edge: usize,
+        parameter: Real,
+    },
+}
+
+struct SplitMeshEdgeCommand;
+
+impl Command for SplitMeshEdgeCommand {
+    fn name(&self) -> &'static str {
+        "SplitMeshEdge"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selection = parse_split_mesh_edge_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedSplitMeshEdgeGeometry);
+                };
+                Ok(MeshTopologySource {
+                    id: object.id(),
+                    mesh: mesh.clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selections = selected_split_mesh_edges(&sources, &selection, document.tolerance())?;
+        let replacements = selections
+            .into_iter()
+            .map(|(source_index, edge_index, parameter)| {
+                let source = &sources[source_index];
+                let split = source
+                    .mesh
+                    .split_topology_edge(edge_index, parameter, document.tolerance())?
+                    .ok_or(CommandError::NoSplittableMeshEdges)?;
+                Ok((source.id, Geometry::Mesh(split)))
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        let split_edge_count = replacements.len();
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Split {split_edge_count} mesh edge(s) in {changed_mesh_count} mesh(es)"
+        ))
+    }
+}
+
+fn selected_split_mesh_edges(
+    sources: &[MeshTopologySource],
+    selection: &SplitMeshEdgeSelection,
+    tolerance: Tolerance,
+) -> Result<Vec<(usize, usize, Real)>, CommandError> {
+    match selection {
+        SplitMeshEdgeSelection::Edge { edge, parameter } => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let edge_count = source.mesh.topology().edge_count();
+                if *edge >= edge_count {
+                    return Err(CommandError::SplitMeshEdgeIndexOutOfRange {
+                        edge: *edge,
+                        edge_count,
+                    });
+                }
+                Ok((source_index, *edge, *parameter))
+            })
+            .collect(),
+        SplitMeshEdgeSelection::Points {
+            edge_point,
+            split_point,
+        } => {
+            let Some((source_index, edge_index)) =
+                closest_mesh_topology_edge(sources, *edge_point, tolerance)?
+            else {
+                return Err(CommandError::NoSplittableMeshEdges);
+            };
+            let edge = sources[source_index].mesh.wireframe_lines(tolerance)?[edge_index];
+            let parameter = edge.closest_parameter(*split_point, tolerance)?;
+            Ok(vec![(source_index, edge_index, parameter)])
+        }
+    }
+}
+
+fn parse_split_mesh_edge_arguments(
+    arguments: &[&str],
+) -> Result<SplitMeshEdgeSelection, CommandError> {
+    let mut edge = None;
+    let mut parameter = None;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Edge")
+            || option_name_eq(argument, "EdgeIndex")
+            || option_name_eq(argument, "Parameter")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(SPLIT_MESH_EDGE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if (option_name_eq(name, "Edge") || option_name_eq(name, "EdgeIndex")) && edge.is_none() {
+            edge = Some(
+                value
+                    .trim_start_matches('_')
+                    .parse::<usize>()
+                    .map_err(|_| CommandError::Usage(SPLIT_MESH_EDGE_USAGE))?,
+            );
+        } else if option_name_eq(name, "Parameter") && parameter.is_none() {
+            parameter = Some(parse_finite_real(value.trim_start_matches('_'))?);
+        } else {
+            return Err(CommandError::Usage(SPLIT_MESH_EDGE_USAGE));
+        }
+        index += consumed;
+    }
+
+    if edge.is_some() || parameter.is_some() {
+        require_consumed(&positional, 0, SPLIT_MESH_EDGE_USAGE)?;
+        let (Some(edge), Some(parameter)) = (edge, parameter) else {
+            return Err(CommandError::Usage(SPLIT_MESH_EDGE_USAGE));
+        };
+        if !(0.0..=1.0).contains(&parameter) {
+            return Err(CommandError::InvalidMeshEdgeSplitParameter(parameter));
+        }
+        Ok(SplitMeshEdgeSelection::Edge { edge, parameter })
+    } else {
+        let (edge_point, edge_consumed) = parse_point(&positional)?;
+        let (split_point, split_consumed) = parse_point(&positional[edge_consumed..])?;
+        require_consumed(
+            &positional,
+            edge_consumed + split_consumed,
+            SPLIT_MESH_EDGE_USAGE,
+        )?;
+        Ok(SplitMeshEdgeSelection::Points {
+            edge_point,
+            split_point,
+        })
+    }
+}
+
 const EXTRACT_NON_MANIFOLD_USAGE: &str =
     "ExtractNonManifoldMeshEdges [ExtractHangingFacesOnly=Yes|No] [MinimumFaceCount=count]";
 
@@ -12236,6 +12401,20 @@ pub enum CommandError {
     #[error("none of the selected mesh edges can be collapsed")]
     NoCollapsibleMeshEdges,
 
+    #[error("SplitMeshEdge supports selected meshes only")]
+    UnsupportedSplitMeshEdgeGeometry,
+
+    #[error(
+        "SplitMeshEdge edge index {edge} is outside the selected mesh's edge count {edge_count}"
+    )]
+    SplitMeshEdgeIndexOutOfRange { edge: usize, edge_count: usize },
+
+    #[error("SplitMeshEdge parameter {0} must lie in [0, 1]")]
+    InvalidMeshEdgeSplitParameter(Real),
+
+    #[error("none of the selected mesh edges can be split")]
+    NoSplittableMeshEdges,
+
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
 
@@ -12434,7 +12613,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -17005,6 +17184,214 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "CollapseMeshEdge Edge=0"),
             Err(CommandError::UnsupportedCollapseMeshEdgeGeometry)
+        ));
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+    }
+
+    #[test]
+    fn splits_mesh_edge_from_two_points_with_identity_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Retopology")
+            .unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Split target")
+            .with_object_color(ColorRgb::new(211, 77, 31));
+        let source = document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Retopology group".to_owned()), [source])
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "SplitMeshEdge 2,0,0 1,0,0")
+                .unwrap(),
+            "Split 1 mesh edge(s) in 1 mesh(es)"
+        );
+        assert!(document.is_selected(source));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        let Geometry::Mesh(split) = document.object(source).unwrap().geometry() else {
+            panic!("expected edge-split mesh")
+        };
+        assert_eq!(
+            split.vertices(),
+            &[
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+        assert_eq!(
+            split.triangles(),
+            &[
+                [1, 2, 3],
+                [2, 0, 3],
+                [2, 4, 0],
+                [2, 1, 4],
+                [3, 0, 4],
+                [3, 4, 1],
+            ]
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("SplitMeshEdge"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+    }
+
+    #[test]
+    fn split_mesh_edge_supports_explicit_endpoint_parameters() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        let second = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(14.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 4.0, 0.0).unwrap(),
+                    ],
+                    vec![[0, 1, 2]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([source, second], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "SplitMeshEdge Edge=0 Parameter=0")
+                .unwrap(),
+            "Split 2 mesh edge(s) in 2 mesh(es)"
+        );
+        for id in [source, second] {
+            let Geometry::Mesh(split) = document.object(id).unwrap().geometry() else {
+                panic!("expected endpoint-split mesh")
+            };
+            assert_eq!(split.triangles(), &[[0, 1, 2], [2, 3, 1]]);
+            assert_eq!(split.vertices()[3], split.vertices()[0]);
+        }
+    }
+
+    #[test]
+    fn split_mesh_edge_rejects_invalid_unsupported_and_degenerate_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "SplitMeshEdge Edge=0 Parameter=0.5"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "SplitMeshEdge Edge=3 Parameter=0.5"),
+            Err(CommandError::SplitMeshEdgeIndexOutOfRange {
+                edge: 3,
+                edge_count: 3,
+            })
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SplitMeshEdge Edge=0 Parameter=-0.1"),
+            Err(CommandError::InvalidMeshEdgeSplitParameter(parameter))
+                if parameter == -0.1
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SplitMeshEdge 2,0,0 0.000000000001,0,0"),
+            Err(CommandError::Geometry(GeometryError::DegenerateTriangle {
+                triangle: 0
+            }))
+        ));
+        for invalid in [
+            "SplitMeshEdge",
+            "SplitMeshEdge 1,0,0",
+            "SplitMeshEdge Edge=0",
+            "SplitMeshEdge Parameter=0.5",
+            "SplitMeshEdge Edge=-1 Parameter=0.5",
+            "SplitMeshEdge Edge=0 Parameter=nan",
+            "SplitMeshEdge Edge=0 Parameter=0.5 1,2,3",
+            "SplitMeshEdge Edge=0 Edge=1 Parameter=0.5",
+            "SplitMeshEdge Unknown=0",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let point = document
+            .add_geometry(Geometry::Point(Point3::try_new(5.0, 5.0, 5.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([source, point], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "SplitMeshEdge Edge=0 Parameter=0.5"),
+            Err(CommandError::UnsupportedSplitMeshEdgeGeometry)
         ));
         assert_eq!(
             document.object(source).unwrap().geometry(),
