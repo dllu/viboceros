@@ -317,6 +317,9 @@ impl CommandRegistry {
             .register(ExtractMeshEdgesCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtractMeshFacesCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractNonManifoldMeshEdgesCommand)
             .expect("unique built-in command");
         registry
@@ -6801,6 +6804,228 @@ fn parse_extract_mesh_edges_arguments(
     Ok(options)
 }
 
+const EXTRACT_MESH_FACES_USAGE: &str =
+    "ExtractMeshFaces (point|Faces=All|Faces=0,2,...) [MakeCopy=Yes|No]";
+
+#[derive(Clone, Debug, PartialEq)]
+enum ExtractMeshFaceSelection {
+    Point(Point3),
+    Faces(SurfaceFaceIndices),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct ExtractMeshFacesOptions {
+    selection: ExtractMeshFaceSelection,
+    make_copy: bool,
+}
+
+struct ExtractMeshFacesCommand;
+
+struct ExtractMeshFacesSource {
+    id: ObjectId,
+    mesh: TriangleMesh,
+    attributes: ObjectAttributes,
+    group_ids: Vec<GroupId>,
+}
+
+struct ExtractMeshFacesPlan {
+    source: ObjectId,
+    remainder: Option<TriangleMesh>,
+    extracted: TriangleMesh,
+    attributes: ObjectAttributes,
+    group_ids: Vec<GroupId>,
+}
+
+impl Command for ExtractMeshFacesCommand {
+    fn name(&self) -> &'static str {
+        "ExtractMeshFaces"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_extract_mesh_faces_arguments(arguments)?;
+        let sources = document
+            .selected_object_ids()
+            .map(|id| {
+                let object = document
+                    .object(id)
+                    .expect("selected object identities belong to the document");
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedExtractMeshFacesGeometry);
+                };
+                let group_ids = document
+                    .groups()
+                    .filter(|group| group.members().any(|member| member == id))
+                    .map(|group| group.id())
+                    .collect();
+                Ok(ExtractMeshFacesSource {
+                    id,
+                    mesh: mesh.clone(),
+                    attributes: object.attributes().clone(),
+                    group_ids,
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selections = selected_mesh_faces(&sources, &options.selection)?;
+        if selections.len() > MAX_SPAN_OUTPUT_OBJECTS {
+            return Err(too_many_span_outputs("ExtractMeshFaces"));
+        }
+        let mut extracted_face_count = 0_usize;
+        let mut plans = Vec::with_capacity(selections.len());
+        for (source_index, face_indices) in selections {
+            extracted_face_count = extracted_face_count
+                .checked_add(face_indices.len())
+                .ok_or_else(|| too_many_span_outputs("ExtractMeshFaces"))?;
+            let source = &sources[source_index];
+            let (remainder, extracted) = source.mesh.extract_faces(&face_indices)?.into_parts();
+            plans.push(ExtractMeshFacesPlan {
+                source: source.id,
+                remainder,
+                extracted,
+                attributes: source.attributes.clone(),
+                group_ids: source.group_ids.clone(),
+            });
+        }
+        let source_count = plans.len();
+
+        if !options.make_copy {
+            document.replace_object_geometries(plans.iter().map(|plan| {
+                (
+                    plan.source,
+                    Geometry::Mesh(plan.remainder.as_ref().unwrap_or(&plan.extracted).clone()),
+                )
+            }))?;
+        }
+
+        let mut output_ids = Vec::with_capacity(source_count);
+        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+        for plan in plans {
+            if !options.make_copy && plan.remainder.is_none() {
+                output_ids.push(plan.source);
+                continue;
+            }
+            let output = document
+                .add_geometry_with_attributes(Geometry::Mesh(plan.extracted), plan.attributes)?;
+            output_ids.push(output);
+            for group_id in plan.group_ids {
+                group_additions.entry(group_id).or_default().push(output);
+            }
+        }
+        for (group_id, additions) in group_additions {
+            document.add_group_members(group_id, additions)?;
+        }
+        document.select_objects_direct(output_ids, SelectionMode::Replace)?;
+        Ok(format!(
+            "Extracted {extracted_face_count} mesh face(s) from {source_count} mesh(es); source faces {}",
+            if options.make_copy {
+                "copied"
+            } else {
+                "removed"
+            }
+        ))
+    }
+}
+
+fn selected_mesh_faces(
+    sources: &[ExtractMeshFacesSource],
+    selection: &ExtractMeshFaceSelection,
+) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
+    match selection {
+        ExtractMeshFaceSelection::Faces(selection) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let face_count = source.mesh.face_count();
+                let face_indices = match selection {
+                    SurfaceFaceIndices::All => (0..face_count).collect(),
+                    SurfaceFaceIndices::Indices(indices) => {
+                        if let Some(&face) = indices.iter().find(|&&face| face >= face_count) {
+                            return Err(CommandError::ExtractMeshFacesFaceIndexOutOfRange {
+                                face,
+                                face_count,
+                            });
+                        }
+                        indices.clone()
+                    }
+                };
+                Ok((source_index, face_indices))
+            })
+            .collect(),
+        ExtractMeshFaceSelection::Point(target) => {
+            let mut best = None;
+            for (source_index, source) in sources.iter().enumerate() {
+                for face_index in 0..source.mesh.face_count() {
+                    let point = source.mesh.closest_point_on_face(face_index, *target)?;
+                    let distance = point.distance_to(*target)?;
+                    if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                        best = Some((distance, source_index, face_index));
+                    }
+                }
+            }
+            let (_, source, face) =
+                best.expect("every selected validated mesh has at least one face");
+            Ok(vec![(source, vec![face])])
+        }
+    }
+}
+
+fn parse_extract_mesh_faces_arguments(
+    arguments: &[&str],
+) -> Result<ExtractMeshFacesOptions, CommandError> {
+    let mut make_copy = false;
+    let mut face_selection = None;
+    let mut make_copy_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "MakeCopy")
+            || option_name_eq(argument, "Faces")
+            || option_name_eq(argument, "FaceIndices")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_MESH_FACES_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if option_name_eq(name, "MakeCopy") && !make_copy_seen {
+            make_copy = parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_MESH_FACES_USAGE))?;
+            make_copy_seen = true;
+        } else if (option_name_eq(name, "Faces") || option_name_eq(name, "FaceIndices"))
+            && face_selection.is_none()
+        {
+            face_selection = Some(parse_surface_face_indices(value, EXTRACT_MESH_FACES_USAGE)?);
+        } else {
+            return Err(CommandError::Usage(EXTRACT_MESH_FACES_USAGE));
+        }
+        index += consumed;
+    }
+    let selection = if let Some(faces) = face_selection {
+        require_consumed(&positional, 0, EXTRACT_MESH_FACES_USAGE)?;
+        ExtractMeshFaceSelection::Faces(faces)
+    } else {
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, EXTRACT_MESH_FACES_USAGE)?;
+        ExtractMeshFaceSelection::Point(point)
+    };
+    Ok(ExtractMeshFacesOptions {
+        selection,
+        make_copy,
+    })
+}
+
 const EXTRACT_NON_MANIFOLD_USAGE: &str =
     "ExtractNonManifoldMeshEdges [ExtractHangingFacesOnly=Yes|No] [MinimumFaceCount=count]";
 
@@ -11434,6 +11659,14 @@ pub enum CommandError {
     #[error("none of the selected meshes has an edge matching the extraction filter")]
     NoExtractableMeshEdges,
 
+    #[error("ExtractMeshFaces supports selected meshes only")]
+    UnsupportedExtractMeshFacesGeometry,
+
+    #[error(
+        "ExtractMeshFaces face index {face} is outside the selected mesh's face count {face_count}"
+    )]
+    ExtractMeshFacesFaceIndexOutOfRange { face: usize, face_count: usize },
+
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
 
@@ -11632,7 +11865,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -15082,6 +15315,281 @@ mod tests {
             assert_eq!(document.objects().len(), 2);
             assert_eq!(document.undo_label(), history.as_deref());
         }
+    }
+
+    #[test]
+    fn extracts_selected_mesh_faces_with_rhino_identity_attributes_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New MeshEdit")
+            .unwrap();
+        let vertices = vec![
+            Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(88.0, 88.0, 88.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 1.0, 1.0).unwrap(),
+        ];
+        let mesh = TriangleMesh::try_new(
+            vertices,
+            vec![[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source_attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Editable mesh")
+            .with_object_color(ColorRgb::new(17, 83, 149));
+        let source = document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh.clone()), source_attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Mesh parts".to_owned()), [source])
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractMeshFaces Faces=2,0 MakeCopy=No")
+                .unwrap(),
+            "Extracted 2 mesh face(s) from 1 mesh(es); source faces removed"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert!(!document.is_selected(source));
+        let extracted = document.selected_objects().next().unwrap();
+        let extracted_id = extracted.id();
+        assert_ne!(extracted_id, source);
+        assert_eq!(extracted.attributes(), &source_attributes);
+        let Geometry::Mesh(extracted_mesh) = extracted.geometry() else {
+            panic!("expected extracted mesh faces")
+        };
+        assert_eq!(extracted_mesh.triangles(), &[[1, 3, 4], [2, 0, 4]]);
+        let Geometry::Mesh(remainder) = document.object(source).unwrap().geometry() else {
+            panic!("expected parent mesh remainder")
+        };
+        assert_eq!(remainder.triangles(), &[[0, 1, 4], [3, 2, 4]]);
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source, extracted_id])
+        );
+        assert_eq!(document.undo_label(), Some("ExtractMeshFaces"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh.clone())
+        );
+        assert!(!document.is_selected(source));
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractMeshFaces Faces 1 MakeCopy Yes")
+                .unwrap(),
+            "Extracted 1 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh.clone())
+        );
+        assert!(!document.is_selected(source));
+        let copied = document.selected_objects().next().unwrap();
+        assert_eq!(copied.attributes(), &source_attributes);
+        assert!(matches!(
+            copied.geometry(),
+            Geometry::Mesh(copied) if copied.triangles() == [[0, 1, 2]]
+        ));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractMeshFaces Faces=3,2,1,0")
+                .unwrap(),
+            "Extracted 4 mesh face(s) from 1 mesh(es); source faces removed"
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.is_selected(source));
+        let Geometry::Mesh(extracted_all) = document.object(source).unwrap().geometry() else {
+            panic!("expected all extracted faces to reuse the source")
+        };
+        assert_eq!(
+            extracted_all.triangles(),
+            &[[3, 2, 4], [1, 3, 4], [0, 1, 4], [2, 0, 4]]
+        );
+
+        let mut already_compact = Document::default();
+        let one_face = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            already_compact.tolerance(),
+        )
+        .unwrap();
+        let one_face_id = already_compact
+            .add_geometry(Geometry::Mesh(one_face.clone()))
+            .unwrap();
+        already_compact
+            .select_object(one_face_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(
+            registry
+                .execute(&mut already_compact, "ExtractMeshFaces Faces=All")
+                .is_ok()
+        );
+        assert_eq!(already_compact.objects().len(), 1);
+        assert_eq!(
+            already_compact.object(one_face_id).unwrap().geometry(),
+            &Geometry::Mesh(one_face)
+        );
+        assert!(already_compact.is_selected(one_face_id));
+    }
+
+    #[test]
+    fn extract_mesh_faces_point_pick_targets_only_the_nearest_selected_mesh() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let near = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let far = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(100.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(102.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(100.0, 2.0, 2.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let near_id = document.add_geometry(Geometry::Mesh(near.clone())).unwrap();
+        let far_id = document.add_geometry(Geometry::Mesh(far.clone())).unwrap();
+        document
+            .select_objects([near_id, far_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractMeshFaces 100.25,0.25,8 MakeCopy=Yes")
+                .unwrap(),
+            "Extracted 1 mesh face(s) from 1 mesh(es); source faces copied"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert!(!document.is_selected(near_id));
+        assert!(!document.is_selected(far_id));
+        assert_eq!(
+            document.object(near_id).unwrap().geometry(),
+            &Geometry::Mesh(near)
+        );
+        assert_eq!(
+            document.object(far_id).unwrap().geometry(),
+            &Geometry::Mesh(far.clone())
+        );
+        assert_eq!(
+            document.selected_objects().next().unwrap().geometry(),
+            &Geometry::Mesh(far)
+        );
+    }
+
+    #[test]
+    fn extract_mesh_faces_rejects_empty_unsupported_and_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshFaces Faces=All"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        registry.execute(&mut document, "Point 0,0").unwrap();
+        let point_id = document.objects().next().unwrap().id();
+        document
+            .select_object(point_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshFaces Faces=All"),
+            Err(CommandError::UnsupportedExtractMeshFacesGeometry)
+        ));
+
+        let first = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [1, 3, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let second = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let first_id = document.add_geometry(Geometry::Mesh(first)).unwrap();
+        let second_id = document.add_geometry(Geometry::Mesh(second)).unwrap();
+        document
+            .select_objects([first_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshFaces Faces=1"),
+            Err(CommandError::ExtractMeshFacesFaceIndexOutOfRange {
+                face: 1,
+                face_count: 1,
+            })
+        ));
+        for invalid in [
+            "ExtractMeshFaces",
+            "ExtractMeshFaces Faces=",
+            "ExtractMeshFaces Faces=0,0",
+            "ExtractMeshFaces Faces=0 1,2,3",
+            "ExtractMeshFaces Faces=0 MakeCopy=Maybe",
+            "ExtractMeshFaces Faces=0 MakeCopy=No MakeCopy=Yes",
+            "ExtractMeshFaces Unknown=0",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

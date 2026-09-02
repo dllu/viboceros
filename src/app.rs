@@ -95,6 +95,9 @@ enum InteractiveCommand {
     DupEdge {
         output_on_current_layer: bool,
     },
+    ExtractMeshFaces {
+        make_copy: bool,
+    },
     WeldEdge,
     WeldVertices,
     UnweldEdge {
@@ -188,6 +191,7 @@ impl InteractiveCommand {
             Self::ExtractSrf { .. } => "ExtractSrf",
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
+            Self::ExtractMeshFaces { .. } => "ExtractMeshFaces",
             Self::WeldEdge => "WeldEdge",
             Self::WeldVertices => "WeldVertices",
             Self::UnweldEdge { .. } => "UnweldEdge",
@@ -299,6 +303,9 @@ impl InteractiveCommand {
             }
             Self::DupEdge { .. } => {
                 "DupEdge: pick an edge location on a selected surface, B-rep, or mesh (Esc to cancel)"
+            }
+            Self::ExtractMeshFaces { .. } => {
+                "ExtractMeshFaces: pick a face on a selected mesh (Esc to cancel)"
             }
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
@@ -475,6 +482,7 @@ impl InteractiveCommand {
             | Self::ExtractSrf { .. }
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
+            | Self::ExtractMeshFaces { .. }
             | Self::WeldEdge
             | Self::WeldVertices
             | Self::UnweldEdge { .. }
@@ -896,6 +904,29 @@ impl VibocerosApp {
             InteractiveCommand::DupEdge {
                 output_on_current_layer,
             }
+        } else if normalized == "extractmeshfaces" {
+            let mut make_copy = false;
+            let mut make_copy_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("MakeCopy") && !make_copy_seen {
+                    make_copy = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    make_copy_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::ExtractMeshFaces { make_copy }
         } else if matches!(normalized.as_str(), "weldedge" | "weldmeshedge") {
             if !arguments.is_empty() {
                 return false;
@@ -1258,6 +1289,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
+                | InteractiveCommand::ExtractMeshFaces { .. }
                 | InteractiveCommand::WeldEdge
                 | InteractiveCommand::WeldVertices
                 | InteractiveCommand::UnweldEdge { .. }
@@ -1681,6 +1713,14 @@ impl VibocerosApp {
                     } else {
                         "Input"
                     },
+                ));
+            }
+            InteractiveCommand::ExtractMeshFaces { make_copy } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtractMeshFaces {} MakeCopy={}",
+                    format_model_point(point),
+                    if make_copy { "Yes" } else { "No" },
                 ));
             }
             InteractiveCommand::WeldEdge => {
@@ -2217,6 +2257,7 @@ impl VibocerosApp {
         let mut cull_unused_mesh_vertices_clicked = false;
         let mut split_disjoint_mesh_clicked = false;
         let mut extract_mesh_edges_clicked = false;
+        let mut extract_mesh_faces_clicked = false;
         let mut extract_non_manifold_clicked = false;
         let mut extract_duplicate_faces_clicked = false;
         let mut close_curve_clicked = false;
@@ -2409,6 +2450,10 @@ impl VibocerosApp {
                 extract_mesh_edges_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Mesh Edges"))
                     .on_hover_text("Extract naked and unwelded edges from selected meshes")
+                    .clicked();
+                extract_mesh_faces_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract Mesh Face"))
+                    .on_hover_text("Pick a face to separate from a selected mesh")
                     .clicked();
                 extract_non_manifold_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Non-Manifold"))
@@ -2655,6 +2700,8 @@ impl VibocerosApp {
             self.execute_command("SplitDisjointMesh");
         } else if extract_mesh_edges_clicked {
             self.execute_command("ExtractMeshEdges");
+        } else if extract_mesh_faces_clicked {
+            self.try_start_interactive_command("ExtractMeshFaces");
         } else if extract_non_manifold_clicked {
             self.execute_command("ExtractNonManifoldMeshEdges");
         } else if extract_duplicate_faces_clicked {
@@ -3573,6 +3620,52 @@ mod tests {
     }
 
     #[test]
+    fn interactive_extract_mesh_faces_uses_one_face_pick_and_copy_option() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app
+            .document
+            .add_geometry(Geometry::Mesh(mesh.clone()))
+            .unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ExtractMeshFaces MakeCopy=Yes"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtractMeshFaces { make_copy: true })
+        );
+        assert!(app.command_log.back().unwrap().contains("pick a face"));
+        app.accept_drafting_point(point(0.5, 3.5, 2.0));
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 2);
+        assert_eq!(
+            app.document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+        assert!(!app.document.is_selected(source));
+        assert!(matches!(
+            app.document.selected_objects().next().unwrap().geometry(),
+            Geometry::Mesh(extracted) if extracted.triangles() == [[0, 1, 2]]
+        ));
+        assert_eq!(app.document.undo_label(), Some("ExtractMeshFaces"));
+        assert!(!app.try_start_interactive_command("ExtractMeshFaces MakeCopy=Maybe"));
+        assert!(!app.try_start_interactive_command("ExtractMeshFaces MakeCopy=No MakeCopy=Yes"));
+    }
+
+    #[test]
     fn interactive_weld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -4095,6 +4188,7 @@ mod tests {
             "ExtractSrf",
             "DupEdge",
             "DupFaceBorder",
+            "ExtractMeshFaces",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
             "WeldEdge",

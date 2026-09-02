@@ -208,6 +208,15 @@ pub enum GeometryError {
     #[error("a polygon mesh contains too many faces")]
     TooManyMeshFaces,
 
+    #[error("a mesh face subset must contain at least one face")]
+    EmptyMeshFaceSubset,
+
+    #[error("mesh face index {face} is outside the face count {face_count}")]
+    MeshFaceIndexOutOfRange { face: usize, face_count: usize },
+
+    #[error("mesh face index {face} appears more than once")]
+    DuplicateMeshFaceIndex { face: usize },
+
     #[error(
         "a mesh face-angle interval must be finite and satisfy 0 <= greater than < less than <= pi"
     )]

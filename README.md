@@ -127,6 +127,7 @@ ExtractControlPolygon OutputLayer=Current
 ExtractSrf 2,1,0 Copy=No OutputLayer=Input
 ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
 ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
+ExtractMeshFaces Faces=2,0 MakeCopy=No
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -272,6 +273,12 @@ keeps only one-face edges. `ExtractBy=BreakAngle` accepts strict
 combines each filtered edge network into deterministic edge-exact polylines,
 including branched Euler trails; the default emits individual lines. Sources
 and results remain selected, matching Rhino's extraction workflow.
+`ExtractMeshFaces` separates an ordered zero-based face list from every
+selected mesh (`Faces=All` is supported), or omits the selector for a one-pick
+viewport workflow. The unselected remainder keeps its source identity; the
+selected result inherits attributes and group membership. Extracting every
+face reuses the source identity. `MakeCopy=Yes` instead leaves each source
+unchanged. Both parts compact unused vertices in Rhino source order.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

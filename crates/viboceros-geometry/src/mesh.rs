@@ -310,6 +310,51 @@ impl TriangleMesh {
         ])
     }
 
+    /// Returns the point on a logical triangle or quadrilateral face nearest
+    /// to `target`. Quadrilaterals use the mesh's deterministic A-C display
+    /// diagonal, with exact ties resolved toward the A-B-C half.
+    pub fn closest_point_on_face(
+        &self,
+        index: usize,
+        target: Point3,
+    ) -> Result<Point3, GeometryError> {
+        let face =
+            self.faces
+                .get(index)
+                .copied()
+                .ok_or(GeometryError::MeshFaceIndexOutOfRange {
+                    face: index,
+                    face_count: self.faces.len(),
+                })?;
+        match face {
+            MeshFace::Triangle([a, b, c]) => closest_point_on_triangle(
+                target,
+                self.vertices[a as usize],
+                self.vertices[b as usize],
+                self.vertices[c as usize],
+            ),
+            MeshFace::Quad([a, b, c, d]) => {
+                let first = closest_point_on_triangle(
+                    target,
+                    self.vertices[a as usize],
+                    self.vertices[b as usize],
+                    self.vertices[c as usize],
+                )?;
+                let second = closest_point_on_triangle(
+                    target,
+                    self.vertices[a as usize],
+                    self.vertices[c as usize],
+                    self.vertices[d as usize],
+                )?;
+                if second.distance_to(target)? < first.distance_to(target)? {
+                    Ok(second)
+                } else {
+                    Ok(first)
+                }
+            }
+        }
+    }
+
     /// Builds OpenNURBS-compatible edge topology after welding vertices at
     /// exactly equal 3D locations. This recognizes indexed meshes and
     /// triangle-soup imports consistently without applying model tolerance.
@@ -759,6 +804,41 @@ impl TriangleMesh {
             .into_iter()
             .map(|faces| self.piece_from_faces(&faces))
             .collect()
+    }
+
+    /// Removes the requested source faces into a separate mesh.
+    ///
+    /// The extracted face order follows `face_indices`, while the remainder
+    /// retains source face order. Both meshes discard unused vertices and keep
+    /// their retained vertices in source order, matching RhinoCommon's
+    /// `MeshFaceList.ExtractFaces` behavior.
+    pub fn extract_faces(
+        &self,
+        face_indices: &[usize],
+    ) -> Result<MeshFaceExtraction, GeometryError> {
+        if face_indices.is_empty() {
+            return Err(GeometryError::EmptyMeshFaceSubset);
+        }
+        let mut extracted_mask = vec![false; self.faces.len()];
+        for &face in face_indices {
+            if face >= self.faces.len() {
+                return Err(GeometryError::MeshFaceIndexOutOfRange {
+                    face,
+                    face_count: self.faces.len(),
+                });
+            }
+            if std::mem::replace(&mut extracted_mask[face], true) {
+                return Err(GeometryError::DuplicateMeshFaceIndex { face });
+            }
+        }
+        let remainder_faces = (0..self.faces.len())
+            .filter(|&face| !extracted_mask[face])
+            .collect::<Vec<_>>();
+        Ok(MeshFaceExtraction {
+            remainder: (!remainder_faces.is_empty())
+                .then(|| self.subset_preserving_vertex_order(&remainder_faces)),
+            extracted: self.subset_preserving_vertex_order(face_indices),
+        })
     }
 
     /// Removes faces around exact-location edges used by at least
@@ -1867,6 +1947,86 @@ fn validate_mesh_edge_filter(filter: MeshEdgeFilter) -> Result<(), GeometryError
     } else {
         Err(GeometryError::InvalidMeshFaceAngleInterval)
     }
+}
+
+fn closest_point_on_triangle(
+    target: Point3,
+    a: Point3,
+    b: Point3,
+    c: Point3,
+) -> Result<Point3, GeometryError> {
+    let ab_vector = a.vector_to(b)?;
+    let ac_vector = a.vector_to(c)?;
+    let ap_vector = a.vector_to(target)?;
+    let bp_vector = b.vector_to(target)?;
+    let cp_vector = c.vector_to(target)?;
+    let mut products = [
+        ab_vector.dot(ap_vector)?,
+        ac_vector.dot(ap_vector)?,
+        ab_vector.dot(bp_vector)?,
+        ac_vector.dot(bp_vector)?,
+        ab_vector.dot(cp_vector)?,
+        ac_vector.dot(cp_vector)?,
+    ];
+    let product_scale = products
+        .iter()
+        .fold(0.0_f64, |current, value| current.max(value.abs()));
+    debug_assert!(
+        product_scale > 0.0,
+        "a validated triangle has nonzero dot products"
+    );
+    for product in &mut products {
+        *product /= product_scale;
+    }
+    let [d1, d2, d3, d4, d5, d6] = products;
+    let ab = ab_vector.to_array();
+    let ac = ac_vector.to_array();
+    if d1 <= 0.0 && d2 <= 0.0 {
+        return Ok(a);
+    }
+
+    if d3 >= 0.0 && d4 <= d3 {
+        return Ok(b);
+    }
+
+    let vc = d1.mul_add(d4, -d3 * d2);
+    if vc <= 0.0 && d1 >= 0.0 && d3 <= 0.0 {
+        return triangle_barycentric_point(a, ab, ac, d1 / (d1 - d3), 0.0);
+    }
+
+    if d6 >= 0.0 && d5 <= d6 {
+        return Ok(c);
+    }
+
+    let vb = d5.mul_add(d2, -d1 * d6);
+    if vb <= 0.0 && d2 >= 0.0 && d6 <= 0.0 {
+        return triangle_barycentric_point(a, ab, ac, 0.0, d2 / (d2 - d6));
+    }
+
+    let va = d3.mul_add(d6, -d5 * d4);
+    let d43 = d4 - d3;
+    let d56 = d5 - d6;
+    if va <= 0.0 && d43 >= 0.0 && d56 >= 0.0 {
+        let edge_parameter = d43 / (d43 + d56);
+        return triangle_barycentric_point(a, ab, ac, 1.0 - edge_parameter, edge_parameter);
+    }
+
+    let inverse_sum = 1.0 / (va + vb + vc);
+    triangle_barycentric_point(a, ab, ac, vb * inverse_sum, vc * inverse_sum)
+}
+
+fn triangle_barycentric_point(
+    origin: Point3,
+    first: [Real; 3],
+    second: [Real; 3],
+    first_weight: Real,
+    second_weight: Real,
+) -> Result<Point3, GeometryError> {
+    Point3::try_new(
+        second[0].mul_add(second_weight, first[0].mul_add(first_weight, origin.x())),
+        second[1].mul_add(second_weight, first[1].mul_add(first_weight, origin.y())),
+        second[2].mul_add(second_weight, first[2].mul_add(first_weight, origin.z())),
+    )
 }
 
 fn validate_mesh_break_angle(break_angle_radians: Real) -> Result<(), GeometryError> {
@@ -3436,6 +3596,130 @@ mod tests {
         )
         .unwrap();
         assert_eq!(half_welded.explode_pieces(), vec![half_welded.clone()]);
+    }
+
+    #[test]
+    fn extracts_requested_faces_in_caller_order_and_compacts_both_parts() {
+        let vertices = vec![
+            point(99.0, 99.0, 99.0),
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(88.0, 88.0, 88.0),
+            point(0.0, 2.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(1.0, 1.0, 1.0),
+        ];
+        let faces = vec![[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]];
+        let mesh = TriangleMesh::try_new(vertices, faces, Tolerance::DEFAULT).unwrap();
+
+        let extraction = mesh.extract_faces(&[2, 0]).unwrap();
+        assert_eq!(
+            extraction.extracted().vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(1.0, 1.0, 1.0),
+            ]
+        );
+        assert_eq!(extraction.extracted().triangles(), &[[1, 3, 4], [2, 0, 4]]);
+        let remainder = extraction.remainder().unwrap();
+        assert_eq!(remainder.vertices(), extraction.extracted().vertices());
+        assert_eq!(remainder.triangles(), &[[0, 1, 4], [3, 2, 4]]);
+
+        let all = mesh.extract_faces(&[3, 2, 1, 0]).unwrap();
+        assert!(all.remainder().is_none());
+        assert_eq!(
+            all.extracted().triangles(),
+            &[[3, 2, 4], [1, 3, 4], [0, 1, 4], [2, 0, 4]]
+        );
+
+        let mixed = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Triangle([0, 1, 4])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mixed_extraction = mixed.extract_faces(&[0]).unwrap();
+        assert_eq!(
+            mixed_extraction.extracted().faces(),
+            &[MeshFace::Quad([0, 1, 2, 3])]
+        );
+        assert_eq!(
+            mixed_extraction.remainder().unwrap().faces(),
+            &[MeshFace::Triangle([0, 1, 2])]
+        );
+    }
+
+    #[test]
+    fn finds_closest_points_on_triangle_and_quad_faces() {
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(10.0, 0.0, 2.0),
+                point(12.0, 0.0, 2.0),
+                point(10.0, 2.0, 2.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Triangle([4, 5, 6])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            mesh.closest_point_on_face(0, point(1.0, 3.0, 5.0))
+                .unwrap()
+                .is_near(point(1.0, 3.0, 0.0), Tolerance::DEFAULT)
+        );
+        assert!(
+            mesh.closest_point_on_face(1, point(13.0, 3.0, 4.0))
+                .unwrap()
+                .is_near(point(11.0, 1.0, 2.0), Tolerance::DEFAULT)
+        );
+        assert_eq!(
+            mesh.closest_point_on_face(2, point(0.0, 0.0, 0.0)),
+            Err(GeometryError::MeshFaceIndexOutOfRange {
+                face: 2,
+                face_count: 2,
+            })
+        );
+    }
+
+    #[test]
+    fn face_extraction_rejects_empty_duplicate_and_out_of_range_subsets() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            mesh.extract_faces(&[]),
+            Err(GeometryError::EmptyMeshFaceSubset)
+        );
+        assert_eq!(
+            mesh.extract_faces(&[0, 0]),
+            Err(GeometryError::DuplicateMeshFaceIndex { face: 0 })
+        );
+        assert_eq!(
+            mesh.extract_faces(&[1]),
+            Err(GeometryError::MeshFaceIndexOutOfRange {
+                face: 1,
+                face_count: 1,
+            })
+        );
     }
 
     #[test]

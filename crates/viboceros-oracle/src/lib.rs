@@ -298,6 +298,12 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         triangles: Vec<[u32; 3]>,
     },
+    MeshExtractFaces {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        face_indices: Vec<usize>,
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -372,6 +378,7 @@ impl Operation {
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
             | Self::MeshExtractDuplicateFaces { id, .. }
+            | Self::MeshExtractFaces { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1248,6 +1255,32 @@ fn execute(
                 })
             };
             (value, elapsed)
+        }
+        Operation::MeshExtractFaces {
+            vertices,
+            triangles,
+            face_indices,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let (extraction, elapsed) = measure(iterations, || {
+                black_box(&mesh).extract_faces(black_box(face_indices))
+            })?;
+            let (remainder, extracted) = extraction.into_parts();
+            (
+                json!({
+                    "extracted": mesh_value(&extracted),
+                    "remainder": remainder.as_ref().map(mesh_value),
+                }),
+                elapsed,
+            )
         }
         Operation::NurbsSurfaceExtractPoints {
             degree_u,
@@ -5546,6 +5579,65 @@ mod tests {
                     ],
                 },
             })
+        );
+    }
+
+    #[test]
+    fn extracts_requested_mesh_faces_for_oracle_comparison() {
+        let vertices = vec![
+            [99.0, 99.0, 99.0],
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [88.0, 88.0, 88.0],
+            [0.0, 2.0, 0.0],
+            [2.0, 2.0, 0.0],
+            [1.0, 1.0, 1.0],
+        ];
+        let triangles = vec![[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]];
+        let response = run_request(&request(vec![
+            Operation::MeshExtractFaces {
+                id: "subset".to_owned(),
+                vertices: vertices.clone(),
+                triangles: triangles.clone(),
+                face_indices: vec![2, 0],
+            },
+            Operation::MeshExtractFaces {
+                id: "all".to_owned(),
+                vertices,
+                triangles,
+                face_indices: vec![3, 2, 1, 0],
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "extracted": {
+                    "triangles": [[1, 3, 4], [2, 0, 4]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
+                        [2.0, 2.0, 0.0],
+                        [1.0, 1.0, 1.0],
+                    ],
+                },
+                "remainder": {
+                    "triangles": [[0, 1, 4], [3, 2, 4]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
+                        [2.0, 2.0, 0.0],
+                        [1.0, 1.0, 1.0],
+                    ],
+                },
+            })
+        );
+        assert!(response.results[1].value["remainder"].is_null());
+        assert_eq!(
+            response.results[1].value["extracted"]["triangles"],
+            json!([[3, 2, 4], [1, 3, 4], [0, 1, 4], [2, 0, 4]])
         );
     }
 

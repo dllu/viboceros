@@ -4253,6 +4253,42 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_extract_faces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        face_indices = operation["face_indices"]
+        if not isinstance(face_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in face_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh extraction face indices must be integers")
+        face_indices = [int(index) for index in face_indices]
+
+        def extract_faces():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            extracted = None
+            try:
+                extracted = remainder.Faces.ExtractFaces(face_indices)
+                if extracted is None:
+                    raise ValueError("mesh face extraction failed")
+                return {
+                    "extracted": _mesh_value(extracted),
+                    "remainder": (
+                        None if remainder.Faces.Count == 0 else _mesh_value(remainder)
+                    ),
+                }
+            finally:
+                if extracted is not None:
+                    extracted.Dispose()
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, extract_faces)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_extract_non_manifold":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         selective = operation["selective"]
