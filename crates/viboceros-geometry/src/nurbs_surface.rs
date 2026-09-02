@@ -2,12 +2,12 @@ use std::ops::RangeInclusive;
 
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
-    clamped_uniform_knots, curve_points_coincident, de_boor, knot_vector_is_periodic,
-    project_homogeneous, stable_divided_difference, validate_direction,
+    clamped_uniform_knots, control_polygon_range, curve_points_coincident, de_boor,
+    knot_vector_is_periodic, project_homogeneous, stable_divided_difference, validate_direction,
 };
 use crate::{
-    AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, Point3, Real,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
+    Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
     vector::product_three,
 };
 
@@ -1173,6 +1173,114 @@ impl NurbsSurface {
         points
     }
 
+    /// Builds Rhino's cleaned polygon mesh through the Euclidean control net.
+    ///
+    /// Regular cells remain quads. Cells beside a singular side become
+    /// triangles, and invalid collapsed cells are omitted before unused
+    /// vertices are culled. Closed directions retain one coincident seam row
+    /// or column; periodic directions use their domain-aligned Greville
+    /// window rather than the raw repeated-control prefix.
+    pub fn control_polygon_mesh(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Option<TriangleMesh>, GeometryError> {
+        let periodic_u = self.is_periodic_u();
+        let periodic_v = self.is_periodic_v();
+        let (start_u, end_u) = control_polygon_range(
+            self.degree_u,
+            self.control_point_count_u,
+            &self.knots_u,
+            periodic_u,
+        );
+        let (start_v, end_v) = control_polygon_range(
+            self.degree_v,
+            self.control_point_count_v,
+            &self.knots_v,
+            periodic_v,
+        );
+        let count_u = end_u - start_u;
+        let count_v = end_v - start_v;
+        let vertex_count = count_u
+            .checked_mul(count_v)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if vertex_count
+            .checked_sub(1)
+            .is_some_and(|last| u32::try_from(last).is_err())
+        {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+        let face_capacity = count_u
+            .checked_sub(1)
+            .and_then(|u| count_v.checked_sub(1).and_then(|v| u.checked_mul(v)))
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for v in start_v..end_v {
+            for u in start_u..end_u {
+                vertices.push(self.control_points[self.control_index(u, v)].point());
+            }
+        }
+
+        let singular_sides = control_net_singular_sides(
+            &vertices,
+            count_u,
+            count_v,
+            [
+                knots_are_clamped_at_start(self.degree_v, &self.knots_v),
+                knots_are_clamped_at_end(self.degree_u, &self.knots_u),
+                knots_are_clamped_at_end(self.degree_v, &self.knots_v),
+                knots_are_clamped_at_start(self.degree_u, &self.knots_u),
+            ],
+        );
+        if self.is_closed_u()? {
+            for v in 0..count_v {
+                let first = vertices[v * count_u];
+                vertices[v * count_u + count_u - 1] = first;
+            }
+        }
+        if self.is_closed_v()? {
+            let last_row = count_u * (count_v - 1);
+            for u in 0..count_u {
+                vertices[last_row + u] = vertices[u];
+            }
+        }
+        snap_singular_control_net_sides(&mut vertices, count_u, count_v, singular_sides);
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_capacity)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        let mut omitted_face = false;
+        for v in 1..count_v {
+            for u in 1..count_u {
+                let current = v * count_u + u;
+                let raw = [
+                    current - count_u - 1,
+                    current - count_u,
+                    current,
+                    current - 1,
+                ]
+                .map(|index| index as u32);
+                match clean_control_net_face(raw, &vertices) {
+                    Some(face) => faces.push(face),
+                    None => omitted_face = true,
+                }
+            }
+        }
+        if faces.is_empty() {
+            return Ok(None);
+        }
+        let mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
+        Ok(Some(if omitted_face {
+            mesh.culled_unused_vertices().0
+        } else {
+            mesh
+        }))
+    }
+
     fn isocurve_controls(
         &self,
         direction: SurfaceIsoDirection,
@@ -2095,6 +2203,98 @@ fn curve_has_extent(curve: &crate::NurbsCurve) -> bool {
         .any(|control| control.point() != first)
 }
 
+fn control_net_singular_sides(
+    vertices: &[Point3],
+    count_u: usize,
+    count_v: usize,
+    clamped: [bool; 4],
+) -> [bool; 4] {
+    let south =
+        clamped[0] && (1..count_u).all(|u| curve_points_coincident(vertices[0], vertices[u]));
+    let east_start = count_u - 1;
+    let east = clamped[1]
+        && (1..count_v).all(|v| {
+            curve_points_coincident(vertices[east_start], vertices[v * count_u + east_start])
+        });
+    let north_start = (count_v - 1) * count_u;
+    let north = clamped[2]
+        && (1..count_u)
+            .all(|u| curve_points_coincident(vertices[north_start], vertices[north_start + u]));
+    let west = clamped[3]
+        && (1..count_v).all(|v| curve_points_coincident(vertices[0], vertices[v * count_u]));
+    [south, east, north, west]
+}
+
+fn snap_singular_control_net_sides(
+    vertices: &mut [Point3],
+    count_u: usize,
+    count_v: usize,
+    singular: [bool; 4],
+) {
+    if singular[0] {
+        let point = vertices[0];
+        vertices[..count_u].fill(point);
+    }
+    if singular[1] {
+        let index = count_u - 1;
+        let point = vertices[index];
+        for v in 1..count_v {
+            vertices[v * count_u + index] = point;
+        }
+    }
+    if singular[2] {
+        let start = (count_v - 1) * count_u;
+        let point = vertices[start];
+        vertices[start..start + count_u].fill(point);
+    }
+    if singular[3] {
+        let point = vertices[0];
+        for v in 1..count_v {
+            vertices[v * count_u] = point;
+        }
+    }
+}
+
+/// Mirrors the `bCleanMesh` face cleanup in OpenNURBS'
+/// `ON_ControlPolygonMesh`, including which duplicated pole index survives.
+fn clean_control_net_face(mut indices: [u32; 4], vertices: &[Point3]) -> Option<MeshFace> {
+    let mut points = indices.map(|index| vertices[index as usize]);
+    if points[0] == points[1] {
+        indices[1] = indices[2];
+        indices[2] = indices[3];
+        points[1] = points[2];
+        points[2] = points[3];
+    }
+    if points[1] == points[2] {
+        indices[2] = indices[3];
+        points[2] = points[3];
+    }
+    if points[2] == points[3] {
+        indices[2] = indices[3];
+        points[2] = points[3];
+    }
+    if points[3] == points[0] {
+        indices[0] = indices[1];
+        indices[1] = indices[2];
+        indices[2] = indices[3];
+        points[0] = points[1];
+        points[1] = points[2];
+        points[2] = points[3];
+    }
+    if indices[0] == indices[1]
+        || indices[1] == indices[2]
+        || indices[3] == indices[0]
+        || points[0] == points[2]
+        || points[1] == points[3]
+    {
+        None
+    } else if indices[2] == indices[3] {
+        Some(MeshFace::Triangle([indices[0], indices[1], indices[2]]))
+    } else {
+        Some(MeshFace::Quad(indices))
+    }
+}
+
 fn isocurve_controls_coincident(left: &crate::NurbsCurve, right: &crate::NurbsCurve) -> bool {
     if left.degree() != right.degree()
         || left.knots() != right.knots()
@@ -2400,10 +2600,18 @@ fn compensated_add(sum: &mut Real, correction: &mut Real, value: Real) {
 }
 
 fn knots_are_clamped(degree: usize, knots: &[Real]) -> bool {
-    knots[..=degree].iter().all(|knot| *knot == knots[0])
-        && knots[knots.len() - degree - 1..]
-            .iter()
-            .all(|knot| *knot == knots[knots.len() - 1])
+    knots_are_clamped_at_start(degree, knots) && knots_are_clamped_at_end(degree, knots)
+}
+
+fn knots_are_clamped_at_start(degree: usize, knots: &[Real]) -> bool {
+    // OpenNURBS omits our two superfluous end knots. This is the equivalent
+    // `ON_IsKnotVectorClamped(order, count, knots, 0)` comparison.
+    knots[1] == knots[degree]
+}
+
+fn knots_are_clamped_at_end(degree: usize, knots: &[Real]) -> bool {
+    let control_count = knots.len() - degree - 1;
+    knots[control_count] == knots[knots.len() - 2]
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -4256,6 +4464,139 @@ mod tests {
         assert!(!periodic_v.is_periodic_u());
         assert!(periodic_v.is_periodic_v());
         assert_eq!(periodic_v.extract_point_locations().len(), 6);
+    }
+
+    #[test]
+    fn control_polygon_mesh_matches_rhino_quads_periodic_seams_and_poles() {
+        let bilinear = NurbsSurface::try_bilinear([
+            point(0.0, 10.0, 0.0),
+            point(3.0, 10.0, 0.0),
+            point(3.0, 12.0, 1.0),
+            point(0.0, 12.0, 0.0),
+        ])
+        .unwrap()
+        .control_polygon_mesh(Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+        assert_eq!(
+            bilinear.vertices(),
+            &[
+                point(0.0, 10.0, 0.0),
+                point(3.0, 10.0, 0.0),
+                point(0.0, 12.0, 0.0),
+                point(3.0, 12.0, 1.0),
+            ]
+        );
+        assert_eq!(bilinear.faces(), &[MeshFace::Quad([0, 1, 3, 2])]);
+        assert_eq!(bilinear.topology().edge_count(), 4);
+
+        let periodic = NurbsSurface::try_new(
+            2,
+            1,
+            5,
+            2,
+            vec![
+                point(20.0, 10.0, 0.0),
+                point(22.0, 10.0, 0.0),
+                point(21.0, 12.0, 0.0),
+                point(20.0, 10.0, 0.0),
+                point(22.0, 10.0, 0.0),
+                point(20.0, 10.0, 3.0),
+                point(22.0, 10.0, 3.0),
+                point(21.0, 12.0, 3.0),
+                point(20.0, 10.0, 3.0),
+                point(22.0, 10.0, 3.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap()
+        .control_polygon_mesh(Tolerance::DEFAULT)
+        .unwrap()
+        .unwrap();
+        assert_eq!(
+            periodic.vertices(),
+            &[
+                point(22.0, 10.0, 0.0),
+                point(21.0, 12.0, 0.0),
+                point(20.0, 10.0, 0.0),
+                point(22.0, 10.0, 0.0),
+                point(22.0, 10.0, 3.0),
+                point(21.0, 12.0, 3.0),
+                point(20.0, 10.0, 3.0),
+                point(22.0, 10.0, 3.0),
+            ]
+        );
+        assert_eq!(
+            periodic.faces(),
+            &[
+                MeshFace::Quad([0, 1, 5, 4]),
+                MeshFace::Quad([1, 2, 6, 5]),
+                MeshFace::Quad([2, 3, 7, 6]),
+            ]
+        );
+        assert_eq!(periodic.topology().edge_count(), 9);
+
+        let frame = Frame3::try_from_normal(
+            point(40.0, 10.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sphere = NurbsSurface::try_sphere(frame, 2.0)
+            .unwrap()
+            .control_polygon_mesh(Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(sphere.vertices().len(), 45);
+        assert_eq!(sphere.face_count(), 32);
+        assert_eq!(
+            sphere
+                .faces()
+                .iter()
+                .filter(|face| face.is_triangle())
+                .count(),
+            16
+        );
+        assert_eq!(
+            sphere.faces().iter().filter(|face| face.is_quad()).count(),
+            16
+        );
+        assert_eq!(sphere.faces()[0], MeshFace::Triangle([0, 10, 9]));
+        assert_eq!(sphere.faces()[24], MeshFace::Triangle([27, 28, 36]));
+        assert_eq!(sphere.topology().edge_count(), 56);
+    }
+
+    #[test]
+    fn control_polygon_mesh_only_snaps_coincident_clamped_sides() {
+        let nearly_collapsed = NurbsSurface::try_new(
+            1,
+            2,
+            2,
+            4,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0e-10, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(1.0, 2.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(1.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![-1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        let strict = Tolerance::try_new(1.0e-15, 1.0e-15, 1.0e-12).unwrap();
+        let mesh = nearly_collapsed
+            .control_polygon_mesh(strict)
+            .unwrap()
+            .unwrap();
+
+        assert_eq!(mesh.face_count(), 3);
+        assert!(mesh.faces().iter().all(|face| face.is_quad()));
+        assert_eq!(mesh.vertices()[1], point(1.0e-10, 0.0, 0.0));
     }
 
     #[test]

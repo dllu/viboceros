@@ -343,7 +343,10 @@ impl Viewport {
                         document.tolerance(),
                     ),
                 ),
-                Geometry::Mesh(mesh) => (2, self.mesh_pick_distance(pointer, rect, mesh)),
+                Geometry::Mesh(mesh) => (
+                    2,
+                    self.mesh_pick_distance(pointer, rect, mesh, document.tolerance()),
+                ),
             };
             if distance > PICK_CAPTURE_PIXELS {
                 continue;
@@ -430,7 +433,28 @@ impl Viewport {
             .fold(f32::INFINITY, f32::min)
     }
 
-    fn mesh_pick_distance(&self, pointer: Pos2, rect: Rect, mesh: &TriangleMesh) -> f32 {
+    fn mesh_pick_distance(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        mesh: &TriangleMesh,
+        tolerance: Tolerance,
+    ) -> f32 {
+        if self.display_mode == DisplayMode::Wireframe {
+            return mesh
+                .wireframe_lines(tolerance)
+                .map(|lines| {
+                    lines
+                        .into_iter()
+                        .filter_map(|line| {
+                            self.project(line.start(), rect)
+                                .zip(self.project(line.end(), rect))
+                        })
+                        .map(|(start, end)| point_segment_distance(pointer, start, end))
+                        .fold(f32::INFINITY, f32::min)
+                })
+                .unwrap_or(f32::INFINITY);
+        }
         let mut nearest = f32::INFINITY;
         for triangle_index in 0..mesh.triangles().len() {
             let Some(points) = mesh.triangle_points(triangle_index) else {
@@ -465,7 +489,7 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            return self.mesh_pick_distance(pointer, rect, &mesh);
+            return self.mesh_pick_distance(pointer, rect, &mesh, tolerance);
         }
         surface
             .wireframe_curves(wire_density)
@@ -489,7 +513,7 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            return self.mesh_pick_distance(pointer, rect, &mesh);
+            return self.mesh_pick_distance(pointer, rect, &mesh, tolerance);
         }
         brep.wireframe_curves(wire_density, tolerance)
             .map(|curves| {
@@ -1296,6 +1320,39 @@ mod tests {
 
         let wireframe = Viewport::default();
         assert_eq!(wireframe.pick_object(center, rect, &document), None);
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        assert_eq!(shaded.pick_object(center, rect, &document), Some(mesh_id));
+    }
+
+    #[test]
+    fn wireframe_quad_picking_ignores_the_triangulation_diagonal() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let mesh_id = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new_faces(
+                    vec![
+                        point(-2.0, -2.0, 0.0),
+                        point(2.0, -2.0, 0.0),
+                        point(2.0, 2.0, 0.0),
+                        point(-2.0, 2.0, 0.0),
+                    ],
+                    vec![viboceros_geometry::MeshFace::Quad([0, 1, 2, 3])],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let center = Viewport::default()
+            .project(point(0.0, 0.0, 0.0), rect)
+            .unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &document),
+            None
+        );
         let shaded = Viewport {
             display_mode: DisplayMode::Shaded,
             ..Viewport::default()

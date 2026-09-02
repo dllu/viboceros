@@ -1874,6 +1874,7 @@ impl VibocerosApp {
         let mut curve_start_clicked = false;
         let mut curve_end_clicked = false;
         let mut extract_points_clicked = false;
+        let mut extract_control_polygon_clicked = false;
         let mut duplicate_border_clicked = false;
         let mut extract_isocurve_clicked = false;
         let mut extract_all_isocurves_clicked = false;
@@ -2046,6 +2047,10 @@ impl VibocerosApp {
                 extract_points_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Pts"))
                     .on_hover_text("Duplicate defining points and raw mesh vertices")
+                    .clicked();
+                extract_control_polygon_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Control Polygon"))
+                    .on_hover_text("Extract curve control polylines or surface control meshes")
                     .clicked();
                 duplicate_border_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Dup Border"))
@@ -2242,6 +2247,8 @@ impl VibocerosApp {
             self.execute_command("CrvEnd");
         } else if extract_points_clicked {
             self.execute_command("ExtractPt");
+        } else if extract_control_polygon_clicked {
+            self.execute_command("ExtractControlPolygon");
         } else if duplicate_border_clicked {
             self.execute_command("DupBorder");
         } else if extract_isocurve_clicked {

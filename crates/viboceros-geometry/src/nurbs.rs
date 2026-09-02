@@ -1,7 +1,7 @@
 use std::ops::RangeInclusive;
 
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, Vector3,
+    AffineTransform3, BoundingBox3, GeometryError, Point3, Polyline3, Real, Tolerance, Vector3,
     integration::integrate_adaptive, require_finite,
 };
 
@@ -297,6 +297,33 @@ impl NurbsCurve {
             points.pop();
         }
         Ok(points)
+    }
+
+    /// Fits Rhino's extracted degree-one control polygon through this curve's
+    /// Euclidean control locations.
+    ///
+    /// Periodic curves use the domain-aligned Greville window returned by
+    /// `Curve.ControlPolygon`, retaining one repeated endpoint to close the
+    /// polyline. Unlike `ExtractPt`, this can therefore rotate the first
+    /// output point away from raw control index zero.
+    pub fn control_polygon(&self, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
+        let (start, end) = control_polygon_range(
+            self.degree,
+            self.control_points.len(),
+            &self.knots,
+            self.is_periodic(),
+        );
+        let mut points = self.control_points[start..end]
+            .iter()
+            .map(|control| control.point())
+            .collect::<Vec<_>>();
+        if self.is_periodic() {
+            let first = points[0];
+            *points
+                .last_mut()
+                .expect("a periodic control window is nonempty") = first;
+        }
+        Polyline3::try_new(points, tolerance)
     }
 
     pub fn control_point_bounds(&self) -> BoundingBox3 {
@@ -948,6 +975,43 @@ pub(crate) fn curve_points_coincident(left: Point3, right: Point3) -> bool {
         })
 }
 
+/// Returns the half-open raw-control window used by OpenNURBS control
+/// polygons. Periodic directions keep one closing control and slide the
+/// window until its endpoint Greville abscissae bracket the active domain.
+pub(crate) fn control_polygon_range(
+    degree: usize,
+    control_count: usize,
+    knots: &[Real],
+    periodic: bool,
+) -> (usize, usize) {
+    debug_assert!(degree >= 1);
+    debug_assert_eq!(knots.len(), control_count + degree + 1);
+    if !periodic {
+        return (0, control_count);
+    }
+
+    let greville = |control: usize| {
+        let values = &knots[control + 1..=control + degree];
+        let scale = values.iter().map(|value| value.abs()).fold(0.0, Real::max);
+        if scale == 0.0 {
+            0.0
+        } else {
+            (values.iter().map(|value| value / scale).sum::<Real>() / degree as Real)
+                .clamp(-1.0, 1.0)
+                * scale
+        }
+    };
+    let domain_start = knots[degree];
+    let domain_end = knots[control_count];
+    let mut start = 0;
+    let mut end = control_count - (degree - 1);
+    while end < control_count && greville(start) < domain_start && greville(end - 1) <= domain_end {
+        start += 1;
+        end += 1;
+    }
+    (start, end)
+}
+
 pub(crate) fn knot_vector_is_periodic(order: usize, control_count: usize, knots: &[Real]) -> bool {
     if order < 2 || control_count < order || knots.len() != order + control_count - 2 {
         return false;
@@ -1484,6 +1548,57 @@ mod tests {
                 ControlPointCurveClosure::Sharp,
             ),
             Err(GeometryError::InsufficientClosedControlPoints { actual: 2 })
+        );
+    }
+
+    #[test]
+    fn control_polygon_uses_rhino_periodic_window_and_rejects_zero_segments() {
+        let points = vec![
+            point(0.0, 0.0),
+            point(2.0, 0.0),
+            point(3.0, 2.0),
+            point(1.0, 4.0),
+            point(-1.0, 2.0),
+        ];
+        let periodic = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            points.clone(),
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert_eq!(
+            periodic
+                .control_polygon(Tolerance::DEFAULT)
+                .unwrap()
+                .vertices(),
+            &[
+                points[0], points[1], points[2], points[3], points[4], points[0]
+            ]
+        );
+
+        let degree_two = NurbsCurve::try_new(
+            2,
+            vec![points[0], points[1], points[2], points[0], points[1]],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        assert_eq!(
+            degree_two
+                .control_polygon(Tolerance::DEFAULT)
+                .unwrap()
+                .vertices(),
+            &[points[1], points[2], points[0], points[1]]
+        );
+
+        let repeated = NurbsCurve::try_new(
+            3,
+            vec![points[0], points[0], points[2], points[3], points[4]],
+            vec![0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(
+            repeated.control_polygon(Tolerance::DEFAULT),
+            Err(GeometryError::DegeneratePolylineSegment { segment: 0 })
         );
     }
 

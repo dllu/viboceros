@@ -119,6 +119,7 @@ CrvStart
 CrvEnd
 ExtractPt OutputLayer=Input Output=Points
 ExtractPt OutputLayer=Input Output=PointCloud
+ExtractControlPolygon OutputLayer=Current
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -221,6 +222,12 @@ omitted. B-reps preserve each exact naked edge, while mesh edges are welded by
 exact location into boundary polylines. Multi-edge borders are grouped until
 the document gains an exact polycurve primitive. Results use the current layer
 and become selected by default; `OutputLayer=Input` uses each source layer.
+`ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
+of selected curves and creates mixed triangle/quad meshes through selected
+untrimmed NURBS surface control nets. Periodic control windows align to the
+active domain, closed seams remain explicit, and singular surface sides become
+triangles without artificial quad diagonals. Results default to the current
+layer; `OutputLayer=Input` and `TargetObject` use each source object's layer.
 `ExtractIsocurve` creates the exact U, V, or both rational isocurves nearest a
 model-space point on every selected NURBS surface or B-rep. B-rep results come
 from the nearest trimmed face and are split exactly around outer boundaries and

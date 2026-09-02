@@ -248,6 +248,9 @@ impl CommandRegistry {
             .register(ExtractPtCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtractControlPolygonCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractIsocurveCommand)
             .expect("unique built-in command");
         registry
@@ -3220,6 +3223,128 @@ fn parse_extract_point_arguments(arguments: &[&str]) -> Result<ExtractPointOptio
         output_layer,
         output,
     })
+}
+
+const EXTRACT_CONTROL_POLYGON_USAGE: &str =
+    "ExtractControlPolygon [OutputLayer=Current|Input|TargetObject]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ExtractControlPolygonOutputLayer {
+    Current,
+    Input,
+    TargetObject,
+}
+
+struct ExtractControlPolygonCommand;
+
+impl Command for ExtractControlPolygonCommand {
+    fn name(&self) -> &'static str {
+        "ExtractControlPolygon"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let output_layer = parse_extract_control_polygon_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.geometry().clone(), object.attributes().layer_id()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let current_layer = document.current_layer_id();
+        let mut staged = Vec::new();
+        staged
+            .try_reserve(selected.len())
+            .map_err(|_| too_many_span_outputs("ExtractControlPolygon"))?;
+        for (geometry, input_layer) in &selected {
+            let geometry = match geometry {
+                Geometry::NurbsSurface(surface) => surface
+                    .control_polygon_mesh(document.tolerance())?
+                    .map(Geometry::Mesh),
+                Geometry::NurbsCurve(curve) => Some(Geometry::Polyline(
+                    curve.control_polygon(document.tolerance())?,
+                )),
+                Geometry::Line(_)
+                | Geometry::Circle(_)
+                | Geometry::Arc(_)
+                | Geometry::Ellipse(_)
+                | Geometry::Polyline(_) => {
+                    let curve = geometry
+                        .nurbs_curve_representation()?
+                        .expect("supported non-NURBS curves have exact NURBS forms");
+                    Some(Geometry::Polyline(
+                        curve.control_polygon(document.tolerance())?,
+                    ))
+                }
+                Geometry::Point(_)
+                | Geometry::PointCloud(_)
+                | Geometry::Brep(_)
+                | Geometry::Mesh(_) => {
+                    return Err(CommandError::UnsupportedExtractControlPolygonGeometry);
+                }
+            };
+            let Some(geometry) = geometry else {
+                continue;
+            };
+            if staged.len() == MAX_SPAN_OUTPUT_OBJECTS {
+                return Err(too_many_span_outputs("ExtractControlPolygon"));
+            }
+            let layer = match output_layer {
+                ExtractControlPolygonOutputLayer::Current => current_layer,
+                ExtractControlPolygonOutputLayer::Input
+                | ExtractControlPolygonOutputLayer::TargetObject => *input_layer,
+            };
+            staged.push((geometry, layer));
+        }
+        if staged.is_empty() {
+            return Err(CommandError::NoExtractableControlPolygons);
+        }
+
+        let output_count = staged.len();
+        let mut output_ids = Vec::with_capacity(output_count);
+        for (geometry, layer) in staged {
+            output_ids.push(
+                document
+                    .add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(layer))?,
+            );
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Extracted {output_count} control polygon(s) from {} object(s)",
+            selected.len()
+        ))
+    }
+}
+
+fn parse_extract_control_polygon_arguments(
+    arguments: &[&str],
+) -> Result<ExtractControlPolygonOutputLayer, CommandError> {
+    if arguments.is_empty() {
+        return Ok(ExtractControlPolygonOutputLayer::Current);
+    }
+    let (name, value, consumed) = if let Some((name, value)) = arguments[0].split_once('=') {
+        (name, value, 1)
+    } else {
+        let value = arguments
+            .get(1)
+            .ok_or(CommandError::Usage(EXTRACT_CONTROL_POLYGON_USAGE))?;
+        (arguments[0], *value, 2)
+    };
+    require_consumed(arguments, consumed, EXTRACT_CONTROL_POLYGON_USAGE)?;
+    if !option_name_eq(name, "OutputLayer") {
+        return Err(CommandError::Usage(EXTRACT_CONTROL_POLYGON_USAGE));
+    }
+    let value = value.trim_start_matches('_');
+    if value.eq_ignore_ascii_case("Current") {
+        Ok(ExtractControlPolygonOutputLayer::Current)
+    } else if value.eq_ignore_ascii_case("Input") {
+        Ok(ExtractControlPolygonOutputLayer::Input)
+    } else if value.eq_ignore_ascii_case("TargetObject") {
+        Ok(ExtractControlPolygonOutputLayer::TargetObject)
+    } else {
+        Err(CommandError::Usage(EXTRACT_CONTROL_POLYGON_USAGE))
+    }
 }
 
 const EXTRACT_ISOCURVE_USAGE: &str =
@@ -8819,6 +8944,14 @@ pub enum CommandError {
     #[error("none of the selected objects has an open border")]
     NoDuplicateBorders,
 
+    #[error(
+        "ExtractControlPolygon supports selected lines, analytic curves, polylines, NURBS curves, and untrimmed NURBS surfaces only"
+    )]
+    UnsupportedExtractControlPolygonGeometry,
+
+    #[error("none of the selected objects has an extractable control polygon")]
+    NoExtractableControlPolygons,
+
     #[error("ExtractIsocurve supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractIsocurveGeometry,
 
@@ -9070,7 +9203,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -10072,6 +10205,201 @@ mod tests {
             registry.execute(&mut point_only, "ExtractPt Output=PointCloud"),
             Err(CommandError::NoExtractablePoints)
         ));
+    }
+
+    #[test]
+    fn extracts_curve_and_surface_control_polygons_with_rhino_layers_and_seams() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Inputs").unwrap();
+        let input_layer = document.current_layer_id();
+        registry.execute(&mut document, "Line 0,0,0 2,3,4").unwrap();
+        registry.execute(&mut document, "Circle 10,0,0 2").unwrap();
+        let periodic_points = [
+            Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(22.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(21.0, 2.0, 0.0).unwrap(),
+        ];
+        let periodic = NurbsCurve::try_new(
+            2,
+            vec![
+                periodic_points[0],
+                periodic_points[1],
+                periodic_points[2],
+                periodic_points[0],
+                periodic_points[1],
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsCurve(periodic))
+            .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(30.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(33.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(33.0, 2.0, 1.0).unwrap(),
+            Point3::try_new(30.0, 2.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+
+        registry
+            .execute(&mut document, "Layer New Results")
+            .unwrap();
+        let result_layer = document.current_layer_id();
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractControlPolygon OutputLayer=Input")
+                .unwrap(),
+            "Extracted 4 control polygon(s) from 4 object(s)"
+        );
+        assert!(source_ids.iter().all(|id| !document.is_selected(*id)));
+        let outputs = document
+            .objects()
+            .skip(source_ids.len())
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 4);
+        assert!(outputs.iter().all(|object| {
+            object.attributes().layer_id() == input_layer && document.is_selected(object.id())
+        }));
+        let Geometry::Polyline(line_polygon) = outputs[0].geometry() else {
+            panic!("line control polygon must remain a polyline object")
+        };
+        assert_eq!(line_polygon.vertices().len(), 2);
+        let Geometry::Polyline(circle_polygon) = outputs[1].geometry() else {
+            panic!("circle control polygon must be a polyline object")
+        };
+        assert!(circle_polygon.is_closed());
+        assert_eq!(circle_polygon.vertices().len(), 9);
+        let Geometry::Polyline(periodic_polygon) = outputs[2].geometry() else {
+            panic!("periodic control polygon must be a polyline object")
+        };
+        assert_eq!(
+            periodic_polygon.vertices(),
+            &[
+                periodic_points[1],
+                periodic_points[2],
+                periodic_points[0],
+                periodic_points[1],
+            ]
+        );
+        let Geometry::Mesh(surface_polygon) = outputs[3].geometry() else {
+            panic!("surface control polygon must be a mesh object")
+        };
+        assert_eq!(
+            surface_polygon.faces(),
+            &[viboceros_geometry::MeshFace::Quad([0, 1, 3, 2])]
+        );
+        assert_eq!(surface_polygon.topology().edge_count(), 4);
+        assert_eq!(document.undo_label(), Some("ExtractControlPolygon"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), source_ids.len());
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractControlPolygon")
+                .unwrap(),
+            "Extracted 4 control polygon(s) from 4 object(s)"
+        );
+        assert!(
+            document
+                .objects()
+                .skip(source_ids.len())
+                .all(|object| object.attributes().layer_id() == result_layer)
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "ExtractControlPolygon OutputLayer _TargetObject",
+            )
+            .unwrap();
+        assert!(
+            document
+                .objects()
+                .skip(source_ids.len())
+                .all(|object| object.attributes().layer_id() == input_layer)
+        );
+    }
+
+    #[test]
+    fn extract_control_polygon_rejects_bad_inputs_and_options_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 2,0").unwrap();
+        registry.execute(&mut document, "Point 5,5").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        let object_count = document.objects().len();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractControlPolygon"),
+            Err(CommandError::UnsupportedExtractControlPolygonGeometry)
+        ));
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.undo_label(), history.as_deref());
+        for invalid in [
+            "ExtractControlPolygon OutputLayer",
+            "ExtractControlPolygon OutputLayer=Other",
+            "ExtractControlPolygon OutputLayer=Input OutputLayer=Current",
+            "ExtractControlPolygon Other=Input",
+            "ExtractControlPolygon stray",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+            assert_eq!(document.objects().len(), object_count);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractControlPolygon"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+
+        let points = [
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(12.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(14.0, 1.0, 0.0).unwrap(),
+            Point3::try_new(15.0, 0.0, 0.0).unwrap(),
+        ];
+        let repeated = NurbsCurve::try_new(
+            3,
+            vec![points[0], points[0], points[1], points[2], points[3]],
+            vec![0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let repeated_id = document
+            .add_geometry(Geometry::NurbsCurve(repeated))
+            .unwrap();
+        document
+            .select_objects_direct([repeated_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        let object_count = document.objects().len();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractControlPolygon"),
+            Err(CommandError::Geometry(
+                GeometryError::DegeneratePolylineSegment { segment: 0 }
+            ))
+        ));
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
