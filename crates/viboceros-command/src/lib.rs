@@ -297,6 +297,9 @@ impl CommandRegistry {
             .register(RotateCommand)
             .expect("unique built-in command");
         registry
+            .register(RotateThreeDimensionalCommand)
+            .expect("unique built-in command");
+        registry
             .register(MirrorCommand)
             .expect("unique built-in command");
         registry
@@ -4799,7 +4802,7 @@ impl Command for ScaleCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
@@ -4828,7 +4831,7 @@ impl Command for ScaleOneDimensionalCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_1D_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_1D_USAGE)?;
         let (origin, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
 
@@ -4880,7 +4883,7 @@ impl Command for ScaleTwoDimensionalCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_2D_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_2D_USAGE)?;
         let (center, consumed) = parse_point(&positional)?;
         let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
@@ -4913,7 +4916,7 @@ impl Command for ScaleNonUniformCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_NU_USAGE)?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_NU_USAGE)?;
         let (origin, consumed) = parse_point(&positional)?;
         let [x_factor, y_factor, z_factor] = positional[consumed..] else {
             return Err(CommandError::Usage(SCALE_NU_USAGE));
@@ -4933,6 +4936,11 @@ impl Command for ScaleNonUniformCommand {
     }
 }
 
+const ROTATE_USAGE: &str = "Rotate center degrees | center reference target [Copy=Yes|No]";
+const ROTATE_3D_USAGE: &str =
+    "Rotate3D axis-start axis-end degrees | axis-start axis-end reference target [Copy=Yes|No]";
+const MIRROR_USAGE: &str = "Mirror axis-start axis-end [Copy=Yes|No]";
+
 struct RotateCommand;
 
 impl Command for RotateCommand {
@@ -4942,8 +4950,9 @@ impl Command for RotateCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (center, consumed) = parse_point(arguments)?;
-        let remaining = &arguments[consumed..];
+        let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_USAGE)?;
+        let (center, consumed) = parse_point(&positional)?;
+        let remaining = &positional[consumed..];
         let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
             parse_finite_real(remaining[0])?.to_radians()
         } else {
@@ -4952,16 +4961,56 @@ impl Command for RotateCommand {
             require_consumed(
                 remaining,
                 reference_consumed + target_consumed,
-                "Rotate center degrees | center reference target",
+                ROTATE_USAGE,
             )?;
             top_view_angle(center, reference, target, document.tolerance())?
         };
         let axis = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
         let transform = AffineTransform3::try_rotation(center, axis, angle_radians)?;
-        let count = document.transform_objects(selected, transform)?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
-            "Rotated {count} object(s) by {:.6} degrees",
-            angle_radians.to_degrees()
+            "Rotated {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
+            angle_radians.to_degrees(),
+        ))
+    }
+}
+
+struct RotateThreeDimensionalCommand;
+
+impl Command for RotateThreeDimensionalCommand {
+    fn name(&self) -> &'static str {
+        "Rotate3D"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_3D_USAGE)?;
+        let (axis_start, start_consumed) = parse_point(&positional)?;
+        let (axis_end, end_consumed) = parse_point(&positional[start_consumed..])?;
+        let consumed = start_consumed + end_consumed;
+        let remaining = &positional[consumed..];
+        let axis = axis_start
+            .vector_to(axis_end)?
+            .normalized(document.tolerance())?;
+        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_finite_real(remaining[0])?.to_radians()
+        } else {
+            let (reference, reference_consumed) = parse_point(remaining)?;
+            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+            require_consumed(
+                remaining,
+                reference_consumed + target_consumed,
+                ROTATE_3D_USAGE,
+            )?;
+            axis_rotation_angle(axis_start, axis, reference, target, document.tolerance())?
+        };
+        let transform = AffineTransform3::try_rotation(axis_start, axis, angle_radians)?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Rotated {transformed} object(s) around a 3D axis by {:.6} degrees, creating {copied} copy object(s)",
+            angle_radians.to_degrees(),
         ))
     }
 }
@@ -4975,17 +5024,17 @@ impl Command for MirrorCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (axis_start, consumed) = parse_point(arguments)?;
-        let (axis_end, end_consumed) = parse_point(&arguments[consumed..])?;
-        require_consumed(
-            arguments,
-            consumed + end_consumed,
-            "Mirror axisStart axisEnd",
-        )?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, MIRROR_USAGE)?;
+        let (axis_start, consumed) = parse_point(&positional)?;
+        let (axis_end, end_consumed) = parse_point(&positional[consumed..])?;
+        require_consumed(&positional, consumed + end_consumed, MIRROR_USAGE)?;
         let normal = top_view_mirror_normal(axis_start, axis_end, document.tolerance())?;
         let transform = AffineTransform3::try_reflection(axis_start, normal)?;
-        let count = document.transform_objects(selected, transform)?;
-        Ok(format!("Mirrored {count} object(s)"))
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Mirrored {transformed} object(s), creating {copied} copy object(s)"
+        ))
     }
 }
 
@@ -5100,7 +5149,7 @@ fn parse_nonzero_scale(value: &str) -> Result<Real, CommandError> {
     }
 }
 
-fn parse_scale_copy_arguments<'a>(
+fn parse_transform_copy_arguments<'a>(
     arguments: &[&'a str],
     usage: &'static str,
 ) -> Result<(Vec<&'a str>, bool), CommandError> {
@@ -5193,6 +5242,28 @@ fn top_view_angle(
     let to = top_view_vector(center, target)?.normalized(tolerance)?;
     let cosine = from.as_vector().dot(to.as_vector())?.clamp(-1.0, 1.0);
     let sine = from.as_vector().cross(to.as_vector())?.z();
+    Ok(sine.atan2(cosine))
+}
+
+fn axis_rotation_angle(
+    axis_origin: Point3,
+    axis: UnitVector3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    let perpendicular_direction = |point: Point3| -> Result<UnitVector3, CommandError> {
+        let vector = axis_origin.vector_to(point)?;
+        let axial = axis.as_vector().scaled(vector.dot(axis.as_vector())?)?;
+        Ok(subtract_vectors(vector, axial)?.normalized(tolerance)?)
+    };
+    let from = perpendicular_direction(reference)?;
+    let to = perpendicular_direction(target)?;
+    let cosine = from.as_vector().dot(to.as_vector())?.clamp(-1.0, 1.0);
+    let sine = axis
+        .as_vector()
+        .dot(from.as_vector().cross(to.as_vector())?)?
+        .clamp(-1.0, 1.0);
     Ok(sine.atan2(cosine))
 }
 
@@ -6009,7 +6080,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -11214,6 +11285,82 @@ mod tests {
         assert_eq!(
             position(&document, original),
             Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn rotate_three_dimensional_and_transform_copy_options_are_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 2,0,1").unwrap();
+        let original = document.objects().next().unwrap().id();
+        document
+            .select_object(original, SelectionMode::Replace)
+            .unwrap();
+        let position = |document: &Document, id: ObjectId| {
+            let Geometry::Point(point) = document.object(id).unwrap().geometry() else {
+                panic!("expected a point")
+            };
+            *point
+        };
+
+        registry
+            .execute(&mut document, "Rotate3D 0,0,0 0,0,2 90")
+            .unwrap();
+        assert!(position(&document, original).is_near(
+            Point3::try_new(0.0, 2.0, 1.0).unwrap(),
+            document.tolerance()
+        ));
+        assert_eq!(document.undo_label(), Some("Rotate3D"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Rotate3D 0,0,0 0,0,2 1,0,5 0,1,-2 Copy=Yes")
+            .unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(2.0, 0.0, 1.0).unwrap()
+        );
+        let copy = document.objects().nth(1).unwrap().id();
+        assert!(position(&document, copy).is_near(
+            Point3::try_new(0.0, 2.0, 1.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(document.is_selected(original));
+        assert!(!document.is_selected(copy));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Rotate 0,0 90 Copy=Yes")
+            .unwrap();
+        assert_eq!(document.objects().len(), 2);
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Mirror 0,0 0,1 Copy=Yes")
+            .unwrap();
+        let mirrored = document.objects().nth(1).unwrap().id();
+        assert_eq!(
+            position(&document, mirrored),
+            Point3::try_new(-2.0, 0.0, 1.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "Rotate3D 0,0,0 0,0,0 90",
+            "Rotate3D 0,0,0 0,0,2 0,0,1 1,0,0",
+            "Rotate3D 0,0,0 0,0,2 90 Copy=Yes Copy=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(2.0, 0.0, 1.0).unwrap()
         );
         assert_eq!(document.undo_label(), history.as_deref());
     }

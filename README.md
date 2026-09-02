@@ -76,6 +76,7 @@ Scale1D 0,0 2 1,0
 Scale2D 0,0 2
 ScaleNU 0,0,0 2 .5 1 Copy=Yes
 Rotate 0,0 45
+Rotate3D 0,0,0 0,0,1 90 Copy=Yes
 Mirror 0,-5 0,5
 Group Assembly
 Group All Everything
@@ -146,6 +147,8 @@ to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
 `Rotate` to pick center/reference/target points, `Mirror` to pick a two-point
 axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
 independent world x/y/z factors; all scale variants accept `Copy=Yes`.
+`Rotate3D` picks an axis start/end followed by angle reference/target points;
+`Rotate`, `Rotate3D`, and `Mirror` also accept `Copy=Yes`.
 `ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a

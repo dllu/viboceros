@@ -92,6 +92,9 @@ enum InteractiveCommand {
         center: Option<Point3>,
         reference: Option<Point3>,
     },
+    Rotate3D {
+        points: [Option<Point3>; 3],
+    },
     Mirror {
         start: Option<Point3>,
     },
@@ -118,6 +121,7 @@ impl InteractiveCommand {
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { kind, .. } => kind.name(),
             Self::Rotate { .. } => "Rotate",
+            Self::Rotate3D { .. } => "Rotate3D",
             Self::Mirror { .. } => "Mirror",
         }
     }
@@ -271,6 +275,16 @@ impl InteractiveCommand {
             Self::Rotate {
                 reference: Some(_), ..
             } => "Rotate: pick the target point in the viewport (Esc to cancel)",
+            Self::Rotate3D { points } => match points {
+                [None, _, _] => "Rotate3D: pick the axis start in the viewport (Esc to cancel)",
+                [Some(_), None, _] => "Rotate3D: pick the axis end in the viewport (Esc to cancel)",
+                [Some(_), Some(_), None] => {
+                    "Rotate3D: pick the reference point in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), Some(_)] => {
+                    "Rotate3D: pick the target point in the viewport (Esc to cancel)"
+                }
+            },
             Self::Mirror { start: None } => {
                 "Mirror: pick the first axis point in the viewport (Esc to cancel)"
             }
@@ -302,6 +316,9 @@ impl InteractiveCommand {
             | Self::ArrayPolar { .. }
             | Self::Scale { center: None, .. }
             | Self::Rotate { center: None, .. }
+            | Self::Rotate3D {
+                points: [None, _, _],
+            }
             | Self::Mirror { start: None } => None,
             Self::Line { start }
             | Self::Circle { center: start }
@@ -335,12 +352,18 @@ impl InteractiveCommand {
                 center: Some(center),
                 ..
             } => Some(center),
+            Self::Rotate3D {
+                points: [Some(start), _, _],
+            } => Some(start),
         }
     }
 
     const fn reference(self) -> Option<Point3> {
         match self {
             Self::Scale { reference, .. } | Self::Rotate { reference, .. } => reference,
+            Self::Rotate3D {
+                points: [_, _, reference],
+            } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
             _ => None,
         }
@@ -659,6 +682,7 @@ impl VibocerosApp {
                     center: None,
                     reference: None,
                 },
+                "rotate3d" => InteractiveCommand::Rotate3D { points: [None; 3] },
                 "mirror" => InteractiveCommand::Mirror { start: None },
                 _ => return false,
             }
@@ -675,6 +699,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::Rotate { .. }
+                | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Mirror { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -1161,6 +1186,51 @@ impl VibocerosApp {
                     format_model_point(reference),
                     format_model_point(point)
                 ));
+            }
+            InteractiveCommand::Rotate3D { mut points } => {
+                let point_count = points.iter().flatten().count();
+                if point_count == 1
+                    && points[0]
+                        .is_some_and(|start| start.is_near(point, self.document.tolerance()))
+                {
+                    self.push_log("Error: rotation axis points must differ".to_owned());
+                    return;
+                }
+                if point_count >= 2 {
+                    let [Some(axis_start), Some(axis_end), _] = points else {
+                        self.push_log("Error: Rotate3D point state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    if point_is_near_axis(axis_start, axis_end, point, self.document.tolerance()) {
+                        self.push_log(
+                            "Error: Rotate3D reference points must lie off the axis".to_owned(),
+                        );
+                        return;
+                    }
+                }
+                if point_count < points.len() {
+                    points[point_count] = Some(point);
+                    let command = InteractiveCommand::Rotate3D { points };
+                    self.active_command = Some(command);
+                    let label = ["Axis start", "Axis end", "Reference"][point_count];
+                    self.push_log(format!("{label}: {}", format_model_point(point)));
+                    self.push_log(command.prompt().to_owned());
+                } else {
+                    let [Some(axis_start), Some(axis_end), Some(reference)] = points else {
+                        self.push_log("Error: Rotate3D point state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "Rotate3D {} {} {} {}",
+                        format_model_point(axis_start),
+                        format_model_point(axis_end),
+                        format_model_point(reference),
+                        format_model_point(point)
+                    ));
+                }
             }
             InteractiveCommand::Mirror { start: None } => {
                 let command = InteractiveCommand::Mirror { start: Some(point) };
@@ -1794,6 +1864,20 @@ fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
     (left.x() - right.x()).hypot(left.y() - right.y()) <= tolerance.absolute()
 }
 
+fn point_is_near_axis(
+    axis_start: Point3,
+    axis_end: Point3,
+    point: Point3,
+    tolerance: Tolerance,
+) -> bool {
+    axis_start
+        .vector_to(axis_end)
+        .and_then(|axis| axis.normalized(tolerance))
+        .and_then(|axis| axis_start.vector_to(point)?.cross(axis.as_vector()))
+        .and_then(|perpendicular| perpendicular.length())
+        .map_or(true, |distance| distance <= tolerance.absolute())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2420,6 +2504,7 @@ mod tests {
             "Scale1D",
             "Scale2D",
             "Rotate",
+            "Rotate3D",
             "Mirror",
         ] {
             assert!(app.try_start_interactive_command(command));
@@ -2482,6 +2567,29 @@ mod tests {
         app.accept_drafting_point(point(1.0, 2.0, 0.0));
         assert!(position(&app).is_near(point(1.0, 2.0, 0.0), app.document.tolerance()));
         assert_eq!(app.document.undo_label(), Some("Rotate"));
+        app.document.undo().unwrap();
+
+        assert!(app.try_start_interactive_command("Rotate3D"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::Rotate3D {
+                points: [Some(_), None, None]
+            })
+        ));
+        app.accept_drafting_point(point(0.0, 0.0, 1.0));
+        app.accept_drafting_point(point(0.0, 0.0, 2.0));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::Rotate3D {
+                points: [Some(_), Some(_), None]
+            })
+        ));
+        app.accept_drafting_point(point(1.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 1.0, 0.0));
+        assert!(position(&app).is_near(point(-1.0, 2.0, 0.0), app.document.tolerance()));
+        assert_eq!(app.document.undo_label(), Some("Rotate3D"));
         app.document.undo().unwrap();
 
         assert!(app.try_start_interactive_command("Mirror"));
