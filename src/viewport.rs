@@ -16,7 +16,6 @@ const PICK_CAPTURE_PIXELS: f32 = 8.0;
 const CURVE_SAMPLES_PER_SPAN: usize = 16;
 const CIRCLE_SAMPLES: usize = 64;
 const SURFACE_SAMPLES_PER_SPAN: usize = 8;
-const SURFACE_ISOCURVES_PER_SPAN: usize = 2;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
 const LOCKED_COLOR: Color32 = Color32::from_gray(145);
 
@@ -65,6 +64,13 @@ struct DraftingCursor {
     point: Point3,
     object_snap: Option<ObjectSnap>,
     track: Option<OrthogonalTrack>,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct SurfaceDisplayStyle {
+    color: Color32,
+    width: f32,
+    wire_density: i32,
 }
 
 pub struct Viewport {
@@ -319,11 +325,23 @@ impl Viewport {
                 Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
                 Geometry::NurbsSurface(surface) => (
                     2,
-                    self.nurbs_surface_pick_distance(pointer, rect, surface, document.tolerance()),
+                    self.nurbs_surface_pick_distance(
+                        pointer,
+                        rect,
+                        surface,
+                        object.attributes().wire_density(),
+                        document.tolerance(),
+                    ),
                 ),
                 Geometry::Brep(brep) => (
                     2,
-                    self.brep_pick_distance(pointer, rect, brep, document.tolerance()),
+                    self.brep_pick_distance(
+                        pointer,
+                        rect,
+                        brep,
+                        object.attributes().wire_density(),
+                        document.tolerance(),
+                    ),
                 ),
                 Geometry::Mesh(mesh) => (2, self.mesh_pick_distance(pointer, rect, mesh)),
             };
@@ -441,6 +459,7 @@ impl Viewport {
         pointer: Pos2,
         rect: Rect,
         surface: &NurbsSurface,
+        wire_density: i32,
         tolerance: Tolerance,
     ) -> f32 {
         if self.display_mode != DisplayMode::Wireframe
@@ -448,11 +467,15 @@ impl Viewport {
         {
             return self.mesh_pick_distance(pointer, rect, &mesh);
         }
-        let mut nearest = f32::INFINITY;
-        self.for_each_surface_grid_segment(rect, surface, |start, end| {
-            nearest = nearest.min(point_segment_distance(pointer, start, end));
-        });
-        nearest
+        surface
+            .wireframe_curves(wire_density)
+            .map(|curves| {
+                curves
+                    .iter()
+                    .map(|curve| self.nurbs_pick_distance(pointer, rect, curve))
+                    .fold(f32::INFINITY, f32::min)
+            })
+            .unwrap_or(f32::INFINITY)
     }
 
     fn brep_pick_distance(
@@ -460,6 +483,7 @@ impl Viewport {
         pointer: Pos2,
         rect: Rect,
         brep: &Brep,
+        wire_density: i32,
         tolerance: Tolerance,
     ) -> f32 {
         if self.display_mode != DisplayMode::Wireframe
@@ -467,10 +491,14 @@ impl Viewport {
         {
             return self.mesh_pick_distance(pointer, rect, &mesh);
         }
-        brep.edges()
-            .iter()
-            .map(|edge| self.nurbs_pick_distance(pointer, rect, edge.curve()))
-            .fold(f32::INFINITY, f32::min)
+        brep.wireframe_curves(wire_density, tolerance)
+            .map(|curves| {
+                curves
+                    .iter()
+                    .map(|curve| self.nurbs_pick_distance(pointer, rect, curve))
+                    .fold(f32::INFINITY, f32::min)
+            })
+            .unwrap_or(f32::INFINITY)
     }
 
     fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
@@ -617,16 +645,29 @@ impl Viewport {
                         painter,
                         rect,
                         surface,
-                        color,
-                        width,
+                        SurfaceDisplayStyle {
+                            color,
+                            width,
+                            wire_density: attributes.wire_density(),
+                        },
                         document.tolerance(),
                     );
                 }
                 Geometry::Brep(brep) => {
-                    self.paint_brep(painter, rect, brep, color, width, document.tolerance());
+                    self.paint_brep(
+                        painter,
+                        rect,
+                        brep,
+                        SurfaceDisplayStyle {
+                            color,
+                            width,
+                            wire_density: attributes.wire_density(),
+                        },
+                        document.tolerance(),
+                    );
                 }
                 Geometry::Mesh(mesh) => {
-                    self.paint_mesh(painter, rect, mesh, color, width);
+                    self.paint_mesh(painter, rect, mesh, color, width, document.tolerance());
                 }
             }
         }
@@ -689,8 +730,7 @@ impl Viewport {
         painter: &egui::Painter,
         rect: Rect,
         surface: &NurbsSurface,
-        color: Color32,
-        width: f32,
+        style: SurfaceDisplayStyle,
         tolerance: Tolerance,
     ) {
         if self.display_mode != DisplayMode::Wireframe
@@ -708,12 +748,15 @@ impl Viewport {
                 let fill = match self.display_mode {
                     DisplayMode::Wireframe => Color32::TRANSPARENT,
                     DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
-                        |_| blend_toward_white(color, 0.35),
-                        |normal| shaded_color(color, normal),
+                        |_| blend_toward_white(style.color, 0.35),
+                        |normal| shaded_color(style.color, normal),
                     ),
-                    DisplayMode::Ghosted => {
-                        Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35)
-                    }
+                    DisplayMode::Ghosted => Color32::from_rgba_unmultiplied(
+                        style.color.r(),
+                        style.color.g(),
+                        style.color.b(),
+                        35,
+                    ),
                 };
                 painter.add(egui::Shape::convex_polygon(
                     vec![first, second, third],
@@ -723,10 +766,12 @@ impl Viewport {
             }
         }
 
-        let stroke = Stroke::new(width, color);
-        self.for_each_surface_grid_segment(rect, surface, |start, end| {
-            painter.line_segment([start, end], stroke);
-        });
+        let stroke = Stroke::new(style.width, style.color);
+        if let Ok(curves) = surface.wireframe_curves(style.wire_density) {
+            for curve in &curves {
+                self.paint_nurbs_curve(painter, rect, curve, stroke);
+            }
+        }
     }
 
     fn paint_brep(
@@ -734,8 +779,7 @@ impl Viewport {
         painter: &egui::Painter,
         rect: Rect,
         brep: &Brep,
-        color: Color32,
-        width: f32,
+        style: SurfaceDisplayStyle,
         tolerance: Tolerance,
     ) {
         if self.display_mode != DisplayMode::Wireframe
@@ -753,12 +797,15 @@ impl Viewport {
                 let fill = match self.display_mode {
                     DisplayMode::Wireframe => Color32::TRANSPARENT,
                     DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
-                        |_| blend_toward_white(color, 0.35),
-                        |normal| shaded_color(color, normal),
+                        |_| blend_toward_white(style.color, 0.35),
+                        |normal| shaded_color(style.color, normal),
                     ),
-                    DisplayMode::Ghosted => {
-                        Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35)
-                    }
+                    DisplayMode::Ghosted => Color32::from_rgba_unmultiplied(
+                        style.color.r(),
+                        style.color.g(),
+                        style.color.b(),
+                        35,
+                    ),
                 };
                 painter.add(egui::Shape::convex_polygon(
                     vec![first, second, third],
@@ -767,84 +814,10 @@ impl Viewport {
                 ));
             }
         }
-        let stroke = Stroke::new(width, color);
-        for edge in brep.edges() {
-            self.paint_nurbs_curve(painter, rect, edge.curve(), stroke);
-        }
-    }
-
-    fn for_each_surface_grid_segment(
-        &self,
-        rect: Rect,
-        surface: &NurbsSurface,
-        mut visit: impl FnMut(Pos2, Pos2),
-    ) {
-        let spans_u = surface.spans_u().collect::<Vec<_>>();
-        let spans_v = surface.spans_v().collect::<Vec<_>>();
-        let domain_u_end = *surface.domain_u().end();
-        let domain_v_end = *surface.domain_v().end();
-
-        for &(u_start, u_end) in &spans_u {
-            for iso_sample in 0..=SURFACE_ISOCURVES_PER_SPAN {
-                let u = sampled_span_parameter(
-                    u_start,
-                    u_end,
-                    iso_sample,
-                    SURFACE_ISOCURVES_PER_SPAN,
-                    domain_u_end,
-                );
-                for &(v_start, v_end) in &spans_v {
-                    let mut previous = None;
-                    for sample in 0..=CURVE_SAMPLES_PER_SPAN {
-                        let v = sampled_span_parameter(
-                            v_start,
-                            v_end,
-                            sample,
-                            CURVE_SAMPLES_PER_SPAN,
-                            domain_v_end,
-                        );
-                        let projected = surface
-                            .evaluate(u, v)
-                            .ok()
-                            .and_then(|point| self.project(point, rect));
-                        if let (Some(start), Some(end)) = (previous, projected) {
-                            visit(start, end);
-                        }
-                        previous = projected;
-                    }
-                }
-            }
-        }
-
-        for &(v_start, v_end) in &spans_v {
-            for iso_sample in 0..=SURFACE_ISOCURVES_PER_SPAN {
-                let v = sampled_span_parameter(
-                    v_start,
-                    v_end,
-                    iso_sample,
-                    SURFACE_ISOCURVES_PER_SPAN,
-                    domain_v_end,
-                );
-                for &(u_start, u_end) in &spans_u {
-                    let mut previous = None;
-                    for sample in 0..=CURVE_SAMPLES_PER_SPAN {
-                        let u = sampled_span_parameter(
-                            u_start,
-                            u_end,
-                            sample,
-                            CURVE_SAMPLES_PER_SPAN,
-                            domain_u_end,
-                        );
-                        let projected = surface
-                            .evaluate(u, v)
-                            .ok()
-                            .and_then(|point| self.project(point, rect));
-                        if let (Some(start), Some(end)) = (previous, projected) {
-                            visit(start, end);
-                        }
-                        previous = projected;
-                    }
-                }
+        let stroke = Stroke::new(style.width, style.color);
+        if let Ok(curves) = brep.wireframe_curves(style.wire_density, tolerance) {
+            for curve in &curves {
+                self.paint_nurbs_curve(painter, rect, curve, stroke);
             }
         }
     }
@@ -856,6 +829,7 @@ impl Viewport {
         mesh: &TriangleMesh,
         color: Color32,
         width: f32,
+        tolerance: Tolerance,
     ) {
         let edge = Stroke::new(width, color);
         for triangle_index in 0..mesh.triangles().len() {
@@ -879,8 +853,18 @@ impl Viewport {
             painter.add(egui::Shape::convex_polygon(
                 vec![first, second, third],
                 fill,
-                edge,
+                Stroke::NONE,
             ));
+        }
+        if let Ok(lines) = mesh.wireframe_lines(tolerance) {
+            for line in lines {
+                if let (Some(start), Some(end)) = (
+                    self.project(line.start(), rect),
+                    self.project(line.end(), rect),
+                ) {
+                    painter.line_segment([start, end], edge);
+                }
+            }
         }
     }
 
@@ -1008,22 +992,6 @@ impl Viewport {
             FontId::monospace(11.0),
             Color32::from_gray(75),
         );
-    }
-}
-
-fn sampled_span_parameter(
-    start: Real,
-    end: Real,
-    sample: usize,
-    sample_count: usize,
-    domain_end: Real,
-) -> Real {
-    let fraction = sample as Real / sample_count as Real;
-    let parameter = start.mul_add(1.0 - fraction, end * fraction);
-    if sample == sample_count && end < domain_end {
-        parameter.next_down().max(start)
-    } else {
-        parameter
     }
 }
 
@@ -1339,22 +1307,25 @@ mod tests {
     fn shaded_nurbs_surfaces_pick_from_their_display_tessellation() {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let mut document = Document::default();
+        let surface = NurbsSurface::try_bilinear([
+            point(-2.0, -2.0, 0.0),
+            point(2.0, -2.0, 0.0),
+            point(2.0, 2.0, 1.0),
+            point(-2.0, 2.0, 1.0),
+        ])
+        .unwrap();
         let surface_id = document
-            .add_geometry(Geometry::NurbsSurface(
-                NurbsSurface::try_bilinear([
-                    point(-2.0, -2.0, 0.0),
-                    point(2.0, -2.0, 0.0),
-                    point(2.0, 2.0, 1.0),
-                    point(-2.0, 2.0, 1.0),
-                ])
-                .unwrap(),
-            ))
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
             .unwrap();
         let viewport = Viewport {
             display_mode: DisplayMode::Shaded,
             ..Viewport::default()
         };
         let center = viewport.project(point(0.0, 0.0, 0.0), rect).unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &document),
+            Some(surface_id)
+        );
         assert_eq!(
             viewport.pick_object(center, rect, &document),
             Some(surface_id)
@@ -1368,10 +1339,24 @@ mod tests {
             viewport.pick_object(off_isocurve, rect, &document),
             Some(surface_id)
         );
+
+        let mut boundary_only = Document::default();
+        boundary_only
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface),
+                ObjectAttributes::on_layer(boundary_only.current_layer_id())
+                    .try_with_wire_density(-1)
+                    .unwrap(),
+            )
+            .unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &boundary_only),
+            None
+        );
     }
 
     #[test]
-    fn shaded_breps_pick_faces_while_wireframe_uses_exact_edges() {
+    fn shaded_breps_pick_faces_while_wireframe_uses_density_wires() {
         let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
         let mut document = Document::default();
         let frame = Frame3::try_from_normal(
@@ -1396,6 +1381,13 @@ mod tests {
 
         assert_eq!(
             Viewport::default().pick_object(center, rect, &document),
+            Some(brep_id)
+        );
+        let off_wire = Viewport::default()
+            .project(point(1.0, 1.0, 0.0), rect)
+            .unwrap();
+        assert_eq!(
+            Viewport::default().pick_object(off_wire, rect, &document),
             None
         );
         let shaded = Viewport {

@@ -251,6 +251,9 @@ impl CommandRegistry {
             .register(ExtractIsocurveCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtractWireframeCommand)
+            .expect("unique built-in command");
+        registry
             .register(ConvertToSingleSpansCommand)
             .expect("unique built-in command");
         registry
@@ -3400,7 +3403,7 @@ fn append_all_surface_isocurves(
         direction,
         ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
     ) {
-        for v in surface_wire_parameters(surface.spans_v(), wire_density)? {
+        for v in surface.wire_parameters_v(wire_density)? {
             append_extractable_isocurves(curves, [surface.isocurve_u(v)?])?;
         }
     }
@@ -3408,7 +3411,7 @@ fn append_all_surface_isocurves(
         direction,
         ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
     ) {
-        for u in surface_wire_parameters(surface.spans_u(), wire_density)? {
+        for u in surface.wire_parameters_u(wire_density)? {
             append_extractable_isocurves(curves, [surface.isocurve_v(u)?])?;
         }
     }
@@ -3427,7 +3430,7 @@ fn append_all_face_isocurves(
         direction,
         ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
     ) {
-        for v in surface_wire_parameters(face.surface().spans_v(), wire_density)? {
+        for v in face.surface().wire_parameters_v(wire_density)? {
             if ignore_trims {
                 append_extractable_isocurves(curves, [face.surface().isocurve_u(v)?])?;
             } else {
@@ -3439,7 +3442,7 @@ fn append_all_face_isocurves(
         direction,
         ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
     ) {
-        for u in surface_wire_parameters(face.surface().spans_u(), wire_density)? {
+        for u in face.surface().wire_parameters_u(wire_density)? {
             if ignore_trims {
                 append_extractable_isocurves(curves, [face.surface().isocurve_v(u)?])?;
             } else {
@@ -3448,56 +3451,6 @@ fn append_all_face_isocurves(
         }
     }
     Ok(())
-}
-
-fn surface_wire_parameters(
-    spans: impl Iterator<Item = (Real, Real)>,
-    wire_density: i32,
-) -> Result<Vec<Real>, CommandError> {
-    // Rhino/OpenNURBS density -1 draws only natural boundaries, 0 adds knot
-    // wires, 1 adds one midpoint only when there are no interior knots, and
-    // N >= 2 adds N-1 evenly spaced wires inside every nonempty knot span.
-    // Both natural parameters are retained even when they form a closed seam.
-    let spans = spans.collect::<Vec<_>>();
-    let Some(first) = spans.first() else {
-        return Err(CommandError::NoExtractableIsocurves);
-    };
-    let last = spans
-        .last()
-        .copied()
-        .ok_or(CommandError::NoExtractableIsocurves)?;
-    if wire_density < 0 {
-        return Ok(vec![first.0, last.1]);
-    }
-    let extra_per_span = match wire_density {
-        1 if spans.len() == 1 => 1,
-        2.. => (wire_density - 1) as usize,
-        _ => 0,
-    };
-    let parameter_count = spans
-        .len()
-        .checked_mul(extra_per_span + 1)
-        .and_then(|count| count.checked_add(1))
-        .ok_or_else(|| too_many_span_outputs("ExtractIsocurve"))?;
-    if parameter_count > MAX_SPAN_OUTPUT_OBJECTS {
-        return Err(too_many_span_outputs("ExtractIsocurve"));
-    }
-    let mut parameters = Vec::new();
-    parameters
-        .try_reserve_exact(parameter_count)
-        .map_err(|_| too_many_span_outputs("ExtractIsocurve"))?;
-    parameters.push(first.0);
-    for &(start, end) in &spans {
-        for division in 1..=extra_per_span {
-            let fraction = division as Real / (extra_per_span + 1) as Real;
-            let parameter = start.mul_add(1.0 - fraction, end * fraction);
-            if parameter > start && parameter < end {
-                parameters.push(parameter);
-            }
-        }
-        parameters.push(end);
-    }
-    Ok(parameters)
 }
 
 fn append_extractable_isocurves(
@@ -3593,6 +3546,163 @@ fn nurbs_curve_has_extent(curve: &NurbsCurve) -> bool {
         .control_points()
         .iter()
         .any(|control| control.point() != first)
+}
+
+const EXTRACT_WIREFRAME_USAGE: &str =
+    "ExtractWireframe [OutputLayer=Current|Input|TargetObject] [GroupOutput=Yes|No]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ExtractWireframeOutputLayer {
+    Current,
+    Input,
+    TargetObject,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct ExtractWireframeOptions {
+    output_layer: ExtractWireframeOutputLayer,
+    group_output: bool,
+}
+
+struct ExtractWireframeCommand;
+
+impl Command for ExtractWireframeCommand {
+    fn name(&self) -> &'static str {
+        "ExtractWireframe"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_extract_wireframe_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| {
+                (
+                    object.geometry().clone(),
+                    object.attributes().layer_id(),
+                    object.attributes().wire_density(),
+                )
+            })
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let current_layer = document.current_layer_id();
+        let mut staged = Vec::<(Geometry, LayerId)>::new();
+        for (geometry, input_layer, wire_density) in &selected {
+            let layer = match options.output_layer {
+                ExtractWireframeOutputLayer::Current => current_layer,
+                ExtractWireframeOutputLayer::Input | ExtractWireframeOutputLayer::TargetObject => {
+                    *input_layer
+                }
+            };
+            let wires = match geometry {
+                Geometry::NurbsSurface(surface) => surface
+                    .wireframe_curves(*wire_density)?
+                    .into_iter()
+                    .map(Geometry::NurbsCurve)
+                    .collect::<Vec<_>>(),
+                Geometry::Brep(brep) => brep
+                    .wireframe_curves(*wire_density, document.tolerance())?
+                    .into_iter()
+                    .map(Geometry::NurbsCurve)
+                    .collect::<Vec<_>>(),
+                Geometry::Mesh(mesh) => mesh
+                    .wireframe_lines(document.tolerance())?
+                    .into_iter()
+                    .map(Geometry::Line)
+                    .collect::<Vec<_>>(),
+                Geometry::Point(_)
+                | Geometry::PointCloud(_)
+                | Geometry::Line(_)
+                | Geometry::Circle(_)
+                | Geometry::Arc(_)
+                | Geometry::Ellipse(_)
+                | Geometry::Polyline(_)
+                | Geometry::NurbsCurve(_) => {
+                    return Err(CommandError::UnsupportedExtractWireframeGeometry);
+                }
+            };
+            let output_count = staged
+                .len()
+                .checked_add(wires.len())
+                .filter(|&count| count <= MAX_SPAN_OUTPUT_OBJECTS)
+                .ok_or_else(|| too_many_span_outputs("ExtractWireframe"))?;
+            staged
+                .try_reserve(output_count - staged.len())
+                .map_err(|_| too_many_span_outputs("ExtractWireframe"))?;
+            staged.extend(wires.into_iter().map(|wire| (wire, layer)));
+        }
+        if staged.is_empty() {
+            return Err(CommandError::NoExtractableWireframe);
+        }
+
+        let wire_count = staged.len();
+        let mut output_ids = Vec::with_capacity(wire_count);
+        for (wire, layer) in staged {
+            output_ids.push(
+                document.add_geometry_with_attributes(wire, ObjectAttributes::on_layer(layer))?,
+            );
+        }
+        if options.group_output {
+            document.add_group(None, output_ids.iter().copied())?;
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Extracted {wire_count} wireframe curve(s) from {} object(s){}",
+            selected.len(),
+            if options.group_output {
+                "; grouped output"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
+fn parse_extract_wireframe_arguments(
+    arguments: &[&str],
+) -> Result<ExtractWireframeOptions, CommandError> {
+    let mut output_layer = ExtractWireframeOutputLayer::Current;
+    let mut group_output = false;
+    let mut output_layer_seen = false;
+    let mut group_output_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_WIREFRAME_USAGE))?;
+            (argument, *value, 2)
+        };
+        if option_name_eq(name, "OutputLayer") && !output_layer_seen {
+            let value = value.trim_start_matches('_');
+            output_layer = if value.eq_ignore_ascii_case("Current") {
+                ExtractWireframeOutputLayer::Current
+            } else if value.eq_ignore_ascii_case("Input") {
+                ExtractWireframeOutputLayer::Input
+            } else if value.eq_ignore_ascii_case("TargetObject") {
+                ExtractWireframeOutputLayer::TargetObject
+            } else {
+                return Err(CommandError::Usage(EXTRACT_WIREFRAME_USAGE));
+            };
+            output_layer_seen = true;
+        } else if option_name_eq(name, "GroupOutput") && !group_output_seen {
+            group_output =
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_WIREFRAME_USAGE))?;
+            group_output_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTRACT_WIREFRAME_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(ExtractWireframeOptions {
+        output_layer,
+        group_output,
+    })
 }
 
 const CONVERT_TO_SINGLE_SPANS_USAGE: &str =
@@ -8715,6 +8825,12 @@ pub enum CommandError {
     #[error("the requested surface location has no non-degenerate isocurve")]
     NoExtractableIsocurves,
 
+    #[error("ExtractWireframe supports selected NURBS surfaces, B-reps, and triangle meshes only")]
+    UnsupportedExtractWireframeGeometry,
+
+    #[error("none of the selected objects has an extractable wireframe")]
+    NoExtractableWireframe,
+
     #[error("ConvertToSingleSpans supports selected untrimmed NURBS surfaces only")]
     UnsupportedConvertToSingleSpansGeometry,
 
@@ -8954,7 +9070,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -12563,6 +12679,166 @@ mod tests {
             };
             Tolerance::DEFAULT.approx_eq(curve.length(document.tolerance()).unwrap(), 10.0)
         }));
+    }
+
+    #[test]
+    fn extract_wireframe_matches_surface_density_and_preserves_exact_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Wires").unwrap();
+        let input_layer = document.current_layer_id();
+        let surface = rational_multi_span_surface();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface.clone()),
+                ObjectAttributes::on_layer(input_layer)
+                    .try_with_wire_density(2)
+                    .unwrap(),
+            )
+            .unwrap();
+        registry
+            .execute(&mut document, "Layer Current Default")
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractWireframe OutputLayer=Input GroupOutput=Yes",
+                )
+                .unwrap(),
+            "Extracted 10 wireframe curve(s) from 1 object(s); grouped output"
+        );
+        assert!(!document.is_selected(source));
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 10);
+        assert!(outputs.iter().all(|object| {
+            object.attributes().layer_id() == input_layer
+                && document.is_selected(object.id())
+                && matches!(object.geometry(), Geometry::NurbsCurve(_))
+        }));
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.groups().next().unwrap().members().len(), 10);
+
+        for object in &outputs[4..] {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                unreachable!()
+            };
+            let midpoint = curve
+                .evaluate((*curve.domain().start() + *curve.domain().end()) * 0.5)
+                .unwrap();
+            assert!(
+                surface
+                    .closest_parameters(midpoint, document.tolerance())
+                    .is_ok()
+            );
+        }
+        assert_eq!(document.undo_label(), Some("ExtractWireframe"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.groups().len(), 0);
+    }
+
+    #[test]
+    fn extract_wireframe_deduplicates_brep_and_mesh_topology_and_groups_the_batch() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Solids").unwrap();
+        let solid_layer = document.current_layer_id();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let solid = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame,
+                    [[0.0, 2.0], [0.0, 3.0], [0.0, 5.0]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        registry.execute(&mut document, "Layer New Meshes").unwrap();
+        let mesh_layer = document.current_layer_id();
+        let mesh = document
+            .add_geometry(Geometry::Mesh(
+                TriangleMesh::try_new(
+                    vec![
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(12.0, 2.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(12.0, 2.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 2.0, 0.0).unwrap(),
+                    ],
+                    vec![[0, 1, 2], [3, 4, 5]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([solid, mesh], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractWireframe GroupOutput _Yes OutputLayer _TargetObject",
+                )
+                .unwrap(),
+            "Extracted 29 wireframe curve(s) from 2 object(s); grouped output"
+        );
+        let outputs = document.objects().skip(2).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 29);
+        assert!(outputs[..24].iter().all(|object| {
+            object.attributes().layer_id() == solid_layer
+                && matches!(object.geometry(), Geometry::NurbsCurve(_))
+        }));
+        assert!(outputs[24..].iter().all(|object| {
+            object.attributes().layer_id() == mesh_layer
+                && matches!(object.geometry(), Geometry::Line(_))
+        }));
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.groups().next().unwrap().members().len(), 29);
+        assert_eq!(document.selected_object_count(), 29);
+    }
+
+    #[test]
+    fn extract_wireframe_rejects_bad_inputs_and_options_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractWireframe"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractWireframe"),
+            Err(CommandError::UnsupportedExtractWireframeGeometry)
+        ));
+        for invalid in [
+            "ExtractWireframe OutputLayer",
+            "ExtractWireframe OutputLayer=Other",
+            "ExtractWireframe OutputLayer=Input OutputLayer=Current",
+            "ExtractWireframe GroupOutput=Maybe",
+            "ExtractWireframe GroupOutput=Yes GroupOutput=No",
+            "ExtractWireframe Other=Yes",
+            "ExtractWireframe stray",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+            assert_eq!(document.objects().len(), 1);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
     }
 
     #[test]

@@ -1045,6 +1045,44 @@ impl Brep {
         &self.faces
     }
 
+    /// Returns every topological edge once, followed by the exact trimmed
+    /// interior isocurves selected by the OpenNURBS wire-density rules.
+    pub fn wireframe_curves(
+        &self,
+        wire_density: i32,
+        tolerance: Tolerance,
+    ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        // Validate the density before staging any output, including for a
+        // hypothetical face whose interior contributes no curves.
+        self.faces[0].surface().wire_parameters_u(wire_density)?;
+        if self.edges.len() > crate::MAX_SURFACE_WIRES {
+            return Err(GeometryError::TooManySurfaceWires);
+        }
+        let mut curves = Vec::new();
+        curves
+            .try_reserve_exact(self.edges.len())
+            .map_err(|_| GeometryError::TooManySurfaceWires)?;
+        curves.extend(self.edges.iter().map(|edge| edge.curve().clone()));
+
+        for face in &self.faces {
+            let parameters_v = face.surface().wire_parameters_v(wire_density)?;
+            let interior_v_count = parameters_v.len().saturating_sub(2);
+            for v in parameters_v.into_iter().skip(1).take(interior_v_count) {
+                for curve in face.isocurve_u_segments(v, tolerance)? {
+                    push_brep_wire(&mut curves, curve)?;
+                }
+            }
+            let parameters_u = face.surface().wire_parameters_u(wire_density)?;
+            let interior_u_count = parameters_u.len().saturating_sub(2);
+            for u in parameters_u.into_iter().skip(1).take(interior_u_count) {
+                for curve in face.isocurve_v_segments(u, tolerance)? {
+                    push_brep_wire(&mut curves, curve)?;
+                }
+            }
+        }
+        Ok(curves)
+    }
+
     /// Finds the selected model-space point's nearest underlying face
     /// parameters, rejecting closest points that fall outside that face's trim
     /// region. Ties retain face order.
@@ -1823,6 +1861,22 @@ impl Brep {
         }
         uses
     }
+}
+
+fn push_brep_wire(curves: &mut Vec<NurbsCurve>, curve: NurbsCurve) -> Result<(), GeometryError> {
+    let first = curve.control_points()[0].point();
+    if curve
+        .control_points()
+        .iter()
+        .all(|control| control.point() == first)
+    {
+        return Ok(());
+    }
+    if curves.len() == crate::MAX_SURFACE_WIRES {
+        return Err(GeometryError::TooManySurfaceWires);
+    }
+    curves.push(curve);
+    Ok(())
 }
 
 #[derive(Clone, Copy)]
@@ -3797,6 +3851,62 @@ mod tests {
                     .is_empty()
             );
         }
+    }
+
+    #[test]
+    fn wireframe_emits_topology_once_then_trimmed_interior_isocurves() {
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 5.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (density, expected) in [(-1, 12), (0, 12), (1, 24), (2, 24)] {
+            let wires = box_brep
+                .wireframe_curves(density, Tolerance::DEFAULT)
+                .unwrap();
+            assert_eq!(wires.len(), expected);
+            assert_eq!(
+                &wires[..box_brep.edges().len()],
+                &box_brep
+                    .edges()
+                    .iter()
+                    .map(|edge| edge.curve().clone())
+                    .collect::<Vec<_>>()
+            );
+        }
+
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let outer = Circle3::try_new(point(0.0, 0.0, 0.0), 5.0, normal, Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let hole = Circle3::try_new(point(0.0, 0.0, 0.0), 2.0, normal, Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let ring = Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            ring.wireframe_curves(-1, Tolerance::DEFAULT).unwrap().len(),
+            2
+        );
+        let wires = ring.wireframe_curves(1, Tolerance::DEFAULT).unwrap();
+        assert_eq!(wires.len(), 6);
+        assert_eq!(
+            wires
+                .iter()
+                .skip(2)
+                .filter(|curve| Tolerance::DEFAULT
+                    .approx_eq(curve.length(Tolerance::DEFAULT).unwrap(), 3.0))
+                .count(),
+            4
+        );
     }
 
     #[test]

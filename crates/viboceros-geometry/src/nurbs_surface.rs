@@ -1244,6 +1244,66 @@ impl NurbsSurface {
         nonempty_spans(&self.knots_v, self.degree_v, self.control_point_count_v)
     }
 
+    /// Returns all U parameters used by an OpenNURBS-compatible wireframe.
+    /// Natural boundaries are included even when they form a closed seam.
+    pub fn wire_parameters_u(&self, wire_density: i32) -> Result<Vec<Real>, GeometryError> {
+        surface_wire_parameters(self.spans_u(), wire_density)
+    }
+
+    /// Returns all V parameters used by an OpenNURBS-compatible wireframe.
+    /// Natural boundaries are included even when they form a closed seam.
+    pub fn wire_parameters_v(&self, wire_density: i32) -> Result<Vec<Real>, GeometryError> {
+        surface_wire_parameters(self.spans_v(), wire_density)
+    }
+
+    /// Returns the exact topological boundaries, seams, and interior
+    /// isoparametric curves displayed for this standalone surface.
+    pub fn wireframe_curves(
+        &self,
+        wire_density: i32,
+    ) -> Result<Vec<crate::NurbsCurve>, GeometryError> {
+        let parameters_u = self.wire_parameters_u(wire_density)?;
+        let parameters_v = self.wire_parameters_v(wire_density)?;
+        let closed_u = self.is_closed_u()?;
+        let closed_v = self.is_closed_v()?;
+        let u_start = *self.domain_u().start();
+        let u_end = *self.domain_u().end();
+        let v_start = *self.domain_v().start();
+        let v_end = *self.domain_v().end();
+        let mut curves = Vec::new();
+
+        match (closed_u, closed_v) {
+            (false, false) => {
+                push_surface_wire(&mut curves, self.isocurve_u(v_start)?)?;
+                push_surface_wire(&mut curves, self.isocurve_v(u_end)?)?;
+                push_surface_wire(&mut curves, self.isocurve_u(v_end)?.reversed()?)?;
+                push_surface_wire(&mut curves, self.isocurve_v(u_start)?.reversed()?)?;
+            }
+            (true, false) => {
+                push_surface_wire(&mut curves, self.isocurve_u(v_start)?)?;
+                push_surface_wire(&mut curves, self.isocurve_v(u_start)?)?;
+                push_surface_wire(&mut curves, self.isocurve_u(v_end)?.reversed()?)?;
+            }
+            (false, true) => {
+                push_surface_wire(&mut curves, self.isocurve_v(u_start)?)?;
+                push_surface_wire(&mut curves, self.isocurve_u(v_start)?)?;
+                push_surface_wire(&mut curves, self.isocurve_v(u_end)?.reversed()?)?;
+            }
+            (true, true) => {
+                push_surface_wire(&mut curves, self.isocurve_v(u_start)?)?;
+                push_surface_wire(&mut curves, self.isocurve_u(v_start)?)?;
+            }
+        }
+
+        for v in interior_wire_parameters(&parameters_v) {
+            push_surface_wire(&mut curves, self.isocurve_u(v)?)?;
+        }
+        for u in interior_wire_parameters(&parameters_u) {
+            push_surface_wire(&mut curves, self.isocurve_v(u)?)?;
+        }
+        Ok(curves)
+    }
+
     pub fn control_point_bounds(&self) -> BoundingBox3 {
         BoundingBox3::from_points(
             self.control_points
@@ -1950,6 +2010,81 @@ impl NurbsSurface {
         }
         Ok(parameters)
     }
+}
+
+fn surface_wire_parameters(
+    spans: impl Iterator<Item = (Real, Real)>,
+    wire_density: i32,
+) -> Result<Vec<Real>, GeometryError> {
+    if !(crate::MIN_SURFACE_WIRE_DENSITY..=crate::MAX_SURFACE_WIRE_DENSITY).contains(&wire_density)
+    {
+        return Err(GeometryError::InvalidSurfaceWireDensity(wire_density));
+    }
+
+    // Rhino/OpenNURBS density -1 draws only natural boundaries, 0 adds knot
+    // wires, 1 adds one midpoint only when there are no interior knots, and
+    // N >= 2 adds N-1 evenly spaced wires inside every nonempty knot span.
+    let spans = spans.collect::<Vec<_>>();
+    let first = spans
+        .first()
+        .copied()
+        .expect("a validated NURBS direction has a nonempty span");
+    let last = spans
+        .last()
+        .copied()
+        .expect("a validated NURBS direction has a nonempty span");
+    if wire_density < 0 {
+        return Ok(vec![first.0, last.1]);
+    }
+    let extra_per_span = match wire_density {
+        1 if spans.len() == 1 => 1,
+        2.. => (wire_density - 1) as usize,
+        _ => 0,
+    };
+    let parameter_count = spans
+        .len()
+        .checked_mul(extra_per_span + 1)
+        .and_then(|count| count.checked_add(1))
+        .filter(|&count| count <= crate::MAX_SURFACE_WIRES)
+        .ok_or(GeometryError::TooManySurfaceWires)?;
+    let mut parameters = Vec::new();
+    parameters
+        .try_reserve_exact(parameter_count)
+        .map_err(|_| GeometryError::TooManySurfaceWires)?;
+    parameters.push(first.0);
+    for (start, end) in spans {
+        for division in 1..=extra_per_span {
+            let fraction = division as Real / (extra_per_span + 1) as Real;
+            let parameter = start.mul_add(1.0 - fraction, end * fraction);
+            if parameter > start && parameter < end {
+                parameters.push(parameter);
+            }
+        }
+        parameters.push(end);
+    }
+    Ok(parameters)
+}
+
+fn interior_wire_parameters(parameters: &[Real]) -> impl Iterator<Item = Real> + '_ {
+    parameters
+        .iter()
+        .copied()
+        .skip(1)
+        .take(parameters.len().saturating_sub(2))
+}
+
+fn push_surface_wire(
+    curves: &mut Vec<crate::NurbsCurve>,
+    curve: crate::NurbsCurve,
+) -> Result<(), GeometryError> {
+    if !curve_has_extent(&curve) {
+        return Ok(());
+    }
+    if curves.len() == crate::MAX_SURFACE_WIRES {
+        return Err(GeometryError::TooManySurfaceWires);
+    }
+    curves.push(curve);
+    Ok(())
 }
 
 fn curve_has_extent(curve: &crate::NurbsCurve) -> bool {
@@ -2720,6 +2855,53 @@ mod tests {
         assert!(torus.is_closed_u().unwrap());
         assert!(torus.is_closed_v().unwrap());
         assert!(torus.natural_boundary_curve_loops().unwrap().is_empty());
+    }
+
+    #[test]
+    fn wireframe_curves_match_opennurbs_density_and_seam_rules() {
+        let surface = NurbsSurface::try_new(
+            2,
+            1,
+            5,
+            2,
+            (0..2)
+                .flat_map(|v| {
+                    (0..5).map(move |u| point(u as Real, v as Real * 3.0, ((u % 2) * v) as Real))
+                })
+                .collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 3.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(surface.wire_parameters_u(-1).unwrap(), [0.0, 3.0]);
+        assert_eq!(surface.wire_parameters_u(0).unwrap(), [0.0, 1.0, 2.0, 3.0]);
+        assert_eq!(surface.wire_parameters_v(1).unwrap(), [0.0, 0.5, 1.0]);
+        for (density, expected) in [(-1, 4), (0, 6), (1, 7), (2, 10), (3, 14)] {
+            assert_eq!(surface.wireframe_curves(density).unwrap().len(), expected);
+        }
+        assert!(matches!(
+            surface.wireframe_curves(-2),
+            Err(GeometryError::InvalidSurfaceWireDensity(-2))
+        ));
+        assert!(matches!(
+            surface.wireframe_curves(100),
+            Err(GeometryError::InvalidSurfaceWireDensity(100))
+        ));
+
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, 0.0, 5.0).unwrap();
+        for (density, expected) in [(-1, 3), (0, 6), (1, 7), (2, 11)] {
+            assert_eq!(cylinder.wireframe_curves(density).unwrap().len(), expected);
+        }
+        let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        assert_eq!(sphere.wireframe_curves(1).unwrap().len(), 5);
+        let torus = NurbsSurface::try_torus(frame, 4.0, 1.0).unwrap();
+        assert_eq!(torus.wireframe_curves(1).unwrap().len(), 8);
     }
 
     #[test]

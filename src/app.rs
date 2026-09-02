@@ -1877,6 +1877,7 @@ impl VibocerosApp {
         let mut duplicate_border_clicked = false;
         let mut extract_isocurve_clicked = false;
         let mut extract_all_isocurves_clicked = false;
+        let mut extract_wireframe_clicked = false;
         let mut convert_to_single_spans_clicked = false;
         let mut convert_to_beziers_clicked = false;
         let mut length_clicked = false;
@@ -2057,6 +2058,10 @@ impl VibocerosApp {
                 extract_all_isocurves_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract All Iso"))
                     .on_hover_text("Extract every U/V display isocurve from selected surfaces")
+                    .clicked();
+                extract_wireframe_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract Wireframe"))
+                    .on_hover_text("Duplicate displayed surface wires, B-rep edges, or mesh edges")
                     .clicked();
                 convert_to_single_spans_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Single Spans"))
@@ -2243,6 +2248,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("ExtractIsocurve");
         } else if extract_all_isocurves_clicked {
             self.execute_command("ExtractIsocurve ExtractAll Direction=Both");
+        } else if extract_wireframe_clicked {
+            self.execute_command("ExtractWireframe");
         } else if convert_to_single_spans_clicked {
             self.execute_command("ConvertToSingleSpans");
         } else if convert_to_beziers_clicked {

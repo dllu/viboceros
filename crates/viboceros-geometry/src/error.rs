@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSITY};
+
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
@@ -139,6 +141,14 @@ pub enum GeometryError {
 
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
+
+    #[error(
+        "surface wire density must be from {MIN_SURFACE_WIRE_DENSITY} through {MAX_SURFACE_WIRE_DENSITY}, got {0}"
+    )]
+    InvalidSurfaceWireDensity(i32),
+
+    #[error("surface wireframe would contain more than {MAX_SURFACE_WIRES} curves")]
+    TooManySurfaceWires,
 
     #[error("B-rep face {face} requires trimmed-face clipping before it can be tessellated")]
     UnsupportedBrepTrimTessellation { face: usize },

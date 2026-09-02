@@ -120,6 +120,7 @@ ExtractPt OutputLayer=Input Output=Points
 ExtractPt OutputLayer=Input Output=PointCloud
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
+ExtractWireframe OutputLayer=Current GroupOutput=No
 ConvertToSingleSpans Direction=Both DeleteInput=No
 ConvertToBeziers DeleteInput=No
 CloseCrv
@@ -229,6 +230,11 @@ point to pick a surface location in the viewport. `IgnoreTrims=Yes` uses the
 full underlying B-rep face instead. `ExtractAll` emits the natural boundaries,
 knot wires, and density-dependent wires inside each knot span from all selected
 surfaces or B-rep faces; the per-object Rhino wire density survives 3DM I/O.
+The same wire-density rules drive viewport display and `ExtractWireframe`.
+That command emits each B-rep or exact-location-welded mesh topology edge once,
+adds exact trim-clipped interior surface isocurves, selects the results, and can
+place them on the current or input layer. `GroupOutput=Yes` forms one output
+group; `OutputLayer=TargetObject` currently uses the selected target's layer.
 `ConvertToSingleSpans` decomposes selected untrimmed NURBS surfaces at their
 exact knot spans in `Direction=U`, `V`, or `Both`. Rational weights, source
 parameter values, attributes, and group membership are preserved. Inputs are

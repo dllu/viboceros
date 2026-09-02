@@ -2,8 +2,8 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::vector::product_three;
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, Point3, Polyline3, Real, Tolerance, UnitVector3,
-    require_finite,
+    AffineTransform3, BoundingBox3, GeometryError, LineSegment, Point3, Polyline3, Real, Tolerance,
+    UnitVector3, require_finite,
 };
 
 /// Exact location-welded edge topology for a triangle mesh.
@@ -247,6 +247,25 @@ impl TriangleMesh {
                 && self.triangles.len() >= 4
                 && boundary_edge_count == 0,
         }
+    }
+
+    /// Returns every exact-location-welded topology edge exactly once.
+    ///
+    /// This is the curve set Rhino displays and extracts for a triangle mesh:
+    /// shared face edges are not duplicated, while naked and non-manifold
+    /// edges remain represented.
+    pub fn wireframe_lines(&self, tolerance: Tolerance) -> Result<Vec<LineSegment>, GeometryError> {
+        let data = self.topology_data();
+        data.edges
+            .keys()
+            .map(|&(first, second)| {
+                LineSegment::try_new(
+                    data.topological_points[first],
+                    data.topological_points[second],
+                    tolerance,
+                )
+            })
+            .collect()
     }
 
     /// Returns each exact-location-welded naked border as a polyline.
@@ -1087,6 +1106,36 @@ mod tests {
                 .boundary_polylines(Tolerance::DEFAULT)
                 .unwrap()
                 .is_empty()
+        );
+    }
+
+    #[test]
+    fn wireframe_returns_each_welded_topology_edge_once() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let lines = mesh.wireframe_lines(Tolerance::DEFAULT).unwrap();
+        assert_eq!(lines.len(), 5);
+        assert_eq!(lines.len(), mesh.topology().edge_count());
+        assert_eq!(
+            lines
+                .iter()
+                .filter(|line| {
+                    [line.start(), line.end()].contains(&point(0.0, 0.0, 0.0))
+                        && [line.start(), line.end()].contains(&point(2.0, 2.0, 0.0))
+                })
+                .count(),
+            1
         );
     }
 

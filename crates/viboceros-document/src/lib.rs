@@ -15,10 +15,9 @@ use viboceros_geometry::{
     LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, Tolerance,
     TriangleMesh,
 };
-
-pub const MIN_SURFACE_WIRE_DENSITY: i32 = -1;
-pub const MAX_SURFACE_WIRE_DENSITY: i32 = 99;
-pub const DEFAULT_SURFACE_WIRE_DENSITY: i32 = 1;
+pub use viboceros_geometry::{
+    DEFAULT_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRE_DENSITY, MIN_SURFACE_WIRE_DENSITY,
+};
 
 use duplicate::DuplicateGeometryFamily;
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};

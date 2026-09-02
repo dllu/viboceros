@@ -62,6 +62,15 @@ pub use vector::{UnitVector3, Vector3};
 /// Scalar type used throughout the geometry kernel.
 pub type Real = f64;
 
+/// OpenNURBS-compatible range for per-object surface wire density.
+pub const MIN_SURFACE_WIRE_DENSITY: i32 = -1;
+pub const MAX_SURFACE_WIRE_DENSITY: i32 = 99;
+pub const DEFAULT_SURFACE_WIRE_DENSITY: i32 = 1;
+
+/// Resource ceiling for wire parameters or exact wireframe curves returned by
+/// one geometry operation.
+pub const MAX_SURFACE_WIRES: usize = 1_000_000;
+
 #[inline]
 pub(crate) fn require_finite(
     values: impl IntoIterator<Item = Real>,
