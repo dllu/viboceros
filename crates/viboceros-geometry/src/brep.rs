@@ -404,6 +404,49 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs one exact trimmed planar face from a closed NURBS boundary.
+    ///
+    /// The source curve remains the sole 3D boundary edge. Its exact rational
+    /// projection becomes a counterclockwise p-curve on an affine plane, so
+    /// concave and curved boundaries are retained without filling the plane's
+    /// unused rectangular parameter domain.
+    pub fn try_planar_face(
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !curve.is_closed()? || !curve.is_planar(tolerance)? {
+            return Err(GeometryError::InvalidPlanarFaceBoundary);
+        }
+
+        let projection = project_planar_curve(curve, tolerance)
+            .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
+        let surface = planar_cap_surface(projection.frame, zero, projection.coordinate_bounds)?;
+        let (parameter_curve, curve_reversed) = oriented_cap_curve(projection.curve)
+            .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+        let seam = curve.evaluate(*curve.domain().start())?;
+        let closure_tolerance = cap_closure_tolerance(
+            seam,
+            curve,
+            &surface,
+            &parameter_curve,
+            curve_reversed,
+            projection.maximum_residual,
+        )?;
+        let vertices = vec![BrepVertex::try_new(seam, closure_tolerance)?];
+        let edges = vec![BrepEdge::try_new([0, 0], curve.clone(), closure_tolerance)?];
+        let face_loop = single_edge_loop(
+            0,
+            0,
+            parameter_curve,
+            curve_reversed,
+            BrepTrimType::Boundary,
+            [closure_tolerance, closure_tolerance],
+        )?;
+        let faces = vec![BrepFace::try_new(surface, false, vec![face_loop])?];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     /// Constructs an exact capped right circular cylinder with one wall face
     /// and two polar disk faces. Periodic parameter seams are represented by
     /// shared radial/axial seam edges rather than duplicated boundary edges.
@@ -627,14 +670,22 @@ impl Brep {
             ],
         )?;
         let cap_trim_tolerance = [closure_tolerance, closure_tolerance];
-        let start_loop = single_trim_loop(
+        let start_loop = single_edge_loop(
             0,
             0,
             cap_curve.clone(),
             cap_curve_reversed,
+            BrepTrimType::Mated,
             cap_trim_tolerance,
         )?;
-        let end_loop = single_trim_loop(1, 1, cap_curve, cap_curve_reversed, cap_trim_tolerance)?;
+        let end_loop = single_edge_loop(
+            1,
+            1,
+            cap_curve,
+            cap_curve_reversed,
+            BrepTrimType::Mated,
+            cap_trim_tolerance,
+        )?;
         let path_opposes_surface = normal_distance < 0.0;
         let faces = vec![
             BrepFace::try_new(
@@ -720,14 +771,22 @@ impl Brep {
             ],
         )?;
         let cap_trim_tolerance = [closure_tolerance, closure_tolerance];
-        let start_loop = single_trim_loop(
+        let start_loop = single_edge_loop(
             0,
             0,
             cap_curve.clone(),
             cap_curve_reversed,
+            BrepTrimType::Mated,
             cap_trim_tolerance,
         )?;
-        let end_loop = single_trim_loop(1, 1, cap_curve, cap_curve_reversed, cap_trim_tolerance)?;
+        let end_loop = single_edge_loop(
+            1,
+            1,
+            cap_curve,
+            cap_curve_reversed,
+            BrepTrimType::Mated,
+            cap_trim_tolerance,
+        )?;
         let path_opposes_surface = normal_distance < 0.0;
         let faces = vec![
             BrepFace::try_new(
@@ -804,11 +863,12 @@ impl Brep {
                 RectangularTrimSpec::edge([0, 0], 0, true, BrepTrimType::Mated),
             ],
         )?;
-        let cap_loop = single_trim_loop(
+        let cap_loop = single_edge_loop(
             0,
             0,
             cap_curve,
             cap_curve_reversed,
+            BrepTrimType::Mated,
             [closure_tolerance, closure_tolerance],
         )?;
         let apex_is_above_profile = normal_distance > 0.0;
@@ -1542,11 +1602,12 @@ fn rectangular_surface_loop(
     BrepLoop::try_new(BrepLoopType::Outer, trims)
 }
 
-fn single_trim_loop(
+fn single_edge_loop(
     vertex: usize,
     edge: usize,
     curve: NurbsCurve2,
     reversed_3d: bool,
+    trim_type: BrepTrimType,
     tolerance: [Real; 2],
 ) -> Result<BrepLoop, GeometryError> {
     BrepLoop::try_new(
@@ -1556,7 +1617,7 @@ fn single_trim_loop(
             Some(edge),
             reversed_3d,
             curve,
-            BrepTrimType::Mated,
+            trim_type,
             SurfaceIso::NotIso,
             tolerance,
         )?],
@@ -2520,6 +2581,104 @@ mod tests {
         assert_eq!(brep.vertices()[0].point(), point(2.0, 2.0, 3.0));
         assert_eq!(brep.vertices()[7].point(), point(-3.0, 4.0, 0.0));
         assert!(brep.is_solid());
+    }
+
+    #[test]
+    fn exact_planar_face_retains_concave_and_rational_trim_boundaries() {
+        let profile = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 2.0),
+                point(3.0, 0.0, 2.0),
+                point(3.0, 1.0, 2.0),
+                point(1.0, 1.0, 2.0),
+                point(1.0, 3.0, 2.0),
+                point(0.0, 3.0, 2.0),
+                point(0.0, 0.0, 2.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let face = Brep::try_planar_face(&profile, Tolerance::DEFAULT).unwrap();
+
+        assert_eq!(face.vertices().len(), 1);
+        assert_eq!(face.edges().len(), 1);
+        assert_eq!(face.faces().len(), 1);
+        assert_eq!(face.edge_use_count(0), Some(1));
+        assert!(face.is_manifold());
+        assert!(!face.is_closed());
+        assert!(!face.is_solid());
+        assert_eq!(face.edges()[0].curve(), &profile);
+        let trim = &face.faces()[0].loops()[0].trims()[0];
+        assert_eq!(trim.trim_type(), BrepTrimType::Boundary);
+        assert_eq!(trim.iso(), SurfaceIso::NotIso);
+        for samples_per_span in [1, 4] {
+            let mesh = face
+                .tessellate(samples_per_span, Tolerance::DEFAULT)
+                .unwrap();
+            assert!(!mesh.topology().is_closed());
+            assert!((mesh.area().unwrap() - 5.0).abs() < 1.0e-12);
+        }
+
+        let reversed =
+            Brep::try_planar_face(&profile.reversed().unwrap(), Tolerance::DEFAULT).unwrap();
+        assert!(
+            (reversed
+                .tessellate(1, Tolerance::DEFAULT)
+                .unwrap()
+                .area()
+                .unwrap()
+                - 5.0)
+                .abs()
+                < 1.0e-12
+        );
+
+        let circle = Circle3::try_new(
+            point(8.0, -3.0, 2.0),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let disk = Brep::try_planar_face(&circle, Tolerance::DEFAULT).unwrap();
+        assert_eq!(disk.edges()[0].curve().degree(), 2);
+        assert_eq!(disk.edges()[0].curve().knots(), circle.knots());
+        let disk_mesh = disk.tessellate(8, Tolerance::DEFAULT).unwrap();
+        let expected_disk_area = std::f64::consts::PI * 4.0;
+        assert!((disk_mesh.area().unwrap() - expected_disk_area).abs() / expected_disk_area < 0.01);
+
+        let open = LineSegment::try_new(
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        assert_eq!(
+            Brep::try_planar_face(&open, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidPlanarFaceBoundary)
+        );
+        let nonplanar = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 1.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        assert_eq!(
+            Brep::try_planar_face(&nonplanar, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidPlanarFaceBoundary)
+        );
     }
 
     #[test]

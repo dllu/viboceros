@@ -1100,6 +1100,8 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        let planar_face_brep =
+            Brep::try_planar_face(&extrusion_profile, Tolerance::DEFAULT).unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -1158,6 +1160,7 @@ mod tests {
                 ThreeDmObject::new(ThreeDmGeometry::Brep(extrusion_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(apex_extrusion_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(path_extrusion_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(planar_face_brep), 0),
             ],
         )
     }

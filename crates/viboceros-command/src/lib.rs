@@ -90,6 +90,9 @@ impl CommandRegistry {
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
+            .register(PlanarSurfaceCommand)
+            .expect("unique built-in command");
+        registry
             .register(BoxCommand)
             .expect("unique built-in command");
         registry
@@ -1067,6 +1070,73 @@ impl Command for SrfPtCommand {
     }
 }
 
+const PLANAR_SURFACE_USAGE: &str = "PlanarSrf [DeleteInput=Yes|No]";
+
+struct PlanarSurfaceCommand;
+
+impl Command for PlanarSurfaceCommand {
+    fn name(&self) -> &'static str {
+        "PlanarSrf"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["PlanarSurface"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let mut delete_input = None;
+        for argument in arguments {
+            let Some((name, value)) = argument.split_once('=') else {
+                return Err(CommandError::Usage(PLANAR_SURFACE_USAGE));
+            };
+            if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
+                delete_input =
+                    Some(parse_yes_no(value).ok_or(CommandError::Usage(PLANAR_SURFACE_USAGE))?);
+            } else {
+                return Err(CommandError::Usage(PLANAR_SURFACE_USAGE));
+            }
+        }
+
+        let selected = selected_ids(document)?;
+        let mut faces = Vec::new();
+        for id in selected {
+            let Some(curve) = document
+                .object(id)
+                .expect("selected objects exist")
+                .geometry()
+                .nurbs_curve_representation()?
+            else {
+                continue;
+            };
+            if curve.is_closed()? && curve.is_planar(document.tolerance())? {
+                faces.push((id, Brep::try_planar_face(&curve, document.tolerance())?));
+            }
+        }
+        if faces.is_empty() {
+            return Err(CommandError::NoPlanarSurfaceBoundaries);
+        }
+
+        let face_count = faces.len();
+        for (_, face) in &faces {
+            document.add_geometry(Geometry::Brep(face.clone()))?;
+        }
+        let delete_input = delete_input.unwrap_or(false);
+        if delete_input {
+            for (id, _) in &faces {
+                document.delete_object(*id)?;
+            }
+        }
+        Ok(format!(
+            "Created {face_count} exact trimmed planar surface(s){}",
+            if delete_input {
+                ", deleting the input curves"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
 
 struct BoxCommand;
@@ -1852,14 +1922,21 @@ impl GeometrySelectionFilter {
             },
             Self::Point => matches!(geometry, Geometry::Point(_)),
             Self::PointCloud => matches!(geometry, Geometry::PointCloud(_)),
-            Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
-            Self::Polysurface => matches!(geometry, Geometry::Brep(_)),
+            Self::Surface => match geometry {
+                Geometry::NurbsSurface(_) => true,
+                Geometry::Brep(brep) => brep.faces().len() == 1,
+                _ => false,
+            },
+            Self::Polysurface => match geometry {
+                Geometry::Brep(brep) => brep.faces().len() > 1,
+                _ => false,
+            },
             Self::OpenPolysurface => match geometry {
-                Geometry::Brep(brep) => !brep.is_closed(),
+                Geometry::Brep(brep) => brep.faces().len() > 1 && !brep.is_closed(),
                 _ => false,
             },
             Self::ClosedPolysurface => match geometry {
-                Geometry::Brep(brep) => brep.is_closed(),
+                Geometry::Brep(brep) => brep.faces().len() > 1 && brep.is_closed(),
                 _ => false,
             },
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
@@ -7232,6 +7309,9 @@ pub enum CommandError {
     #[error("none of the selected objects is an extrudable curve")]
     NoExtrudableCurves,
 
+    #[error("none of the selected curves is a closed, nondegenerate planar boundary")]
+    NoPlanarSurfaceBoundaries,
+
     #[error("ExtrudeCrv currently supports Output=Surface only")]
     UnsupportedCurveExtrusionOutput,
 
@@ -7334,7 +7414,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -9761,6 +9841,186 @@ mod tests {
     }
 
     #[test]
+    fn planar_surface_creates_exact_trimmed_faces_and_deletes_only_valid_inputs() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let output_layer = document.current_layer_id();
+        let input_layer = document
+            .add_layer("Planar boundaries", ColorRgb::new(91, 92, 93))
+            .unwrap();
+        let concave = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(3.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(3.0, 1.0, 2.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 2.0).unwrap(),
+                Point3::try_new(1.0, 3.0, 2.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 2.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let circle = Circle3::try_new(
+            Point3::try_new(8.0, 0.0, 2.0).unwrap(),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(12.0, 0.0, 2.0).unwrap(),
+            Point3::try_new(15.0, 0.0, 2.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let nonplanar = Polyline3::try_new(
+            vec![
+                Point3::try_new(18.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(18.0, 3.0, 1.0).unwrap(),
+                Point3::try_new(18.0, 0.0, 0.0).unwrap(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let source_ids = [
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Polyline(concave),
+                    ObjectAttributes::on_layer(input_layer).with_name("concave"),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Circle(circle),
+                    ObjectAttributes::on_layer(input_layer).with_name("circle"),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Line(line),
+                    ObjectAttributes::on_layer(input_layer).with_name("open"),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Polyline(nonplanar),
+                    ObjectAttributes::on_layer(input_layer).with_name("nonplanar"),
+                )
+                .unwrap(),
+        ];
+        let group = document
+            .add_group(Some("Planar inputs".to_owned()), source_ids)
+            .unwrap();
+        document
+            .select_objects_direct(source_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "PlanarSrf DeleteInput=No")
+                .unwrap(),
+            "Created 2 exact trimmed planar surface(s)"
+        );
+        let outputs = document
+            .objects()
+            .filter(|object| !source_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        assert_eq!(document.group(group).unwrap().members().len(), 4);
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        for output in &outputs {
+            assert!(!document.is_selected(output.id()));
+            assert_eq!(output.attributes().layer_id(), output_layer);
+            assert_eq!(output.attributes().name(), None);
+        }
+        let Geometry::Brep(concave_face) = outputs[0].geometry() else {
+            panic!("PlanarSrf must create a trimmed B-rep face")
+        };
+        assert_eq!(concave_face.faces().len(), 1);
+        assert!(!concave_face.is_closed());
+        assert!(
+            (concave_face
+                .tessellate(1, tolerance)
+                .unwrap()
+                .area()
+                .unwrap()
+                - 5.0)
+                .abs()
+                < 1.0e-12
+        );
+        let Geometry::Brep(circle_face) = outputs[1].geometry() else {
+            panic!("PlanarSrf must preserve a rational circular trim")
+        };
+        let expected_circle_area = std::f64::consts::PI * 4.0;
+        assert!(
+            (circle_face
+                .tessellate(8, tolerance)
+                .unwrap()
+                .area()
+                .unwrap()
+                - expected_circle_area)
+                .abs()
+                / expected_circle_area
+                < 0.01
+        );
+        assert_eq!(document.undo_label(), Some("PlanarSrf"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 4);
+        document
+            .select_objects_direct(source_ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "PlanarSurface DeleteInput=Yes")
+                .unwrap(),
+            "Created 2 exact trimmed planar surface(s), deleting the input curves"
+        );
+        assert_eq!(document.objects().len(), 4);
+        assert!(document.object(source_ids[0]).is_none());
+        assert!(document.object(source_ids[1]).is_none());
+        assert!(document.object(source_ids[2]).is_some());
+        assert!(document.object(source_ids[3]).is_some());
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source_ids[2], source_ids[3]]
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct(source_ids, SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "PlanarSrf DeleteInput=Maybe",
+            "PlanarSrf DeleteInput=Yes DeleteInput=No",
+            "PlanarSrf extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.group(group).unwrap().members().len(), 4);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document
+            .select_objects_direct(source_ids[2..].iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "PlanarSrf"),
+            Err(CommandError::NoPlanarSurfaceBoundaries)
+        ));
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
     fn box_creates_an_exact_closed_brep_from_signed_height_or_height_point() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -9831,27 +10091,47 @@ mod tests {
         registry
             .execute(&mut document, "Box 4,0,0 6,2,0 3")
             .unwrap();
+        let planar_boundary = Polyline3::try_new(
+            vec![
+                Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+            ],
+            document.tolerance(),
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        document
+            .add_geometry(Geometry::Brep(
+                Brep::try_planar_face(&planar_boundary, document.tolerance()).unwrap(),
+            ))
+            .unwrap();
         let history = document.undo_label().map(str::to_owned);
 
         assert_eq!(
             registry.execute(&mut document, "SelSrf").unwrap(),
-            "Selected 1 object(s)"
+            "Selected 2 object(s)"
         );
         assert!(
             document
                 .selected_objects()
-                .all(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)))
+                .all(|object| match object.geometry() {
+                    Geometry::NurbsSurface(_) => true,
+                    Geometry::Brep(brep) => brep.faces().len() == 1,
+                    _ => false,
+                })
         );
         registry.execute(&mut document, "SelNone").unwrap();
         assert_eq!(
             registry.execute(&mut document, "SelPolysurface").unwrap(),
             "Selected 1 object(s)"
         );
-        assert!(
-            document
-                .selected_objects()
-                .all(|object| matches!(object.geometry(), Geometry::Brep(_)))
-        );
+        assert!(document.selected_objects().all(
+            |object| matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() > 1)
+        ));
         registry.execute(&mut document, "SelNone").unwrap();
         assert_eq!(
             registry.execute(&mut document, "SelOpenPolysrf").unwrap(),

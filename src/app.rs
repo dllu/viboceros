@@ -1807,6 +1807,7 @@ impl VibocerosApp {
         let mut shear_clicked = false;
         let mut project_to_cplane_clicked = false;
         let mut to_nurbs_clicked = false;
+        let mut planar_surface_clicked = false;
         let mut sphere_clicked = false;
         let mut ellipsoid_clicked = false;
         let mut extrude_curve_clicked = false;
@@ -2007,6 +2008,10 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("To NURBS"))
                     .on_hover_text("Create exact NURBS copies of supported selected curves")
                     .clicked();
+                planar_surface_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Planar Surface"))
+                    .on_hover_text("Create exact trimmed planar faces from selected closed curves")
+                    .clicked();
                 sphere_clicked = ui
                     .button("Sphere")
                     .on_hover_text("Create an exact NURBS sphere from two viewport points")
@@ -2142,6 +2147,8 @@ impl VibocerosApp {
             self.execute_command("ProjectToCPlane");
         } else if to_nurbs_clicked {
             self.execute_command("ToNURBS");
+        } else if planar_surface_clicked {
+            self.execute_command("PlanarSrf");
         } else if sphere_clicked {
             self.try_start_interactive_command("Sphere");
         } else if ellipsoid_clicked {

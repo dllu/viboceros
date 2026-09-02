@@ -30,6 +30,7 @@ Curve 0,0 2,3 5,3 8,0 Degree=3
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
+PlanarSrf DeleteInput=No
 Box 0,0,0 8,5,0 3
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
@@ -177,6 +178,12 @@ polylines. It retains inputs and creates unselected copies in the same groups
 by default; use `DeleteInputObjects=Yes` to preserve object identities and
 replace the inputs in place. Line, polyline, circle, arc, and ellipse parameter
 domains follow Rhino's chord-length, arc-length, and angular conventions.
+`PlanarSrf` creates one exact single-face B-rep for each selected closed planar
+curve. The original rational curve remains its boundary edge and exact
+parameter-space trim, so curved and concave regions shade and export without
+filling the unused rectangular surface domain. Inputs are retained by default;
+`DeleteInput=Yes` removes each successfully used boundary. Multiple selected
+boundaries are currently treated independently rather than nested as holes.
 `Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
 a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
@@ -287,9 +294,10 @@ the matching isolate command, with provenance preserved through undo and redo.
 Rhino-compatible curve, line, polyline, point, point-cloud, surface, and
 polysurface, and open/closed mesh filters add visible, unlocked objects of the
 requested type to the current selection. `SelPtCloud` is separate from `SelPt`,
-matching Rhino. `SelSrf` excludes B-rep polysurfaces; `SelPolysrf` (alias
-`SelPolysurface`) and its open/closed variants classify them by shared-edge
-topology.
+matching Rhino. `SelSrf` includes both untrimmed NURBS surfaces and single-face
+trimmed B-reps while excluding multi-face B-reps. `SelPolysrf` (alias
+`SelPolysurface`) and its open/closed variants classify only multi-face B-reps
+by shared-edge topology.
 `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
 exactly straight, single-span higher-degree NURBS curves, while excluding
 multi-span curves and polylines as Rhino does. `SelPolyline` includes native
