@@ -31,6 +31,7 @@ InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 Sphere 0,0,0 5
 Cylinder 0,0,0 5 10 Solid=No
+Cone 0,0,0 5 10 Solid=No
 Layer New Construction
 Layer Hide Construction
 Layer Show Construction
@@ -177,6 +178,9 @@ arguments starts the two-pick viewport workflow.
 radius (or base-circle point), and signed height. `Axis=` accepts an arbitrary
 axis, while `BothSides=Yes` makes the height symmetric about the base center.
 The current surface document model accepts `Solid=No`; caps await B-rep support.
+`Cone` uses the same center, numeric radius or base-point radius, signed height,
+and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
+surface with a weighted collapsed apex. `Solid=No` is currently required.
 `ExtrudeCrv` creates exact rational NURBS surfaces from selected analytic,
 polyline, and NURBS curves. A numeric distance uses World Z; two points define
 an arbitrary direction; entering it without either starts the two-pick viewport

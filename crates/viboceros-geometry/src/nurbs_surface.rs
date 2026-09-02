@@ -466,6 +466,102 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact open NURBS wall of a right circular cone.
+    ///
+    /// This follows `ON_Cone::GetNurbForm`: the frame origin is the apex,
+    /// `height_to_base` is the signed base offset on frame Z, U is the
+    /// four-span rational quadratic circle on `[0, 2π]`, and V is an
+    /// increasing linear height interval with the apex controls repeated at
+    /// their corresponding circular weights.
+    pub fn try_cone(
+        apex_frame: Frame3,
+        radius: Real,
+        height_to_base: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([radius, height_to_base], "cone dimensions")?;
+        if radius <= 0.0 || height_to_base == 0.0 {
+            return Err(GeometryError::Degenerate { context: "cone" });
+        }
+
+        let circle_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let origin = apex_frame.origin().to_array();
+        let x_axis = apex_frame.x_axis().as_vector().to_array();
+        let y_axis = apex_frame.y_axis().as_vector().to_array();
+        let z_axis = apex_frame.z_axis().as_vector().to_array();
+        let mut base_controls = Vec::with_capacity(9);
+        for ([x, y], weight) in circle_coordinates.into_iter().zip(circle_weights) {
+            let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                let radial_coordinate = x.mul_add(x_axis[coordinate], y * y_axis[coordinate]);
+                radius.mul_add(
+                    radial_coordinate,
+                    height_to_base.mul_add(z_axis[coordinate], origin[coordinate]),
+                )
+            }))?;
+            base_controls.push(WeightedPoint3::try_new(point, weight)?);
+        }
+        let apex_controls = circle_weights
+            .into_iter()
+            .map(|weight| WeightedPoint3::try_new(apex_frame.origin(), weight))
+            .collect::<Result<Vec<_>, _>>()?;
+        let (height_start, height_end, controls) = if height_to_base < 0.0 {
+            let mut controls = base_controls;
+            controls.extend(apex_controls);
+            (height_to_base, 0.0, controls)
+        } else {
+            let mut controls = apex_controls;
+            controls.extend(base_controls);
+            (0.0, height_to_base, controls)
+        };
+
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let tau = std::f64::consts::TAU;
+        Self::try_new_rational(
+            2,
+            1,
+            9,
+            2,
+            controls,
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                3.0 * half_pi,
+                3.0 * half_pi,
+                tau,
+                tau,
+                tau,
+            ],
+            vec![height_start, height_start, height_end, height_end],
+        )
+    }
+
     /// Constructs an exact rational surface by revolving a NURBS profile.
     ///
     /// U is the quadratic rational revolution direction and V preserves the
@@ -1950,6 +2046,74 @@ mod tests {
         assert!(NurbsSurface::try_cylinder(frame, 0.0, 0.0, 1.0).is_err());
         assert!(NurbsSurface::try_cylinder(frame, 1.0, 2.0, 2.0).is_err());
         assert!(NurbsSurface::try_cylinder(frame, 1.0, 0.0, Real::NAN).is_err());
+    }
+
+    #[test]
+    fn exact_cone_matches_opennurbs_apex_and_signed_height_layout() {
+        let apex = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            apex,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_cone(frame, 2.5, -4.0).unwrap();
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), -4.0..=0.0);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            point(1.0, 4.5, -1.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().point(),
+            point(-1.5, 4.5, -1.0)
+        );
+        for u in 0..9 {
+            assert_eq!(surface.control_point(u, 1).unwrap().point(), apex);
+            assert_eq!(
+                surface.control_point(u, 0).unwrap().weight(),
+                surface.control_point(u, 1).unwrap().weight()
+            );
+        }
+
+        for u_index in 0..32 {
+            for v_index in 0..=8 {
+                let u = std::f64::consts::TAU * u_index as Real / 32.0;
+                let v = -4.0 + 4.0 * v_index as Real / 8.0;
+                let point = surface.evaluate(u, v).unwrap();
+                let axis_point = apex
+                    .translated(frame.z_axis().as_vector().scaled(v).unwrap())
+                    .unwrap();
+                let expected_radius = 2.5 * (-v / 4.0);
+                assert!(
+                    Tolerance::DEFAULT
+                        .approx_eq(point.distance_to(axis_point).unwrap(), expected_radius)
+                );
+            }
+        }
+        assert!(
+            !surface
+                .tessellate(2, Tolerance::DEFAULT)
+                .unwrap()
+                .triangles()
+                .is_empty()
+        );
+        let positive = NurbsSurface::try_cone(frame, 2.5, 4.0).unwrap();
+        assert_eq!(positive.domain_v(), 0.0..=4.0);
+        assert_eq!(positive.control_point(0, 0).unwrap().point(), apex);
+        assert_eq!(
+            positive.control_point(0, 1).unwrap().point(),
+            point(1.0, 4.5, 7.0)
+        );
+        assert!(NurbsSurface::try_cone(frame, 0.0, 1.0).is_err());
+        assert!(NurbsSurface::try_cone(frame, 1.0, 0.0).is_err());
+        assert!(NurbsSurface::try_cone(frame, 1.0, Real::INFINITY).is_err());
     }
 
     #[test]

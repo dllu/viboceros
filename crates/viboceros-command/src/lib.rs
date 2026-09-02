@@ -93,6 +93,9 @@ impl CommandRegistry {
             .register(CylinderCommand)
             .expect("unique built-in command");
         registry
+            .register(ConeCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtrudeCurveCommand)
             .expect("unique built-in command");
         registry
@@ -1003,6 +1006,130 @@ impl Command for SphereCommand {
 }
 
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=No]";
+const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=No]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum AxialPrimitiveRadius {
+    Numeric(Real),
+    Point(Point3),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct AxialPrimitiveOptions {
+    center: Point3,
+    radius: AxialPrimitiveRadius,
+    height: Real,
+    axis: Vector3,
+    both_sides: bool,
+    solid: bool,
+}
+
+fn parse_axial_primitive_options(
+    arguments: &[&str],
+    usage: &'static str,
+    supports_both_sides: bool,
+) -> Result<AxialPrimitiveOptions, CommandError> {
+    let (center, center_consumed) = parse_point(arguments)?;
+    let remaining = &arguments[center_consumed..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let (radius, height, option_start) = if remaining
+        .first()
+        .is_some_and(|argument| argument.contains(','))
+    {
+        if positional_count != 2 {
+            return Err(CommandError::Usage(usage));
+        }
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 1);
+        (
+            AxialPrimitiveRadius::Point(point),
+            parse_finite_real(remaining[1])?,
+            2,
+        )
+    } else if positional_count == 2 {
+        (
+            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
+            parse_finite_real(remaining[1])?,
+            2,
+        )
+    } else if positional_count == 4 {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 3);
+        (
+            AxialPrimitiveRadius::Point(point),
+            parse_finite_real(remaining[3])?,
+            4,
+        )
+    } else {
+        return Err(CommandError::Usage(usage));
+    };
+
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut both_sides = false;
+    let mut solid = false;
+    let mut axis_seen = false;
+    let mut both_sides_seen = false;
+    let mut solid_seen = false;
+    for argument in &remaining[option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(usage));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            let (point, consumed) = parse_point(&[value])?;
+            if consumed != 1 {
+                return Err(CommandError::Usage(usage));
+            }
+            axis = Vector3::try_from(point.to_array())?;
+            axis_seen = true;
+        } else if supports_both_sides && option_name_eq(name, "BothSides") && !both_sides_seen {
+            both_sides = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+            both_sides_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            solid = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+            solid_seen = true;
+        } else {
+            return Err(CommandError::Usage(usage));
+        }
+    }
+    Ok(AxialPrimitiveOptions {
+        center,
+        radius,
+        height,
+        axis,
+        both_sides,
+        solid,
+    })
+}
+
+fn axial_primitive_frame(
+    options: AxialPrimitiveOptions,
+    tolerance: Tolerance,
+) -> Result<(Frame3, Real), CommandError> {
+    let base_frame = Frame3::try_from_normal(options.center, options.axis, tolerance)?;
+    if let AxialPrimitiveRadius::Point(point) = options.radius {
+        let radial = options.center.vector_to(point)?;
+        let axial_distance = radial.dot(base_frame.z_axis().as_vector())?;
+        let axial = base_frame.z_axis().as_vector().scaled(axial_distance)?;
+        let projected = Vector3::try_new(
+            radial.x() - axial.x(),
+            radial.y() - axial.y(),
+            radial.z() - axial.z(),
+        )?;
+        Ok((
+            Frame3::try_from_x_and_normal(options.center, projected, options.axis, tolerance)?,
+            projected.length()?,
+        ))
+    } else {
+        let AxialPrimitiveRadius::Numeric(radius) = options.radius else {
+            unreachable!("axial primitive radius variants are exhaustive")
+        };
+        Ok((base_frame, radius))
+    }
+}
 
 struct CylinderCommand;
 
@@ -1016,100 +1143,55 @@ impl Command for CylinderCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (center, center_consumed) = parse_point(arguments)?;
-        let remaining = &arguments[center_consumed..];
-        let positional_count = remaining
-            .iter()
-            .take_while(|argument| !argument.contains('='))
-            .count();
-        let (numeric_radius, radius_point, height, option_start) = if remaining
-            .first()
-            .is_some_and(|argument| argument.contains(','))
-        {
-            if positional_count != 2 {
-                return Err(CommandError::Usage(CYLINDER_USAGE));
-            }
-            let (point, consumed) = parse_point(remaining)?;
-            debug_assert_eq!(consumed, 1);
-            (None, Some(point), parse_finite_real(remaining[1])?, 2)
-        } else if positional_count == 2 {
-            (
-                Some(parse_finite_real(remaining[0])?),
-                None,
-                parse_finite_real(remaining[1])?,
-                2,
-            )
-        } else if positional_count == 4 {
-            let (point, consumed) = parse_point(remaining)?;
-            debug_assert_eq!(consumed, 3);
-            (None, Some(point), parse_finite_real(remaining[3])?, 4)
-        } else {
-            return Err(CommandError::Usage(CYLINDER_USAGE));
-        };
-
-        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
-        let mut both_sides = false;
-        let mut solid = false;
-        let mut axis_seen = false;
-        let mut both_sides_seen = false;
-        let mut solid_seen = false;
-        for argument in &remaining[option_start..] {
-            let Some((name, value)) = argument.split_once('=') else {
-                return Err(CommandError::Usage(CYLINDER_USAGE));
-            };
-            let value = value.trim_start_matches('_');
-            if option_name_eq(name, "Axis") && !axis_seen {
-                let (point, consumed) = parse_point(&[value])?;
-                if consumed != 1 {
-                    return Err(CommandError::Usage(CYLINDER_USAGE));
-                }
-                axis = Vector3::try_from(point.to_array())?;
-                axis_seen = true;
-            } else if option_name_eq(name, "BothSides") && !both_sides_seen {
-                both_sides = parse_yes_no(value).ok_or(CommandError::Usage(CYLINDER_USAGE))?;
-                both_sides_seen = true;
-            } else if option_name_eq(name, "Solid") && !solid_seen {
-                solid = parse_yes_no(value).ok_or(CommandError::Usage(CYLINDER_USAGE))?;
-                solid_seen = true;
-            } else {
-                return Err(CommandError::Usage(CYLINDER_USAGE));
-            }
-        }
-        if solid {
+        let options = parse_axial_primitive_options(arguments, CYLINDER_USAGE, true)?;
+        if options.solid {
             return Err(CommandError::SolidPrimitiveUnsupported);
         }
 
         let tolerance = document.tolerance();
-        let base_frame = Frame3::try_from_normal(center, axis, tolerance)?;
-        let (frame, radius) = if let Some(point) = radius_point {
-            let radial = center.vector_to(point)?;
-            let axial_distance = radial.dot(base_frame.z_axis().as_vector())?;
-            let axial = base_frame.z_axis().as_vector().scaled(axial_distance)?;
-            let projected = Vector3::try_new(
-                radial.x() - axial.x(),
-                radial.y() - axial.y(),
-                radial.z() - axial.z(),
-            )?;
-            (
-                Frame3::try_from_x_and_normal(center, projected, axis, tolerance)?,
-                projected.length()?,
-            )
-        } else {
-            (
-                base_frame,
-                numeric_radius.expect("numeric and point radius cases are exhaustive"),
-            )
-        };
-        let [start_height, end_height] = if both_sides {
-            let magnitude = height.abs();
+        let (frame, radius) = axial_primitive_frame(options, tolerance)?;
+        let [start_height, end_height] = if options.both_sides {
+            let magnitude = options.height.abs();
             [-magnitude, magnitude]
         } else {
-            [0.0, height]
+            [0.0, options.height]
         };
         let surface = NurbsSurface::try_cylinder(frame, radius, start_height, end_height)?;
         let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
         Ok(format!(
             "Added open NURBS cylinder {id} (radius {radius:.6}, heights {start_height:.6} to {end_height:.6})"
+        ))
+    }
+}
+
+struct ConeCommand;
+
+impl Command for ConeCommand {
+    fn name(&self) -> &'static str {
+        "Cone"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_axial_primitive_options(arguments, CONE_USAGE, false)?;
+        if options.solid {
+            return Err(CommandError::SolidPrimitiveUnsupported);
+        }
+        let tolerance = document.tolerance();
+        let (base_frame, radius) = axial_primitive_frame(options, tolerance)?;
+        let apex = options
+            .center
+            .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
+        let apex_frame = Frame3::try_from_directions(
+            apex,
+            base_frame.x_axis().as_vector(),
+            base_frame.y_axis().as_vector(),
+            tolerance,
+        )?;
+        let surface = NurbsSurface::try_cone(apex_frame, radius, -options.height)?;
+        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+        Ok(format!(
+            "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
+            options.height
         ))
     }
 }
@@ -6946,7 +7028,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7096,6 +7178,65 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Cylinder"));
+    }
+
+    #[test]
+    fn cone_creates_exact_apex_surface_for_signed_arbitrary_axes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Cone 0,0,0 3 4 Solid=No")
+            .unwrap();
+        let cone_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(cone_id));
+        let Geometry::NurbsSurface(surface) = document.object(cone_id).unwrap().geometry() else {
+            panic!("Cone must create a NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), -4.0..=0.0);
+        assert_eq!(
+            surface.evaluate(0.0, -4.0).unwrap(),
+            Point3::try_new(3.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            surface.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 4.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Cone"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Cone 1,2,3 4,7,3 -4 Axis=0,1,0 Solid=No")
+            .unwrap();
+        let Geometry::NurbsSurface(negative) = document.objects().next().unwrap().geometry() else {
+            panic!("Cone must support a point radius and arbitrary axis")
+        };
+        assert_eq!(negative.domain_v(), 0.0..=4.0);
+        assert_eq!(
+            negative.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, -2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            negative.evaluate(0.0, 4.0).unwrap(),
+            Point3::try_new(4.0, 2.0, 3.0).unwrap()
+        );
+
+        for invalid in [
+            "Cone 0,0,0 1 2 Solid=Yes",
+            "Cone 0,0,0 1 0",
+            "Cone 0,0,0 0 2",
+            "Cone 0,0,0 0,0,2 3 Axis=0,0,1",
+            "Cone 0,0,0 1 2 Axis=0,0,0",
+            "Cone 0,0,0 1 2 BothSides=Yes",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Cone"));
     }
 
     #[test]
