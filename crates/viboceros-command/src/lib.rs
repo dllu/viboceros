@@ -90,6 +90,9 @@ impl CommandRegistry {
             .register(ExtrudeCurveCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtrudeCurveAlongCurveCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtrudeCurveToPointCommand)
             .expect("unique built-in command");
         registry
@@ -5297,6 +5300,150 @@ fn parse_curve_extrusion(
     ))
 }
 
+const EXTRUDE_CURVE_ALONG_CURVE_USAGE: &str = "ExtrudeCrvAlongCrv [PathName=name] [DeleteInput=Yes|No] [Output=Surface] [Solid=No] [SplitAtTangents=Yes|No]";
+
+struct ExtrudeCurveAlongCurveCommand;
+
+impl Command for ExtrudeCurveAlongCurveCommand {
+    fn name(&self) -> &'static str {
+        "ExtrudeCrvAlongCrv"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (path_name, delete_input) = parse_curve_along_curve_options(arguments)?;
+        let selected = selected_ids(document)?;
+        let path_id = resolve_curve_along_curve_path(document, &selected, path_name.as_deref())?;
+        let path = document
+            .object(path_id)
+            .expect("resolved extrusion paths exist")
+            .geometry()
+            .nurbs_curve_representation()?
+            .ok_or(CommandError::CurveAlongCurvePathNotCurve)?;
+        let profile_ids = selected
+            .iter()
+            .copied()
+            .filter(|id| *id != path_id)
+            .collect::<Vec<_>>();
+        if profile_ids.is_empty() {
+            return Err(CommandError::CurveAlongCurveProfilesRequired);
+        }
+
+        let mut extrusions = Vec::new();
+        for id in &profile_ids {
+            let Some(profile) = document
+                .object(*id)
+                .expect("selected objects exist")
+                .geometry()
+                .nurbs_curve_representation()?
+            else {
+                continue;
+            };
+            extrusions.push((
+                *id,
+                NurbsSurface::try_extruded_curve_along_curve(&profile, &path)?,
+            ));
+        }
+        if extrusions.is_empty() {
+            return Err(CommandError::NoCurveAlongCurveProfiles);
+        }
+
+        let output_count = extrusions.len();
+        for (_, surface) in &extrusions {
+            document.add_geometry(Geometry::NurbsSurface(surface.clone()))?;
+        }
+        if delete_input {
+            for (id, _) in &extrusions {
+                document.delete_object(*id)?;
+            }
+        }
+        let retained_selection = selected
+            .into_iter()
+            .filter(|id| *id != path_id && document.object(*id).is_some())
+            .collect::<Vec<_>>();
+        document.select_objects_direct(retained_selection, SelectionMode::Replace)?;
+        Ok(format!(
+            "Extruded {output_count} curve object(s) along the fixed-orientation path into exact NURBS surfaces{}",
+            if delete_input {
+                ", deleting the input profiles"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
+fn parse_curve_along_curve_options(
+    arguments: &[&str],
+) -> Result<(Option<String>, bool), CommandError> {
+    let mut path_name = None;
+    let mut delete_input = None;
+    let mut output_seen = false;
+    let mut solid_seen = false;
+    let mut split_at_tangents_seen = false;
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE));
+        };
+        if option_name_eq(name, "PathName") && path_name.is_none() && !value.is_empty() {
+            path_name = Some(value.to_owned());
+        } else if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
+            delete_input = Some(
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?,
+            );
+        } else if option_name_eq(name, "Output") && !output_seen {
+            if !value
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Surface")
+            {
+                return Err(CommandError::UnsupportedCurveAlongCurveOutput);
+            }
+            output_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            let solid =
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?;
+            if solid {
+                return Err(CommandError::SolidCurveExtrusionUnsupported);
+            }
+            solid_seen = true;
+        } else if option_name_eq(name, "SplitAtTangents") && !split_at_tangents_seen {
+            parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?;
+            split_at_tangents_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE));
+        }
+    }
+    Ok((path_name, delete_input.unwrap_or(false)))
+}
+
+fn resolve_curve_along_curve_path(
+    document: &Document,
+    selected: &[ObjectId],
+    path_name: Option<&str>,
+) -> Result<ObjectId, CommandError> {
+    if let Some(name) = path_name {
+        let matches = document
+            .objects()
+            .filter(|object| {
+                object
+                    .attributes()
+                    .name()
+                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
+            })
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        match matches.as_slice() {
+            [] => Err(CommandError::CurveAlongCurvePathNotFound(name.to_owned())),
+            [id] => Ok(*id),
+            _ => Err(CommandError::AmbiguousCurveAlongCurvePath(name.to_owned())),
+        }
+    } else {
+        selected
+            .last()
+            .copied()
+            .ok_or(CommandError::CurveAlongCurvePathRequired)
+    }
+}
+
 const EXTRUDE_CURVE_TO_POINT_USAGE: &str =
     "ExtrudeCrvToPoint apex [DeleteInput=Yes|No] [Output=Surface] [Solid=No]";
 
@@ -6554,6 +6701,29 @@ pub enum CommandError {
     #[error("solid curve extrusion requires capped polysurface support")]
     SolidCurveExtrusionUnsupported,
 
+    #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
+    UnsupportedCurveAlongCurveOutput,
+
+    #[error(
+        "ExtrudeCrvAlongCrv requires a named path or a selected path as the last selected object"
+    )]
+    CurveAlongCurvePathRequired,
+
+    #[error("no object named '{0}' was found for the extrusion path")]
+    CurveAlongCurvePathNotFound(String),
+
+    #[error("more than one object named '{0}' could be the extrusion path")]
+    AmbiguousCurveAlongCurvePath(String),
+
+    #[error("the curve-along-curve extrusion path is not a supported curve")]
+    CurveAlongCurvePathNotCurve,
+
+    #[error("ExtrudeCrvAlongCrv requires at least one selected profile besides the path")]
+    CurveAlongCurveProfilesRequired,
+
+    #[error("none of the selected profile objects is an extrudable curve")]
+    NoCurveAlongCurveProfiles,
+
     #[error("none of the selected objects is a revolvable curve")]
     NoRevolvableCurves,
 
@@ -6622,7 +6792,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -12393,6 +12563,209 @@ mod tests {
             Err(CommandError::NoExtrudableCurves)
         ));
         assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn extrude_curve_along_curve_matches_rhino_sum_surface_and_path_retention() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let output_layer = document.current_layer_id();
+        let input_layer = document
+            .add_layer("Profiles", ColorRgb::new(91, 92, 93))
+            .unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let rational_profile = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(4.0, 1.0, 0.0).unwrap(), 0.75).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(3.0, 1.0, 0.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![3.0, 3.0, 3.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+        let path = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(10.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(11.0, 2.0, 1.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(12.0, 3.0, 4.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let source_ids = [
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Line(line),
+                    ObjectAttributes::on_layer(input_layer)
+                        .with_name("line")
+                        .with_object_color(ColorRgb::new(12, 34, 56)),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::NurbsCurve(rational_profile.clone()),
+                    ObjectAttributes::on_layer(input_layer)
+                        .with_name("rational")
+                        .with_object_color(ColorRgb::new(12, 34, 56)),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()),
+                    ObjectAttributes::on_layer(input_layer).with_name("point"),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::NurbsCurve(path.clone()),
+                    ObjectAttributes::on_layer(input_layer)
+                        .with_name("Rail")
+                        .with_object_color(ColorRgb::new(12, 34, 56)),
+                )
+                .unwrap(),
+        ];
+        let group = document
+            .add_group(Some("Along-curve inputs".to_owned()), source_ids)
+            .unwrap();
+        document
+            .select_objects_direct(source_ids[..3].iter().copied(), SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                "ExtrudeCrvAlongCrv PathName=Rail Output=Surface Solid=No DeleteInput=No SplitAtTangents=No",
+            )
+            .unwrap();
+        assert_eq!(document.objects().len(), 6);
+        assert_eq!(document.group(group).unwrap().members().len(), 4);
+        assert!(source_ids[..3].iter().all(|id| document.is_selected(*id)));
+        assert!(!document.is_selected(source_ids[3]));
+        let outputs = document
+            .objects()
+            .filter(|object| !source_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for output in &outputs {
+            assert!(!document.is_selected(output.id()));
+            assert_eq!(output.attributes().layer_id(), output_layer);
+            assert_eq!(output.attributes().name(), None);
+            assert_eq!(output.attributes().color_source(), ObjectColorSource::Layer);
+            assert_eq!(output.attributes().object_color(), ColorRgb::BLACK);
+        }
+        let surfaces = outputs
+            .iter()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => surface,
+                _ => panic!("ExtrudeCrvAlongCrv must create NURBS surfaces"),
+            })
+            .collect::<Vec<_>>();
+        let line_surface = surfaces
+            .iter()
+            .find(|surface| surface.control_point_count_u() == 2)
+            .unwrap();
+        assert_eq!(line_surface.degree_u(), 1);
+        assert_eq!(line_surface.degree_v(), path.degree());
+        assert_eq!(line_surface.knots_u(), &[0.0, 0.0, 2.0, 2.0]);
+        assert_eq!(line_surface.knots_v(), path.knots());
+        assert_eq!(
+            line_surface.control_point(0, 0).unwrap().point(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            line_surface.control_point(1, 1).unwrap().point(),
+            Point3::try_new(1.0, 4.0, 1.0).unwrap()
+        );
+        assert_eq!(line_surface.control_point(1, 1).unwrap().weight(), 0.5);
+        let rational_surface = surfaces
+            .iter()
+            .find(|surface| surface.control_point_count_u() == 3)
+            .unwrap();
+        assert_eq!(rational_surface.knots_u(), rational_profile.knots());
+        assert_eq!(rational_surface.knots_v(), path.knots());
+        assert_eq!(
+            rational_surface.control_point(1, 1).unwrap().point(),
+            Point3::try_new(5.0, 3.0, 1.0).unwrap()
+        );
+        assert_eq!(
+            rational_surface.control_point(1, 1).unwrap().weight(),
+            0.375
+        );
+        assert_eq!(document.undo_label(), Some("ExtrudeCrvAlongCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct(source_ids[..3].iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        document
+            .select_objects_direct([source_ids[3]], SelectionMode::Add)
+            .unwrap();
+        registry
+            .execute(&mut document, "ExtrudeCrvAlongCrv DeleteInput=Yes")
+            .unwrap();
+        assert_eq!(document.objects().len(), 4);
+        let remaining_group_members = document.group(group).unwrap().members().collect::<Vec<_>>();
+        assert_eq!(remaining_group_members.len(), 2);
+        assert!(remaining_group_members.contains(&source_ids[2]));
+        assert!(remaining_group_members.contains(&source_ids[3]));
+        assert!(document.object(source_ids[0]).is_none());
+        assert!(document.object(source_ids[1]).is_none());
+        assert!(document.is_selected(source_ids[2]));
+        assert!(!document.is_selected(source_ids[3]));
+        assert!(
+            document
+                .objects()
+                .filter(|object| ![source_ids[2], source_ids[3]].contains(&object.id()))
+                .all(|object| !document.is_selected(object.id()))
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct(source_ids[..3].iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "ExtrudeCrvAlongCrv PathName=Missing",
+            "ExtrudeCrvAlongCrv PathName=point",
+            "ExtrudeCrvAlongCrv PathName=Rail DeleteInput=Maybe",
+            "ExtrudeCrvAlongCrv PathName=Rail Output=SubD",
+            "ExtrudeCrvAlongCrv PathName=Rail Solid=Yes",
+            "ExtrudeCrvAlongCrv PathName=Rail SplitAtTangents=Maybe",
+            "ExtrudeCrvAlongCrv PathName=Rail extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.group(group).unwrap().members().len(), 4);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document
+            .select_objects_direct([source_ids[3]], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtrudeCrvAlongCrv"),
+            Err(CommandError::CurveAlongCurveProfilesRequired)
+        ));
+        document
+            .select_objects_direct([source_ids[2]], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtrudeCrvAlongCrv PathName=Rail"),
+            Err(CommandError::NoCurveAlongCurveProfiles)
+        ));
+        assert_eq!(document.objects().len(), 4);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

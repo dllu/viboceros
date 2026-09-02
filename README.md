@@ -83,6 +83,7 @@ ProjectToCPlane DeleteInput=Yes
 ToNURBS DeleteInputObjects=Yes
 ExtrudeCrv 5 BothSides=No DeleteInput=No
 ExtrudeCrvToPoint 0,0,10 DeleteInput=No
+ExtrudeCrvAlongCrv PathName=Rail DeleteInput=No
 Revolve 0,0,0 0,0,1 270 StartAngle=0 DeleteInput=No
 Group Assembly
 Group All Everything
@@ -180,6 +181,12 @@ preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
 form. Enter it without an apex to pick one in the viewport. Inputs are retained
 by default; `DeleteInput=Yes` removes them. `Output=Surface` and `Solid=No` are
 accepted explicitly; SubD and capped-solid output are not yet represented.
+`ExtrudeCrvAlongCrv` creates an exact fixed-orientation sum surface from each
+selected profile and a curve path. Name the path with `PathName=`, or select it
+last; the toolbar uses the last-selected convention. The path is retained and
+deselected. `DeleteInput=Yes` removes only successfully extruded profiles.
+Profile degree, knots, and weights become U; path data becomes V; tensor weights
+are multiplied exactly. `Output=Surface` and `Solid=No` are supported.
 `Revolve` creates exact rational NURBS surfaces around an arbitrary two-point
 axis. Supply a signed sweep from -360 through 360 degrees, or use
 `FullCircle=Yes`; `StartAngle=` rotates the beginning of a partial sweep.

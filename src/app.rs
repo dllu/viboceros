@@ -1661,6 +1661,7 @@ impl VibocerosApp {
         let mut to_nurbs_clicked = false;
         let mut extrude_curve_clicked = false;
         let mut extrude_curve_to_point_clicked = false;
+        let mut extrude_curve_along_curve_clicked = false;
         let mut revolve_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
@@ -1864,6 +1865,12 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Extrude to Point"))
                     .on_hover_text("Extrude selected curves to a picked apex")
                     .clicked();
+                extrude_curve_along_curve_clicked = ui
+                    .add_enabled(selected > 1, egui::Button::new("Extrude Along"))
+                    .on_hover_text(
+                        "Extrude selected profiles along the last-selected curve path",
+                    )
+                    .clicked();
                 revolve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Revolve"))
                     .on_hover_text("Revolve selected curves around a picked axis")
@@ -1981,6 +1988,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("ExtrudeCrv");
         } else if extrude_curve_to_point_clicked {
             self.try_start_interactive_command("ExtrudeCrvToPoint");
+        } else if extrude_curve_along_curve_clicked {
+            self.execute_command("ExtrudeCrvAlongCrv");
         } else if revolve_clicked {
             self.try_start_interactive_command("Revolve");
         }

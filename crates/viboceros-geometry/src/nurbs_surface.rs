@@ -177,6 +177,61 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact fixed-orientation sweep of a NURBS profile along
+    /// a NURBS path.
+    ///
+    /// This is the OpenNURBS sum-surface form used by Rhino's
+    /// `ExtrudeCrvAlongCrv`: U preserves the profile, V preserves the path,
+    /// the path start is subtracted as the base point, and each tensor weight
+    /// is the product of its profile and path weights.
+    pub fn try_extruded_curve_along_curve(
+        profile: &crate::NurbsCurve,
+        path: &crate::NurbsCurve,
+    ) -> Result<Self, GeometryError> {
+        let first_path_control = path.control_points()[0].point();
+        if path
+            .control_points()
+            .iter()
+            .all(|control| control.point() == first_path_control)
+        {
+            return Err(GeometryError::Degenerate {
+                context: "curve extrusion path",
+            });
+        }
+        let path_start = path.evaluate(*path.domain().start())?;
+        let control_count_u = profile.control_points().len();
+        let control_count_v = path.control_points().len();
+        let control_count = control_count_u.checked_mul(control_count_v).ok_or(
+            GeometryError::InvalidControlNet {
+                context: "curve-along-curve control-point count overflowed usize",
+            },
+        )?;
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidControlNet {
+                context: "curve-along-curve control net exceeds addressable memory",
+            }
+        })?;
+        for path_control in path.control_points() {
+            let offset = path_start.vector_to(path_control.point())?;
+            for profile_control in profile.control_points() {
+                controls.push(WeightedPoint3::try_new(
+                    profile_control.point().translated(offset)?,
+                    profile_control.weight() * path_control.weight(),
+                )?);
+            }
+        }
+        Self::try_new_rational(
+            profile.degree(),
+            path.degree(),
+            control_count_u,
+            control_count_v,
+            controls,
+            profile.knots().to_vec(),
+            path.knots().to_vec(),
+        )
+    }
+
     /// Constructs the exact ruled surface between a NURBS curve and one apex.
     ///
     /// Matching Rhino's `ExtrudeCrvToPoint` NURBS form, U runs from the source
@@ -1598,6 +1653,85 @@ mod tests {
 
         let zero = Vector3::try_new(0.0, 0.0, 0.0).unwrap();
         assert!(NurbsSurface::try_extruded_curve(&curve, zero, zero).is_err());
+    }
+
+    #[test]
+    fn exact_curve_along_curve_extrusion_is_a_rational_sum_surface() {
+        let profile = crate::NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(4.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(4.0, 1.0, 0.0), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(3.0, 1.0, 0.0), 1.0).unwrap(),
+            ],
+            vec![3.0, 3.0, 3.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+        let path = crate::NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(10.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(11.0, 2.0, 1.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(12.0, 3.0, 4.0), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_extruded_curve_along_curve(&profile, &path).unwrap();
+
+        assert_eq!(surface.degree_u(), profile.degree());
+        assert_eq!(surface.degree_v(), path.degree());
+        assert_eq!(surface.control_point_count_u(), 3);
+        assert_eq!(surface.control_point_count_v(), 3);
+        assert_eq!(surface.knots_u(), profile.knots());
+        assert_eq!(surface.knots_v(), path.knots());
+        assert!(surface.is_rational());
+        assert_eq!(
+            surface.control_point(0, 0),
+            profile.control_points().first().copied()
+        );
+        assert_eq!(
+            surface.control_point(1, 1).unwrap().point(),
+            point(5.0, 3.0, 1.0)
+        );
+        assert_eq!(surface.control_point(1, 1).unwrap().weight(), 0.375);
+        assert_eq!(
+            surface.control_point(2, 2).unwrap().point(),
+            point(5.0, 4.0, 4.0)
+        );
+        assert_eq!(surface.control_point(2, 2).unwrap().weight(), 1.0);
+
+        let path_start = path.evaluate(2.0).unwrap();
+        for (u, v) in [(3.0, 2.0), (5.5, 4.25), (8.0, 7.0)] {
+            let profile_point = profile.evaluate(u).unwrap();
+            let expected = profile_point
+                .translated(path_start.vector_to(path.evaluate(v).unwrap()).unwrap())
+                .unwrap();
+            assert_point_near(surface.evaluate(u, v).unwrap(), expected);
+        }
+        let (_, derivative_u, derivative_v) = surface.evaluate_with_derivatives(5.5, 4.25).unwrap();
+        for (actual, expected) in derivative_u
+            .to_array()
+            .into_iter()
+            .zip(profile.derivative_at(5.5).unwrap().to_array())
+        {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
+        for (actual, expected) in derivative_v
+            .to_array()
+            .into_iter()
+            .zip(path.derivative_at(4.25).unwrap().to_array())
+        {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
+
+        let constant_path = crate::NurbsCurve::try_new(
+            1,
+            vec![point(1.0, 2.0, 3.0), point(1.0, 2.0, 3.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(NurbsSurface::try_extruded_curve_along_curve(&profile, &constant_path).is_err());
     }
 
     #[test]
