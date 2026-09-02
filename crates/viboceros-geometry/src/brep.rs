@@ -1,4 +1,6 @@
-use spade::{ConstrainedDelaunayTriangulation, Point2 as TriangulationPoint2, Triangulation};
+use spade::{
+    ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
+};
 
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
@@ -8,12 +10,27 @@ use crate::{
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
-const MAX_TRIM_TRIANGULATION_VERTICES: usize = 16_384;
+const MAX_EAR_CLIP_VERTICES: usize = 16_384;
+const MAX_CONSTRAINED_TRIM_VERTICES: usize = 131_072;
 
 #[derive(Clone, Copy, Debug)]
 struct BoundarySnapPoint {
     point: Point3,
     tolerance: Real,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct TrimTriangulationVertex {
+    position: TriangulationPoint2<Real>,
+    source_index: usize,
+}
+
+impl HasPosition for TrimTriangulationVertex {
+    type Scalar = Real;
+
+    fn position(&self) -> TriangulationPoint2<Self::Scalar> {
+        self.position
+    }
 }
 
 /// A B-rep vertex with its model-space coincidence tolerance.
@@ -437,6 +454,7 @@ impl Brep {
 
         let projection = project_planar_curve(outer, tolerance)
             .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+        let mut surface_bounds = projection.coordinate_bounds;
         let mut projected = Vec::with_capacity(inner.len() + 1);
         projected.push((
             outer,
@@ -451,6 +469,13 @@ impl Brep {
             let (parameter_curve, maximum_residual) =
                 project_curve_to_frame(curve, projection.frame, tolerance)
                     .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+            for control in parameter_curve.control_points() {
+                let point = control.point();
+                surface_bounds[0][0] = surface_bounds[0][0].min(point.x());
+                surface_bounds[0][1] = surface_bounds[0][1].max(point.x());
+                surface_bounds[1][0] = surface_bounds[1][0].min(point.y());
+                surface_bounds[1][1] = surface_bounds[1][1].max(point.y());
+            }
             projected.push((
                 curve,
                 parameter_curve,
@@ -459,7 +484,7 @@ impl Brep {
             ));
         }
         let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let surface = planar_cap_surface(projection.frame, zero, projection.coordinate_bounds)?;
+        let surface = planar_cap_surface(projection.frame, zero, surface_bounds)?;
         let mut vertices = Vec::with_capacity(projected.len());
         let mut edges = Vec::with_capacity(projected.len());
         let mut loops = Vec::with_capacity(projected.len());
@@ -1403,9 +1428,11 @@ impl Brep {
             .map(|parameter| face.surface.evaluate(parameter.x(), parameter.y()))
             .collect::<Result<Vec<_>, _>>()?;
         let candidates = self.trim_boundary_snap_points(face, samples_per_span, tolerance)?;
-        for vertex in &mut face_vertices[..boundary_vertex_count] {
-            snap_point_to_candidates(vertex, &candidates, tolerance);
-        }
+        snap_points_to_candidates(
+            &mut face_vertices[..boundary_vertex_count],
+            candidates,
+            tolerance,
+        );
         TriangleMesh::try_new(face_vertices, triangles, tolerance)
     }
 
@@ -2332,6 +2359,45 @@ fn snap_point_to_candidates(
     }
 }
 
+fn snap_points_to_candidates(
+    points: &mut [Point3],
+    mut candidates: Vec<BoundarySnapPoint>,
+    tolerance: Tolerance,
+) {
+    let candidate_scale = candidates
+        .iter()
+        .flat_map(|candidate| candidate.point.to_array().map(Real::abs))
+        .fold(0.0, Real::max);
+    let component_tolerance = candidates
+        .iter()
+        .map(|candidate| candidate.tolerance)
+        .fold(tolerance.absolute(), Real::max);
+    candidates.sort_by(|left, right| left.point.x().total_cmp(&right.point.x()));
+
+    for point in points {
+        let point_scale = point
+            .to_array()
+            .into_iter()
+            .map(Real::abs)
+            .fold(0.0, Real::max);
+        let search_radius =
+            component_tolerance.max(tolerance.relative() * point_scale.max(candidate_scale));
+        let lower = point.x() - search_radius;
+        let upper = point.x() + search_radius;
+        let start = if lower.is_finite() {
+            candidates.partition_point(|candidate| candidate.point.x() < lower)
+        } else {
+            0
+        };
+        let end = if upper.is_finite() {
+            candidates.partition_point(|candidate| candidate.point.x() <= upper)
+        } else {
+            candidates.len()
+        };
+        snap_point_to_candidates(point, &candidates[start..end], tolerance);
+    }
+}
+
 fn validate_iso(
     face: &BrepFace,
     trim: &BrepTrim,
@@ -2505,7 +2571,7 @@ fn triangulate_simple_trim_polygon(
             .collect::<Result<Vec<_>, GeometryError>>()?;
         return Ok(Some(triangles));
     }
-    if vertex_count > MAX_TRIM_TRIANGULATION_VERTICES {
+    if vertex_count > MAX_EAR_CLIP_VERTICES {
         return Ok(None);
     }
 
@@ -2557,7 +2623,7 @@ fn triangulate_trim_region(
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
     if loop_lengths.len() < 2
         || loop_lengths.iter().any(|length| *length < 3)
-        || parameters.len() > MAX_TRIM_TRIANGULATION_VERTICES
+        || parameters.len() > MAX_CONSTRAINED_TRIM_VERTICES
         || loop_lengths
             .iter()
             .try_fold(0_usize, |total, length| total.checked_add(*length))
@@ -2575,24 +2641,44 @@ fn triangulate_trim_region(
         loop_ranges.push(start..end);
         start = end;
     }
+    let loop_bounds = loop_ranges
+        .iter()
+        .map(|range| {
+            normalized[range.clone()].iter().fold(
+                [[Real::INFINITY, Real::NEG_INFINITY]; 2],
+                |mut bounds, point| {
+                    for coordinate in 0..2 {
+                        bounds[coordinate][0] = bounds[coordinate][0].min(point[coordinate]);
+                        bounds[coordinate][1] = bounds[coordinate][1].max(point[coordinate]);
+                    }
+                    bounds
+                },
+            )
+        })
+        .collect::<Vec<_>>();
     let epsilon = 64.0 * Real::EPSILON;
     let outer = &normalized[loop_ranges[0].clone()];
-    for (hole_index, hole_range) in loop_ranges[1..].iter().enumerate() {
-        let probe = normalized[hole_range.start];
-        if !point_in_trim_polygon(probe, outer, epsilon)
-            || loop_ranges[1..]
-                .iter()
-                .enumerate()
-                .any(|(other_index, other_range)| {
-                    other_index != hole_index
-                        && point_in_trim_polygon(probe, &normalized[other_range.clone()], epsilon)
-                })
-        {
-            return Ok(None);
-        }
-    }
 
-    let mut constraints = Vec::with_capacity(parameters.len());
+    let vertices = normalized
+        .iter()
+        .enumerate()
+        .map(|(source_index, point)| TrimTriangulationVertex {
+            position: TriangulationPoint2::new(point[0], point[1]),
+            source_index,
+        })
+        .collect::<Vec<_>>();
+    let mut triangulation =
+        match ConstrainedDelaunayTriangulation::<TrimTriangulationVertex>::bulk_load(vertices) {
+            Ok(triangulation) => triangulation,
+            Err(_) => return Ok(None),
+        };
+    if triangulation.num_vertices() != parameters.len() {
+        return Ok(None);
+    }
+    let mut handles = vec![None; parameters.len()];
+    for vertex in triangulation.vertices() {
+        handles[vertex.data().source_index] = Some(vertex.fix());
+    }
     for range in &loop_ranges {
         for index in range.clone() {
             let next = if index + 1 == range.end {
@@ -2600,27 +2686,21 @@ fn triangulate_trim_region(
             } else {
                 index + 1
             };
-            constraints.push([index, next]);
+            let before = triangulation.num_constraints();
+            let Some(from) = handles[index] else {
+                return Ok(None);
+            };
+            let Some(to) = handles[next] else {
+                return Ok(None);
+            };
+            if triangulation.try_add_constraint(from, to).is_empty()
+                || triangulation.num_constraints() != before + 1
+            {
+                return Ok(None);
+            }
         }
     }
-    let vertices = normalized
-        .iter()
-        .map(|point| TriangulationPoint2::new(point[0], point[1]))
-        .collect::<Vec<_>>();
-    let mut conflicts = Vec::new();
-    let triangulation =
-        match ConstrainedDelaunayTriangulation::<TriangulationPoint2<Real>>::try_bulk_load_cdt(
-            vertices,
-            constraints,
-            |edge| conflicts.push(edge),
-        ) {
-            Ok(triangulation) => triangulation,
-            Err(_) => return Ok(None),
-        };
-    if !conflicts.is_empty()
-        || triangulation.num_vertices() != parameters.len()
-        || triangulation.num_constraints() != parameters.len()
-    {
+    if triangulation.num_constraints() != parameters.len() {
         return Ok(None);
     }
 
@@ -2630,7 +2710,7 @@ fn triangulate_trim_region(
     for face in triangulation.inner_faces() {
         let handles = face.vertices();
         let points = handles.map(|vertex| {
-            let point = vertex.position();
+            let point = vertex.data().position;
             [point.x, point.y]
         });
         let centroid = [
@@ -2640,7 +2720,11 @@ fn triangulate_trim_region(
         if !point_in_trim_polygon(centroid, outer, epsilon)
             || loop_ranges[1..]
                 .iter()
-                .any(|range| point_in_trim_polygon(centroid, &normalized[range.clone()], epsilon))
+                .zip(&loop_bounds[1..])
+                .any(|(range, bounds)| {
+                    point_in_trim_bounds(centroid, *bounds, epsilon)
+                        && point_in_trim_polygon(centroid, &normalized[range.clone()], epsilon)
+                })
         {
             continue;
         }
@@ -2651,7 +2735,7 @@ fn triangulate_trim_region(
         neumaier_add(&mut actual_area, &mut actual_area_correction, doubled_area);
         let mut triangle = [0_u32; 3];
         for (target, vertex) in triangle.iter_mut().zip(handles) {
-            *target = u32::try_from(vertex.fix().index())
+            *target = u32::try_from(vertex.data().source_index)
                 .map_err(|_| GeometryError::TooManyMeshVertices)?;
         }
         triangles.push(triangle);
@@ -2687,6 +2771,13 @@ fn triangulate_trim_region(
         return Ok(None);
     }
     Ok(Some(triangles))
+}
+
+fn point_in_trim_bounds(point: [Real; 2], bounds: [[Real; 2]; 2], epsilon: Real) -> bool {
+    (0..2).all(|coordinate| {
+        point[coordinate] >= bounds[coordinate][0] - epsilon
+            && point[coordinate] <= bounds[coordinate][1] + epsilon
+    })
 }
 
 fn point_in_trim_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {
@@ -3293,6 +3384,48 @@ mod tests {
                 Err(GeometryError::InvalidPlanarFaceBoundary)
             );
         }
+    }
+
+    #[test]
+    fn constrained_trim_tessellation_scales_beyond_the_ear_clip_budget() {
+        let rectangle = |min_x, min_y, max_x, max_y| {
+            Polyline3::try_new(
+                vec![
+                    point(min_x, min_y, 0.0),
+                    point(max_x, min_y, 0.0),
+                    point(max_x, max_y, 0.0),
+                    point(min_x, max_y, 0.0),
+                    point(min_x, min_y, 0.0),
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+        };
+        let outer = rectangle(0.0, 0.0, 100.0, 100.0);
+        let holes = (0..16)
+            .flat_map(|row| {
+                (0..17).map(move |column| {
+                    let min_x = 2.0 + 5.0 * column as Real;
+                    let min_y = 2.0 + 5.0 * row as Real;
+                    rectangle(min_x, min_y, min_x + 1.0, min_y + 1.0)
+                })
+            })
+            .collect::<Vec<_>>();
+        let brep = Brep::try_planar_face_with_holes(&outer, &holes, Tolerance::DEFAULT).unwrap();
+        let samples_per_span = 16;
+        let mesh = brep
+            .tessellate(samples_per_span, Tolerance::DEFAULT)
+            .unwrap();
+        let expected_boundary_edges = (holes.len() + 1) * 4 * samples_per_span;
+
+        assert!(expected_boundary_edges > MAX_EAR_CLIP_VERTICES);
+        assert_eq!(
+            mesh.topology().boundary_edge_count(),
+            expected_boundary_edges
+        );
+        assert!((mesh.area().unwrap() - (10_000.0 - holes.len() as Real)).abs() < 1.0e-10);
     }
 
     #[test]

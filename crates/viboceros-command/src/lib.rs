@@ -1077,6 +1077,46 @@ const PLANAR_SURFACE_USAGE: &str = "PlanarSrf [DeleteInput=Yes|No]";
 
 struct PlanarSurfaceCommand;
 
+struct PlanarSurfaceBoundary {
+    id: ObjectId,
+    curve: NurbsCurve,
+    untrimmed_face: Brep,
+    area: Real,
+    bounds: BoundingBox3,
+    probe: Point3,
+}
+
+fn bounds_overlap(left: BoundingBox3, right: BoundingBox3, tolerance: Tolerance) -> bool {
+    left.min()
+        .to_array()
+        .into_iter()
+        .zip(left.max().to_array())
+        .zip(
+            right
+                .min()
+                .to_array()
+                .into_iter()
+                .zip(right.max().to_array()),
+        )
+        .all(|((left_min, left_max), (right_min, right_max))| {
+            (left_min <= right_max || tolerance.approx_eq(left_min, right_max))
+                && (right_min <= left_max || tolerance.approx_eq(right_min, left_max))
+        })
+}
+
+fn bounds_contain_point(bounds: BoundingBox3, point: Point3, tolerance: Tolerance) -> bool {
+    bounds
+        .min()
+        .to_array()
+        .into_iter()
+        .zip(bounds.max().to_array())
+        .zip(point.to_array())
+        .all(|((min, max), coordinate)| {
+            (min <= coordinate || tolerance.approx_eq(min, coordinate))
+                && (coordinate <= max || tolerance.approx_eq(coordinate, max))
+        })
+}
+
 impl Command for PlanarSurfaceCommand {
     fn name(&self) -> &'static str {
         "PlanarSrf"
@@ -1101,7 +1141,7 @@ impl Command for PlanarSurfaceCommand {
         }
 
         let selected = selected_ids(document)?;
-        let mut faces = Vec::new();
+        let mut boundaries = Vec::new();
         for id in selected {
             let Some(curve) = document
                 .object(id)
@@ -1112,21 +1152,149 @@ impl Command for PlanarSurfaceCommand {
                 continue;
             };
             if curve.is_closed()? && curve.is_planar(document.tolerance())? {
-                faces.push((id, Brep::try_planar_face(&curve, document.tolerance())?));
+                let untrimmed_face = Brep::try_planar_face(&curve, document.tolerance())?;
+                let area = untrimmed_face.area(document.tolerance())?;
+                let bounds = curve.control_point_bounds();
+                let probe = curve.evaluate(*curve.domain().start())?;
+                boundaries.push(PlanarSurfaceBoundary {
+                    id,
+                    curve,
+                    untrimmed_face,
+                    area,
+                    bounds,
+                    probe,
+                });
             }
         }
-        if faces.is_empty() {
+        if boundaries.is_empty() {
             return Err(CommandError::NoPlanarSurfaceBoundaries);
         }
 
+        // A strict containment forest applies the same even-odd region rule
+        // as planar CAD boundaries: children cut holes, grandchildren become
+        // independent islands, and disjoint or partially overlapping loops
+        // remain independent faces. The smallest containing loop is the
+        // immediate parent when several levels are nested.
+        let mut parents: Vec<Option<usize>> = vec![None; boundaries.len()];
+        let mut indices_by_area = (0..boundaries.len()).collect::<Vec<_>>();
+        indices_by_area.sort_by(|left, right| {
+            boundaries[*left]
+                .area
+                .total_cmp(&boundaries[*right].area)
+                .then(left.cmp(right))
+        });
+        for child_index in 0..boundaries.len() {
+            for &outer_index in &indices_by_area {
+                if outer_index == child_index
+                    || boundaries[outer_index].area <= boundaries[child_index].area
+                    || !bounds_contain_point(
+                        boundaries[outer_index].bounds,
+                        boundaries[child_index].probe,
+                        document.tolerance(),
+                    )
+                {
+                    continue;
+                }
+                if Brep::try_planar_face_with_holes(
+                    &boundaries[outer_index].curve,
+                    std::slice::from_ref(&boundaries[child_index].curve),
+                    document.tolerance(),
+                )
+                .is_ok()
+                {
+                    parents[child_index] = Some(outer_index);
+                    break;
+                }
+            }
+        }
+
+        // Intersecting siblings cannot both be trim holes. Rhino treats
+        // partially overlapping input curves as independent surfaces, so
+        // detach both while leaving unrelated siblings assigned as holes.
+        let mut detached = vec![false; boundaries.len()];
+        for parent_index in 0..boundaries.len() {
+            let children = parents
+                .iter()
+                .enumerate()
+                .filter_map(|(index, parent)| (*parent == Some(parent_index)).then_some(index))
+                .collect::<Vec<_>>();
+            for first_position in 0..children.len() {
+                for second_position in (first_position + 1)..children.len() {
+                    let first = children[first_position];
+                    let second = children[second_position];
+                    if !bounds_overlap(
+                        boundaries[first].bounds,
+                        boundaries[second].bounds,
+                        document.tolerance(),
+                    ) {
+                        continue;
+                    }
+                    let holes = [
+                        boundaries[first].curve.clone(),
+                        boundaries[second].curve.clone(),
+                    ];
+                    if Brep::try_planar_face_with_holes(
+                        &boundaries[parent_index].curve,
+                        &holes,
+                        document.tolerance(),
+                    )
+                    .is_err()
+                    {
+                        detached[first] = true;
+                        detached[second] = true;
+                    }
+                }
+            }
+        }
+        for (parent, detached) in parents.iter_mut().zip(detached) {
+            if detached {
+                *parent = None;
+            }
+        }
+        let depths = (0..boundaries.len())
+            .map(|index| {
+                let mut depth = 0_usize;
+                let mut ancestor = parents[index];
+                while let Some(parent) = ancestor {
+                    depth += 1;
+                    debug_assert!(depth < boundaries.len());
+                    ancestor = parents[parent];
+                }
+                depth
+            })
+            .collect::<Vec<_>>();
+
+        let mut faces = Vec::new();
+        for outer_index in 0..boundaries.len() {
+            if depths[outer_index] % 2 != 0 {
+                continue;
+            }
+            let holes = parents
+                .iter()
+                .enumerate()
+                .filter(|(_, parent)| **parent == Some(outer_index))
+                .map(|(index, _)| boundaries[index].curve.clone())
+                .collect::<Vec<_>>();
+            let face = if holes.is_empty() {
+                boundaries[outer_index].untrimmed_face.clone()
+            } else {
+                Brep::try_planar_face_with_holes(
+                    &boundaries[outer_index].curve,
+                    &holes,
+                    document.tolerance(),
+                )?
+            };
+            faces.push(face);
+        }
+
         let face_count = faces.len();
-        for (_, face) in &faces {
-            document.add_geometry(Geometry::Brep(face.clone()))?;
+        for face in faces {
+            document.add_geometry(Geometry::Brep(face))?;
         }
         let delete_input = delete_input.unwrap_or(false);
         if delete_input {
-            for (id, _) in &faces {
-                document.delete_object(*id)?;
+            for boundary in &boundaries {
+                document.delete_object(boundary.id)?;
             }
         }
         Ok(format!(
@@ -10373,6 +10541,139 @@ mod tests {
         ));
         assert_eq!(document.objects().len(), 4);
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn planar_surface_builds_holes_and_alternating_nested_islands_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let rectangle = |min_x, min_y, max_x, max_y| {
+            Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![
+                        Point3::try_new(min_x, min_y, 0.0).unwrap(),
+                        Point3::try_new(max_x, min_y, 0.0).unwrap(),
+                        Point3::try_new(max_x, max_y, 0.0).unwrap(),
+                        Point3::try_new(min_x, max_y, 0.0).unwrap(),
+                        Point3::try_new(min_x, min_y, 0.0).unwrap(),
+                    ],
+                    tolerance,
+                )
+                .unwrap(),
+            )
+        };
+        let outer = document
+            .add_geometry(rectangle(0.0, 0.0, 10.0, 10.0))
+            .unwrap();
+        let hole = document
+            .add_geometry(rectangle(2.0, 2.0, 8.0, 8.0))
+            .unwrap();
+        let island = document
+            .add_geometry(rectangle(4.0, 4.0, 6.0, 6.0))
+            .unwrap();
+        let inputs = [outer, hole, island];
+        document
+            .select_objects_direct([hole, island, outer], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "PlanarSrf DeleteInput=No")
+                .unwrap(),
+            "Created 2 exact trimmed planar surface(s)"
+        );
+        let mut output_regions = document
+            .objects()
+            .filter(|object| !inputs.contains(&object.id()))
+            .map(|object| {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("PlanarSrf output must be a B-rep")
+                };
+                (brep.faces()[0].loops().len(), brep.area(tolerance).unwrap())
+            })
+            .collect::<Vec<_>>();
+        output_regions.sort_by(|left, right| left.1.total_cmp(&right.1));
+        assert_eq!(output_regions.len(), 2);
+        assert_eq!(output_regions[0].0, 1);
+        assert!((output_regions[0].1 - 4.0).abs() < 1.0e-12);
+        assert_eq!(output_regions[1].0, 2);
+        assert!((output_regions[1].1 - 64.0).abs() < 1.0e-12);
+        assert!(inputs.iter().all(|id| document.is_selected(*id)));
+        assert_eq!(document.undo_label(), Some("PlanarSrf"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 3);
+        document
+            .select_objects_direct([outer, island, hole], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "PlanarSrf DeleteInput=Yes")
+                .unwrap(),
+            "Created 2 exact trimmed planar surface(s), deleting the input curves"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert!(inputs.iter().all(|id| document.object(*id).is_none()));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 3);
+        assert!(inputs.iter().all(|id| document.object(*id).is_some()));
+    }
+
+    #[test]
+    fn planar_surface_keeps_partially_overlapping_curves_independent() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let rectangle = |min_x, min_y, max_x, max_y| {
+            Geometry::Polyline(
+                Polyline3::try_new(
+                    vec![
+                        Point3::try_new(min_x, min_y, 0.0).unwrap(),
+                        Point3::try_new(max_x, min_y, 0.0).unwrap(),
+                        Point3::try_new(max_x, max_y, 0.0).unwrap(),
+                        Point3::try_new(min_x, max_y, 0.0).unwrap(),
+                        Point3::try_new(min_x, min_y, 0.0).unwrap(),
+                    ],
+                    tolerance,
+                )
+                .unwrap(),
+            )
+        };
+        let inputs = [
+            document
+                .add_geometry(rectangle(0.0, 0.0, 10.0, 10.0))
+                .unwrap(),
+            document
+                .add_geometry(rectangle(2.0, 2.0, 6.0, 6.0))
+                .unwrap(),
+            document
+                .add_geometry(rectangle(4.0, 4.0, 8.0, 8.0))
+                .unwrap(),
+            document
+                .add_geometry(rectangle(0.5, 0.5, 1.5, 1.5))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(inputs, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "PlanarSrf").unwrap(),
+            "Created 3 exact trimmed planar surface(s)"
+        );
+        let mut output_regions = document
+            .objects()
+            .filter(|object| !inputs.contains(&object.id()))
+            .map(|object| {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("PlanarSrf output must be a B-rep")
+                };
+                (brep.faces()[0].loops().len(), brep.area(tolerance).unwrap())
+            })
+            .collect::<Vec<_>>();
+        output_regions.sort_by(|left, right| left.1.total_cmp(&right.1));
+        assert_eq!(output_regions, vec![(1, 16.0), (1, 16.0), (2, 99.0)]);
     }
 
     #[test]

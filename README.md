@@ -179,12 +179,13 @@ polylines. It retains inputs and creates unselected copies in the same groups
 by default; use `DeleteInputObjects=Yes` to preserve object identities and
 replace the inputs in place. Line, polyline, circle, arc, and ellipse parameter
 domains follow Rhino's chord-length, arc-length, and angular conventions.
-`PlanarSrf` creates one exact single-face B-rep for each selected closed planar
-curve. The original rational curve remains its boundary edge and exact
-parameter-space trim, so curved and concave regions shade and export without
-filling the unused rectangular surface domain. Inputs are retained by default;
-`DeleteInput=Yes` removes each successfully used boundary. Multiple selected
-boundaries are currently treated independently rather than nested as holes.
+`PlanarSrf` creates exact single-face B-reps from selected closed planar curves.
+Wholly contained curves become inner trim loops, alternating nested regions
+become independent islands, and partially overlapping curves remain separate
+surfaces. Every original rational curve remains an exact boundary edge and
+parameter-space trim, so curved, concave, and holed regions shade and export
+without filling excluded areas. Inputs are retained by default;
+`DeleteInput=Yes` removes each successfully used boundary.
 `Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
 a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
