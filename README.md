@@ -281,10 +281,11 @@ selected result inherits attributes and group membership. Extracting every
 face reuses the source identity. `MakeCopy=Yes` instead leaves each source
 unchanged. Both parts compact unused vertices in Rhino source order.
 `DeleteFaces` removes an ordered zero-based face list from every selected mesh
-(`Faces=All` is supported), or omits the selector for a one-pick viewport
-workflow. A partial edit keeps the unselected source object's identity,
-attributes, and groups while compacting unused vertices in source order;
-deleting every face removes the mesh object.
+or B-rep (`Faces=All` is supported), or omits the selector for a one-pick
+viewport workflow. A partial edit keeps the unselected source object's
+identity, attributes, groups, and surviving source face order. Mesh results
+compact unused vertices in source order; deleting every face removes the
+object. SubD input awaits a native SubD geometry type.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

@@ -6811,18 +6811,18 @@ const EXTRACT_MESH_FACES_USAGE: &str =
     "ExtractMeshFaces (point|Faces=All|Faces=0,2,...) [MakeCopy=Yes|No]";
 
 #[derive(Clone, Debug, PartialEq)]
-enum MeshFaceSelection {
+enum FaceSelection {
     Point(Point3),
     Faces(SurfaceFaceIndices),
 }
 
 #[derive(Clone, Copy)]
-enum MeshFaceCommand {
+enum FaceEditCommand {
     ExtractMeshFaces,
     DeleteFaces,
 }
 
-impl MeshFaceCommand {
+impl FaceEditCommand {
     fn face_index_out_of_range(self, face: usize, face_count: usize) -> CommandError {
         match self {
             Self::ExtractMeshFaces => {
@@ -6835,7 +6835,7 @@ impl MeshFaceCommand {
 
 #[derive(Clone, Debug, PartialEq)]
 struct ExtractMeshFacesOptions {
-    selection: MeshFaceSelection,
+    selection: FaceSelection,
     make_copy: bool,
 }
 
@@ -6873,7 +6873,7 @@ impl Command for ExtractMeshFacesCommand {
         let selections = selected_mesh_faces(
             &sources,
             &options.selection,
-            MeshFaceCommand::ExtractMeshFaces,
+            FaceEditCommand::ExtractMeshFaces,
         )?;
         if selections.len() > MAX_SPAN_OUTPUT_OBJECTS {
             return Err(too_many_span_outputs("ExtractMeshFaces"));
@@ -6964,11 +6964,11 @@ fn selected_mesh_face_sources(
 
 fn selected_mesh_faces(
     sources: &[MeshFaceSource],
-    selection: &MeshFaceSelection,
-    command: MeshFaceCommand,
+    selection: &FaceSelection,
+    command: FaceEditCommand,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
     match selection {
-        MeshFaceSelection::Faces(selection) => sources
+        FaceSelection::Faces(selection) => sources
             .iter()
             .enumerate()
             .map(|(source_index, source)| {
@@ -6985,7 +6985,7 @@ fn selected_mesh_faces(
                 Ok((source_index, face_indices))
             })
             .collect(),
-        MeshFaceSelection::Point(target) => {
+        FaceSelection::Point(target) => {
             let mut best = None;
             for (source_index, source) in sources.iter().enumerate() {
                 for face_index in 0..source.mesh.face_count() {
@@ -7043,8 +7043,7 @@ fn parse_extract_mesh_faces_arguments(
         }
         index += consumed;
     }
-    let selection =
-        finish_mesh_face_selection(face_selection, &positional, EXTRACT_MESH_FACES_USAGE)?;
+    let selection = finish_face_selection(face_selection, &positional, EXTRACT_MESH_FACES_USAGE)?;
     Ok(ExtractMeshFacesOptions {
         selection,
         make_copy,
@@ -7055,9 +7054,14 @@ const DELETE_FACES_USAGE: &str = "DeleteFaces (point|Faces=All|Faces=0,2,...)";
 
 struct DeleteFacesCommand;
 
+struct DeleteFacesSource {
+    id: ObjectId,
+    geometry: Geometry,
+}
+
 struct DeleteFacesPlan {
     source: ObjectId,
-    remainder: Option<TriangleMesh>,
+    remainder: Option<Geometry>,
 }
 
 impl Command for DeleteFacesCommand {
@@ -7067,12 +7071,22 @@ impl Command for DeleteFacesCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selection = parse_delete_faces_arguments(arguments)?;
-        let sources =
-            selected_mesh_face_sources(document, || CommandError::UnsupportedDeleteFacesGeometry)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                if !matches!(object.geometry(), Geometry::Mesh(_) | Geometry::Brep(_)) {
+                    return Err(CommandError::UnsupportedDeleteFacesGeometry);
+                }
+                Ok(DeleteFacesSource {
+                    id: object.id(),
+                    geometry: object.geometry().clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
         if sources.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
-        let selections = selected_mesh_faces(&sources, &selection, MeshFaceCommand::DeleteFaces)?;
+        let selections = selected_delete_faces(&sources, &selection, document.tolerance())?;
         let deleted_face_count = selections
             .iter()
             .map(|(_, faces)| faces.len())
@@ -7081,9 +7095,26 @@ impl Command for DeleteFacesCommand {
             .into_iter()
             .map(|(source_index, face_indices)| {
                 let source = &sources[source_index];
+                let remainder = match &source.geometry {
+                    Geometry::Mesh(mesh) => mesh.delete_faces(&face_indices)?.map(Geometry::Mesh),
+                    Geometry::Brep(brep) => {
+                        let deleted = face_indices.iter().copied().collect::<BTreeSet<_>>();
+                        let remainder_faces = (0..brep.faces().len())
+                            .filter(|face| !deleted.contains(face))
+                            .collect::<Vec<_>>();
+                        if remainder_faces.is_empty() {
+                            None
+                        } else {
+                            Some(Geometry::Brep(
+                                brep.sub_brep(&remainder_faces, document.tolerance())?,
+                            ))
+                        }
+                    }
+                    _ => unreachable!("DeleteFaces sources were validated above"),
+                };
                 Ok(DeleteFacesPlan {
                     source: source.id,
-                    remainder: source.mesh.delete_faces(&face_indices)?,
+                    remainder,
                 })
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -7092,7 +7123,7 @@ impl Command for DeleteFacesCommand {
         document.replace_object_geometries(plans.iter().filter_map(|plan| {
             plan.remainder
                 .as_ref()
-                .map(|remainder| (plan.source, Geometry::Mesh(remainder.clone())))
+                .map(|remainder| (plan.source, remainder.clone()))
         }))?;
         for plan in plans {
             if plan.remainder.is_none() {
@@ -7101,12 +7132,82 @@ impl Command for DeleteFacesCommand {
         }
         document.clear_selection();
         Ok(format!(
-            "Deleted {deleted_face_count} mesh face(s) from {source_count} mesh(es)"
+            "Deleted {deleted_face_count} face(s) from {source_count} object(s)"
         ))
     }
 }
 
-fn parse_delete_faces_arguments(arguments: &[&str]) -> Result<MeshFaceSelection, CommandError> {
+fn selected_delete_faces(
+    sources: &[DeleteFacesSource],
+    selection: &FaceSelection,
+    tolerance: Tolerance,
+) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
+    match selection {
+        FaceSelection::Faces(selection) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let face_count = match &source.geometry {
+                    Geometry::Mesh(mesh) => mesh.face_count(),
+                    Geometry::Brep(brep) => brep.faces().len(),
+                    _ => unreachable!("DeleteFaces sources were validated above"),
+                };
+                let face_indices = match selection {
+                    SurfaceFaceIndices::All => (0..face_count).collect(),
+                    SurfaceFaceIndices::Indices(indices) => {
+                        if let Some(&face) = indices.iter().find(|&&face| face >= face_count) {
+                            return Err(FaceEditCommand::DeleteFaces
+                                .face_index_out_of_range(face, face_count));
+                        }
+                        indices.clone()
+                    }
+                };
+                Ok((source_index, face_indices))
+            })
+            .collect(),
+        FaceSelection::Point(target) => {
+            let mut best: Option<(Real, usize, usize)> = None;
+            for (source_index, source) in sources.iter().enumerate() {
+                let candidate = match &source.geometry {
+                    Geometry::Mesh(mesh) => {
+                        let mut nearest: Option<(Real, usize)> = None;
+                        for face in 0..mesh.face_count() {
+                            let point = mesh.closest_point_on_face(face, *target)?;
+                            let distance = point.distance_to(*target)?;
+                            if nearest.is_none_or(|(best_distance, _)| distance < best_distance) {
+                                nearest = Some((distance, face));
+                            }
+                        }
+                        nearest
+                    }
+                    Geometry::Brep(brep) => brep
+                        .closest_face_parameters(*target, tolerance)?
+                        .map(|(face, u, v)| {
+                            brep.faces()[face]
+                                .surface()
+                                .evaluate(u, v)
+                                .and_then(|point| point.distance_to(*target))
+                                .map(|distance| (distance, face))
+                        })
+                        .transpose()?,
+                    _ => unreachable!("DeleteFaces sources were validated above"),
+                };
+                let Some((distance, face)) = candidate else {
+                    continue;
+                };
+                if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                    best = Some((distance, source_index, face));
+                }
+            }
+            let Some((_, source, face)) = best else {
+                return Err(CommandError::NoDeleteFaceAtLocation);
+            };
+            Ok(vec![(source, vec![face])])
+        }
+    }
+}
+
+fn parse_delete_faces_arguments(arguments: &[&str]) -> Result<FaceSelection, CommandError> {
     let mut face_selection = None;
     let mut positional = Vec::new();
     let mut index = 0;
@@ -7136,21 +7237,21 @@ fn parse_delete_faces_arguments(arguments: &[&str]) -> Result<MeshFaceSelection,
         }
         index += consumed;
     }
-    finish_mesh_face_selection(face_selection, &positional, DELETE_FACES_USAGE)
+    finish_face_selection(face_selection, &positional, DELETE_FACES_USAGE)
 }
 
-fn finish_mesh_face_selection(
+fn finish_face_selection(
     face_selection: Option<SurfaceFaceIndices>,
     positional: &[&str],
     usage: &'static str,
-) -> Result<MeshFaceSelection, CommandError> {
+) -> Result<FaceSelection, CommandError> {
     if let Some(faces) = face_selection {
         require_consumed(positional, 0, usage)?;
-        Ok(MeshFaceSelection::Faces(faces))
+        Ok(FaceSelection::Faces(faces))
     } else {
         let (point, consumed) = parse_point(positional)?;
         require_consumed(positional, consumed, usage)?;
-        Ok(MeshFaceSelection::Point(point))
+        Ok(FaceSelection::Point(point))
     }
 }
 
@@ -11795,11 +11896,16 @@ pub enum CommandError {
     )]
     ExtractMeshFacesFaceIndexOutOfRange { face: usize, face_count: usize },
 
-    #[error("DeleteFaces currently supports selected meshes only")]
+    #[error("DeleteFaces supports selected meshes and B-reps only")]
     UnsupportedDeleteFacesGeometry,
 
-    #[error("DeleteFaces face index {face} is outside the selected mesh's face count {face_count}")]
+    #[error(
+        "DeleteFaces face index {face} is outside the selected object's face count {face_count}"
+    )]
     DeleteFacesFaceIndexOutOfRange { face: usize, face_count: usize },
+
+    #[error("no deletable face was found at the requested location")]
+    NoDeleteFaceAtLocation,
 
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
@@ -15764,7 +15870,7 @@ mod tests {
             registry
                 .execute(&mut document, "DeleteFaces Faces=1")
                 .unwrap(),
-            "Deleted 1 mesh face(s) from 1 mesh(es)"
+            "Deleted 1 face(s) from 1 object(s)"
         );
         assert_eq!(document.objects().len(), 1);
         assert!(!document.is_selected(source));
@@ -15803,7 +15909,7 @@ mod tests {
             registry
                 .execute(&mut document, "DeleteFaces Faces=3,2,1,0")
                 .unwrap(),
-            "Deleted 4 mesh face(s) from 1 mesh(es)"
+            "Deleted 4 face(s) from 1 object(s)"
         );
         assert!(document.object(source).is_none());
         assert_eq!(document.selected_object_count(), 0);
@@ -15813,6 +15919,89 @@ mod tests {
         assert_eq!(
             document.object(source).unwrap().geometry(),
             &Geometry::Mesh(mesh)
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+    }
+
+    #[test]
+    fn deletes_brep_faces_in_source_order_with_rhino_document_behavior() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New PolysurfaceEdit")
+            .unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 5.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Editable polysurface")
+            .with_object_color(ColorRgb::new(23, 91, 161));
+        let source = document
+            .add_geometry_with_attributes(Geometry::Brep(brep.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Polysurface repair".to_owned()), [source])
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "DeleteFaces Faces=1")
+                .unwrap(),
+            "Deleted 1 face(s) from 1 object(s)"
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert!(!document.is_selected(source));
+        let result = document.object(source).unwrap();
+        assert_eq!(result.attributes(), &attributes);
+        assert_eq!(
+            result.geometry(),
+            &Geometry::Brep(
+                brep.sub_brep(&[0, 2, 3, 4, 5], document.tolerance())
+                    .unwrap()
+            )
+        );
+        let Geometry::Brep(result) = result.geometry() else {
+            panic!("expected a B-rep face-deletion remainder")
+        };
+        assert!(!result.is_solid());
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("DeleteFaces"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "DeleteFaces Faces=All")
+                .unwrap(),
+            "Deleted 6 face(s) from 1 object(s)"
+        );
+        assert!(document.object(source).is_none());
+        assert_eq!(document.selected_object_count(), 0);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Brep(brep)
         );
         assert_eq!(
             document.group(group).unwrap().members().collect::<Vec<_>>(),
@@ -15855,7 +16044,7 @@ mod tests {
             registry
                 .execute(&mut document, "DeleteFaces 100.5,3.5,8")
                 .unwrap(),
-            "Deleted 1 mesh face(s) from 1 mesh(es)"
+            "Deleted 1 face(s) from 1 object(s)"
         );
         assert_eq!(document.objects().len(), 2);
         assert_eq!(
@@ -15865,6 +16054,55 @@ mod tests {
         assert!(matches!(
             document.object(far_id).unwrap().geometry(),
             Geometry::Mesh(remainder) if remainder.triangles() == [[0, 1, 2]]
+        ));
+        assert_eq!(document.selected_object_count(), 0);
+    }
+
+    #[test]
+    fn delete_faces_point_pick_compares_mesh_and_brep_faces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(100.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 5.0]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let mesh_id = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+        let brep_id = document.add_geometry(Geometry::Brep(brep)).unwrap();
+        document
+            .select_objects([mesh_id, brep_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "DeleteFaces 102,1.5,2.5")
+                .unwrap(),
+            "Deleted 1 face(s) from 1 object(s)"
+        );
+        assert_eq!(
+            document.object(mesh_id).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+        assert!(matches!(
+            document.object(brep_id).unwrap().geometry(),
+            Geometry::Brep(remainder) if remainder.faces().len() == 5 && !remainder.is_solid()
         ));
         assert_eq!(document.selected_object_count(), 0);
     }

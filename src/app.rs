@@ -310,7 +310,7 @@ impl InteractiveCommand {
                 "ExtractMeshFaces: pick a face on a selected mesh (Esc to cancel)"
             }
             Self::DeleteFaces => {
-                "DeleteFaces: pick a face to remove from a selected mesh (Esc to cancel)"
+                "DeleteFaces: pick a face on a selected mesh or B-rep (Esc to cancel)"
             }
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
@@ -2473,8 +2473,8 @@ impl VibocerosApp {
                     .on_hover_text("Pick a face to separate from a selected mesh")
                     .clicked();
                 delete_faces_clicked = ui
-                    .add_enabled(selected > 0, egui::Button::new("Delete Mesh Face"))
-                    .on_hover_text("Pick a face to remove from a selected mesh")
+                    .add_enabled(selected > 0, egui::Button::new("Delete Face"))
+                    .on_hover_text("Pick a face to remove from a selected mesh or B-rep")
                     .clicked();
                 extract_non_manifold_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Non-Manifold"))
