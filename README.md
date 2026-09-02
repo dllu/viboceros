@@ -25,6 +25,7 @@ Ellipse 0,0 6,0 0,3
 Polyline 0,0 4,0 4,3 7,3
 Rectangle 0,0 8,5
 Polygon 6 0,0 5
+Curve 0,0 2,3 5,3 8,0 Degree=3
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
@@ -125,10 +126,13 @@ Export3dm path/to/model.3dm
 Help
 ```
 
-Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `InterpCrv`,
-`Rectangle`, `Polygon`, or `SrfPt` without coordinates to pick points in the
-viewport; press Enter to finish a polyline or interpolated curve. `InterpCrv`
-defaults to an open, degree-three, chord-knot curve through the input points.
+Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Curve`,
+`InterpCrv`, `Rectangle`, `Polygon`, or `SrfPt` without coordinates to pick
+points in the viewport; press Enter to finish a polyline or curve. `Curve`
+creates an open control-point curve, defaults to degree three, accepts degrees
+through 11, and lowers the degree when too few controls are supplied.
+`InterpCrv` defaults to an open, degree-three, chord-knot curve through the
+input points.
 It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp
 `Close=` modes, and start/end tangent directions on open cubics. `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With

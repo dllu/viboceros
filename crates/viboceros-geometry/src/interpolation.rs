@@ -113,6 +113,27 @@ impl NurbsCurve {
         options: CurveInterpolationOptions,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::try_interpolate_impl(points, options, tolerance, false)
+    }
+
+    /// Interpolates points using the behavior of Rhino's `InterpCrv` command.
+    ///
+    /// Unlike the RhinoCommon interpolation helper, the command preserves a
+    /// requested cubic degree when only two unconstrained points are supplied.
+    pub fn try_interpolate_for_command(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::try_interpolate_impl(points, options, tolerance, true)
+    }
+
+    fn try_interpolate_impl(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+        tolerance: Tolerance,
+        preserve_two_point_degree: bool,
+    ) -> Result<Self, GeometryError> {
         if !matches!(options.degree, 1 | CUBIC_DEGREE) {
             return Err(GeometryError::UnsupportedCurveInterpolationDegree {
                 actual: options.degree,
@@ -179,6 +200,13 @@ impl NurbsCurve {
             return interpolate_periodic_cubic(&points, options.knot_spacing);
         }
         if points.len() == 2 && options.start_tangent.is_none() && options.end_tangent.is_none() {
+            if preserve_two_point_degree {
+                return interpolate_two_point_command_cubic(
+                    points[0],
+                    points[1],
+                    options.knot_spacing,
+                );
+            }
             return interpolate_two_point_line(points[0], points[1]);
         }
         interpolate_open_cubic(
@@ -216,6 +244,32 @@ fn interpolate_degree_one(points: &[Point3]) -> Result<NurbsCurve, GeometryError
 fn interpolate_two_point_line(start: Point3, end: Point3) -> Result<NurbsCurve, GeometryError> {
     let domain_end = start.distance_to(end)?;
     NurbsCurve::try_new(1, vec![start, end], vec![0.0, 0.0, domain_end, domain_end])
+}
+
+fn interpolate_two_point_command_cubic(
+    start: Point3,
+    end: Point3,
+    spacing: CurveKnotSpacing,
+) -> Result<NurbsCurve, GeometryError> {
+    let chord = start.vector_to(end)?;
+    let distance = chord.length()?;
+    let controls = vec![
+        start,
+        start.translated(chord.scaled(1.0 / 3.0)?)?,
+        start.translated(chord.scaled(2.0 / 3.0)?)?,
+        end,
+    ];
+    let domain_end = match spacing {
+        CurveKnotSpacing::Uniform => 1.0,
+        CurveKnotSpacing::Chord | CurveKnotSpacing::SquareRootChord => distance,
+    };
+    NurbsCurve::try_new(
+        CUBIC_DEGREE,
+        controls,
+        vec![
+            0.0, 0.0, 0.0, 0.0, domain_end, domain_end, domain_end, domain_end,
+        ],
+    )
 }
 
 fn interpolate_open_cubic(
@@ -723,6 +777,41 @@ mod tests {
                 [10.0, 0.0, 0.0],
             ],
         );
+    }
+
+    #[test]
+    fn two_point_command_interpolation_preserves_the_requested_cubic_degree() {
+        let points = [point(0.0, 0.0, 0.0), point(10.0, 0.0, 0.0)];
+        let chord = NurbsCurve::try_interpolate_for_command(
+            &points,
+            CurveInterpolationOptions::default(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(chord.degree(), 3);
+        assert_eq!(chord.domain(), 0.0..=10.0);
+        assert_controls_near(
+            &chord,
+            &[
+                [0.0, 0.0, 0.0],
+                [10.0 / 3.0, 0.0, 0.0],
+                [20.0 / 3.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+            ],
+        );
+
+        let uniform = NurbsCurve::try_interpolate_for_command(
+            &points,
+            CurveInterpolationOptions::new(
+                3,
+                CurveKnotSpacing::Uniform,
+                InterpolatedCurveClosure::Open,
+            ),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(uniform.degree(), 3);
+        assert_eq!(uniform.domain(), 0.0..=1.0);
     }
 
     #[test]

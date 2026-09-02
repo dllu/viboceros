@@ -94,6 +94,40 @@ impl NurbsCurve {
         Self::try_new(degree, control_points, knots)
     }
 
+    /// Constructs a Rhino `Curve`-style open control-point curve.
+    ///
+    /// The effective degree is lowered to `control_point_count - 1` when the
+    /// requested degree is too high. Knots are clamped and uniform, and the
+    /// parameter domain is scaled to the control polygon's total length.
+    pub fn try_control_point_curve(
+        requested_degree: usize,
+        control_points: Vec<Point3>,
+    ) -> Result<Self, GeometryError> {
+        if requested_degree == 0 {
+            return Err(GeometryError::InvalidDegree);
+        }
+        if control_points.len() < 2 {
+            return Err(GeometryError::InsufficientControlPoints {
+                degree: 1,
+                required: 2,
+                actual: control_points.len(),
+            });
+        }
+
+        let degree = requested_degree.min(control_points.len() - 1);
+        let domain_end = control_polygon_length(&control_points)?;
+        if domain_end <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "control-point curve",
+            });
+        }
+        let knots = clamped_uniform_knots(degree, control_points.len())?
+            .into_iter()
+            .map(|knot| knot * domain_end)
+            .collect();
+        Self::try_new(degree, control_points, knots)
+    }
+
     #[inline]
     pub const fn degree(&self) -> usize {
         self.degree
@@ -386,6 +420,24 @@ impl NurbsCurve {
             parameter,
         )
     }
+}
+
+fn control_polygon_length(control_points: &[Point3]) -> Result<Real, GeometryError> {
+    let mut sum = 0.0;
+    let mut correction = 0.0;
+    for pair in control_points.windows(2) {
+        let length = pair[0].distance_to(pair[1])?;
+        let next = sum + length;
+        if sum.abs() >= length.abs() {
+            correction += (sum - next) + length;
+        } else {
+            correction += (length - next) + sum;
+        }
+        sum = next;
+    }
+    let length = sum + correction;
+    require_finite([length], "control polygon length")?;
+    Ok(length)
 }
 
 pub(crate) fn bspline_basis_values(
@@ -752,6 +804,56 @@ mod tests {
             curve.derivative_at(0.25).unwrap(),
             Vector3::try_new(2.0, 4.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn control_point_curve_matches_rhino_degree_lowering_and_domain() {
+        let controls = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 2.0, 0.5).unwrap(),
+            Point3::try_new(4.0, -1.0, 2.0).unwrap(),
+            Point3::try_new(4.5, 3.0, -0.5).unwrap(),
+            Point3::try_new(10.0, 0.0, 1.0).unwrap(),
+        ];
+        let curve = NurbsCurve::try_control_point_curve(3, controls.clone()).unwrap();
+        let domain_end = 17.976_753_701_093_052;
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(
+            curve
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            controls
+        );
+        for (actual, expected) in curve.knots().iter().zip([
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            domain_end / 2.0,
+            domain_end,
+            domain_end,
+            domain_end,
+            domain_end,
+        ]) {
+            assert!((*actual - expected).abs() <= 2.0e-14);
+        }
+
+        let quadratic = NurbsCurve::try_control_point_curve(
+            5,
+            vec![point(0.0, 0.0), point(2.0, 3.0), point(10.0, 0.0)],
+        )
+        .unwrap();
+        assert_eq!(quadratic.degree(), 2);
+        assert_eq!(quadratic.domain(), 0.0..=13.0_f64.sqrt() + 73.0_f64.sqrt());
+
+        assert!(matches!(
+            NurbsCurve::try_control_point_curve(3, vec![point(1.0, 1.0), point(1.0, 1.0)]),
+            Err(GeometryError::Degenerate {
+                context: "control-point curve"
+            })
+        ));
     }
 
     #[test]

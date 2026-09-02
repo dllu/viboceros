@@ -1,7 +1,7 @@
 use std::collections::{BTreeSet, VecDeque};
 
 use eframe::egui::{self, RichText};
-use viboceros_command::CommandRegistry;
+use viboceros_command::{CommandRegistry, MAX_CURVE_COMMAND_DEGREE};
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{CircularArc3, Ellipse3, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance};
 
@@ -27,6 +27,9 @@ enum InteractiveCommand {
         first_axis: Option<Point3>,
     },
     Polyline,
+    Curve {
+        degree: usize,
+    },
     InterpCrv,
     Rectangle {
         first: Option<Point3>,
@@ -82,6 +85,7 @@ impl InteractiveCommand {
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
+            Self::Curve { .. } => "Curve",
             Self::InterpCrv => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
             Self::Polygon { .. } => "Polygon",
@@ -129,6 +133,9 @@ impl InteractiveCommand {
                 ..
             } => "Ellipse: pick the second-axis radius in the viewport (Esc to cancel)",
             Self::Polyline => "Polyline: pick vertices; press Enter to finish (Esc to cancel)",
+            Self::Curve { .. } => {
+                "Curve: pick control points; press Enter to finish (Esc to cancel)"
+            }
             Self::InterpCrv => {
                 "InterpCrv: pick points on the curve; press Enter to finish (Esc to cancel)"
             }
@@ -227,6 +234,7 @@ impl InteractiveCommand {
             | Self::Arc { points: [None, _] }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
+            | Self::Curve { .. }
             | Self::InterpCrv
             | Self::Rectangle { first: None }
             | Self::Polygon { center: None, .. }
@@ -285,7 +293,7 @@ impl InteractiveCommand {
     }
 
     const fn collects_curve_points(self) -> bool {
-        matches!(self, Self::Polyline | Self::InterpCrv)
+        matches!(self, Self::Polyline | Self::Curve { .. } | Self::InterpCrv)
     }
 }
 
@@ -364,7 +372,28 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if matches!(normalized.as_str(), "polygon" | "poly") {
+        let command = if normalized == "curve" {
+            let degree = match arguments.as_slice() {
+                [] => 3,
+                [option] => {
+                    let Some((name, value)) = option.split_once('=') else {
+                        return false;
+                    };
+                    if !name
+                        .trim_start_matches(['_', '-'])
+                        .eq_ignore_ascii_case("Degree")
+                    {
+                        return false;
+                    }
+                    let Ok(degree) = value.trim_start_matches('_').parse::<usize>() else {
+                        return false;
+                    };
+                    degree.clamp(1, MAX_CURVE_COMMAND_DEGREE)
+                }
+                _ => return false,
+            };
+            InteractiveCommand::Curve { degree }
+        } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
                 [text] => match text.parse::<usize>() {
@@ -741,6 +770,21 @@ impl VibocerosApp {
                 ));
                 self.push_log(command.prompt().to_owned());
             }
+            InteractiveCommand::Curve { .. } => {
+                if let Some(previous) = self.curve_points.last()
+                    && previous.is_near(point, self.document.tolerance())
+                {
+                    self.push_log("Error: adjacent curve control points must differ".to_owned());
+                    return;
+                }
+                self.curve_points.push(point);
+                self.push_log(format!(
+                    "Control point {}: {}",
+                    self.curve_points.len(),
+                    format_model_point(point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
             InteractiveCommand::InterpCrv => {
                 if let Some(previous) = self.curve_points.last()
                     && previous.is_near(point, self.document.tolerance())
@@ -1071,7 +1115,13 @@ impl VibocerosApp {
             .map(format_model_point)
             .collect::<Vec<_>>()
             .join(" ");
-        self.execute_command(&format!("{} {arguments}", command.name()));
+        let input = match command {
+            InteractiveCommand::Curve { degree } => {
+                format!("Curve {arguments} Degree={degree}")
+            }
+            _ => format!("{} {arguments}", command.name()),
+        };
+        self.execute_command(&input);
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
@@ -1877,6 +1927,55 @@ mod tests {
     }
 
     #[test]
+    fn interactive_curve_collects_control_points_and_preserves_degree_option() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Curve Degree=5"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Curve { degree: 5 })
+        );
+
+        let controls = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 3.0, 0.0),
+            point(10.0, 0.0, 0.0),
+        ];
+        app.accept_drafting_point(controls[0]);
+        app.accept_drafting_point(controls[0]);
+        assert_eq!(app.curve_points, vec![controls[0]]);
+        for control in &controls[1..] {
+            app.accept_drafting_point(*control);
+        }
+        app.run_command();
+
+        assert_eq!(app.active_command, None);
+        assert!(app.curve_points.is_empty());
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactive control-point curve")
+        };
+        assert_eq!(curve.degree(), 2);
+        assert_eq!(
+            curve
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            controls
+        );
+        assert_eq!(app.document.undo_label(), Some("Curve"));
+
+        assert!(app.try_start_interactive_command("Curve Degree=15"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Curve { degree: 11 })
+        );
+        app.accept_drafting_point(point(20.0, 0.0, 0.0));
+        app.cancel_interactive_command(false);
+        assert!(app.curve_points.is_empty());
+        assert_eq!(app.document.objects().len(), 1);
+    }
+
+    #[test]
     fn interactive_interp_crv_collects_points_until_enter() {
         let mut app = test_app();
         assert!(app.try_start_interactive_command("InterpCurve"));
@@ -1958,6 +2057,14 @@ mod tests {
         assert!(matches!(
             app.document.objects().next().unwrap().geometry(),
             Geometry::Point(point) if *point == Point3::try_new(7.0, 8.0, 9.0).unwrap()
+        ));
+
+        app.command_input = "Curve 0,0 1,1".to_owned();
+        app.run_command();
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().nth(1).unwrap().geometry(),
+            Geometry::NurbsCurve(curve) if curve.degree() == 1
         ));
     }
 

@@ -23,6 +23,7 @@ use viboceros_io::{
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 const MAX_ARRAY_OBJECTS: usize = 1_000_000;
+pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
@@ -71,6 +72,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(PolygonCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CurveCommand)
             .expect("unique built-in command");
         registry
             .register(ControlPointCurveCommand)
@@ -671,6 +675,50 @@ impl Command for CopyToLayerCommand {
 
 struct ControlPointCurveCommand;
 
+const CURVE_USAGE: &str = "Curve point1 point2 ... [Degree=1..11]";
+
+struct CurveCommand;
+
+impl Command for CurveCommand {
+    fn name(&self) -> &'static str {
+        "Curve"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let mut control_points = Vec::new();
+        let mut requested_degree = 3;
+        let mut degree_seen = false;
+        let mut index = 0;
+        while index < arguments.len() {
+            let argument = arguments[index];
+            if let Some((name, value)) = argument.split_once('=') {
+                let value = value.trim_start_matches('_');
+                if !option_name_eq(name, "Degree") || degree_seen {
+                    return Err(CommandError::Usage(CURVE_USAGE));
+                }
+                requested_degree = value
+                    .parse::<usize>()
+                    .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?
+                    .clamp(1, MAX_CURVE_COMMAND_DEGREE);
+                degree_seen = true;
+                index += 1;
+            } else {
+                let (point, consumed) = parse_point(&arguments[index..])?;
+                control_points.push(point);
+                index += consumed;
+            }
+        }
+
+        let control_point_count = control_points.len();
+        let curve = NurbsCurve::try_control_point_curve(requested_degree, control_points)?;
+        let degree = curve.degree();
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added degree {degree} curve {id} ({control_point_count} control points)"
+        ))
+    }
+}
+
 impl Command for ControlPointCurveCommand {
     fn name(&self) -> &'static str {
         "ControlPointCurve"
@@ -721,7 +769,8 @@ impl Command for InterpCurveCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let (points, options) = parse_interp_curve_arguments(arguments)?;
         let point_count = points.len();
-        let curve = NurbsCurve::try_interpolate(&points, options, document.tolerance())?;
+        let curve =
+            NurbsCurve::try_interpolate_for_command(&points, options, document.tolerance())?;
         let degree = curve.degree();
         let periodic = curve.is_periodic();
         let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
@@ -5742,7 +5791,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7561,6 +7610,87 @@ mod tests {
     }
 
     #[test]
+    fn curve_preserves_controls_and_matches_rhino_degree_rules() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let controls = [
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 2.0, 0.5).unwrap(),
+            Point3::try_new(4.0, -1.0, 2.0).unwrap(),
+            Point3::try_new(4.5, 3.0, -0.5).unwrap(),
+            Point3::try_new(10.0, 0.0, 1.0).unwrap(),
+        ];
+        let message = registry
+            .execute(
+                &mut document,
+                "Curve 0,0,0 1,2,.5 4,-1,2 4.5,3,-.5 10,0,1 Degree=3",
+            )
+            .unwrap();
+        assert!(message.contains("degree 3 curve"));
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("expected a control-point NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(
+            curve
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            controls
+        );
+        let domain_end = 17.976_753_701_093_052;
+        for (actual, expected) in curve.knots().iter().zip([
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            domain_end / 2.0,
+            domain_end,
+            domain_end,
+            domain_end,
+            domain_end,
+        ]) {
+            assert!((actual - expected).abs() <= 2.0e-14);
+        }
+
+        let message = registry
+            .execute(&mut document, "Curve Degree=5 0,0 2,3 10,0")
+            .unwrap();
+        assert!(message.contains("degree 2 curve"));
+        let Geometry::NurbsCurve(lowered) = document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected a lowered-degree NURBS curve")
+        };
+        assert_eq!(lowered.degree(), 2);
+
+        let message = registry
+            .execute(
+                &mut document,
+                "Curve Degree=15 0,0 1,0 2,0 3,0 4,0 5,0 6,0 7,0 8,0 9,0 10,0 11,0",
+            )
+            .unwrap();
+        assert!(message.contains("degree 11 curve"));
+        let Geometry::NurbsCurve(clamped) = document.objects().nth(2).unwrap().geometry() else {
+            panic!("expected a maximum-degree NURBS curve")
+        };
+        assert_eq!(clamped.degree(), 11);
+    }
+
+    #[test]
+    fn invalid_curve_arguments_are_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for input in [
+            "Curve 0,0",
+            "Curve 0,0 1,1 Degree=3 Degree=4",
+            "Curve 0,0 1,1 Knots=Chord",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 0);
+        }
+    }
+
+    #[test]
     fn creates_interpolated_curves_with_rhino_style_options() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -7619,6 +7749,11 @@ mod tests {
 
         let message = registry
             .execute(&mut document, "InterpCrv 20,0 24,0")
+            .unwrap();
+        assert!(message.contains("degree 3 interpolated curve"));
+
+        let message = registry
+            .execute(&mut document, "InterpCrv Degree=1 30,0 34,0")
             .unwrap();
         assert!(message.contains("degree 1 interpolated curve"));
     }
