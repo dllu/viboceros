@@ -391,6 +391,80 @@ impl NurbsSurface {
         Self::try_sphere(frame, 1.0)?.transformed(transform)
     }
 
+    /// Constructs an exact rational polar disk in the supplied frame.
+    ///
+    /// U is a four-span quadratic circle on `[0, 2π]`; V is the radial
+    /// distance on `[0, radius]`. The V-start boundary collapses to the center,
+    /// and the natural surface normal points opposite the frame's Z axis.
+    pub fn try_disk(frame: Frame3, radius: Real) -> Result<Self, GeometryError> {
+        require_finite([radius], "disk radius")?;
+        if radius <= 0.0 {
+            return Err(GeometryError::Degenerate { context: "disk" });
+        }
+        let circle_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let origin = frame.origin().to_array();
+        let x_axis = frame.x_axis().as_vector().to_array();
+        let y_axis = frame.y_axis().as_vector().to_array();
+        let mut controls = circle_weights
+            .into_iter()
+            .map(|weight| WeightedPoint3::try_new(frame.origin(), weight))
+            .collect::<Result<Vec<_>, _>>()?;
+        for ([x, y], weight) in circle_coordinates.into_iter().zip(circle_weights) {
+            let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                let radial_coordinate = x.mul_add(x_axis[coordinate], y * y_axis[coordinate]);
+                radius.mul_add(radial_coordinate, origin[coordinate])
+            }))?;
+            controls.push(WeightedPoint3::try_new(point, weight)?);
+        }
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let tau = std::f64::consts::TAU;
+        Self::try_new_rational(
+            2,
+            1,
+            9,
+            2,
+            controls,
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                3.0 * half_pi,
+                3.0 * half_pi,
+                tau,
+                tau,
+                tau,
+            ],
+            vec![0.0, 0.0, radius, radius],
+        )
+    }
+
     /// Constructs the exact open NURBS wall of a right circular cylinder.
     ///
     /// U is Rhino/OpenNURBS' four-span rational quadratic circle on
@@ -1268,8 +1342,9 @@ impl NurbsSurface {
     }
 
     /// Produces a regular display mesh inside every nonempty knot-span pair.
-    /// Span boundaries are duplicated so a fully multiple knot cannot create
-    /// triangles that bridge a discontinuity. Singular triangles, such as the
+    /// Span boundaries are sampled independently so a fully multiple knot
+    /// cannot bridge a discontinuity. Boundary samples that meet within model
+    /// tolerance are made exactly coincident. Singular triangles, such as the
     /// collapsed row at a sphere pole, are omitted.
     pub fn tessellate(
         &self,
@@ -1352,6 +1427,13 @@ impl NurbsSurface {
                 }
             }
         }
+        stitch_continuous_patch_boundaries(
+            &mut vertices,
+            spans_u.len(),
+            spans_v.len(),
+            samples_per_span,
+            tolerance,
+        )?;
         TriangleMesh::try_new(vertices, triangles, tolerance)
     }
 
@@ -1914,6 +1996,68 @@ fn span_parameter(
     }
 }
 
+fn stitch_continuous_patch_boundaries(
+    vertices: &mut [Point3],
+    span_count_u: usize,
+    span_count_v: usize,
+    samples_per_span: usize,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let side = samples_per_span
+        .checked_add(1)
+        .ok_or(GeometryError::TooManyMeshVertices)?;
+    let vertices_per_patch = side
+        .checked_mul(side)
+        .ok_or(GeometryError::TooManyMeshVertices)?;
+    let patch_offset =
+        |u_span: usize, v_span: usize| (v_span * span_count_u + u_span) * vertices_per_patch;
+
+    for v_span in 0..span_count_v {
+        for u_span in 0..span_count_u.saturating_sub(1) {
+            let left = patch_offset(u_span, v_span);
+            let right = patch_offset(u_span + 1, v_span);
+            for v_sample in 0..=samples_per_span {
+                let left_index = left + v_sample * side + samples_per_span;
+                let right_index = right + v_sample * side;
+                snap_first_point_to_second_if_near(vertices, left_index, right_index, tolerance)?;
+            }
+        }
+    }
+    for v_span in 0..span_count_v.saturating_sub(1) {
+        for u_span in 0..span_count_u {
+            let lower = patch_offset(u_span, v_span);
+            let upper = patch_offset(u_span, v_span + 1);
+            for u_sample in 0..=samples_per_span {
+                let lower_index = lower + samples_per_span * side + u_sample;
+                let upper_index = upper + u_sample;
+                snap_first_point_to_second_if_near(vertices, lower_index, upper_index, tolerance)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn snap_first_point_to_second_if_near(
+    vertices: &mut [Point3],
+    first_index: usize,
+    second_index: usize,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let first = vertices[first_index];
+    let second = vertices[second_index];
+    let scale = first
+        .to_array()
+        .into_iter()
+        .chain(second.to_array())
+        .map(Real::abs)
+        .fold(0.0, Real::max);
+    let allowed = tolerance.absolute().max(tolerance.relative() * scale);
+    if first.distance_to(second)? <= allowed {
+        vertices[first_index] = second;
+    }
+    Ok(())
+}
+
 fn push_if_nondegenerate(
     vertices: &[Point3],
     triangles: &mut Vec<[u32; 3]>,
@@ -2174,6 +2318,85 @@ mod tests {
         assert!(NurbsSurface::try_ellipsoid(frame, [0.0, 1.0, 1.0]).is_err());
         assert!(NurbsSurface::try_ellipsoid(frame, [1.0, -1.0, 1.0]).is_err());
         assert!(NurbsSurface::try_ellipsoid(frame, [1.0, 1.0, Real::NAN]).is_err());
+    }
+
+    #[test]
+    fn exact_polar_disk_has_a_collapsed_center_and_opposite_frame_normal() {
+        let origin = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            origin,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let disk = NurbsSurface::try_disk(frame, 4.0).unwrap();
+
+        assert_eq!(disk.degree_u(), 2);
+        assert_eq!(disk.degree_v(), 1);
+        assert_eq!(disk.control_point_count_u(), 9);
+        assert_eq!(disk.control_point_count_v(), 2);
+        assert_eq!(disk.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(disk.domain_v(), 0.0..=4.0);
+        for u_index in 0..=16 {
+            let u = std::f64::consts::TAU * u_index as Real / 16.0;
+            assert!(
+                disk.evaluate(u, 0.0)
+                    .unwrap()
+                    .is_near(origin, Tolerance::DEFAULT)
+            );
+            assert!(Tolerance::DEFAULT.approx_eq(
+                disk.evaluate(u, 4.0).unwrap().distance_to(origin).unwrap(),
+                4.0
+            ));
+        }
+        assert_eq!(disk.evaluate(0.0, 2.0).unwrap(), point(1.0, 4.0, 3.0));
+        let normal = disk.normal_at(0.25, 2.0, Tolerance::DEFAULT).unwrap();
+        assert!(normal.as_vector().dot(frame.z_axis().as_vector()).unwrap() < -0.999_999);
+        assert!(
+            !disk
+                .tessellate(2, Tolerance::DEFAULT)
+                .unwrap()
+                .triangles()
+                .is_empty()
+        );
+        assert!(NurbsSurface::try_disk(frame, 0.0).is_err());
+        assert!(NurbsSurface::try_disk(frame, Real::NAN).is_err());
+    }
+
+    #[test]
+    fn tessellation_stitches_continuous_full_knot_boundaries_but_preserves_jumps() {
+        let tessellate = |right_start: Real| {
+            NurbsSurface::try_new(
+                1,
+                1,
+                4,
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 0.0, 0.0),
+                    point(right_start, 0.0, 0.0),
+                    point(right_start + 1.0, 0.0, 0.0),
+                    point(0.0, 1.0, 0.0),
+                    point(1.0, 1.0, 0.0),
+                    point(right_start, 1.0, 0.0),
+                    point(right_start + 1.0, 1.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 1.0, 2.0, 2.0],
+                vec![0.0, 0.0, 1.0, 1.0],
+            )
+            .unwrap()
+            .tessellate(1, Tolerance::DEFAULT)
+            .unwrap()
+        };
+
+        let continuous = tessellate(1.0).topology();
+        assert_eq!(continuous.topological_vertex_count(), 6);
+        assert_eq!(continuous.boundary_edge_count(), 6);
+
+        let discontinuous = tessellate(3.0).topology();
+        assert_eq!(discontinuous.topological_vertex_count(), 8);
+        assert_eq!(discontinuous.boundary_edge_count(), 8);
     }
 
     #[test]

@@ -5,6 +5,12 @@ use crate::{
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
 
+#[derive(Clone, Copy, Debug)]
+struct BoundarySnapPoint {
+    point: Point3,
+    tolerance: Real,
+}
+
 /// A B-rep vertex with its model-space coincidence tolerance.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct BrepVertex {
@@ -395,6 +401,88 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs an exact capped right circular cylinder with one wall face
+    /// and two polar disk faces. Periodic parameter seams are represented by
+    /// shared radial/axial seam edges rather than duplicated boundary edges.
+    pub fn try_cylinder(
+        frame: Frame3,
+        radius: Real,
+        start_height: Real,
+        end_height: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_cylinder(frame, radius, start_height, end_height)?;
+        let height_domain = wall.domain_v();
+        let low_height = *height_domain.start();
+        let high_height = *height_domain.end();
+        let low_frame = frame_at_height(frame, low_height, tolerance)?;
+        let high_frame = frame_at_height(frame, high_height, tolerance)?;
+        let u_domain = wall.domain_u();
+        let low_seam = wall.evaluate(*u_domain.start(), low_height)?;
+        let high_seam = wall.evaluate(*u_domain.start(), high_height)?;
+        let vertices = vec![
+            BrepVertex::try_new(low_seam, 0.0)?,
+            BrepVertex::try_new(high_seam, 0.0)?,
+            BrepVertex::try_new(low_frame.origin(), 0.0)?,
+            BrepVertex::try_new(high_frame.origin(), 0.0)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 0], surface_u_control_curve(&wall, 0)?, 0.0)?,
+            BrepEdge::try_new([1, 1], surface_u_control_curve(&wall, 1)?, 0.0)?,
+            BrepEdge::try_new(
+                [0, 1],
+                LineSegment::try_new(low_seam, high_seam, tolerance)?.to_nurbs()?,
+                0.0,
+            )?,
+            BrepEdge::try_new(
+                [2, 0],
+                LineSegment::try_new(low_frame.origin(), low_seam, tolerance)?.to_nurbs()?,
+                0.0,
+            )?,
+            BrepEdge::try_new(
+                [3, 1],
+                LineSegment::try_new(high_frame.origin(), high_seam, tolerance)?.to_nurbs()?,
+                0.0,
+            )?,
+        ];
+
+        let wall_loop = rectangular_surface_loop(
+            &wall,
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 2, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([1, 1], 1, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 0], 2, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let low_disk = NurbsSurface::try_disk(low_frame, radius)?;
+        let low_loop = rectangular_surface_loop(
+            &low_disk,
+            [
+                RectangularTrimSpec::singular(2),
+                RectangularTrimSpec::edge([2, 0], 3, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([0, 0], 0, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 2], 3, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let high_disk = NurbsSurface::try_disk(high_frame, radius)?;
+        let high_loop = rectangular_surface_loop(
+            &high_disk,
+            [
+                RectangularTrimSpec::singular(3),
+                RectangularTrimSpec::edge([3, 1], 4, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([1, 1], 1, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 3], 4, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let faces = vec![
+            BrepFace::try_new(wall, false, vec![wall_loop])?,
+            BrepFace::try_new(low_disk, false, vec![low_loop])?,
+            BrepFace::try_new(high_disk, true, vec![high_loop])?,
+        ];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     #[inline]
     pub fn vertices(&self) -> &[BrepVertex] {
         &self.vertices
@@ -527,16 +615,23 @@ impl Brep {
                 return Err(GeometryError::UnsupportedBrepTrimTessellation { face: face_index });
             }
             let mesh = face.surface.tessellate(samples_per_span, tolerance)?;
+            let mut face_vertices = mesh.vertices().to_vec();
+            self.snap_face_boundary_vertices(
+                face,
+                &mut face_vertices,
+                samples_per_span,
+                tolerance,
+            )?;
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             let combined_vertex_count = vertices
                 .len()
-                .checked_add(mesh.vertices().len())
+                .checked_add(face_vertices.len())
                 .ok_or(GeometryError::TooManyMeshVertices)?;
             if combined_vertex_count > u32::MAX as usize {
                 return Err(GeometryError::TooManyMeshVertices);
             }
-            vertices.extend_from_slice(mesh.vertices());
+            vertices.extend(face_vertices);
             for triangle in mesh.triangles() {
                 let mut triangle = [
                     triangle[0]
@@ -555,7 +650,131 @@ impl Brep {
                 triangles.push(triangle);
             }
         }
-        TriangleMesh::try_new(vertices, triangles, tolerance)
+        let mesh = TriangleMesh::try_new(vertices, triangles, tolerance)?;
+        let topology = mesh.topology();
+        if (self.is_closed() && !topology.is_closed()) || (self.is_solid() && !topology.is_solid())
+        {
+            return Err(GeometryError::UnstitchedBrepTessellation {
+                boundary_edges: topology.boundary_edge_count(),
+                orientation_conflicts: topology.orientation_conflict_edge_count(),
+            });
+        }
+        Ok(mesh)
+    }
+
+    fn snap_face_boundary_vertices(
+        &self,
+        face: &BrepFace,
+        vertices: &mut [Point3],
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<(), GeometryError> {
+        let candidates = self.face_boundary_snap_points(face, samples_per_span, tolerance)?;
+        let span_count_u = face.surface.spans_u().count();
+        let span_count_v = face.surface.spans_v().count();
+        let side = samples_per_span
+            .checked_add(1)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let vertices_per_patch = side
+            .checked_mul(side)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let expected_vertex_count = span_count_u
+            .checked_mul(span_count_v)
+            .and_then(|count| count.checked_mul(vertices_per_patch))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if vertices.len() != expected_vertex_count {
+            return invalid("surface tessellation layout changed while stitching B-rep edges");
+        }
+
+        for v_span in 0..span_count_v {
+            for u_span in 0..span_count_u {
+                let patch = v_span * span_count_u + u_span;
+                let patch_offset = patch * vertices_per_patch;
+                for v_sample in 0..=samples_per_span {
+                    for u_sample in 0..=samples_per_span {
+                        let vertex = &mut vertices[patch_offset + v_sample * side + u_sample];
+                        if v_span == 0 && v_sample == 0 {
+                            snap_point_to_candidates(vertex, &candidates[0], tolerance);
+                        }
+                        if u_span + 1 == span_count_u && u_sample == samples_per_span {
+                            snap_point_to_candidates(vertex, &candidates[1], tolerance);
+                        }
+                        if v_span + 1 == span_count_v && v_sample == samples_per_span {
+                            snap_point_to_candidates(vertex, &candidates[2], tolerance);
+                        }
+                        if u_span == 0 && u_sample == 0 {
+                            snap_point_to_candidates(vertex, &candidates[3], tolerance);
+                        }
+                    }
+                }
+            }
+        }
+        Ok(())
+    }
+
+    fn face_boundary_snap_points(
+        &self,
+        face: &BrepFace,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<[Vec<BoundarySnapPoint>; 4], GeometryError> {
+        let mut candidates: [Vec<BoundarySnapPoint>; 4] = std::array::from_fn(|_| Vec::new());
+        for trim in &face.loops[0].trims {
+            let side = match trim.iso {
+                SurfaceIso::South => 0,
+                SurfaceIso::East => 1,
+                SurfaceIso::North => 2,
+                SurfaceIso::West => 3,
+                SurfaceIso::NotIso => {
+                    return invalid("a full-domain B-rep face has a non-isoparametric side");
+                }
+            };
+            if let Some(edge_index) = trim.edge {
+                let edge = &self.edges[edge_index];
+                let spans = edge.curve.spans().collect::<Vec<_>>();
+                let domain = edge.curve.domain();
+                let last_span =
+                    spans
+                        .len()
+                        .checked_sub(1)
+                        .ok_or(GeometryError::InvalidBrepTopology {
+                            context: "a B-rep edge curve has no nonempty span",
+                        })?;
+                for (span_index, (start, end)) in spans.into_iter().enumerate() {
+                    for sample in 0..=samples_per_span {
+                        let is_start = span_index == 0 && sample == 0;
+                        let is_end = span_index == last_span && sample == samples_per_span;
+                        let (point, component_tolerance) = if is_start {
+                            let vertex = self.vertices[edge.vertices[0]];
+                            (vertex.point, edge.tolerance.max(vertex.tolerance))
+                        } else if is_end {
+                            let vertex = self.vertices[edge.vertices[1]];
+                            (vertex.point, edge.tolerance.max(vertex.tolerance))
+                        } else {
+                            let parameter = brep_span_parameter(
+                                start,
+                                end,
+                                sample,
+                                samples_per_span,
+                                *domain.end(),
+                            );
+                            (edge.curve.evaluate(parameter)?, edge.tolerance)
+                        };
+                        candidates[side].push(BoundarySnapPoint {
+                            point,
+                            tolerance: tolerance.absolute().max(component_tolerance),
+                        });
+                    }
+                }
+            } else {
+                let vertex = self.vertices[trim.vertices[0]];
+                candidates[side].push(BoundarySnapPoint {
+                    point: vertex.point,
+                    tolerance: tolerance.absolute().max(vertex.tolerance),
+                });
+            }
+        }
+        Ok(candidates)
     }
 
     fn validate(&self, tolerance: Tolerance) -> Result<(), GeometryError> {
@@ -714,6 +933,152 @@ struct TrimUse<'a> {
     face: usize,
     face_loop: usize,
     trim: &'a BrepTrim,
+}
+
+#[derive(Clone, Copy)]
+struct RectangularTrimSpec {
+    vertices: [usize; 2],
+    edge: Option<usize>,
+    reversed_3d: bool,
+    trim_type: BrepTrimType,
+}
+
+impl RectangularTrimSpec {
+    const fn edge(
+        vertices: [usize; 2],
+        edge: usize,
+        reversed_3d: bool,
+        trim_type: BrepTrimType,
+    ) -> Self {
+        Self {
+            vertices,
+            edge: Some(edge),
+            reversed_3d,
+            trim_type,
+        }
+    }
+
+    const fn singular(vertex: usize) -> Self {
+        Self {
+            vertices: [vertex, vertex],
+            edge: None,
+            reversed_3d: false,
+            trim_type: BrepTrimType::Singular,
+        }
+    }
+}
+
+fn rectangular_surface_loop(
+    surface: &NurbsSurface,
+    specs: [RectangularTrimSpec; 4],
+) -> Result<BrepLoop, GeometryError> {
+    let domain_u = surface.domain_u();
+    let domain_v = surface.domain_v();
+    let parameter_corners = [
+        Point2::try_new(*domain_u.start(), *domain_v.start())?,
+        Point2::try_new(*domain_u.end(), *domain_v.start())?,
+        Point2::try_new(*domain_u.end(), *domain_v.end())?,
+        Point2::try_new(*domain_u.start(), *domain_v.end())?,
+    ];
+    let iso = [
+        SurfaceIso::South,
+        SurfaceIso::East,
+        SurfaceIso::North,
+        SurfaceIso::West,
+    ];
+    let trims = specs
+        .into_iter()
+        .enumerate()
+        .map(|(index, spec)| {
+            BrepTrim::try_new(
+                spec.vertices,
+                spec.edge,
+                spec.reversed_3d,
+                NurbsCurve2::try_line(
+                    parameter_corners[index],
+                    parameter_corners[(index + 1) % 4],
+                )?,
+                spec.trim_type,
+                iso[index],
+                [0.0, 0.0],
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    BrepLoop::try_new(BrepLoopType::Outer, trims)
+}
+
+fn frame_at_height(
+    frame: Frame3,
+    height: Real,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
+    let origin = frame
+        .origin()
+        .translated(frame.z_axis().as_vector().scaled(height)?)?;
+    Frame3::try_from_directions(
+        origin,
+        frame.x_axis().as_vector(),
+        frame.y_axis().as_vector(),
+        tolerance,
+    )
+}
+
+fn surface_u_control_curve(
+    surface: &NurbsSurface,
+    v_index: usize,
+) -> Result<NurbsCurve, GeometryError> {
+    let controls = (0..surface.control_point_count_u())
+        .map(|u_index| {
+            surface
+                .control_point(u_index, v_index)
+                .ok_or(GeometryError::InvalidBrepTopology {
+                    context: "a requested surface boundary control row is missing",
+                })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    NurbsCurve::try_new_rational(surface.degree_u(), controls, surface.knots_u().to_vec())
+}
+
+fn brep_span_parameter(
+    start: Real,
+    end: Real,
+    sample: usize,
+    sample_count: usize,
+    domain_end: Real,
+) -> Real {
+    let fraction = sample as Real / sample_count as Real;
+    let parameter = start.mul_add(1.0 - fraction, end * fraction);
+    if sample == sample_count && end < domain_end {
+        parameter.next_down().max(start)
+    } else {
+        parameter
+    }
+}
+
+fn snap_point_to_candidates(
+    point: &mut Point3,
+    candidates: &[BoundarySnapPoint],
+    tolerance: Tolerance,
+) {
+    let mut nearest = None;
+    for candidate in candidates {
+        let scale = point
+            .to_array()
+            .into_iter()
+            .chain(candidate.point.to_array())
+            .map(Real::abs)
+            .fold(0.0, Real::max);
+        let allowed = candidate.tolerance.max(tolerance.relative() * scale);
+        if let Ok(distance) = point.distance_to(candidate.point)
+            && distance <= allowed
+            && nearest.is_none_or(|(nearest_distance, _)| distance < nearest_distance)
+        {
+            nearest = Some((distance, candidate.point));
+        }
+    }
+    if let Some((_, candidate)) = nearest {
+        *point = candidate;
+    }
 }
 
 fn validate_iso(
@@ -945,6 +1310,74 @@ mod tests {
         assert_eq!(brep.vertices()[0].point(), point(2.0, 2.0, 3.0));
         assert_eq!(brep.vertices()[7].point(), point(-3.0, 4.0, 0.0));
         assert!(brep.is_solid());
+    }
+
+    #[test]
+    fn exact_capped_cylinder_has_mated_rims_and_periodic_seams() {
+        let origin = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            origin,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let brep = Brep::try_cylinder(frame, 2.5, 3.0, -4.0, Tolerance::DEFAULT).unwrap();
+
+        assert_eq!(brep.vertices().len(), 4);
+        assert_eq!(brep.edges().len(), 5);
+        assert_eq!(brep.faces().len(), 3);
+        assert!(brep.is_manifold());
+        assert!(brep.is_closed());
+        assert!(brep.is_solid());
+        assert!((0..brep.edges().len()).all(|edge| brep.edge_use_count(edge) == Some(2)));
+        assert_eq!(
+            brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| trim.trim_type())
+                .collect::<Vec<_>>(),
+            vec![
+                BrepTrimType::Mated,
+                BrepTrimType::Seam,
+                BrepTrimType::Mated,
+                BrepTrimType::Seam,
+            ]
+        );
+        for cap in &brep.faces()[1..] {
+            assert_eq!(
+                cap.loops()[0]
+                    .trims()
+                    .iter()
+                    .map(|trim| trim.trim_type())
+                    .collect::<Vec<_>>(),
+                vec![
+                    BrepTrimType::Singular,
+                    BrepTrimType::Seam,
+                    BrepTrimType::Mated,
+                    BrepTrimType::Seam,
+                ]
+            );
+        }
+        assert!(!brep.faces()[1].is_reversed());
+        assert!(brep.faces()[2].is_reversed());
+
+        let mesh = brep.tessellate(8, Tolerance::DEFAULT).unwrap();
+        assert!(
+            mesh.topology().is_solid(),
+            "cylinder display topology: {:?}",
+            mesh.topology()
+        );
+        let expected_volume = std::f64::consts::PI * 2.5 * 2.5 * 7.0;
+        let relative_error =
+            (mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume;
+        assert!(
+            relative_error < 0.01,
+            "relative volume error {relative_error}"
+        );
+
+        assert!(Brep::try_cylinder(frame, 0.0, 0.0, 1.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_cylinder(frame, 1.0, 2.0, 2.0, Tolerance::DEFAULT).is_err());
     }
 
     #[test]

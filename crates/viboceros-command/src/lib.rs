@@ -1149,7 +1149,7 @@ impl Command for SphereCommand {
     }
 }
 
-const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=No]";
+const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=No]";
 const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
@@ -1317,10 +1317,6 @@ impl Command for CylinderCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_axial_primitive_options(arguments, CYLINDER_USAGE, true)?;
-        if options.solid {
-            return Err(CommandError::SolidPrimitiveUnsupported);
-        }
-
         let tolerance = document.tolerance();
         let (frame, radius) =
             axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
@@ -1330,11 +1326,19 @@ impl Command for CylinderCommand {
         } else {
             [0.0, options.height]
         };
-        let surface = NurbsSurface::try_cylinder(frame, radius, start_height, end_height)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!(
-            "Added open NURBS cylinder {id} (radius {radius:.6}, heights {start_height:.6} to {end_height:.6})"
-        ))
+        if options.solid {
+            let brep = Brep::try_cylinder(frame, radius, start_height, end_height, tolerance)?;
+            let id = document.add_geometry(Geometry::Brep(brep))?;
+            Ok(format!(
+                "Added closed B-rep cylinder {id} (radius {radius:.6}, heights {start_height:.6} to {end_height:.6})"
+            ))
+        } else {
+            let surface = NurbsSurface::try_cylinder(frame, radius, start_height, end_height)?;
+            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+            Ok(format!(
+                "Added open NURBS cylinder {id} (radius {radius:.6}, heights {start_height:.6} to {end_height:.6})"
+            ))
+        }
     }
 }
 
@@ -7480,8 +7484,22 @@ mod tests {
             Point3::try_new(4.0, 6.0, 3.0).unwrap()
         );
 
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(&mut document, "Cylinder 1,2,3 2.5 -4 Solid=Yes")
+            .unwrap();
+        assert!(result.contains("closed B-rep cylinder"));
+        let Geometry::Brep(solid) = document.objects().next().unwrap().geometry() else {
+            panic!("Cylinder Solid=Yes must create a B-rep")
+        };
+        assert_eq!(solid.faces().len(), 3);
+        assert!(solid.is_solid());
+        let mesh = solid.tessellate(8, document.tolerance()).unwrap();
+        assert!(mesh.topology().is_solid());
+        let expected_volume = std::f64::consts::PI * 2.5 * 2.5 * 4.0;
+        assert!((mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume < 0.01);
+
         for invalid in [
-            "Cylinder 0,0,0 1 2 Solid=Yes",
             "Cylinder 0,0,0 1 0",
             "Cylinder 0,0,0 0 2",
             "Cylinder 0,0,0 0,0,2 3 Axis=0,0,1",

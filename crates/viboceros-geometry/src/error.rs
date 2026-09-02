@@ -131,6 +131,14 @@ pub enum GeometryError {
     #[error("B-rep face {face} requires trimmed-face clipping before it can be tessellated")]
     UnsupportedBrepTrimTessellation { face: usize },
 
+    #[error(
+        "closed B-rep faces produced {boundary_edges} open and {orientation_conflicts} conflicting mesh edges"
+    )]
+    UnstitchedBrepTessellation {
+        boundary_edges: usize,
+        orientation_conflicts: usize,
+    },
+
     #[error("non-affine B-rep morphing is not yet supported")]
     UnsupportedBrepMorph,
 

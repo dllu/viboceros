@@ -33,7 +33,7 @@ SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 Box 0,0,0 8,5,0 3
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
-Cylinder 0,0,0 5 10 Solid=No
+Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=No
 Torus 0,0,0 5 1.5
 Layer New Construction
@@ -189,11 +189,11 @@ ellipsoid; entering it without arguments starts the four-pick viewport workflow.
 World XY. The height may be a signed number or a point, and the result is one
 closed B-rep with eight shared vertices, twelve shared edges, six outward
 bilinear faces, and exact rational parameter-space trims.
-`Cylinder` creates the exact open 9-by-2 rational NURBS wall from a center,
-radius (or base-circle point), and signed height. `Axis=` accepts an arbitrary
-axis, while `BothSides=Yes` makes the height symmetric about the base center.
-The current Cylinder command accepts `Solid=No`; cap construction is not yet
-wired into the B-rep layer.
+`Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
+(or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
+while `BothSides=Yes` makes the height symmetric about the base center.
+`Solid=Yes` adds exact rational polar-disk caps and shared rim/seam topology as
+a closed B-rep; `Solid=No` retains the single open wall surface.
 `Cone` uses the same center, numeric radius or base-point radius, signed height,
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
 surface with a weighted collapsed apex. `Solid=No` is currently required.
