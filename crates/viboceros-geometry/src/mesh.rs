@@ -902,8 +902,9 @@ impl TriangleMesh {
     ///
     /// Only vertices paired along an exact-location topology edge can merge;
     /// a coincident vertex-only contact remains distinct. The later raw vertex
-    /// is retained as Rhino/OpenNURBS does, then all unreferenced vertices are
-    /// compacted while the remaining source order is preserved.
+    /// is retained as Rhino/OpenNURBS does. Non-manifold edges consider their
+    /// first two face uses only. All unreferenced vertices are then compacted
+    /// while the remaining source order is preserved.
     pub fn welded_vertices(
         &self,
         angle_tolerance_radians: Real,
@@ -918,24 +919,26 @@ impl TriangleMesh {
         let minimum_dot = angle_tolerance_radians.cos();
         let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
         for incidence in data.edges.values() {
-            let uses = incidence.uses().collect::<Vec<_>>();
-            for left in 0..uses.len().saturating_sub(1) {
-                for right in left + 1..uses.len() {
-                    let dot = face_normals[uses[left].face]
-                        .as_vector()
-                        .dot(face_normals[uses[right].face].as_vector())?
-                        .clamp(-1.0, 1.0);
-                    if dot < minimum_dot {
-                        continue;
-                    }
-                    for endpoint in 0..2 {
-                        union_indices_keep_later(
-                            &mut parents,
-                            uses[left].raw_vertices[endpoint] as usize,
-                            uses[right].raw_vertices[endpoint] as usize,
-                        );
-                    }
-                }
+            let mut uses = incidence.uses();
+            let Some(first) = uses.next() else {
+                continue;
+            };
+            let Some(second) = uses.next() else {
+                continue;
+            };
+            let dot = face_normals[first.face]
+                .as_vector()
+                .dot(face_normals[second.face].as_vector())?
+                .clamp(-1.0, 1.0);
+            if dot < minimum_dot {
+                continue;
+            }
+            for endpoint in 0..2 {
+                union_indices_keep_later(
+                    &mut parents,
+                    first.raw_vertices[endpoint] as usize,
+                    second.raw_vertices[endpoint] as usize,
+                );
             }
         }
 
@@ -992,6 +995,66 @@ impl TriangleMesh {
                 }
             }
             welded_edge_count += usize::from(divided_endpoint);
+        }
+        let (welded, _) = self.compacted_with_vertex_parents(&mut parents);
+        Ok((welded, welded_edge_count))
+    }
+
+    /// Welds joined mesh seams incident to selected exact-location topology
+    /// vertices.
+    ///
+    /// Indices use the same deterministic order as
+    /// [`Self::topology_vertex_points`]. Selecting either endpoint of a seam
+    /// welds both endpoint pairs on every incident edge, matching Rhino's
+    /// vertex tool. On a non-manifold edge only the first two face uses are
+    /// joined. The later raw vertex survives, and a non-empty valid selection
+    /// compacts unused vertices. The returned count is the number of incident
+    /// edges that required welding.
+    pub fn welded_topology_vertices(
+        &self,
+        vertex_indices: &[usize],
+    ) -> Result<(Self, usize), GeometryError> {
+        if vertex_indices.is_empty() {
+            return Ok((self.clone(), 0));
+        }
+        let data = self.topology_data();
+        let mut selected_vertices = vec![false; data.topological_vertex_count];
+        for &vertex in vertex_indices {
+            let Some(selected) = selected_vertices.get_mut(vertex) else {
+                return Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
+                    vertex,
+                    vertex_count: data.topological_vertex_count,
+                });
+            };
+            *selected = true;
+        }
+
+        let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
+        let mut welded_edge_count = 0;
+        for (&(first_vertex, second_vertex), incidence) in &data.edges {
+            if !selected_vertices[first_vertex] && !selected_vertices[second_vertex] {
+                continue;
+            }
+            let mut uses = incidence.uses();
+            let Some(first) = uses.next() else {
+                continue;
+            };
+            let Some(second) = uses.next() else {
+                continue;
+            };
+            let divided = (0..2)
+                .any(|endpoint| first.raw_vertices[endpoint] != second.raw_vertices[endpoint]);
+            if !divided {
+                continue;
+            }
+            for endpoint in 0..2 {
+                union_indices_keep_later(
+                    &mut parents,
+                    first.raw_vertices[endpoint] as usize,
+                    second.raw_vertices[endpoint] as usize,
+                );
+            }
+            welded_edge_count += 1;
         }
         let (welded, _) = self.compacted_with_vertex_parents(&mut parents);
         Ok((welded, welded_edge_count))
@@ -3782,6 +3845,163 @@ mod tests {
             welded.triangles(),
             &[[0, 1, 2], [1, 0, 3], [4, 5, 6], [5, 4, 7]]
         );
+    }
+
+    #[test]
+    fn weld_limits_non_manifold_edges_to_the_first_two_face_uses() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, removed) = mesh.welded_vertices(std::f64::consts::PI).unwrap();
+        assert_eq!(removed, 3);
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[2, 1, 0], [1, 2, 3], [4, 5, 6]]);
+    }
+
+    #[test]
+    fn welds_every_joined_seam_incident_to_selected_topology_vertices() {
+        let seam = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let expected = TriangleMesh::try_new(
+            vec![
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[2, 1, 0], [1, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for selection in [&[0][..], &[1][..], &[1, 0, 1][..]] {
+            assert_eq!(
+                seam.welded_topology_vertices(selection).unwrap(),
+                (expected.clone(), 1)
+            );
+        }
+        assert_eq!(
+            seam.welded_topology_vertices(&[]).unwrap(),
+            (seam.clone(), 0)
+        );
+        assert_eq!(
+            seam.welded_topology_vertices(&[5]),
+            Err(GeometryError::MeshTopologyVertexIndexOutOfRange {
+                vertex: 5,
+                vertex_count: 5,
+            })
+        );
+
+        let two_seams = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(-1.0, 0.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 5, 4], [6, 8, 7]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, edge_count) = two_seams.welded_topology_vertices(&[0]).unwrap();
+        assert_eq!(edge_count, 2);
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, -1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(-1.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[2, 1, 3], [2, 1, 0], [2, 4, 3]]);
+    }
+
+    #[test]
+    fn selected_vertex_welding_ignores_contacts_and_extra_non_manifold_uses() {
+        let vertex_contact = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(-1.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (compacted, edge_count) = vertex_contact.welded_topology_vertices(&[0]).unwrap();
+        assert_eq!(edge_count, 0);
+        assert_eq!(compacted.vertices(), &vertex_contact.vertices()[..6]);
+        assert_eq!(compacted.triangles(), vertex_contact.triangles());
+
+        let non_manifold = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, edge_count) = non_manifold.welded_topology_vertices(&[0]).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(welded.vertices().len(), 7);
+        assert_eq!(welded.triangles(), &[[2, 1, 0], [1, 2, 3], [4, 5, 6]]);
     }
 
     #[test]

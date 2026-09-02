@@ -138,6 +138,7 @@ Flip
 UnifyMeshNormals
 Weld 180
 WeldEdge Edges=0,2
+WeldVertices Vertices=0,2
 Unweld 45 ModifyNormals=Yes
 UnweldEdge Edges=0,2 ModifyNormals=Yes
 UnweldVertex Vertices=0,2 ModifyNormals=Yes
@@ -530,6 +531,11 @@ one edge in the viewport. The earliest source vertex survives; unrelated
 coincident fan components remain separate, including at half-welded and
 non-manifold seams. Naked or already-welded selections still perform
 Rhino-compatible unused-vertex compaction while preserving the object.
+`WeldVertices` welds every joined seam incident to selected topology vertices,
+including both endpoints of each seam. Use `Vertices=0,2`, `Vertices=All`, or
+omit the selector for one viewport pick. It preserves Rhino's later-source
+vertex ordering, ignores coincident vertex-only contacts, limits non-manifold
+edges to their first two face uses, and performs unused-vertex compaction.
 `Unweld` performs the inverse topology edit at edges whose face-normal angle is
 greater than or equal to its tolerance. It preserves smoother face regions,
 rebuilds affected vertices in OpenNURBS radial order, and compacts unused

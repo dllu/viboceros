@@ -1,0 +1,76 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_weld_vertex",
+      "id": "empty-selection",
+      "vertex_indices": [],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "two-face-first-endpoint",
+      "vertex_indices": [0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "two-face-second-endpoint",
+      "vertex_indices": [1],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "two-face-both-reversed",
+      "vertex_indices": [1, 0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "already-welded",
+      "vertex_indices": [0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [1, 0, 3]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "naked-one-face",
+      "vertex_indices": [2],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "closed-fan-center-seam",
+      "vertex_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0], [0, 0, 0], [1, 0, 0]],
+      "triangles": [[0, 2, 1], [0, 3, 2], [0, 4, 3], [5, 6, 4]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "vertex-only-contact",
+      "vertex_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0], [-1, 0, 0], [0, -1, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "nonmanifold-center-seam",
+      "vertex_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0], [0, -1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 1], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    },
+    {
+      "op": "mesh_weld_vertex",
+      "id": "two-incident-seams",
+      "vertex_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 0], [0, -1, 0], [1, 0, 0], [0, 0, 0], [0, 1, 0], [-1, 0, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 5, 4], [6, 8, 7]]
+    }
+  ]
+}

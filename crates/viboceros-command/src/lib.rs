@@ -293,6 +293,9 @@ impl CommandRegistry {
             .register(WeldEdgeCommand)
             .expect("unique built-in command");
         registry
+            .register(WeldVerticesCommand)
+            .expect("unique built-in command");
+        registry
             .register(UnweldCommand)
             .expect("unique built-in command");
         registry
@@ -5886,6 +5889,163 @@ fn parse_weld_edge_arguments(arguments: &[&str]) -> Result<WeldEdgeSelection, Co
     }
 }
 
+const WELD_VERTICES_USAGE: &str = "WeldVertices (point|Vertices=All|Vertices=0,2,...)";
+
+#[derive(Clone, Debug, PartialEq)]
+enum WeldVerticesSelection {
+    Point(Point3),
+    Vertices(SurfaceFaceIndices),
+}
+
+struct WeldVerticesCommand;
+
+impl Command for WeldVerticesCommand {
+    fn name(&self) -> &'static str {
+        "WeldVertices"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["WeldVertex", "WeldMeshVertex"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selection = parse_weld_vertices_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedWeldVerticesGeometry);
+                };
+                Ok(MeshTopologySource {
+                    id: object.id(),
+                    mesh: mesh.clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selections = selected_weld_vertices(&sources, &selection)?;
+        let mesh_count = sources.len();
+        let mut selected_vertex_count = 0_usize;
+        let mut welded_edge_count = 0_usize;
+        let mut removed_vertex_count = 0_usize;
+        let mut replacements = Vec::new();
+        for (source_index, vertex_indices) in selections {
+            selected_vertex_count += vertex_indices.len();
+            let source = &sources[source_index];
+            let (welded, welded_edges) = source.mesh.welded_topology_vertices(&vertex_indices)?;
+            welded_edge_count += welded_edges;
+            removed_vertex_count += source.mesh.vertices().len() - welded.vertices().len();
+            if welded != source.mesh {
+                replacements.push((source.id, Geometry::Mesh(welded)));
+            }
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoSelectedMeshVerticesToWeld);
+        }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Processed {selected_vertex_count} selected mesh topology vertex index(es) in {changed_mesh_count} changed mesh(es): welded {welded_edge_count} incident seam edge(s) and removed {removed_vertex_count} raw vertex occurrence(s); {} mesh(es) unchanged",
+            mesh_count - changed_mesh_count
+        ))
+    }
+}
+
+fn selected_weld_vertices(
+    sources: &[MeshTopologySource],
+    selection: &WeldVerticesSelection,
+) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
+    match selection {
+        WeldVerticesSelection::Vertices(selection) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let vertex_count = source.mesh.topology().topological_vertex_count();
+                let vertex_indices = match selection {
+                    SurfaceFaceIndices::All => (0..vertex_count).collect(),
+                    SurfaceFaceIndices::Indices(indices) => {
+                        if let Some(&vertex) =
+                            indices.iter().find(|&&vertex| vertex >= vertex_count)
+                        {
+                            return Err(CommandError::WeldVertexIndexOutOfRange {
+                                vertex,
+                                vertex_count,
+                            });
+                        }
+                        indices.clone()
+                    }
+                };
+                Ok((source_index, vertex_indices))
+            })
+            .collect(),
+        WeldVerticesSelection::Point(target) => {
+            let mut best = None;
+            for (source_index, source) in sources.iter().enumerate() {
+                for (vertex_index, vertex) in
+                    source.mesh.topology_vertex_points().into_iter().enumerate()
+                {
+                    let distance = vertex.distance_to(*target)?;
+                    if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                        best = Some((distance, source_index, vertex_index));
+                    }
+                }
+            }
+            let Some((_, source, vertex)) = best else {
+                return Err(CommandError::NoSelectedMeshVerticesToWeld);
+            };
+            Ok(vec![(source, vec![vertex])])
+        }
+    }
+}
+
+fn parse_weld_vertices_arguments(
+    arguments: &[&str],
+) -> Result<WeldVerticesSelection, CommandError> {
+    let mut vertex_selection = None;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Vertices") || option_name_eq(argument, "VertexIndices")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(WELD_VERTICES_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        if let Some((name, value, consumed)) = option {
+            if (option_name_eq(name, "Vertices") || option_name_eq(name, "VertexIndices"))
+                && vertex_selection.is_none()
+            {
+                vertex_selection = Some(parse_surface_face_indices(value, WELD_VERTICES_USAGE)?);
+            } else {
+                return Err(CommandError::Usage(WELD_VERTICES_USAGE));
+            }
+            index += consumed;
+        } else {
+            positional.push(argument);
+            index += 1;
+        }
+    }
+    if let Some(vertices) = vertex_selection {
+        require_consumed(&positional, 0, WELD_VERTICES_USAGE)?;
+        Ok(WeldVerticesSelection::Vertices(vertices))
+    } else {
+        if positional.is_empty() {
+            return Err(CommandError::Usage(WELD_VERTICES_USAGE));
+        }
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, WELD_VERTICES_USAGE)?;
+        Ok(WeldVerticesSelection::Point(point))
+    }
+}
+
 const UNWELD_USAGE: &str = "Unweld [angle-degrees|Angle=degrees] [ModifyNormals=Yes|No]";
 
 struct UnweldCommand;
@@ -11213,6 +11373,17 @@ pub enum CommandError {
     #[error("none of the selected mesh edges requires welding or compaction")]
     NoSelectedMeshEdgesToWeld,
 
+    #[error("WeldVertices supports selected meshes only")]
+    UnsupportedWeldVerticesGeometry,
+
+    #[error(
+        "WeldVertices vertex index {vertex} is outside the selected mesh's topology vertex count {vertex_count}"
+    )]
+    WeldVertexIndexOutOfRange { vertex: usize, vertex_count: usize },
+
+    #[error("none of the selected mesh vertices requires welding or compaction")]
+    NoSelectedMeshVerticesToWeld,
+
     #[error("Unweld supports selected meshes only")]
     UnsupportedUnweldGeometry,
 
@@ -11461,7 +11632,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -13665,6 +13836,180 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut mixed, "WeldEdge Edges=0"),
             Err(CommandError::UnsupportedWeldEdgeGeometry)
+        ));
+        assert_eq!(
+            mixed.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn weld_vertices_preserves_identity_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New WeldedVertices")
+            .unwrap();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+        let attributes = document.object(source).unwrap().attributes().clone();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "Group WeldedVertex")
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "WeldVertices Vertices=0")
+                .unwrap(),
+            "Processed 1 selected mesh topology vertex index(es) in 1 changed mesh(es): welded 1 incident seam edge(s) and removed 2 raw vertex occurrence(s); 0 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("WeldVertices"));
+        assert!(document.is_selected(source));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        assert!(
+            document
+                .group_by_name("WeldedVertex")
+                .unwrap()
+                .members()
+                .any(|member| member == source)
+        );
+        let Geometry::Mesh(welded) = document.object(source).unwrap().geometry() else {
+            panic!("expected vertex-welded mesh")
+        };
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[2, 1, 0], [1, 2, 3]]);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+        assert_eq!(
+            registry
+                .execute(&mut document, "WeldVertex 0.1,0.1,0")
+                .unwrap(),
+            "Processed 1 selected mesh topology vertex index(es) in 1 changed mesh(es): welded 1 incident seam edge(s) and removed 2 raw vertex occurrence(s); 0 mesh(es) unchanged"
+        );
+
+        let mut compact = Document::default();
+        let with_unused = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2]],
+            compact.tolerance(),
+        )
+        .unwrap();
+        let compact_id = compact.add_geometry(Geometry::Mesh(with_unused)).unwrap();
+        compact
+            .select_object(compact_id, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut compact, "WeldMeshVertex VertexIndices 2")
+                .unwrap(),
+            "Processed 1 selected mesh topology vertex index(es) in 1 changed mesh(es): welded 0 incident seam edge(s) and removed 1 raw vertex occurrence(s); 0 mesh(es) unchanged"
+        );
+        let Geometry::Mesh(compacted) = compact.object(compact_id).unwrap().geometry() else {
+            panic!("expected compacted mesh")
+        };
+        assert_eq!(compacted.vertices().len(), 3);
+    }
+
+    #[test]
+    fn weld_vertices_rejects_noops_mixed_selection_and_bad_arguments_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let triangle = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Mesh(triangle.clone()))
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "WeldVertices Vertices=0"),
+            Err(CommandError::NoSelectedMeshVerticesToWeld)
+        ));
+        for command in [
+            "WeldVertices",
+            "WeldVertices Vertices=",
+            "WeldVertices Vertices=0,0",
+            "WeldVertices Vertices=3",
+            "WeldVertices Vertices=0 1,2,3",
+            "WeldVertices 1,2,3 Vertices=0",
+            "WeldVertices Unknown=0",
+            "WeldVertices Vertices=0 Vertices=1",
+        ] {
+            assert!(registry.execute(&mut document, command).is_err());
+            assert_eq!(document.undo_label(), history.as_deref());
+            assert_eq!(
+                document.object(source).unwrap().geometry(),
+                &Geometry::Mesh(triangle.clone())
+            );
+        }
+
+        let divided = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut mixed = Document::default();
+        mixed.add_geometry(Geometry::Mesh(divided)).unwrap();
+        mixed
+            .add_geometry(Geometry::Point(point(9.0, 9.0, 0.0)))
+            .unwrap();
+        registry.execute(&mut mixed, "SelAll").unwrap();
+        let before = mixed.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut mixed, "WeldVertices Vertices=0"),
+            Err(CommandError::UnsupportedWeldVerticesGeometry)
         ));
         assert_eq!(
             mixed.objects().collect::<Vec<_>>(),

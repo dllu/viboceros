@@ -244,6 +244,12 @@ pub enum Operation {
         triangles: Vec<[u32; 3]>,
         angle_radians: f64,
     },
+    MeshWeldVertex {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        vertex_indices: Vec<usize>,
+    },
     MeshWeldEdge {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -357,6 +363,7 @@ impl Operation {
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
             | Self::MeshWeld { id, .. }
+            | Self::MeshWeldVertex { id, .. }
             | Self::MeshWeldEdge { id, .. }
             | Self::MeshUnweld { id, .. }
             | Self::MeshUnweldEdge { id, .. }
@@ -1020,6 +1027,33 @@ fn execute(
             (
                 json!({
                     "accepted": !edge_indices.is_empty(),
+                    "removed_vertices": before - welded.vertices().len(),
+                    "mesh": mesh_unweld_value(&welded),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshWeldVertex {
+            vertices,
+            triangles,
+            vertex_indices,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let before = mesh.vertices().len();
+            let ((welded, _), elapsed) = measure(iterations, || {
+                black_box(&mesh).welded_topology_vertices(black_box(vertex_indices))
+            })?;
+            (
+                json!({
+                    "accepted": !vertex_indices.is_empty(),
                     "removed_vertices": before - welded.vertices().len(),
                     "mesh": mesh_unweld_value(&welded),
                 }),
@@ -5137,6 +5171,45 @@ mod tests {
                         [4.0, 0.0, 0.0],
                         [0.0, 0.0, 0.0],
                         [0.0, -3.0, 0.0],
+                    ],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn welds_incident_mesh_edges_for_selected_vertex_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshWeldVertex {
+            id: "welded-vertex".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [0.0, 3.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0],
+                [0.0, -3.0, 0.0],
+                [99.0, 99.0, 99.0],
+            ],
+            triangles: vec![[0, 1, 2], [3, 4, 5]],
+            vertex_indices: vec![0],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "removed_vertices": 3,
+                "mesh": {
+                    "face_points": [
+                        [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 3.0, 0.0]],
+                        [[4.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, -3.0, 0.0]],
+                    ],
+                    "vertex_count": 4,
+                    "vertex_face_groups": [
+                        {"face_groups": [[1]], "point": [0.0, -3.0, 0.0]},
+                        {"face_groups": [[0, 1]], "point": [0.0, 0.0, 0.0]},
+                        {"face_groups": [[0]], "point": [0.0, 3.0, 0.0]},
+                        {"face_groups": [[0, 1]], "point": [4.0, 0.0, 0.0]},
                     ],
                 },
             })

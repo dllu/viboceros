@@ -268,6 +268,67 @@ def _mesh_unweld_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "mesh_weld_vertex":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        vertex_indices = operation["vertex_indices"]
+        if not isinstance(vertex_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in vertex_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh weld vertex indices must be integers")
+        vertex_indices = [int(index) for index in vertex_indices]
+        before = int(source.Vertices.Count)
+        if not vertex_indices:
+            try:
+                return ({
+                    "accepted": False,
+                    "removed_vertices": 0,
+                    "mesh": _mesh_unweld_value(source),
+                }, 0)
+            finally:
+                source.Dispose()
+        source.Dispose()
+
+        def weld_mesh_vertices():
+            command_source = _triangle_mesh(
+                operation["vertices"], operation["triangles"]
+            )
+            try:
+                object_id = document.Objects.AddMesh(command_source)
+            finally:
+                command_source.Dispose()
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add mesh weld vertex oracle source")
+            document.Objects.UnselectAll()
+            mesh_object = document.Objects.FindId(object_id)
+            try:
+                for index in vertex_indices:
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshTopologyVertex,
+                        index,
+                    )
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select mesh topology vertex")
+                # As with UnweldVertex, RunScript can report false for a
+                # command nested inside the Python oracle even after its
+                # synchronous topology edit completed.
+                Rhino.RhinoApp.RunScript("_-WeldVertices _Enter", False)
+                mesh_object = document.Objects.FindId(object_id)
+                if mesh_object is None:
+                    raise ValueError("mesh weld vertex command removed its source")
+                return {
+                    "accepted": True,
+                    "removed_vertices": before - int(mesh_object.Geometry.Vertices.Count),
+                    "mesh": _mesh_unweld_value(mesh_object.Geometry),
+                }
+            finally:
+                document.Objects.UnselectAll()
+                document.Objects.Delete(object_id, True)
+
+        return _measure(iterations, weld_mesh_vertices)
+
     if kind == "mesh_weld_edge":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _triangle_mesh(operation["vertices"], operation["triangles"])

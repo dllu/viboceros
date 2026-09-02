@@ -96,6 +96,7 @@ enum InteractiveCommand {
         output_on_current_layer: bool,
     },
     WeldEdge,
+    WeldVertices,
     UnweldEdge {
         modify_normals: bool,
     },
@@ -188,6 +189,7 @@ impl InteractiveCommand {
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
             Self::WeldEdge => "WeldEdge",
+            Self::WeldVertices => "WeldVertices",
             Self::UnweldEdge { .. } => "UnweldEdge",
             Self::UnweldVertex { .. } => "UnweldVertex",
             Self::DupMeshEdge { .. } => "DupMeshEdge",
@@ -300,6 +302,9 @@ impl InteractiveCommand {
             }
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
+            }
+            Self::WeldVertices => {
+                "WeldVertices: pick a topology vertex incident to mesh seams (Esc to cancel)"
             }
             Self::UnweldEdge { .. } => {
                 "UnweldEdge: pick a topology edge on a selected mesh (Esc to cancel)"
@@ -471,6 +476,7 @@ impl InteractiveCommand {
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
             | Self::WeldEdge
+            | Self::WeldVertices
             | Self::UnweldEdge { .. }
             | Self::UnweldVertex { .. }
             | Self::DupMeshEdge { .. }
@@ -895,6 +901,14 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::WeldEdge
+        } else if matches!(
+            normalized.as_str(),
+            "weldvertices" | "weldvertex" | "weldmeshvertex"
+        ) {
+            if !arguments.is_empty() {
+                return false;
+            }
+            InteractiveCommand::WeldVertices
         } else if matches!(normalized.as_str(), "unweldedge" | "unweldmeshedge") {
             let mut modify_normals = true;
             let mut modify_normals_seen = false;
@@ -1245,6 +1259,7 @@ impl VibocerosApp {
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::WeldEdge
+                | InteractiveCommand::WeldVertices
                 | InteractiveCommand::UnweldEdge { .. }
                 | InteractiveCommand::UnweldVertex { .. }
                 | InteractiveCommand::DupMeshEdge { .. }
@@ -1671,6 +1686,10 @@ impl VibocerosApp {
             InteractiveCommand::WeldEdge => {
                 self.active_command = None;
                 self.execute_command(&format!("WeldEdge {}", format_model_point(point)));
+            }
+            InteractiveCommand::WeldVertices => {
+                self.active_command = None;
+                self.execute_command(&format!("WeldVertices {}", format_model_point(point)));
             }
             InteractiveCommand::UnweldEdge { modify_normals } => {
                 self.active_command = None;
@@ -2190,6 +2209,7 @@ impl VibocerosApp {
         let mut unify_mesh_normals_clicked = false;
         let mut weld_clicked = false;
         let mut weld_edge_clicked = false;
+        let mut weld_vertices_clicked = false;
         let mut unweld_clicked = false;
         let mut unweld_edge_clicked = false;
         let mut unweld_vertex_clicked = false;
@@ -2354,6 +2374,12 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Weld Edge"))
                     .on_hover_text(
                         "Pick a selected-mesh topology edge whose raw endpoints should merge",
+                    )
+                    .clicked();
+                weld_vertices_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Weld Vertices"))
+                    .on_hover_text(
+                        "Pick a selected-mesh topology vertex to weld its incident seams",
                     )
                     .clicked();
                 unweld_clicked = ui
@@ -2613,6 +2639,8 @@ impl VibocerosApp {
             self.execute_command("Weld");
         } else if weld_edge_clicked {
             self.try_start_interactive_command("WeldEdge");
+        } else if weld_vertices_clicked {
+            self.try_start_interactive_command("WeldVertices");
         } else if unweld_clicked {
             self.execute_command("Unweld");
         } else if unweld_edge_clicked {
@@ -3582,6 +3610,43 @@ mod tests {
     }
 
     #[test]
+    fn interactive_weld_vertices_uses_one_topology_vertex_pick() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("WeldMeshVertex"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::WeldVertices));
+        assert!(app.command_log.back().unwrap().contains("topology vertex"));
+        app.accept_drafting_point(point(0.1, 0.1, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.is_selected(source));
+        let Geometry::Mesh(welded) = app.document.object(source).unwrap().geometry() else {
+            panic!("expected vertex-welded mesh")
+        };
+        assert_eq!(welded.vertices().len(), 4);
+        assert_eq!(welded.triangles(), &[[2, 1, 0], [1, 2, 3]]);
+        assert_eq!(app.document.undo_label(), Some("WeldVertices"));
+        assert!(!app.try_start_interactive_command("WeldVertices Unknown=0"));
+    }
+
+    #[test]
     fn interactive_unweld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -4033,6 +4098,7 @@ mod tests {
             "DupMeshEdge",
             "DupMeshHoleBoundary",
             "WeldEdge",
+            "WeldVertices",
             "UnweldEdge",
             "UnweldVertex",
             "ExtractIsocurve",
