@@ -87,6 +87,7 @@ enum InteractiveCommand {
     },
     ExtractIsocurve {
         direction: InteractiveIsocurveDirection,
+        ignore_trims: bool,
     },
     Move {
         start: Option<Point3>,
@@ -743,28 +744,43 @@ impl VibocerosApp {
             }
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
+            let mut ignore_trims = false;
             let mut direction_seen = false;
+            let mut ignore_trims_seen = false;
             for option in arguments {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
                 };
                 let name = name.trim_start_matches(['_', '-']);
                 let value = value.trim_start_matches('_');
-                if !name.eq_ignore_ascii_case("Direction") || direction_seen {
-                    return false;
-                }
-                direction = if value.eq_ignore_ascii_case("U") {
-                    InteractiveIsocurveDirection::U
-                } else if value.eq_ignore_ascii_case("V") {
-                    InteractiveIsocurveDirection::V
-                } else if value.eq_ignore_ascii_case("Both") {
-                    InteractiveIsocurveDirection::Both
+                if name.eq_ignore_ascii_case("Direction") && !direction_seen {
+                    direction = if value.eq_ignore_ascii_case("U") {
+                        InteractiveIsocurveDirection::U
+                    } else if value.eq_ignore_ascii_case("V") {
+                        InteractiveIsocurveDirection::V
+                    } else if value.eq_ignore_ascii_case("Both") {
+                        InteractiveIsocurveDirection::Both
+                    } else {
+                        return false;
+                    };
+                    direction_seen = true;
+                } else if name.eq_ignore_ascii_case("IgnoreTrims") && !ignore_trims_seen {
+                    ignore_trims = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    ignore_trims_seen = true;
                 } else {
                     return false;
-                };
-                direction_seen = true;
+                }
             }
-            InteractiveCommand::ExtractIsocurve { direction }
+            InteractiveCommand::ExtractIsocurve {
+                direction,
+                ignore_trims,
+            }
         } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
@@ -1365,12 +1381,16 @@ impl VibocerosApp {
                     ));
                 }
             }
-            InteractiveCommand::ExtractIsocurve { direction } => {
+            InteractiveCommand::ExtractIsocurve {
+                direction,
+                ignore_trims,
+            } => {
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "ExtractIsocurve {} Direction={}",
+                    "ExtractIsocurve {} Direction={} IgnoreTrims={}",
                     format_model_point(point),
-                    direction.option_value()
+                    direction.option_value(),
+                    if ignore_trims { "Yes" } else { "No" },
                 ));
             }
             InteractiveCommand::Move { start: None } => {
@@ -1856,6 +1876,7 @@ impl VibocerosApp {
         let mut extract_points_clicked = false;
         let mut duplicate_border_clicked = false;
         let mut extract_isocurve_clicked = false;
+        let mut extract_all_isocurves_clicked = false;
         let mut convert_to_single_spans_clicked = false;
         let mut convert_to_beziers_clicked = false;
         let mut length_clicked = false;
@@ -2031,7 +2052,11 @@ impl VibocerosApp {
                     .clicked();
                 extract_isocurve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Iso"))
-                    .on_hover_text("Pick an exact U isocurve on a selected NURBS surface")
+                    .on_hover_text("Pick an exact isocurve on a selected NURBS surface or B-rep")
+                    .clicked();
+                extract_all_isocurves_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract All Iso"))
+                    .on_hover_text("Extract every U/V display isocurve from selected surfaces")
                     .clicked();
                 convert_to_single_spans_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Single Spans"))
@@ -2216,6 +2241,8 @@ impl VibocerosApp {
             self.execute_command("DupBorder");
         } else if extract_isocurve_clicked {
             self.try_start_interactive_command("ExtractIsocurve");
+        } else if extract_all_isocurves_clicked {
+            self.execute_command("ExtractIsocurve ExtractAll Direction=Both");
         } else if convert_to_single_spans_clicked {
             self.execute_command("ConvertToSingleSpans");
         } else if convert_to_beziers_clicked {
@@ -2982,11 +3009,14 @@ mod tests {
             .select_object(surface, viboceros_document::SelectionMode::Replace)
             .unwrap();
 
-        assert!(app.try_start_interactive_command("ExtractIsocurve Direction=Both"));
+        assert!(
+            app.try_start_interactive_command("ExtractIsocurve Direction=Both IgnoreTrims=Yes")
+        );
         assert_eq!(
             app.active_command,
             Some(InteractiveCommand::ExtractIsocurve {
                 direction: InteractiveIsocurveDirection::Both,
+                ignore_trims: true,
             })
         );
         assert!(app.command_log.back().unwrap().contains("selected surface"));
@@ -3001,6 +3031,19 @@ mod tests {
         }));
         assert_eq!(app.document.undo_label(), Some("ExtractIsocurve"));
         assert!(!app.try_start_interactive_command("ExtractIsocurve Direction=Sideways"));
+
+        app.execute_command("Undo");
+        app.document
+            .select_object(surface, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        app.command_input = "ExtractIsocurve ExtractAll Direction=Both".to_owned();
+        app.run_command();
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 7);
+        assert_eq!(
+            app.command_log.back().map(String::as_str),
+            Some("Extracted 6 exact U/V isocurve(s) from 1 surface(s)")
+        );
     }
 
     #[test]

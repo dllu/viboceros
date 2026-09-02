@@ -119,6 +119,7 @@ CrvEnd
 ExtractPt OutputLayer=Input Output=Points
 ExtractPt OutputLayer=Input Output=PointCloud
 ExtractIsocurve 2,1,0 Direction=Both
+ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ConvertToSingleSpans Direction=Both DeleteInput=No
 ConvertToBeziers DeleteInput=No
 CloseCrv
@@ -224,7 +225,10 @@ from the nearest trimmed face and are split exactly around outer boundaries and
 holes; rational p-curve intersections determine the retained parameter
 intervals without faceting the output. Extracted curves preserve the varying
 direction's degree and parameter values even at non-clamped spans. Omit the
-point to pick a surface location in the viewport. `ExtractAll` remains pending.
+point to pick a surface location in the viewport. `IgnoreTrims=Yes` uses the
+full underlying B-rep face instead. `ExtractAll` emits the natural boundaries,
+knot wires, and density-dependent wires inside each knot span from all selected
+surfaces or B-rep faces; the per-object Rhino wire density survives 3DM I/O.
 `ConvertToSingleSpans` decomposes selected untrimmed NURBS surfaces at their
 exact knot spans in `Direction=U`, `V`, or `Both`. Rational weights, source
 parameter values, attributes, and group membership are preserved. Inputs are

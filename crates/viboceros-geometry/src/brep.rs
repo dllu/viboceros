@@ -1067,6 +1067,28 @@ impl Brep {
         Ok(best.map(|(_, face, u, v)| (face, u, v)))
     }
 
+    /// Finds the model-space point's nearest parameters on any underlying face
+    /// surface without testing the face's parameter-space trim region. Ties
+    /// retain face order.
+    pub fn closest_underlying_face_parameters(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<(usize, Real, Real), GeometryError> {
+        let mut best: Option<(Real, usize, Real, Real)> = None;
+        for (face_index, face) in self.faces.iter().enumerate() {
+            let (u, v) = face.surface.closest_parameters(target, tolerance)?;
+            let distance = face.surface.evaluate(u, v)?.distance_to(target)?;
+            if best.is_none_or(|candidate| distance < candidate.0) {
+                best = Some((distance, face_index, u, v));
+            }
+        }
+        best.map(|(_, face, u, v)| (face, u, v))
+            .ok_or(GeometryError::Degenerate {
+                context: "B-rep underlying face closest-point search",
+            })
+    }
+
     pub fn edge_use_count(&self, edge_index: usize) -> Option<usize> {
         (edge_index < self.edges.len()).then(|| {
             self.trim_uses()
@@ -4962,6 +4984,21 @@ mod tests {
             brep.closest_face_parameters(center, Tolerance::DEFAULT)
                 .unwrap(),
             None
+        );
+        let underlying = brep
+            .closest_underlying_face_parameters(center, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(underlying.0, 0);
+        assert!(
+            !face
+                .contains_parameters(underlying.1, underlying.2, Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert!(
+            face.surface()
+                .evaluate(underlying.1, underlying.2)
+                .unwrap()
+                .is_near(center, Tolerance::DEFAULT)
         );
         let target = point(3.0, 0.0, 0.0);
         let closest = brep

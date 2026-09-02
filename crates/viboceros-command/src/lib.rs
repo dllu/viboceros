@@ -8,12 +8,12 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, ControlPointCurveClosure,
-    CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample, Ellipse3, Frame3,
-    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS,
-    MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane, Point3,
-    PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh,
-    UnitVector3, Vector3, join_polylines,
+    AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, CircularArc3,
+    ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
+    Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
+    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve,
+    NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -3219,7 +3219,8 @@ fn parse_extract_point_arguments(arguments: &[&str]) -> Result<ExtractPointOptio
     })
 }
 
-const EXTRACT_ISOCURVE_USAGE: &str = "ExtractIsocurve point [Direction=U|V|Both]";
+const EXTRACT_ISOCURVE_USAGE: &str =
+    "ExtractIsocurve (point|ExtractAll) [Direction=U|V|Both] [IgnoreTrims=Yes|No]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ExtractIsocurveDirection {
@@ -3239,8 +3240,9 @@ impl ExtractIsocurveDirection {
 }
 
 struct ExtractIsocurveOptions {
-    point: Point3,
+    point: Option<Point3>,
     direction: ExtractIsocurveDirection,
+    ignore_trims: bool,
 }
 
 struct ExtractIsocurveCommand;
@@ -3262,44 +3264,52 @@ impl Command for ExtractIsocurveCommand {
             source_count += 1;
             match object.geometry() {
                 Geometry::NurbsSurface(surface) => {
-                    let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
-                    if matches!(
-                        options.direction,
-                        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
-                    ) {
-                        let curve = surface.isocurve_u(v)?;
-                        if nurbs_curve_has_extent(&curve) {
-                            curves.push(curve);
-                        }
-                    }
-                    if matches!(
-                        options.direction,
-                        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
-                    ) {
-                        let curve = surface.isocurve_v(u)?;
-                        if nurbs_curve_has_extent(&curve) {
-                            curves.push(curve);
-                        }
+                    if let Some(point) = options.point {
+                        let (u, v) = surface.closest_parameters(point, document.tolerance())?;
+                        append_surface_isocurves_at(&mut curves, surface, u, v, options.direction)?;
+                    } else {
+                        append_all_surface_isocurves(
+                            &mut curves,
+                            surface,
+                            options.direction,
+                            object.attributes().wire_density(),
+                        )?;
                     }
                 }
                 Geometry::Brep(brep) => {
-                    let Some((face_index, u, v)) =
-                        brep.closest_face_parameters(options.point, document.tolerance())?
-                    else {
-                        continue;
-                    };
-                    let face = &brep.faces()[face_index];
-                    if matches!(
-                        options.direction,
-                        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
-                    ) {
-                        curves.extend(face.isocurve_u_segments(v, document.tolerance())?);
-                    }
-                    if matches!(
-                        options.direction,
-                        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
-                    ) {
-                        curves.extend(face.isocurve_v_segments(u, document.tolerance())?);
+                    if let Some(point) = options.point {
+                        let closest =
+                            if options.ignore_trims {
+                                Some(brep.closest_underlying_face_parameters(
+                                    point,
+                                    document.tolerance(),
+                                )?)
+                            } else {
+                                brep.closest_face_parameters(point, document.tolerance())?
+                            };
+                        let Some((face_index, u, v)) = closest else {
+                            continue;
+                        };
+                        append_face_isocurves_at(
+                            &mut curves,
+                            &brep.faces()[face_index],
+                            u,
+                            v,
+                            options.direction,
+                            options.ignore_trims,
+                            document.tolerance(),
+                        )?;
+                    } else {
+                        for face in brep.faces() {
+                            append_all_face_isocurves(
+                                &mut curves,
+                                face,
+                                options.direction,
+                                object.attributes().wire_density(),
+                                options.ignore_trims,
+                                document.tolerance(),
+                            )?;
+                        }
                     }
                 }
                 _ => return Err(CommandError::UnsupportedExtractIsocurveGeometry),
@@ -3326,18 +3336,209 @@ impl Command for ExtractIsocurveCommand {
     }
 }
 
+fn append_surface_isocurves_at(
+    curves: &mut Vec<NurbsCurve>,
+    surface: &NurbsSurface,
+    u: Real,
+    v: Real,
+    direction: ExtractIsocurveDirection,
+) -> Result<(), CommandError> {
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+    ) {
+        append_extractable_isocurves(curves, [surface.isocurve_u(v)?])?;
+    }
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+    ) {
+        append_extractable_isocurves(curves, [surface.isocurve_v(u)?])?;
+    }
+    Ok(())
+}
+
+fn append_face_isocurves_at(
+    curves: &mut Vec<NurbsCurve>,
+    face: &BrepFace,
+    u: Real,
+    v: Real,
+    direction: ExtractIsocurveDirection,
+    ignore_trims: bool,
+    tolerance: Tolerance,
+) -> Result<(), CommandError> {
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+    ) {
+        if ignore_trims {
+            append_extractable_isocurves(curves, [face.surface().isocurve_u(v)?])?;
+        } else {
+            append_extractable_isocurves(curves, face.isocurve_u_segments(v, tolerance)?)?;
+        }
+    }
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+    ) {
+        if ignore_trims {
+            append_extractable_isocurves(curves, [face.surface().isocurve_v(u)?])?;
+        } else {
+            append_extractable_isocurves(curves, face.isocurve_v_segments(u, tolerance)?)?;
+        }
+    }
+    Ok(())
+}
+
+fn append_all_surface_isocurves(
+    curves: &mut Vec<NurbsCurve>,
+    surface: &NurbsSurface,
+    direction: ExtractIsocurveDirection,
+    wire_density: i32,
+) -> Result<(), CommandError> {
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+    ) {
+        for v in surface_wire_parameters(surface.spans_v(), wire_density)? {
+            append_extractable_isocurves(curves, [surface.isocurve_u(v)?])?;
+        }
+    }
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+    ) {
+        for u in surface_wire_parameters(surface.spans_u(), wire_density)? {
+            append_extractable_isocurves(curves, [surface.isocurve_v(u)?])?;
+        }
+    }
+    Ok(())
+}
+
+fn append_all_face_isocurves(
+    curves: &mut Vec<NurbsCurve>,
+    face: &BrepFace,
+    direction: ExtractIsocurveDirection,
+    wire_density: i32,
+    ignore_trims: bool,
+    tolerance: Tolerance,
+) -> Result<(), CommandError> {
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+    ) {
+        for v in surface_wire_parameters(face.surface().spans_v(), wire_density)? {
+            if ignore_trims {
+                append_extractable_isocurves(curves, [face.surface().isocurve_u(v)?])?;
+            } else {
+                append_extractable_isocurves(curves, face.isocurve_u_segments(v, tolerance)?)?;
+            }
+        }
+    }
+    if matches!(
+        direction,
+        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+    ) {
+        for u in surface_wire_parameters(face.surface().spans_u(), wire_density)? {
+            if ignore_trims {
+                append_extractable_isocurves(curves, [face.surface().isocurve_v(u)?])?;
+            } else {
+                append_extractable_isocurves(curves, face.isocurve_v_segments(u, tolerance)?)?;
+            }
+        }
+    }
+    Ok(())
+}
+
+fn surface_wire_parameters(
+    spans: impl Iterator<Item = (Real, Real)>,
+    wire_density: i32,
+) -> Result<Vec<Real>, CommandError> {
+    // Rhino/OpenNURBS density -1 draws only natural boundaries, 0 adds knot
+    // wires, 1 adds one midpoint only when there are no interior knots, and
+    // N >= 2 adds N-1 evenly spaced wires inside every nonempty knot span.
+    // Both natural parameters are retained even when they form a closed seam.
+    let spans = spans.collect::<Vec<_>>();
+    let Some(first) = spans.first() else {
+        return Err(CommandError::NoExtractableIsocurves);
+    };
+    let last = spans
+        .last()
+        .copied()
+        .ok_or(CommandError::NoExtractableIsocurves)?;
+    if wire_density < 0 {
+        return Ok(vec![first.0, last.1]);
+    }
+    let extra_per_span = match wire_density {
+        1 if spans.len() == 1 => 1,
+        2.. => (wire_density - 1) as usize,
+        _ => 0,
+    };
+    let parameter_count = spans
+        .len()
+        .checked_mul(extra_per_span + 1)
+        .and_then(|count| count.checked_add(1))
+        .ok_or_else(|| too_many_span_outputs("ExtractIsocurve"))?;
+    if parameter_count > MAX_SPAN_OUTPUT_OBJECTS {
+        return Err(too_many_span_outputs("ExtractIsocurve"));
+    }
+    let mut parameters = Vec::new();
+    parameters
+        .try_reserve_exact(parameter_count)
+        .map_err(|_| too_many_span_outputs("ExtractIsocurve"))?;
+    parameters.push(first.0);
+    for &(start, end) in &spans {
+        for division in 1..=extra_per_span {
+            let fraction = division as Real / (extra_per_span + 1) as Real;
+            let parameter = start.mul_add(1.0 - fraction, end * fraction);
+            if parameter > start && parameter < end {
+                parameters.push(parameter);
+            }
+        }
+        parameters.push(end);
+    }
+    Ok(parameters)
+}
+
+fn append_extractable_isocurves(
+    curves: &mut Vec<NurbsCurve>,
+    candidates: impl IntoIterator<Item = NurbsCurve>,
+) -> Result<(), CommandError> {
+    for curve in candidates {
+        if !nurbs_curve_has_extent(&curve) {
+            continue;
+        }
+        if curves.len() == MAX_SPAN_OUTPUT_OBJECTS {
+            return Err(too_many_span_outputs("ExtractIsocurve"));
+        }
+        curves.push(curve);
+    }
+    Ok(())
+}
+
 fn parse_extract_isocurve_arguments(
     arguments: &[&str],
 ) -> Result<ExtractIsocurveOptions, CommandError> {
     let mut direction = ExtractIsocurveDirection::U;
+    let mut ignore_trims = false;
+    let mut extract_all = false;
     let mut direction_seen = false;
+    let mut ignore_trims_seen = false;
     let mut positional = Vec::new();
     let mut index = 0;
     while index < arguments.len() {
         let argument = arguments[index];
+        if option_name_eq(argument, "ExtractAll") {
+            if extract_all {
+                return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
+            }
+            extract_all = true;
+            index += 1;
+            continue;
+        }
         let option = if let Some((name, value)) = argument.split_once('=') {
             Some((name, value, 1))
-        } else if option_name_eq(argument, "Direction") {
+        } else if option_name_eq(argument, "Direction") || option_name_eq(argument, "IgnoreTrims") {
             let value = arguments
                 .get(index + 1)
                 .ok_or(CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?;
@@ -3346,29 +3547,44 @@ fn parse_extract_isocurve_arguments(
             None
         };
         if let Some((name, value, consumed)) = option {
-            if !option_name_eq(name, "Direction") || direction_seen {
-                return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
-            }
-            let value = value.trim_start_matches('_');
-            direction = if value.eq_ignore_ascii_case("U") {
-                ExtractIsocurveDirection::U
-            } else if value.eq_ignore_ascii_case("V") {
-                ExtractIsocurveDirection::V
-            } else if value.eq_ignore_ascii_case("Both") {
-                ExtractIsocurveDirection::Both
+            if option_name_eq(name, "Direction") && !direction_seen {
+                let value = value.trim_start_matches('_');
+                direction = if value.eq_ignore_ascii_case("U") {
+                    ExtractIsocurveDirection::U
+                } else if value.eq_ignore_ascii_case("V") {
+                    ExtractIsocurveDirection::V
+                } else if value.eq_ignore_ascii_case("Both") {
+                    ExtractIsocurveDirection::Both
+                } else {
+                    return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
+                };
+                direction_seen = true;
+            } else if option_name_eq(name, "IgnoreTrims") && !ignore_trims_seen {
+                ignore_trims =
+                    parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?;
+                ignore_trims_seen = true;
             } else {
                 return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
-            };
-            direction_seen = true;
+            }
             index += consumed;
         } else {
             positional.push(argument);
             index += 1;
         }
     }
-    let (point, consumed) = parse_point(&positional)?;
-    require_consumed(&positional, consumed, EXTRACT_ISOCURVE_USAGE)?;
-    Ok(ExtractIsocurveOptions { point, direction })
+    let point = if extract_all {
+        require_consumed(&positional, 0, EXTRACT_ISOCURVE_USAGE)?;
+        None
+    } else {
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, EXTRACT_ISOCURVE_USAGE)?;
+        Some(point)
+    };
+    Ok(ExtractIsocurveOptions {
+        point,
+        direction,
+        ignore_trims,
+    })
 }
 
 fn nurbs_curve_has_extent(curve: &NurbsCurve) -> bool {
@@ -12031,8 +12247,13 @@ mod tests {
             "ExtractIsocurve",
             "ExtractIsocurve 1,1 Direction=Sideways",
             "ExtractIsocurve 1,1 Direction=U Direction=V",
+            "ExtractIsocurve 1,1 IgnoreTrims=Yes IgnoreTrims=No",
             "ExtractIsocurve 1,1 Direction",
+            "ExtractIsocurve 1,1 IgnoreTrims",
             "ExtractIsocurve 1,1,0 extra",
+            "ExtractIsocurve ExtractAll 1,1,0",
+            "ExtractIsocurve ExtractAll ExtractAll",
+            "ExtractIsocurve ExtractAll=Yes",
         ] {
             assert!(registry.execute(&mut document, invalid).is_err());
             assert_eq!(document.objects().len(), 3);
@@ -12104,6 +12325,23 @@ mod tests {
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), history.as_deref());
 
+        registry
+            .execute(
+                &mut document,
+                "ExtractIsocurve 5,5,0 Direction=Both IgnoreTrims=Yes",
+            )
+            .unwrap();
+        let untrimmed_outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(untrimmed_outputs.len(), 2);
+        assert!(untrimmed_outputs.iter().all(|object| {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                return false;
+            };
+            document.is_selected(object.id())
+                && Tolerance::DEFAULT.approx_eq(curve.length(document.tolerance()).unwrap(), 10.0)
+        }));
+        registry.execute(&mut document, "Undo").unwrap();
+
         let mut solid_document = Document::default();
         registry
             .execute(&mut solid_document, "Cylinder 0,0,0 2 5 Solid=Yes")
@@ -12120,6 +12358,210 @@ mod tests {
         assert!(solid_outputs.iter().all(|object| {
             matches!(object.geometry(), Geometry::NurbsCurve(_))
                 && solid_document.is_selected(object.id())
+        }));
+    }
+
+    #[test]
+    fn extract_all_isocurves_matches_rhino_wire_density_rules() {
+        let registry = CommandRegistry::with_builtins();
+        for (wire_density, expected_count) in [(-1, 4), (0, 6), (1, 6), (2, 10), (3, 14)] {
+            let mut document = Document::default();
+            let surface = rational_multi_span_surface();
+            let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+                .try_with_wire_density(wire_density)
+                .unwrap();
+            let source = document
+                .add_geometry_with_attributes(Geometry::NurbsSurface(surface.clone()), attributes)
+                .unwrap();
+            document
+                .select_objects_direct([source], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(&mut document, "ExtractIsocurve ExtractAll Direction=Both",)
+                    .unwrap(),
+                format!("Extracted {expected_count} exact U/V isocurve(s) from 1 surface(s)")
+            );
+            assert_eq!(document.objects().len(), expected_count + 1);
+            assert!(!document.is_selected(source));
+            assert!(
+                document
+                    .objects()
+                    .skip(1)
+                    .all(|object| document.is_selected(object.id()))
+            );
+
+            if wire_density == 2 {
+                let fixed_v = [10.0, 10.75, 11.5, 12.75, 14.0];
+                let fixed_u = [0.0, 0.35, 0.7, 1.35, 2.0];
+                for (object, v) in document.objects().skip(1).take(5).zip(fixed_v) {
+                    let Geometry::NurbsCurve(curve) = object.geometry() else {
+                        panic!("U wire must remain an exact NURBS curve")
+                    };
+                    assert_eq!(curve.domain(), surface.domain_u());
+                    for u in [0.0, 0.8, 2.0] {
+                        assert!(
+                            curve
+                                .evaluate(u)
+                                .unwrap()
+                                .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT,)
+                        );
+                    }
+                }
+                for (object, u) in document.objects().skip(6).zip(fixed_u) {
+                    let Geometry::NurbsCurve(curve) = object.geometry() else {
+                        panic!("V wire must remain an exact NURBS curve")
+                    };
+                    assert_eq!(curve.domain(), surface.domain_v());
+                    for v in [10.0, 12.0, 14.0] {
+                        assert!(
+                            curve
+                                .evaluate(v)
+                                .unwrap()
+                                .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT,)
+                        );
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn extract_all_isocurves_retains_both_closed_seams_and_skips_singular_wires() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Cylinder 0,0,0 2 5 Solid=No")
+            .unwrap();
+        let cylinder = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([cylinder], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractIsocurve ExtractAll Direction=Both",)
+                .unwrap(),
+            "Extracted 8 exact U/V isocurve(s) from 1 surface(s)"
+        );
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 8);
+        for output in &outputs[..3] {
+            let Geometry::NurbsCurve(curve) = output.geometry() else {
+                panic!("cylinder U wires must be NURBS circles")
+            };
+            assert!(curve.is_closed().unwrap());
+        }
+        let seam_curves = [&outputs[3], &outputs[7]];
+        let mut seam_endpoints = Vec::new();
+        for output in seam_curves {
+            let Geometry::NurbsCurve(curve) = output.geometry() else {
+                panic!("cylinder seam wires must be NURBS lines")
+            };
+            assert!(
+                Tolerance::DEFAULT.approx_eq(curve.length(document.tolerance()).unwrap(), 5.0,)
+            );
+            seam_endpoints.push((
+                curve.evaluate(*curve.domain().start()).unwrap(),
+                curve.evaluate(*curve.domain().end()).unwrap(),
+            ));
+        }
+        assert_eq!(seam_endpoints[0], seam_endpoints[1]);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "Sphere 0,0,0 3").unwrap();
+        let sphere = document.objects().last().unwrap().id();
+        document
+            .select_objects_direct([sphere], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "ExtractIsocurve ExtractAll Direction=Both")
+            .unwrap();
+        assert!(document.objects().skip(2).all(|object| {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                return false;
+            };
+            nurbs_curve_has_extent(curve)
+        }));
+    }
+
+    #[test]
+    fn extract_all_isocurves_can_respect_or_ignore_brep_trims() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let closed_polyline = |coordinates: &[(Real, Real)]| {
+            let mut points = coordinates
+                .iter()
+                .map(|(x, y)| Point3::try_new(*x, *y, 0.0).unwrap())
+                .collect::<Vec<_>>();
+            points.push(points[0]);
+            Polyline3::try_new(points, Tolerance::DEFAULT)
+                .unwrap()
+                .to_nurbs()
+                .unwrap()
+        };
+        let outer = closed_polyline(&[(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)]);
+        let hole = closed_polyline(&[(4.0, 4.0), (4.0, 6.0), (6.0, 6.0), (6.0, 4.0)]);
+        let source = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No",
+                )
+                .unwrap(),
+            "Extracted 8 exact U/V isocurve(s) from 1 surface(s)"
+        );
+        let trimmed_lengths = document
+            .objects()
+            .skip(1)
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.length(document.tolerance()).unwrap(),
+                _ => panic!("trim-aware wires must remain NURBS curves"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            trimmed_lengths
+                .iter()
+                .filter(|length| Tolerance::DEFAULT.approx_eq(**length, 4.0))
+                .count(),
+            4
+        );
+        assert_eq!(
+            trimmed_lengths
+                .iter()
+                .filter(|length| Tolerance::DEFAULT.approx_eq(**length, 10.0))
+                .count(),
+            4
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=Yes",
+                )
+                .unwrap(),
+            "Extracted 6 exact U/V isocurve(s) from 1 surface(s)"
+        );
+        assert!(document.objects().skip(1).all(|object| {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                return false;
+            };
+            Tolerance::DEFAULT.approx_eq(curve.length(document.tolerance()).unwrap(), 10.0)
         }));
     }
 
