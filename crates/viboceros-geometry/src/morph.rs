@@ -1,13 +1,19 @@
+use faer::{Mat, prelude::*};
+
 use crate::{
     Frame3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3,
     Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
 };
 
+const MORPH_CURVE_DEGREE: usize = 3;
+const MORPH_CURVE_ERROR_SAMPLES: usize = 16;
+const MAX_MORPH_CURVE_CONTROL_POINTS: usize = 100;
+
 /// A deterministic non-affine mapping of finite Euclidean points.
 ///
-/// Default helpers preserve mesh and control-net topology. Linear curves are
-/// first made deformable as piecewise cubic NURBS curves, following Rhino's
-/// space-morph behavior rather than reducing a nonlinear result to endpoints.
+/// Default helpers preserve mesh and surface control-net topology. Curves are
+/// made deformable as cubic NURBS curves, following Rhino's space-morph
+/// behavior rather than reducing a nonlinear result to mapped controls.
 pub trait PointMorph {
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError>;
 
@@ -78,15 +84,81 @@ pub trait PointMorph {
         NurbsCurve::try_new(3, controls, knots)
     }
 
-    fn morph_nurbs_curve(&self, curve: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
-        let controls = curve
-            .control_points()
-            .iter()
-            .map(|control| {
-                WeightedPoint3::try_new(self.morph_point(control.point())?, control.weight())
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        NurbsCurve::try_new_rational(curve.degree(), controls, curve.knots().to_vec())
+    /// Approximates a deformed curve with Rhino-style adaptive cubic fitting.
+    ///
+    /// The cubic interpolates the exact morph at its Greville abscissae. Knot
+    /// spans whose sampled error exceeds the absolute tolerance are bisected,
+    /// retaining the source curve's parameter domain and initial span breaks.
+    /// Refinement is bounded at 100 controls to prevent an unbounded dense
+    /// linear solve; at that limit the best fitted curve is returned.
+    fn morph_nurbs_curve(
+        &self,
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve, GeometryError> {
+        let mut breaks = Vec::new();
+        for (start, end) in curve.spans() {
+            if breaks.last().copied() != Some(start) {
+                breaks.push(start);
+            }
+            breaks.push(end);
+        }
+        debug_assert!(breaks.len() >= 2);
+        if breaks.len() + MORPH_CURVE_DEGREE - 1 > MAX_MORPH_CURVE_CONTROL_POINTS {
+            return Err(GeometryError::TooManyMorphCurveControlPoints {
+                maximum: MAX_MORPH_CURVE_CONTROL_POINTS,
+            });
+        }
+
+        loop {
+            let approximation = interpolate_morphed_curve(self, curve, &breaks)?;
+            let mut refinements = Vec::new();
+            for (index, interval) in breaks.windows(2).enumerate() {
+                let [start, end] = [interval[0], interval[1]];
+                let mut maximum_error = 0.0_f64;
+                for sample in 1..MORPH_CURVE_ERROR_SAMPLES {
+                    let fraction = sample as Real / MORPH_CURVE_ERROR_SAMPLES as Real;
+                    let parameter = stable_lerp(start, end, fraction)?;
+                    let exact = self.morph_point(curve.evaluate(parameter)?)?;
+                    let fitted = approximation.evaluate(parameter)?;
+                    maximum_error = maximum_error.max(exact.distance_to(fitted)?);
+                }
+                if maximum_error > tolerance.absolute() {
+                    refinements.push((index, maximum_error));
+                }
+            }
+            if refinements.is_empty()
+                || approximation.control_points().len() >= MAX_MORPH_CURVE_CONTROL_POINTS
+            {
+                return Ok(approximation);
+            }
+
+            let available = MAX_MORPH_CURVE_CONTROL_POINTS - approximation.control_points().len();
+            refinements.sort_by(|left, right| right.1.total_cmp(&left.1));
+            refinements.truncate(available);
+            refinements.sort_unstable_by_key(|refinement| refinement.0);
+
+            let mut refined = Vec::with_capacity(breaks.len() + refinements.len());
+            let mut next_refinement = refinements.iter().peekable();
+            for (index, interval) in breaks.windows(2).enumerate() {
+                refined.push(interval[0]);
+                if next_refinement
+                    .peek()
+                    .is_some_and(|refinement| refinement.0 == index)
+                {
+                    let midpoint = stable_lerp(interval[0], interval[1], 0.5)?;
+                    if midpoint > interval[0] && midpoint < interval[1] {
+                        refined.push(midpoint);
+                    }
+                    next_refinement.next();
+                }
+            }
+            refined.push(*breaks.last().expect("a NURBS curve has a domain"));
+            if refined.len() == breaks.len() {
+                return Ok(approximation);
+            }
+            breaks = refined;
+        }
     }
 
     fn morph_nurbs_surface(&self, surface: &NurbsSurface) -> Result<NurbsSurface, GeometryError> {
@@ -122,6 +194,124 @@ pub trait PointMorph {
             tolerance,
         )
     }
+}
+
+fn interpolate_morphed_curve(
+    morph: &(impl PointMorph + ?Sized),
+    curve: &NurbsCurve,
+    breaks: &[Real],
+) -> Result<NurbsCurve, GeometryError> {
+    debug_assert!(breaks.len() >= 2);
+    let control_count = breaks.len() + MORPH_CURVE_DEGREE - 1;
+    let mut knots = Vec::with_capacity(control_count + MORPH_CURVE_DEGREE + 1);
+    knots.extend([breaks[0]; MORPH_CURVE_DEGREE + 1]);
+    knots.extend_from_slice(&breaks[1..breaks.len() - 1]);
+    knots.extend([breaks[breaks.len() - 1]; MORPH_CURVE_DEGREE + 1]);
+
+    let parameters = (0..control_count)
+        .map(|index| stable_mean3(knots[index + 1], knots[index + 2], knots[index + 3]))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut basis_rows = Vec::with_capacity(control_count);
+    let mut targets = Vec::with_capacity(control_count);
+    for parameter in parameters {
+        basis_rows.push(cubic_basis_values(&knots, control_count, parameter)?);
+        targets.push(morph.morph_point(curve.evaluate(parameter)?)?.to_array());
+    }
+
+    let matrix = Mat::from_fn(control_count, control_count, |row, column| {
+        basis_rows[row][column]
+    });
+    let right_hand_side = Mat::from_fn(control_count, 3, |row, column| targets[row][column]);
+    let solution = matrix.full_piv_lu().solve(&right_hand_side);
+    let controls = (0..control_count)
+        .map(|row| Point3::try_new(solution[(row, 0)], solution[(row, 1)], solution[(row, 2)]))
+        .collect::<Result<Vec<_>, _>>()?;
+    NurbsCurve::try_new(MORPH_CURVE_DEGREE, controls, knots)
+}
+
+fn cubic_basis_values(
+    knots: &[Real],
+    control_count: usize,
+    parameter: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    let last_control = control_count - 1;
+    let span = if parameter >= knots[control_count] {
+        last_control
+    } else if parameter <= knots[MORPH_CURVE_DEGREE] {
+        MORPH_CURVE_DEGREE
+    } else {
+        let mut low = MORPH_CURVE_DEGREE;
+        let mut high = control_count;
+        let mut middle = (low + high) / 2;
+        while parameter < knots[middle] || parameter >= knots[middle + 1] {
+            if parameter < knots[middle] {
+                high = middle;
+            } else {
+                low = middle;
+            }
+            middle = (low + high) / 2;
+        }
+        middle
+    };
+
+    let mut local = [0.0; MORPH_CURVE_DEGREE + 1];
+    local[0] = 1.0;
+    for column in 1..=MORPH_CURVE_DEGREE {
+        let mut saved = 0.0;
+        for row in 0..column {
+            let left_knot = knots[span + 1 - column + row];
+            let right_knot = knots[span + row + 1];
+            let left_fraction = stable_interval_fraction(left_knot, parameter, right_knot)?;
+            let value = local[row];
+            local[row] = (1.0 - left_fraction).mul_add(value, saved);
+            saved = left_fraction * value;
+        }
+        local[column] = saved;
+    }
+    require_finite(local, "cubic morph interpolation basis")?;
+
+    let mut values = vec![0.0; control_count];
+    values[span - MORPH_CURVE_DEGREE..=span].copy_from_slice(&local);
+    Ok(values)
+}
+
+fn stable_mean3(first: Real, second: Real, third: Real) -> Result<Real, GeometryError> {
+    let scale = first.abs().max(second.abs()).max(third.abs());
+    if scale == 0.0 {
+        return Ok(0.0);
+    }
+    let normalized_mean = ((first / scale + second / scale) + third / scale) / 3.0;
+    let mean = normalized_mean.clamp(-1.0, 1.0) * scale;
+    require_finite([mean], "cubic morph Greville parameter")?;
+    Ok(mean)
+}
+
+fn stable_lerp(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryError> {
+    let parameter = start.mul_add(1.0 - fraction, end * fraction);
+    require_finite([parameter], "cubic morph sample parameter")?;
+    Ok(parameter)
+}
+
+fn stable_interval_fraction(
+    interval_start: Real,
+    value: Real,
+    interval_end: Real,
+) -> Result<Real, GeometryError> {
+    let denominator = interval_end - interval_start;
+    let fraction = if denominator.is_finite() && denominator > 0.0 {
+        (value - interval_start) / denominator
+    } else if denominator.is_infinite() && interval_start < interval_end {
+        let scaled_start = interval_start * 0.5;
+        (value * 0.5 - scaled_start) / (interval_end * 0.5 - scaled_start)
+    } else {
+        return Err(GeometryError::SingularSystem);
+    };
+    if !fraction.is_finite() {
+        return Err(GeometryError::NonFinite {
+            context: "cubic morph interpolation basis",
+        });
+    }
+    Ok(fraction.clamp(0.0, 1.0))
 }
 
 /// Rhino-compatible plane-to-surface ("splop") point morph.
@@ -260,6 +450,15 @@ impl PointMorph for SurfacePointMorph<'_> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Circle3;
+
+    struct IdentityMorph;
+
+    impl PointMorph for IdentityMorph {
+        fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
+            Ok(point)
+        }
+    }
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -389,5 +588,151 @@ mod tests {
         ]) {
             assert_point_near(actual.point(), expected);
         }
+    }
+
+    #[test]
+    fn nurbs_curve_morph_matches_rhino_adaptive_cubic_fit() {
+        let tolerance = Tolerance::try_new(1.0e-3, 1.0e-12, 1.0e-10).unwrap();
+        let surface = quarter_cylinder();
+        let origin = point(1.0, 2.0, 3.0);
+        let source_frame = Frame3::try_from_directions(
+            origin,
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let morph = SurfacePointMorph::try_new(
+            source_frame,
+            &surface,
+            0.3,
+            0.4,
+            1.0,
+            0.0,
+            false,
+            tolerance,
+        )
+        .unwrap();
+        let source = NurbsCurve::try_new(
+            3,
+            vec![
+                point(-1.0, 1.0, 3.25),
+                point(0.5, 4.0, 2.5),
+                point(1.75, 0.0, 4.0),
+                point(3.0, 3.0, 3.25),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+
+        let fitted = morph.morph_nurbs_curve(&source, tolerance).unwrap();
+        assert_eq!(fitted.degree(), 3);
+        assert!(!fitted.is_rational());
+        assert_eq!(
+            fitted.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 0.25, 0.5, 0.75, 1.0, 1.0, 1.0, 1.0]
+        );
+        for (actual, expected) in fitted.control_points().iter().zip([
+            [9.903118539226027, 2.6440013612019504, 3.0],
+            [9.62694536417517, 2.9507091324819466, 3.75],
+            [9.323490683416267, 3.576627826611515, 4.375],
+            [9.172855614886387, 4.610892997949948, 4.0],
+            [8.916649937470847, 5.634336473858159, 3.625],
+            [8.448980236942445, 6.137312585428537, 4.25],
+            [8.09940914728505, 6.281884388053891, 5.0],
+        ]) {
+            assert_point_near(actual.point(), expected);
+        }
+    }
+
+    #[test]
+    fn rational_circle_morph_refines_source_spans_to_tolerance() {
+        let tolerance = Tolerance::try_new(1.0e-3, 1.0e-12, 1.0e-10).unwrap();
+        let surface = quarter_cylinder();
+        let origin = point(1.0, 2.0, 3.0);
+        let source_frame = Frame3::try_from_directions(
+            origin,
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let morph = SurfacePointMorph::try_new(
+            source_frame,
+            &surface,
+            0.3,
+            0.4,
+            1.0,
+            0.0,
+            false,
+            tolerance,
+        )
+        .unwrap();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap();
+        let source = Circle3::try_new(origin, 1.0, normal, tolerance)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+
+        let fitted = morph.morph_nurbs_curve(&source, tolerance).unwrap();
+        assert_eq!(fitted.degree(), 3);
+        assert!(!fitted.is_rational());
+        assert_eq!(fitted.control_points().len(), 25);
+        assert_eq!(
+            fitted.knots(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 0.0625, 0.125, 0.1875, 0.21875, 0.25, 0.28125, 0.3125, 0.375,
+                0.4375, 0.46875, 0.5, 0.53125, 0.5625, 0.625, 0.6875, 0.71875, 0.75, 0.78125,
+                0.8125, 0.875, 0.9375, 1.0, 1.0, 1.0, 1.0,
+            ]
+        );
+        let maximum_error = (0..=1024)
+            .map(|sample| {
+                let parameter = sample as Real / 1024.0;
+                let exact = morph
+                    .morph_point(source.evaluate(parameter).unwrap())
+                    .unwrap();
+                exact
+                    .distance_to(fitted.evaluate(parameter).unwrap())
+                    .unwrap()
+            })
+            .fold(0.0_f64, Real::max);
+        assert!(maximum_error <= tolerance.absolute(), "{maximum_error}");
+    }
+
+    #[test]
+    fn curve_morph_handles_a_parameter_domain_whose_width_overflows() {
+        let source = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(1.0, 2.0, 3.0)],
+            vec![-Real::MAX, -Real::MAX, Real::MAX, Real::MAX],
+        )
+        .unwrap();
+        let fitted = IdentityMorph
+            .morph_nurbs_curve(&source, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert_eq!(fitted.domain(), -Real::MAX..=Real::MAX);
+        assert_eq!(fitted.control_points().len(), 4);
+        assert_point_near(fitted.evaluate(-Real::MAX).unwrap(), [0.0, 0.0, 0.0]);
+        assert_point_near(fitted.evaluate(Real::MAX).unwrap(), [1.0, 2.0, 3.0]);
+    }
+
+    #[test]
+    fn curve_morph_rejects_an_initial_fit_over_the_control_budget() {
+        let controls = (0..100)
+            .map(|index| point(index as Real, 0.0, 0.0))
+            .collect::<Vec<_>>();
+        let mut knots = vec![0.0, 0.0];
+        knots.extend((1..99).map(|index| index as Real));
+        knots.extend([99.0, 99.0]);
+        let source = NurbsCurve::try_new(1, controls, knots).unwrap();
+
+        assert_eq!(
+            IdentityMorph.morph_nurbs_curve(&source, Tolerance::DEFAULT),
+            Err(GeometryError::TooManyMorphCurveControlPoints {
+                maximum: MAX_MORPH_CURVE_CONTROL_POINTS,
+            })
+        );
     }
 }

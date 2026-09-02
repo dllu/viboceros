@@ -227,7 +227,8 @@ the first point pair. Both commands default to in-place, unscaled transforms;
 NURBS surface. Name that surface with `SurfaceName=`, or make it the last
 selected object. `Rigid=Yes` (the default) maps a frame without deformation;
 `Rigid=No` applies Rhino's plane-to-surface morph; lines and polylines become
-cubic deformable curves, while meshes map per vertex. `Scale=` must be positive,
+cubic deformable curves, analytic and NURBS curves receive tolerance-driven
+adaptive cubic fits, and meshes map per vertex. `Scale=` must be positive,
 `Rotation=` is in degrees, `Flip=Yes` reverses surface Y and Z, and
 `SourceNormal=` defaults to world Z. In deformable mode, `ConstrainNormal=Yes`
 keeps normal offsets parallel to `SourceNormal`, the command-line stand-in for

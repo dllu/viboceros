@@ -89,6 +89,9 @@ pub enum GeometryError {
     #[error("curve division would create more than {maximum} points")]
     TooManyCurveDivisionPoints { maximum: usize },
 
+    #[error("adaptive curve morph supports at most {maximum} control points")]
+    TooManyMorphCurveControlPoints { maximum: usize },
+
     #[error("arc-length distance {distance} is outside [0, {length}]")]
     ArcLengthOutOfDomain { distance: f64, length: f64 },
 

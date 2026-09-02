@@ -201,13 +201,17 @@ impl Geometry {
             Self::Point(point) => Self::Point(morph.morph_point(*point)?),
             Self::PointCloud(cloud) => Self::PointCloud(morph.morph_point_cloud(cloud)?),
             Self::Line(line) => Self::NurbsCurve(morph.morph_line(*line)?),
-            Self::Circle(circle) => Self::NurbsCurve(morph.morph_nurbs_curve(&circle.to_nurbs()?)?),
-            Self::Arc(arc) => Self::NurbsCurve(morph.morph_nurbs_curve(&arc.to_nurbs()?)?),
+            Self::Circle(circle) => {
+                Self::NurbsCurve(morph.morph_nurbs_curve(&circle.to_nurbs()?, tolerance)?)
+            }
+            Self::Arc(arc) => {
+                Self::NurbsCurve(morph.morph_nurbs_curve(&arc.to_nurbs()?, tolerance)?)
+            }
             Self::Ellipse(ellipse) => {
-                Self::NurbsCurve(morph.morph_nurbs_curve(&ellipse.to_nurbs()?)?)
+                Self::NurbsCurve(morph.morph_nurbs_curve(&ellipse.to_nurbs()?, tolerance)?)
             }
             Self::Polyline(polyline) => Self::NurbsCurve(morph.morph_polyline(polyline)?),
-            Self::NurbsCurve(curve) => Self::NurbsCurve(morph.morph_nurbs_curve(curve)?),
+            Self::NurbsCurve(curve) => Self::NurbsCurve(morph.morph_nurbs_curve(curve, tolerance)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(morph.morph_nurbs_surface(surface)?),
             Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
         })
