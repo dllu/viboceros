@@ -107,6 +107,9 @@ enum InteractiveCommand {
         both_sides: bool,
         delete_input: bool,
     },
+    ExtrudeCurveToPoint {
+        delete_input: bool,
+    },
 }
 
 impl InteractiveCommand {
@@ -134,6 +137,7 @@ impl InteractiveCommand {
             Self::Mirror { .. } => "Mirror",
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
+            Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
         }
     }
 
@@ -318,6 +322,9 @@ impl InteractiveCommand {
             Self::ExtrudeCurve { base: Some(_), .. } => {
                 "ExtrudeCrv: pick the direction target point in the viewport (Esc to cancel)"
             }
+            Self::ExtrudeCurveToPoint { .. } => {
+                "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
+            }
         }
     }
 
@@ -348,7 +355,8 @@ impl InteractiveCommand {
             }
             | Self::Mirror { start: None }
             | Self::Shear { origin: None, .. }
-            | Self::ExtrudeCurve { base: None, .. } => None,
+            | Self::ExtrudeCurve { base: None, .. }
+            | Self::ExtrudeCurveToPoint { .. } => None,
             Self::Line { start }
             | Self::Circle { center: start }
             | Self::Rectangle { first: start }
@@ -554,6 +562,28 @@ impl VibocerosApp {
                 both_sides,
                 delete_input,
             }
+        } else if normalized == "extrudecrvtopoint" {
+            let mut delete_input = false;
+            let mut delete_input_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if !name.eq_ignore_ascii_case("DeleteInput") || delete_input_seen {
+                    return false;
+                }
+                delete_input = if value.eq_ignore_ascii_case("Yes") {
+                    true
+                } else if value.eq_ignore_ascii_case("No") {
+                    false
+                } else {
+                    return false;
+                };
+                delete_input_seen = true;
+            }
+            InteractiveCommand::ExtrudeCurveToPoint { delete_input }
         } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
@@ -776,6 +806,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
+                | InteractiveCommand::ExtrudeCurveToPoint { .. }
         ) && self.document.selected_object_count() == 0
         {
             self.push_log("Error: no objects are selected".to_owned());
@@ -1398,6 +1429,14 @@ impl VibocerosApp {
                     if delete_input { "Yes" } else { "No" }
                 ));
             }
+            InteractiveCommand::ExtrudeCurveToPoint { delete_input } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtrudeCrvToPoint {} DeleteInput={}",
+                    format_model_point(point),
+                    if delete_input { "Yes" } else { "No" }
+                ));
+            }
         }
     }
 
@@ -1512,6 +1551,7 @@ impl VibocerosApp {
         let mut project_to_cplane_clicked = false;
         let mut to_nurbs_clicked = false;
         let mut extrude_curve_clicked = false;
+        let mut extrude_curve_to_point_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
         let selectable_previous = self.document.selectable_previous_object_count();
@@ -1710,6 +1750,10 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Extrude Curve"))
                     .on_hover_text("Extrude selected curves along a picked direction")
                     .clicked();
+                extrude_curve_to_point_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extrude to Point"))
+                    .on_hover_text("Extrude selected curves to a picked apex")
+                    .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
@@ -1821,6 +1865,8 @@ impl VibocerosApp {
             self.execute_command("ToNURBS");
         } else if extrude_curve_clicked {
             self.try_start_interactive_command("ExtrudeCrv");
+        } else if extrude_curve_to_point_clicked {
+            self.try_start_interactive_command("ExtrudeCrvToPoint");
         }
     }
 
@@ -2686,6 +2732,7 @@ mod tests {
             "Mirror",
             "Shear",
             "ExtrudeCrv",
+            "ExtrudeCrvToPoint",
         ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
@@ -2744,6 +2791,52 @@ mod tests {
         assert_eq!(surface.evaluate(0.0, 4.0).unwrap(), point(0.0, 2.0, 0.0));
         assert_eq!(app.document.undo_label(), Some("ExtrudeCrv"));
         assert!(!app.try_start_interactive_command("ExtrudeCrv BothSides=Maybe"));
+    }
+
+    #[test]
+    fn interactive_curve_to_point_extrusion_uses_one_apex_pick() {
+        let mut app = test_app();
+        let source = app
+            .document
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    app.document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ExtrudeCrvToPoint DeleteInput=No"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtrudeCurveToPoint {
+                delete_input: false,
+            })
+        );
+        app.accept_drafting_point(point(1.0, 2.0, 5.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 2);
+        assert!(app.document.is_selected(source));
+        let output = app.document.objects().nth(1).unwrap();
+        assert!(!app.document.is_selected(output.id()));
+        let Geometry::NurbsSurface(surface) = output.geometry() else {
+            panic!("expected a curve-to-point NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 1);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.domain_v(), 0.0..=4.0);
+        let apex = point(1.0, 2.0, 5.0);
+        assert_eq!(
+            surface.evaluate(*surface.domain_u().end(), 2.0).unwrap(),
+            apex
+        );
+        assert_eq!(app.document.undo_label(), Some("ExtrudeCrvToPoint"));
+        assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint DeleteInput=Maybe"));
     }
 
     #[test]

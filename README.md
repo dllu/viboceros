@@ -82,6 +82,7 @@ Shear 0,0,0 1,0,0 45 Copy=Yes
 ProjectToCPlane DeleteInput=Yes
 ToNURBS DeleteInputObjects=Yes
 ExtrudeCrv 5 BothSides=No DeleteInput=No
+ExtrudeCrvToPoint 0,0,10 DeleteInput=No
 Group Assembly
 Group All Everything
 SetObjectName "Fastener Part" AppendCounter=Yes
@@ -172,6 +173,12 @@ workflow. `BothSides=Yes` sweeps equally in both directions and
 ungrouped objects with fresh attributes on the current layer. The current
 surface-only implementation accepts `Solid=No`; capped solids await a
 polysurface/B-rep document representation.
+`ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
+curves to one apex. Its U direction runs from the profile to the apex while V
+preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
+form. Enter it without an apex to pick one in the viewport. Inputs are retained
+by default; `DeleteInput=Yes` removes them. `Output=Surface` and `Solid=No` are
+accepted explicitly; SubD and capped-solid output are not yet represented.
 `ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a

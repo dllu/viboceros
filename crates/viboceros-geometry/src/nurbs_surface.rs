@@ -177,6 +177,53 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact ruled surface between a NURBS curve and one apex.
+    ///
+    /// Matching Rhino's `ExtrudeCrvToPoint` NURBS form, U runs from the source
+    /// curve to the apex and V retains the source curve's degree, knots, and
+    /// rational weights. The U domain is the distance from the curve's start
+    /// point to the apex. Repeating the apex with each corresponding curve
+    /// weight makes the collapsed U edge exact even for rational curves.
+    pub fn try_extruded_curve_to_point(
+        curve: &crate::NurbsCurve,
+        apex: Point3,
+    ) -> Result<Self, GeometryError> {
+        let curve_start = curve.evaluate(*curve.domain().start())?;
+        let apex_distance = curve_start.distance_to(apex)?;
+        if apex_distance == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "curve-to-point extrusion path",
+            });
+        }
+
+        let control_count_v = curve.control_points().len();
+        let control_count =
+            control_count_v
+                .checked_mul(2)
+                .ok_or(GeometryError::InvalidControlNet {
+                    context: "curve-to-point control-point count overflowed usize",
+                })?;
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidControlNet {
+                context: "curve-to-point control net exceeds addressable memory",
+            }
+        })?;
+        for control in curve.control_points() {
+            controls.push(*control);
+            controls.push(WeightedPoint3::try_new(apex, control.weight())?);
+        }
+        Self::try_new_rational(
+            1,
+            curve.degree(),
+            2,
+            control_count_v,
+            controls,
+            vec![0.0, 0.0, apex_distance, apex_distance],
+            curve.knots().to_vec(),
+        )
+    }
+
     /// Constructs a bilinear surface from four perimeter-ordered corners.
     /// The order is first, adjacent second, opposite third, adjacent fourth.
     pub fn try_bilinear(corners: [Point3; 4]) -> Result<Self, GeometryError> {
@@ -1423,6 +1470,66 @@ mod tests {
 
         let zero = Vector3::try_new(0.0, 0.0, 0.0).unwrap();
         assert!(NurbsSurface::try_extruded_curve(&curve, zero, zero).is_err());
+    }
+
+    #[test]
+    fn exact_curve_to_point_extrusion_matches_rhino_direction_and_weights() {
+        let middle_weight = 0.5_f64.sqrt();
+        let curve = crate::NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0, 0.0), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0, 0.0), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let apex = point(1.0, 2.0, 5.0);
+        let surface = NurbsSurface::try_extruded_curve_to_point(&curve, apex).unwrap();
+        let apex_distance = curve.evaluate(2.0).unwrap().distance_to(apex).unwrap();
+
+        assert_eq!(surface.degree_u(), 1);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 2);
+        assert_eq!(surface.control_point_count_v(), 3);
+        assert_eq!(surface.knots_u(), &[0.0, 0.0, apex_distance, apex_distance]);
+        assert_eq!(surface.knots_v(), curve.knots());
+        assert!(surface.is_rational());
+        for (v_index, curve_control) in curve.control_points().iter().enumerate() {
+            assert_eq!(surface.control_point(0, v_index), Some(*curve_control));
+            let apex_control = surface.control_point(1, v_index).unwrap();
+            assert_eq!(apex_control.point(), apex);
+            assert_eq!(apex_control.weight(), curve_control.weight());
+        }
+        for v in [2.0, 3.25, 7.0] {
+            assert_point_near(
+                surface.evaluate(0.0, v).unwrap(),
+                curve.evaluate(v).unwrap(),
+            );
+            assert_point_near(surface.evaluate(apex_distance, v).unwrap(), apex);
+        }
+        let (midpoint, derivative_u, _) = surface
+            .evaluate_with_derivatives(apex_distance * 0.5, 4.0)
+            .unwrap();
+        let curve_point = curve.evaluate(4.0).unwrap();
+        assert_point_near(
+            midpoint,
+            curve_point
+                .translated(curve_point.vector_to(apex).unwrap().scaled(0.5).unwrap())
+                .unwrap(),
+        );
+        assert_point_near(
+            curve_point
+                .translated(derivative_u.scaled(apex_distance).unwrap())
+                .unwrap(),
+            apex,
+        );
+
+        assert!(
+            NurbsSurface::try_extruded_curve_to_point(&curve, curve.evaluate(2.0).unwrap())
+                .is_err()
+        );
     }
 
     #[test]
