@@ -240,9 +240,13 @@ tolerance, while `Explode` turns polylines back into attribute-preserving line
 segments and frees point-cloud members as point objects. `Length` measures
 analytic, polyline, and NURBS curves with controlled accuracy; `Area` measures
 circles, ellipses, closed planar polylines, and meshes.
-`Volume` reports the accumulated signed volume of selected closed meshes;
-outward winding is positive and reversed winding is negative. The calculation
-is stabilized around each mesh bounding-box center and does not alter history.
+`Volume` reports the accumulated signed volume of selected closed triangle
+meshes and exact B-rep solids; outward orientation is positive and reversed
+orientation is negative. Meshes use translation-stable tetrahedral
+accumulation. Full-domain NURBS B-rep faces are integrated directly over each
+knot-span rectangle with adaptive quadrature, without measuring a display
+tessellation. Generally trimmed faces are rejected until trimmed-domain mass
+properties are implemented. Measurement does not alter history.
 `Divide` creates equal arc-length points on selected curves by segment count or
 requested segment length; add `MarkEnds` to include open-curve endpoints.
 `CrvStart` and `CrvEnd` place attribute-preserving point objects at the natural

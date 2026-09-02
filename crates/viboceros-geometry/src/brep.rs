@@ -1,6 +1,7 @@
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
-    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, require_finite,
+    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, Vector3, WeightedPoint3,
+    integration::integrate_adaptive, require_finite, vector::product_three,
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
@@ -600,6 +601,82 @@ impl Brep {
         })
     }
 
+    /// Computes oriented volume directly from the exact NURBS faces.
+    ///
+    /// The divergence-theorem integral is evaluated independently over every
+    /// nonempty knot-span rectangle. Subtracting the control-geometry bounds
+    /// center before the scalar triple product makes the result insensitive to
+    /// large translations. General trimmed domains require a constrained
+    /// parameter-space integrator and are rejected explicitly.
+    pub fn signed_volume(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        if !self.is_solid() {
+            return Err(GeometryError::OpenBrepVolume);
+        }
+        for (face_index, face) in self.faces.iter().enumerate() {
+            if !face_covers_full_surface_domain(face, tolerance)? {
+                return Err(GeometryError::UnsupportedBrepTrimMassProperties { face: face_index });
+            }
+        }
+
+        let bounds = self.bounds();
+        let reference = bounds.center()?;
+        let scale = bounds.min().distance_to(bounds.max())?;
+        let centered_surfaces = self
+            .faces
+            .iter()
+            .map(|face| centered_surface(&face.surface, reference))
+            .collect::<Result<Vec<_>, _>>()?;
+        let absolute_tolerance = match product_three(
+            tolerance.absolute(),
+            scale.max(tolerance.absolute()),
+            scale.max(tolerance.absolute()),
+            "B-rep volume tolerance",
+        ) {
+            Ok(value) => value,
+            // A tolerance larger than the representable volume range imposes
+            // no useful absolute restriction, but the relative target remains
+            // meaningful to the adaptive integrator.
+            Err(GeometryError::NonFinite { .. }) => Real::MAX,
+            Err(error) => return Err(error),
+        };
+        let patch_count = self
+            .faces
+            .iter()
+            .map(|face| {
+                face.surface
+                    .spans_u()
+                    .count()
+                    .checked_mul(face.surface.spans_v().count())
+                    .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+            })
+            .try_fold(0_usize, |total, count| {
+                total
+                    .checked_add(count?)
+                    .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+            })?;
+        let patch_tolerance = (absolute_tolerance / patch_count as Real).max(Real::MIN_POSITIVE);
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for (face, surface) in self.faces.iter().zip(&centered_surfaces) {
+            for (u_start, u_end) in surface.spans_u() {
+                for (v_start, v_end) in surface.spans_v() {
+                    let contribution = integrate_volume_patch(
+                        surface,
+                        face.reversed,
+                        [u_start, u_end],
+                        [v_start, v_end],
+                        patch_tolerance,
+                        tolerance.relative(),
+                    )?;
+                    neumaier_add(&mut sum, &mut correction, contribution);
+                }
+            }
+        }
+        let volume = sum + correction;
+        require_finite([volume], "B-rep signed volume")?;
+        Ok(volume)
+    }
+
     /// Conservative control-geometry bounds. Exact curved-edge bounds can be
     /// tighter, but this box always contains every positive-weight NURBS locus.
     pub fn bounds(&self) -> BoundingBox3 {
@@ -1108,6 +1185,97 @@ fn surface_u_control_curve(
     NurbsCurve::try_new_rational(surface.degree_u(), controls, surface.knots_u().to_vec())
 }
 
+fn centered_surface(
+    surface: &NurbsSurface,
+    reference: Point3,
+) -> Result<NurbsSurface, GeometryError> {
+    let controls = surface
+        .control_points()
+        .iter()
+        .map(|control| {
+            let point = control.point();
+            WeightedPoint3::try_new(
+                Point3::try_new(
+                    point.x() - reference.x(),
+                    point.y() - reference.y(),
+                    point.z() - reference.z(),
+                )?,
+                control.weight(),
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    NurbsSurface::try_new_rational(
+        surface.degree_u(),
+        surface.degree_v(),
+        surface.control_point_count_u(),
+        surface.control_point_count_v(),
+        controls,
+        surface.knots_u().to_vec(),
+        surface.knots_v().to_vec(),
+    )
+}
+
+fn integrate_volume_patch(
+    surface: &NurbsSurface,
+    reversed: bool,
+    u: [Real; 2],
+    v: [Real; 2],
+    absolute_tolerance: Real,
+    relative_tolerance: Real,
+) -> Result<Real, GeometryError> {
+    let half_u = u[1] * 0.5 - u[0] * 0.5;
+    let half_v = v[1] * 0.5 - v[0] * 0.5;
+    require_finite([half_u, half_v], "B-rep volume parameter span")?;
+    if half_u <= 0.0 || half_v <= 0.0 {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+    }
+    let inner_tolerance = (absolute_tolerance * 0.25).max(Real::MIN_POSITIVE);
+    integrate_adaptive(
+        0.0,
+        1.0,
+        absolute_tolerance,
+        relative_tolerance,
+        |normalized_u| {
+            let parameter_u = normalized_span_parameter(u, normalized_u)?;
+            integrate_adaptive(
+                0.0,
+                1.0,
+                inner_tolerance,
+                relative_tolerance,
+                |normalized_v| {
+                    let parameter_v = normalized_span_parameter(v, normalized_v)?;
+                    let (point, derivative_u, derivative_v) =
+                        surface.evaluate_with_derivatives(parameter_u, parameter_v)?;
+                    let position = Vector3::try_new(point.x(), point.y(), point.z())?;
+                    let normalized_u = derivative_u.scaled(half_u)?;
+                    let normalized_v = derivative_v.scaled(half_v)?;
+                    let triple = position.dot(normalized_u.cross(normalized_v)?)?;
+                    let magnitude =
+                        product_three(triple.abs(), 4.0, 1.0 / 3.0, "B-rep volume integrand")?;
+                    let orientation = if reversed { -1.0 } else { 1.0 };
+                    Ok(orientation * triple.signum() * magnitude)
+                },
+            )
+        },
+    )
+}
+
+fn normalized_span_parameter(span: [Real; 2], normalized: Real) -> Result<Real, GeometryError> {
+    let parameter = span[0].mul_add(1.0 - normalized, span[1] * normalized);
+    require_finite([parameter], "B-rep volume parameter")?;
+    Ok(parameter)
+}
+
+fn neumaier_add(sum: &mut Real, correction: &mut Real, value: Real) {
+    let next = *sum + value;
+    if sum.abs() >= value.abs() {
+        *correction += (*sum - next) + value;
+    } else {
+        *correction += (value - next) + *sum;
+    }
+    *sum = next;
+}
+
 fn brep_span_parameter(
     start: Real,
     end: Real,
@@ -1513,6 +1681,67 @@ mod tests {
     }
 
     #[test]
+    fn exact_solid_volume_is_oriented_translation_stable_and_not_faceted() {
+        let frame = Frame3::try_from_normal(
+            point(1.0e12, -2.0e12, 3.0e12),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[-1.0, 2.0], [-2.0, 3.0], [-3.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_volume = box_brep.signed_volume(Tolerance::DEFAULT).unwrap();
+        assert!(
+            (box_volume - 105.0).abs() < 1.0e-11,
+            "box volume {box_volume}"
+        );
+
+        let cylinder = Brep::try_cylinder(frame, 2.5, -3.0, 4.0, Tolerance::DEFAULT).unwrap();
+        let expected_cylinder = std::f64::consts::PI * 2.5 * 2.5 * 7.0;
+        let cylinder_error =
+            (cylinder.signed_volume(Tolerance::DEFAULT).unwrap() - expected_cylinder).abs()
+                / expected_cylinder;
+        assert!(cylinder_error < 2.0e-12, "relative error {cylinder_error}");
+        let mut open_wall = cylinder.faces[0].clone();
+        open_wall.loops[0].trims[0].trim_type = BrepTrimType::Boundary;
+        open_wall.loops[0].trims[2].trim_type = BrepTrimType::Boundary;
+        let open = Brep::try_new(
+            cylinder.vertices.clone(),
+            cylinder.edges[..3].to_vec(),
+            vec![open_wall],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            open.signed_volume(Tolerance::DEFAULT),
+            Err(GeometryError::OpenBrepVolume)
+        );
+
+        let cone = Brep::try_cone(frame, 2.5, -7.0, Tolerance::DEFAULT).unwrap();
+        let expected_cone = std::f64::consts::PI * 2.5 * 2.5 * 7.0 / 3.0;
+        let cone_error =
+            (cone.signed_volume(Tolerance::DEFAULT).unwrap() - expected_cone).abs() / expected_cone;
+        assert!(cone_error < 2.0e-12, "relative error {cone_error}");
+
+        let mut reversed_faces = box_brep.faces.clone();
+        for face in &mut reversed_faces {
+            face.reversed = !face.reversed;
+        }
+        let reversed = Brep::try_new(
+            box_brep.vertices.clone(),
+            box_brep.edges.clone(),
+            reversed_faces,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((reversed.signed_volume(Tolerance::DEFAULT).unwrap() + 105.0).abs() < 1.0e-11);
+    }
+
+    #[test]
     fn affine_box_transform_preserves_solid_orientation_and_rejects_projection() {
         let origin = point(0.0, 0.0, 0.0);
         let frame = Frame3::try_from_normal(
@@ -1536,6 +1765,7 @@ mod tests {
         assert!(transformed.is_solid());
         assert_eq!(transformed.bounds().min(), point(-2.0, 0.0, 0.0));
         assert_eq!(transformed.bounds().max(), point(0.0, 3.0, 4.0));
+        assert!((transformed.signed_volume(Tolerance::DEFAULT).unwrap() - 24.0).abs() < 1.0e-12);
         let center = transformed.bounds().center().unwrap();
         for face in transformed.faces() {
             assert!(face.is_reversed());

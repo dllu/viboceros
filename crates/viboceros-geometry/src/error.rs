@@ -131,6 +131,12 @@ pub enum GeometryError {
     #[error("B-rep face {face} requires trimmed-face clipping before it can be tessellated")]
     UnsupportedBrepTrimTessellation { face: usize },
 
+    #[error("oriented volume requires a closed, consistently oriented B-rep")]
+    OpenBrepVolume,
+
+    #[error("B-rep face {face} requires trimmed-domain integration for mass properties")]
+    UnsupportedBrepTrimMassProperties { face: usize },
+
     #[error(
         "closed B-rep faces produced {boundary_edges} open and {orientation_conflicts} conflicting mesh edges"
     )]

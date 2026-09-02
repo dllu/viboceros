@@ -1988,13 +1988,21 @@ impl Command for VolumeCommand {
         let mut sum = 0.0;
         let mut correction = 0.0;
         for object in &selected {
-            let Geometry::Mesh(mesh) = object.geometry() else {
-                return Err(CommandError::UnsupportedVolumeGeometry);
+            let volume = match object.geometry() {
+                Geometry::Mesh(mesh) => {
+                    if !mesh.topology().is_closed() {
+                        return Err(CommandError::OpenMeshVolume);
+                    }
+                    mesh.signed_volume()?
+                }
+                Geometry::Brep(brep) => {
+                    if !brep.is_solid() {
+                        return Err(CommandError::OpenBrepVolume);
+                    }
+                    brep.signed_volume(document.tolerance())?
+                }
+                _ => return Err(CommandError::UnsupportedVolumeGeometry),
             };
-            if !mesh.topology().is_closed() {
-                return Err(CommandError::OpenMeshVolume);
-            }
-            let volume = mesh.signed_volume()?;
             let next = sum + volume;
             if sum.abs() >= volume.abs() {
                 correction += (sum - next) + volume;
@@ -2011,7 +2019,7 @@ impl Command for VolumeCommand {
             .into());
         }
         Ok(format!(
-            "Measured {} closed mesh(es): total volume {total:.12}",
+            "Measured {} closed object(s): total volume {total:.12}",
             selected.len()
         ))
     }
@@ -7100,11 +7108,14 @@ pub enum CommandError {
     #[error("Area supports selected circles, ellipses, closed planar polylines, and meshes only")]
     UnsupportedAreaGeometry,
 
-    #[error("Volume currently supports selected meshes only")]
+    #[error("Volume supports selected triangle meshes and exact B-reps only")]
     UnsupportedVolumeGeometry,
 
     #[error("Volume requires every selected mesh to be closed")]
     OpenMeshVolume,
+
+    #[error("Volume requires every selected B-rep to be a closed, oriented solid")]
+    OpenBrepVolume,
 
     #[error("Divide supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedDivideGeometry,
@@ -7815,7 +7826,7 @@ mod tests {
     }
 
     #[test]
-    fn volume_measures_closed_meshes_with_signed_accumulation_without_history() {
+    fn volume_measures_meshes_and_exact_breps_with_stable_signed_accumulation() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let vertices = vec![
@@ -7833,6 +7844,22 @@ mod tests {
         let outward_id = document.add_geometry(Geometry::Mesh(outward)).unwrap();
         let reversed_id = document.add_geometry(Geometry::Mesh(reversed)).unwrap();
         let open_id = document.add_geometry(Geometry::Mesh(open)).unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0e12, -2.0e12, 3.0e12).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let box_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame,
+                    [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
         let history = document.undo_label().map(str::to_owned);
 
         document
@@ -7840,21 +7867,35 @@ mod tests {
             .unwrap();
         assert_eq!(
             registry.execute(&mut document, "Volume").unwrap(),
-            "Measured 1 closed mesh(es): total volume 4.000000000000"
+            "Measured 1 closed object(s): total volume 4.000000000000"
         );
         document
             .select_object(reversed_id, SelectionMode::Replace)
             .unwrap();
         assert_eq!(
             registry.execute(&mut document, "Volume").unwrap(),
-            "Measured 1 closed mesh(es): total volume -4.000000000000"
+            "Measured 1 closed object(s): total volume -4.000000000000"
         );
         document
             .select_object(outward_id, SelectionMode::Add)
             .unwrap();
         assert_eq!(
             registry.execute(&mut document, "Volume").unwrap(),
-            "Measured 2 closed mesh(es): total volume 0.000000000000"
+            "Measured 2 closed object(s): total volume 0.000000000000"
+        );
+        document
+            .select_object(box_id, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Volume").unwrap(),
+            "Measured 1 closed object(s): total volume 24.000000000000"
+        );
+        document
+            .select_object(reversed_id, SelectionMode::Add)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Volume").unwrap(),
+            "Measured 2 closed object(s): total volume 20.000000000000"
         );
         assert_eq!(document.undo_label(), history.as_deref());
 
