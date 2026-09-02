@@ -16,6 +16,27 @@ pub const MAX_MESH_PLANE_FACES: usize = 1_000_000;
 /// Resource ceiling for one generated mesh-box shell.
 pub const MAX_MESH_BOX_FACES: usize = 1_000_000;
 
+/// Resource ceiling for one generated mesh-cylinder shell.
+pub const MAX_MESH_CYLINDER_FACES: usize = 1_000_000;
+
+/// Polygon style used for a generated mesh-cylinder cap.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum MeshCapFaceStyle {
+    Triangles,
+    Quadrilaterals,
+}
+
+/// Topology controls for an exact polygonal cylinder primitive.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MeshCylinderOptions {
+    pub vertical_count: usize,
+    pub around_count: usize,
+    pub cap_bottom: bool,
+    pub cap_top: bool,
+    pub circumscribe: bool,
+    pub cap_style: MeshCapFaceStyle,
+}
+
 /// Exact location-welded edge topology for a polygon mesh.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MeshTopology {
@@ -482,7 +503,7 @@ impl TriangleMesh {
             .map_err(|_| GeometryError::TooManyMeshFaces)?;
 
         append_mesh_grid_side(&mut vertices, &mut faces, x_count, y_count, |x, y| {
-            mesh_box_point(
+            mesh_frame_point(
                 frame,
                 mesh_grid_sample(x_interval, x_step, x_count, x),
                 mesh_grid_sample(y_interval, y_step, y_count, y_count - y),
@@ -490,7 +511,7 @@ impl TriangleMesh {
             )
         })?;
         append_mesh_grid_side(&mut vertices, &mut faces, x_count, y_count, |x, y| {
-            mesh_box_point(
+            mesh_frame_point(
                 frame,
                 mesh_grid_sample(x_interval, x_step, x_count, x),
                 mesh_grid_sample(y_interval, y_step, y_count, y),
@@ -498,7 +519,7 @@ impl TriangleMesh {
             )
         })?;
         append_mesh_grid_side(&mut vertices, &mut faces, x_count, z_count, |x, z| {
-            mesh_box_point(
+            mesh_frame_point(
                 frame,
                 mesh_grid_sample(x_interval, x_step, x_count, x),
                 y_interval[0],
@@ -506,7 +527,7 @@ impl TriangleMesh {
             )
         })?;
         append_mesh_grid_side(&mut vertices, &mut faces, y_count, z_count, |y, z| {
-            mesh_box_point(
+            mesh_frame_point(
                 frame,
                 x_interval[1],
                 mesh_grid_sample(y_interval, y_step, y_count, y),
@@ -514,7 +535,7 @@ impl TriangleMesh {
             )
         })?;
         append_mesh_grid_side(&mut vertices, &mut faces, x_count, z_count, |x, z| {
-            mesh_box_point(
+            mesh_frame_point(
                 frame,
                 mesh_grid_sample(x_interval, x_step, x_count, x_count - x),
                 y_interval[1],
@@ -522,13 +543,161 @@ impl TriangleMesh {
             )
         })?;
         append_mesh_grid_side(&mut vertices, &mut faces, y_count, z_count, |y, z| {
-            mesh_box_point(
+            mesh_frame_point(
                 frame,
                 x_interval[0],
                 mesh_grid_sample(y_interval, y_step, y_count, y_count - y),
                 mesh_grid_sample(z_interval, z_step, z_count, z),
             )
         })?;
+        debug_assert_eq!(vertices.len(), vertex_count);
+        debug_assert_eq!(faces.len(), face_count);
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's ordered polygonal cylinder wall and optional caps.
+    ///
+    /// Wall vertices are stored as height-major rings without a duplicated
+    /// angular seam. Each cap has its own raw vertices, matching
+    /// `Mesh.CreateFromCylinder`; exact-location topology still joins the
+    /// requested caps to the wall.
+    pub fn try_cylinder_grid(
+        frame: Frame3,
+        radius: Real,
+        heights: [Real; 2],
+        options: MeshCylinderOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            std::iter::once(radius).chain(heights),
+            "mesh-cylinder dimensions",
+        )?;
+        if options.vertical_count == 0 || options.around_count < 3 {
+            return Err(GeometryError::InvalidMeshCylinderFaceCount {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            });
+        }
+        if radius <= 0.0 || heights[0] >= heights[1] {
+            return Err(GeometryError::InvalidMeshCylinderDimensions);
+        }
+
+        let wall_face_count = options
+            .vertical_count
+            .checked_mul(options.around_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        let cap_count = usize::from(options.cap_bottom) + usize::from(options.cap_top);
+        let cap_face_count = mesh_cylinder_cap_face_count(options);
+        let face_count = cap_face_count
+            .checked_mul(cap_count)
+            .and_then(|caps| wall_face_count.checked_add(caps))
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_CYLINDER_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+
+        let wall_vertex_count = options
+            .vertical_count
+            .checked_add(1)
+            .and_then(|rings| rings.checked_mul(options.around_count))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let one_cap_vertex_count =
+            if options.cap_style == MeshCapFaceStyle::Quadrilaterals && options.around_count == 4 {
+                options.around_count
+            } else {
+                options
+                    .around_count
+                    .checked_add(1)
+                    .ok_or(GeometryError::TooManyMeshVertices)?
+            };
+        let vertex_count = one_cap_vertex_count
+            .checked_mul(cap_count)
+            .and_then(|caps| wall_vertex_count.checked_add(caps))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if vertex_count
+            .checked_sub(1)
+            .is_some_and(|last_index| u32::try_from(last_index).is_err())
+        {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+
+        let angle_step = std::f64::consts::TAU / options.around_count as Real;
+        let half_step = 0.5 * angle_step;
+        let polygon_radius = if options.circumscribe {
+            radius / half_step.cos()
+        } else {
+            radius
+        };
+        let start_angle = if options.circumscribe { half_step } else { 0.0 };
+        let height_step = (heights[1] - heights[0]) / options.vertical_count as Real;
+        require_finite(
+            [angle_step, polygon_radius, height_step],
+            "mesh-cylinder sampling",
+        )?;
+
+        let mut radial_coordinates = Vec::new();
+        radial_coordinates
+            .try_reserve_exact(options.around_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for around_index in 0..options.around_count {
+            let angle = (around_index as Real).mul_add(angle_step, start_angle);
+            let (sine, cosine) = angle.sin_cos();
+            radial_coordinates.push([polygon_radius * cosine, polygon_radius * sine]);
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for vertical_index in 0..=options.vertical_count {
+            let height =
+                mesh_grid_sample(heights, height_step, options.vertical_count, vertical_index);
+            for [x, y] in &radial_coordinates {
+                vertices.push(mesh_frame_point(frame, *x, *y, height)?);
+            }
+        }
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for vertical_index in 0..options.vertical_count {
+            let lower_offset = vertical_index * options.around_count;
+            let upper_offset = lower_offset + options.around_count;
+            for around_index in 0..options.around_count {
+                let next = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(lower_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(lower_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        }
+        if options.cap_bottom {
+            append_mesh_cylinder_cap(
+                &mut vertices,
+                &mut faces,
+                frame,
+                &radial_coordinates,
+                heights[0],
+                options.cap_style,
+            )?;
+        }
+        if options.cap_top {
+            append_mesh_cylinder_cap(
+                &mut vertices,
+                &mut faces,
+                frame,
+                &radial_coordinates,
+                heights[1],
+                options.cap_style,
+            )?;
+        }
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
         Self::try_new_faces(vertices, faces, tolerance)
@@ -3466,7 +3635,75 @@ fn mesh_grid_sample(interval: [Real; 2], step: Real, count: usize, index: usize)
     }
 }
 
-fn mesh_box_point(frame: Frame3, x: Real, y: Real, z: Real) -> Result<Point3, GeometryError> {
+fn mesh_cylinder_cap_face_count(options: MeshCylinderOptions) -> usize {
+    if options.cap_style == MeshCapFaceStyle::Quadrilaterals
+        && options.around_count.is_multiple_of(2)
+    {
+        if options.around_count == 4 {
+            1
+        } else {
+            options.around_count / 2
+        }
+    } else {
+        options.around_count
+    }
+}
+
+fn append_mesh_cylinder_cap(
+    vertices: &mut Vec<Point3>,
+    faces: &mut Vec<MeshFace>,
+    frame: Frame3,
+    radial_coordinates: &[[Real; 2]],
+    height: Real,
+    style: MeshCapFaceStyle,
+) -> Result<(), GeometryError> {
+    let around_count = radial_coordinates.len();
+    let offset = vertices.len();
+    if style == MeshCapFaceStyle::Quadrilaterals && around_count == 4 {
+        for [x, y] in radial_coordinates {
+            vertices.push(mesh_frame_point(frame, *x, *y, height)?);
+        }
+        faces.push(MeshFace::Quad([
+            u32::try_from(offset).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            u32::try_from(offset + 1).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            u32::try_from(offset + 2).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            u32::try_from(offset + 3).map_err(|_| GeometryError::TooManyMeshVertices)?,
+        ]));
+        return Ok(());
+    }
+
+    vertices.push(mesh_frame_point(frame, 0.0, 0.0, height)?);
+    for [x, y] in radial_coordinates {
+        vertices.push(mesh_frame_point(frame, *x, *y, height)?);
+    }
+    let center = u32::try_from(offset).map_err(|_| GeometryError::TooManyMeshVertices)?;
+    if style == MeshCapFaceStyle::Quadrilaterals && around_count.is_multiple_of(2) {
+        for face_index in 0..around_count / 2 {
+            let first = offset + 1 + 2 * face_index;
+            let second = first + 1;
+            let third = offset + 1 + (2 * face_index + 2) % around_count;
+            faces.push(MeshFace::Quad([
+                center,
+                u32::try_from(first).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(second).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(third).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            ]));
+        }
+    } else {
+        for face_index in 0..around_count {
+            faces.push(MeshFace::Triangle([
+                center,
+                u32::try_from(offset + 1 + face_index)
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(offset + 1 + (face_index + 1) % around_count)
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?,
+            ]));
+        }
+    }
+    Ok(())
+}
+
+fn mesh_frame_point(frame: Frame3, x: Real, y: Real, z: Real) -> Result<Point3, GeometryError> {
     frame
         .origin()
         .translated(frame.x_axis().as_vector().scaled(x)?)?
@@ -4159,6 +4396,193 @@ mod tests {
                 MAX_MESH_BOX_FACES + 1,
                 1,
                 1,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_mesh_cylinder_walls_and_caps() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let open = TriangleMesh::try_cylinder_grid(
+            frame,
+            2.0,
+            [0.0, 5.0],
+            MeshCylinderOptions {
+                vertical_count: 1,
+                around_count: 4,
+                cap_bottom: false,
+                cap_top: false,
+                circumscribe: false,
+                cap_style: MeshCapFaceStyle::Triangles,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(open.vertices().len(), 8);
+        assert_eq!(open.face_count(), 4);
+        assert_eq!(
+            open.faces(),
+            &[
+                MeshFace::Quad([0, 1, 5, 4]),
+                MeshFace::Quad([1, 2, 6, 5]),
+                MeshFace::Quad([2, 3, 7, 6]),
+                MeshFace::Quad([3, 0, 4, 7]),
+            ]
+        );
+        assert_eq!(open.vertices()[0], point(2.0, 0.0, 0.0));
+        assert_eq!(open.vertices()[4], point(2.0, 0.0, 5.0));
+        assert_eq!(open.topology().boundary_edge_count(), 8);
+
+        let triangles = TriangleMesh::try_cylinder_grid(
+            frame,
+            2.0,
+            [-1.0, 5.0],
+            MeshCylinderOptions {
+                vertical_count: 2,
+                around_count: 5,
+                cap_bottom: true,
+                cap_top: true,
+                circumscribe: false,
+                cap_style: MeshCapFaceStyle::Triangles,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(triangles.vertices().len(), 27);
+        assert_eq!(triangles.face_count(), 20);
+        assert_eq!(triangles.faces()[10], MeshFace::Triangle([15, 16, 17]));
+        assert_eq!(triangles.faces()[14], MeshFace::Triangle([15, 20, 16]));
+        assert_eq!(triangles.faces()[15], MeshFace::Triangle([21, 22, 23]));
+        assert_eq!(triangles.vertices()[15], point(0.0, 0.0, -1.0));
+        assert_eq!(triangles.vertices()[21], point(0.0, 0.0, 5.0));
+        assert!(triangles.topology().is_closed());
+        assert_eq!(triangles.topology().orientation_conflict_edge_count(), 5);
+
+        let quads = TriangleMesh::try_cylinder_grid(
+            frame,
+            3.0,
+            [0.0, 4.0],
+            MeshCylinderOptions {
+                vertical_count: 3,
+                around_count: 6,
+                cap_bottom: true,
+                cap_top: true,
+                circumscribe: false,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(quads.vertices().len(), 38);
+        assert_eq!(quads.face_count(), 24);
+        assert_eq!(quads.faces()[18], MeshFace::Quad([24, 25, 26, 27]));
+        assert_eq!(quads.faces()[19], MeshFace::Quad([24, 27, 28, 29]));
+        assert_eq!(quads.faces()[20], MeshFace::Quad([24, 29, 30, 25]));
+        assert_eq!(quads.faces()[21], MeshFace::Quad([31, 32, 33, 34]));
+
+        let circumscribed = TriangleMesh::try_cylinder_grid(
+            frame,
+            2.0,
+            [0.0, 5.0],
+            MeshCylinderOptions {
+                vertical_count: 2,
+                around_count: 4,
+                cap_bottom: true,
+                cap_top: true,
+                circumscribe: true,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(circumscribed.vertices().len(), 20);
+        assert_eq!(circumscribed.face_count(), 10);
+        assert!(
+            (circumscribed.vertices()[0].x() - 2.0).abs() < 1.0e-12
+                && (circumscribed.vertices()[0].y() - 2.0).abs() < 1.0e-12
+        );
+        assert_eq!(circumscribed.faces()[8], MeshFace::Quad([12, 13, 14, 15]));
+        assert_eq!(circumscribed.faces()[9], MeshFace::Quad([16, 17, 18, 19]));
+    }
+
+    #[test]
+    fn mesh_cylinder_rejects_invalid_counts_dimensions_and_resource_overflow() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let options = |vertical_count, around_count| MeshCylinderOptions {
+            vertical_count,
+            around_count,
+            cap_bottom: true,
+            cap_top: true,
+            circumscribe: false,
+            cap_style: MeshCapFaceStyle::Triangles,
+        };
+        assert_eq!(
+            TriangleMesh::try_cylinder_grid(
+                frame,
+                2.0,
+                [0.0, 5.0],
+                options(0, 4),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshCylinderFaceCount {
+                vertical_count: 0,
+                around_count: 4,
+            })
+        );
+        assert!(matches!(
+            TriangleMesh::try_cylinder_grid(
+                frame,
+                2.0,
+                [0.0, 5.0],
+                options(1, 2),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshCylinderFaceCount { .. })
+        ));
+        for (radius, heights) in [(0.0, [0.0, 5.0]), (2.0, [5.0, 5.0]), (2.0, [5.0, 0.0])] {
+            assert_eq!(
+                TriangleMesh::try_cylinder_grid(
+                    frame,
+                    radius,
+                    heights,
+                    options(1, 4),
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidMeshCylinderDimensions)
+            );
+        }
+        assert!(matches!(
+            TriangleMesh::try_cylinder_grid(
+                frame,
+                Real::NAN,
+                [0.0, 5.0],
+                options(1, 4),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::NonFinite {
+                context: "mesh-cylinder dimensions"
+            })
+        ));
+        assert_eq!(
+            TriangleMesh::try_cylinder_grid(
+                frame,
+                2.0,
+                [0.0, 5.0],
+                options(MAX_MESH_CYLINDER_FACES + 1, 3),
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::TooManyMeshFaces)

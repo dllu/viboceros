@@ -227,6 +227,17 @@ pub enum GeometryError {
     #[error("mesh-box intervals must be strictly increasing")]
     InvalidMeshBoxInterval,
 
+    #[error(
+        "mesh-cylinder face counts require at least one vertical face and three around faces, got {vertical_count} by {around_count}"
+    )]
+    InvalidMeshCylinderFaceCount {
+        vertical_count: usize,
+        around_count: usize,
+    },
+
+    #[error("mesh-cylinder radius must be positive and its height interval strictly increasing")]
+    InvalidMeshCylinderDimensions,
+
     #[error("a mesh face subset must contain at least one face")]
     EmptyMeshFaceSubset,
 

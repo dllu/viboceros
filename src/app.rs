@@ -2,13 +2,14 @@ use std::collections::{BTreeSet, VecDeque};
 
 use eframe::egui::{self, RichText};
 use viboceros_command::{
-    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    MAX_CURVE_COMMAND_DEGREE,
+    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CYLINDER_FACE_COUNT,
+    DEFAULT_MESH_PLANE_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
-    MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
+    Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -94,6 +95,15 @@ enum InteractiveCommand {
         x_count: usize,
         y_count: usize,
         z_count: usize,
+    },
+    MeshCylinder {
+        center: Option<Point3>,
+        radius_point: Option<Point3>,
+        vertical_count: usize,
+        around_count: usize,
+        solid: bool,
+        both_sides: bool,
+        cap_style: MeshCapFaceStyle,
     },
     Polygon {
         side_count: usize,
@@ -214,6 +224,7 @@ impl InteractiveCommand {
             Self::Rectangle { .. } => "Rectangle",
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
+            Self::MeshCylinder { .. } => "MeshCylinder",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
@@ -327,6 +338,18 @@ impl InteractiveCommand {
             Self::MeshBox {
                 opposite: Some(_), ..
             } => "MeshBox: pick the height in the viewport (Esc to cancel)",
+            Self::MeshCylinder { center: None, .. } => {
+                "MeshCylinder: pick the base center in the viewport (Esc to cancel)"
+            }
+            Self::MeshCylinder {
+                center: Some(_),
+                radius_point: None,
+                ..
+            } => "MeshCylinder: pick the base radius in the viewport (Esc to cancel)",
+            Self::MeshCylinder {
+                radius_point: Some(_),
+                ..
+            } => "MeshCylinder: pick the height in the viewport (Esc to cancel)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }
@@ -545,6 +568,7 @@ impl InteractiveCommand {
             | Self::Rectangle { first: None }
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
+            | Self::MeshCylinder { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -588,6 +612,7 @@ impl InteractiveCommand {
             | Self::Rectangle { first: start }
             | Self::MeshPlane { first: start, .. }
             | Self::MeshBox { base: start, .. }
+            | Self::MeshCylinder { center: start, .. }
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
@@ -745,7 +770,104 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if normalized == "meshbox" {
+        let command = if normalized == "meshcylinder" {
+            let mut vertical_count = DEFAULT_MESH_CYLINDER_FACE_COUNT;
+            let mut around_count = DEFAULT_MESH_CYLINDER_FACE_COUNT;
+            let mut solid = true;
+            let mut both_sides = false;
+            let mut cap_style = MeshCapFaceStyle::Triangles;
+            let mut seen = [false; 5];
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count == 0 {
+                        return false;
+                    }
+                    vertical_count = count;
+                    0
+                } else if name.eq_ignore_ascii_case("AroundFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count < 3 {
+                        return false;
+                    }
+                    around_count = count;
+                    1
+                } else if name.eq_ignore_ascii_case("Solid") {
+                    solid = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    2
+                } else if name.eq_ignore_ascii_case("BothSides") {
+                    both_sides = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    3
+                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
+                    cap_style = if value.eq_ignore_ascii_case("Tri")
+                        || value.eq_ignore_ascii_case("Triangle")
+                        || value.eq_ignore_ascii_case("Triangles")
+                    {
+                        MeshCapFaceStyle::Triangles
+                    } else if value.eq_ignore_ascii_case("Quad")
+                        || value.eq_ignore_ascii_case("Quadrilateral")
+                        || value.eq_ignore_ascii_case("Quadrilaterals")
+                    {
+                        MeshCapFaceStyle::Quadrilaterals
+                    } else {
+                        return false;
+                    };
+                    4
+                } else {
+                    return false;
+                };
+                if seen[option_index] {
+                    return false;
+                }
+                seen[option_index] = true;
+            }
+            let wall_faces = vertical_count.checked_mul(around_count);
+            let cap_faces = if !solid {
+                Some(0)
+            } else if cap_style == MeshCapFaceStyle::Quadrilaterals
+                && around_count.is_multiple_of(2)
+            {
+                Some(if around_count == 4 { 2 } else { around_count })
+            } else {
+                around_count.checked_mul(2)
+            };
+            if wall_faces
+                .and_then(|wall| cap_faces.and_then(|caps| wall.checked_add(caps)))
+                .is_none_or(|faces| faces > MAX_MESH_CYLINDER_FACES)
+            {
+                return false;
+            }
+            InteractiveCommand::MeshCylinder {
+                center: None,
+                radius_point: None,
+                vertical_count,
+                around_count,
+                solid,
+                both_sides,
+                cap_style,
+            }
+        } else if normalized == "meshbox" {
             let mut x_count = DEFAULT_MESH_BOX_FACE_COUNT;
             let mut y_count = DEFAULT_MESH_BOX_FACE_COUNT;
             let mut z_count = DEFAULT_MESH_BOX_FACE_COUNT;
@@ -1965,6 +2087,100 @@ impl VibocerosApp {
                 opposite: Some(_),
                 ..
             } => unreachable!("mesh-box opposite corner requires a base corner"),
+            InteractiveCommand::MeshCylinder {
+                center: None,
+                radius_point: None,
+                vertical_count,
+                around_count,
+                solid,
+                both_sides,
+                cap_style,
+            } => {
+                let command = InteractiveCommand::MeshCylinder {
+                    center: Some(point),
+                    radius_point: None,
+                    vertical_count,
+                    around_count,
+                    solid,
+                    both_sides,
+                    cap_style,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Base center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshCylinder {
+                center: Some(center),
+                radius_point: None,
+                vertical_count,
+                around_count,
+                solid,
+                both_sides,
+                cap_style,
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log(
+                        "Error: mesh-cylinder radius must exceed model tolerance".to_owned(),
+                    );
+                    return;
+                }
+                let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
+                    self.push_log("Error: mesh-cylinder radius point is not finite".to_owned());
+                    return;
+                };
+                let command = InteractiveCommand::MeshCylinder {
+                    center: Some(center),
+                    radius_point: Some(radius_point),
+                    vertical_count,
+                    around_count,
+                    solid,
+                    both_sides,
+                    cap_style,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!(
+                    "Radius point: {}",
+                    format_model_point(radius_point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshCylinder {
+                center: Some(center),
+                radius_point: Some(radius_point),
+                vertical_count,
+                around_count,
+                solid,
+                both_sides,
+                cap_style,
+            } => {
+                let height = point.z() - center.z();
+                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
+                    self.push_log(
+                        "Error: mesh-cylinder height must exceed model tolerance".to_owned(),
+                    );
+                    return;
+                }
+                self.active_command = None;
+                let cap_style = match cap_style {
+                    MeshCapFaceStyle::Triangles => "Tri",
+                    MeshCapFaceStyle::Quadrilaterals => "Quad",
+                };
+                self.execute_command(&format!(
+                    "MeshCylinder {} {} {height:.6} VerticalFaces={} AroundFaces={} Solid={} BothSides={} CapFaceStyle={}",
+                    format_model_point(center),
+                    format_model_point(radius_point),
+                    vertical_count,
+                    around_count,
+                    if solid { "Yes" } else { "No" },
+                    if both_sides { "Yes" } else { "No" },
+                    cap_style
+                ));
+            }
+            InteractiveCommand::MeshCylinder {
+                center: None,
+                radius_point: Some(_),
+                ..
+            } => unreachable!("mesh-cylinder radius requires a center"),
             InteractiveCommand::Polygon {
                 side_count,
                 center: None,
@@ -2683,6 +2899,7 @@ impl VibocerosApp {
         let mut mesh_clicked = false;
         let mut mesh_to_nurb_clicked = false;
         let mut mesh_box_clicked = false;
+        let mut mesh_cylinder_clicked = false;
         let mut mesh_plane_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
@@ -2893,6 +3110,10 @@ impl VibocerosApp {
                 mesh_box_clicked = ui
                     .button("Mesh Box")
                     .on_hover_text("Draw a closed six-sided quadrilateral mesh box")
+                    .clicked();
+                mesh_cylinder_clicked = ui
+                    .button("Mesh Cylinder")
+                    .on_hover_text("Draw a polygonal cylinder with configurable grid faces")
                     .clicked();
                 mesh_plane_clicked = ui
                     .button("Mesh Plane")
@@ -3207,6 +3428,8 @@ impl VibocerosApp {
             self.execute_command("MeshToNURB");
         } else if mesh_box_clicked {
             self.try_start_interactive_command("MeshBox");
+        } else if mesh_cylinder_clicked {
+            self.try_start_interactive_command("MeshCylinder");
         } else if mesh_plane_clicked {
             self.try_start_interactive_command("MeshPlane");
         } else if triangulate_mesh_clicked {
@@ -4140,6 +4363,65 @@ mod tests {
         assert!(mesh.topology().is_solid());
         assert_eq!(app.document.selected_object_count(), 0);
         assert_eq!(app.document.undo_label(), Some("MeshBox"));
+    }
+
+    #[test]
+    fn interactive_mesh_cylinder_retains_options_and_validates_three_picks() {
+        let mut app = test_app();
+        assert!(!app.try_start_interactive_command("MeshCylinder AroundFaces=2"));
+        assert!(!app.try_start_interactive_command(
+            "MeshCylinder VerticalFaces=1000001 AroundFaces=3 Solid=No"
+        ));
+        assert!(app.try_start_interactive_command(
+            "MeshCylinder VerticalFaces=2 AroundFaces=6 Solid=Yes BothSides=Yes CapFaceStyle=Quadrilaterals"
+        ));
+        let center = point(1.0, 2.0, 1.0);
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(point(1.0, 2.0, 9.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshCylinder {
+                center: Some(center),
+                radius_point: None,
+                vertical_count: 2,
+                around_count: 6,
+                solid: true,
+                both_sides: true,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        let radius_point = point(3.0, 2.0, 1.0);
+        app.accept_drafting_point(point(3.0, 2.0, 9.0));
+        app.accept_drafting_point(point(9.0, 9.0, 1.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshCylinder {
+                center: Some(center),
+                radius_point: Some(radius_point),
+                vertical_count: 2,
+                around_count: 6,
+                solid: true,
+                both_sides: true,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(9.0, 9.0, 4.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created mesh cylinder")
+        };
+        assert_eq!(mesh.vertices().len(), 32);
+        assert_eq!(mesh.face_count(), 18);
+        assert_eq!(mesh.faces()[12], MeshFace::Quad([18, 21, 20, 19]));
+        assert_eq!(mesh.bounds().min().z(), -2.0);
+        assert_eq!(mesh.bounds().max().z(), 4.0);
+        assert!(mesh.topology().is_solid());
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("MeshCylinder"));
     }
 
     #[test]

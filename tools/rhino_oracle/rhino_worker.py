@@ -4782,6 +4782,49 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_box)
 
+    if kind == "mesh_cylinder":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "mesh-cylinder radius")
+        heights = [
+            _finite(value, "mesh-cylinder height")
+            for value in operation["heights"]
+        ]
+        base_origin = plane.Origin + heights[0] * plane.ZAxis
+        base_plane = Rhino.Geometry.Plane(base_origin, plane.XAxis, plane.YAxis)
+        circle = Rhino.Geometry.Circle(base_plane, radius)
+        cylinder = Rhino.Geometry.Cylinder(circle, heights[1] - heights[0])
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        cap_bottom = bool(operation["cap_bottom"])
+        cap_top = bool(operation["cap_top"])
+        circumscribe = bool(operation["circumscribe"])
+        quad_caps = bool(operation["quad_caps"])
+
+        def create_mesh_cylinder():
+            mesh = Rhino.Geometry.Mesh.CreateFromCylinder(
+                cylinder,
+                vertical,
+                around,
+                # Rhino 8.32's Python binding exposes these two positional
+                # booleans in physical top-then-bottom order.
+                cap_top,
+                cap_bottom,
+                circumscribe,
+                quad_caps,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh cylinder")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_cylinder)
+
     if kind == "nurbs_surface_mesh":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
