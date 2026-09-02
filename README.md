@@ -36,6 +36,7 @@ InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
+MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2
 MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
@@ -231,6 +232,12 @@ Regular surface cells remain quadrilaterals, singular sides and planar trim
 regions use triangles, and smooth-seam closed solids must remain watertight.
 Unsupported nonplanar general trims fail atomically rather than being silently
 meshed as untrimmed surfaces.
+`MeshBox` draws an unselected closed quadrilateral mesh from two opposite
+World-XY base corners and a signed height or height point. `XCount`, `YCount`,
+and `ZCount` set the side divisions and default to 1. Each of Rhino's bottom,
+top, front, right, back, and left grids retains independent raw vertices while
+exact-location topology forms one outward-oriented solid; one box is bounded
+to one million faces and invalid extents fail atomically.
 `MeshPlane` draws an unselected quadrilateral grid from two opposite top-view
 corners. `XCount` and `YCount` specify face counts and default to 10; corner
 order is normalized, the second corner is projected to the first corner's

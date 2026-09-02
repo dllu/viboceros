@@ -13,6 +13,9 @@ use crate::{
 /// Resource ceiling for one generated mesh-plane grid.
 pub const MAX_MESH_PLANE_FACES: usize = 1_000_000;
 
+/// Resource ceiling for one generated mesh-box shell.
+pub const MAX_MESH_BOX_FACES: usize = 1_000_000;
+
 /// Exact location-welded edge topology for a polygon mesh.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MeshTopology {
@@ -355,10 +358,10 @@ impl TriangleMesh {
         let y_step = (y_interval[1] - y_interval[0]) / y_count as Real;
         require_finite([x_step, y_step], "mesh-plane interval span")?;
         for y_index in 0..=y_count {
-            let y = y_interval[0] + y_index as Real * y_step;
+            let y = mesh_grid_sample(y_interval, y_step, y_count, y_index);
             let y_offset = y_axis.scaled(y)?;
             for x_index in 0..=x_count {
-                let x = x_interval[0] + x_index as Real * x_step;
+                let x = mesh_grid_sample(x_interval, x_step, x_count, x_index);
                 vertices.push(origin.translated(x_axis.scaled(x)?)?.translated(y_offset)?);
             }
         }
@@ -381,6 +384,153 @@ impl TriangleMesh {
                 ]));
             }
         }
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's six independently stored quadrilateral box grids.
+    ///
+    /// The bottom, top, front, right, back, and left grids are appended in
+    /// that order. Their raw vertices remain separate while exact-location
+    /// topology forms one closed, outward-oriented shell.
+    pub fn try_box_grid(
+        frame: Frame3,
+        intervals: [[Real; 2]; 3],
+        x_count: usize,
+        y_count: usize,
+        z_count: usize,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let [x_interval, y_interval, z_interval] = intervals;
+        require_finite(
+            x_interval.into_iter().chain(y_interval).chain(z_interval),
+            "mesh-box interval",
+        )?;
+        if x_count == 0 || y_count == 0 || z_count == 0 {
+            return Err(GeometryError::InvalidMeshBoxFaceCount {
+                x_count,
+                y_count,
+                z_count,
+            });
+        }
+        if x_interval[0] >= x_interval[1]
+            || y_interval[0] >= y_interval[1]
+            || z_interval[0] >= z_interval[1]
+        {
+            return Err(GeometryError::InvalidMeshBoxInterval);
+        }
+
+        let xy_faces = x_count
+            .checked_mul(y_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        let xz_faces = x_count
+            .checked_mul(z_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        let yz_faces = y_count
+            .checked_mul(z_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        let face_count = xy_faces
+            .checked_add(xz_faces)
+            .and_then(|count| count.checked_add(yz_faces))
+            .and_then(|count| count.checked_mul(2))
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_BOX_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+
+        let x_vertices = x_count
+            .checked_add(1)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let y_vertices = y_count
+            .checked_add(1)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let z_vertices = z_count
+            .checked_add(1)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let xy_vertices = x_vertices
+            .checked_mul(y_vertices)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let xz_vertices = x_vertices
+            .checked_mul(z_vertices)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let yz_vertices = y_vertices
+            .checked_mul(z_vertices)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let vertex_count = xy_vertices
+            .checked_add(xz_vertices)
+            .and_then(|count| count.checked_add(yz_vertices))
+            .and_then(|count| count.checked_mul(2))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if vertex_count
+            .checked_sub(1)
+            .is_some_and(|last_index| u32::try_from(last_index).is_err())
+        {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+
+        let x_step = (x_interval[1] - x_interval[0]) / x_count as Real;
+        let y_step = (y_interval[1] - y_interval[0]) / y_count as Real;
+        let z_step = (z_interval[1] - z_interval[0]) / z_count as Real;
+        require_finite([x_step, y_step, z_step], "mesh-box interval span")?;
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+
+        append_mesh_grid_side(&mut vertices, &mut faces, x_count, y_count, |x, y| {
+            mesh_box_point(
+                frame,
+                mesh_grid_sample(x_interval, x_step, x_count, x),
+                mesh_grid_sample(y_interval, y_step, y_count, y_count - y),
+                z_interval[0],
+            )
+        })?;
+        append_mesh_grid_side(&mut vertices, &mut faces, x_count, y_count, |x, y| {
+            mesh_box_point(
+                frame,
+                mesh_grid_sample(x_interval, x_step, x_count, x),
+                mesh_grid_sample(y_interval, y_step, y_count, y),
+                z_interval[1],
+            )
+        })?;
+        append_mesh_grid_side(&mut vertices, &mut faces, x_count, z_count, |x, z| {
+            mesh_box_point(
+                frame,
+                mesh_grid_sample(x_interval, x_step, x_count, x),
+                y_interval[0],
+                mesh_grid_sample(z_interval, z_step, z_count, z),
+            )
+        })?;
+        append_mesh_grid_side(&mut vertices, &mut faces, y_count, z_count, |y, z| {
+            mesh_box_point(
+                frame,
+                x_interval[1],
+                mesh_grid_sample(y_interval, y_step, y_count, y),
+                mesh_grid_sample(z_interval, z_step, z_count, z),
+            )
+        })?;
+        append_mesh_grid_side(&mut vertices, &mut faces, x_count, z_count, |x, z| {
+            mesh_box_point(
+                frame,
+                mesh_grid_sample(x_interval, x_step, x_count, x_count - x),
+                y_interval[1],
+                mesh_grid_sample(z_interval, z_step, z_count, z),
+            )
+        })?;
+        append_mesh_grid_side(&mut vertices, &mut faces, y_count, z_count, |y, z| {
+            mesh_box_point(
+                frame,
+                x_interval[0],
+                mesh_grid_sample(y_interval, y_step, y_count, y_count - y),
+                mesh_grid_sample(z_interval, z_step, z_count, z),
+            )
+        })?;
+        debug_assert_eq!(vertices.len(), vertex_count);
+        debug_assert_eq!(faces.len(), face_count);
         Self::try_new_faces(vertices, faces, tolerance)
     }
 
@@ -3305,6 +3455,54 @@ fn topology_euler_circuit(
     (reversed_vertices, reversed_edges)
 }
 
+fn mesh_grid_sample(interval: [Real; 2], step: Real, count: usize, index: usize) -> Real {
+    debug_assert!(index <= count);
+    if index == 0 {
+        interval[0]
+    } else if index == count {
+        interval[1]
+    } else {
+        interval[0] + index as Real * step
+    }
+}
+
+fn mesh_box_point(frame: Frame3, x: Real, y: Real, z: Real) -> Result<Point3, GeometryError> {
+    frame
+        .origin()
+        .translated(frame.x_axis().as_vector().scaled(x)?)?
+        .translated(frame.y_axis().as_vector().scaled(y)?)?
+        .translated(frame.z_axis().as_vector().scaled(z)?)
+}
+
+fn append_mesh_grid_side(
+    vertices: &mut Vec<Point3>,
+    faces: &mut Vec<MeshFace>,
+    u_count: usize,
+    v_count: usize,
+    mut point: impl FnMut(usize, usize) -> Result<Point3, GeometryError>,
+) -> Result<(), GeometryError> {
+    let offset = vertices.len();
+    for v in 0..=v_count {
+        for u in 0..=u_count {
+            vertices.push(point(u, v)?);
+        }
+    }
+    let width = u_count + 1;
+    for v in 0..v_count {
+        for u in 0..u_count {
+            let lower_left = offset + v * width + u;
+            let upper_left = lower_left + width;
+            faces.push(MeshFace::Quad([
+                u32::try_from(lower_left).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(lower_left + 1).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(upper_left + 1).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(upper_left).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            ]));
+        }
+    }
+    Ok(())
+}
+
 fn validate_triangle(
     vertices: &[Point3],
     triangle: [u32; 3],
@@ -3841,6 +4039,130 @@ mod tests {
                 context: "mesh-plane interval"
             })
         ));
+    }
+
+    #[test]
+    fn creates_rhino_ordered_unwelded_mesh_box_grids() {
+        let world = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let unit_counts = TriangleMesh::try_box_grid(
+            world,
+            [[0.0, 4.0], [0.0, 3.0], [0.0, 2.0]],
+            1,
+            1,
+            1,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(unit_counts.vertices().len(), 24);
+        assert_eq!(unit_counts.face_count(), 6);
+        assert_eq!(
+            unit_counts.faces(),
+            &[
+                MeshFace::Quad([0, 1, 3, 2]),
+                MeshFace::Quad([4, 5, 7, 6]),
+                MeshFace::Quad([8, 9, 11, 10]),
+                MeshFace::Quad([12, 13, 15, 14]),
+                MeshFace::Quad([16, 17, 19, 18]),
+                MeshFace::Quad([20, 21, 23, 22]),
+            ]
+        );
+        assert_eq!(unit_counts.vertices()[0], point(0.0, 3.0, 0.0));
+        assert_eq!(unit_counts.vertices()[3], point(4.0, 0.0, 0.0));
+        assert_eq!(unit_counts.vertices()[4], point(0.0, 0.0, 2.0));
+        assert_eq!(unit_counts.vertices()[23], point(0.0, 0.0, 2.0));
+        assert_eq!(
+            unit_counts.face_normal(0).unwrap().as_vector().to_array(),
+            [0.0, 0.0, -1.0]
+        );
+        assert_eq!(unit_counts.topology().topological_vertex_count(), 8);
+        assert_eq!(unit_counts.topology().edge_count(), 12);
+        assert!(unit_counts.topology().is_solid());
+        assert_eq!(unit_counts.area().unwrap(), 52.0);
+        assert!((unit_counts.signed_volume().unwrap() - 24.0).abs() < 1.0e-12);
+
+        let frame = Frame3::try_from_directions(
+            point(1.0, -2.0, 5.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let subdivided = TriangleMesh::try_box_grid(
+            frame,
+            [[-2.0, 4.0], [1.0, 10.0], [-1.0, 5.0]],
+            2,
+            3,
+            2,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(subdivided.vertices().len(), 66);
+        assert_eq!(subdivided.face_count(), 32);
+        assert_eq!(subdivided.faces()[0], MeshFace::Quad([0, 1, 4, 3]));
+        assert_eq!(subdivided.faces()[6], MeshFace::Quad([12, 13, 16, 15]));
+        assert_eq!(subdivided.faces()[12], MeshFace::Quad([24, 25, 28, 27]));
+        assert_eq!(subdivided.faces()[16], MeshFace::Quad([33, 34, 38, 37]));
+        assert_eq!(subdivided.faces()[22], MeshFace::Quad([45, 46, 49, 48]));
+        assert_eq!(subdivided.faces()[26], MeshFace::Quad([54, 55, 59, 58]));
+        assert_eq!(subdivided.topology().topological_vertex_count(), 34);
+        assert_eq!(subdivided.topology().edge_count(), 64);
+        assert!(subdivided.topology().is_solid());
+        assert!((subdivided.area().unwrap() - 288.0).abs() < 1.0e-12);
+        assert!((subdivided.signed_volume().unwrap() - 324.0).abs() < 1.0e-10);
+    }
+
+    #[test]
+    fn mesh_box_grid_rejects_invalid_counts_extents_and_resource_overflow() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            TriangleMesh::try_box_grid(
+                frame,
+                [[0.0, 4.0], [0.0, 3.0], [0.0, 2.0]],
+                1,
+                0,
+                1,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshBoxFaceCount {
+                x_count: 1,
+                y_count: 0,
+                z_count: 1,
+            })
+        );
+        assert_eq!(
+            TriangleMesh::try_box_grid(
+                frame,
+                [[4.0, 0.0], [0.0, 3.0], [0.0, 2.0]],
+                1,
+                1,
+                1,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshBoxInterval)
+        );
+        assert_eq!(
+            TriangleMesh::try_box_grid(
+                frame,
+                [[0.0, 4.0], [0.0, 3.0], [0.0, 2.0]],
+                MAX_MESH_BOX_FACES + 1,
+                1,
+                1,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
     }
 
     #[test]

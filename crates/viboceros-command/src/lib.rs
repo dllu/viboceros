@@ -11,10 +11,10 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, CircularArc3,
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
-    MAX_CURVE_DIVISION_POINTS, MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshEdgeFilter,
-    MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3,
-    PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    join_polylines,
+    MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES,
+    MeshEdgeFilter, MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3,
+    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -102,6 +102,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(MeshPlaneCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MeshBoxCommand)
             .expect("unique built-in command");
         registry
             .register(BoxCommand)
@@ -1730,6 +1733,187 @@ fn parse_mesh_plane_arguments(arguments: &[&str]) -> Result<MeshPlaneCommandOpti
         .x_count
         .checked_mul(options.y_count)
         .is_none_or(|face_count| face_count > MAX_MESH_PLANE_FACES)
+    {
+        return Err(GeometryError::TooManyMeshFaces.into());
+    }
+    Ok(options)
+}
+
+pub const DEFAULT_MESH_BOX_FACE_COUNT: usize = 1;
+const MESH_BOX_USAGE: &str = "MeshBox base-corner opposite-base-corner height-or-point [XCount=positive-integer] [YCount=positive-integer] [ZCount=positive-integer]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct MeshBoxCommandOptions {
+    x_count: usize,
+    y_count: usize,
+    z_count: usize,
+}
+
+struct MeshBoxCommand;
+
+impl Command for MeshBoxCommand {
+    fn name(&self) -> &'static str {
+        "MeshBox"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let leading_options = mesh_box_leading_option_count(arguments);
+        let (base_corner, opposite_corner, height, options) = if leading_options == 0 {
+            let (base_corner, base_consumed) = parse_point(arguments)?;
+            let (opposite_corner, opposite_consumed) = parse_point(&arguments[base_consumed..])?;
+            let height_start = base_consumed + opposite_consumed;
+            let (height, height_consumed) =
+                parse_mesh_box_height(&arguments[height_start..], base_corner)?;
+            let options = parse_mesh_box_arguments(&arguments[height_start + height_consumed..])?;
+            (base_corner, opposite_corner, height, options)
+        } else {
+            let options = parse_mesh_box_arguments(&arguments[..leading_options])?;
+            let (base_corner, base_consumed) = parse_point(&arguments[leading_options..])?;
+            let opposite_start = leading_options + base_consumed;
+            let (opposite_corner, opposite_consumed) = parse_point(&arguments[opposite_start..])?;
+            let height_start = opposite_start + opposite_consumed;
+            let (height, height_consumed) =
+                parse_mesh_box_height(&arguments[height_start..], base_corner)?;
+            require_consumed(arguments, height_start + height_consumed, MESH_BOX_USAGE)?;
+            (base_corner, opposite_corner, height, options)
+        };
+        if !document
+            .tolerance()
+            .approx_eq(base_corner.z(), opposite_corner.z())
+        {
+            return Err(CommandError::BoxBaseCornersNotCoplanar);
+        }
+        let base_delta = base_corner.vector_to(opposite_corner)?;
+        let frame = Frame3::try_from_directions(
+            base_corner,
+            Vector3::try_new(1.0, 0.0, 0.0)?,
+            Vector3::try_new(0.0, 1.0, 0.0)?,
+            document.tolerance(),
+        )?;
+        let increasing_interval = |value: Real| [value.min(0.0), value.max(0.0)];
+        let mesh = TriangleMesh::try_box_grid(
+            frame,
+            [
+                increasing_interval(base_delta.x()),
+                increasing_interval(base_delta.y()),
+                increasing_interval(height),
+            ],
+            options.x_count,
+            options.y_count,
+            options.z_count,
+            document.tolerance(),
+        )?;
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Added closed mesh box {id} ({} × {} × {} side divisions)",
+            options.x_count, options.y_count, options.z_count
+        ))
+    }
+}
+
+fn is_mesh_box_option_name(argument: &str) -> bool {
+    let name = argument.split_once('=').map_or(argument, |(name, _)| name);
+    option_name_eq(name, "XCount")
+        || option_name_eq(name, "YCount")
+        || option_name_eq(name, "ZCount")
+}
+
+fn mesh_box_leading_option_count(arguments: &[&str]) -> usize {
+    let mut index = 0;
+    while let Some(argument) = arguments.get(index) {
+        if !is_mesh_box_option_name(argument) {
+            break;
+        }
+        index = index.saturating_add(if argument.contains('=') { 1 } else { 2 });
+        if index >= arguments.len() {
+            return arguments.len();
+        }
+    }
+    index
+}
+
+fn parse_mesh_box_height(
+    arguments: &[&str],
+    base_corner: Point3,
+) -> Result<(Real, usize), CommandError> {
+    let first = arguments
+        .first()
+        .ok_or(CommandError::Usage(MESH_BOX_USAGE))?;
+    if first.contains(',') {
+        let (height_point, consumed) = parse_point(arguments)?;
+        return Ok((base_corner.vector_to(height_point)?.z(), consumed));
+    }
+    if arguments.len() >= 3 && !is_mesh_box_option_name(arguments[1]) {
+        let (height_point, consumed) = parse_point(arguments)?;
+        return Ok((base_corner.vector_to(height_point)?.z(), consumed));
+    }
+    Ok((parse_finite_real(first)?, 1))
+}
+
+fn parse_mesh_box_arguments(arguments: &[&str]) -> Result<MeshBoxCommandOptions, CommandError> {
+    let mut options = MeshBoxCommandOptions {
+        x_count: DEFAULT_MESH_BOX_FACE_COUNT,
+        y_count: DEFAULT_MESH_BOX_FACE_COUNT,
+        z_count: DEFAULT_MESH_BOX_FACE_COUNT,
+    };
+    let mut seen = [false; 3];
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else if is_mesh_box_option_name(argument) {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(MESH_BOX_USAGE))?;
+            (argument, *value, 2)
+        } else {
+            return Err(CommandError::Usage(MESH_BOX_USAGE));
+        };
+        let count = value
+            .trim_start_matches('_')
+            .parse::<usize>()
+            .ok()
+            .filter(|count| *count > 0)
+            .ok_or_else(|| CommandError::InvalidMeshBoxFaceCount(value.to_owned()))?;
+        let option_index = if option_name_eq(name, "XCount") {
+            0
+        } else if option_name_eq(name, "YCount") {
+            1
+        } else if option_name_eq(name, "ZCount") {
+            2
+        } else {
+            return Err(CommandError::Usage(MESH_BOX_USAGE));
+        };
+        if seen[option_index] {
+            return Err(CommandError::Usage(MESH_BOX_USAGE));
+        }
+        match option_index {
+            0 => options.x_count = count,
+            1 => options.y_count = count,
+            2 => options.z_count = count,
+            _ => unreachable!("mesh-box option index is in range"),
+        }
+        seen[option_index] = true;
+        index += consumed;
+    }
+    if options
+        .x_count
+        .checked_mul(options.y_count)
+        .and_then(|xy| {
+            options
+                .x_count
+                .checked_mul(options.z_count)
+                .and_then(|xz| xy.checked_add(xz))
+        })
+        .and_then(|xy_xz| {
+            options
+                .y_count
+                .checked_mul(options.z_count)
+                .and_then(|yz| xy_xz.checked_add(yz))
+        })
+        .and_then(|half| half.checked_mul(2))
+        .is_none_or(|face_count| face_count > MAX_MESH_BOX_FACES)
     {
         return Err(GeometryError::TooManyMeshFaces.into());
     }
@@ -12671,6 +12855,9 @@ pub enum CommandError {
     #[error("'{0}' is not a valid positive mesh-plane face count")]
     InvalidMeshPlaneFaceCount(String),
 
+    #[error("'{0}' is not a valid positive mesh-box face count")]
+    InvalidMeshBoxFaceCount(String),
+
     #[error("'{0}' is not a valid r,g,b color with components from 0 through 255")]
     InvalidColor(String),
 
@@ -13242,7 +13429,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshPlane, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshPlane, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -20091,6 +20278,125 @@ mod tests {
                 "{invalid}"
             );
             assert_eq!(document.objects().len(), 0);
+        }
+    }
+
+    #[test]
+    fn mesh_box_creates_an_unselected_rhino_ordered_closed_grid() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert_eq!(
+            parse_mesh_box_arguments(&[]).unwrap(),
+            MeshBoxCommandOptions {
+                x_count: 1,
+                y_count: 1,
+                z_count: 1,
+            }
+        );
+        assert_eq!(
+            parse_mesh_box_arguments(&["_XCount=_2", "-YCount", "3", "ZCount=2"]).unwrap(),
+            MeshBoxCommandOptions {
+                x_count: 2,
+                y_count: 3,
+                z_count: 2,
+            }
+        );
+
+        let message = registry
+            .execute(
+                &mut document,
+                "MeshBox XCount=2 YCount 3 ZCount=2 5,8,3 1,2,3 9 9 -1",
+            )
+            .unwrap();
+        assert!(message.ends_with("(2 × 3 × 2 side divisions)"));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.selected_object_count(), 0);
+        let Geometry::Mesh(mesh) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshBox must create a polygon mesh")
+        };
+        assert_eq!(mesh.vertices().len(), 66);
+        assert_eq!(mesh.face_count(), 32);
+        assert_eq!(mesh.vertices()[0], Point3::try_new(1.0, 8.0, -1.0).unwrap());
+        assert_eq!(
+            mesh.faces()[0],
+            viboceros_geometry::MeshFace::Quad([0, 1, 4, 3])
+        );
+        assert_eq!(
+            mesh.faces()[6],
+            viboceros_geometry::MeshFace::Quad([12, 13, 16, 15])
+        );
+        assert_eq!(
+            mesh.faces()[12],
+            viboceros_geometry::MeshFace::Quad([24, 25, 28, 27])
+        );
+        assert_eq!(
+            mesh.faces()[16],
+            viboceros_geometry::MeshFace::Quad([33, 34, 38, 37])
+        );
+        assert_eq!(
+            mesh.faces()[22],
+            viboceros_geometry::MeshFace::Quad([45, 46, 49, 48])
+        );
+        assert_eq!(
+            mesh.faces()[26],
+            viboceros_geometry::MeshFace::Quad([54, 55, 59, 58])
+        );
+        assert_eq!(
+            mesh.bounds().min(),
+            Point3::try_new(1.0, 2.0, -1.0).unwrap()
+        );
+        assert_eq!(mesh.bounds().max(), Point3::try_new(5.0, 8.0, 3.0).unwrap());
+        assert_eq!(mesh.topology().topological_vertex_count(), 34);
+        assert_eq!(mesh.topology().edge_count(), 64);
+        assert!(mesh.topology().is_solid());
+        assert!(document.tolerance().approx_eq(mesh.area().unwrap(), 128.0));
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(mesh.signed_volume().unwrap(), 96.0)
+        );
+        assert_eq!(document.undo_label(), Some("MeshBox"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshBox 0,0,1 2,3,1 9,9,5 XCount=2 YCount=3 ZCount=4",
+            )
+            .unwrap();
+        let Geometry::Mesh(point_height) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshBox height-point form must create a mesh")
+        };
+        assert_eq!(point_height.face_count(), 52);
+        assert_eq!(
+            point_height.bounds().max(),
+            Point3::try_new(2.0, 3.0, 5.0).unwrap()
+        );
+    }
+
+    #[test]
+    fn mesh_box_rejects_invalid_counts_and_extents_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "MeshBox",
+            "MeshBox 0,0,0 2,3,0 4 XCount=0",
+            "MeshBox 0,0,0 2,3,0 4 YCount=nope",
+            "MeshBox 0,0,0 2,3,0 4 ZCount=2 ZCount=3",
+            "MeshBox 0,0,0 2,3,0 4 Unknown=2",
+            "MeshBox 0,0,0 2,3,0 4 XCount=500001 YCount=1 ZCount=1",
+            "MeshBox 0,0,0 2,3,1 4",
+            "MeshBox 0,0,0 0,3,0 4",
+            "MeshBox 0,0,0 2,0,0 4",
+            "MeshBox 0,0,0 2,3,0 0",
+            "MeshBox XCount=2 0,0,0 2,3,0 4 extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0, "{command}");
+            assert_eq!(document.undo_label(), None, "{command}");
         }
     }
 

@@ -361,6 +361,18 @@ pub enum Operation {
         x_count: usize,
         y_count: usize,
     },
+    MeshBox {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        x_interval: [f64; 2],
+        y_interval: [f64; 2],
+        z_interval: [f64; 2],
+        x_count: usize,
+        y_count: usize,
+        z_count: usize,
+    },
     NurbsSurfaceMesh {
         id: String,
         degree_u: usize,
@@ -458,6 +470,7 @@ impl Operation {
             | Self::MeshFillHoles { id, .. }
             | Self::MeshToNurb { id, .. }
             | Self::MeshPlane { id, .. }
+            | Self::MeshBox { id, .. }
             | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
@@ -1635,6 +1648,36 @@ fn execute(
                     black_box(*y_interval),
                     black_box(*x_count),
                     black_box(*y_count),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::MeshBox {
+            origin,
+            x_axis,
+            y_axis,
+            x_interval,
+            y_interval,
+            z_interval,
+            x_count,
+            y_count,
+            z_count,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_box_grid(
+                    frame,
+                    black_box([*x_interval, *y_interval, *z_interval]),
+                    black_box(*x_count),
+                    black_box(*y_count),
+                    black_box(*z_count),
                     tolerance,
                 )
             })?;
@@ -5671,6 +5714,40 @@ mod tests {
                 ],
             })
         );
+    }
+
+    #[test]
+    fn creates_ordered_mesh_box_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshBox {
+            id: "box".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            x_interval: [0.0, 4.0],
+            y_interval: [0.0, 3.0],
+            z_interval: [0.0, 2.0],
+            x_count: 1,
+            y_count: 1,
+            z_count: 1,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value["faces"],
+            json!([
+                [0, 1, 3, 2],
+                [4, 5, 7, 6],
+                [8, 9, 11, 10],
+                [12, 13, 15, 14],
+                [16, 17, 19, 18],
+                [20, 21, 23, 22],
+            ])
+        );
+        let vertices = response.results[0].value["vertices"].as_array().unwrap();
+        assert_eq!(vertices.len(), 24);
+        assert_eq!(vertices[0], json!([0.0, 3.0, 0.0]));
+        assert_eq!(vertices[3], json!([4.0, 0.0, 0.0]));
+        assert_eq!(vertices[4], json!([0.0, 0.0, 2.0]));
+        assert_eq!(vertices[23], json!([0.0, 0.0, 2.0]));
     }
 
     #[test]

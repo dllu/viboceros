@@ -1,11 +1,14 @@
 use std::collections::{BTreeSet, VecDeque};
 
 use eframe::egui::{self, RichText};
-use viboceros_command::{CommandRegistry, DEFAULT_MESH_PLANE_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE};
+use viboceros_command::{
+    CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
+    MAX_CURVE_COMMAND_DEGREE,
+};
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_PLANE_FACES,
-    MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
+    MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -84,6 +87,13 @@ enum InteractiveCommand {
         first: Option<Point3>,
         x_count: usize,
         y_count: usize,
+    },
+    MeshBox {
+        base: Option<Point3>,
+        opposite: Option<Point3>,
+        x_count: usize,
+        y_count: usize,
+        z_count: usize,
     },
     Polygon {
         side_count: usize,
@@ -203,6 +213,7 @@ impl InteractiveCommand {
             Self::InterpCrv => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
             Self::MeshPlane { .. } => "MeshPlane",
+            Self::MeshBox { .. } => "MeshBox",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
@@ -305,6 +316,17 @@ impl InteractiveCommand {
             Self::MeshPlane { first: Some(_), .. } => {
                 "MeshPlane: pick the opposite corner in the viewport (Esc to cancel)"
             }
+            Self::MeshBox { base: None, .. } => {
+                "MeshBox: pick the first base corner in the viewport (Esc to cancel)"
+            }
+            Self::MeshBox {
+                base: Some(_),
+                opposite: None,
+                ..
+            } => "MeshBox: pick the opposite base corner in the viewport (Esc to cancel)",
+            Self::MeshBox {
+                opposite: Some(_), ..
+            } => "MeshBox: pick the height in the viewport (Esc to cancel)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }
@@ -522,6 +544,7 @@ impl InteractiveCommand {
             | Self::InterpCrv
             | Self::Rectangle { first: None }
             | Self::MeshPlane { first: None, .. }
+            | Self::MeshBox { base: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -564,6 +587,7 @@ impl InteractiveCommand {
             | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
             | Self::MeshPlane { first: start, .. }
+            | Self::MeshBox { base: start, .. }
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
@@ -721,7 +745,68 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if normalized == "meshplane" {
+        let command = if normalized == "meshbox" {
+            let mut x_count = DEFAULT_MESH_BOX_FACE_COUNT;
+            let mut y_count = DEFAULT_MESH_BOX_FACE_COUNT;
+            let mut z_count = DEFAULT_MESH_BOX_FACE_COUNT;
+            let mut seen = [false; 3];
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let Ok(count) = value.parse::<usize>() else {
+                    return false;
+                };
+                if count == 0 {
+                    return false;
+                }
+                let option_index = if name.eq_ignore_ascii_case("XCount") {
+                    0
+                } else if name.eq_ignore_ascii_case("YCount") {
+                    1
+                } else if name.eq_ignore_ascii_case("ZCount") {
+                    2
+                } else {
+                    return false;
+                };
+                if seen[option_index] {
+                    return false;
+                }
+                match option_index {
+                    0 => x_count = count,
+                    1 => y_count = count,
+                    2 => z_count = count,
+                    _ => unreachable!("mesh-box option index is in range"),
+                }
+                seen[option_index] = true;
+            }
+            if x_count
+                .checked_mul(y_count)
+                .and_then(|xy| {
+                    x_count
+                        .checked_mul(z_count)
+                        .and_then(|xz| xy.checked_add(xz))
+                })
+                .and_then(|xy_xz| {
+                    y_count
+                        .checked_mul(z_count)
+                        .and_then(|yz| xy_xz.checked_add(yz))
+                })
+                .and_then(|half| half.checked_mul(2))
+                .is_none_or(|face_count| face_count > MAX_MESH_BOX_FACES)
+            {
+                return false;
+            }
+            InteractiveCommand::MeshBox {
+                base: None,
+                opposite: None,
+                x_count,
+                y_count,
+                z_count,
+            }
+        } else if normalized == "meshplane" {
             let mut x_count = DEFAULT_MESH_PLANE_FACE_COUNT;
             let mut y_count = DEFAULT_MESH_PLANE_FACE_COUNT;
             let mut x_seen = false;
@@ -1799,6 +1884,87 @@ impl VibocerosApp {
                     y_count
                 ));
             }
+            InteractiveCommand::MeshBox {
+                base: None,
+                opposite: None,
+                x_count,
+                y_count,
+                z_count,
+            } => {
+                let command = InteractiveCommand::MeshBox {
+                    base: Some(point),
+                    opposite: None,
+                    x_count,
+                    y_count,
+                    z_count,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("First base corner: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshBox {
+                base: Some(base),
+                opposite: None,
+                x_count,
+                y_count,
+                z_count,
+            } => {
+                let tolerance = self.document.tolerance().absolute();
+                if (base.x() - point.x()).abs() <= tolerance
+                    || (base.y() - point.y()).abs() <= tolerance
+                {
+                    self.push_log(
+                        "Error: mesh-box base width and depth must both exceed model tolerance"
+                            .to_owned(),
+                    );
+                    return;
+                }
+                let Ok(opposite) = Point3::try_new(point.x(), point.y(), base.z()) else {
+                    self.push_log("Error: mesh-box base corner is not finite".to_owned());
+                    return;
+                };
+                let command = InteractiveCommand::MeshBox {
+                    base: Some(base),
+                    opposite: Some(opposite),
+                    x_count,
+                    y_count,
+                    z_count,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!(
+                    "Opposite base corner: {}",
+                    format_model_point(opposite)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshBox {
+                base: Some(base),
+                opposite: Some(opposite),
+                x_count,
+                y_count,
+                z_count,
+            } => {
+                let height = point.z() - base.z();
+                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
+                    self.push_log("Error: mesh-box height must exceed model tolerance".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "MeshBox {} {} {} XCount={} YCount={} ZCount={}",
+                    format_model_point(base),
+                    format_model_point(opposite),
+                    format_model_point(point),
+                    x_count,
+                    y_count,
+                    z_count
+                ));
+            }
+            InteractiveCommand::MeshBox {
+                base: None,
+                opposite: Some(_),
+                ..
+            } => unreachable!("mesh-box opposite corner requires a base corner"),
             InteractiveCommand::Polygon {
                 side_count,
                 center: None,
@@ -2516,6 +2682,7 @@ impl VibocerosApp {
         let mut split_disjoint_mesh_clicked = false;
         let mut mesh_clicked = false;
         let mut mesh_to_nurb_clicked = false;
+        let mut mesh_box_clicked = false;
         let mut mesh_plane_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
@@ -2722,6 +2889,10 @@ impl VibocerosApp {
                 mesh_to_nurb_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Mesh → NURBS"))
                     .on_hover_text("Duplicate selected mesh faces as degree-one NURBS B-reps")
+                    .clicked();
+                mesh_box_clicked = ui
+                    .button("Mesh Box")
+                    .on_hover_text("Draw a closed six-sided quadrilateral mesh box")
                     .clicked();
                 mesh_plane_clicked = ui
                     .button("Mesh Plane")
@@ -3034,6 +3205,8 @@ impl VibocerosApp {
             self.execute_command("Mesh");
         } else if mesh_to_nurb_clicked {
             self.execute_command("MeshToNURB");
+        } else if mesh_box_clicked {
+            self.try_start_interactive_command("MeshBox");
         } else if mesh_plane_clicked {
             self.try_start_interactive_command("MeshPlane");
         } else if triangulate_mesh_clicked {
@@ -3915,6 +4088,58 @@ mod tests {
         assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 1, 4, 3]));
         assert_eq!(app.document.selected_object_count(), 0);
         assert_eq!(app.document.undo_label(), Some("MeshPlane"));
+    }
+
+    #[test]
+    fn interactive_mesh_box_retains_counts_and_validates_all_three_picks() {
+        let mut app = test_app();
+        assert!(!app.try_start_interactive_command("MeshBox XCount=0"));
+        assert!(!app.try_start_interactive_command("MeshBox XCount=500001 YCount=1 ZCount=1"));
+        assert!(app.try_start_interactive_command("MeshBox XCount=2 YCount=3 ZCount=2"));
+        let base = point(5.0, 8.0, 3.0);
+        app.accept_drafting_point(base);
+        app.accept_drafting_point(point(5.0, 2.0, 9.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshBox {
+                base: Some(base),
+                opposite: None,
+                x_count: 2,
+                y_count: 3,
+                z_count: 2,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        let opposite = point(1.0, 2.0, 3.0);
+        app.accept_drafting_point(point(1.0, 2.0, 9.0));
+        app.accept_drafting_point(point(9.0, 9.0, 3.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshBox {
+                base: Some(base),
+                opposite: Some(opposite),
+                x_count: 2,
+                y_count: 3,
+                z_count: 2,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(9.0, 9.0, -1.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created mesh box")
+        };
+        assert_eq!(mesh.vertices().len(), 66);
+        assert_eq!(mesh.face_count(), 32);
+        assert_eq!(mesh.vertices()[0], point(1.0, 8.0, -1.0));
+        assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 1, 4, 3]));
+        assert_eq!(mesh.bounds().min(), point(1.0, 2.0, -1.0));
+        assert_eq!(mesh.bounds().max(), point(5.0, 8.0, 3.0));
+        assert!(mesh.topology().is_solid());
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("MeshBox"));
     }
 
     #[test]

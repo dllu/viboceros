@@ -248,7 +248,8 @@ def _mesh_value(mesh):
     return {
         "triangles": _mesh_triangles(mesh),
         "vertices": [
-            _xyz(mesh.Vertices[index]) for index in range(mesh.Vertices.Count)
+            _xyz(mesh.Vertices.Point3dAt(index))
+            for index in range(mesh.Vertices.Count)
         ],
     }
 
@@ -264,7 +265,8 @@ def _polygon_mesh_value(mesh):
     return {
         "faces": faces,
         "vertices": [
-            _xyz(mesh.Vertices[index]) for index in range(mesh.Vertices.Count)
+            _xyz(mesh.Vertices.Point3dAt(index))
+            for index in range(mesh.Vertices.Count)
         ],
     }
 
@@ -281,7 +283,9 @@ def _canonical_polygon_mesh_face_value(mesh):
             quad_count += 1
         else:
             triangle_count += 1
-        points = [tuple(_xyz(mesh.Vertices[vertex])) for vertex in indices]
+        points = [
+            tuple(_xyz(mesh.Vertices.Point3dAt(vertex))) for vertex in indices
+        ]
         rotations = [tuple(points[offset:] + points[:offset]) for offset in range(len(points))]
         faces.append(min(rotations))
     faces.sort()
@@ -363,7 +367,7 @@ def _mesh_fill_hole_value(mesh, source_vertex_count, source_face_count):
     patch_triangles.sort()
     return {
         "added_vertices": [
-            _xyz(mesh.Vertices[index])
+            _xyz(mesh.Vertices.Point3dAt(index))
             for index in range(source_vertex_count, mesh.Vertices.Count)
         ],
         "patch_triangles": patch_triangles,
@@ -378,9 +382,11 @@ def _mesh_unweld_value(mesh):
         raw_vertices = [int(face.A), int(face.B), int(face.C)]
         if not face.IsTriangle:
             raw_vertices.append(int(face.D))
-        face_points.append([_xyz(mesh.Vertices[raw]) for raw in raw_vertices])
+        face_points.append(
+            [_xyz(mesh.Vertices.Point3dAt(raw)) for raw in raw_vertices]
+        )
         for raw in raw_vertices:
-            point = tuple(_xyz(mesh.Vertices[raw]))
+            point = tuple(_xyz(mesh.Vertices.Point3dAt(raw)))
             raw_groups = point_groups.setdefault(point, {})
             raw_groups.setdefault(raw, []).append(face_index)
     vertex_face_groups = []
@@ -4744,6 +4750,37 @@ def _execute(operation, iterations, tolerance):
                 mesh.Dispose()
 
         return _measure(iterations, create_mesh_plane)
+
+    if kind == "mesh_box":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        intervals = [
+            Rhino.Geometry.Interval(
+                _finite(operation[name][0], "mesh-box interval"),
+                _finite(operation[name][1], "mesh-box interval"),
+            )
+            for name in ("x_interval", "y_interval", "z_interval")
+        ]
+        box = Rhino.Geometry.Box(plane, intervals[0], intervals[1], intervals[2])
+        counts = [
+            int(operation[name]) for name in ("x_count", "y_count", "z_count")
+        ]
+
+        def create_mesh_box():
+            mesh = Rhino.Geometry.Mesh.CreateFromBox(
+                box, counts[0], counts[1], counts[2]
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh box")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_box)
 
     if kind == "nurbs_surface_mesh":
         degree_u = int(operation["degree_u"])

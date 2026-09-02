@@ -1,0 +1,45 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_box",
+      "id": "unit-counts",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "x_interval": [0, 4],
+      "y_interval": [0, 3],
+      "z_interval": [0, 2],
+      "x_count": 1,
+      "y_count": 1,
+      "z_count": 1
+    },
+    {
+      "op": "mesh_box",
+      "id": "subdivided",
+      "origin": [1, -2, 5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "x_interval": [-2, 4],
+      "y_interval": [1, 10],
+      "z_interval": [-1, 5],
+      "x_count": 2,
+      "y_count": 3,
+      "z_count": 2
+    },
+    {
+      "op": "mesh_box",
+      "id": "oblique-frame",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "x_interval": [-1, 2],
+      "y_interval": [-2, 4],
+      "z_interval": [1, 5],
+      "x_count": 2,
+      "y_count": 1,
+      "z_count": 3
+    }
+  ]
+}
