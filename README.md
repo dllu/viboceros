@@ -83,6 +83,7 @@ ProjectToCPlane DeleteInput=Yes
 ToNURBS DeleteInputObjects=Yes
 ExtrudeCrv 5 BothSides=No DeleteInput=No
 ExtrudeCrvToPoint 0,0,10 DeleteInput=No
+Revolve 0,0,0 0,0,1 270 StartAngle=0 DeleteInput=No
 Group Assembly
 Group All Everything
 SetObjectName "Fastener Part" AppendCounter=Yes
@@ -179,6 +180,14 @@ preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
 form. Enter it without an apex to pick one in the viewport. Inputs are retained
 by default; `DeleteInput=Yes` removes them. `Output=Surface` and `Solid=No` are
 accepted explicitly; SubD and capped-solid output are not yet represented.
+`Revolve` creates exact rational NURBS surfaces around an arbitrary two-point
+axis. Supply a signed sweep from -360 through 360 degrees, or use
+`FullCircle=Yes`; `StartAngle=` rotates the beginning of a partial sweep.
+Entering `Revolve` without an axis starts the two-pick viewport workflow, which
+defaults to a full turn and also accepts `Angle=`, `StartAngle=`, and
+`DeleteInput=`. The exact surface keeps the profile in V and uses fully
+multiple quadratic quadrant knots in U. `Output=Surface` and `Deformable=No`
+are supported; deformable and SubD revolves are not yet represented.
 `ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a

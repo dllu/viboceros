@@ -93,6 +93,9 @@ impl CommandRegistry {
             .register(ExtrudeCurveToPointCommand)
             .expect("unique built-in command");
         registry
+            .register(RevolveCommand)
+            .expect("unique built-in command");
+        registry
             .register(LayerCommand)
             .expect("unique built-in command");
         registry
@@ -5383,6 +5386,148 @@ fn parse_curve_to_point_extrusion(arguments: &[&str]) -> Result<(Point3, bool), 
     Ok((apex, delete_input.unwrap_or(false)))
 }
 
+const REVOLVE_USAGE: &str = "Revolve axis-start axis-end angle-degrees [StartAngle=degrees] [FullCircle=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Deformable=No] [SplitAtTangents=Yes|No]";
+
+struct RevolveCommand;
+
+impl Command for RevolveCommand {
+    fn name(&self) -> &'static str {
+        "Revolve"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (axis_origin, axis, start_angle, sweep_angle, delete_input) =
+            parse_revolution(arguments, document.tolerance())?;
+        let mut revolutions = Vec::new();
+        for id in selected {
+            let Some(curve) = document
+                .object(id)
+                .expect("selected objects exist")
+                .geometry()
+                .nurbs_curve_representation()?
+            else {
+                continue;
+            };
+            revolutions.push((
+                id,
+                NurbsSurface::try_revolved_curve(
+                    &curve,
+                    axis_origin,
+                    axis,
+                    start_angle,
+                    sweep_angle,
+                )?,
+            ));
+        }
+        if revolutions.is_empty() {
+            return Err(CommandError::NoRevolvableCurves);
+        }
+
+        let output_count = revolutions.len();
+        for (_, surface) in &revolutions {
+            document.add_geometry(Geometry::NurbsSurface(surface.clone()))?;
+        }
+        if delete_input {
+            for (id, _) in revolutions {
+                document.delete_object(id)?;
+            }
+        }
+        Ok(format!(
+            "Revolved {output_count} curve object(s) through {:.6} degrees into exact NURBS surfaces{}",
+            sweep_angle.to_degrees(),
+            if delete_input {
+                ", deleting the input curves"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
+fn parse_revolution(
+    arguments: &[&str],
+    tolerance: Tolerance,
+) -> Result<(Point3, UnitVector3, Real, Real, bool), CommandError> {
+    let mut positional = Vec::new();
+    let mut start_angle_degrees = None;
+    let mut full_circle = None;
+    let mut delete_input = None;
+    let mut output_seen = false;
+    let mut deformable_seen = false;
+    let mut split_at_tangents = None;
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            positional.push(*argument);
+            continue;
+        };
+        if option_name_eq(name, "StartAngle") && start_angle_degrees.is_none() {
+            start_angle_degrees = Some(parse_finite_real(value)?);
+        } else if option_name_eq(name, "FullCircle") && full_circle.is_none() {
+            full_circle = Some(parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?);
+        } else if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
+            delete_input = Some(parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?);
+        } else if option_name_eq(name, "Output") && !output_seen {
+            if !value
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Surface")
+            {
+                return Err(CommandError::UnsupportedRevolveOutput);
+            }
+            output_seen = true;
+        } else if option_name_eq(name, "Deformable") && !deformable_seen {
+            let deformable = parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?;
+            if deformable {
+                return Err(CommandError::DeformableRevolveUnsupported);
+            }
+            deformable_seen = true;
+        } else if option_name_eq(name, "SplitAtTangents") && split_at_tangents.is_none() {
+            split_at_tangents =
+                Some(parse_yes_no(value).ok_or(CommandError::Usage(REVOLVE_USAGE))?);
+        } else {
+            return Err(CommandError::Usage(REVOLVE_USAGE));
+        }
+    }
+
+    let (axis_origin, origin_consumed) = parse_point(&positional)?;
+    let (axis_end, end_consumed) = parse_point(&positional[origin_consumed..])?;
+    let remaining = &positional[origin_consumed + end_consumed..];
+    let sweep_degrees = if full_circle.unwrap_or(false) {
+        if !remaining.is_empty() {
+            return Err(CommandError::Usage(REVOLVE_USAGE));
+        }
+        360.0
+    } else {
+        let [angle] = remaining else {
+            return Err(CommandError::Usage(REVOLVE_USAGE));
+        };
+        let degrees = parse_finite_real(angle)?;
+        if degrees == 0.0 || degrees.abs() > 360.0 {
+            return Err(CommandError::InvalidRevolutionAngle((*angle).to_owned()));
+        }
+        degrees
+    };
+    let start_angle = start_angle_degrees.unwrap_or(0.0).to_radians();
+    let sweep_angle = if sweep_degrees.abs() == 360.0 {
+        sweep_degrees.signum() * std::f64::consts::TAU
+    } else {
+        sweep_degrees.to_radians()
+    };
+    if !start_angle.is_finite() || !sweep_angle.is_finite() {
+        return Err(CommandError::InvalidRevolutionAngle(
+            sweep_degrees.to_string(),
+        ));
+    }
+    let axis = axis_origin.vector_to(axis_end)?.normalized(tolerance)?;
+    Ok((
+        axis_origin,
+        axis,
+        start_angle,
+        sweep_angle,
+        delete_input.unwrap_or(false),
+    ))
+}
+
 fn parse_delete_input(
     arguments: &[&str],
     usage: &'static str,
@@ -6409,6 +6554,18 @@ pub enum CommandError {
     #[error("solid curve extrusion requires capped polysurface support")]
     SolidCurveExtrusionUnsupported,
 
+    #[error("none of the selected objects is a revolvable curve")]
+    NoRevolvableCurves,
+
+    #[error("Revolve currently supports Output=Surface only")]
+    UnsupportedRevolveOutput,
+
+    #[error("deformable Revolve output is not yet supported")]
+    DeformableRevolveUnsupported,
+
+    #[error("'{0}' is not a valid non-zero revolution angle from -360 through 360 degrees")]
+    InvalidRevolutionAngle(String),
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -6465,7 +6622,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -12402,6 +12559,190 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "ExtrudeCrvToPoint 1,2,5"),
             Err(CommandError::NoExtrudableCurves)
+        ));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn revolve_matches_rhino_exact_surface_attributes_groups_and_delete_input() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let output_layer = document.current_layer_id();
+        let input_layer = document
+            .add_layer("Profiles", ColorRgb::new(91, 92, 93))
+            .unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 3.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let rational_curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 1.5).unwrap(), 0.75).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 3.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let source_ids = [
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Line(line),
+                    ObjectAttributes::on_layer(input_layer)
+                        .with_name("line")
+                        .with_object_color(ColorRgb::new(12, 34, 56)),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::NurbsCurve(rational_curve.clone()),
+                    ObjectAttributes::on_layer(input_layer)
+                        .with_name("rational")
+                        .with_object_color(ColorRgb::new(12, 34, 56)),
+                )
+                .unwrap(),
+            document
+                .add_geometry_with_attributes(
+                    Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()),
+                    ObjectAttributes::on_layer(input_layer).with_name("point"),
+                )
+                .unwrap(),
+        ];
+        let group = document
+            .add_group(Some("Revolve profiles".to_owned()), source_ids)
+            .unwrap();
+        document
+            .select_objects_direct(source_ids, SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                "Revolve 0,0,0 0,0,1 FullCircle=Yes Output=Surface Deformable=No SplitAtTangents=No",
+            )
+            .unwrap();
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.group(group).unwrap().members().len(), 3);
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        let outputs = document
+            .objects()
+            .filter(|object| !source_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for output in &outputs {
+            assert!(!document.is_selected(output.id()));
+            assert_eq!(output.attributes().layer_id(), output_layer);
+            assert_eq!(output.attributes().name(), None);
+            assert_eq!(output.attributes().color_source(), ObjectColorSource::Layer);
+            assert_eq!(output.attributes().object_color(), ColorRgb::BLACK);
+        }
+        let surfaces = outputs
+            .iter()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => surface,
+                _ => panic!("Revolve must create NURBS surfaces"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(surfaces[0].degree_u(), 2);
+        assert_eq!(surfaces[0].degree_v(), 1);
+        assert_eq!(surfaces[0].control_point_count_u(), 9);
+        assert_eq!(surfaces[0].domain_u(), 0.0..=4.0 * std::f64::consts::PI);
+        assert_eq!(surfaces[0].domain_v(), 0.0..=3.0);
+        assert_eq!(
+            surfaces[0].control_point(8, 0),
+            surfaces[0].control_point(0, 0)
+        );
+        assert_eq!(surfaces[1].degree_v(), rational_curve.degree());
+        assert_eq!(surfaces[1].knots_v(), rational_curve.knots());
+        assert_eq!(surfaces[1].domain_u(), 0.0..=8.0 * std::f64::consts::PI);
+        assert_eq!(
+            surfaces[1].control_point(1, 1).unwrap().weight(),
+            0.75 * 0.5_f64.sqrt()
+        );
+        assert_eq!(document.undo_label(), Some("Revolve"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Revolve 0 0 0 0 0 1 120 StartAngle=30 DeleteInput=Yes SplitAtTangents=Yes",
+            )
+            .unwrap();
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source_ids[2]]
+        );
+        assert!(document.object(source_ids[0]).is_none());
+        assert!(document.object(source_ids[1]).is_none());
+        assert!(document.is_selected(source_ids[2]));
+        let partial_outputs = document
+            .objects()
+            .filter(|object| object.id() != source_ids[2])
+            .collect::<Vec<_>>();
+        assert_eq!(partial_outputs.len(), 2);
+        assert!(
+            partial_outputs
+                .iter()
+                .all(|object| !document.is_selected(object.id()))
+        );
+        let Geometry::NurbsSurface(partial_line) = partial_outputs[0].geometry() else {
+            panic!("expected a partially revolved line surface")
+        };
+        assert_eq!(partial_line.control_point_count_u(), 5);
+        assert_eq!(partial_line.domain_u(), 0.0..=2.0 * 120.0_f64.to_radians());
+        assert!(partial_line.evaluate(0.0, 0.0).unwrap().is_near(
+            Point3::try_new(3.0_f64.sqrt(), 1.0, 0.0).unwrap(),
+            tolerance
+        ));
+        assert!(
+            partial_line
+                .evaluate(*partial_line.domain_u().end(), 3.0)
+                .unwrap()
+                .is_near(
+                    Point3::try_new(-3.0_f64.sqrt(), 1.0, 3.0).unwrap(),
+                    tolerance
+                )
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct(source_ids, SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "Revolve",
+            "Revolve 0,0,0 0,0,0 90",
+            "Revolve 0,0,0 0,0,1 0",
+            "Revolve 0,0,0 0,0,1 361",
+            "Revolve 0,0,0 0,0,1 90 FullCircle=Yes",
+            "Revolve 0,0,0 0,0,1 FullCircle=Maybe",
+            "Revolve 0,0,0 0,0,1 90 DeleteInput=Yes DeleteInput=No",
+            "Revolve 0,0,0 0,0,1 90 Output=SubD",
+            "Revolve 0,0,0 0,0,1 90 Deformable=Yes",
+            "Revolve 0,0,0 0,0,1 90 SplitAtTangents=Maybe",
+            "Revolve 0,0,0 0,0,1 90 extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.group(group).unwrap().members().len(), 3);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document
+            .select_objects_direct([source_ids[2]], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Revolve 0,0,0 0,0,1 90"),
+            Err(CommandError::NoRevolvableCurves)
         ));
         assert_eq!(document.objects().len(), 3);
         assert_eq!(document.undo_label(), history.as_deref());

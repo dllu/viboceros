@@ -224,6 +224,134 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs an exact rational surface by revolving a NURBS profile.
+    ///
+    /// U is the quadratic rational revolution direction and V preserves the
+    /// profile's degree and complete knot vector. The U domain follows Rhino's
+    /// exact-revolve convention: sweep radians multiplied by the profile's
+    /// OpenNURBS 65-sample maximum-radius estimate. Quadrant knots are fully
+    /// multiple and every surface weight is the product of its angular and
+    /// profile-curve weights.
+    pub fn try_revolved_curve(
+        curve: &crate::NurbsCurve,
+        axis_origin: Point3,
+        axis_direction: UnitVector3,
+        start_angle_radians: Real,
+        sweep_angle_radians: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([start_angle_radians], "revolution start angle")?;
+        if !sweep_angle_radians.is_finite()
+            || sweep_angle_radians == 0.0
+            || sweep_angle_radians.abs() > std::f64::consts::TAU
+        {
+            return Err(GeometryError::InvalidRevolutionSweep);
+        }
+
+        let axis_vector = axis_direction.as_vector();
+        let axis_center = |point: Point3| -> Result<Point3, GeometryError> {
+            let offset = axis_origin.vector_to(point)?;
+            axis_origin.translated(axis_vector.scaled(offset.dot(axis_vector)?)?)
+        };
+        let mut radius_estimate: Real = 0.0;
+        for index in 0..=64 {
+            let point = curve.evaluate(curve.parameter_at(index as Real / 64.0)?)?;
+            radius_estimate = radius_estimate.max(point.distance_to(axis_center(point)?)?);
+        }
+        if radius_estimate == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "revolution profile radius",
+            });
+        }
+
+        let sweep_magnitude = sweep_angle_radians.abs();
+        let quadrant_limit = (0.5 + f64::EPSILON.sqrt()) * std::f64::consts::PI;
+        let span_count: usize = if sweep_magnitude <= quadrant_limit {
+            1
+        } else if sweep_magnitude <= 2.0 * quadrant_limit {
+            2
+        } else {
+            4
+        };
+        let segment_angle = sweep_angle_radians / span_count as Real;
+        let middle_weight = (0.5 * segment_angle).cos();
+        let domain_length = radius_estimate * sweep_magnitude;
+        require_finite([domain_length], "revolution parameter domain")?;
+
+        let control_count_u = span_count
+            .checked_mul(2)
+            .and_then(|count| count.checked_add(1))
+            .ok_or(GeometryError::InvalidControlNet {
+                context: "revolution control-point count overflowed usize",
+            })?;
+        let control_count_v = curve.control_points().len();
+        let control_count = control_count_u.checked_mul(control_count_v).ok_or(
+            GeometryError::InvalidControlNet {
+                context: "revolution control-net size overflowed usize",
+            },
+        )?;
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidControlNet {
+                context: "revolution control net exceeds addressable memory",
+            }
+        })?;
+
+        let normalized_start = start_angle_radians.rem_euclid(std::f64::consts::TAU);
+        let full_turn = sweep_magnitude == std::f64::consts::TAU;
+        for profile_control in curve.control_points() {
+            let point = profile_control.point();
+            let center = axis_center(point)?;
+            let first =
+                AffineTransform3::try_rotation(axis_origin, axis_direction, normalized_start)?
+                    .transform_point(point)?;
+            controls.push(WeightedPoint3::try_new(first, profile_control.weight())?);
+            for span in 0..span_count {
+                let middle_angle = normalized_start + (span as Real + 0.5) * segment_angle;
+                let rotated_middle =
+                    AffineTransform3::try_rotation(axis_origin, axis_direction, middle_angle)?
+                        .transform_point(point)?;
+                let middle = center.translated(
+                    center
+                        .vector_to(rotated_middle)?
+                        .scaled(middle_weight.recip())?,
+                )?;
+                controls.push(WeightedPoint3::try_new(
+                    middle,
+                    profile_control.weight() * middle_weight,
+                )?);
+
+                let endpoint = if full_turn && span + 1 == span_count {
+                    first
+                } else {
+                    AffineTransform3::try_rotation(
+                        axis_origin,
+                        axis_direction,
+                        normalized_start + (span + 1) as Real * segment_angle,
+                    )?
+                    .transform_point(point)?
+                };
+                controls.push(WeightedPoint3::try_new(endpoint, profile_control.weight())?);
+            }
+        }
+
+        let mut knots_u = Vec::with_capacity(control_count_u + 3);
+        knots_u.extend([0.0; 3]);
+        for boundary in 1..span_count {
+            let knot = domain_length * boundary as Real / span_count as Real;
+            knots_u.extend([knot; 2]);
+        }
+        knots_u.extend([domain_length; 3]);
+        Self::try_new_rational(
+            2,
+            curve.degree(),
+            control_count_u,
+            control_count_v,
+            controls,
+            knots_u,
+            curve.knots().to_vec(),
+        )
+    }
+
     /// Constructs a bilinear surface from four perimeter-ordered corners.
     /// The order is first, adjacent second, opposite third, adjacent fourth.
     pub fn try_bilinear(corners: [Point3; 4]) -> Result<Self, GeometryError> {
@@ -1529,6 +1657,219 @@ mod tests {
         assert!(
             NurbsSurface::try_extruded_curve_to_point(&curve, curve.evaluate(2.0).unwrap())
                 .is_err()
+        );
+    }
+
+    #[test]
+    fn exact_curve_revolution_matches_rhino_spans_domains_and_tensor_weights() {
+        let axis_origin = point(0.0, 0.0, 0.0);
+        let axis = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let profile = crate::NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(2.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(2.0, 0.0, 1.5), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(2.0, 0.0, 3.0), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let full = NurbsSurface::try_revolved_curve(
+            &profile,
+            axis_origin,
+            axis,
+            0.0,
+            std::f64::consts::TAU,
+        )
+        .unwrap();
+        let quadrant = std::f64::consts::PI;
+        let domain_end = 4.0 * std::f64::consts::PI;
+
+        assert_eq!(full.degree_u(), 2);
+        assert_eq!(full.degree_v(), profile.degree());
+        assert_eq!(full.control_point_count_u(), 9);
+        assert_eq!(full.control_point_count_v(), 3);
+        assert_eq!(
+            full.knots_u(),
+            &[
+                0.0,
+                0.0,
+                0.0,
+                quadrant,
+                quadrant,
+                2.0 * quadrant,
+                2.0 * quadrant,
+                3.0 * quadrant,
+                3.0 * quadrant,
+                domain_end,
+                domain_end,
+                domain_end,
+            ]
+        );
+        assert_eq!(full.knots_v(), profile.knots());
+        assert_eq!(
+            full.control_point(0, 0).unwrap().point(),
+            point(2.0, 0.0, 0.0)
+        );
+        assert_point_near(
+            full.control_point(1, 0).unwrap().point(),
+            point(2.0, 2.0, 0.0),
+        );
+        assert_eq!(full.control_point(1, 0).unwrap().weight(), 0.5_f64.sqrt());
+        assert_eq!(full.control_point(8, 0), full.control_point(0, 0));
+        assert_eq!(
+            full.control_point(1, 1).unwrap().weight(),
+            0.75 * 0.5_f64.sqrt()
+        );
+        assert_point_near(full.evaluate(quadrant, 2.0).unwrap(), point(0.0, 2.0, 0.0));
+        assert_point_near(
+            full.evaluate(2.0 * quadrant, 7.0).unwrap(),
+            point(-2.0, 0.0, 3.0),
+        );
+
+        let line = crate::NurbsCurve::try_new(
+            1,
+            vec![point(2.0, 0.0, 0.0), point(2.0, 0.0, 3.0)],
+            vec![0.0, 0.0, 3.0, 3.0],
+        )
+        .unwrap();
+        let partial = NurbsSurface::try_revolved_curve(
+            &line,
+            axis_origin,
+            axis,
+            30.0_f64.to_radians(),
+            120.0_f64.to_radians(),
+        )
+        .unwrap();
+        let partial_end = 2.0 * 120.0_f64.to_radians();
+        assert_eq!(partial.control_point_count_u(), 5);
+        assert_eq!(
+            partial.knots_u(),
+            &[
+                0.0,
+                0.0,
+                0.0,
+                partial_end * 0.5,
+                partial_end * 0.5,
+                partial_end,
+                partial_end,
+                partial_end,
+            ]
+        );
+        assert_point_near(
+            partial.evaluate(0.0, 0.0).unwrap(),
+            point(3.0_f64.sqrt(), 1.0, 0.0),
+        );
+        assert_point_near(
+            partial.evaluate(partial_end * 0.5, 0.0).unwrap(),
+            point(0.0, 2.0, 0.0),
+        );
+        assert_point_near(
+            partial.evaluate(partial_end, 3.0).unwrap(),
+            point(-3.0_f64.sqrt(), 1.0, 3.0),
+        );
+        assert!(Tolerance::DEFAULT.approx_eq(
+            partial.control_point(1, 0).unwrap().weight(),
+            30.0_f64.to_radians().cos()
+        ));
+
+        let negative =
+            NurbsSurface::try_revolved_curve(&line, axis_origin, axis, 0.0, -90.0_f64.to_radians())
+                .unwrap();
+        assert_point_near(
+            negative.evaluate(*negative.domain_u().end(), 3.0).unwrap(),
+            point(0.0, -2.0, 3.0),
+        );
+        let wide =
+            NurbsSurface::try_revolved_curve(&line, axis_origin, axis, 0.0, 270.0_f64.to_radians())
+                .unwrap();
+        assert_eq!(wide.control_point_count_u(), 9);
+
+        let x_axis = UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let x_profile = crate::NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 2.0, 0.0), point(3.0, 2.0, 0.0)],
+            vec![0.0, 0.0, 3.0, 3.0],
+        )
+        .unwrap();
+        let about_x = NurbsSurface::try_revolved_curve(
+            &x_profile,
+            axis_origin,
+            x_axis,
+            0.0,
+            90.0_f64.to_radians(),
+        )
+        .unwrap();
+        assert_point_near(
+            about_x.evaluate(*about_x.domain_u().end(), 0.0).unwrap(),
+            point(0.0, 0.0, 2.0),
+        );
+        assert_point_near(
+            about_x.evaluate(*about_x.domain_u().end(), 3.0).unwrap(),
+            point(3.0, 0.0, 2.0),
+        );
+
+        let axis_touching = crate::NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(2.0, 0.0, 3.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let axis_touching = NurbsSurface::try_revolved_curve(
+            &axis_touching,
+            axis_origin,
+            axis,
+            0.0,
+            std::f64::consts::TAU,
+        )
+        .unwrap();
+        assert_eq!(axis_touching.domain_u(), 0.0..=domain_end);
+
+        let bulging = crate::NurbsCurve::try_new(
+            2,
+            vec![
+                point(2.0, 0.0, 0.0),
+                point(10.0, 0.0, 1.5),
+                point(2.0, 0.0, 3.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let bulging = NurbsSurface::try_revolved_curve(
+            &bulging,
+            axis_origin,
+            axis,
+            0.0,
+            std::f64::consts::TAU,
+        )
+        .unwrap();
+        assert_eq!(bulging.domain_u(), 0.0..=12.0 * std::f64::consts::PI);
+
+        let on_axis = crate::NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(0.0, 0.0, 3.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(
+            NurbsSurface::try_revolved_curve(
+                &on_axis,
+                axis_origin,
+                axis,
+                0.0,
+                std::f64::consts::TAU,
+            )
+            .is_err()
+        );
+        assert!(
+            NurbsSurface::try_revolved_curve(
+                &line,
+                axis_origin,
+                axis,
+                0.0,
+                std::f64::consts::TAU + 0.1,
+            )
+            .is_err()
         );
     }
 

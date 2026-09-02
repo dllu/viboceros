@@ -125,6 +125,9 @@ pub enum GeometryError {
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
 
+    #[error("a revolution sweep must be finite, non-zero, and no greater than one turn")]
+    InvalidRevolutionSweep,
+
     #[error("a triangle mesh must contain at least one triangle")]
     EmptyMesh,
 

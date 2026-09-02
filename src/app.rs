@@ -110,6 +110,12 @@ enum InteractiveCommand {
     ExtrudeCurveToPoint {
         delete_input: bool,
     },
+    Revolve {
+        axis_start: Option<Point3>,
+        start_angle_degrees: f64,
+        sweep_degrees: f64,
+        delete_input: bool,
+    },
 }
 
 impl InteractiveCommand {
@@ -138,6 +144,7 @@ impl InteractiveCommand {
             Self::Shear { .. } => "Shear",
             Self::ExtrudeCurve { .. } => "ExtrudeCrv",
             Self::ExtrudeCurveToPoint { .. } => "ExtrudeCrvToPoint",
+            Self::Revolve { .. } => "Revolve",
         }
     }
 
@@ -325,6 +332,13 @@ impl InteractiveCommand {
             Self::ExtrudeCurveToPoint { .. } => {
                 "ExtrudeCrvToPoint: pick the apex in the viewport (Esc to cancel)"
             }
+            Self::Revolve {
+                axis_start: None, ..
+            } => "Revolve: pick the axis start in the viewport (Esc to cancel)",
+            Self::Revolve {
+                axis_start: Some(_),
+                ..
+            } => "Revolve: pick the axis end in the viewport (Esc to cancel)",
         }
     }
 
@@ -356,7 +370,10 @@ impl InteractiveCommand {
             | Self::Mirror { start: None }
             | Self::Shear { origin: None, .. }
             | Self::ExtrudeCurve { base: None, .. }
-            | Self::ExtrudeCurveToPoint { .. } => None,
+            | Self::ExtrudeCurveToPoint { .. }
+            | Self::Revolve {
+                axis_start: None, ..
+            } => None,
             Self::Line { start }
             | Self::Circle { center: start }
             | Self::Rectangle { first: start }
@@ -365,7 +382,10 @@ impl InteractiveCommand {
             | Self::ArrayLinear { start, .. }
             | Self::Array { start, .. }
             | Self::Mirror { start }
-            | Self::ExtrudeCurve { base: start, .. } => start,
+            | Self::ExtrudeCurve { base: start, .. }
+            | Self::Revolve {
+                axis_start: start, ..
+            } => start,
             Self::Ellipse { center, .. } | Self::Polygon { center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],
@@ -584,6 +604,58 @@ impl VibocerosApp {
                 delete_input_seen = true;
             }
             InteractiveCommand::ExtrudeCurveToPoint { delete_input }
+        } else if normalized == "revolve" {
+            let mut start_angle_degrees = 0.0;
+            let mut sweep_degrees = 360.0;
+            let mut delete_input = false;
+            let mut start_angle_seen = false;
+            let mut sweep_seen = false;
+            let mut delete_input_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("StartAngle") && !start_angle_seen {
+                    let Ok(angle) = value.parse::<f64>() else {
+                        return false;
+                    };
+                    if !angle.is_finite() {
+                        return false;
+                    }
+                    start_angle_degrees = angle;
+                    start_angle_seen = true;
+                } else if matches!(name.to_ascii_lowercase().as_str(), "angle" | "sweepangle")
+                    && !sweep_seen
+                {
+                    let Ok(angle) = value.parse::<f64>() else {
+                        return false;
+                    };
+                    if !angle.is_finite() || angle == 0.0 || angle.abs() > 360.0 {
+                        return false;
+                    }
+                    sweep_degrees = angle;
+                    sweep_seen = true;
+                } else if name.eq_ignore_ascii_case("DeleteInput") && !delete_input_seen {
+                    delete_input = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    delete_input_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::Revolve {
+                axis_start: None,
+                start_angle_degrees,
+                sweep_degrees,
+                delete_input,
+            }
         } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
@@ -807,6 +879,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
+                | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
             self.push_log("Error: no objects are selected".to_owned());
@@ -1437,6 +1510,42 @@ impl VibocerosApp {
                     if delete_input { "Yes" } else { "No" }
                 ));
             }
+            InteractiveCommand::Revolve {
+                axis_start: None,
+                start_angle_degrees,
+                sweep_degrees,
+                delete_input,
+            } => {
+                let command = InteractiveCommand::Revolve {
+                    axis_start: Some(point),
+                    start_angle_degrees,
+                    sweep_degrees,
+                    delete_input,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Axis start: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Revolve {
+                axis_start: Some(axis_start),
+                start_angle_degrees,
+                sweep_degrees,
+                delete_input,
+            } => {
+                if axis_start.is_near(point, self.document.tolerance()) {
+                    self.push_log("Error: revolve axis points must differ".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Revolve {} {} {} StartAngle={} DeleteInput={}",
+                    format_model_point(axis_start),
+                    format_model_point(point),
+                    sweep_degrees,
+                    start_angle_degrees,
+                    if delete_input { "Yes" } else { "No" }
+                ));
+            }
         }
     }
 
@@ -1552,6 +1661,7 @@ impl VibocerosApp {
         let mut to_nurbs_clicked = false;
         let mut extrude_curve_clicked = false;
         let mut extrude_curve_to_point_clicked = false;
+        let mut revolve_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
         let selectable_previous = self.document.selectable_previous_object_count();
@@ -1754,6 +1864,10 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Extrude to Point"))
                     .on_hover_text("Extrude selected curves to a picked apex")
                     .clicked();
+                revolve_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Revolve"))
+                    .on_hover_text("Revolve selected curves around a picked axis")
+                    .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
@@ -1867,6 +1981,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("ExtrudeCrv");
         } else if extrude_curve_to_point_clicked {
             self.try_start_interactive_command("ExtrudeCrvToPoint");
+        } else if revolve_clicked {
+            self.try_start_interactive_command("Revolve");
         }
     }
 
@@ -2733,6 +2849,7 @@ mod tests {
             "Shear",
             "ExtrudeCrv",
             "ExtrudeCrvToPoint",
+            "Revolve",
         ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
@@ -2837,6 +2954,70 @@ mod tests {
         );
         assert_eq!(app.document.undo_label(), Some("ExtrudeCrvToPoint"));
         assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint DeleteInput=Maybe"));
+    }
+
+    #[test]
+    fn interactive_revolve_uses_two_axis_picks_and_angle_options() {
+        let mut app = test_app();
+        let source = app
+            .document
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    point(2.0, 0.0, 0.0),
+                    point(2.0, 0.0, 3.0),
+                    app.document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(
+            app.try_start_interactive_command("Revolve Angle=120 StartAngle=30 DeleteInput=No")
+        );
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Revolve {
+                axis_start: None,
+                start_angle_degrees: 30.0,
+                sweep_degrees: 120.0,
+                delete_input: false,
+            })
+        );
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Revolve {
+                axis_start: Some(point(0.0, 0.0, 0.0)),
+                start_angle_degrees: 30.0,
+                sweep_degrees: 120.0,
+                delete_input: false,
+            })
+        );
+        app.accept_drafting_point(point(0.0, 0.0, 1.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 2);
+        assert!(app.document.is_selected(source));
+        let output = app.document.objects().nth(1).unwrap();
+        assert!(!app.document.is_selected(output.id()));
+        let Geometry::NurbsSurface(surface) = output.geometry() else {
+            panic!("expected a revolved NURBS surface")
+        };
+        assert_eq!(surface.control_point_count_u(), 5);
+        assert_eq!(surface.domain_u(), 0.0..=2.0 * 120.0_f64.to_radians());
+        assert!(
+            surface
+                .evaluate(0.0, 0.0)
+                .unwrap()
+                .is_near(point(3.0_f64.sqrt(), 1.0, 0.0), app.document.tolerance())
+        );
+        assert_eq!(app.document.undo_label(), Some("Revolve"));
+        assert!(!app.try_start_interactive_command("Revolve Angle=0"));
+        assert!(!app.try_start_interactive_command("Revolve Angle=361"));
+        assert!(!app.try_start_interactive_command("Revolve DeleteInput=Maybe"));
     }
 
     #[test]
