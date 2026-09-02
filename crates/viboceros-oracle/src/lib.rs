@@ -170,6 +170,13 @@ pub enum Operation {
         knots: Vec<f64>,
         parameter: f64,
     },
+    NurbsCurveClosestPoint {
+        id: String,
+        degree: usize,
+        control_points: Vec<ControlPoint>,
+        knots: Vec<f64>,
+        target: [f64; 3],
+    },
     NurbsCurveLength {
         id: String,
         degree: usize,
@@ -305,6 +312,7 @@ impl Operation {
             | Self::PolylineArea { id, .. }
             | Self::PolylineJoin { id, .. }
             | Self::NurbsCurveEvaluate { id, .. }
+            | Self::NurbsCurveClosestPoint { id, .. }
             | Self::NurbsCurveLength { id, .. }
             | Self::NurbsCurveShortFilter { id, .. }
             | Self::NurbsCurveDivide { id, .. }
@@ -662,6 +670,35 @@ fn execute(
                 json!({
                     "derivative": derivative.to_array(),
                     "point": point.to_array(),
+                }),
+                elapsed,
+            )
+        }
+        Operation::NurbsCurveClosestPoint {
+            degree,
+            control_points,
+            knots,
+            target,
+            ..
+        } => {
+            let curve = NurbsCurve::try_new_rational(
+                *degree,
+                weighted_points(control_points)?,
+                knots.clone(),
+            )?;
+            let target = point(*target)?;
+            let ((parameter, closest, distance), elapsed) = measure(iterations, || {
+                let parameter =
+                    black_box(&curve).closest_parameter(black_box(target), tolerance)?;
+                let closest = curve.evaluate(parameter)?;
+                let distance = closest.distance_to(target)?;
+                Ok((parameter, closest, distance))
+            })?;
+            (
+                json!({
+                    "distance": distance,
+                    "parameter": parameter,
+                    "point": closest.to_array(),
                 }),
                 elapsed,
             )
@@ -4458,6 +4495,30 @@ mod tests {
             response.results[0].value,
             json!({"is_closed": true, "is_periodic": true})
         );
+    }
+
+    #[test]
+    fn reports_exact_nurbs_curve_closest_point() {
+        let response = run_request(&request(vec![Operation::NurbsCurveClosestPoint {
+            id: "closest".to_owned(),
+            degree: 2,
+            control_points: vec![
+                control([1.0, 0.0, 0.0], 1.0),
+                control([1.0, 1.0, 0.0], 0.5_f64.sqrt()),
+                control([0.0, 1.0, 0.0], 1.0),
+            ],
+            knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            target: [2.0_f64.sqrt(), 2.0_f64.sqrt(), 0.0],
+        }]))
+        .unwrap();
+        assert_eq!(response.results[0].value["parameter"], json!(0.5));
+        let point = response.results[0].value["point"].as_array().unwrap();
+        assert!(
+            (point[0].as_f64().unwrap() - 0.5_f64.sqrt()).abs() <= 1.0e-15
+                && (point[1].as_f64().unwrap() - 0.5_f64.sqrt()).abs() <= 1.0e-15
+                && point[2] == json!(0.0)
+        );
+        assert!((response.results[0].value["distance"].as_f64().unwrap() - 1.0).abs() <= 1.0e-12);
     }
 
     #[test]

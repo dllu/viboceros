@@ -423,6 +423,101 @@ impl NurbsCurve {
             .map(|(_, derivative)| derivative)
     }
 
+    /// Finds the active-domain parameter nearest to a finite model-space
+    /// point.
+    ///
+    /// Every nonempty knot span contributes endpoint and midpoint seeds, with
+    /// an additional bounded uniform seed set for high-span and periodic
+    /// curves. The best candidates are refined by projected-tangent Newton
+    /// steps with clamping and monotone backtracking, so rational and
+    /// non-uniform parameterizations do not need to be sampled as polylines.
+    pub fn closest_parameter(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Real, GeometryError> {
+        let domain = self.domain();
+        let domain_start = *domain.start();
+        let domain_end = *domain.end();
+        let seeds = curve_closest_parameter_seeds(self.spans(), domain_start, domain_end);
+        let mut candidates = seeds
+            .into_iter()
+            .filter_map(|parameter| {
+                self.evaluate(parameter)
+                    .and_then(|point| point.distance_to(target))
+                    .ok()
+                    .map(|distance| (distance, parameter))
+            })
+            .collect::<Vec<_>>();
+        candidates.sort_by(|left, right| {
+            left.0
+                .total_cmp(&right.0)
+                .then_with(|| left.1.total_cmp(&right.1))
+        });
+        candidates.truncate(16);
+        let mut best = candidates
+            .first()
+            .copied()
+            .ok_or(GeometryError::Degenerate {
+                context: "NURBS curve closest-point search",
+            })?;
+        for (_, seed) in candidates {
+            if let Ok((parameter, distance)) =
+                self.refine_closest_parameter(target, seed, [domain_start, domain_end], tolerance)
+                && (distance < best.0 || (distance == best.0 && parameter < best.1))
+            {
+                best = (distance, parameter);
+            }
+        }
+        Ok(best.1)
+    }
+
+    fn refine_closest_parameter(
+        &self,
+        target: Point3,
+        mut parameter: Real,
+        domain: [Real; 2],
+        tolerance: Tolerance,
+    ) -> Result<(Real, Real), GeometryError> {
+        let mut distance = self.evaluate(parameter)?.distance_to(target)?;
+        for _ in 0..64 {
+            let (point, derivative) = self.evaluate_with_derivative(parameter)?;
+            let speed = derivative.length()?;
+            if speed == 0.0 {
+                break;
+            }
+            let residual = point.vector_to(target)?;
+            let tangent_projection = residual.dot(derivative)? / speed;
+            if tangent_projection.abs() <= tolerance.absolute() {
+                break;
+            }
+            let delta = tangent_projection / speed;
+            if !delta.is_finite() {
+                break;
+            }
+            let mut step: Real = 1.0;
+            let mut accepted = None;
+            for _ in 0..24 {
+                let candidate = step.mul_add(delta, parameter).clamp(domain[0], domain[1]);
+                if candidate == parameter {
+                    break;
+                }
+                let candidate_distance = self.evaluate(candidate)?.distance_to(target)?;
+                if candidate_distance <= distance {
+                    accepted = Some((candidate, candidate_distance));
+                    break;
+                }
+                step *= 0.5;
+            }
+            let Some((next_parameter, next_distance)) = accepted else {
+                break;
+            };
+            parameter = next_parameter;
+            distance = next_distance;
+        }
+        Ok((parameter, distance))
+    }
+
     /// Computes arc length span by span with adaptive Gauss-Kronrod
     /// integration of the exact first derivative.
     pub fn length(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
@@ -1158,6 +1253,25 @@ fn validate_structure(
     Ok(())
 }
 
+fn curve_closest_parameter_seeds(
+    spans: impl Iterator<Item = (Real, Real)>,
+    domain_start: Real,
+    domain_end: Real,
+) -> Vec<Real> {
+    const UNIFORM_SEED_COUNT: usize = 33;
+    let mut seeds = Vec::new();
+    for (start, end) in spans {
+        seeds.extend([start, start * 0.5 + end * 0.5, end]);
+    }
+    for index in 0..UNIFORM_SEED_COUNT {
+        let fraction = index as Real / (UNIFORM_SEED_COUNT - 1) as Real;
+        seeds.push(domain_start.mul_add(1.0 - fraction, domain_end * fraction));
+    }
+    seeds.sort_by(Real::total_cmp);
+    seeds.dedup();
+    seeds
+}
+
 pub(crate) fn validate_direction(
     degree: usize,
     control_point_count: usize,
@@ -1799,6 +1913,112 @@ mod tests {
                     curve.length(Tolerance::DEFAULT).unwrap(),
                     std::f64::consts::FRAC_PI_2
                 )
+        );
+    }
+
+    #[test]
+    fn closest_parameter_finds_rational_arc_and_endpoint_minima() {
+        let middle_weight = 0.5_f64.sqrt();
+        let arc = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let diagonal = 2.0_f64.sqrt();
+        let parameter = arc
+            .closest_parameter(point(diagonal, diagonal), Tolerance::DEFAULT)
+            .unwrap();
+        assert!((parameter - 0.5).abs() <= 1.0e-10, "parameter={parameter}");
+        assert_point_near(
+            arc.evaluate(parameter).unwrap(),
+            point(0.5_f64.sqrt(), 0.5_f64.sqrt()),
+        );
+
+        let line = NurbsCurve::try_new(
+            1,
+            vec![point(-2.0, 3.0), point(4.0, 3.0)],
+            vec![-5.0, -5.0, 7.0, 7.0],
+        )
+        .unwrap();
+        assert_eq!(
+            line.closest_parameter(point(-9.0, 1.0), Tolerance::DEFAULT)
+                .unwrap(),
+            -5.0
+        );
+        assert_eq!(
+            line.closest_parameter(point(12.0, 5.0), Tolerance::DEFAULT)
+                .unwrap(),
+            7.0
+        );
+    }
+
+    #[test]
+    fn closest_parameter_resolves_nonuniform_multispan_lobes() {
+        let curve = NurbsCurve::try_new_rational(
+            3,
+            vec![
+                WeightedPoint3::try_new(point(-5.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(-4.0, 7.0), 0.8).unwrap(),
+                WeightedPoint3::try_new(point(-1.0, -6.0), 1.7).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 6.0), 0.6).unwrap(),
+                WeightedPoint3::try_new(point(4.0, -7.0), 1.4).unwrap(),
+                WeightedPoint3::try_new(point(6.0, 1.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(9.0, 3.0), 0.9).unwrap(),
+            ],
+            vec![-3.0, -3.0, -3.0, -3.0, -2.4, 0.75, 2.8, 4.0, 4.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let expected_parameter = 1.83;
+        let (on_curve, tangent) = curve.evaluate_with_derivative(expected_parameter).unwrap();
+        let normal = Vector3::try_new(-tangent.y(), tangent.x(), 0.0)
+            .unwrap()
+            .normalized(Tolerance::DEFAULT)
+            .unwrap();
+        let target = on_curve
+            .translated(normal.as_vector().scaled(0.025).unwrap())
+            .unwrap();
+        let actual_parameter = curve.closest_parameter(target, Tolerance::DEFAULT).unwrap();
+        assert!(
+            (actual_parameter - expected_parameter).abs() <= 1.0e-8,
+            "actual={actual_parameter}, expected={expected_parameter}"
+        );
+    }
+
+    #[test]
+    fn closest_parameter_handles_large_domains_and_translations() {
+        let base = 1.0e120;
+        let extent = 1.0e114;
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(base - 3.0 * extent, base),
+                point(base - extent, base + 4.0 * extent),
+                point(base + 2.0 * extent, base - 2.0 * extent),
+                point(base + 5.0 * extent, base + extent),
+            ],
+            vec![
+                -1.0e100, -1.0e100, -1.0e100, 2.0e99, 1.0e100, 1.0e100, 1.0e100,
+            ],
+        )
+        .unwrap();
+        let expected_parameter = 6.5e99;
+        let (on_curve, tangent) = curve.evaluate_with_derivative(expected_parameter).unwrap();
+        let normal = Vector3::try_new(-tangent.y(), tangent.x(), 0.0)
+            .unwrap()
+            .normalized(Tolerance::DEFAULT)
+            .unwrap();
+        let target = on_curve
+            .translated(normal.as_vector().scaled(1.0e112).unwrap())
+            .unwrap();
+        let actual_parameter = curve.closest_parameter(target, Tolerance::DEFAULT).unwrap();
+        assert!(
+            ((actual_parameter - expected_parameter) / expected_parameter).abs() <= 1.0e-10,
+            "actual={actual_parameter:e}, expected={expected_parameter:e}"
         );
     }
 

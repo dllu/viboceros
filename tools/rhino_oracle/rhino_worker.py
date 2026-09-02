@@ -3634,6 +3634,29 @@ def _execute(operation, iterations, tolerance):
             raise ValueError("NURBS curve evaluation failed")
         return {"point": _xyz(value[0]), "derivative": _xyz(value[1])}, elapsed
 
+    if kind == "nurbs_curve_closest_point":
+        degree = int(operation["degree"])
+        controls = operation["control_points"]
+        curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, operation["knots"], "curve knot")
+        if not curve.IsValid:
+            raise ValueError("NURBS curve is invalid")
+        target = _point(operation["target"])
+
+        def curve_closest_point():
+            success, parameter = curve.ClosestPoint(target)
+            if not success:
+                raise ValueError("NURBS curve closest-point search failed")
+            closest = curve.PointAt(parameter)
+            return {
+                "distance": float(closest.DistanceTo(target)),
+                "parameter": float(parameter),
+                "point": _xyz(closest),
+            }
+
+        return _measure(iterations, curve_closest_point)
+
     if kind == "nurbs_curve_length":
         degree = int(operation["degree"])
         controls = operation["control_points"]

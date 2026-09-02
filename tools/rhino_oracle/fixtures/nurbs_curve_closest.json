@@ -1,0 +1,50 @@
+{
+  "protocol_version": 1,
+  "iterations": 100,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "rational-quarter-circle-closest-point",
+      "degree": 2,
+      "control_points": [
+        {"point": [1.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [1.0, 1.0, 0.0], "weight": 0.7071067811865476},
+        {"point": [0.0, 1.0, 0.0], "weight": 1.0}
+      ],
+      "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+      "target": [1.4142135623730951, 1.4142135623730951, 0.0]
+    },
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "rational-nonuniform-multispan-closest-point",
+      "degree": 3,
+      "control_points": [
+        {"point": [-5.0, 0.0, 0.0], "weight": 1.0},
+        {"point": [-4.0, 7.0, 0.0], "weight": 0.8},
+        {"point": [-1.0, -6.0, 0.0], "weight": 1.7},
+        {"point": [1.0, 6.0, 0.0], "weight": 0.6},
+        {"point": [4.0, -7.0, 0.0], "weight": 1.4},
+        {"point": [6.0, 1.0, 0.0], "weight": 1.0},
+        {"point": [9.0, 3.0, 0.0], "weight": 0.9}
+      ],
+      "knots": [-3.0, -3.0, -3.0, -3.0, -2.4, 0.75, 2.8, 4.0, 4.0, 4.0, 4.0],
+      "target": [4.7, -1.1, 0.3]
+    },
+    {
+      "op": "nurbs_curve_closest_point",
+      "id": "curve-endpoint-closest-point",
+      "degree": 1,
+      "control_points": [
+        {"point": [-2.0, 3.0, 1.0], "weight": 1.0},
+        {"point": [4.0, 3.0, -2.0], "weight": 1.0}
+      ],
+      "knots": [-5.0, -5.0, 7.0, 7.0],
+      "target": [-9.0, 1.0, 5.0]
+    }
+  ]
+}
