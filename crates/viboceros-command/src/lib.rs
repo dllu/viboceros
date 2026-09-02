@@ -320,6 +320,9 @@ impl CommandRegistry {
             .register(ExtractMeshFacesCommand)
             .expect("unique built-in command");
         registry
+            .register(DeleteFacesCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractNonManifoldMeshEdgesCommand)
             .expect("unique built-in command");
         registry
@@ -6808,20 +6811,37 @@ const EXTRACT_MESH_FACES_USAGE: &str =
     "ExtractMeshFaces (point|Faces=All|Faces=0,2,...) [MakeCopy=Yes|No]";
 
 #[derive(Clone, Debug, PartialEq)]
-enum ExtractMeshFaceSelection {
+enum MeshFaceSelection {
     Point(Point3),
     Faces(SurfaceFaceIndices),
 }
 
+#[derive(Clone, Copy)]
+enum MeshFaceCommand {
+    ExtractMeshFaces,
+    DeleteFaces,
+}
+
+impl MeshFaceCommand {
+    fn face_index_out_of_range(self, face: usize, face_count: usize) -> CommandError {
+        match self {
+            Self::ExtractMeshFaces => {
+                CommandError::ExtractMeshFacesFaceIndexOutOfRange { face, face_count }
+            }
+            Self::DeleteFaces => CommandError::DeleteFacesFaceIndexOutOfRange { face, face_count },
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq)]
 struct ExtractMeshFacesOptions {
-    selection: ExtractMeshFaceSelection,
+    selection: MeshFaceSelection,
     make_copy: bool,
 }
 
 struct ExtractMeshFacesCommand;
 
-struct ExtractMeshFacesSource {
+struct MeshFaceSource {
     id: ObjectId,
     mesh: TriangleMesh,
     attributes: ObjectAttributes,
@@ -6843,33 +6863,18 @@ impl Command for ExtractMeshFacesCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_extract_mesh_faces_arguments(arguments)?;
-        let sources = document
-            .selected_object_ids()
-            .map(|id| {
-                let object = document
-                    .object(id)
-                    .expect("selected object identities belong to the document");
-                let Geometry::Mesh(mesh) = object.geometry() else {
-                    return Err(CommandError::UnsupportedExtractMeshFacesGeometry);
-                };
-                let group_ids = document
-                    .groups()
-                    .filter(|group| group.members().any(|member| member == id))
-                    .map(|group| group.id())
-                    .collect();
-                Ok(ExtractMeshFacesSource {
-                    id,
-                    mesh: mesh.clone(),
-                    attributes: object.attributes().clone(),
-                    group_ids,
-                })
-            })
-            .collect::<Result<Vec<_>, CommandError>>()?;
+        let sources = selected_mesh_face_sources(document, || {
+            CommandError::UnsupportedExtractMeshFacesGeometry
+        })?;
         if sources.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
 
-        let selections = selected_mesh_faces(&sources, &options.selection)?;
+        let selections = selected_mesh_faces(
+            &sources,
+            &options.selection,
+            MeshFaceCommand::ExtractMeshFaces,
+        )?;
         if selections.len() > MAX_SPAN_OUTPUT_OBJECTS {
             return Err(too_many_span_outputs("ExtractMeshFaces"));
         }
@@ -6929,12 +6934,41 @@ impl Command for ExtractMeshFacesCommand {
     }
 }
 
+fn selected_mesh_face_sources(
+    document: &Document,
+    unsupported_geometry: impl Fn() -> CommandError,
+) -> Result<Vec<MeshFaceSource>, CommandError> {
+    document
+        .selected_object_ids()
+        .map(|id| {
+            let object = document
+                .object(id)
+                .expect("selected object identities belong to the document");
+            let Geometry::Mesh(mesh) = object.geometry() else {
+                return Err(unsupported_geometry());
+            };
+            let group_ids = document
+                .groups()
+                .filter(|group| group.members().any(|member| member == id))
+                .map(|group| group.id())
+                .collect();
+            Ok(MeshFaceSource {
+                id,
+                mesh: mesh.clone(),
+                attributes: object.attributes().clone(),
+                group_ids,
+            })
+        })
+        .collect()
+}
+
 fn selected_mesh_faces(
-    sources: &[ExtractMeshFacesSource],
-    selection: &ExtractMeshFaceSelection,
+    sources: &[MeshFaceSource],
+    selection: &MeshFaceSelection,
+    command: MeshFaceCommand,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
     match selection {
-        ExtractMeshFaceSelection::Faces(selection) => sources
+        MeshFaceSelection::Faces(selection) => sources
             .iter()
             .enumerate()
             .map(|(source_index, source)| {
@@ -6943,10 +6977,7 @@ fn selected_mesh_faces(
                     SurfaceFaceIndices::All => (0..face_count).collect(),
                     SurfaceFaceIndices::Indices(indices) => {
                         if let Some(&face) = indices.iter().find(|&&face| face >= face_count) {
-                            return Err(CommandError::ExtractMeshFacesFaceIndexOutOfRange {
-                                face,
-                                face_count,
-                            });
+                            return Err(command.face_index_out_of_range(face, face_count));
                         }
                         indices.clone()
                     }
@@ -6954,7 +6985,7 @@ fn selected_mesh_faces(
                 Ok((source_index, face_indices))
             })
             .collect(),
-        ExtractMeshFaceSelection::Point(target) => {
+        MeshFaceSelection::Point(target) => {
             let mut best = None;
             for (source_index, source) in sources.iter().enumerate() {
                 for face_index in 0..source.mesh.face_count() {
@@ -7012,18 +7043,115 @@ fn parse_extract_mesh_faces_arguments(
         }
         index += consumed;
     }
-    let selection = if let Some(faces) = face_selection {
-        require_consumed(&positional, 0, EXTRACT_MESH_FACES_USAGE)?;
-        ExtractMeshFaceSelection::Faces(faces)
-    } else {
-        let (point, consumed) = parse_point(&positional)?;
-        require_consumed(&positional, consumed, EXTRACT_MESH_FACES_USAGE)?;
-        ExtractMeshFaceSelection::Point(point)
-    };
+    let selection =
+        finish_mesh_face_selection(face_selection, &positional, EXTRACT_MESH_FACES_USAGE)?;
     Ok(ExtractMeshFacesOptions {
         selection,
         make_copy,
     })
+}
+
+const DELETE_FACES_USAGE: &str = "DeleteFaces (point|Faces=All|Faces=0,2,...)";
+
+struct DeleteFacesCommand;
+
+struct DeleteFacesPlan {
+    source: ObjectId,
+    remainder: Option<TriangleMesh>,
+}
+
+impl Command for DeleteFacesCommand {
+    fn name(&self) -> &'static str {
+        "DeleteFaces"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selection = parse_delete_faces_arguments(arguments)?;
+        let sources =
+            selected_mesh_face_sources(document, || CommandError::UnsupportedDeleteFacesGeometry)?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let selections = selected_mesh_faces(&sources, &selection, MeshFaceCommand::DeleteFaces)?;
+        let deleted_face_count = selections
+            .iter()
+            .map(|(_, faces)| faces.len())
+            .sum::<usize>();
+        let plans = selections
+            .into_iter()
+            .map(|(source_index, face_indices)| {
+                let source = &sources[source_index];
+                Ok(DeleteFacesPlan {
+                    source: source.id,
+                    remainder: source.mesh.delete_faces(&face_indices)?,
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        let source_count = plans.len();
+
+        document.replace_object_geometries(plans.iter().filter_map(|plan| {
+            plan.remainder
+                .as_ref()
+                .map(|remainder| (plan.source, Geometry::Mesh(remainder.clone())))
+        }))?;
+        for plan in plans {
+            if plan.remainder.is_none() {
+                document.delete_object(plan.source)?;
+            }
+        }
+        document.clear_selection();
+        Ok(format!(
+            "Deleted {deleted_face_count} mesh face(s) from {source_count} mesh(es)"
+        ))
+    }
+}
+
+fn parse_delete_faces_arguments(arguments: &[&str]) -> Result<MeshFaceSelection, CommandError> {
+    let mut face_selection = None;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Faces") || option_name_eq(argument, "FaceIndices") {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(DELETE_FACES_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if (option_name_eq(name, "Faces") || option_name_eq(name, "FaceIndices"))
+            && face_selection.is_none()
+        {
+            face_selection = Some(parse_surface_face_indices(value, DELETE_FACES_USAGE)?);
+        } else {
+            return Err(CommandError::Usage(DELETE_FACES_USAGE));
+        }
+        index += consumed;
+    }
+    finish_mesh_face_selection(face_selection, &positional, DELETE_FACES_USAGE)
+}
+
+fn finish_mesh_face_selection(
+    face_selection: Option<SurfaceFaceIndices>,
+    positional: &[&str],
+    usage: &'static str,
+) -> Result<MeshFaceSelection, CommandError> {
+    if let Some(faces) = face_selection {
+        require_consumed(positional, 0, usage)?;
+        Ok(MeshFaceSelection::Faces(faces))
+    } else {
+        let (point, consumed) = parse_point(positional)?;
+        require_consumed(positional, consumed, usage)?;
+        Ok(MeshFaceSelection::Point(point))
+    }
 }
 
 const EXTRACT_NON_MANIFOLD_USAGE: &str =
@@ -11667,6 +11795,12 @@ pub enum CommandError {
     )]
     ExtractMeshFacesFaceIndexOutOfRange { face: usize, face_count: usize },
 
+    #[error("DeleteFaces currently supports selected meshes only")]
+    UnsupportedDeleteFacesGeometry,
+
+    #[error("DeleteFaces face index {face} is outside the selected mesh's face count {face_count}")]
+    DeleteFacesFaceIndexOutOfRange { face: usize, face_count: usize },
+
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
 
@@ -11865,7 +11999,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -15579,6 +15713,222 @@ mod tests {
             "ExtractMeshFaces Faces=0 MakeCopy=Maybe",
             "ExtractMeshFaces Faces=0 MakeCopy=No MakeCopy=Yes",
             "ExtractMeshFaces Unknown=0",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn deletes_mesh_faces_with_rhino_identity_attributes_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New MeshEdit")
+            .unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(88.0, 88.0, 88.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 1.0).unwrap(),
+            ],
+            vec![[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Editable mesh")
+            .with_object_color(ColorRgb::new(19, 83, 157));
+        let source = document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Mesh repair".to_owned()), [source])
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "DeleteFaces Faces=1")
+                .unwrap(),
+            "Deleted 1 mesh face(s) from 1 mesh(es)"
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert!(!document.is_selected(source));
+        let result = document.object(source).unwrap();
+        assert_eq!(result.attributes(), &attributes);
+        let Geometry::Mesh(result) = result.geometry() else {
+            panic!("expected a mesh face-deletion remainder")
+        };
+        assert_eq!(
+            result.vertices(),
+            &[
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 1.0).unwrap(),
+            ]
+        );
+        assert_eq!(result.triangles(), &[[2, 0, 4], [1, 3, 4], [3, 2, 4]]);
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("DeleteFaces"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh.clone())
+        );
+        assert!(!document.is_selected(source));
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "DeleteFaces Faces=3,2,1,0")
+                .unwrap(),
+            "Deleted 4 mesh face(s) from 1 mesh(es)"
+        );
+        assert!(document.object(source).is_none());
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.undo_label(), Some("DeleteFaces"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+    }
+
+    #[test]
+    fn delete_faces_point_pick_targets_only_the_nearest_selected_mesh() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let near = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let far = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(100.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(104.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(104.0, 4.0, 2.0).unwrap(),
+                Point3::try_new(100.0, 4.0, 2.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let near_id = document.add_geometry(Geometry::Mesh(near.clone())).unwrap();
+        let far_id = document.add_geometry(Geometry::Mesh(far)).unwrap();
+        document
+            .select_objects([near_id, far_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "DeleteFaces 100.5,3.5,8")
+                .unwrap(),
+            "Deleted 1 mesh face(s) from 1 mesh(es)"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.object(near_id).unwrap().geometry(),
+            &Geometry::Mesh(near)
+        );
+        assert!(matches!(
+            document.object(far_id).unwrap().geometry(),
+            Geometry::Mesh(remainder) if remainder.triangles() == [[0, 1, 2]]
+        ));
+        assert_eq!(document.selected_object_count(), 0);
+    }
+
+    #[test]
+    fn delete_faces_rejects_empty_unsupported_and_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "DeleteFaces Faces=All"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        registry.execute(&mut document, "Point 0,0").unwrap();
+        let point_id = document.objects().next().unwrap().id();
+        document
+            .select_object(point_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "DeleteFaces Faces=All"),
+            Err(CommandError::UnsupportedDeleteFacesGeometry)
+        ));
+
+        let first = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [1, 3, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let second = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(11.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let first_id = document.add_geometry(Geometry::Mesh(first)).unwrap();
+        let second_id = document.add_geometry(Geometry::Mesh(second)).unwrap();
+        document
+            .select_objects([first_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DeleteFaces Faces=1"),
+            Err(CommandError::DeleteFacesFaceIndexOutOfRange {
+                face: 1,
+                face_count: 1,
+            })
+        ));
+        for invalid in [
+            "DeleteFaces",
+            "DeleteFaces Faces=",
+            "DeleteFaces Faces=0,0",
+            "DeleteFaces Faces=0 1,2,3",
+            "DeleteFaces Faces=0 Faces=1",
+            "DeleteFaces Unknown=0",
         ] {
             assert!(
                 registry.execute(&mut document, invalid).is_err(),

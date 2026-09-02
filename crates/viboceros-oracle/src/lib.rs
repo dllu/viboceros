@@ -304,6 +304,12 @@ pub enum Operation {
         triangles: Vec<[u32; 3]>,
         face_indices: Vec<usize>,
     },
+    MeshDeleteFaces {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        face_indices: Vec<usize>,
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -379,6 +385,7 @@ impl Operation {
             | Self::MeshExtractNonManifold { id, .. }
             | Self::MeshExtractDuplicateFaces { id, .. }
             | Self::MeshExtractFaces { id, .. }
+            | Self::MeshDeleteFaces { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1277,6 +1284,31 @@ fn execute(
             (
                 json!({
                     "extracted": mesh_value(&extracted),
+                    "remainder": remainder.as_ref().map(mesh_value),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshDeleteFaces {
+            vertices,
+            triangles,
+            face_indices,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let (remainder, elapsed) = measure(iterations, || {
+                black_box(&mesh).delete_faces(black_box(face_indices))
+            })?;
+            (
+                json!({
+                    "deleted_face_count": face_indices.len(),
                     "remainder": remainder.as_ref().map(mesh_value),
                 }),
                 elapsed,
@@ -5638,6 +5670,58 @@ mod tests {
         assert_eq!(
             response.results[1].value["extracted"]["triangles"],
             json!([[3, 2, 4], [1, 3, 4], [0, 1, 4], [2, 0, 4]])
+        );
+    }
+
+    #[test]
+    fn deletes_requested_mesh_faces_for_oracle_comparison() {
+        let vertices = vec![
+            [99.0, 99.0, 99.0],
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [88.0, 88.0, 88.0],
+            [0.0, 2.0, 0.0],
+            [2.0, 2.0, 0.0],
+            [1.0, 1.0, 1.0],
+        ];
+        let triangles = vec![[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]];
+        let response = run_request(&request(vec![
+            Operation::MeshDeleteFaces {
+                id: "subset".to_owned(),
+                vertices: vertices.clone(),
+                triangles: triangles.clone(),
+                face_indices: vec![2, 0],
+            },
+            Operation::MeshDeleteFaces {
+                id: "all".to_owned(),
+                vertices,
+                triangles,
+                face_indices: vec![3, 2, 1, 0],
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "deleted_face_count": 2,
+                "remainder": {
+                    "triangles": [[0, 1, 4], [3, 2, 4]],
+                    "vertices": [
+                        [0.0, 0.0, 0.0],
+                        [2.0, 0.0, 0.0],
+                        [0.0, 2.0, 0.0],
+                        [2.0, 2.0, 0.0],
+                        [1.0, 1.0, 1.0],
+                    ],
+                },
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "deleted_face_count": 4,
+                "remainder": null,
+            })
         );
     }
 

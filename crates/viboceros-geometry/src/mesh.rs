@@ -816,21 +816,7 @@ impl TriangleMesh {
         &self,
         face_indices: &[usize],
     ) -> Result<MeshFaceExtraction, GeometryError> {
-        if face_indices.is_empty() {
-            return Err(GeometryError::EmptyMeshFaceSubset);
-        }
-        let mut extracted_mask = vec![false; self.faces.len()];
-        for &face in face_indices {
-            if face >= self.faces.len() {
-                return Err(GeometryError::MeshFaceIndexOutOfRange {
-                    face,
-                    face_count: self.faces.len(),
-                });
-            }
-            if std::mem::replace(&mut extracted_mask[face], true) {
-                return Err(GeometryError::DuplicateMeshFaceIndex { face });
-            }
-        }
+        let extracted_mask = self.face_subset_mask(face_indices)?;
         let remainder_faces = (0..self.faces.len())
             .filter(|&face| !extracted_mask[face])
             .collect::<Vec<_>>();
@@ -839,6 +825,37 @@ impl TriangleMesh {
                 .then(|| self.subset_preserving_vertex_order(&remainder_faces)),
             extracted: self.subset_preserving_vertex_order(face_indices),
         })
+    }
+
+    /// Deletes a non-empty, unique source-face subset and compacts the
+    /// remainder. Surviving faces and vertices retain source order. `None`
+    /// represents deleting every face, because an empty mesh is not valid.
+    pub fn delete_faces(&self, face_indices: &[usize]) -> Result<Option<Self>, GeometryError> {
+        let deleted_mask = self.face_subset_mask(face_indices)?;
+        let remainder_faces = (0..self.faces.len())
+            .filter(|&face| !deleted_mask[face])
+            .collect::<Vec<_>>();
+        Ok((!remainder_faces.is_empty())
+            .then(|| self.subset_preserving_vertex_order(&remainder_faces)))
+    }
+
+    fn face_subset_mask(&self, face_indices: &[usize]) -> Result<Vec<bool>, GeometryError> {
+        if face_indices.is_empty() {
+            return Err(GeometryError::EmptyMeshFaceSubset);
+        }
+        let mut selected = vec![false; self.faces.len()];
+        for &face in face_indices {
+            if face >= self.faces.len() {
+                return Err(GeometryError::MeshFaceIndexOutOfRange {
+                    face,
+                    face_count: self.faces.len(),
+                });
+            }
+            if std::mem::replace(&mut selected[face], true) {
+                return Err(GeometryError::DuplicateMeshFaceIndex { face });
+            }
+        }
+        Ok(selected)
     }
 
     /// Removes faces around exact-location edges used by at least
@@ -3659,6 +3676,55 @@ mod tests {
     }
 
     #[test]
+    fn deletes_requested_faces_in_source_order_and_compacts_the_remainder() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(99.0, 99.0, 99.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(88.0, 88.0, 88.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(1.0, 1.0, 1.0),
+            ],
+            vec![[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let remainder = mesh.delete_faces(&[2, 0]).unwrap().unwrap();
+        assert_eq!(
+            remainder.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(1.0, 1.0, 1.0),
+            ]
+        );
+        assert_eq!(remainder.triangles(), &[[0, 1, 4], [3, 2, 4]]);
+        assert!(mesh.delete_faces(&[3, 2, 1, 0]).unwrap().is_none());
+
+        let mixed = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Triangle([0, 1, 4])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            mixed.delete_faces(&[0]).unwrap().unwrap().faces(),
+            &[MeshFace::Triangle([0, 1, 2])]
+        );
+    }
+
+    #[test]
     fn finds_closest_points_on_triangle_and_quad_faces() {
         let mesh = TriangleMesh::try_new_faces(
             vec![
@@ -3694,7 +3760,7 @@ mod tests {
     }
 
     #[test]
-    fn face_extraction_rejects_empty_duplicate_and_out_of_range_subsets() {
+    fn face_subset_edits_reject_empty_duplicate_and_out_of_range_subsets() {
         let mesh = TriangleMesh::try_new(
             vec![
                 point(0.0, 0.0, 0.0),
@@ -3715,6 +3781,21 @@ mod tests {
         );
         assert_eq!(
             mesh.extract_faces(&[1]),
+            Err(GeometryError::MeshFaceIndexOutOfRange {
+                face: 1,
+                face_count: 1,
+            })
+        );
+        assert_eq!(
+            mesh.delete_faces(&[]),
+            Err(GeometryError::EmptyMeshFaceSubset)
+        );
+        assert_eq!(
+            mesh.delete_faces(&[0, 0]),
+            Err(GeometryError::DuplicateMeshFaceIndex { face: 0 })
+        );
+        assert_eq!(
+            mesh.delete_faces(&[1]),
             Err(GeometryError::MeshFaceIndexOutOfRange {
                 face: 1,
                 face_count: 1,

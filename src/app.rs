@@ -98,6 +98,7 @@ enum InteractiveCommand {
     ExtractMeshFaces {
         make_copy: bool,
     },
+    DeleteFaces,
     WeldEdge,
     WeldVertices,
     UnweldEdge {
@@ -192,6 +193,7 @@ impl InteractiveCommand {
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
             Self::ExtractMeshFaces { .. } => "ExtractMeshFaces",
+            Self::DeleteFaces => "DeleteFaces",
             Self::WeldEdge => "WeldEdge",
             Self::WeldVertices => "WeldVertices",
             Self::UnweldEdge { .. } => "UnweldEdge",
@@ -306,6 +308,9 @@ impl InteractiveCommand {
             }
             Self::ExtractMeshFaces { .. } => {
                 "ExtractMeshFaces: pick a face on a selected mesh (Esc to cancel)"
+            }
+            Self::DeleteFaces => {
+                "DeleteFaces: pick a face to remove from a selected mesh (Esc to cancel)"
             }
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
@@ -483,6 +488,7 @@ impl InteractiveCommand {
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
             | Self::ExtractMeshFaces { .. }
+            | Self::DeleteFaces
             | Self::WeldEdge
             | Self::WeldVertices
             | Self::UnweldEdge { .. }
@@ -927,6 +933,11 @@ impl VibocerosApp {
                 }
             }
             InteractiveCommand::ExtractMeshFaces { make_copy }
+        } else if normalized == "deletefaces" {
+            if !arguments.is_empty() {
+                return false;
+            }
+            InteractiveCommand::DeleteFaces
         } else if matches!(normalized.as_str(), "weldedge" | "weldmeshedge") {
             if !arguments.is_empty() {
                 return false;
@@ -1290,6 +1301,7 @@ impl VibocerosApp {
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }
+                | InteractiveCommand::DeleteFaces
                 | InteractiveCommand::WeldEdge
                 | InteractiveCommand::WeldVertices
                 | InteractiveCommand::UnweldEdge { .. }
@@ -1722,6 +1734,10 @@ impl VibocerosApp {
                     format_model_point(point),
                     if make_copy { "Yes" } else { "No" },
                 ));
+            }
+            InteractiveCommand::DeleteFaces => {
+                self.active_command = None;
+                self.execute_command(&format!("DeleteFaces {}", format_model_point(point)));
             }
             InteractiveCommand::WeldEdge => {
                 self.active_command = None;
@@ -2258,6 +2274,7 @@ impl VibocerosApp {
         let mut split_disjoint_mesh_clicked = false;
         let mut extract_mesh_edges_clicked = false;
         let mut extract_mesh_faces_clicked = false;
+        let mut delete_faces_clicked = false;
         let mut extract_non_manifold_clicked = false;
         let mut extract_duplicate_faces_clicked = false;
         let mut close_curve_clicked = false;
@@ -2454,6 +2471,10 @@ impl VibocerosApp {
                 extract_mesh_faces_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Mesh Face"))
                     .on_hover_text("Pick a face to separate from a selected mesh")
+                    .clicked();
+                delete_faces_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Delete Mesh Face"))
+                    .on_hover_text("Pick a face to remove from a selected mesh")
                     .clicked();
                 extract_non_manifold_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Non-Manifold"))
@@ -2702,6 +2723,8 @@ impl VibocerosApp {
             self.execute_command("ExtractMeshEdges");
         } else if extract_mesh_faces_clicked {
             self.try_start_interactive_command("ExtractMeshFaces");
+        } else if delete_faces_clicked {
+            self.try_start_interactive_command("DeleteFaces");
         } else if extract_non_manifold_clicked {
             self.execute_command("ExtractNonManifoldMeshEdges");
         } else if extract_duplicate_faces_clicked {
@@ -3666,6 +3689,41 @@ mod tests {
     }
 
     #[test]
+    fn interactive_delete_faces_uses_one_face_pick() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("DeleteFaces"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::DeleteFaces));
+        assert!(app.command_log.back().unwrap().contains("pick a face"));
+        app.accept_drafting_point(point(0.5, 3.5, 2.0));
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 1);
+        assert!(!app.document.is_selected(source));
+        assert!(matches!(
+            app.document.object(source).unwrap().geometry(),
+            Geometry::Mesh(remainder) if remainder.triangles() == [[0, 1, 2]]
+        ));
+        assert_eq!(app.document.undo_label(), Some("DeleteFaces"));
+        assert!(!app.try_start_interactive_command("DeleteFaces extra"));
+    }
+
+    #[test]
     fn interactive_weld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -4189,6 +4247,7 @@ mod tests {
             "DupEdge",
             "DupFaceBorder",
             "ExtractMeshFaces",
+            "DeleteFaces",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
             "WeldEdge",

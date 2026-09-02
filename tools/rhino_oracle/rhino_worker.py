@@ -4289,6 +4289,41 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_delete_faces":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        face_indices = operation["face_indices"]
+        if not isinstance(face_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in face_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh deletion face indices must be integers")
+        face_indices = [int(index) for index in face_indices]
+
+        def delete_faces():
+            remainder = source.DuplicateMesh()
+            if remainder is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                deleted_face_count = int(
+                    remainder.Faces.DeleteFaces(face_indices, True)
+                )
+                if deleted_face_count != len(face_indices):
+                    raise ValueError("mesh face deletion failed")
+                return {
+                    "deleted_face_count": deleted_face_count,
+                    "remainder": (
+                        None if remainder.Faces.Count == 0 else _mesh_value(remainder)
+                    ),
+                }
+            finally:
+                remainder.Dispose()
+
+        try:
+            return _measure(iterations, delete_faces)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_extract_non_manifold":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         selective = operation["selective"]

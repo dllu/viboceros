@@ -1,0 +1,27 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_delete_faces",
+      "id": "one-middle-face",
+      "face_indices": [1],
+      "vertices": [[99, 99, 99], [0, 0, 0], [2, 0, 0], [88, 88, 88], [0, 2, 0], [2, 2, 0], [1, 1, 1]],
+      "triangles": [[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]]
+    },
+    {
+      "op": "mesh_delete_faces",
+      "id": "reversed-disjoint-face-order",
+      "face_indices": [2, 0],
+      "vertices": [[99, 99, 99], [0, 0, 0], [2, 0, 0], [88, 88, 88], [0, 2, 0], [2, 2, 0], [1, 1, 1]],
+      "triangles": [[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]]
+    },
+    {
+      "op": "mesh_delete_faces",
+      "id": "all-faces-reversed",
+      "face_indices": [3, 2, 1, 0],
+      "vertices": [[99, 99, 99], [0, 0, 0], [2, 0, 0], [88, 88, 88], [0, 2, 0], [2, 2, 0], [1, 1, 1]],
+      "triangles": [[4, 1, 6], [1, 2, 6], [2, 5, 6], [5, 4, 6]]
+    }
+  ]
+}

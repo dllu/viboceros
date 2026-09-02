@@ -128,6 +128,7 @@ ExtractSrf 2,1,0 Copy=No OutputLayer=Input
 ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
 ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
+DeleteFaces Faces=2,0
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -279,6 +280,11 @@ viewport workflow. The unselected remainder keeps its source identity; the
 selected result inherits attributes and group membership. Extracting every
 face reuses the source identity. `MakeCopy=Yes` instead leaves each source
 unchanged. Both parts compact unused vertices in Rhino source order.
+`DeleteFaces` removes an ordered zero-based face list from every selected mesh
+(`Faces=All` is supported), or omits the selector for a one-pick viewport
+workflow. A partial edit keeps the unselected source object's identity,
+attributes, and groups while compacting unused vertices in source order;
+deleting every face removes the mesh object.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the
