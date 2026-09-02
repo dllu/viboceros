@@ -106,6 +106,9 @@ impl CommandRegistry {
             .register(DuplicateEdgeCommand)
             .expect("unique built-in command");
         registry
+            .register(DuplicateMeshEdgeCommand)
+            .expect("unique built-in command");
+        registry
             .register(DuplicateMeshHoleBoundaryCommand)
             .expect("unique built-in command");
         registry
@@ -4164,6 +4167,207 @@ fn parse_duplicate_edge_arguments(
     Ok(DuplicateEdgeOptions {
         selection,
         output_layer,
+    })
+}
+
+const DUPLICATE_MESH_EDGE_USAGE: &str =
+    "DupMeshEdge (point|All) [BreakAngle=degrees] [Output=Polylines|Lines]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum DuplicateMeshEdgeSelection {
+    Point(Point3),
+    All,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum DuplicateMeshEdgeOutput {
+    Polylines,
+    Lines,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct DuplicateMeshEdgeOptions {
+    selection: DuplicateMeshEdgeSelection,
+    break_angle_degrees: Real,
+    output: DuplicateMeshEdgeOutput,
+}
+
+struct DuplicateMeshEdgeCommand;
+
+impl Command for DuplicateMeshEdgeCommand {
+    fn name(&self) -> &'static str {
+        "DupMeshEdge"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["DuplicateMeshEdge"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_duplicate_mesh_edge_arguments(arguments)?;
+        let meshes = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Mesh(mesh) => Ok(mesh),
+                Geometry::Point(_)
+                | Geometry::PointCloud(_)
+                | Geometry::Line(_)
+                | Geometry::Circle(_)
+                | Geometry::Arc(_)
+                | Geometry::Ellipse(_)
+                | Geometry::Polyline(_)
+                | Geometry::NurbsCurve(_)
+                | Geometry::NurbsSurface(_)
+                | Geometry::Brep(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        if meshes.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let tolerance = document.tolerance();
+        let mut staged = Vec::new();
+        let source_count = match options.selection {
+            DuplicateMeshEdgeSelection::All => {
+                let mut source_count = 0_usize;
+                for mesh in meshes {
+                    let geometries = match options.output {
+                        DuplicateMeshEdgeOutput::Polylines => mesh
+                            .filtered_edge_polylines(MeshEdgeFilter::Unwelded, tolerance)?
+                            .into_iter()
+                            .map(Geometry::Polyline)
+                            .collect::<Vec<_>>(),
+                        DuplicateMeshEdgeOutput::Lines => mesh
+                            .filtered_edge_lines(MeshEdgeFilter::Unwelded, tolerance)?
+                            .into_iter()
+                            .map(Geometry::Line)
+                            .collect::<Vec<_>>(),
+                    };
+                    if geometries.is_empty() {
+                        continue;
+                    }
+                    source_count += 1;
+                    let output_count = staged
+                        .len()
+                        .checked_add(geometries.len())
+                        .filter(|&count| count <= MAX_SPAN_OUTPUT_OBJECTS)
+                        .ok_or_else(|| too_many_span_outputs("DupMeshEdge"))?;
+                    staged
+                        .try_reserve(output_count - staged.len())
+                        .map_err(|_| too_many_span_outputs("DupMeshEdge"))?;
+                    staged.extend(geometries);
+                }
+                source_count
+            }
+            DuplicateMeshEdgeSelection::Point(target) => {
+                let mut best = None;
+                for (source, mesh) in meshes.into_iter().enumerate() {
+                    for polyline in mesh.logical_edge_polylines(
+                        options.break_angle_degrees.to_radians(),
+                        tolerance,
+                    )? {
+                        let closest = polyline.closest_point(target, tolerance)?;
+                        let distance = closest.distance_to(target)?;
+                        if best
+                            .as_ref()
+                            .is_none_or(|(best_distance, _, _)| distance < *best_distance)
+                        {
+                            best = Some((distance, source, polyline));
+                        }
+                    }
+                }
+                let Some((_, _, polyline)) = best else {
+                    return Err(CommandError::NoDuplicateMeshEdges);
+                };
+                staged.push(Geometry::Polyline(polyline));
+                1
+            }
+        };
+        if staged.is_empty() {
+            return Err(CommandError::NoDuplicateMeshEdges);
+        }
+
+        let output_count = staged.len();
+        let layer = document.current_layer_id();
+        let mut output_ids = Vec::with_capacity(output_count);
+        for geometry in staged {
+            output_ids.push(
+                document
+                    .add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(layer))?,
+            );
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Duplicated {output_count} mesh edge curve(s) from {source_count} mesh(es)"
+        ))
+    }
+}
+
+fn parse_duplicate_mesh_edge_arguments(
+    arguments: &[&str],
+) -> Result<DuplicateMeshEdgeOptions, CommandError> {
+    let mut break_angle_degrees = 90.0;
+    let mut output = DuplicateMeshEdgeOutput::Polylines;
+    let mut break_angle_seen = false;
+    let mut output_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "BreakAngle") || option_name_eq(argument, "Output") {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(DUPLICATE_MESH_EDGE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if option_name_eq(name, "BreakAngle") && !break_angle_seen {
+            break_angle_degrees = parse_finite_real(value)?;
+            break_angle_seen = true;
+        } else if option_name_eq(name, "Output") && !output_seen {
+            let value = value.trim_start_matches('_');
+            output = if value.eq_ignore_ascii_case("Polylines") {
+                DuplicateMeshEdgeOutput::Polylines
+            } else if value.eq_ignore_ascii_case("Lines") {
+                DuplicateMeshEdgeOutput::Lines
+            } else {
+                return Err(CommandError::Usage(DUPLICATE_MESH_EDGE_USAGE));
+            };
+            output_seen = true;
+        } else {
+            return Err(CommandError::Usage(DUPLICATE_MESH_EDGE_USAGE));
+        }
+        index += consumed;
+    }
+    if !(0.0..=180.0).contains(&break_angle_degrees) {
+        return Err(GeometryError::InvalidMeshBreakAngle.into());
+    }
+    let selection = if positional.len() == 1
+        && positional[0]
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("All")
+    {
+        DuplicateMeshEdgeSelection::All
+    } else {
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, DUPLICATE_MESH_EDGE_USAGE)?;
+        if output_seen {
+            return Err(CommandError::Usage(DUPLICATE_MESH_EDGE_USAGE));
+        }
+        DuplicateMeshEdgeSelection::Point(point)
+    };
+    Ok(DuplicateMeshEdgeOptions {
+        selection,
+        break_angle_degrees,
+        output,
     })
 }
 
@@ -10215,6 +10419,12 @@ pub enum CommandError {
     #[error("the requested location does not identify a duplicable edge")]
     NoDuplicateEdges,
 
+    #[error("DupMeshEdge supports selected polygon meshes only")]
+    UnsupportedDuplicateMeshEdgeGeometry,
+
+    #[error("none of the selected meshes has a duplicable mesh edge")]
+    NoDuplicateMeshEdges,
+
     #[error("DupMeshHoleBoundary supports selected polygon meshes only")]
     UnsupportedDuplicateMeshHoleBoundaryGeometry,
 
@@ -10539,7 +10749,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -14841,6 +15051,237 @@ mod tests {
             "DupEdge OutputLayer=Other Edges=0",
             "DupEdge Edges=0 OutputLayer=Input OutputLayer=Current",
             "DupEdge EdgeIndices=0 Edges=1",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.objects().len(), 2);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+    }
+
+    #[test]
+    fn duplicate_mesh_edge_picks_the_nearest_logical_edge_with_fresh_attributes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Input").unwrap();
+        let input_layer = document.current_layer_id();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let expected = mesh
+            .logical_edge_polylines(90.0_f64.to_radians(), document.tolerance())
+            .unwrap()
+            .pop()
+            .unwrap();
+        assert!(expected.is_closed());
+        assert_eq!(expected.segment_count(), 4);
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::Mesh(mesh),
+                ObjectAttributes::on_layer(input_layer)
+                    .with_name("Colored mesh")
+                    .with_object_color(ColorRgb::new(17, 83, 149)),
+            )
+            .unwrap();
+        let source_group = document
+            .add_group(Some("Source group".to_owned()), [source])
+            .unwrap();
+        registry.execute(&mut document, "Layer New Output").unwrap();
+        let output_layer = document.current_layer_id();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "DuplicateMeshEdge 2,-0.1,0")
+                .unwrap(),
+            "Duplicated 1 mesh edge curve(s) from 1 mesh(es)"
+        );
+        assert!(!document.is_selected(source));
+        let output = document.objects().last().unwrap();
+        assert!(document.is_selected(output.id()));
+        assert_eq!(output.attributes().layer_id(), output_layer);
+        assert_eq!(output.attributes().name(), None);
+        assert_eq!(output.attributes().color_source(), ObjectColorSource::Layer);
+        assert!(matches!(output.geometry(), Geometry::Polyline(polyline) if polyline == &expected));
+        assert_eq!(
+            document
+                .group(source_group)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("DupMeshEdge"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+    }
+
+    #[test]
+    fn duplicate_mesh_edge_break_angle_separates_a_strict_crease() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 3.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 3, 1]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "DupMeshEdge 2,0.01,0.01 BreakAngle=90")
+            .unwrap();
+        let Geometry::Polyline(crease) = document.objects().last().unwrap().geometry() else {
+            panic!("a picked logical mesh edge must be a polyline")
+        };
+        assert_eq!(crease.segment_count(), 1);
+        assert_eq!(
+            [crease.vertices()[0], crease.vertices()[1]],
+            [
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "DupMeshEdge 2,0.01,0.01 BreakAngle 91")
+            .unwrap();
+        let Geometry::Polyline(boundary) = document.objects().last().unwrap().geometry() else {
+            panic!("the smoothed result must be a boundary polyline")
+        };
+        assert!(boundary.is_closed());
+        assert_eq!(boundary.segment_count(), 4);
+    }
+
+    #[test]
+    fn duplicate_mesh_edge_all_outputs_joined_polylines_or_individual_lines() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let expected_lines = mesh
+            .filtered_edge_lines(MeshEdgeFilter::Unwelded, document.tolerance())
+            .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "DupMeshEdge All").unwrap(),
+            "Duplicated 1 mesh edge curve(s) from 1 mesh(es)"
+        );
+        let Geometry::Polyline(joined) = document.objects().last().unwrap().geometry() else {
+            panic!("the default All output must be joined polylines")
+        };
+        assert_eq!(joined.segment_count(), 5);
+        assert!(!document.is_selected(source));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "DupMeshEdge _All BreakAngle=0 Output=_Lines",)
+                .unwrap(),
+            "Duplicated 5 mesh edge curve(s) from 1 mesh(es)"
+        );
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), expected_lines.len());
+        for (output, expected) in outputs.into_iter().zip(expected_lines) {
+            assert!(matches!(output.geometry(), Geometry::Line(line) if line == &expected));
+        }
+    }
+
+    #[test]
+    fn duplicate_mesh_edge_rejects_empty_unsupported_and_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "DupMeshEdge All"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        let line = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([line], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DupMeshEdge All"),
+            Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry)
+        ));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let closed = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let closed_id = document.add_geometry(Geometry::Mesh(closed)).unwrap();
+        document
+            .select_objects_direct([closed_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DupMeshEdge 0,0,0 BreakAngle=180"),
+            Err(CommandError::NoDuplicateMeshEdges)
+        ));
+        for invalid in [
+            "DupMeshEdge",
+            "DupMeshEdge All Output=Curves",
+            "DupMeshEdge 1,2,3 Output=Lines",
+            "DupMeshEdge All BreakAngle=-1",
+            "DupMeshEdge All BreakAngle=181",
+            "DupMeshEdge All BreakAngle=nan",
+            "DupMeshEdge All BreakAngle=20 BreakAngle=30",
+            "DupMeshEdge All Output=Lines Output=Polylines",
+            "DupMeshEdge All Unknown=Yes",
+            "DupMeshEdge All 1,2,3",
         ] {
             assert!(
                 registry.execute(&mut document, invalid).is_err(),

@@ -38,6 +38,7 @@ Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 DupBorder OutputLayer=Current
 DupEdge Edges=2,0 OutputLayer=Input
+DupMeshEdge All Output=Polylines
 DupFaceBorder Faces=2,0 OutputLayer=Input
 DupMeshHoleBoundary Boundaries=All
 Sphere 0,0,0 5
@@ -235,6 +236,14 @@ collapsed singular sides are omitted, B-rep rational edge curves stay exact,
 and mesh indices follow exact-location-welded topology order. Omit the selector
 for a one-pick viewport workflow. Fresh selected results default to the current
 layer; `OutputLayer=Input` uses each source layer.
+`DupMeshEdge` duplicates the logical edge nearest a model-space point on the
+selected polygon meshes. `BreakAngle=90` is the default: incident faces below
+the angle are locally one smooth region, while creases at the angle, naked
+borders, and unwelded seams remain boundaries. Omit the point for a one-pick
+viewport workflow. `All` instead duplicates every naked/unwelded edge, with
+`Output=Polylines` joining edge-exact trails or `Output=Lines` retaining
+individual segments. Fresh selected results use the current layer and sources
+are deselected.
 `DupMeshHoleBoundary` duplicates the closed naked loop nearest a model-space
 point on selected polygon meshes, or accepts ordered zero-based
 `Boundaries=0,2`/`Boundaries=All` selectors for every selected mesh. Boundaries

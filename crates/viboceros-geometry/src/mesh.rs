@@ -415,6 +415,127 @@ impl TriangleMesh {
         topology_edge_polylines(&data.topological_points, &edges, tolerance)
     }
 
+    /// Returns the logical mesh edges induced by a face break angle.
+    ///
+    /// Naked and unwelded topology edges always form boundaries. A welded
+    /// interior edge forms a boundary when at least two of its incident face
+    /// normals meet at or above `break_angle_radians`; angles strictly below
+    /// the threshold are treated as one smooth face region. At each topology
+    /// vertex, boundary segments join only when the locally adjacent smooth
+    /// face regions agree. This keeps a crease separate from an intersecting
+    /// crease while allowing a tessellated open border to become one polyline.
+    pub fn logical_edge_polylines(
+        &self,
+        break_angle_radians: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Polyline3>, GeometryError> {
+        validate_mesh_break_angle(break_angle_radians)?;
+        let data = self.topology_data();
+        let face_normals = self.polygon_face_normals()?;
+        let edge_records = data
+            .edges
+            .iter()
+            .map(|(&(first, second), incidence)| ([first, second], incidence))
+            .collect::<Vec<_>>();
+        let boundary_edges = edge_records
+            .iter()
+            .map(|(_, incidence)| {
+                mesh_edge_is_logical_boundary(incidence, &face_normals, break_angle_radians)
+            })
+            .collect::<Vec<_>>();
+        if !boundary_edges.iter().any(|&boundary| boundary) {
+            return Ok(Vec::new());
+        }
+
+        let mut incident_edges = vec![Vec::new(); data.topological_vertex_count];
+        for (edge, (vertices, _)) in edge_records.iter().enumerate() {
+            incident_edges[vertices[0]].push(edge);
+            incident_edges[vertices[1]].push(edge);
+        }
+        let mut endpoint_signatures = vec![[Vec::new(), Vec::new()]; edge_records.len()];
+        for (vertex, incident) in incident_edges.iter().enumerate() {
+            let mut faces = incident
+                .iter()
+                .flat_map(|&edge| edge_records[edge].1.uses().map(|edge_use| edge_use.face))
+                .collect::<Vec<_>>();
+            faces.sort_unstable();
+            faces.dedup();
+            let mut parents = (0..faces.len()).collect::<Vec<_>>();
+            let mut ranks = vec![0_u8; faces.len()];
+            for &edge in incident {
+                if boundary_edges[edge] {
+                    continue;
+                }
+                let mut uses = edge_records[edge].1.uses();
+                let Some(first) = uses.next() else {
+                    continue;
+                };
+                let first = faces
+                    .binary_search(&first.face)
+                    .expect("an incident edge face is present at its vertex");
+                for edge_use in uses {
+                    let face = faces
+                        .binary_search(&edge_use.face)
+                        .expect("an incident edge face is present at its vertex");
+                    union_faces(&mut parents, &mut ranks, first, face);
+                }
+            }
+
+            for &edge in incident {
+                if !boundary_edges[edge] {
+                    continue;
+                }
+                let mut signature = edge_records[edge]
+                    .1
+                    .uses()
+                    .map(|edge_use| {
+                        let face = faces
+                            .binary_search(&edge_use.face)
+                            .expect("an incident edge face is present at its vertex");
+                        face_root(&mut parents, face)
+                    })
+                    .collect::<Vec<_>>();
+                if edge_records[edge].1.count == 1 {
+                    // The exterior is a distinct local region after every real
+                    // incident face. Its stable sentinel lets adjacent naked
+                    // edges join without colliding with a face-region root.
+                    signature.push(faces.len());
+                }
+                signature.sort_unstable();
+                let endpoint = usize::from(edge_records[edge].0[1] == vertex);
+                endpoint_signatures[edge][endpoint] = signature;
+            }
+        }
+
+        let mut logical_vertex_indices = BTreeMap::<(usize, Vec<usize>), usize>::new();
+        let mut logical_points = Vec::new();
+        let mut logical_edges = Vec::new();
+        for (edge, ((vertices, _), boundary)) in edge_records.iter().zip(boundary_edges).enumerate()
+        {
+            if !boundary {
+                continue;
+            }
+            let mut logical_vertices = [0_usize; 2];
+            for endpoint in 0..2 {
+                let key = (
+                    vertices[endpoint],
+                    endpoint_signatures[edge][endpoint].clone(),
+                );
+                logical_vertices[endpoint] = if let Some(&index) = logical_vertex_indices.get(&key)
+                {
+                    index
+                } else {
+                    let index = logical_points.len();
+                    logical_points.push(data.topological_points[vertices[endpoint]]);
+                    logical_vertex_indices.insert(key, index);
+                    index
+                };
+            }
+            logical_edges.push(logical_vertices);
+        }
+        topology_edge_polylines(&logical_points, &logical_edges, tolerance)
+    }
+
     /// Returns each exact-location-welded naked border as a polyline.
     ///
     /// Manifold boundaries are returned as closed, face-oriented loops.
@@ -1056,6 +1177,44 @@ fn validate_mesh_edge_filter(filter: MeshEdgeFilter) -> Result<(), GeometryError
     }
 }
 
+fn validate_mesh_break_angle(break_angle_radians: Real) -> Result<(), GeometryError> {
+    if break_angle_radians.is_finite()
+        && (0.0..=std::f64::consts::PI).contains(&break_angle_radians)
+    {
+        Ok(())
+    } else {
+        Err(GeometryError::InvalidMeshBreakAngle)
+    }
+}
+
+fn mesh_edge_is_logical_boundary(
+    incidence: &EdgeIncidence,
+    face_normals: &[UnitVector3],
+    break_angle_radians: Real,
+) -> bool {
+    let uses = incidence.uses().collect::<Vec<_>>();
+    if uses.len() == 1 || edge_uses_are_unwelded(&uses) {
+        return true;
+    }
+    (0..uses.len() - 1).any(|left| {
+        (left + 1..uses.len()).any(|right| {
+            unit_vector_angle(
+                face_normals[uses[left].face],
+                face_normals[uses[right].face],
+            ) >= break_angle_radians
+        })
+    })
+}
+
+fn unit_vector_angle(first: UnitVector3, second: UnitVector3) -> Real {
+    first
+        .as_vector()
+        .dot(second.as_vector())
+        .expect("finite unit-vector dot products cannot fail")
+        .clamp(-1.0, 1.0)
+        .acos()
+}
+
 fn mesh_edge_matches_filter(
     incidence: &EdgeIncidence,
     filter: MeshEdgeFilter,
@@ -1078,12 +1237,10 @@ fn mesh_edge_matches_filter(
             let mut greatest_angle: Real = 0.0;
             for left in 0..uses.len() - 1 {
                 for right in left + 1..uses.len() {
-                    let cosine = normals[uses[left].face]
-                        .as_vector()
-                        .dot(normals[uses[right].face].as_vector())
-                        .expect("finite unit-vector dot products cannot fail")
-                        .clamp(-1.0, 1.0);
-                    greatest_angle = greatest_angle.max(cosine.acos());
+                    greatest_angle = greatest_angle.max(unit_vector_angle(
+                        normals[uses[left].face],
+                        normals[uses[right].face],
+                    ));
                 }
             }
             greatest_angle > greater_than_radians && greatest_angle < less_than_radians
@@ -1819,6 +1976,122 @@ mod tests {
             assert!(actual.insert(vertices));
         }
         assert_eq!(actual, edges.into_iter().collect());
+    }
+
+    #[test]
+    fn logical_edges_join_only_across_locally_smooth_face_regions() {
+        let planar = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let split = planar
+            .logical_edge_polylines(0.0, Tolerance::DEFAULT)
+            .unwrap();
+        let mut split_segment_counts = split
+            .iter()
+            .map(Polyline3::segment_count)
+            .collect::<Vec<_>>();
+        split_segment_counts.sort_unstable();
+        assert_eq!(split_segment_counts, [1, 2, 2]);
+        assert_eq!(split_segment_counts.iter().sum::<usize>(), 5);
+
+        let joined = planar
+            .logical_edge_polylines(1.0_f64.to_radians(), Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(joined.len(), 1);
+        assert!(joined[0].is_closed());
+        assert_eq!(joined[0].segment_count(), 4);
+    }
+
+    #[test]
+    fn logical_edges_use_a_strict_face_grouping_break_angle() {
+        let folded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 3.0),
+            ],
+            vec![[0, 1, 2], [0, 3, 1]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let at_right_angle = folded
+            .logical_edge_polylines(90.0_f64.to_radians(), Tolerance::DEFAULT)
+            .unwrap();
+        let mut segment_counts = at_right_angle
+            .iter()
+            .map(Polyline3::segment_count)
+            .collect::<Vec<_>>();
+        segment_counts.sort_unstable();
+        assert_eq!(segment_counts, [1, 2, 2]);
+        assert_eq!(segment_counts.iter().sum::<usize>(), 5);
+
+        let above_right_angle = folded
+            .logical_edge_polylines(91.0_f64.to_radians(), Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(above_right_angle.len(), 1);
+        assert!(above_right_angle[0].is_closed());
+        assert_eq!(above_right_angle[0].segment_count(), 4);
+    }
+
+    #[test]
+    fn logical_edges_never_smooth_across_an_unwelded_seam() {
+        let unwelded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edges = unwelded
+            .logical_edge_polylines(std::f64::consts::PI, Tolerance::DEFAULT)
+            .unwrap();
+        let mut segment_counts = edges
+            .iter()
+            .map(Polyline3::segment_count)
+            .collect::<Vec<_>>();
+        segment_counts.sort_unstable();
+        assert_eq!(segment_counts, [1, 2, 2]);
+        assert_eq!(segment_counts.iter().sum::<usize>(), 5);
+    }
+
+    #[test]
+    fn rejects_invalid_mesh_break_angles() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for break_angle in [-1.0, std::f64::consts::PI.next_up(), Real::NAN] {
+            assert_eq!(
+                mesh.logical_edge_polylines(break_angle, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidMeshBreakAngle)
+            );
+        }
+        assert!(mesh.logical_edge_polylines(0.0, Tolerance::DEFAULT).is_ok());
+        assert!(
+            mesh.logical_edge_polylines(std::f64::consts::PI, Tolerance::DEFAULT)
+                .is_ok()
+        );
     }
 
     #[test]

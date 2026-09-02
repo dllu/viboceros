@@ -213,6 +213,9 @@ pub enum GeometryError {
     )]
     InvalidMeshFaceAngleInterval,
 
+    #[error("a mesh break angle must be finite and lie in [0, pi]")]
+    InvalidMeshBreakAngle,
+
     #[error("triangle {triangle} references missing vertex index {vertex}")]
     InvalidTriangleIndex { triangle: usize, vertex: u32 },
 
