@@ -247,6 +247,9 @@ impl CommandRegistry {
             .register(ExtractPtCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtractIsocurveCommand)
+            .expect("unique built-in command");
+        registry
             .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
@@ -3207,6 +3210,147 @@ fn parse_extract_point_arguments(arguments: &[&str]) -> Result<ExtractPointOptio
         output_layer,
         output,
     })
+}
+
+const EXTRACT_ISOCURVE_USAGE: &str = "ExtractIsocurve point [Direction=U|V|Both]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ExtractIsocurveDirection {
+    U,
+    V,
+    Both,
+}
+
+impl ExtractIsocurveDirection {
+    const fn label(self) -> &'static str {
+        match self {
+            Self::U => "U",
+            Self::V => "V",
+            Self::Both => "U/V",
+        }
+    }
+}
+
+struct ExtractIsocurveOptions {
+    point: Point3,
+    direction: ExtractIsocurveDirection,
+}
+
+struct ExtractIsocurveCommand;
+
+impl Command for ExtractIsocurveCommand {
+    fn name(&self) -> &'static str {
+        "ExtractIsocurve"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["IsoCurve"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_extract_isocurve_arguments(arguments)?;
+        let mut surfaces = Vec::new();
+        for object in document.selected_objects() {
+            let Geometry::NurbsSurface(surface) = object.geometry() else {
+                return Err(CommandError::UnsupportedExtractIsocurveGeometry);
+            };
+            surfaces.push(surface.clone());
+        }
+        if surfaces.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut curves = Vec::with_capacity(surfaces.len());
+        for surface in &surfaces {
+            let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
+            if matches!(
+                options.direction,
+                ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+            ) {
+                let curve = surface.isocurve_u(v)?;
+                if nurbs_curve_has_extent(&curve) {
+                    curves.push(curve);
+                }
+            }
+            if matches!(
+                options.direction,
+                ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+            ) {
+                let curve = surface.isocurve_v(u)?;
+                if nurbs_curve_has_extent(&curve) {
+                    curves.push(curve);
+                }
+            }
+        }
+        if curves.is_empty() {
+            return Err(CommandError::NoExtractableIsocurves);
+        }
+
+        let curve_count = curves.len();
+        let mut ids = Vec::with_capacity(curve_count);
+        for curve in curves {
+            ids.push(document.add_geometry(Geometry::NurbsCurve(curve))?);
+        }
+        replace_selection(document, ids)?;
+        Ok(format!(
+            "Extracted {curve_count} exact {} isocurve(s) from {} surface(s)",
+            options.direction.label(),
+            surfaces.len()
+        ))
+    }
+}
+
+fn parse_extract_isocurve_arguments(
+    arguments: &[&str],
+) -> Result<ExtractIsocurveOptions, CommandError> {
+    let mut direction = ExtractIsocurveDirection::U;
+    let mut direction_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Direction") {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_ISOCURVE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        if let Some((name, value, consumed)) = option {
+            if !option_name_eq(name, "Direction") || direction_seen {
+                return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
+            }
+            let value = value.trim_start_matches('_');
+            direction = if value.eq_ignore_ascii_case("U") {
+                ExtractIsocurveDirection::U
+            } else if value.eq_ignore_ascii_case("V") {
+                ExtractIsocurveDirection::V
+            } else if value.eq_ignore_ascii_case("Both") {
+                ExtractIsocurveDirection::Both
+            } else {
+                return Err(CommandError::Usage(EXTRACT_ISOCURVE_USAGE));
+            };
+            direction_seen = true;
+            index += consumed;
+        } else {
+            positional.push(argument);
+            index += 1;
+        }
+    }
+    let (point, consumed) = parse_point(&positional)?;
+    require_consumed(&positional, consumed, EXTRACT_ISOCURVE_USAGE)?;
+    Ok(ExtractIsocurveOptions { point, direction })
+}
+
+fn nurbs_curve_has_extent(curve: &NurbsCurve) -> bool {
+    let first = curve.control_points()[0].point();
+    curve
+        .control_points()
+        .iter()
+        .any(|control| control.point() != first)
 }
 
 const CLOSE_CRV_USAGE: &str = "CloseCrv [CloseWideGapsWithLine=Yes|No] [Tolerance=value]";
@@ -7912,6 +8056,12 @@ pub enum CommandError {
     #[error("none of the selected objects has an open border")]
     NoDuplicateBorders,
 
+    #[error("ExtractIsocurve currently supports selected untrimmed NURBS surfaces only")]
+    UnsupportedExtractIsocurveGeometry,
+
+    #[error("the requested surface location has no non-degenerate isocurve")]
+    NoExtractableIsocurves,
+
     #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedLengthGeometry,
 
@@ -8106,7 +8256,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -11284,6 +11434,126 @@ mod tests {
         ] {
             assert!(registry.execute(&mut document, invalid).is_err());
             assert_eq!(document.objects().len(), 2);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+    }
+
+    #[test]
+    fn extract_isocurve_creates_exact_rational_u_and_v_curves_at_a_surface_point() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Cylinder 0,0,0 2 5 Solid=No")
+            .unwrap();
+        let source = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(&mut document, "ExtractIsocurve 2,0,2 Direction=Both")
+            .unwrap();
+        assert_eq!(
+            message,
+            "Extracted 2 exact U/V isocurve(s) from 1 surface(s)"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert!(!document.is_selected(source));
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert!(
+            outputs
+                .iter()
+                .all(|output| document.is_selected(output.id()))
+        );
+
+        let Geometry::NurbsCurve(u_curve) = outputs[0].geometry() else {
+            panic!("the first Both result must run in U")
+        };
+        assert_eq!(u_curve.degree(), 2);
+        assert!(u_curve.is_rational());
+        assert!(u_curve.is_closed().unwrap());
+        for parameter in [0.0, std::f64::consts::PI, std::f64::consts::TAU] {
+            let point = u_curve.evaluate(parameter).unwrap();
+            assert!((point.x().hypot(point.y()) - 2.0).abs() < 1.0e-12);
+            assert!((point.z() - 2.0).abs() < 1.0e-12);
+        }
+
+        let Geometry::NurbsCurve(v_curve) = outputs[1].geometry() else {
+            panic!("the second Both result must run in V")
+        };
+        assert_eq!(v_curve.degree(), 1);
+        assert_eq!(
+            v_curve.evaluate(*v_curve.domain().start()).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            v_curve.evaluate(*v_curve.domain().end()).unwrap(),
+            Point3::try_new(2.0, 0.0, 5.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("ExtractIsocurve"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+    }
+
+    #[test]
+    fn extract_isocurve_batches_surfaces_and_rejects_invalid_inputs_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for offset in [0.0, 10.0] {
+            document
+                .add_geometry(Geometry::NurbsSurface(
+                    NurbsSurface::try_bilinear([
+                        Point3::try_new(offset, 0.0, 0.0).unwrap(),
+                        Point3::try_new(offset + 4.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(offset + 4.0, 3.0, 0.0).unwrap(),
+                        Point3::try_new(offset, 3.0, 0.0).unwrap(),
+                    ])
+                    .unwrap(),
+                ))
+                .unwrap();
+        }
+        let surfaces = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(surfaces.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "IsoCurve Direction _V 2 1 0")
+            .unwrap();
+        let outputs = document.objects().skip(2).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for output in outputs {
+            let Geometry::NurbsCurve(curve) = output.geometry() else {
+                panic!("ExtractIsocurve must output exact curves")
+            };
+            assert_eq!(curve.degree(), 1);
+            assert!((curve.length(document.tolerance()).unwrap() - 3.0).abs() < 1.0e-12);
+        }
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        let line = document.objects().last().unwrap().id();
+        document
+            .select_objects_direct([surfaces[0], line], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractIsocurve 1,1,0"),
+            Err(CommandError::UnsupportedExtractIsocurveGeometry)
+        ));
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.undo_label(), history.as_deref());
+        for invalid in [
+            "ExtractIsocurve",
+            "ExtractIsocurve 1,1 Direction=Sideways",
+            "ExtractIsocurve 1,1 Direction=U Direction=V",
+            "ExtractIsocurve 1,1 Direction",
+            "ExtractIsocurve 1,1,0 extra",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+            assert_eq!(document.objects().len(), 3);
             assert_eq!(document.undo_label(), history.as_deref());
         }
     }

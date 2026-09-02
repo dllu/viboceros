@@ -20,6 +20,23 @@ enum InteractiveScaleKind {
     TwoDimensional,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InteractiveIsocurveDirection {
+    U,
+    V,
+    Both,
+}
+
+impl InteractiveIsocurveDirection {
+    const fn option_value(self) -> &'static str {
+        match self {
+            Self::U => "U",
+            Self::V => "V",
+            Self::Both => "Both",
+        }
+    }
+}
+
 impl InteractiveScaleKind {
     const fn name(self) -> &'static str {
         match self {
@@ -67,6 +84,9 @@ enum InteractiveCommand {
     },
     SrfPt {
         corners: [Option<Point3>; 3],
+    },
+    ExtractIsocurve {
+        direction: InteractiveIsocurveDirection,
     },
     Move {
         start: Option<Point3>,
@@ -142,6 +162,7 @@ impl InteractiveCommand {
             Self::Rectangle { .. } => "Rectangle",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
+            Self::ExtractIsocurve { .. } => "ExtractIsocurve",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
@@ -238,6 +259,9 @@ impl InteractiveCommand {
                     "SrfPt: pick the fourth corner in the viewport (Esc to cancel)"
                 }
             },
+            Self::ExtractIsocurve { .. } => {
+                "ExtractIsocurve: pick a location on the selected surface (Esc to cancel)"
+            }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -389,6 +413,7 @@ impl InteractiveCommand {
             | Self::SrfPt {
                 corners: [None, _, _],
             }
+            | Self::ExtractIsocurve { .. }
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -716,6 +741,30 @@ impl VibocerosApp {
                 sweep_degrees,
                 delete_input,
             }
+        } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
+            let mut direction = InteractiveIsocurveDirection::U;
+            let mut direction_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if !name.eq_ignore_ascii_case("Direction") || direction_seen {
+                    return false;
+                }
+                direction = if value.eq_ignore_ascii_case("U") {
+                    InteractiveIsocurveDirection::U
+                } else if value.eq_ignore_ascii_case("V") {
+                    InteractiveIsocurveDirection::V
+                } else if value.eq_ignore_ascii_case("Both") {
+                    InteractiveIsocurveDirection::Both
+                } else {
+                    return false;
+                };
+                direction_seen = true;
+            }
+            InteractiveCommand::ExtractIsocurve { direction }
         } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
@@ -941,6 +990,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Shear { .. }
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
+                | InteractiveCommand::ExtractIsocurve { .. }
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -1314,6 +1364,14 @@ impl VibocerosApp {
                         format_model_point(point)
                     ));
                 }
+            }
+            InteractiveCommand::ExtractIsocurve { direction } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtractIsocurve {} Direction={}",
+                    format_model_point(point),
+                    direction.option_value()
+                ));
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -1796,6 +1854,8 @@ impl VibocerosApp {
         let mut curve_start_clicked = false;
         let mut curve_end_clicked = false;
         let mut extract_points_clicked = false;
+        let mut duplicate_border_clicked = false;
+        let mut extract_isocurve_clicked = false;
         let mut length_clicked = false;
         let mut area_clicked = false;
         let mut volume_clicked = false;
@@ -1962,6 +2022,14 @@ impl VibocerosApp {
                 extract_points_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Pts"))
                     .on_hover_text("Duplicate defining points and raw mesh vertices")
+                    .clicked();
+                duplicate_border_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Dup Border"))
+                    .on_hover_text("Duplicate selected surface, B-rep, or mesh borders")
+                    .clicked();
+                extract_isocurve_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract Iso"))
+                    .on_hover_text("Pick an exact U isocurve on a selected NURBS surface")
                     .clicked();
                 length_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Length"))
@@ -2130,6 +2198,10 @@ impl VibocerosApp {
             self.execute_command("CrvEnd");
         } else if extract_points_clicked {
             self.execute_command("ExtractPt");
+        } else if duplicate_border_clicked {
+            self.execute_command("DupBorder");
+        } else if extract_isocurve_clicked {
+            self.try_start_interactive_command("ExtractIsocurve");
         } else if length_clicked {
             self.execute_command("Length");
         } else if area_clicked {
@@ -2884,6 +2956,36 @@ mod tests {
     }
 
     #[test]
+    fn interactive_extract_isocurve_uses_one_surface_location_pick() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
+        let surface = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(surface, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ExtractIsocurve Direction=Both"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtractIsocurve {
+                direction: InteractiveIsocurveDirection::Both,
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("selected surface"));
+        app.accept_drafting_point(point(1.5, 2.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 3);
+        assert!(!app.document.is_selected(surface));
+        assert!(app.document.objects().skip(1).all(|object| {
+            app.document.is_selected(object.id())
+                && matches!(object.geometry(), Geometry::NurbsCurve(_))
+        }));
+        assert_eq!(app.document.undo_label(), Some("ExtractIsocurve"));
+        assert!(!app.try_start_interactive_command("ExtractIsocurve Direction=Sideways"));
+    }
+
+    #[test]
     fn coordinate_commands_still_bypass_interactive_mode() {
         let mut app = test_app();
         app.command_input = "Point 7,8,9".to_owned();
@@ -3116,6 +3218,7 @@ mod tests {
             "Shear",
             "ExtrudeCrv",
             "ExtrudeCrvToPoint",
+            "ExtractIsocurve",
             "Revolve",
         ] {
             assert!(app.try_start_interactive_command(command));
