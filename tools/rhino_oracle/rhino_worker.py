@@ -3899,6 +3899,27 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_weld":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        angle_radians = _finite(operation["angle_radians"], "mesh weld angle")
+        def weld_mesh():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                mesh.Weld(angle_radians)
+                return {
+                    "removed_vertices": before - int(mesh.Vertices.Count),
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, weld_mesh)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_cull_unused_vertices":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         def cull_unused_vertices():

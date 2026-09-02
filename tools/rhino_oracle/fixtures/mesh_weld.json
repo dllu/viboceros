@@ -1,0 +1,34 @@
+{
+  "protocol_version": 1,
+  "iterations": 100,
+  "operations": [
+    {
+      "op": "mesh_weld",
+      "id": "flat-zero",
+      "angle_radians": 0.0,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld",
+      "id": "right-below",
+      "angle_radians": 1.5533430342749532,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, 0, 3], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld",
+      "id": "right-above",
+      "angle_radians": 1.5708137800879967,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, 0, 3]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld",
+      "id": "vertex-only",
+      "angle_radians": 3.141592653589793,
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [0, 0, 0], [-2, 0, 0], [0, -2, 0]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    }
+  ]
+}

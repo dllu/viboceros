@@ -287,6 +287,9 @@ impl CommandRegistry {
             .register(UnifyMeshNormalsCommand)
             .expect("unique built-in command");
         registry
+            .register(WeldCommand)
+            .expect("unique built-in command");
+        registry
             .register(CombineIdenticalMeshVerticesCommand)
             .expect("unique built-in command");
         registry
@@ -5647,6 +5650,76 @@ impl Command for UnifyMeshNormalsCommand {
     }
 }
 
+const WELD_USAGE: &str = "Weld [angle-degrees|Angle=degrees]";
+
+struct WeldCommand;
+
+impl Command for WeldCommand {
+    fn name(&self) -> &'static str {
+        "Weld"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let angle_degrees = parse_weld_angle(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mesh_count = selected.len();
+        let mut removed_vertex_count = 0;
+        let mut replacements = Vec::new();
+        for (id, geometry) in selected {
+            let Geometry::Mesh(mesh) = geometry else {
+                return Err(CommandError::UnsupportedWeldGeometry);
+            };
+            let (welded, removed) = mesh.welded_vertices(angle_degrees.to_radians())?;
+            removed_vertex_count += removed;
+            if removed > 0 {
+                replacements.push((id, Geometry::Mesh(welded)));
+            }
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoMeshVerticesToWeld);
+        }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Welded {removed_vertex_count} vertex occurrence(s) in {changed_mesh_count} mesh(es); {} mesh(es) unchanged",
+            mesh_count - changed_mesh_count
+        ))
+    }
+}
+
+fn parse_weld_angle(arguments: &[&str]) -> Result<Real, CommandError> {
+    let value = match arguments {
+        [] => return Ok(180.0),
+        [argument] => {
+            if let Some((name, value)) = argument.split_once('=') {
+                if !(option_name_eq(name, "Angle") || option_name_eq(name, "AngleTolerance")) {
+                    return Err(CommandError::Usage(WELD_USAGE));
+                }
+                value
+            } else {
+                argument
+            }
+        }
+        [name, value]
+            if option_name_eq(name, "Angle") || option_name_eq(name, "AngleTolerance") =>
+        {
+            value
+        }
+        _ => return Err(CommandError::Usage(WELD_USAGE)),
+    };
+    let angle_degrees = parse_finite_real(value)?;
+    if !(0.0..=180.0).contains(&angle_degrees) {
+        return Err(GeometryError::InvalidMeshWeldAngle.into());
+    }
+    Ok(angle_degrees)
+}
+
 struct CombineIdenticalMeshVerticesCommand;
 
 impl Command for CombineIdenticalMeshVerticesCommand {
@@ -10527,6 +10600,12 @@ pub enum CommandError {
     #[error("UnifyMeshNormals supports selected meshes only")]
     UnsupportedUnifyMeshNormalsGeometry,
 
+    #[error("Weld supports selected meshes only")]
+    UnsupportedWeldGeometry,
+
+    #[error("none of the selected meshes contains vertices to weld or compact")]
+    NoMeshVerticesToWeld,
+
     #[error("CombineIdenticalMeshVertices supports selected meshes only")]
     UnsupportedCombineIdenticalMeshVerticesGeometry,
 
@@ -10749,7 +10828,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume, Weld"
         );
     }
 
@@ -12623,6 +12702,169 @@ mod tests {
         ));
         assert_eq!(
             document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn welds_mesh_edges_by_angle_with_rhino_order_identity_groups_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Cleanup")
+            .unwrap();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let flat = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let right_angle = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 3.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let flat_id = document.add_geometry(Geometry::Mesh(flat.clone())).unwrap();
+        let right_id = document
+            .add_geometry(Geometry::Mesh(right_angle.clone()))
+            .unwrap();
+        let attributes = document.object(flat_id).unwrap().attributes().clone();
+        registry.execute(&mut document, "SelMesh").unwrap();
+        registry.execute(&mut document, "Group WeldSet").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Weld Angle=90").unwrap(),
+            "Welded 3 vertex occurrence(s) in 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("Weld"));
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.object(flat_id).unwrap().attributes(), &attributes);
+        let Geometry::Mesh(welded) = document.object(flat_id).unwrap().geometry() else {
+            panic!("expected welded mesh")
+        };
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[2, 1, 0], [1, 2, 3]]);
+        assert_eq!(
+            document.object(right_id).unwrap().geometry(),
+            &Geometry::Mesh(right_angle.clone())
+        );
+        assert_eq!(
+            document
+                .group_by_name("WeldSet")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([flat_id, right_id])
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(flat_id).unwrap().geometry(),
+            &Geometry::Mesh(flat.clone())
+        );
+        assert_eq!(
+            registry.execute(&mut document, "Weld").unwrap(),
+            "Welded 5 vertex occurrence(s) in 2 mesh(es); 0 mesh(es) unchanged"
+        );
+        let Geometry::Mesh(welded_right) = document.object(right_id).unwrap().geometry() else {
+            panic!("expected welded mesh")
+        };
+        assert_eq!(welded_right.triangles(), &[[2, 1, 0], [1, 2, 3]]);
+    }
+
+    #[test]
+    fn weld_rejects_noops_mixed_selection_and_invalid_angles_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let compact = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut compact_only = Document::default();
+        let compact_id = compact_only
+            .add_geometry(Geometry::Mesh(compact.clone()))
+            .unwrap();
+        compact_only
+            .select_object(compact_id, SelectionMode::Replace)
+            .unwrap();
+        let history = compact_only.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut compact_only, "Weld AngleTolerance 45"),
+            Err(CommandError::NoMeshVerticesToWeld)
+        ));
+        assert_eq!(compact_only.undo_label(), history.as_deref());
+        assert_eq!(
+            compact_only.object(compact_id).unwrap().geometry(),
+            &Geometry::Mesh(compact)
+        );
+        for command in [
+            "Weld -1",
+            "Weld 180.001",
+            "Weld nan",
+            "Weld Angle=20 Angle=30",
+            "Weld Unknown=20",
+        ] {
+            assert!(registry.execute(&mut compact_only, command).is_err());
+            assert_eq!(compact_only.undo_label(), history.as_deref());
+        }
+
+        let duplicated = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut mixed = Document::default();
+        mixed.add_geometry(Geometry::Mesh(duplicated)).unwrap();
+        mixed
+            .add_geometry(Geometry::Point(point(9.0, 9.0, 0.0)))
+            .unwrap();
+        registry.execute(&mut mixed, "SelAll").unwrap();
+        let before = mixed.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut mixed, "Weld 180"),
+            Err(CommandError::UnsupportedWeldGeometry)
+        ));
+        assert_eq!(
+            mixed.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
     }

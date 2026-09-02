@@ -136,6 +136,7 @@ CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
+Weld 180
 CombineIdenticalMeshVertices
 CullUnusedMeshVertices
 SplitDisjointMesh
@@ -514,6 +515,11 @@ location-welded manifold edges, including STL-style triangle soup, and rejects
 non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)
 reverses selected curve directions or every face in selected meshes without
 changing object identities, attributes, groups, or closed-curve seams.
+`Weld` merges exactly coincident endpoints only where mesh faces share a whole
+edge and their normal angle is within the supplied 0-to-180-degree tolerance.
+It matches Rhino's survivor ordering, compacts unused vertices, never merges a
+vertex-only contact, and preserves object identity, metadata, groups, and
+selection. The default is 180 degrees; `Angle=90` is also accepted.
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,
 face order, and winding.

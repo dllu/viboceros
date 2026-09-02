@@ -889,6 +889,85 @@ impl TriangleMesh {
         (Self::from_validated_parts(vertices, faces), removed)
     }
 
+    /// Welds coincident edge endpoints whose incident face normals fall
+    /// within the supplied angular tolerance.
+    ///
+    /// Only vertices paired along an exact-location topology edge can merge;
+    /// a coincident vertex-only contact remains distinct. The later raw vertex
+    /// is retained as Rhino/OpenNURBS does, then all unreferenced vertices are
+    /// compacted while the remaining source order is preserved.
+    pub fn welded_vertices(
+        &self,
+        angle_tolerance_radians: Real,
+    ) -> Result<(Self, usize), GeometryError> {
+        if !(angle_tolerance_radians.is_finite()
+            && (0.0..=std::f64::consts::PI).contains(&angle_tolerance_radians))
+        {
+            return Err(GeometryError::InvalidMeshWeldAngle);
+        }
+        let data = self.topology_data();
+        let face_normals = self.polygon_face_normals()?;
+        let minimum_dot = angle_tolerance_radians.cos();
+        let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
+        for incidence in data.edges.values() {
+            let uses = incidence.uses().collect::<Vec<_>>();
+            for left in 0..uses.len().saturating_sub(1) {
+                for right in left + 1..uses.len() {
+                    let dot = face_normals[uses[left].face]
+                        .as_vector()
+                        .dot(face_normals[uses[right].face].as_vector())?
+                        .clamp(-1.0, 1.0);
+                    if dot < minimum_dot {
+                        continue;
+                    }
+                    for endpoint in 0..2 {
+                        union_indices_keep_later(
+                            &mut parents,
+                            uses[left].raw_vertices[endpoint] as usize,
+                            uses[right].raw_vertices[endpoint] as usize,
+                        );
+                    }
+                }
+            }
+        }
+
+        let mut retained = vec![false; self.vertices.len()];
+        for face in &self.faces {
+            for &vertex in face.indices() {
+                let representative = index_root(&mut parents, vertex as usize);
+                retained[representative] = true;
+            }
+        }
+        let retained_count = retained.iter().filter(|&&keep| keep).count();
+        let removed = self.vertices.len() - retained_count;
+        if removed == 0 {
+            return Ok((self.clone(), 0));
+        }
+
+        let mut representative_remap = vec![0_u32; self.vertices.len()];
+        let mut vertices = Vec::with_capacity(retained_count);
+        for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {
+            if !keep {
+                continue;
+            }
+            representative_remap[source] = u32::try_from(vertices.len())
+                .expect("a welded mesh cannot have more vertices than its source");
+            vertices.push(point);
+        }
+        let faces = self
+            .faces
+            .iter()
+            .copied()
+            .map(|face| {
+                face.remapped(|vertex| {
+                    let representative = index_root(&mut parents, vertex as usize);
+                    representative_remap[representative]
+                })
+            })
+            .collect();
+        Ok((Self::from_validated_parts(vertices, faces), removed))
+    }
+
     /// Removes vertices that are not referenced by any face. Referenced
     /// vertices retain their relative source order, and coincident referenced
     /// vertices remain distinct. Face order and winding are unchanged.
@@ -1556,6 +1635,30 @@ fn union_faces(parents: &mut [usize], ranks: &mut [u8], first: usize, second: us
             parents[second_root] = first_root;
             ranks[first_root] += 1;
         }
+    }
+}
+
+fn index_root(parents: &mut [usize], index: usize) -> usize {
+    let mut root = index;
+    while parents[root] != root {
+        root = parents[root];
+    }
+    let mut current = index;
+    while parents[current] != current {
+        let next = parents[current];
+        parents[current] = root;
+        current = next;
+    }
+    root
+}
+
+fn union_indices_keep_later(parents: &mut [usize], first: usize, second: usize) {
+    let first = index_root(parents, first);
+    let second = index_root(parents, second);
+    if first < second {
+        parents[first] = second;
+    } else if second < first {
+        parents[second] = first;
     }
 }
 
@@ -2611,6 +2714,103 @@ mod tests {
         )
         .unwrap();
         assert_eq!(near.combined_identical_vertices(), (near.clone(), 0));
+    }
+
+    #[test]
+    fn welds_smooth_coincident_edge_endpoints_in_rhino_order() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, removed) = mesh.welded_vertices(0.0).unwrap();
+        assert_eq!(removed, 3);
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[2, 1, 0], [1, 2, 3]]);
+        assert_eq!(welded.topology().edge_count(), 5);
+        assert_eq!(welded.explode_pieces().len(), 1);
+    }
+
+    #[test]
+    fn weld_respects_angle_and_never_merges_a_vertex_only_contact() {
+        let right_angle = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 3.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (below, removed) = right_angle.welded_vertices(89.0_f64.to_radians()).unwrap();
+        assert_eq!(removed, 1);
+        assert_eq!(below.vertices(), &right_angle.vertices()[..6]);
+        assert_eq!(below.triangles(), right_angle.triangles());
+        let (above, removed) = right_angle
+            .welded_vertices(90.001_f64.to_radians())
+            .unwrap();
+        assert_eq!(removed, 3);
+        assert_eq!(above.triangles(), &[[2, 1, 0], [1, 2, 3]]);
+
+        let vertex_only = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(-2.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            vertex_only.welded_vertices(std::f64::consts::PI),
+            Ok((vertex_only.clone(), 0))
+        );
+    }
+
+    #[test]
+    fn weld_rejects_invalid_angle_tolerances() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for angle in [-1.0, std::f64::consts::PI.next_up(), Real::NAN] {
+            assert_eq!(
+                mesh.welded_vertices(angle),
+                Err(GeometryError::InvalidMeshWeldAngle)
+            );
+        }
     }
 
     #[test]
