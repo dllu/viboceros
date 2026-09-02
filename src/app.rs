@@ -95,6 +95,7 @@ enum InteractiveCommand {
     DupEdge {
         output_on_current_layer: bool,
     },
+    WeldEdge,
     UnweldEdge {
         modify_normals: bool,
     },
@@ -186,6 +187,7 @@ impl InteractiveCommand {
             Self::ExtractSrf { .. } => "ExtractSrf",
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
+            Self::WeldEdge => "WeldEdge",
             Self::UnweldEdge { .. } => "UnweldEdge",
             Self::UnweldVertex { .. } => "UnweldVertex",
             Self::DupMeshEdge { .. } => "DupMeshEdge",
@@ -295,6 +297,9 @@ impl InteractiveCommand {
             }
             Self::DupEdge { .. } => {
                 "DupEdge: pick an edge location on a selected surface, B-rep, or mesh (Esc to cancel)"
+            }
+            Self::WeldEdge => {
+                "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
             }
             Self::UnweldEdge { .. } => {
                 "UnweldEdge: pick a topology edge on a selected mesh (Esc to cancel)"
@@ -465,6 +470,7 @@ impl InteractiveCommand {
             | Self::ExtractSrf { .. }
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
+            | Self::WeldEdge
             | Self::UnweldEdge { .. }
             | Self::UnweldVertex { .. }
             | Self::DupMeshEdge { .. }
@@ -884,6 +890,11 @@ impl VibocerosApp {
             InteractiveCommand::DupEdge {
                 output_on_current_layer,
             }
+        } else if matches!(normalized.as_str(), "weldedge" | "weldmeshedge") {
+            if !arguments.is_empty() {
+                return false;
+            }
+            InteractiveCommand::WeldEdge
         } else if matches!(normalized.as_str(), "unweldedge" | "unweldmeshedge") {
             let mut modify_normals = true;
             let mut modify_normals_seen = false;
@@ -1233,6 +1244,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
+                | InteractiveCommand::WeldEdge
                 | InteractiveCommand::UnweldEdge { .. }
                 | InteractiveCommand::UnweldVertex { .. }
                 | InteractiveCommand::DupMeshEdge { .. }
@@ -1655,6 +1667,10 @@ impl VibocerosApp {
                         "Input"
                     },
                 ));
+            }
+            InteractiveCommand::WeldEdge => {
+                self.active_command = None;
+                self.execute_command(&format!("WeldEdge {}", format_model_point(point)));
             }
             InteractiveCommand::UnweldEdge { modify_normals } => {
                 self.active_command = None;
@@ -2173,6 +2189,7 @@ impl VibocerosApp {
         let mut flip_clicked = false;
         let mut unify_mesh_normals_clicked = false;
         let mut weld_clicked = false;
+        let mut weld_edge_clicked = false;
         let mut unweld_clicked = false;
         let mut unweld_edge_clicked = false;
         let mut unweld_vertex_clicked = false;
@@ -2332,6 +2349,12 @@ impl VibocerosApp {
                 weld_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Weld"))
                     .on_hover_text("Merge coincident selected-mesh edge vertices up to 180 degrees")
+                    .clicked();
+                weld_edge_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Weld Edge"))
+                    .on_hover_text(
+                        "Pick a selected-mesh topology edge whose raw endpoints should merge",
+                    )
                     .clicked();
                 unweld_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Unweld"))
@@ -2588,6 +2611,8 @@ impl VibocerosApp {
             self.execute_command("UnifyMeshNormals");
         } else if weld_clicked {
             self.execute_command("Weld");
+        } else if weld_edge_clicked {
+            self.try_start_interactive_command("WeldEdge");
         } else if unweld_clicked {
             self.execute_command("Unweld");
         } else if unweld_edge_clicked {
@@ -3520,6 +3545,43 @@ mod tests {
     }
 
     #[test]
+    fn interactive_weld_edge_uses_one_topology_edge_pick() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("WeldMeshEdge"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::WeldEdge));
+        assert!(app.command_log.back().unwrap().contains("topology edge"));
+        app.accept_drafting_point(point(2.0, -0.1, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.is_selected(source));
+        let Geometry::Mesh(welded) = app.document.object(source).unwrap().geometry() else {
+            panic!("expected edge-welded mesh")
+        };
+        assert_eq!(welded.vertices().len(), 4);
+        assert_eq!(welded.triangles(), &[[0, 1, 2], [1, 0, 3]]);
+        assert_eq!(app.document.undo_label(), Some("WeldEdge"));
+        assert!(!app.try_start_interactive_command("WeldEdge Unknown=0"));
+    }
+
+    #[test]
     fn interactive_unweld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -3970,6 +4032,7 @@ mod tests {
             "DupFaceBorder",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
+            "WeldEdge",
             "UnweldEdge",
             "UnweldVertex",
             "ExtractIsocurve",

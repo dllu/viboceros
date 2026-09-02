@@ -1,0 +1,62 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_weld_edge",
+      "id": "empty-selection",
+      "edge_indices": [],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "two-face-seam",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "already-welded",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [1, 0, 3]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "half-welded",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 0, 4]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "naked-edge",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "closed-fan-seam",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [-1, 0, 0], [0, -1, 0], [0, 0, 0], [1, 0, 0]],
+      "triangles": [[0, 2, 1], [0, 3, 2], [0, 4, 3], [5, 6, 4]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "nonmanifold-seam",
+      "edge_indices": [0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0], [0, -1, 0], [0, 0, 0], [1, 0, 0], [0, 0, 1], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    },
+    {
+      "op": "mesh_weld_edge",
+      "id": "two-disjoint-seams-reversed",
+      "edge_indices": [5, 0],
+      "vertices": [[0, 0, 0], [1, 0, 0], [0, 1, 0], [1, 0, 0], [0, 0, 0], [0, -1, 0], [10, 0, 0], [11, 0, 0], [10, 1, 0], [11, 0, 0], [10, 0, 0], [10, -1, 0]],
+      "triangles": [[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]]
+    }
+  ]
+}

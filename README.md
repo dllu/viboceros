@@ -137,6 +137,7 @@ CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
 Weld 180
+WeldEdge Edges=0,2
 Unweld 45 ModifyNormals=Yes
 UnweldEdge Edges=0,2 ModifyNormals=Yes
 UnweldVertex Vertices=0,2 ModifyNormals=Yes
@@ -523,6 +524,12 @@ edge and their normal angle is within the supplied 0-to-180-degree tolerance.
 It matches Rhino's survivor ordering, compacts unused vertices, never merges a
 vertex-only contact, and preserves object identity, metadata, groups, and
 selection. The default is 180 degrees; `Angle=90` is also accepted.
+`WeldEdge` merges the raw endpoint sets incident to selected exact-location
+mesh topology edges. Use `Edges=0,2`, `Edges=All`, or omit the selector to pick
+one edge in the viewport. The earliest source vertex survives; unrelated
+coincident fan components remain separate, including at half-welded and
+non-manifold seams. Naked or already-welded selections still perform
+Rhino-compatible unused-vertex compaction while preserving the object.
 `Unweld` performs the inverse topology edit at edges whose face-normal angle is
 greater than or equal to its tolerance. It preserves smoother face regions,
 rebuilds affected vertices in OpenNURBS radial order, and compacts unused

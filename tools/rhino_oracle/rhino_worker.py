@@ -268,6 +268,65 @@ def _mesh_unweld_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "mesh_weld_edge":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        edge_indices = operation["edge_indices"]
+        if not isinstance(edge_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in edge_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh weld edge indices must be integers")
+        edge_indices = [int(index) for index in edge_indices]
+        before = int(source.Vertices.Count)
+        if not edge_indices:
+            try:
+                return ({
+                    "accepted": False,
+                    "removed_vertices": 0,
+                    "mesh": _mesh_unweld_value(source),
+                }, 0)
+            finally:
+                source.Dispose()
+        source.Dispose()
+
+        def weld_mesh_edges():
+            command_source = _triangle_mesh(
+                operation["vertices"], operation["triangles"]
+            )
+            try:
+                object_id = document.Objects.AddMesh(command_source)
+            finally:
+                command_source.Dispose()
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add mesh weld edge oracle source")
+            document.Objects.UnselectAll()
+            mesh_object = document.Objects.FindId(object_id)
+            try:
+                for index in edge_indices:
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshTopologyEdge,
+                        index,
+                    )
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select mesh topology edge")
+                if not Rhino.RhinoApp.RunScript("_-WeldEdge _Enter", False):
+                    raise ValueError("mesh weld edge command failed")
+                mesh_object = document.Objects.FindId(object_id)
+                if mesh_object is None:
+                    raise ValueError("mesh weld edge command removed its source")
+                return {
+                    "accepted": True,
+                    "removed_vertices": before - int(mesh_object.Geometry.Vertices.Count),
+                    "mesh": _mesh_unweld_value(mesh_object.Geometry),
+                }
+            finally:
+                document.Objects.UnselectAll()
+                document.Objects.Delete(object_id, True)
+
+        return _measure(iterations, weld_mesh_edges)
+
     if kind == "mesh_unweld_vertex":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _triangle_mesh(operation["vertices"], operation["triangles"])

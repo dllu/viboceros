@@ -939,41 +939,62 @@ impl TriangleMesh {
             }
         }
 
-        let mut retained = vec![false; self.vertices.len()];
-        for face in &self.faces {
-            for &vertex in face.indices() {
-                let representative = index_root(&mut parents, vertex as usize);
-                retained[representative] = true;
-            }
-        }
-        let retained_count = retained.iter().filter(|&&keep| keep).count();
-        let removed = self.vertices.len() - retained_count;
-        if removed == 0 {
+        Ok(self.compacted_with_vertex_parents(&mut parents))
+    }
+
+    /// Welds coincident raw endpoint sets along selected exact-location
+    /// topology edges.
+    ///
+    /// Indices use the same deterministic order as [`Self::wireframe_lines`].
+    /// Only raw vertices used by faces incident to a selected edge are merged;
+    /// other coincident fan components remain separate. The earliest source
+    /// raw vertex survives, and a non-empty valid selection compacts unused
+    /// vertices. The returned count is the number of selected edges that had
+    /// at least one divided endpoint set.
+    pub fn welded_topology_edges(
+        &self,
+        edge_indices: &[usize],
+    ) -> Result<(Self, usize), GeometryError> {
+        if edge_indices.is_empty() {
             return Ok((self.clone(), 0));
         }
+        let data = self.topology_data();
+        let edges = data.edges.values().collect::<Vec<_>>();
+        let mut selected_edges = vec![false; edges.len()];
+        for &edge in edge_indices {
+            let Some(selected) = selected_edges.get_mut(edge) else {
+                return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                    edge,
+                    edge_count: edges.len(),
+                });
+            };
+            *selected = true;
+        }
 
-        let mut representative_remap = vec![0_u32; self.vertices.len()];
-        let mut vertices = Vec::with_capacity(retained_count);
-        for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {
-            if !keep {
+        let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
+        let mut welded_edge_count = 0;
+        for (incidence, selected) in edges.into_iter().zip(selected_edges) {
+            if !selected {
                 continue;
             }
-            representative_remap[source] = u32::try_from(vertices.len())
-                .expect("a welded mesh cannot have more vertices than its source");
-            vertices.push(point);
+            let uses = incidence.uses().collect::<Vec<_>>();
+            let mut divided_endpoint = false;
+            for endpoint in 0..2 {
+                let raw_vertices = uses
+                    .iter()
+                    .map(|edge_use| edge_use.raw_vertices[endpoint] as usize)
+                    .collect::<BTreeSet<_>>();
+                divided_endpoint |= raw_vertices.len() > 1;
+                if let Some(&first) = raw_vertices.first() {
+                    for &raw in raw_vertices.iter().skip(1) {
+                        union_indices_keep_earlier(&mut parents, first, raw);
+                    }
+                }
+            }
+            welded_edge_count += usize::from(divided_endpoint);
         }
-        let faces = self
-            .faces
-            .iter()
-            .copied()
-            .map(|face| {
-                face.remapped(|vertex| {
-                    let representative = index_root(&mut parents, vertex as usize);
-                    representative_remap[representative]
-                })
-            })
-            .collect();
-        Ok((Self::from_validated_parts(vertices, faces), removed))
+        let (welded, _) = self.compacted_with_vertex_parents(&mut parents);
+        Ok((welded, welded_edge_count))
     }
 
     /// Separates coincident edge endpoints where the incident-face normal
@@ -1455,6 +1476,44 @@ impl TriangleMesh {
             })
             .collect();
         Ok(Self::from_validated_parts(vertices, faces))
+    }
+
+    fn compacted_with_vertex_parents(&self, parents: &mut [usize]) -> (Self, usize) {
+        let mut retained = vec![false; self.vertices.len()];
+        for face in &self.faces {
+            for &vertex in face.indices() {
+                let representative = index_root(parents, vertex as usize);
+                retained[representative] = true;
+            }
+        }
+        let retained_count = retained.iter().filter(|&&keep| keep).count();
+        let removed = self.vertices.len() - retained_count;
+        if removed == 0 {
+            return (self.clone(), 0);
+        }
+
+        let mut representative_remap = vec![0_u32; self.vertices.len()];
+        let mut vertices = Vec::with_capacity(retained_count);
+        for (source, (&point, keep)) in self.vertices.iter().zip(retained).enumerate() {
+            if !keep {
+                continue;
+            }
+            representative_remap[source] = u32::try_from(vertices.len())
+                .expect("a compacted mesh cannot have more vertices than its source");
+            vertices.push(point);
+        }
+        let faces = self
+            .faces
+            .iter()
+            .copied()
+            .map(|face| {
+                face.remapped(|vertex| {
+                    let representative = index_root(parents, vertex as usize);
+                    representative_remap[representative]
+                })
+            })
+            .collect();
+        (Self::from_validated_parts(vertices, faces), removed)
     }
 
     /// Removes vertices that are not referenced by any face. Referenced
@@ -2369,6 +2428,16 @@ fn union_indices_keep_later(parents: &mut [usize], first: usize, second: usize) 
         parents[first] = second;
     } else if second < first {
         parents[second] = first;
+    }
+}
+
+fn union_indices_keep_earlier(parents: &mut [usize], first: usize, second: usize) {
+    let first = index_root(parents, first);
+    let second = index_root(parents, second);
+    if first < second {
+        parents[second] = first;
+    } else if second < first {
+        parents[first] = second;
     }
 }
 
@@ -3538,6 +3607,181 @@ mod tests {
                 Err(GeometryError::InvalidMeshWeldAngle)
             );
         }
+    }
+
+    #[test]
+    fn welds_selected_topology_edges_with_earliest_survivors_and_compaction() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, edge_count) = mesh.welded_topology_edges(&[0]).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[0, 1, 2], [1, 0, 3]]);
+        assert_eq!(mesh.welded_topology_edges(&[0, 0]).unwrap().0, welded);
+
+        let (empty, edge_count) = mesh.welded_topology_edges(&[]).unwrap();
+        assert_eq!((empty, edge_count), (mesh.clone(), 0));
+        assert_eq!(
+            mesh.welded_topology_edges(&[5]),
+            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: 5,
+                edge_count: 5,
+            })
+        );
+
+        let already_welded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            already_welded.welded_topology_edges(&[0]).unwrap(),
+            (welded.clone(), 0)
+        );
+
+        let half_welded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 0, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            half_welded.welded_topology_edges(&[0]).unwrap(),
+            (welded.clone(), 1)
+        );
+
+        let naked = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (compacted, edge_count) = naked.welded_topology_edges(&[0]).unwrap();
+        assert_eq!(edge_count, 0);
+        assert_eq!(compacted.vertices(), &naked.vertices()[..3]);
+        assert_eq!(compacted.triangles(), naked.triangles());
+    }
+
+    #[test]
+    fn selected_edge_welding_handles_closed_non_manifold_and_disjoint_seams() {
+        let fan = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(-1.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+            ],
+            vec![[0, 2, 1], [0, 3, 2], [0, 4, 3], [5, 6, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, edge_count) = fan.welded_topology_edges(&[0]).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(welded.vertices(), &fan.vertices()[..5]);
+        assert_eq!(
+            welded.triangles(),
+            &[[0, 2, 1], [0, 3, 2], [0, 4, 3], [0, 1, 4]]
+        );
+
+        let non_manifold = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, edge_count) = non_manifold.welded_topology_edges(&[0]).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(
+            welded.vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ]
+        );
+        assert_eq!(welded.triangles(), &[[0, 1, 2], [1, 0, 3], [0, 1, 4]]);
+
+        let disjoint = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -1.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(11.0, 0.0, 0.0),
+                point(10.0, 1.0, 0.0),
+                point(11.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, -1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [6, 7, 8], [9, 10, 11]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (welded, edge_count) = disjoint.welded_topology_edges(&[5, 0]).unwrap();
+        assert_eq!(edge_count, 2);
+        assert_eq!(welded.vertices().len(), 8);
+        assert_eq!(
+            welded.triangles(),
+            &[[0, 1, 2], [1, 0, 3], [4, 5, 6], [5, 4, 7]]
+        );
     }
 
     #[test]
