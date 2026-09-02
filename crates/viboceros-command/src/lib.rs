@@ -2036,6 +2036,8 @@ impl Command for AreaCommand {
                 Geometry::Circle(circle) => Ok(circle.area()?),
                 Geometry::Ellipse(ellipse) => Ok(ellipse.area()?),
                 Geometry::Polyline(polyline) => Ok(polyline.planar_area(tolerance)?),
+                Geometry::NurbsSurface(surface) => Ok(surface.area(tolerance)?),
+                Geometry::Brep(brep) => Ok(brep.area(tolerance)?),
                 Geometry::Mesh(mesh) => Ok(mesh.area()?),
                 _ => Err(CommandError::UnsupportedAreaGeometry),
             })?;
@@ -7228,7 +7230,9 @@ pub enum CommandError {
     #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedLengthGeometry,
 
-    #[error("Area supports selected circles, ellipses, closed planar polylines, and meshes only")]
+    #[error(
+        "Area supports selected circles, ellipses, closed planar polylines, NURBS surfaces, B-reps, and meshes only"
+    )]
     UnsupportedAreaGeometry,
 
     #[error("Volume supports selected triangle meshes and exact B-reps only")]
@@ -7946,6 +7950,48 @@ mod tests {
             Err(CommandError::UnsupportedAreaGeometry)
         ));
         assert_eq!(document.undo_label(), Some("Point"));
+    }
+
+    #[test]
+    fn area_measures_exact_nurbs_surfaces_and_breps_without_tessellation() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0e12, -2.0e12, 3.0e12).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let sphere_id = document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_sphere(frame, 2.0).unwrap(),
+            ))
+            .unwrap();
+        let box_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame,
+                    [[0.0, 1.0], [0.0, 2.0], [0.0, 3.0]],
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects([sphere_id, box_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        let message = registry.execute(&mut document, "Area").unwrap();
+        let area = message
+            .split_whitespace()
+            .next_back()
+            .unwrap()
+            .parse::<Real>()
+            .unwrap();
+        let expected = 16.0 * std::f64::consts::PI + 22.0;
+        assert!((area - expected).abs() < 1.0e-10);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
@@ -9986,8 +10032,12 @@ mod tests {
         assert!(document.object(source_ids[2]).is_some());
         assert!(document.object(source_ids[3]).is_some());
         assert_eq!(
-            document.group(group).unwrap().members().collect::<Vec<_>>(),
-            vec![source_ids[2], source_ids[3]]
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            [source_ids[2], source_ids[3]].into_iter().collect()
         );
 
         registry.execute(&mut document, "Undo").unwrap();

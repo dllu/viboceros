@@ -1,8 +1,8 @@
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
     NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    WeightedPoint2, WeightedPoint3, integration::integrate_adaptive, require_finite,
-    vector::product_three,
+    WeightedPoint2, WeightedPoint3, integration::integrate_adaptive,
+    nurbs_surface::integrate_area_patch, require_finite, vector::product_three,
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
@@ -929,6 +929,109 @@ impl Brep {
                 && (edge_uses[0].trim.reversed_3d ^ self.faces[edge_uses[0].face].reversed)
                     != (edge_uses[1].trim.reversed_3d ^ self.faces[edge_uses[1].face].reversed)
         })
+    }
+
+    /// Computes total face area directly from the exact NURBS faces.
+    ///
+    /// Full natural surface domains are integrated independently over every
+    /// nonempty knot-span rectangle. Planar trimmed faces use their exact
+    /// oriented p-curve boundaries, including subtractive inner loops. The
+    /// control geometry is recentered first so large translations do not
+    /// degrade either calculation.
+    pub fn area(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        let full_domain_faces = self
+            .faces
+            .iter()
+            .map(|face| face_covers_full_surface_domain(face, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        let bounds = self.bounds();
+        let reference = bounds.center()?;
+        let scale = bounds.min().distance_to(bounds.max())?;
+        let centered_surfaces = self
+            .faces
+            .iter()
+            .map(|face| centered_surface(&face.surface, reference))
+            .collect::<Result<Vec<_>, _>>()?;
+        let planar_faces = full_domain_faces
+            .iter()
+            .zip(&centered_surfaces)
+            .enumerate()
+            .map(|(face_index, (full_domain, surface))| {
+                if *full_domain {
+                    Ok(None)
+                } else {
+                    planar_surface_plane(surface, tolerance)?.map_or_else(
+                        || Err(GeometryError::UnsupportedBrepTrimArea { face: face_index }),
+                        |plane| Ok(Some(plane)),
+                    )
+                }
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let absolute_tolerance = match product_three(
+            tolerance.absolute(),
+            scale.max(tolerance.absolute()),
+            1.0,
+            "B-rep area tolerance",
+        ) {
+            Ok(value) => value,
+            Err(GeometryError::NonFinite { .. }) => Real::MAX,
+            Err(error) => return Err(error),
+        };
+        let integration_piece_count = self
+            .faces
+            .iter()
+            .zip(&full_domain_faces)
+            .map(|(face, full_domain)| {
+                if *full_domain {
+                    face.surface
+                        .spans_u()
+                        .count()
+                        .checked_mul(face.surface.spans_v().count())
+                        .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+                } else {
+                    Ok(1)
+                }
+            })
+            .try_fold(0_usize, |total, count| {
+                total
+                    .checked_add(count?)
+                    .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+            })?;
+        let piece_tolerance =
+            (absolute_tolerance / integration_piece_count as Real).max(Real::MIN_POSITIVE);
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for (face_index, (face, surface)) in self.faces.iter().zip(&centered_surfaces).enumerate() {
+            if full_domain_faces[face_index] {
+                for (u_start, u_end) in surface.spans_u() {
+                    for (v_start, v_end) in surface.spans_v() {
+                        let contribution = integrate_area_patch(
+                            surface,
+                            [u_start, u_end],
+                            [v_start, v_end],
+                            piece_tolerance,
+                            tolerance.relative(),
+                        )?;
+                        neumaier_add(&mut sum, &mut correction, contribution);
+                    }
+                }
+            } else {
+                let doubled_area = integrate_planar_trimmed_face_doubled_area(
+                    face,
+                    surface,
+                    planar_faces[face_index]
+                        .expect("a non-full-domain area face was verified planar"),
+                    piece_tolerance,
+                    tolerance.relative(),
+                )?;
+                let contribution =
+                    product_three(doubled_area.abs(), 0.5, 1.0, "planar B-rep face area")?;
+                neumaier_add(&mut sum, &mut correction, contribution);
+            }
+        }
+        let area = sum + correction;
+        require_finite([area], "B-rep area")?;
+        Ok(area)
     }
 
     /// Computes oriented volume directly from the exact NURBS faces.
@@ -1934,6 +2037,32 @@ fn integrate_planar_trimmed_face_volume(
     absolute_area_tolerance: Real,
     relative_tolerance: Real,
 ) -> Result<Real, GeometryError> {
+    let doubled_area = integrate_planar_trimmed_face_doubled_area(
+        face,
+        surface,
+        plane,
+        absolute_area_tolerance,
+        relative_tolerance,
+    )?;
+    let plane_position = Vector3::try_new(plane.point.x(), plane.point.y(), plane.point.z())?;
+    let plane_distance = plane_position.dot(plane.normal.as_vector())?;
+    let magnitude = product_three(
+        plane_distance.abs(),
+        doubled_area.abs(),
+        1.0 / 6.0,
+        "planar B-rep face volume",
+    )?;
+    let orientation = if face.reversed { -1.0 } else { 1.0 };
+    Ok(orientation * plane_distance.signum() * doubled_area.signum() * magnitude)
+}
+
+fn integrate_planar_trimmed_face_doubled_area(
+    face: &BrepFace,
+    surface: &NurbsSurface,
+    plane: PlanarSurfacePlane,
+    absolute_area_tolerance: Real,
+    relative_tolerance: Real,
+) -> Result<Real, GeometryError> {
     let span_count = face
         .loops
         .iter()
@@ -1984,16 +2113,8 @@ fn integrate_planar_trimmed_face_volume(
         }
     }
     let doubled_area = sum + correction;
-    let plane_position = Vector3::try_new(plane.point.x(), plane.point.y(), plane.point.z())?;
-    let plane_distance = plane_position.dot(plane.normal.as_vector())?;
-    let magnitude = product_three(
-        plane_distance.abs(),
-        doubled_area.abs(),
-        1.0 / 6.0,
-        "planar B-rep face volume",
-    )?;
-    let orientation = if face.reversed { -1.0 } else { 1.0 };
-    Ok(orientation * plane_distance.signum() * doubled_area.signum() * magnitude)
+    require_finite([doubled_area], "planar B-rep doubled face area")?;
+    Ok(doubled_area)
 }
 
 fn integrate_volume_patch(
@@ -2613,6 +2734,7 @@ mod tests {
         let trim = &face.faces()[0].loops()[0].trims()[0];
         assert_eq!(trim.trim_type(), BrepTrimType::Boundary);
         assert_eq!(trim.iso(), SurfaceIso::NotIso);
+        assert!((face.area(Tolerance::DEFAULT).unwrap() - 5.0).abs() < 1.0e-12);
         for samples_per_span in [1, 4] {
             let mesh = face
                 .tessellate(samples_per_span, Tolerance::DEFAULT)
@@ -2623,6 +2745,7 @@ mod tests {
 
         let reversed =
             Brep::try_planar_face(&profile.reversed().unwrap(), Tolerance::DEFAULT).unwrap();
+        assert!((reversed.area(Tolerance::DEFAULT).unwrap() - 5.0).abs() < 1.0e-12);
         assert!(
             (reversed
                 .tessellate(1, Tolerance::DEFAULT)
@@ -2646,8 +2769,10 @@ mod tests {
         let disk = Brep::try_planar_face(&circle, Tolerance::DEFAULT).unwrap();
         assert_eq!(disk.edges()[0].curve().degree(), 2);
         assert_eq!(disk.edges()[0].curve().knots(), circle.knots());
-        let disk_mesh = disk.tessellate(8, Tolerance::DEFAULT).unwrap();
         let expected_disk_area = std::f64::consts::PI * 4.0;
+        let exact_disk_area = disk.area(Tolerance::DEFAULT).unwrap();
+        assert!((exact_disk_area - expected_disk_area).abs() / expected_disk_area < 2.0e-12);
+        let disk_mesh = disk.tessellate(8, Tolerance::DEFAULT).unwrap();
         assert!((disk_mesh.area().unwrap() - expected_disk_area).abs() / expected_disk_area < 0.01);
 
         let open = LineSegment::try_new(
@@ -3221,6 +3346,7 @@ mod tests {
             (box_volume - 105.0).abs() < 1.0e-11,
             "box volume {box_volume}"
         );
+        assert!((box_brep.area(Tolerance::DEFAULT).unwrap() - 142.0).abs() < 1.0e-11);
 
         let cylinder = Brep::try_cylinder(frame, 2.5, -3.0, 4.0, Tolerance::DEFAULT).unwrap();
         let expected_cylinder = std::f64::consts::PI * 2.5 * 2.5 * 7.0;
@@ -3228,6 +3354,14 @@ mod tests {
             (cylinder.signed_volume(Tolerance::DEFAULT).unwrap() - expected_cylinder).abs()
                 / expected_cylinder;
         assert!(cylinder_error < 2.0e-12, "relative error {cylinder_error}");
+        let expected_cylinder_area = 2.0 * std::f64::consts::PI * 2.5 * (2.5 + 7.0);
+        let cylinder_area_error =
+            (cylinder.area(Tolerance::DEFAULT).unwrap() - expected_cylinder_area).abs()
+                / expected_cylinder_area;
+        assert!(
+            cylinder_area_error < 2.0e-12,
+            "relative error {cylinder_area_error}"
+        );
         let mut open_wall = cylinder.faces[0].clone();
         open_wall.loops[0].trims[0].trim_type = BrepTrimType::Boundary;
         open_wall.loops[0].trims[2].trim_type = BrepTrimType::Boundary;
@@ -3248,6 +3382,13 @@ mod tests {
         let cone_error =
             (cone.signed_volume(Tolerance::DEFAULT).unwrap() - expected_cone).abs() / expected_cone;
         assert!(cone_error < 2.0e-12, "relative error {cone_error}");
+        let expected_cone_area = std::f64::consts::PI * 2.5 * (2.5 + 2.5_f64.hypot(7.0));
+        let cone_area_error = (cone.area(Tolerance::DEFAULT).unwrap() - expected_cone_area).abs()
+            / expected_cone_area;
+        assert!(
+            cone_area_error < 2.0e-12,
+            "relative error {cone_area_error}"
+        );
 
         let mut reversed_faces = box_brep.faces.clone();
         for face in &mut reversed_faces {
@@ -3261,6 +3402,7 @@ mod tests {
         )
         .unwrap();
         assert!((reversed.signed_volume(Tolerance::DEFAULT).unwrap() + 105.0).abs() < 1.0e-11);
+        assert!((reversed.area(Tolerance::DEFAULT).unwrap() - 142.0).abs() < 1.0e-11);
     }
 
     #[test]
@@ -3490,6 +3632,7 @@ mod tests {
 
         assert!(brep.is_manifold());
         assert!(!brep.is_closed());
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - 84.0).abs() < 1.0e-12);
         assert!(matches!(
             brep.tessellate(1, Tolerance::DEFAULT),
             Err(GeometryError::UnsupportedBrepTrimTessellation { face: 0 })

@@ -8,6 +8,7 @@ use crate::nurbs::{
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, Point3, Real,
     Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
+    vector::product_three,
 };
 
 /// A finite tensor-product non-uniform rational B-spline surface.
@@ -1341,6 +1342,83 @@ impl NurbsSurface {
         )
     }
 
+    /// Computes the area of the complete natural surface domain directly
+    /// from the exact NURBS representation.
+    ///
+    /// Every nonempty knot-span rectangle is integrated independently. The
+    /// control net is recentered before derivative evaluation so large model
+    /// translations do not degrade the result through rational-coordinate
+    /// cancellation.
+    pub fn area(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
+        let bounds = self.control_point_bounds();
+        let reference = bounds.center()?;
+        let scale = bounds.min().distance_to(bounds.max())?;
+        let absolute_tolerance = match product_three(
+            tolerance.absolute(),
+            scale.max(tolerance.absolute()),
+            1.0,
+            "NURBS surface area tolerance",
+        ) {
+            Ok(value) => value,
+            // An unrepresentably large tolerance places no useful absolute
+            // restriction on the adaptive rule; its relative target remains.
+            Err(GeometryError::NonFinite { .. }) => Real::MAX,
+            Err(error) => return Err(error),
+        };
+        let centered = self.centered(reference)?;
+        let spans_u = centered.spans_u().collect::<Vec<_>>();
+        let spans_v = centered.spans_v().collect::<Vec<_>>();
+        let patch_count = spans_u
+            .len()
+            .checked_mul(spans_v.len())
+            .ok_or(GeometryError::NumericalIntegrationDidNotConverge)?;
+        let patch_tolerance = (absolute_tolerance / patch_count as Real).max(Real::MIN_POSITIVE);
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for &(u_start, u_end) in &spans_u {
+            for &(v_start, v_end) in &spans_v {
+                let contribution = integrate_area_patch(
+                    &centered,
+                    [u_start, u_end],
+                    [v_start, v_end],
+                    patch_tolerance,
+                    tolerance.relative(),
+                )?;
+                compensated_add(&mut sum, &mut correction, contribution);
+            }
+        }
+        let area = sum + correction;
+        require_finite([area], "NURBS surface area")?;
+        Ok(area)
+    }
+
+    fn centered(&self, reference: Point3) -> Result<Self, GeometryError> {
+        let control_points = self
+            .control_points
+            .iter()
+            .map(|control| {
+                let point = control.point();
+                WeightedPoint3::try_new(
+                    Point3::try_new(
+                        point.x() - reference.x(),
+                        point.y() - reference.y(),
+                        point.z() - reference.z(),
+                    )?,
+                    control.weight(),
+                )
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            self.control_point_count_v,
+            control_points,
+            self.knots_u.clone(),
+            self.knots_v.clone(),
+        )
+    }
+
     /// Produces a regular display mesh inside every nonempty knot-span pair.
     /// Span boundaries are sampled independently so a fully multiple knot
     /// cannot bridge a discontinuity. Boundary samples that meet within model
@@ -1728,6 +1806,55 @@ impl<'a> SurfaceIsoArcLengthSampler<'a> {
     }
 }
 
+pub(crate) fn integrate_area_patch(
+    surface: &NurbsSurface,
+    u: [Real; 2],
+    v: [Real; 2],
+    absolute_tolerance: Real,
+    relative_tolerance: Real,
+) -> Result<Real, GeometryError> {
+    let half_u = u[1] * 0.5 - u[0] * 0.5;
+    let half_v = v[1] * 0.5 - v[0] * 0.5;
+    require_finite([half_u, half_v], "NURBS surface area parameter span")?;
+    if half_u <= 0.0 || half_v <= 0.0 {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+    }
+    let inner_tolerance = (absolute_tolerance * 0.25).max(Real::MIN_POSITIVE);
+    integrate_adaptive(
+        0.0,
+        1.0,
+        absolute_tolerance,
+        relative_tolerance,
+        |normalized_u| {
+            let parameter_u = normalized_surface_span_parameter(u, normalized_u)?;
+            integrate_adaptive(
+                0.0,
+                1.0,
+                inner_tolerance,
+                relative_tolerance,
+                |normalized_v| {
+                    let parameter_v = normalized_surface_span_parameter(v, normalized_v)?;
+                    let (_, derivative_u, derivative_v) =
+                        surface.evaluate_with_derivatives(parameter_u, parameter_v)?;
+                    let normalized_u = derivative_u.scaled(half_u)?;
+                    let normalized_v = derivative_v.scaled(half_v)?;
+                    let jacobian = normalized_u.cross(normalized_v)?.length()?;
+                    product_three(jacobian, 4.0, 1.0, "NURBS surface area integrand")
+                },
+            )
+        },
+    )
+}
+
+fn normalized_surface_span_parameter(
+    span: [Real; 2],
+    normalized: Real,
+) -> Result<Real, GeometryError> {
+    let parameter = span[0].mul_add(1.0 - normalized, span[1] * normalized);
+    require_finite([parameter], "NURBS surface area parameter")?;
+    Ok(parameter)
+}
+
 fn integrate_surface_speed(
     start: Real,
     end: Real,
@@ -2110,6 +2237,58 @@ mod tests {
         assert_eq!(derivative_v, Vector3::try_new(0.0, 2.0, 2.0).unwrap());
         let normal = surface.normal_at(0.5, 0.5, Tolerance::DEFAULT).unwrap();
         assert!(normal.y() < 0.0 && normal.z() > 0.0);
+    }
+
+    #[test]
+    fn exact_surface_area_handles_rational_primitives_and_large_translations() {
+        let tolerance = Tolerance::try_new(1.0e-10, 1.0e-12, 1.0e-10).unwrap();
+        let translated_rectangle = NurbsSurface::try_bilinear([
+            point(1.0e12, -2.0e12, 3.0e12),
+            point(1.0e12 + 4.0, -2.0e12, 3.0e12),
+            point(1.0e12 + 4.0, -2.0e12 + 3.0, 3.0e12),
+            point(1.0e12, -2.0e12 + 3.0, 3.0e12),
+        ])
+        .unwrap();
+        assert!((translated_rectangle.area(tolerance).unwrap() - 12.0).abs() < 1.0e-11);
+
+        let frame = Frame3::try_from_normal(
+            point(8.0, -3.0, 2.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let radius = 2.5;
+        let height = 7.0;
+        let cases = [
+            (
+                NurbsSurface::try_disk(frame, radius).unwrap(),
+                std::f64::consts::PI * radius * radius,
+            ),
+            (
+                NurbsSurface::try_sphere(frame, radius).unwrap(),
+                4.0 * std::f64::consts::PI * radius * radius,
+            ),
+            (
+                NurbsSurface::try_cylinder(frame, radius, -3.0, 4.0).unwrap(),
+                2.0 * std::f64::consts::PI * radius * height,
+            ),
+            (
+                NurbsSurface::try_cone(frame, radius, height).unwrap(),
+                std::f64::consts::PI * radius * radius.hypot(height),
+            ),
+            (
+                NurbsSurface::try_torus(frame, 5.0, 1.5).unwrap(),
+                4.0 * std::f64::consts::PI.powi(2) * 5.0 * 1.5,
+            ),
+        ];
+        for (surface, expected) in cases {
+            let area = surface.area(tolerance).unwrap();
+            let relative_error = (area - expected).abs() / expected;
+            assert!(
+                relative_error < 2.0e-11,
+                "area {area}, relative error {relative_error}"
+            );
+        }
     }
 
     #[test]

@@ -255,7 +255,10 @@ connects unambiguous line/polyline endpoint chains within the document
 tolerance, while `Explode` turns polylines back into attribute-preserving line
 segments and frees point-cloud members as point objects. `Length` measures
 analytic, polyline, and NURBS curves with controlled accuracy; `Area` measures
-circles, ellipses, closed planar polylines, and meshes.
+circles, ellipses, closed planar polylines, exact NURBS surfaces, B-reps, and
+meshes. Full-domain NURBS faces are integrated per knot-span rectangle, while
+planar trimmed B-rep faces use their exact boundary integrals, including inner
+holes; general nonplanar trims remain explicit errors.
 `Volume` reports the accumulated signed volume of selected closed triangle
 meshes and exact B-rep solids; outward orientation is positive and reversed
 orientation is negative. Meshes use translation-stable tetrahedral
