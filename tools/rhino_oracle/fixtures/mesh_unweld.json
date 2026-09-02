@@ -1,0 +1,54 @@
+{
+  "protocol_version": 1,
+  "iterations": 100,
+  "operations": [
+    {
+      "op": "mesh_unweld",
+      "id": "flat-zero",
+      "angle_radians": 0.0,
+      "modify_normals": false,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [1, 0, 3]]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "flat-positive",
+      "angle_radians": 0.000001,
+      "modify_normals": false,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, -3, 0], [99, 99, 99]],
+      "triangles": [[0, 1, 2], [1, 0, 3]]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "right-equal",
+      "angle_radians": 1.5707963267948966,
+      "modify_normals": false,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, 0, 3]],
+      "triangles": [[0, 1, 2], [1, 0, 3]]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "right-above",
+      "angle_radians": 1.5708137800879967,
+      "modify_normals": true,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [0, 0, 3]],
+      "triangles": [[0, 1, 2], [1, 0, 3]]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "already-unwelded",
+      "angle_radians": 0.0,
+      "modify_normals": true,
+      "vertices": [[0, 0, 0], [4, 0, 0], [0, 3, 0], [4, 0, 0], [0, 0, 0], [0, -3, 0]],
+      "triangles": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_unweld",
+      "id": "cube-45",
+      "angle_radians": 0.7853981633974483,
+      "modify_normals": false,
+      "vertices": [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]],
+      "triangles": [[0, 2, 1], [0, 3, 2], [4, 5, 6], [4, 6, 7], [0, 1, 5], [0, 5, 4], [1, 2, 6], [1, 6, 5], [2, 3, 7], [2, 7, 6], [3, 0, 4], [3, 4, 7]]
+    }
+  ]
+}

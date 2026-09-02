@@ -3920,6 +3920,31 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_unweld":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        angle_radians = _finite(operation["angle_radians"], "mesh unweld angle")
+        modify_normals = operation["modify_normals"]
+        if not isinstance(modify_normals, bool):
+            source.Dispose()
+            raise ValueError("mesh unweld modify_normals must be a boolean")
+        def unweld_mesh():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                mesh.Unweld(angle_radians, modify_normals)
+                return {
+                    "added_vertices": int(mesh.Vertices.Count) - before,
+                    "mesh": _mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, unweld_mesh)
+        finally:
+            source.Dispose()
+
     if kind == "mesh_cull_unused_vertices":
         source = _triangle_mesh(operation["vertices"], operation["triangles"])
         def cull_unused_vertices():

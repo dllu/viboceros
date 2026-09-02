@@ -219,6 +219,9 @@ pub enum GeometryError {
     #[error("a mesh weld angle tolerance must be finite and lie in [0, pi]")]
     InvalidMeshWeldAngle,
 
+    #[error("a mesh unweld angle tolerance must be finite and lie in [0, pi]")]
+    InvalidMeshUnweldAngle,
+
     #[error("triangle {triangle} references missing vertex index {vertex}")]
     InvalidTriangleIndex { triangle: usize, vertex: u32 },
 

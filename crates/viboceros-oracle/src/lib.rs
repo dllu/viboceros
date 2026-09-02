@@ -244,6 +244,13 @@ pub enum Operation {
         triangles: Vec<[u32; 3]>,
         angle_radians: f64,
     },
+    MeshUnweld {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        angle_radians: f64,
+        modify_normals: bool,
+    },
     MeshCullUnusedVertices {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -330,6 +337,7 @@ impl Operation {
             | Self::MeshDisjointPieces { id, .. }
             | Self::MeshCombineIdenticalVertices { id, .. }
             | Self::MeshWeld { id, .. }
+            | Self::MeshUnweld { id, .. }
             | Self::MeshCullUnusedVertices { id, .. }
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
@@ -964,6 +972,34 @@ fn execute(
                 json!({
                     "removed_vertices": removed_vertices,
                     "mesh": mesh_value(&welded),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshUnweld {
+            vertices,
+            triangles,
+            angle_radians,
+            modify_normals: _,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let before = mesh.vertices().len() as i64;
+            let ((unwelded, _), elapsed) = measure(iterations, || {
+                black_box(&mesh).unwelded_vertices(black_box(*angle_radians))
+            })?;
+            let added_vertices = unwelded.vertices().len() as i64 - before;
+            (
+                json!({
+                    "added_vertices": added_vertices,
+                    "mesh": mesh_value(&unwelded),
                 }),
                 elapsed,
             )
@@ -4941,6 +4977,41 @@ mod tests {
                         [4.0, 0.0, 0.0],
                         [0.0, 0.0, 0.0],
                         [0.0, -3.0, 0.0],
+                    ],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn unwelds_mesh_vertices_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshUnweld {
+            id: "unwelded".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [0.0, 3.0, 0.0],
+                [0.0, -3.0, 0.0],
+                [99.0, 99.0, 99.0],
+            ],
+            triangles: vec![[0, 1, 2], [1, 0, 3]],
+            angle_radians: 0.0,
+            modify_normals: false,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "added_vertices": 1,
+                "mesh": {
+                    "triangles": [[3, 4, 0], [5, 2, 1]],
+                    "vertices": [
+                        [0.0, 3.0, 0.0],
+                        [0.0, -3.0, 0.0],
+                        [0.0, 0.0, 0.0],
+                        [0.0, 0.0, 0.0],
+                        [4.0, 0.0, 0.0],
+                        [4.0, 0.0, 0.0],
                     ],
                 },
             })

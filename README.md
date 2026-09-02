@@ -137,6 +137,7 @@ CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
 UnifyMeshNormals
 Weld 180
+Unweld 45 ModifyNormals=Yes
 CombineIdenticalMeshVertices
 CullUnusedMeshVertices
 SplitDisjointMesh
@@ -520,6 +521,12 @@ edge and their normal angle is within the supplied 0-to-180-degree tolerance.
 It matches Rhino's survivor ordering, compacts unused vertices, never merges a
 vertex-only contact, and preserves object identity, metadata, groups, and
 selection. The default is 180 degrees; `Angle=90` is also accepted.
+`Unweld` performs the inverse topology edit at edges whose face-normal angle is
+greater than or equal to its tolerance. It preserves smoother face regions,
+rebuilds affected vertices in OpenNURBS radial order, and compacts unused
+vertices. The zero-degree default separates every adjacent face region;
+`ModifyNormals=Yes|No` is accepted for Rhino script compatibility while mesh
+normals remain derived data.
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,
 face order, and winding.

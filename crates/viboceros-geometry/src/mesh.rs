@@ -101,6 +101,7 @@ impl EdgeIncidence {
 #[derive(Clone, Copy, Debug)]
 struct EdgeUse {
     face: usize,
+    side: usize,
     forward: bool,
     /// Raw mesh vertex indices ordered like the canonical topology edge.
     raw_vertices: [u32; 2],
@@ -110,6 +111,7 @@ struct EdgeUse {
 struct MeshTopologyData {
     topological_vertex_count: usize,
     topological_points: Vec<Point3>,
+    topological_vertices: Vec<usize>,
     edges: BTreeMap<(usize, usize), EdgeIncidence>,
 }
 
@@ -968,6 +970,202 @@ impl TriangleMesh {
         Ok((Self::from_validated_parts(vertices, faces), removed))
     }
 
+    /// Separates coincident edge endpoints where the incident-face normal
+    /// angle is greater than or equal to the supplied tolerance.
+    ///
+    /// Face regions that remain connected through smoother, already-welded
+    /// edges continue to share a raw vertex. Qualifying topology vertices are
+    /// rebuilt in OpenNURBS radial order, and unused vertices are compacted as
+    /// Rhino does even when no edge qualifies. The returned count is the
+    /// number of qualifying topology edges.
+    pub fn unwelded_vertices(
+        &self,
+        angle_tolerance_radians: Real,
+    ) -> Result<(Self, usize), GeometryError> {
+        if !(angle_tolerance_radians.is_finite()
+            && (0.0..=std::f64::consts::PI).contains(&angle_tolerance_radians))
+        {
+            return Err(GeometryError::InvalidMeshUnweldAngle);
+        }
+        let data = self.topology_data();
+        let face_normals = self.polygon_face_normals()?;
+        let maximum_dot = angle_tolerance_radians.cos();
+        let edges = data
+            .edges
+            .iter()
+            .map(|(&(first, second), incidence)| ([first, second], incidence))
+            .collect::<Vec<_>>();
+        let mut qualifying_edges = vec![false; edges.len()];
+        for (edge_index, (_, incidence)) in edges.iter().enumerate() {
+            let uses = incidence.uses().collect::<Vec<_>>();
+            'pairs: for left in 0..uses.len().saturating_sub(1) {
+                for right in left + 1..uses.len() {
+                    let dot = face_normals[uses[left].face]
+                        .as_vector()
+                        .dot(face_normals[uses[right].face].as_vector())?
+                        .clamp(-1.0, 1.0);
+                    if dot <= maximum_dot {
+                        qualifying_edges[edge_index] = true;
+                        break 'pairs;
+                    }
+                }
+            }
+        }
+        let qualifying_edge_count = qualifying_edges.iter().filter(|&&edge| edge).count();
+        if qualifying_edge_count == 0 {
+            return Ok((self.culled_unused_vertices().0, 0));
+        }
+
+        let mut affected_topological_vertices = vec![false; data.topological_vertex_count];
+        for (edge, qualifies) in edges.iter().zip(&qualifying_edges) {
+            if *qualifies {
+                affected_topological_vertices[edge.0[0]] = true;
+                affected_topological_vertices[edge.0[1]] = true;
+            }
+        }
+        let face_edges = topology_face_edge_indices(self, &data);
+        let mut incident_edges = vec![Vec::new(); data.topological_vertex_count];
+        for (edge, (vertices, _)) in edges.iter().enumerate() {
+            incident_edges[vertices[0]].push(edge);
+            incident_edges[vertices[1]].push(edge);
+        }
+        let mut edge_groups = vec![Vec::new(); data.topological_vertex_count];
+        for vertex in 0..data.topological_vertex_count {
+            if affected_topological_vertices[vertex] {
+                edge_groups[vertex] = radially_sorted_vertex_edges(
+                    vertex,
+                    &incident_edges[vertex],
+                    &edges,
+                    &face_edges,
+                );
+            }
+        }
+
+        let mut used = vec![false; self.vertices.len()];
+        for face in &self.faces {
+            for &vertex in face.indices() {
+                used[vertex as usize] = true;
+            }
+        }
+        let mut raw_remap = vec![u32::MAX; self.vertices.len()];
+        let mut vertices = Vec::new();
+        for (source, (&point, is_used)) in self.vertices.iter().zip(used).enumerate() {
+            if !is_used || affected_topological_vertices[data.topological_vertices[source]] {
+                continue;
+            }
+            raw_remap[source] =
+                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            vertices.push(point);
+        }
+
+        let mut face_replacements = vec![BTreeMap::<u32, u32>::new(); self.faces.len()];
+        for (face_index, face) in self.faces.iter().enumerate() {
+            for &raw_vertex in face.indices() {
+                let source = raw_vertex as usize;
+                if !affected_topological_vertices[data.topological_vertices[source]] {
+                    face_replacements[face_index].insert(raw_vertex, raw_remap[source]);
+                }
+            }
+        }
+
+        let mut incident_faces = vec![Vec::new(); data.topological_vertex_count];
+        for (face, polygon) in self.faces.iter().enumerate() {
+            for &raw in polygon.indices() {
+                incident_faces[data.topological_vertices[raw as usize]].push(face);
+            }
+        }
+        for topological_vertex in 0..data.topological_vertex_count {
+            if !affected_topological_vertices[topological_vertex] {
+                continue;
+            }
+            let vertex_faces = &incident_faces[topological_vertex];
+            let face_to_local = vertex_faces
+                .iter()
+                .enumerate()
+                .map(|(local, &face)| (face, local))
+                .collect::<BTreeMap<_, _>>();
+            let mut parents = (0..vertex_faces.len()).collect::<Vec<_>>();
+            let mut ranks = vec![0_u8; vertex_faces.len()];
+            for &edge in &incident_edges[topological_vertex] {
+                let (edge_vertices, incidence) = edges[edge];
+                let endpoint = if edge_vertices[0] == topological_vertex {
+                    Some(0)
+                } else if edge_vertices[1] == topological_vertex {
+                    Some(1)
+                } else {
+                    None
+                };
+                let Some(endpoint) = endpoint else {
+                    continue;
+                };
+                let uses = incidence.uses().collect::<Vec<_>>();
+                for left in 0..uses.len().saturating_sub(1) {
+                    for right in left + 1..uses.len() {
+                        if uses[left].raw_vertices[endpoint] != uses[right].raw_vertices[endpoint] {
+                            continue;
+                        }
+                        let dot = face_normals[uses[left].face]
+                            .as_vector()
+                            .dot(face_normals[uses[right].face].as_vector())?
+                            .clamp(-1.0, 1.0);
+                        if dot > maximum_dot {
+                            union_faces(
+                                &mut parents,
+                                &mut ranks,
+                                face_to_local[&uses[left].face],
+                                face_to_local[&uses[right].face],
+                            );
+                        }
+                    }
+                }
+            }
+
+            let component_order = ordered_vertex_face_components(
+                &edge_groups[topological_vertex],
+                &edges,
+                &face_to_local,
+                vertex_faces,
+                &mut parents,
+            );
+            for component in component_order {
+                let target = u32::try_from(vertices.len())
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                vertices.push(data.topological_points[topological_vertex]);
+                for &face in vertex_faces {
+                    let local = face_to_local[&face];
+                    if face_root(&mut parents, local) != component {
+                        continue;
+                    }
+                    let raw_vertex = self.faces[face]
+                        .indices()
+                        .iter()
+                        .copied()
+                        .find(|&raw| data.topological_vertices[raw as usize] == topological_vertex)
+                        .expect("an incident face contains its topology vertex");
+                    face_replacements[face].insert(raw_vertex, target);
+                }
+            }
+        }
+
+        let faces = self
+            .faces
+            .iter()
+            .copied()
+            .enumerate()
+            .map(|(face, polygon)| {
+                polygon.remapped(|raw| {
+                    *face_replacements[face]
+                        .get(&raw)
+                        .expect("every unwelded face vertex has a replacement")
+                })
+            })
+            .collect();
+        Ok((
+            Self::from_validated_parts(vertices, faces),
+            qualifying_edge_count,
+        ))
+    }
+
     /// Removes vertices that are not referenced by any face. Referenced
     /// vertices retain their relative source order, and coincident referenced
     /// vertices remain distinct. Face order and winding are unchanged.
@@ -1067,9 +1265,9 @@ impl TriangleMesh {
         let mut edges = BTreeMap::<(usize, usize), EdgeIncidence>::new();
         for (face_index, face) in self.faces.iter().enumerate() {
             let indices = face.indices();
-            for edge in 0..indices.len() {
-                let raw_from = indices[edge];
-                let raw_to = indices[(edge + 1) % indices.len()];
+            for side in 0..indices.len() {
+                let raw_from = indices[side];
+                let raw_to = indices[(side + 1) % indices.len()];
                 let from = topological_vertices[raw_from as usize];
                 let to = topological_vertices[raw_to as usize];
                 debug_assert_ne!(from, to, "validated mesh edge collapsed");
@@ -1081,6 +1279,7 @@ impl TriangleMesh {
                 let incidence = edges.entry(edge).or_default();
                 incidence.add_use(EdgeUse {
                     face: face_index,
+                    side,
                     forward,
                     raw_vertices,
                 });
@@ -1090,6 +1289,7 @@ impl TriangleMesh {
         MeshTopologyData {
             topological_vertex_count: locations.len(),
             topological_points,
+            topological_vertices,
             edges,
         }
     }
@@ -1606,6 +1806,168 @@ fn edge_uses_are_unwelded(uses: &[EdgeUse]) -> bool {
         }
     }
     true
+}
+
+fn topology_face_edge_indices(mesh: &TriangleMesh, data: &MeshTopologyData) -> Vec<Vec<usize>> {
+    let edge_indices = data
+        .edges
+        .keys()
+        .copied()
+        .enumerate()
+        .map(|(index, edge)| (edge, index))
+        .collect::<BTreeMap<_, _>>();
+    mesh.faces
+        .iter()
+        .map(|face| {
+            let raw_vertices = face.indices();
+            (0..raw_vertices.len())
+                .map(|side| {
+                    let first = data.topological_vertices[raw_vertices[side] as usize];
+                    let second = data.topological_vertices
+                        [raw_vertices[(side + 1) % raw_vertices.len()] as usize];
+                    edge_indices[&(first.min(second), first.max(second))]
+                })
+                .collect()
+        })
+        .collect()
+}
+
+/// Reproduces `ON_MeshTopology::SortVertexEdges`: each returned group is one
+/// radial fan, starting at a naked/non-manifold edge when one is present.
+fn radially_sorted_vertex_edges(
+    topological_vertex: usize,
+    incident_edges: &[usize],
+    edges: &[([usize; 2], &EdgeIncidence)],
+    face_edges: &[Vec<usize>],
+) -> Vec<Vec<usize>> {
+    let mut naked = Vec::new();
+    let mut manifold = Vec::new();
+    let mut non_manifold = Vec::new();
+    for &edge in incident_edges {
+        let (vertices, incidence) = edges[edge];
+        debug_assert!(vertices.contains(&topological_vertex));
+        match incidence.count {
+            1 => naked.push(edge),
+            2 => manifold.push(edge),
+            _ => non_manifold.push(edge),
+        }
+    }
+    naked.extend(non_manifold);
+
+    let mut groups = Vec::new();
+    while !naked.is_empty() || !manifold.is_empty() {
+        let first = if naked.is_empty() {
+            manifold.remove(0)
+        } else {
+            naked.remove(0)
+        };
+        let mut group = vec![first];
+        let mut current = first;
+        let mut group_direction = 0_i8;
+        loop {
+            let (vertices, incidence) = edges[current];
+            let mut next = None;
+            for edge_use in incidence.uses() {
+                let direction = if vertices[0] == topological_vertex {
+                    if edge_use.forward { -1 } else { 1 }
+                } else if edge_use.forward {
+                    1
+                } else {
+                    -1
+                };
+                let side_count = face_edges[edge_use.face].len();
+                let next_side = if direction < 0 {
+                    (edge_use.side + side_count - 1) % side_count
+                } else {
+                    (edge_use.side + 1) % side_count
+                };
+                let candidate = face_edges[edge_use.face][next_side];
+                let removed = if let Some(index) = naked.iter().position(|&edge| edge == candidate)
+                {
+                    naked.remove(index);
+                    true
+                } else if let Some(index) = manifold.iter().position(|&edge| edge == candidate) {
+                    manifold.remove(index);
+                    true
+                } else {
+                    false
+                };
+                if removed {
+                    if group_direction == 0 {
+                        group_direction = direction;
+                    }
+                    next = Some(candidate);
+                    break;
+                }
+            }
+            let Some(next_edge) = next else {
+                break;
+            };
+            group.push(next_edge);
+            current = next_edge;
+        }
+        if group_direction > 0 {
+            group.reverse();
+        }
+        groups.push(group);
+    }
+    groups
+}
+
+fn shared_edge_face(first: &EdgeIncidence, second: &EdgeIncidence) -> Option<usize> {
+    first.uses().find_map(|first_use| {
+        second
+            .uses()
+            .any(|second_use| second_use.face == first_use.face)
+            .then_some(first_use.face)
+    })
+}
+
+fn ordered_vertex_face_components(
+    edge_groups: &[Vec<usize>],
+    edges: &[([usize; 2], &EdgeIncidence)],
+    face_to_local: &BTreeMap<usize, usize>,
+    incident_faces: &[usize],
+    parents: &mut [usize],
+) -> Vec<usize> {
+    let mut order = Vec::new();
+    let mut seen = BTreeSet::new();
+    for edge_group in edge_groups {
+        let mut radial_roots = Vec::new();
+        let mut add_shared_root = |first: usize, second: usize| {
+            let Some(face) = shared_edge_face(edges[first].1, edges[second].1) else {
+                return;
+            };
+            let Some(&local) = face_to_local.get(&face) else {
+                return;
+            };
+            let root = face_root(parents, local);
+            if radial_roots.last().copied() != Some(root) {
+                radial_roots.push(root);
+            }
+        };
+        for pair in edge_group.windows(2) {
+            add_shared_root(pair[0], pair[1]);
+        }
+        if edge_group.len() > 1 {
+            add_shared_root(*edge_group.last().unwrap(), edge_group[0]);
+        }
+        if radial_roots.len() > 1 && radial_roots.first() == radial_roots.last() {
+            radial_roots.remove(0);
+        }
+        for root in radial_roots {
+            if seen.insert(root) {
+                order.push(root);
+            }
+        }
+    }
+    for &face in incident_faces {
+        let root = face_root(parents, face_to_local[&face]);
+        if seen.insert(root) {
+            order.push(root);
+        }
+    }
+    order
 }
 
 fn face_root(parents: &mut [usize], face: usize) -> usize {
@@ -2809,6 +3171,186 @@ mod tests {
             assert_eq!(
                 mesh.welded_vertices(angle),
                 Err(GeometryError::InvalidMeshWeldAngle)
+            );
+        }
+    }
+
+    #[test]
+    fn unwelds_threshold_edges_in_rhino_radial_order_and_compacts() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (unwelded, edge_count) = mesh.unwelded_vertices(0.0).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(
+            unwelded.vertices(),
+            &[
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(unwelded.triangles(), &[[3, 4, 0], [5, 2, 1]]);
+        assert_eq!(unwelded.explode_pieces().len(), 2);
+
+        let (smooth, edge_count) = mesh.unwelded_vertices(1.0e-6).unwrap();
+        assert_eq!(edge_count, 0);
+        assert_eq!(smooth.vertices(), &mesh.vertices()[..4]);
+        assert_eq!(smooth.triangles(), mesh.triangles());
+
+        let (rebuilt, edge_count) = unwelded.unwelded_vertices(0.0).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(rebuilt, unwelded);
+
+        let already_unwelded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (rebuilt, edge_count) = already_unwelded.unwelded_vertices(0.0).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(rebuilt, unwelded);
+    }
+
+    #[test]
+    fn unweld_uses_an_inclusive_angle_threshold() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 3.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (equal, edge_count) = mesh.unwelded_vertices(std::f64::consts::FRAC_PI_2).unwrap();
+        assert_eq!(edge_count, 1);
+        assert_eq!(equal.triangles(), &[[3, 4, 0], [5, 2, 1]]);
+
+        let (above, edge_count) = mesh.unwelded_vertices(90.001_f64.to_radians()).unwrap();
+        assert_eq!(edge_count, 0);
+        assert_eq!(above, mesh);
+    }
+
+    #[test]
+    fn unweld_partitions_a_closed_corner_into_smooth_face_regions() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(1.0, 1.0, 0.0),
+            point(0.0, 1.0, 0.0),
+            point(0.0, 0.0, 1.0),
+            point(1.0, 0.0, 1.0),
+            point(1.0, 1.0, 1.0),
+            point(0.0, 1.0, 1.0),
+        ];
+        let mesh = TriangleMesh::try_new(
+            vertices.clone(),
+            vec![
+                [0, 2, 1],
+                [0, 3, 2],
+                [4, 5, 6],
+                [4, 6, 7],
+                [0, 1, 5],
+                [0, 5, 4],
+                [1, 2, 6],
+                [1, 6, 5],
+                [2, 3, 7],
+                [2, 7, 6],
+                [3, 0, 4],
+                [3, 4, 7],
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (unwelded, edge_count) = mesh.unwelded_vertices(std::f64::consts::FRAC_PI_4).unwrap();
+        assert_eq!(edge_count, 12);
+        assert_eq!(unwelded.vertices().len(), 24);
+        assert_eq!(
+            unwelded.triangles(),
+            &[
+                [1, 8, 3],
+                [1, 10, 8],
+                [13, 16, 19],
+                [13, 19, 22],
+                [2, 5, 17],
+                [2, 17, 12],
+                [4, 7, 20],
+                [4, 20, 15],
+                [6, 9, 23],
+                [6, 23, 18],
+                [11, 0, 14],
+                [11, 14, 21],
+            ]
+        );
+        assert!(
+            unwelded
+                .vertices()
+                .chunks_exact(3)
+                .all(|copies| { copies[0] == copies[1] && copies[1] == copies[2] })
+        );
+        assert_eq!(unwelded.explode_pieces().len(), 6);
+
+        let quad_mesh = TriangleMesh::try_new_faces(
+            vertices,
+            vec![
+                MeshFace::Quad([0, 3, 2, 1]),
+                MeshFace::Quad([4, 5, 6, 7]),
+                MeshFace::Quad([0, 1, 5, 4]),
+                MeshFace::Quad([1, 2, 6, 5]),
+                MeshFace::Quad([2, 3, 7, 6]),
+                MeshFace::Quad([3, 0, 4, 7]),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (quad_unwelded, edge_count) = quad_mesh
+            .unwelded_vertices(std::f64::consts::FRAC_PI_4)
+            .unwrap();
+        assert_eq!(edge_count, 12);
+        assert_eq!(quad_unwelded.vertices().len(), 24);
+        assert!(quad_unwelded.faces().iter().all(|face| face.is_quad()));
+        assert_eq!(quad_unwelded.explode_pieces().len(), 6);
+    }
+
+    #[test]
+    fn unweld_rejects_invalid_angle_tolerances() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for angle in [-1.0, std::f64::consts::PI.next_up(), Real::NAN] {
+            assert_eq!(
+                mesh.unwelded_vertices(angle),
+                Err(GeometryError::InvalidMeshUnweldAngle)
             );
         }
     }
