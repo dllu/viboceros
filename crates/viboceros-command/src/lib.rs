@@ -13626,6 +13626,13 @@ mod tests {
                 / expected_circle_volume
                 < 2.0e-12
         );
+        let circle_display = circle_solid.tessellate(8, tolerance).unwrap();
+        assert!(circle_display.topology().is_solid());
+        assert!(
+            (circle_display.signed_volume().unwrap() - expected_circle_volume).abs()
+                / expected_circle_volume
+                < 0.01
+        );
         assert!(matches!(outputs[2].geometry(), Geometry::NurbsSurface(_)));
         assert!(matches!(outputs[3].geometry(), Geometry::NurbsSurface(_)));
         assert!(source_ids.iter().all(|id| document.is_selected(*id)));

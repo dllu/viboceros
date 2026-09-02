@@ -1406,6 +1406,46 @@ mod tests {
     }
 
     #[test]
+    fn shaded_trimmed_brep_respects_a_concave_cap_boundary() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let profile = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(1.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let brep_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_extruded_curve(
+                    &profile,
+                    Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Vector3::try_new(0.0, 0.0, 4.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let inside = shaded.project(point(0.5, 2.0, 0.0), rect).unwrap();
+        let outside_notch = shaded.project(point(2.0, 2.0, 0.0), rect).unwrap();
+        assert_eq!(shaded.pick_object(inside, rect, &document), Some(brep_id));
+        assert_eq!(shaded.pick_object(outside_notch, rect, &document), None);
+    }
+
+    #[test]
     fn picking_ignores_locked_or_hidden_objects_and_prefers_point_features() {
         let viewport = Viewport {
             display_mode: DisplayMode::Shaded,

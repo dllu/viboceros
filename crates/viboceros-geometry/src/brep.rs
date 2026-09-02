@@ -6,6 +6,7 @@ use crate::{
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
+const MAX_EAR_CLIP_VERTICES: usize = 16_384;
 
 #[derive(Clone, Copy, Debug)]
 struct BoundarySnapPoint {
@@ -906,39 +907,51 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
-    /// Tessellates faces whose sole outer loop is exactly the full rectangular
-    /// surface domain. Faces with holes or general trims are rejected until a
-    /// constrained parameter-space triangulator is available; they are never
-    /// silently filled as untrimmed surfaces.
+    /// Tessellates full rectangular faces and simply trimmed planar faces.
+    ///
+    /// Planar trim boundaries are sampled per exact p-curve knot span and
+    /// triangulated in parameter space while preserving every boundary sample
+    /// for watertight stitching. Faces with holes and nonplanar general trims
+    /// remain explicit errors; they are never silently filled as untrimmed
+    /// surfaces.
     pub fn tessellate(
         &self,
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
+        if samples_per_span == 0 {
+            return Err(GeometryError::InvalidTessellationResolution);
+        }
         let mut vertices = Vec::new();
         let mut triangles = Vec::new();
         for (face_index, face) in self.faces.iter().enumerate() {
-            if !face_covers_full_surface_domain(face, tolerance)? {
+            let mesh = if face_covers_full_surface_domain(face, tolerance)? {
+                let surface_mesh = face.surface.tessellate(samples_per_span, tolerance)?;
+                let mut face_vertices = surface_mesh.vertices().to_vec();
+                self.snap_face_boundary_vertices(
+                    face,
+                    &mut face_vertices,
+                    samples_per_span,
+                    tolerance,
+                )?;
+                TriangleMesh::try_new(face_vertices, surface_mesh.triangles().to_vec(), tolerance)?
+            } else if face.loops.len() == 1
+                && planar_surface_plane(&face.surface, tolerance)?.is_some()
+            {
+                self.tessellate_planar_trimmed_face(face_index, face, samples_per_span, tolerance)?
+            } else {
                 return Err(GeometryError::UnsupportedBrepTrimTessellation { face: face_index });
-            }
-            let mesh = face.surface.tessellate(samples_per_span, tolerance)?;
-            let mut face_vertices = mesh.vertices().to_vec();
-            self.snap_face_boundary_vertices(
-                face,
-                &mut face_vertices,
-                samples_per_span,
-                tolerance,
-            )?;
+            };
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
             let combined_vertex_count = vertices
                 .len()
-                .checked_add(face_vertices.len())
+                .checked_add(mesh.vertices().len())
                 .ok_or(GeometryError::TooManyMeshVertices)?;
             if combined_vertex_count > u32::MAX as usize {
                 return Err(GeometryError::TooManyMeshVertices);
             }
-            vertices.extend(face_vertices);
+            vertices.extend(mesh.vertices());
             for triangle in mesh.triangles() {
                 let mut triangle = [
                     triangle[0]
@@ -967,6 +980,28 @@ impl Brep {
             });
         }
         Ok(mesh)
+    }
+
+    fn tessellate_planar_trimmed_face(
+        &self,
+        face_index: usize,
+        face: &BrepFace,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        let mut parameters = sample_trim_loop(&face.loops[0], samples_per_span)?;
+        let boundary_vertex_count = parameters.len();
+        let triangles = triangulate_simple_trim_polygon(&mut parameters)?
+            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+        let mut face_vertices = parameters
+            .iter()
+            .map(|parameter| face.surface.evaluate(parameter.x(), parameter.y()))
+            .collect::<Result<Vec<_>, _>>()?;
+        let candidates = self.trim_boundary_snap_points(face, samples_per_span, tolerance)?;
+        for vertex in &mut face_vertices[..boundary_vertex_count] {
+            snap_point_to_candidates(vertex, &candidates, tolerance);
+        }
+        TriangleMesh::try_new(face_vertices, triangles, tolerance)
     }
 
     fn snap_face_boundary_vertices(
@@ -1036,48 +1071,76 @@ impl Brep {
                     return invalid("a full-domain B-rep face has a non-isoparametric side");
                 }
             };
-            if let Some(edge_index) = trim.edge {
-                let edge = &self.edges[edge_index];
-                let spans = edge.curve.spans().collect::<Vec<_>>();
-                let domain = edge.curve.domain();
-                let last_span =
-                    spans
-                        .len()
-                        .checked_sub(1)
-                        .ok_or(GeometryError::InvalidBrepTopology {
-                            context: "a B-rep edge curve has no nonempty span",
-                        })?;
-                for (span_index, (start, end)) in spans.into_iter().enumerate() {
-                    for sample in 0..=samples_per_span {
-                        let is_start = span_index == 0 && sample == 0;
-                        let is_end = span_index == last_span && sample == samples_per_span;
-                        let (point, component_tolerance) = if is_start {
-                            let vertex = self.vertices[edge.vertices[0]];
-                            (vertex.point, edge.tolerance.max(vertex.tolerance))
-                        } else if is_end {
-                            let vertex = self.vertices[edge.vertices[1]];
-                            (vertex.point, edge.tolerance.max(vertex.tolerance))
-                        } else {
-                            let parameter = brep_span_parameter(
-                                start,
-                                end,
-                                sample,
-                                samples_per_span,
-                                *domain.end(),
-                            );
-                            (edge.curve.evaluate(parameter)?, edge.tolerance)
-                        };
-                        candidates[side].push(BoundarySnapPoint {
-                            point,
-                            tolerance: tolerance.absolute().max(component_tolerance),
-                        });
-                    }
-                }
-            } else {
-                let vertex = self.vertices[trim.vertices[0]];
-                candidates[side].push(BoundarySnapPoint {
-                    point: vertex.point,
-                    tolerance: tolerance.absolute().max(vertex.tolerance),
+            candidates[side].extend(self.trim_snap_points(trim, samples_per_span, tolerance)?);
+        }
+        Ok(candidates)
+    }
+
+    fn trim_boundary_snap_points(
+        &self,
+        face: &BrepFace,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<Vec<BoundarySnapPoint>, GeometryError> {
+        let mut candidates = Vec::new();
+        for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
+            candidates.extend(self.trim_snap_points(trim, samples_per_span, tolerance)?);
+        }
+        Ok(candidates)
+    }
+
+    fn trim_snap_points(
+        &self,
+        trim: &BrepTrim,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<Vec<BoundarySnapPoint>, GeometryError> {
+        let Some(edge_index) = trim.edge else {
+            let vertex = self.vertices[trim.vertices[0]];
+            return Ok(vec![BoundarySnapPoint {
+                point: vertex.point,
+                tolerance: tolerance.absolute().max(vertex.tolerance),
+            }]);
+        };
+        let edge = &self.edges[edge_index];
+        let spans = edge.curve.spans().collect::<Vec<_>>();
+        let domain = edge.curve.domain();
+        let last_span = spans
+            .len()
+            .checked_sub(1)
+            .ok_or(GeometryError::InvalidBrepTopology {
+                context: "a B-rep edge curve has no nonempty span",
+            })?;
+        let capacity = spans
+            .len()
+            .checked_mul(
+                samples_per_span
+                    .checked_add(1)
+                    .ok_or(GeometryError::TooManyMeshVertices)?,
+            )
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if capacity > u32::MAX as usize {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+        let mut candidates = Vec::with_capacity(capacity);
+        for (span_index, (start, end)) in spans.into_iter().enumerate() {
+            for sample in 0..=samples_per_span {
+                let is_start = span_index == 0 && sample == 0;
+                let is_end = span_index == last_span && sample == samples_per_span;
+                let (point, component_tolerance) = if is_start {
+                    let vertex = self.vertices[edge.vertices[0]];
+                    (vertex.point, edge.tolerance.max(vertex.tolerance))
+                } else if is_end {
+                    let vertex = self.vertices[edge.vertices[1]];
+                    (vertex.point, edge.tolerance.max(vertex.tolerance))
+                } else {
+                    let parameter =
+                        brep_span_parameter(start, end, sample, samples_per_span, *domain.end());
+                    (edge.curve.evaluate(parameter)?, edge.tolerance)
+                };
+                candidates.push(BoundarySnapPoint {
+                    point,
+                    tolerance: tolerance.absolute().max(component_tolerance),
                 });
             }
         }
@@ -1831,6 +1894,259 @@ fn face_covers_full_surface_domain(
     Ok(seen.into_iter().all(|side| side))
 }
 
+fn sample_trim_loop(
+    face_loop: &BrepLoop,
+    samples_per_span: usize,
+) -> Result<Vec<Point2>, GeometryError> {
+    let span_count = face_loop
+        .trims
+        .iter()
+        .map(|trim| trim.curve.spans().count())
+        .try_fold(0_usize, |total, count| {
+            total
+                .checked_add(count)
+                .ok_or(GeometryError::TooManyMeshVertices)
+        })?;
+    let capacity = span_count
+        .checked_mul(samples_per_span)
+        .and_then(|count| count.checked_add(1))
+        .ok_or(GeometryError::TooManyMeshVertices)?;
+    if capacity > u32::MAX as usize {
+        return Err(GeometryError::TooManyMeshVertices);
+    }
+    let mut points = Vec::with_capacity(capacity);
+    for trim in &face_loop.trims {
+        for (start, end) in trim.curve.spans() {
+            if points.is_empty() {
+                points.push(trim.curve.evaluate(start)?);
+            }
+            for sample in 1..=samples_per_span {
+                let parameter = normalized_span_parameter(
+                    [start, end],
+                    sample as Real / samples_per_span as Real,
+                )?;
+                points.push(trim.curve.evaluate(parameter)?);
+            }
+        }
+    }
+    if points.len() > 1 {
+        points.pop();
+    }
+    Ok(points)
+}
+
+fn triangulate_simple_trim_polygon(
+    parameters: &mut Vec<Point2>,
+) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
+    let Some(normalized) = normalized_trim_polygon(parameters)? else {
+        return Ok(None);
+    };
+    let epsilon = 64.0 * Real::EPSILON;
+    let vertex_count = normalized.len();
+    if vertex_count < 3 {
+        return Ok(None);
+    }
+    let doubled_area = (0..vertex_count)
+        .map(|index| {
+            let first = normalized[index];
+            let second = normalized[(index + 1) % vertex_count];
+            first[0].mul_add(second[1], -first[1] * second[0])
+        })
+        .fold((0.0, 0.0), |(mut sum, mut correction), value| {
+            neumaier_add(&mut sum, &mut correction, value);
+            (sum, correction)
+        });
+    if doubled_area.0 + doubled_area.1 <= epsilon {
+        return Ok(None);
+    }
+
+    let is_convex = (0..vertex_count).all(|index| {
+        polygon_cross(
+            normalized[(index + vertex_count - 1) % vertex_count],
+            normalized[index],
+            normalized[(index + 1) % vertex_count],
+        ) >= -epsilon
+    });
+    if is_convex && vertex_count > 3 {
+        let center = [
+            normalized.iter().map(|point| point[0]).sum::<Real>() / vertex_count as Real,
+            normalized.iter().map(|point| point[1]).sum::<Real>() / vertex_count as Real,
+        ];
+        if (0..vertex_count).any(|index| {
+            polygon_cross(
+                normalized[index],
+                normalized[(index + 1) % vertex_count],
+                center,
+            ) <= epsilon
+        }) {
+            return Ok(None);
+        }
+        let center_index =
+            u32::try_from(parameters.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let parameter_center = stable_parameter_average(parameters)?;
+        parameters.push(parameter_center);
+        let triangles = (0..vertex_count)
+            .map(|index| {
+                Ok([
+                    u32::try_from(index).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from((index + 1) % vertex_count)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    center_index,
+                ])
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        return Ok(Some(triangles));
+    }
+    if vertex_count > MAX_EAR_CLIP_VERTICES {
+        return Ok(None);
+    }
+
+    let mut remaining = (0..vertex_count).collect::<Vec<_>>();
+    let mut triangles = Vec::with_capacity(vertex_count - 2);
+    while remaining.len() > 3 {
+        let mut ear = None;
+        for position in 0..remaining.len() {
+            let previous = remaining[(position + remaining.len() - 1) % remaining.len()];
+            let current = remaining[position];
+            let next = remaining[(position + 1) % remaining.len()];
+            let triangle = [normalized[previous], normalized[current], normalized[next]];
+            if polygon_cross(triangle[0], triangle[1], triangle[2]) <= epsilon {
+                continue;
+            }
+            let contains_vertex = remaining.iter().copied().any(|candidate| {
+                candidate != previous
+                    && candidate != current
+                    && candidate != next
+                    && point_in_ccw_triangle(normalized[candidate], triangle, epsilon)
+            });
+            if !contains_vertex {
+                ear = Some((position, [previous, current, next]));
+                break;
+            }
+        }
+        let Some((position, triangle)) = ear else {
+            return Ok(None);
+        };
+        triangles.push(triangle.map(|index| index as u32));
+        remaining.remove(position);
+    }
+    let final_triangle = [remaining[0], remaining[1], remaining[2]];
+    if polygon_cross(
+        normalized[final_triangle[0]],
+        normalized[final_triangle[1]],
+        normalized[final_triangle[2]],
+    ) <= epsilon
+    {
+        return Ok(None);
+    }
+    triangles.push(final_triangle.map(|index| index as u32));
+    Ok(Some(triangles))
+}
+
+fn normalized_trim_polygon(parameters: &[Point2]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
+    let Some(origin) = parameters.first() else {
+        return Ok(None);
+    };
+    let relative = parameters
+        .iter()
+        .map(|point| [point.x() - origin.x(), point.y() - origin.y()])
+        .collect::<Vec<_>>();
+    if relative.iter().flatten().all(|value| value.is_finite()) {
+        let scale = relative
+            .iter()
+            .flatten()
+            .map(|value| value.abs())
+            .fold(0.0, Real::max);
+        return if scale > 0.0 {
+            Ok(Some(
+                relative
+                    .into_iter()
+                    .map(|point| point.map(|value| value / scale))
+                    .collect(),
+            ))
+        } else {
+            Ok(None)
+        };
+    }
+
+    let global_scale = parameters
+        .iter()
+        .flat_map(|point| [point.x().abs(), point.y().abs()])
+        .fold(0.0, Real::max);
+    if global_scale == 0.0 {
+        return Ok(None);
+    }
+    let scaled_origin = [origin.x() / global_scale, origin.y() / global_scale];
+    let relative = parameters
+        .iter()
+        .map(|point| {
+            [
+                point.x() / global_scale - scaled_origin[0],
+                point.y() / global_scale - scaled_origin[1],
+            ]
+        })
+        .collect::<Vec<_>>();
+    require_finite(
+        relative.iter().flatten().copied(),
+        "trim triangulation coordinates",
+    )?;
+    let scale = relative
+        .iter()
+        .flatten()
+        .map(|value| value.abs())
+        .fold(0.0, Real::max);
+    Ok((scale > 0.0).then(|| {
+        relative
+            .into_iter()
+            .map(|point| point.map(|value| value / scale))
+            .collect()
+    }))
+}
+
+fn stable_parameter_average(parameters: &[Point2]) -> Result<Point2, GeometryError> {
+    let average_coordinate = |coordinate: fn(Point2) -> Real| {
+        let scale = parameters
+            .iter()
+            .map(|point| coordinate(*point).abs())
+            .fold(0.0, Real::max);
+        if scale == 0.0 {
+            return 0.0;
+        }
+        let count = parameters.len() as Real;
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for point in parameters {
+            neumaier_add(
+                &mut sum,
+                &mut correction,
+                coordinate(*point) / scale / count,
+            );
+        }
+        let minimum = parameters
+            .iter()
+            .map(|point| coordinate(*point) / scale)
+            .fold(Real::INFINITY, Real::min);
+        let maximum = parameters
+            .iter()
+            .map(|point| coordinate(*point) / scale)
+            .fold(Real::NEG_INFINITY, Real::max);
+        (sum + correction).clamp(minimum, maximum) * scale
+    };
+    Point2::try_new(average_coordinate(Point2::x), average_coordinate(Point2::y))
+}
+
+fn polygon_cross(first: [Real; 2], second: [Real; 2], third: [Real; 2]) -> Real {
+    let first_edge = [second[0] - first[0], second[1] - first[1]];
+    let second_edge = [third[0] - first[0], third[1] - first[1]];
+    first_edge[0].mul_add(second_edge[1], -first_edge[1] * second_edge[0])
+}
+
+fn point_in_ccw_triangle(point: [Real; 2], triangle: [[Real; 2]; 3], epsilon: Real) -> bool {
+    polygon_cross(triangle[0], triangle[1], point) >= -epsilon
+        && polygon_cross(triangle[1], triangle[2], point) >= -epsilon
+        && polygon_cross(triangle[2], triangle[0], point) >= -epsilon
+}
+
 fn sampled_loop_signed_area(face_loop: &BrepLoop) -> Result<Real, GeometryError> {
     let mut points = Vec::new();
     for trim in &face_loop.trims {
@@ -2155,6 +2471,9 @@ mod tests {
         assert_eq!(brep.edges()[0].curve().degree(), profile.degree());
         assert_eq!(brep.edges()[0].curve().knots(), profile.knots());
         assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1.0e-10);
+        let display_mesh = brep.tessellate(4, Tolerance::DEFAULT).unwrap();
+        assert!(display_mesh.topology().is_solid());
+        assert!((display_mesh.signed_volume().unwrap() - 30.0).abs() < 1.0e-10);
 
         let reversed = profile.reversed().unwrap();
         let reversed_brep =
@@ -2189,6 +2508,40 @@ mod tests {
             ),
             Err(GeometryError::CoplanarCappedExtrusion)
         );
+    }
+
+    #[test]
+    fn concave_planar_extrusion_tessellates_without_losing_boundary_edges() {
+        let profile = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(3.0, 0.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(1.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let brep = Brep::try_extruded_curve(
+            &profile,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 4.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 20.0).abs() < 1.0e-12);
+        for samples_per_span in [1, 4] {
+            let mesh = brep
+                .tessellate(samples_per_span, Tolerance::DEFAULT)
+                .unwrap();
+            assert!(mesh.topology().is_solid());
+            assert!((mesh.signed_volume().unwrap() - 20.0).abs() < 1.0e-12);
+        }
     }
 
     #[test]
