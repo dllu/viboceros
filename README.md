@@ -225,7 +225,12 @@ selected profile and a curve path. Name the path with `PathName=`, or select it
 last; the toolbar uses the last-selected convention. The path is retained and
 deselected. `DeleteInput=Yes` removes only successfully extruded profiles.
 Profile degree, knots, and weights become U; path data becomes V; tensor weights
-are multiplied exactly. `Output=Surface` and `Solid=No` are supported.
+are multiplied exactly. With an open path whose endpoints leave the profile
+plane, `Solid=Yes` turns each closed planar profile into an exact capped B-rep
+with translated planar trims, shared rational rims, and an exact copy of the
+path as the twice-used wall seam. Open and nonplanar profiles, or profiles swept
+along a closed path, remain surfaces. `Output=Surface` and `Solid=No` are
+accepted explicitly.
 `Revolve` creates exact rational NURBS surfaces around an arbitrary two-point
 axis. Supply a signed sweep from -360 through 360 degrees, or use
 `FullCircle=Yes`; `StartAngle=` rotates the beginning of a partial sweep.

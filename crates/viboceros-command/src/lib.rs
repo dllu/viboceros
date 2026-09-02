@@ -5791,7 +5791,7 @@ fn parse_curve_extrusion(
     ))
 }
 
-const EXTRUDE_CURVE_ALONG_CURVE_USAGE: &str = "ExtrudeCrvAlongCrv [PathName=name] [DeleteInput=Yes|No] [Output=Surface] [Solid=No] [SplitAtTangents=Yes|No]";
+const EXTRUDE_CURVE_ALONG_CURVE_USAGE: &str = "ExtrudeCrvAlongCrv [PathName=name] [DeleteInput=Yes|No] [Output=Surface] [Solid=Yes|No] [SplitAtTangents=Yes|No]";
 
 struct ExtrudeCurveAlongCurveCommand;
 
@@ -5801,7 +5801,7 @@ impl Command for ExtrudeCurveAlongCurveCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (path_name, delete_input) = parse_curve_along_curve_options(arguments)?;
+        let (path_name, delete_input, solid) = parse_curve_along_curve_options(arguments)?;
         let selected = selected_ids(document)?;
         let path_id = resolve_curve_along_curve_path(document, &selected, path_name.as_deref())?;
         let path = document
@@ -5819,6 +5819,7 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             return Err(CommandError::CurveAlongCurveProfilesRequired);
         }
 
+        let path_is_open = !path.is_closed()?;
         let mut extrusions = Vec::new();
         for id in &profile_ids {
             let Some(profile) = document
@@ -5829,18 +5830,34 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             else {
                 continue;
             };
-            extrusions.push((
-                *id,
-                NurbsSurface::try_extruded_curve_along_curve(&profile, &path)?,
-            ));
+            let geometry = if solid
+                && path_is_open
+                && profile.is_closed()?
+                && profile.is_planar(document.tolerance())?
+            {
+                Geometry::Brep(Brep::try_extruded_curve_along_curve(
+                    &profile,
+                    &path,
+                    document.tolerance(),
+                )?)
+            } else {
+                Geometry::NurbsSurface(NurbsSurface::try_extruded_curve_along_curve(
+                    &profile, &path,
+                )?)
+            };
+            extrusions.push((*id, geometry));
         }
         if extrusions.is_empty() {
             return Err(CommandError::NoCurveAlongCurveProfiles);
         }
 
         let output_count = extrusions.len();
-        for (_, surface) in &extrusions {
-            document.add_geometry(Geometry::NurbsSurface(surface.clone()))?;
+        let solid_count = extrusions
+            .iter()
+            .filter(|(_, geometry)| matches!(geometry, Geometry::Brep(_)))
+            .count();
+        for (_, geometry) in &extrusions {
+            document.add_geometry(geometry.clone())?;
         }
         if delete_input {
             for (id, _) in &extrusions {
@@ -5852,8 +5869,9 @@ impl Command for ExtrudeCurveAlongCurveCommand {
             .filter(|id| *id != path_id && document.object(*id).is_some())
             .collect::<Vec<_>>();
         document.select_objects_direct(retained_selection, SelectionMode::Replace)?;
+        let surface_count = output_count - solid_count;
         Ok(format!(
-            "Extruded {output_count} curve object(s) along the fixed-orientation path into exact NURBS surfaces{}",
+            "Extruded {output_count} curve object(s) along the fixed-orientation path into {solid_count} exact capped B-rep solid(s) and {surface_count} exact NURBS surface(s){}",
             if delete_input {
                 ", deleting the input profiles"
             } else {
@@ -5865,11 +5883,11 @@ impl Command for ExtrudeCurveAlongCurveCommand {
 
 fn parse_curve_along_curve_options(
     arguments: &[&str],
-) -> Result<(Option<String>, bool), CommandError> {
+) -> Result<(Option<String>, bool, bool), CommandError> {
     let mut path_name = None;
     let mut delete_input = None;
     let mut output_seen = false;
-    let mut solid_seen = false;
+    let mut solid = None;
     let mut split_at_tangents_seen = false;
     for argument in arguments {
         let Some((name, value)) = argument.split_once('=') else {
@@ -5889,13 +5907,10 @@ fn parse_curve_along_curve_options(
                 return Err(CommandError::UnsupportedCurveAlongCurveOutput);
             }
             output_seen = true;
-        } else if option_name_eq(name, "Solid") && !solid_seen {
-            let solid =
-                parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?;
-            if solid {
-                return Err(CommandError::SolidCurveExtrusionUnsupported);
-            }
-            solid_seen = true;
+        } else if option_name_eq(name, "Solid") && solid.is_none() {
+            solid = Some(
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?,
+            );
         } else if option_name_eq(name, "SplitAtTangents") && !split_at_tangents_seen {
             parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE))?;
             split_at_tangents_seen = true;
@@ -5903,7 +5918,11 @@ fn parse_curve_along_curve_options(
             return Err(CommandError::Usage(EXTRUDE_CURVE_ALONG_CURVE_USAGE));
         }
     }
-    Ok((path_name, delete_input.unwrap_or(false)))
+    Ok((
+        path_name,
+        delete_input.unwrap_or(false),
+        solid.unwrap_or(false),
+    ))
 }
 
 fn resolve_curve_along_curve_path(
@@ -7218,9 +7237,6 @@ pub enum CommandError {
 
     #[error("ExtrudeCrvToPoint currently supports Output=Surface only")]
     UnsupportedCurveToPointExtrusionOutput,
-
-    #[error("solid curve extrusion is not yet constructed as a capped B-rep")]
-    SolidCurveExtrusionUnsupported,
 
     #[error("the two Box base corners must lie on the same World XY plane")]
     BoxBaseCornersNotCoplanar,
@@ -13828,7 +13844,7 @@ mod tests {
             "ExtrudeCrvAlongCrv PathName=point",
             "ExtrudeCrvAlongCrv PathName=Rail DeleteInput=Maybe",
             "ExtrudeCrvAlongCrv PathName=Rail Output=SubD",
-            "ExtrudeCrvAlongCrv PathName=Rail Solid=Yes",
+            "ExtrudeCrvAlongCrv PathName=Rail Solid=Yes Solid=No",
             "ExtrudeCrvAlongCrv PathName=Rail SplitAtTangents=Maybe",
             "ExtrudeCrvAlongCrv PathName=Rail extra",
         ] {
@@ -13857,6 +13873,128 @@ mod tests {
         ));
         assert_eq!(document.objects().len(), 4);
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn extrude_curve_along_curve_solid_caps_closed_planar_profiles() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let rectangle = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let circle = Circle3::try_new(
+            Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(15.0, 0.0, 0.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let nonplanar = Polyline3::try_new(
+            vec![
+                Point3::try_new(18.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(18.0, 3.0, 1.0).unwrap(),
+                Point3::try_new(18.0, 0.0, 0.0).unwrap(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let path = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(30.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(31.0, 4.0, 2.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(32.0, 3.0, 5.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let source_ids = [
+            document
+                .add_geometry(Geometry::Polyline(rectangle))
+                .unwrap(),
+            document.add_geometry(Geometry::Circle(circle)).unwrap(),
+            document.add_geometry(Geometry::Line(line)).unwrap(),
+            document
+                .add_geometry(Geometry::Polyline(nonplanar))
+                .unwrap(),
+        ];
+        let path_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(path.clone()),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_name("SolidRail"),
+            )
+            .unwrap();
+        document
+            .select_objects_direct(source_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtrudeCrvAlongCrv PathName=SolidRail Solid=Yes DeleteInput=No",
+                )
+                .unwrap(),
+            "Extruded 4 curve object(s) along the fixed-orientation path into 2 exact capped B-rep solid(s) and 2 exact NURBS surface(s)"
+        );
+        let outputs = document
+            .objects()
+            .filter(|object| !source_ids.contains(&object.id()) && object.id() != path_id)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 4);
+        let Geometry::Brep(rectangle_solid) = outputs[0].geometry() else {
+            panic!("closed rectangle must produce a capped path B-rep")
+        };
+        assert!(rectangle_solid.is_solid());
+        assert!((rectangle_solid.signed_volume(tolerance).unwrap() - 30.0).abs() < 1.0e-10);
+        assert_eq!(rectangle_solid.faces()[0].surface().knots_v(), path.knots());
+        let rectangle_display = rectangle_solid.tessellate(2, tolerance).unwrap();
+        assert!(rectangle_display.topology().is_solid());
+        assert!((rectangle_display.signed_volume().unwrap() - 30.0).abs() < 1.0e-10);
+        let Geometry::Brep(circle_solid) = outputs[1].geometry() else {
+            panic!("circle must produce a capped path B-rep")
+        };
+        assert!(circle_solid.is_solid());
+        let expected_circle_volume = std::f64::consts::PI * 4.0 * 5.0;
+        assert!(
+            (circle_solid.signed_volume(tolerance).unwrap() - expected_circle_volume).abs()
+                / expected_circle_volume
+                < 2.0e-12
+        );
+        let circle_display = circle_solid.tessellate(8, tolerance).unwrap();
+        assert!(circle_display.topology().is_solid());
+        assert!(
+            (circle_display.signed_volume().unwrap() - expected_circle_volume).abs()
+                / expected_circle_volume
+                < 0.01
+        );
+        assert!(matches!(outputs[2].geometry(), Geometry::NurbsSurface(_)));
+        assert!(matches!(outputs[3].geometry(), Geometry::NurbsSurface(_)));
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        assert!(!document.is_selected(path_id));
+        assert_eq!(document.undo_label(), Some("ExtrudeCrvAlongCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 5);
+        assert!(source_ids.iter().all(|id| document.object(*id).is_some()));
+        assert!(document.object(path_id).is_some());
     }
 
     #[test]

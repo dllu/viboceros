@@ -140,6 +140,9 @@ pub enum GeometryError {
     #[error("a capped curve extrusion requires a closed, nondegenerate planar profile")]
     InvalidCappedExtrusionProfile,
 
+    #[error("a capped curve-along-curve extrusion requires an open path")]
+    InvalidCappedExtrusionPath,
+
     #[error("a capped curve extrusion path must leave the profile plane")]
     CoplanarCappedExtrusion,
 

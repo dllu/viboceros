@@ -648,6 +648,99 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs an exact capped fixed-orientation sweep along an open NURBS path.
+    ///
+    /// The tensor-product wall retains the complete rational data of both
+    /// curves. Exact translated profile curves form the two shared rims, and
+    /// an exact translated copy of the path forms the twice-used wall seam.
+    pub fn try_extruded_curve_along_curve(
+        profile: &NurbsCurve,
+        path: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !profile.is_closed()? || !profile.is_planar(tolerance)? {
+            return Err(GeometryError::InvalidCappedExtrusionProfile);
+        }
+        if path.is_closed()? {
+            return Err(GeometryError::InvalidCappedExtrusionPath);
+        }
+
+        let wall = NurbsSurface::try_extruded_curve_along_curve(profile, path)?;
+        let path_domain = path.domain();
+        let path_start = path.evaluate(*path_domain.start())?;
+        let path_end = path.evaluate(*path_domain.end())?;
+        let start_offset = Vector3::try_new(0.0, 0.0, 0.0)?;
+        let end_offset = path_start.vector_to(path_end)?;
+        let projection = project_planar_curve(profile, tolerance)?;
+        let normal_distance = end_offset.dot(projection.frame.z_axis().as_vector())?;
+        if normal_distance.abs() <= tolerance.absolute() {
+            return Err(GeometryError::CoplanarCappedExtrusion);
+        }
+
+        let start_cap =
+            planar_cap_surface(projection.frame, start_offset, projection.coordinate_bounds)?;
+        let end_cap =
+            planar_cap_surface(projection.frame, end_offset, projection.coordinate_bounds)?;
+        let (cap_curve, cap_curve_reversed) = oriented_cap_curve(projection.curve)?;
+
+        let profile_domain = profile.domain();
+        let profile_start = profile.evaluate(*profile_domain.start())?;
+        let start_seam = profile_start;
+        let end_seam = profile_start.translated(end_offset)?;
+        let start_profile = profile.clone();
+        let end_profile = profile.transformed(AffineTransform3::from_translation(end_offset))?;
+        let seam = path.transformed(AffineTransform3::from_translation(
+            path_start.vector_to(profile_start)?,
+        ))?;
+        let closure_tolerance = extrusion_closure_tolerance(
+            [start_seam, end_seam],
+            [&start_profile, &end_profile],
+            [&start_cap, &end_cap],
+            &cap_curve,
+            cap_curve_reversed,
+            projection.maximum_residual,
+        )?;
+        let vertices = vec![
+            BrepVertex::try_new(start_seam, closure_tolerance)?,
+            BrepVertex::try_new(end_seam, closure_tolerance)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 0], start_profile, closure_tolerance)?,
+            BrepEdge::try_new([1, 1], end_profile, closure_tolerance)?,
+            BrepEdge::try_new([0, 1], seam, closure_tolerance)?,
+        ];
+
+        let wall_loop = rectangular_surface_loop(
+            &wall,
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 2, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([1, 1], 1, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 0], 2, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let cap_trim_tolerance = [closure_tolerance, closure_tolerance];
+        let start_loop = single_trim_loop(
+            0,
+            0,
+            cap_curve.clone(),
+            cap_curve_reversed,
+            cap_trim_tolerance,
+        )?;
+        let end_loop = single_trim_loop(1, 1, cap_curve, cap_curve_reversed, cap_trim_tolerance)?;
+        let path_opposes_surface = normal_distance < 0.0;
+        let faces = vec![
+            BrepFace::try_new(
+                wall,
+                path_opposes_surface ^ cap_curve_reversed,
+                vec![wall_loop],
+            )?,
+            BrepFace::try_new(start_cap, !path_opposes_surface, vec![start_loop])?,
+            BrepFace::try_new(end_cap, path_opposes_surface, vec![end_loop])?,
+        ];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     /// Constructs an exact capped extrusion from a closed planar curve to an apex.
     ///
     /// The ruled wall retains the source curve's rational data and represents
@@ -2716,6 +2809,175 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::CoplanarCappedExtrusion)
+        );
+    }
+
+    #[test]
+    fn capped_curve_along_curve_retains_exact_rational_wall_and_path_seam() {
+        let profile = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let path = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(10.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(11.0, 4.0, 2.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(12.0, 3.0, 5.0), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let brep =
+            Brep::try_extruded_curve_along_curve(&profile, &path, Tolerance::DEFAULT).unwrap();
+
+        assert_eq!(brep.vertices().len(), 2);
+        assert_eq!(brep.edges().len(), 3);
+        assert_eq!(brep.faces().len(), 3);
+        assert!(brep.is_manifold());
+        assert!(brep.is_closed());
+        assert!(brep.is_solid());
+        assert_eq!(brep.edges()[0].curve(), &profile);
+        assert_eq!(brep.edges()[2].curve().degree(), path.degree());
+        assert_eq!(brep.edges()[2].curve().knots(), path.knots());
+        assert_eq!(brep.faces()[0].surface().degree_u(), profile.degree());
+        assert_eq!(brep.faces()[0].surface().degree_v(), path.degree());
+        assert_eq!(brep.faces()[0].surface().knots_v(), path.knots());
+        assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1.0e-10);
+        for samples_per_span in [1, 4] {
+            let mesh = brep
+                .tessellate(samples_per_span, Tolerance::DEFAULT)
+                .unwrap();
+            assert!(mesh.topology().is_solid());
+            assert!((mesh.signed_volume().unwrap() - 30.0).abs() < 1.0e-10);
+        }
+
+        let reversed_profile = profile.reversed().unwrap();
+        let reversed_profile_brep =
+            Brep::try_extruded_curve_along_curve(&reversed_profile, &path, Tolerance::DEFAULT)
+                .unwrap();
+        assert!(reversed_profile_brep.is_solid());
+        assert!(
+            (reversed_profile_brep
+                .signed_volume(Tolerance::DEFAULT)
+                .unwrap()
+                - 30.0)
+                .abs()
+                < 1.0e-10
+        );
+
+        let reversed_path = path.reversed().unwrap();
+        let reversed_path_brep =
+            Brep::try_extruded_curve_along_curve(&profile, &reversed_path, Tolerance::DEFAULT)
+                .unwrap();
+        assert!(reversed_path_brep.is_solid());
+        assert!(
+            (reversed_path_brep
+                .signed_volume(Tolerance::DEFAULT)
+                .unwrap()
+                - 30.0)
+                .abs()
+                < 1.0e-10
+        );
+
+        let open_profile = LineSegment::try_new(
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        assert_eq!(
+            Brep::try_extruded_curve_along_curve(&open_profile, &path, Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidCappedExtrusionProfile)
+        );
+
+        let closed_path = Circle3::try_new(
+            point(0.0, 0.0, 0.0),
+            1.0,
+            UnitVector3::try_new(0.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        assert_eq!(
+            Brep::try_extruded_curve_along_curve(&profile, &closed_path, Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidCappedExtrusionPath)
+        );
+
+        let coplanar_path = LineSegment::try_new(
+            point(10.0, 0.0, 0.0),
+            point(12.0, 3.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        assert_eq!(
+            Brep::try_extruded_curve_along_curve(&profile, &coplanar_path, Tolerance::DEFAULT,),
+            Err(GeometryError::CoplanarCappedExtrusion)
+        );
+    }
+
+    #[test]
+    fn capped_curve_sweep_uses_evaluated_unclamped_path_endpoints() {
+        let profile = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let path = NurbsCurve::try_new(
+            2,
+            vec![
+                point(10.0, 0.0, -1.0),
+                point(11.0, 2.0, 1.0),
+                point(12.0, 4.0, 5.0),
+                point(14.0, 3.0, 8.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let path_start = path.evaluate(*path.domain().start()).unwrap();
+        let path_end = path.evaluate(*path.domain().end()).unwrap();
+        assert_ne!(path_start, path.control_points()[0].point());
+        assert_ne!(path_end, path.control_points()[3].point());
+
+        let brep =
+            Brep::try_extruded_curve_along_curve(&profile, &path, Tolerance::DEFAULT).unwrap();
+        assert!(brep.is_solid());
+        let seam = brep.edges()[2].curve();
+        assert!(
+            seam.evaluate(*seam.domain().start())
+                .unwrap()
+                .is_near(brep.vertices()[0].point(), Tolerance::DEFAULT)
+        );
+        assert!(
+            seam.evaluate(*seam.domain().end())
+                .unwrap()
+                .is_near(brep.vertices()[1].point(), Tolerance::DEFAULT)
+        );
+        let expected_volume = 6.0 * (path_end.z() - path_start.z()).abs();
+        assert!(
+            (brep.signed_volume(Tolerance::DEFAULT).unwrap() - expected_volume).abs() < 1.0e-10
         );
     }
 

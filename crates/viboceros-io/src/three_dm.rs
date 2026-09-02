@@ -1084,6 +1084,22 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        let extrusion_path = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(30.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(31.0, 4.0, 2.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(32.0, 3.0, 5.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let path_extrusion_brep = Brep::try_extruded_curve_along_curve(
+            &extrusion_profile,
+            &extrusion_path,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -1141,6 +1157,7 @@ mod tests {
                 ThreeDmObject::new(ThreeDmGeometry::Brep(cone_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(extrusion_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(apex_extrusion_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(path_extrusion_brep), 0),
             ],
         )
     }
