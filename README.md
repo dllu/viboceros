@@ -30,6 +30,7 @@ ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 Sphere 0,0,0 5
+Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=No
 Cone 0,0,0 5 10 Solid=No
 Torus 0,0,0 5 1.5
@@ -142,8 +143,8 @@ Help
 ```
 
 Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Curve`,
-`InterpCrv`, `Rectangle`, `Polygon`, `SrfPt`, or `Sphere` without coordinates
-to pick points in the viewport; press Enter to finish a polyline or curve. `Curve`
+`InterpCrv`, `Rectangle`, `Polygon`, `SrfPt`, `Sphere`, or `Ellipsoid` without
+coordinates to pick points in the viewport; press Enter to finish a polyline or curve. `Curve`
 creates an open control-point curve, defaults to degree three, accepts degrees
 through 11, and lowers the degree when too few controls are supplied.
 `Close=Smooth` creates a periodic seam (degree one remains linear and closed);
@@ -175,6 +176,10 @@ domains follow Rhino's chord-length, arc-length, and angular conventions.
 a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
 arguments starts the two-pick viewport workflow.
+`Ellipsoid` creates the exact closed 9-by-5 rational surface obtained by
+scaling that sphere along three orthogonal semi-axes. Supply three numeric
+radii in World XY, or center and three axis-radius points for an oriented
+ellipsoid; entering it without arguments starts the four-pick viewport workflow.
 `Cylinder` creates the exact open 9-by-2 rational NURBS wall from a center,
 radius (or base-circle point), and signed height. `Axis=` accepts an arbitrary
 axis, while `BothSides=Yes` makes the height symmetric about the base center.

@@ -374,6 +374,23 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs an exact rational quadratic NURBS ellipsoid.
+    ///
+    /// An ellipsoid is the affine image of the exact 9-by-5 sphere surface:
+    /// its control weights, fully multiple quadrant knots, longitude domain
+    /// `[0, 2π]`, and latitude domain `[-π/2, π/2]` are unchanged. The three
+    /// positive semi-axis radii scale the supplied frame's x, y, and z axes.
+    pub fn try_ellipsoid(frame: Frame3, radii: [Real; 3]) -> Result<Self, GeometryError> {
+        require_finite(radii, "ellipsoid radii")?;
+        if radii.into_iter().any(|radius| radius <= 0.0) {
+            return Err(GeometryError::Degenerate {
+                context: "ellipsoid",
+            });
+        }
+        let transform = AffineTransform3::try_frame_mapping(frame, frame, radii)?;
+        Self::try_sphere(frame, 1.0)?.transformed(transform)
+    }
+
     /// Constructs the exact open NURBS wall of a right circular cylinder.
     ///
     /// U is Rhino/OpenNURBS' four-span rational quadratic circle on
@@ -2078,6 +2095,85 @@ mod tests {
         assert!(NurbsSurface::try_sphere(frame, 0.0).is_err());
         assert!(NurbsSurface::try_sphere(frame, -1.0).is_err());
         assert!(NurbsSurface::try_sphere(frame, Real::INFINITY).is_err());
+    }
+
+    #[test]
+    fn exact_ellipsoid_is_an_affine_sphere_with_preserved_parameterization() {
+        let center = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            center,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let radii = [2.0, 3.0, 4.0];
+        let surface = NurbsSurface::try_ellipsoid(frame, radii).unwrap();
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let tau = std::f64::consts::TAU;
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 5);
+        assert_eq!(surface.domain_u(), 0.0..=tau);
+        assert_eq!(surface.domain_v(), -half_pi..=half_pi);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            point(1.0, 2.0, -1.0)
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            point(1.0, 4.0, -1.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 1).unwrap().point(),
+            point(-2.0, 4.0, -1.0)
+        );
+        assert!(Tolerance::DEFAULT.approx_eq(surface.control_point(1, 1).unwrap().weight(), 0.5));
+        assert_eq!(
+            surface.control_point(8, 4).unwrap().point(),
+            point(1.0, 2.0, 7.0)
+        );
+        assert_point_near(
+            surface.evaluate(0.0, -half_pi).unwrap(),
+            point(1.0, 2.0, -1.0),
+        );
+        assert_point_near(surface.evaluate(0.0, 0.0).unwrap(), point(1.0, 4.0, 3.0));
+        assert_point_near(
+            surface.evaluate(half_pi, 0.0).unwrap(),
+            point(-2.0, 2.0, 3.0),
+        );
+        assert_point_near(
+            surface.evaluate(0.0, half_pi).unwrap(),
+            point(1.0, 2.0, 7.0),
+        );
+
+        for u_index in 0..32 {
+            for v_index in 0..=16 {
+                let u = tau * u_index as Real / 32.0;
+                let v = -half_pi + std::f64::consts::PI * v_index as Real / 16.0;
+                let offset = center.vector_to(surface.evaluate(u, v).unwrap()).unwrap();
+                let normalized = frame
+                    .axes()
+                    .into_iter()
+                    .zip(radii)
+                    .map(|(axis, radius)| offset.dot(axis.as_vector()).unwrap() / radius)
+                    .map(|coordinate| coordinate * coordinate)
+                    .sum::<Real>();
+                assert!(Tolerance::DEFAULT.approx_eq(normalized, 1.0));
+            }
+        }
+        assert!(
+            !surface
+                .tessellate(2, Tolerance::DEFAULT)
+                .unwrap()
+                .triangles()
+                .is_empty()
+        );
+        assert!(NurbsSurface::try_ellipsoid(frame, [0.0, 1.0, 1.0]).is_err());
+        assert!(NurbsSurface::try_ellipsoid(frame, [1.0, -1.0, 1.0]).is_err());
+        assert!(NurbsSurface::try_ellipsoid(frame, [1.0, 1.0, Real::NAN]).is_err());
     }
 
     #[test]

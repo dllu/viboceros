@@ -66,6 +66,9 @@ impl CommandRegistry {
             .register(EllipseCommand)
             .expect("unique built-in command");
         registry
+            .register(EllipsoidCommand)
+            .expect("unique built-in command");
+        registry
             .register(PolylineCommand)
             .expect("unique built-in command");
         registry
@@ -554,6 +557,61 @@ impl Command for EllipseCommand {
         let id = document.add_geometry(Geometry::Ellipse(ellipse))?;
         Ok(format!(
             "Added ellipse {id} (radii {radius_x:.6} × {radius_y:.6})"
+        ))
+    }
+}
+
+const ELLIPSOID_USAGE: &str = "Ellipsoid center radius-x radius-y radius-z | Ellipsoid center first-axis-point second-axis-point third-axis-radius-point";
+
+struct EllipsoidCommand;
+
+impl Command for EllipsoidCommand {
+    fn name(&self) -> &'static str {
+        "Ellipsoid"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (center, center_consumed) = parse_point(arguments)?;
+        let remaining = &arguments[center_consumed..];
+        let (frame, radii) =
+            if remaining.len() == 3 && remaining.iter().all(|argument| !argument.contains(',')) {
+                let radii = [
+                    parse_finite_real(remaining[0])?,
+                    parse_finite_real(remaining[1])?,
+                    parse_finite_real(remaining[2])?,
+                ];
+                let frame = Frame3::try_from_normal(
+                    center,
+                    Vector3::try_new(0.0, 0.0, 1.0)?,
+                    document.tolerance(),
+                )?;
+                (frame, radii)
+            } else {
+                let (first_axis, first_consumed) = parse_point(remaining)?;
+                let (second_axis, second_consumed) = parse_point(&remaining[first_consumed..])?;
+                let (third_axis, third_consumed) =
+                    parse_point(&remaining[first_consumed + second_consumed..])?;
+                require_consumed(
+                    remaining,
+                    first_consumed + second_consumed + third_consumed,
+                    ELLIPSOID_USAGE,
+                )?;
+                let frame =
+                    Frame3::try_from_points(center, first_axis, second_axis, document.tolerance())?;
+                (
+                    frame,
+                    [
+                        center.distance_to(first_axis)?,
+                        center.distance_to(second_axis)?,
+                        center.distance_to(third_axis)?,
+                    ],
+                )
+            };
+        let surface = NurbsSurface::try_ellipsoid(frame, radii)?;
+        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+        Ok(format!(
+            "Added NURBS ellipsoid {id} (radii {:.6} × {:.6} × {:.6})",
+            radii[0], radii[1], radii[2]
         ))
     }
 }
@@ -7096,7 +7154,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7186,6 +7244,73 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Sphere"));
+    }
+
+    #[test]
+    fn ellipsoid_creates_exact_affine_sphere_from_radii_or_axis_points() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Ellipsoid 1,2,3 2 3 4")
+            .unwrap();
+        let ellipsoid_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(ellipsoid_id));
+        let Geometry::NurbsSurface(surface) = document.object(ellipsoid_id).unwrap().geometry()
+        else {
+            panic!("Ellipsoid must create a NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 5);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(
+            surface.domain_v(),
+            -std::f64::consts::FRAC_PI_2..=std::f64::consts::FRAC_PI_2
+        );
+        assert_eq!(
+            surface.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(3.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            surface.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
+            Point3::try_new(1.0, 5.0, 3.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Ellipsoid"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Ellipsoid 1,2,3 1,4,3 -2,2,3 1,2,7")
+            .unwrap();
+        let Geometry::NurbsSurface(oriented) = document.objects().next().unwrap().geometry() else {
+            panic!("Ellipsoid must support oriented axis points")
+        };
+        assert_eq!(
+            oriented.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 4.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            oriented.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
+            Point3::try_new(-2.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            oriented.evaluate(0.0, std::f64::consts::FRAC_PI_2).unwrap(),
+            Point3::try_new(1.0, 2.0, 7.0).unwrap()
+        );
+
+        for invalid in [
+            "Ellipsoid 0,0,0 0 2 3",
+            "Ellipsoid 0,0,0 1 -2 3",
+            "Ellipsoid 0,0,0 1 2 inf",
+            "Ellipsoid 0,0,0 1,0,0 2,0,0 0,0,3",
+            "Ellipsoid 0,0,0 1,0,0 0,2,0 0,0,0",
+            "Ellipsoid 0,0,0 1 2",
+            "Ellipsoid 0,0,0 1 2 3 4",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Ellipsoid"));
     }
 
     #[test]

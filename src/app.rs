@@ -4,7 +4,8 @@ use eframe::egui::{self, RichText};
 use viboceros_command::{CommandRegistry, MAX_CURVE_COMMAND_DEGREE};
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Ellipse3, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance,
+    CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_REGULAR_POLYGON_SIDES, Point3,
+    Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -40,6 +41,9 @@ enum InteractiveCommand {
     },
     Sphere {
         center: Option<Point3>,
+    },
+    Ellipsoid {
+        points: [Option<Point3>; 3],
     },
     Arc {
         points: [Option<Point3>; 2],
@@ -128,6 +132,7 @@ impl InteractiveCommand {
             Self::Line { .. } => "Line",
             Self::Circle { .. } => "Circle",
             Self::Sphere { .. } => "Sphere",
+            Self::Ellipsoid { .. } => "Ellipsoid",
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
@@ -173,6 +178,18 @@ impl InteractiveCommand {
             Self::Sphere { center: Some(_) } => {
                 "Sphere: pick a point on the sphere in the viewport (Esc to cancel)"
             }
+            Self::Ellipsoid { points } => match points {
+                [None, _, _] => "Ellipsoid: pick the center in the viewport (Esc to cancel)",
+                [Some(_), None, _] => {
+                    "Ellipsoid: pick the end of the first axis in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), None] => {
+                    "Ellipsoid: pick the second-axis radius in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), Some(_)] => {
+                    "Ellipsoid: pick the third-axis radius in the viewport (Esc to cancel)"
+                }
+            },
             Self::Arc { points } => match points {
                 [None, _] => "Arc: pick the start point in the viewport (Esc to cancel)",
                 [Some(_), None] => "Arc: pick a point on the arc in the viewport (Esc to cancel)",
@@ -358,6 +375,9 @@ impl InteractiveCommand {
             | Self::Line { start: None }
             | Self::Circle { center: None }
             | Self::Sphere { center: None }
+            | Self::Ellipsoid {
+                points: [None, _, _],
+            }
             | Self::Arc { points: [None, _] }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
@@ -398,7 +418,11 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
-            Self::Ellipse { center, .. } | Self::Polygon { center, .. } => center,
+            Self::Ellipse { center, .. }
+            | Self::Polygon { center, .. }
+            | Self::Ellipsoid {
+                points: [center, _, _],
+            } => center,
             Self::Arc {
                 points: [_, Some(point)],
             }
@@ -441,6 +465,11 @@ impl InteractiveCommand {
                 points: [_, _, reference],
             } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
+            Self::Ellipsoid { points } => match points {
+                [_, _, Some(second_axis)] => Some(second_axis),
+                [_, Some(first_axis), None] => Some(first_axis),
+                _ => None,
+            },
             _ => None,
         }
     }
@@ -836,6 +865,7 @@ impl VibocerosApp {
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
                 "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
+                "ellipsoid" => InteractiveCommand::Ellipsoid { points: [None; 3] },
                 "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
                 "ellipse" | "ell" => InteractiveCommand::Ellipse {
                     center: None,
@@ -986,6 +1016,66 @@ impl VibocerosApp {
                     format_model_point(center),
                     format_model_point(point)
                 ));
+            }
+            InteractiveCommand::Ellipsoid { mut points } => {
+                let point_count = points.iter().flatten().count();
+                if point_count == 1 {
+                    let Some(center) = points[0] else {
+                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    if center.is_near(point, self.document.tolerance()) {
+                        self.push_log(
+                            "Error: ellipsoid axis point must differ from its center".to_owned(),
+                        );
+                        return;
+                    }
+                } else if point_count == 2 {
+                    let [Some(center), Some(first_axis), _] = points else {
+                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    if let Err(error) = Frame3::try_from_points(
+                        center,
+                        first_axis,
+                        point,
+                        self.document.tolerance(),
+                    ) {
+                        self.push_log(format!("Error: {error}"));
+                        return;
+                    }
+                }
+
+                if point_count < points.len() {
+                    points[point_count] = Some(point);
+                    let command = InteractiveCommand::Ellipsoid { points };
+                    self.active_command = Some(command);
+                    let label = ["Center", "First axis", "Second axis"][point_count];
+                    self.push_log(format!("{label}: {}", format_model_point(point)));
+                    self.push_log(command.prompt().to_owned());
+                } else {
+                    let [Some(center), Some(first_axis), Some(second_axis)] = points else {
+                        self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
+                        self.active_command = None;
+                        return;
+                    };
+                    if center.is_near(point, self.document.tolerance()) {
+                        self.push_log(
+                            "Error: ellipsoid third-axis radius must be positive".to_owned(),
+                        );
+                        return;
+                    }
+                    self.active_command = None;
+                    self.execute_command(&format!(
+                        "Ellipsoid {} {} {} {}",
+                        format_model_point(center),
+                        format_model_point(first_axis),
+                        format_model_point(second_axis),
+                        format_model_point(point)
+                    ));
+                }
             }
             InteractiveCommand::Arc { mut points } => {
                 let point_count = points.iter().flatten().count();
@@ -1695,6 +1785,7 @@ impl VibocerosApp {
         let mut project_to_cplane_clicked = false;
         let mut to_nurbs_clicked = false;
         let mut sphere_clicked = false;
+        let mut ellipsoid_clicked = false;
         let mut extrude_curve_clicked = false;
         let mut extrude_curve_to_point_clicked = false;
         let mut extrude_curve_along_curve_clicked = false;
@@ -1897,6 +1988,10 @@ impl VibocerosApp {
                     .button("Sphere")
                     .on_hover_text("Create an exact NURBS sphere from two viewport points")
                     .clicked();
+                ellipsoid_clicked = ui
+                    .button("Ellipsoid")
+                    .on_hover_text("Create an exact NURBS ellipsoid from four viewport points")
+                    .clicked();
                 extrude_curve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extrude Curve"))
                     .on_hover_text("Extrude selected curves along a picked direction")
@@ -2026,6 +2121,8 @@ impl VibocerosApp {
             self.execute_command("ToNURBS");
         } else if sphere_clicked {
             self.try_start_interactive_command("Sphere");
+        } else if ellipsoid_clicked {
+            self.try_start_interactive_command("Ellipsoid");
         } else if extrude_curve_clicked {
             self.try_start_interactive_command("ExtrudeCrv");
         } else if extrude_curve_to_point_clicked {
@@ -2398,6 +2495,60 @@ mod tests {
         assert_eq!(surface.control_point_count_v(), 5);
         assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), point(4.0, 2.0, 3.0));
         assert_eq!(app.document.undo_label(), Some("Sphere"));
+    }
+
+    #[test]
+    fn interactive_ellipsoid_validates_each_axis_and_uses_command_history() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Ellipsoid"));
+        let center = point(1.0, 2.0, 3.0);
+        let first_axis = point(3.0, 2.0, 3.0);
+        let second_axis = point(1.0, 5.0, 3.0);
+
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(center);
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Ellipsoid {
+                points: [Some(center), None, None]
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(first_axis);
+        let command = app.active_command.unwrap();
+        assert_eq!(command.anchor(), Some(center));
+        assert_eq!(command.reference(), Some(first_axis));
+        app.accept_drafting_point(point(5.0, 2.0, 3.0));
+        assert_eq!(app.active_command, Some(command));
+        assert!(app.command_log.back().unwrap().contains("coordinate frame"));
+
+        app.accept_drafting_point(second_axis);
+        let command = app.active_command.unwrap();
+        assert_eq!(command.anchor(), Some(center));
+        assert_eq!(command.reference(), Some(second_axis));
+        app.accept_drafting_point(center);
+        assert_eq!(app.active_command, Some(command));
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(1.0, 2.0, 7.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::NurbsSurface(surface) = app.document.objects().next().unwrap().geometry()
+        else {
+            panic!("expected an interactively created NURBS ellipsoid")
+        };
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 5);
+        assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), first_axis);
+        assert_eq!(
+            surface.evaluate(std::f64::consts::FRAC_PI_2, 0.0).unwrap(),
+            second_axis
+        );
+        assert_eq!(
+            surface.evaluate(0.0, std::f64::consts::FRAC_PI_2).unwrap(),
+            point(1.0, 2.0, 7.0)
+        );
+        assert_eq!(app.document.undo_label(), Some("Ellipsoid"));
     }
 
     #[test]
