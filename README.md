@@ -229,8 +229,9 @@ selected object. `Rigid=Yes` (the default) maps a frame without deformation;
 `Rigid=No` applies Rhino's plane-to-surface morph; lines and polylines become
 cubic deformable curves, while meshes map per vertex. `Scale=` must be positive,
 `Rotation=` is in degrees, `Flip=Yes` reverses surface Y and Z, and
-`SourceNormal=` defaults to world Z. A fixed `ConstrainNormal=` vector is
-available in deformable mode.
+`SourceNormal=` defaults to world Z. In deformable mode, `ConstrainNormal=Yes`
+keeps normal offsets parallel to `SourceNormal`, the command-line stand-in for
+Rhino's placement-viewport construction-plane normal.
 This command defaults to `Copy=Yes`; originals remain selected and copied group
 topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
 `Array` takes X/Y/Z counts followed by signed world-axis distances. Its default

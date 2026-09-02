@@ -3190,7 +3190,7 @@ fn apply_orient_transform(
 
 const ORIENT_ON_SURFACE_USAGE: &str = "OrientOnSrf base-point reference-point target-point \
     [Scale=factor] [Rotation=degrees] [Copy=Yes|No] [Rigid=Yes|No] [Flip=Yes|No] \
-    [SourceNormal=x,y,z] [ConstrainNormal=x,y,z] [SurfaceName=name]";
+    [SourceNormal=x,y,z] [ConstrainNormal=Yes|No] [IgnoreTrims=Yes|No] [SurfaceName=name]";
 
 struct OrientOnSurfaceCommand;
 
@@ -3227,7 +3227,7 @@ impl Command for OrientOnSurfaceCommand {
         }
 
         let (transformed, copied) = if options.rigid {
-            if options.constrained_normal.is_some() {
+            if options.constrain_normal {
                 return Err(CommandError::Usage(ORIENT_ON_SURFACE_USAGE));
             }
             let target_frame = orient_on_surface_target_frame(
@@ -3253,8 +3253,11 @@ impl Command for OrientOnSurfaceCommand {
                 options.flip,
                 tolerance,
             )?;
-            if let Some(normal) = options.constrained_normal {
-                let morph = morph.with_constrained_normal(normal)?;
+            if options.constrain_normal {
+                // The standalone command has no viewport state yet, so its
+                // source construction-plane normal is also the placement
+                // construction-plane normal used by Rhino's toggle.
+                let morph = morph.with_constrained_normal(options.source_normal)?;
                 apply_orient_surface_morph(document, sources.as_slice(), &morph, options.copy)?
             } else {
                 apply_orient_surface_morph(document, sources.as_slice(), &morph, options.copy)?
@@ -3277,7 +3280,7 @@ struct OrientOnSurfaceOptions {
     rigid: bool,
     flip: bool,
     source_normal: Vector3,
-    constrained_normal: Option<Vector3>,
+    constrain_normal: bool,
     surface_name: Option<String>,
 }
 
@@ -3291,7 +3294,7 @@ fn parse_orient_on_surface_options(
         rigid: true,
         flip: false,
         source_normal: Vector3::try_new(0.0, 0.0, 1.0).expect("the world z direction is finite"),
-        constrained_normal: None,
+        constrain_normal: false,
         surface_name: None,
     };
     let mut seen = BTreeSet::new();
@@ -3328,9 +3331,8 @@ fn parse_orient_on_surface_options(
                 )?;
             }
             "constrainnormal" => {
-                options.constrained_normal = Some(Vector3::try_from(
-                    parse_single_option_point(value, ORIENT_ON_SURFACE_USAGE)?.to_array(),
-                )?);
+                options.constrain_normal =
+                    parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
             }
             "ignoretrims" => {
                 parse_yes_no(value).ok_or(CommandError::Usage(ORIENT_ON_SURFACE_USAGE))?;
@@ -10371,7 +10373,7 @@ mod tests {
     }
 
     #[test]
-    fn orient_on_surface_rigid_flip_and_errors_are_atomic() {
+    fn orient_on_surface_rigid_flip_constrained_normal_and_errors_are_atomic() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let originals = add_orient_triad(&mut document);
@@ -10402,6 +10404,23 @@ mod tests {
             .execute(
                 &mut document,
                 "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
+                 Copy=No Rigid=No ConstrainNormal=Yes SurfaceName=Target",
+            )
+            .unwrap();
+        let z = match document.object(originals[2]).unwrap().geometry() {
+            Geometry::NurbsCurve(curve) => curve,
+            _ => panic!("expected an in-place surface morph"),
+        };
+        assert!(z.evaluate(*z.domain().end()).unwrap().is_near(
+            Point3::try_new(base.x(), base.y(), 5.0).unwrap(),
+            document.tolerance()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
                  Copy=No Rigid=No Flip=Yes SurfaceName=Target",
             )
             .unwrap();
@@ -10425,7 +10444,8 @@ mod tests {
             "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Scale=0 SurfaceName=Target",
             "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Scale=-1 SurfaceName=Target",
             "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 SourceNormal=1,0,0 SurfaceName=Target",
-            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Rigid=Yes ConstrainNormal=0,0,1 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 ConstrainNormal=0,0,1 SurfaceName=Target",
+            "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Rigid=Yes ConstrainNormal=Yes SurfaceName=Target",
             "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 SurfaceName=Missing",
             "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 Copy=Yes Copy=No SurfaceName=Target",
         ] {

@@ -210,7 +210,8 @@ impl<'a> SurfacePointMorph<'a> {
         })
     }
 
-    /// Uses a fixed normal direction instead of the target surface normal.
+    /// Uses a fixed placement construction-plane normal instead of the
+    /// varying target surface normal.
     pub fn with_constrained_normal(mut self, normal: Vector3) -> Result<Self, GeometryError> {
         self.constrained_normal = Some(normal.normalized(self.tolerance)?);
         Ok(self)
@@ -336,6 +337,17 @@ mod tests {
                 .unwrap();
             assert_point_near(morph.morph_point(point).unwrap(), expected);
         }
+
+        let constrained = morph
+            .with_constrained_normal(Vector3::try_new(0.0, 0.0, 1.0).unwrap())
+            .unwrap();
+        let source_normal_end = origin
+            .translated(Vector3::try_new(0.0, 0.0, 1.0).unwrap())
+            .unwrap();
+        assert_point_near(
+            constrained.morph_point(source_normal_end).unwrap(),
+            [8.973756499953726, 4.412674277525846, 5.0],
+        );
     }
 
     #[test]
