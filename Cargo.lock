@@ -3665,6 +3665,7 @@ version = "0.1.0"
 dependencies = [
  "faer",
  "nalgebra",
+ "spade",
  "thiserror 2.0.20",
 ]
 

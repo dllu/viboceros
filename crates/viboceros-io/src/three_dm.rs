@@ -1100,8 +1100,25 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
-        let planar_face_brep =
-            Brep::try_planar_face(&extrusion_profile, Tolerance::DEFAULT).unwrap();
+        let planar_hole = Polyline3::try_new(
+            vec![
+                Point3::try_new(10.5, 1.0, 0.0).unwrap(),
+                Point3::try_new(11.5, 1.0, 0.0).unwrap(),
+                Point3::try_new(11.5, 2.0, 0.0).unwrap(),
+                Point3::try_new(10.5, 2.0, 0.0).unwrap(),
+                Point3::try_new(10.5, 1.0, 0.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let planar_face_brep = Brep::try_planar_face_with_holes(
+            &extrusion_profile,
+            &[planar_hole],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {

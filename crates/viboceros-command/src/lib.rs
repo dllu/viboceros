@@ -15385,6 +15385,69 @@ mod tests {
     }
 
     #[test]
+    fn stl_and_step_exports_preserve_planar_brep_holes() {
+        use std::fs;
+        use std::time::{SystemTime, UNIX_EPOCH};
+
+        let rectangle = |min_x, min_y, max_x, max_y| {
+            Polyline3::try_new(
+                vec![
+                    Point3::try_new(min_x, min_y, 0.0).unwrap(),
+                    Point3::try_new(max_x, min_y, 0.0).unwrap(),
+                    Point3::try_new(max_x, max_y, 0.0).unwrap(),
+                    Point3::try_new(min_x, max_y, 0.0).unwrap(),
+                    Point3::try_new(min_x, min_y, 0.0).unwrap(),
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+        };
+        let outer = rectangle(-3.0, -3.0, 3.0, 3.0);
+        let hole = rectangle(-1.0, -1.0, 1.0, 1.0);
+        let brep = Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap();
+        let mut document = Document::default();
+        document.add_geometry(Geometry::Brep(brep)).unwrap();
+
+        let unique = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let stl_path = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-trimmed-hole.stl",
+            std::process::id()
+        ));
+        let step_path = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-trimmed-hole.step",
+            std::process::id()
+        ));
+        let registry = CommandRegistry::with_builtins();
+
+        registry
+            .execute(
+                &mut document,
+                &format!("ExportStl Ascii {}", stl_path.display()),
+            )
+            .unwrap();
+        let stl = read_stl_file(&stl_path, Tolerance::DEFAULT).unwrap();
+        assert!((stl.area().unwrap() - 32.0).abs() < 1.0e-12);
+
+        registry
+            .execute(
+                &mut document,
+                &format!("ExportStep {}", step_path.display()),
+            )
+            .unwrap();
+        let step = read_step_file(&step_path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(step.objects.len(), 1);
+        assert!((step.objects[0].mesh.area().unwrap() - 32.0).abs() < 1.0e-12);
+
+        fs::remove_file(stl_path).unwrap();
+        fs::remove_file(step_path).unwrap();
+    }
+
+    #[test]
     fn imports_and_exports_step_without_polluting_undo_history() {
         use std::fs;
         use std::time::{SystemTime, UNIX_EPOCH};

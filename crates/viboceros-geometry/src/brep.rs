@@ -1,3 +1,5 @@
+use spade::{ConstrainedDelaunayTriangulation, Point2 as TriangulationPoint2, Triangulation};
+
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
     NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
@@ -6,7 +8,7 @@ use crate::{
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
-const MAX_EAR_CLIP_VERTICES: usize = 16_384;
+const MAX_TRIM_TRIANGULATION_VERTICES: usize = 16_384;
 
 #[derive(Clone, Copy, Debug)]
 struct BoundarySnapPoint {
@@ -414,36 +416,100 @@ impl Brep {
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        if !curve.is_closed()? || !curve.is_planar(tolerance)? {
+        Self::try_planar_face_with_holes(curve, &[], tolerance)
+    }
+
+    /// Constructs one exact trimmed planar face with zero or more inner loops.
+    ///
+    /// Every supplied NURBS curve is retained as a distinct shared-topology
+    /// boundary edge. Inner curves are projected into the outer curve's exact
+    /// affine plane and oriented clockwise in parameter space. Their standard
+    /// sampled trim representation is validated as disjoint holes inside the
+    /// counterclockwise outer loop before topology is committed.
+    pub fn try_planar_face_with_holes(
+        outer: &NurbsCurve,
+        inner: &[NurbsCurve],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !outer.is_closed()? || !outer.is_planar(tolerance)? {
             return Err(GeometryError::InvalidPlanarFaceBoundary);
         }
 
-        let projection = project_planar_curve(curve, tolerance)
+        let projection = project_planar_curve(outer, tolerance)
             .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+        let mut projected = Vec::with_capacity(inner.len() + 1);
+        projected.push((
+            outer,
+            projection.curve,
+            projection.maximum_residual,
+            BrepLoopType::Outer,
+        ));
+        for curve in inner {
+            if !curve.is_closed()? {
+                return Err(GeometryError::InvalidPlanarFaceBoundary);
+            }
+            let (parameter_curve, maximum_residual) =
+                project_curve_to_frame(curve, projection.frame, tolerance)
+                    .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+            projected.push((
+                curve,
+                parameter_curve,
+                maximum_residual,
+                BrepLoopType::Inner,
+            ));
+        }
         let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
         let surface = planar_cap_surface(projection.frame, zero, projection.coordinate_bounds)?;
-        let (parameter_curve, curve_reversed) = oriented_cap_curve(projection.curve)
+        let mut vertices = Vec::with_capacity(projected.len());
+        let mut edges = Vec::with_capacity(projected.len());
+        let mut loops = Vec::with_capacity(projected.len());
+        for (index, (curve, parameter_curve, maximum_residual, loop_type)) in
+            projected.into_iter().enumerate()
+        {
+            let (mut parameter_curve, mut curve_reversed) = oriented_cap_curve(parameter_curve)
+                .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
+            if loop_type == BrepLoopType::Inner {
+                parameter_curve = parameter_curve.reversed()?;
+                curve_reversed = !curve_reversed;
+            }
+            let seam = curve.evaluate(*curve.domain().start())?;
+            let closure_tolerance = cap_closure_tolerance(
+                seam,
+                curve,
+                &surface,
+                &parameter_curve,
+                curve_reversed,
+                maximum_residual,
+            )
             .map_err(|_| GeometryError::InvalidPlanarFaceBoundary)?;
-        let seam = curve.evaluate(*curve.domain().start())?;
-        let closure_tolerance = cap_closure_tolerance(
-            seam,
-            curve,
-            &surface,
-            &parameter_curve,
-            curve_reversed,
-            projection.maximum_residual,
-        )?;
-        let vertices = vec![BrepVertex::try_new(seam, closure_tolerance)?];
-        let edges = vec![BrepEdge::try_new([0, 0], curve.clone(), closure_tolerance)?];
-        let face_loop = single_edge_loop(
-            0,
-            0,
-            parameter_curve,
-            curve_reversed,
-            BrepTrimType::Boundary,
-            [closure_tolerance, closure_tolerance],
-        )?;
-        let faces = vec![BrepFace::try_new(surface, false, vec![face_loop])?];
+            vertices.push(BrepVertex::try_new(seam, closure_tolerance)?);
+            edges.push(BrepEdge::try_new(
+                [index, index],
+                curve.clone(),
+                closure_tolerance,
+            )?);
+            loops.push(single_edge_loop(
+                index,
+                index,
+                loop_type,
+                parameter_curve,
+                curve_reversed,
+                BrepTrimType::Boundary,
+                [closure_tolerance, closure_tolerance],
+            )?);
+        }
+        if loops.len() > 1 {
+            let sampled = loops
+                .iter()
+                .map(|face_loop| sample_trim_loop(face_loop, LOOP_SAMPLES_PER_SPAN))
+                .collect::<Result<Vec<_>, _>>()?;
+            let loop_lengths = sampled.iter().map(Vec::len).collect::<Vec<_>>();
+            let parameters = sampled.into_iter().flatten().collect::<Vec<_>>();
+            if triangulate_trim_region(&parameters, &loop_lengths)?.is_none() {
+                return Err(GeometryError::InvalidPlanarFaceBoundary);
+            }
+        }
+        let faces = vec![BrepFace::try_new(surface, false, loops)?];
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
@@ -673,6 +739,7 @@ impl Brep {
         let start_loop = single_edge_loop(
             0,
             0,
+            BrepLoopType::Outer,
             cap_curve.clone(),
             cap_curve_reversed,
             BrepTrimType::Mated,
@@ -681,6 +748,7 @@ impl Brep {
         let end_loop = single_edge_loop(
             1,
             1,
+            BrepLoopType::Outer,
             cap_curve,
             cap_curve_reversed,
             BrepTrimType::Mated,
@@ -774,6 +842,7 @@ impl Brep {
         let start_loop = single_edge_loop(
             0,
             0,
+            BrepLoopType::Outer,
             cap_curve.clone(),
             cap_curve_reversed,
             BrepTrimType::Mated,
@@ -782,6 +851,7 @@ impl Brep {
         let end_loop = single_edge_loop(
             1,
             1,
+            BrepLoopType::Outer,
             cap_curve,
             cap_curve_reversed,
             BrepTrimType::Mated,
@@ -866,6 +936,7 @@ impl Brep {
         let cap_loop = single_edge_loop(
             0,
             0,
+            BrepLoopType::Outer,
             cap_curve,
             cap_curve_reversed,
             BrepTrimType::Mated,
@@ -1228,13 +1299,13 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
-    /// Tessellates full rectangular faces and simply trimmed planar faces.
+    /// Tessellates full rectangular faces and trimmed planar faces.
     ///
     /// Planar trim boundaries are sampled per exact p-curve knot span and
-    /// triangulated in parameter space while preserving every boundary sample
-    /// for watertight stitching. Faces with holes and nonplanar general trims
-    /// remain explicit errors; they are never silently filled as untrimmed
-    /// surfaces.
+    /// constrained-triangulated in parameter space while preserving every
+    /// outer and inner boundary sample for watertight stitching. Nonplanar
+    /// general trims remain explicit errors; they are never silently filled
+    /// as untrimmed surfaces.
     pub fn tessellate(
         &self,
         samples_per_span: usize,
@@ -1256,9 +1327,7 @@ impl Brep {
                     tolerance,
                 )?;
                 TriangleMesh::try_new(face_vertices, surface_mesh.triangles().to_vec(), tolerance)?
-            } else if face.loops.len() == 1
-                && planar_surface_plane(&face.surface, tolerance)?.is_some()
-            {
+            } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
                 self.tessellate_planar_trimmed_face(face_index, face, samples_per_span, tolerance)?
             } else {
                 return Err(GeometryError::UnsupportedBrepTrimTessellation { face: face_index });
@@ -1310,10 +1379,25 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
-        let mut parameters = sample_trim_loop(&face.loops[0], samples_per_span)?;
-        let boundary_vertex_count = parameters.len();
-        let triangles = triangulate_simple_trim_polygon(&mut parameters)?
-            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+        let mut sampled_loops = face
+            .loops
+            .iter()
+            .map(|face_loop| sample_trim_loop(face_loop, samples_per_span))
+            .collect::<Result<Vec<_>, _>>()?;
+        let (parameters, boundary_vertex_count, triangles) = if sampled_loops.len() == 1 {
+            let mut parameters = sampled_loops.pop().expect("one sampled trim loop exists");
+            let boundary_vertex_count = parameters.len();
+            let triangles = triangulate_simple_trim_polygon(&mut parameters)?
+                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+            (parameters, boundary_vertex_count, triangles)
+        } else {
+            let loop_lengths = sampled_loops.iter().map(Vec::len).collect::<Vec<_>>();
+            let parameters = sampled_loops.into_iter().flatten().collect::<Vec<_>>();
+            let boundary_vertex_count = parameters.len();
+            let triangles = triangulate_trim_region(&parameters, &loop_lengths)?
+                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+            (parameters, boundary_vertex_count, triangles)
+        };
         let mut face_vertices = parameters
             .iter()
             .map(|parameter| face.surface.evaluate(parameter.x(), parameter.y()))
@@ -1708,13 +1792,14 @@ fn rectangular_surface_loop(
 fn single_edge_loop(
     vertex: usize,
     edge: usize,
+    loop_type: BrepLoopType,
     curve: NurbsCurve2,
     reversed_3d: bool,
     trim_type: BrepTrimType,
     tolerance: [Real; 2],
 ) -> Result<BrepLoop, GeometryError> {
     BrepLoop::try_new(
-        BrepLoopType::Outer,
+        loop_type,
         vec![BrepTrim::try_new(
             [vertex, vertex],
             Some(edge),
@@ -1806,6 +1891,33 @@ fn project_planar_curve(
         curve: NurbsCurve2::try_new_rational(curve.degree(), projected, curve.knots().to_vec())?,
         maximum_residual,
     })
+}
+
+fn project_curve_to_frame(
+    curve: &NurbsCurve,
+    frame: Frame3,
+    tolerance: Tolerance,
+) -> Result<(NurbsCurve2, Real), GeometryError> {
+    let mut maximum_residual: Real = 0.0;
+    let projected = curve
+        .control_points()
+        .iter()
+        .map(|control| {
+            let relative = frame.origin().vector_to(control.point())?;
+            let x = relative.dot(frame.x_axis().as_vector())?;
+            let y = relative.dot(frame.y_axis().as_vector())?;
+            let residual = relative.dot(frame.z_axis().as_vector())?.abs();
+            if residual > tolerance.absolute() {
+                return Err(GeometryError::InvalidPlanarFaceBoundary);
+            }
+            maximum_residual = maximum_residual.max(residual);
+            WeightedPoint2::try_new(Point2::try_new(x, y)?, control.weight())
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok((
+        NurbsCurve2::try_new_rational(curve.degree(), projected, curve.knots().to_vec())?,
+        maximum_residual,
+    ))
 }
 
 fn planar_cap_surface(
@@ -2393,7 +2505,7 @@ fn triangulate_simple_trim_polygon(
             .collect::<Result<Vec<_>, GeometryError>>()?;
         return Ok(Some(triangles));
     }
-    if vertex_count > MAX_EAR_CLIP_VERTICES {
+    if vertex_count > MAX_TRIM_TRIANGULATION_VERTICES {
         return Ok(None);
     }
 
@@ -2437,6 +2549,169 @@ fn triangulate_simple_trim_polygon(
     }
     triangles.push(final_triangle.map(|index| index as u32));
     Ok(Some(triangles))
+}
+
+fn triangulate_trim_region(
+    parameters: &[Point2],
+    loop_lengths: &[usize],
+) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
+    if loop_lengths.len() < 2
+        || loop_lengths.iter().any(|length| *length < 3)
+        || parameters.len() > MAX_TRIM_TRIANGULATION_VERTICES
+        || loop_lengths
+            .iter()
+            .try_fold(0_usize, |total, length| total.checked_add(*length))
+            != Some(parameters.len())
+    {
+        return Ok(None);
+    }
+    let Some(normalized) = normalized_trim_polygon(parameters)? else {
+        return Ok(None);
+    };
+    let mut loop_ranges = Vec::with_capacity(loop_lengths.len());
+    let mut start = 0_usize;
+    for length in loop_lengths {
+        let end = start + *length;
+        loop_ranges.push(start..end);
+        start = end;
+    }
+    let epsilon = 64.0 * Real::EPSILON;
+    let outer = &normalized[loop_ranges[0].clone()];
+    for (hole_index, hole_range) in loop_ranges[1..].iter().enumerate() {
+        let probe = normalized[hole_range.start];
+        if !point_in_trim_polygon(probe, outer, epsilon)
+            || loop_ranges[1..]
+                .iter()
+                .enumerate()
+                .any(|(other_index, other_range)| {
+                    other_index != hole_index
+                        && point_in_trim_polygon(probe, &normalized[other_range.clone()], epsilon)
+                })
+        {
+            return Ok(None);
+        }
+    }
+
+    let mut constraints = Vec::with_capacity(parameters.len());
+    for range in &loop_ranges {
+        for index in range.clone() {
+            let next = if index + 1 == range.end {
+                range.start
+            } else {
+                index + 1
+            };
+            constraints.push([index, next]);
+        }
+    }
+    let vertices = normalized
+        .iter()
+        .map(|point| TriangulationPoint2::new(point[0], point[1]))
+        .collect::<Vec<_>>();
+    let mut conflicts = Vec::new();
+    let triangulation =
+        match ConstrainedDelaunayTriangulation::<TriangulationPoint2<Real>>::try_bulk_load_cdt(
+            vertices,
+            constraints,
+            |edge| conflicts.push(edge),
+        ) {
+            Ok(triangulation) => triangulation,
+            Err(_) => return Ok(None),
+        };
+    if !conflicts.is_empty()
+        || triangulation.num_vertices() != parameters.len()
+        || triangulation.num_constraints() != parameters.len()
+    {
+        return Ok(None);
+    }
+
+    let mut triangles = Vec::new();
+    let mut actual_area = 0.0;
+    let mut actual_area_correction = 0.0;
+    for face in triangulation.inner_faces() {
+        let handles = face.vertices();
+        let points = handles.map(|vertex| {
+            let point = vertex.position();
+            [point.x, point.y]
+        });
+        let centroid = [
+            (points[0][0] + points[1][0] + points[2][0]) / 3.0,
+            (points[0][1] + points[1][1] + points[2][1]) / 3.0,
+        ];
+        if !point_in_trim_polygon(centroid, outer, epsilon)
+            || loop_ranges[1..]
+                .iter()
+                .any(|range| point_in_trim_polygon(centroid, &normalized[range.clone()], epsilon))
+        {
+            continue;
+        }
+        let doubled_area = polygon_cross(points[0], points[1], points[2]);
+        if doubled_area <= epsilon {
+            return Ok(None);
+        }
+        neumaier_add(&mut actual_area, &mut actual_area_correction, doubled_area);
+        let mut triangle = [0_u32; 3];
+        for (target, vertex) in triangle.iter_mut().zip(handles) {
+            *target = u32::try_from(vertex.fix().index())
+                .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        }
+        triangles.push(triangle);
+    }
+    if triangles.is_empty() {
+        return Ok(None);
+    }
+
+    let mut expected_area = 0.0;
+    let mut expected_area_correction = 0.0;
+    for range in &loop_ranges {
+        for index in range.clone() {
+            let next = if index + 1 == range.end {
+                range.start
+            } else {
+                index + 1
+            };
+            let contribution = normalized[index][0].mul_add(
+                normalized[next][1],
+                -normalized[index][1] * normalized[next][0],
+            );
+            neumaier_add(
+                &mut expected_area,
+                &mut expected_area_correction,
+                contribution,
+            );
+        }
+    }
+    let expected_area = expected_area + expected_area_correction;
+    let actual_area = actual_area + actual_area_correction;
+    let area_error_tolerance = 1024.0 * Real::EPSILON * parameters.len() as Real;
+    if expected_area <= epsilon || (actual_area - expected_area).abs() > area_error_tolerance {
+        return Ok(None);
+    }
+    Ok(Some(triangles))
+}
+
+fn point_in_trim_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {
+    let mut winding = 0_i64;
+    for index in 0..polygon.len() {
+        let start = polygon[index];
+        let end = polygon[(index + 1) % polygon.len()];
+        let cross = polygon_cross(start, end, point);
+        if cross.abs() <= epsilon
+            && point[0] >= start[0].min(end[0]) - epsilon
+            && point[0] <= start[0].max(end[0]) + epsilon
+            && point[1] >= start[1].min(end[1]) - epsilon
+            && point[1] <= start[1].max(end[1]) + epsilon
+        {
+            return true;
+        }
+        if start[1] <= point[1] {
+            if end[1] > point[1] && cross > epsilon {
+                winding += 1;
+            }
+        } else if end[1] <= point[1] && cross < -epsilon {
+            winding -= 1;
+        }
+    }
+    winding != 0
 }
 
 fn normalized_trim_polygon(parameters: &[Point2]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
@@ -2630,6 +2905,100 @@ mod tests {
         Point3::try_new(x, y, z).unwrap()
     }
 
+    fn planar_polygon_brep(paths: &[Vec<Point3>]) -> Brep {
+        assert!(!paths.is_empty() && paths.iter().all(|path| path.len() >= 3));
+        let bounds = BoundingBox3::from_points(paths[0].iter().copied()).unwrap();
+        let min = bounds.min();
+        let max = bounds.max();
+        assert!(min.x() < max.x() && min.y() < max.y() && min.z() == max.z());
+        let surface = NurbsSurface::try_bilinear([
+            min,
+            point(max.x(), min.y(), min.z()),
+            max,
+            point(min.x(), max.y(), min.z()),
+        ])
+        .unwrap();
+        let coordinate_scale = paths
+            .iter()
+            .flatten()
+            .flat_map(|point| point.to_array().map(Real::abs))
+            .fold(0.0, Real::max);
+        let component_tolerance = 64.0 * Real::EPSILON * coordinate_scale;
+        let vertices = paths
+            .iter()
+            .flatten()
+            .map(|point| BrepVertex::try_new(*point, component_tolerance).unwrap())
+            .collect::<Vec<_>>();
+        let mut edges = Vec::new();
+        let mut loops = Vec::new();
+        let mut vertex_offset = 0_usize;
+        for (loop_index, path) in paths.iter().enumerate() {
+            let mut trims = Vec::new();
+            for index in 0..path.len() {
+                let from = vertex_offset + index;
+                let to = vertex_offset + (index + 1) % path.len();
+                let edge_index = edges.len();
+                edges.push(
+                    BrepEdge::try_new(
+                        [from, to],
+                        LineSegment::try_new(
+                            path[index],
+                            path[(index + 1) % path.len()],
+                            Tolerance::DEFAULT,
+                        )
+                        .unwrap()
+                        .to_nurbs()
+                        .unwrap(),
+                        component_tolerance,
+                    )
+                    .unwrap(),
+                );
+                let parameter = |point: Point3| {
+                    Point2::try_new(
+                        (point.x() - min.x()) / (max.x() - min.x()),
+                        (point.y() - min.y()) / (max.y() - min.y()),
+                    )
+                    .unwrap()
+                };
+                trims.push(
+                    BrepTrim::try_new(
+                        [from, to],
+                        Some(edge_index),
+                        false,
+                        NurbsCurve2::try_line(
+                            parameter(path[index]),
+                            parameter(path[(index + 1) % path.len()]),
+                        )
+                        .unwrap(),
+                        BrepTrimType::Boundary,
+                        SurfaceIso::NotIso,
+                        [0.0, 0.0],
+                    )
+                    .unwrap(),
+                );
+            }
+            loops.push(
+                BrepLoop::try_new(
+                    if loop_index == 0 {
+                        BrepLoopType::Outer
+                    } else {
+                        BrepLoopType::Inner
+                    },
+                    trims,
+                )
+                .unwrap(),
+            );
+            vertex_offset += path.len();
+        }
+        Brep::try_new(
+            vertices,
+            edges,
+            vec![BrepFace::try_new(surface, false, loops).unwrap()],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+    }
+
     #[test]
     fn exact_box_has_shared_closed_oriented_topology() {
         let frame = Frame3::try_from_normal(
@@ -2804,6 +3173,126 @@ mod tests {
             Brep::try_planar_face(&nonplanar, Tolerance::DEFAULT),
             Err(GeometryError::InvalidPlanarFaceBoundary)
         );
+    }
+
+    #[test]
+    fn exact_planar_face_retains_multiple_rational_holes_and_curve_directions() {
+        let outer = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 3.0),
+                point(12.0, 0.0, 3.0),
+                point(12.0, 10.0, 3.0),
+                point(0.0, 10.0, 3.0),
+                point(0.0, 0.0, 3.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let holes = [
+            Circle3::try_new(point(3.0, 5.0, 3.0), 2.0, normal, Tolerance::DEFAULT)
+                .unwrap()
+                .to_nurbs()
+                .unwrap(),
+            Circle3::try_new(point(9.0, 5.0, 3.0), 1.0, normal, Tolerance::DEFAULT)
+                .unwrap()
+                .to_nurbs()
+                .unwrap(),
+        ];
+        let expected_area = 120.0 - 5.0 * std::f64::consts::PI;
+
+        for reverse_outer in [false, true] {
+            for reverse_holes in [false, true] {
+                let directed_outer = if reverse_outer {
+                    outer.reversed().unwrap()
+                } else {
+                    outer.clone()
+                };
+                let directed_holes = holes
+                    .iter()
+                    .map(|hole| {
+                        if reverse_holes {
+                            hole.reversed().unwrap()
+                        } else {
+                            hole.clone()
+                        }
+                    })
+                    .collect::<Vec<_>>();
+                let brep = Brep::try_planar_face_with_holes(
+                    &directed_outer,
+                    &directed_holes,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+
+                assert_eq!(brep.vertices().len(), 3);
+                assert_eq!(brep.edges().len(), 3);
+                assert_eq!(brep.faces().len(), 1);
+                assert_eq!(brep.edges()[0].curve(), &directed_outer);
+                assert_eq!(brep.edges()[1].curve(), &directed_holes[0]);
+                assert_eq!(brep.edges()[2].curve(), &directed_holes[1]);
+                assert_eq!(brep.faces()[0].loops().len(), 3);
+                assert_eq!(brep.faces()[0].loops()[0].loop_type(), BrepLoopType::Outer);
+                assert!(
+                    brep.faces()[0].loops()[1..]
+                        .iter()
+                        .all(|face_loop| face_loop.loop_type() == BrepLoopType::Inner)
+                );
+                assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 2.0e-10);
+
+                let mesh = brep.tessellate(16, Tolerance::DEFAULT).unwrap();
+                assert_eq!(mesh.topology().boundary_edge_count(), 192);
+                assert!((mesh.area().unwrap() - expected_area).abs() / expected_area < 5.0e-4);
+            }
+        }
+    }
+
+    #[test]
+    fn planar_face_holes_must_be_closed_coplanar_disjoint_and_inside() {
+        let rectangle = |min_x, min_y, max_x, max_y, z| {
+            Polyline3::try_new(
+                vec![
+                    point(min_x, min_y, z),
+                    point(max_x, min_y, z),
+                    point(max_x, max_y, z),
+                    point(min_x, max_y, z),
+                    point(min_x, min_y, z),
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+        };
+        let outer = rectangle(0.0, 0.0, 10.0, 10.0, 0.0);
+        let valid = rectangle(2.0, 2.0, 4.0, 4.0, 0.0);
+        let open = LineSegment::try_new(
+            point(2.0, 2.0, 0.0),
+            point(4.0, 2.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let noncoplanar = rectangle(2.0, 2.0, 4.0, 4.0, 1.0);
+        let outside = rectangle(8.0, 8.0, 12.0, 12.0, 0.0);
+        let overlapping = rectangle(3.0, 3.0, 5.0, 5.0, 0.0);
+        let nested = rectangle(2.5, 2.5, 3.5, 3.5, 0.0);
+
+        for holes in [
+            vec![open],
+            vec![noncoplanar],
+            vec![outside],
+            vec![valid.clone(), overlapping],
+            vec![valid, nested],
+        ] {
+            assert_eq!(
+                Brep::try_planar_face_with_holes(&outer, &holes, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidPlanarFaceBoundary)
+            );
+        }
     }
 
     #[test]
@@ -3542,100 +4031,65 @@ mod tests {
     }
 
     #[test]
-    fn a_trimmed_face_with_a_hole_is_valid_but_never_tessellated_as_untrimmed() {
-        let model_points = [
-            point(0.0, 0.0, 0.0),
-            point(10.0, 0.0, 0.0),
-            point(10.0, 10.0, 0.0),
-            point(0.0, 10.0, 0.0),
-            point(3.0, 3.0, 0.0),
-            point(3.0, 7.0, 0.0),
-            point(7.0, 7.0, 0.0),
-            point(7.0, 3.0, 0.0),
-        ];
-        let vertices = model_points
-            .into_iter()
-            .map(|point| BrepVertex::try_new(point, 0.0).unwrap())
-            .collect::<Vec<_>>();
-        let paths = [[0, 1, 2, 3], [4, 5, 6, 7]];
-        let mut edges = Vec::new();
-        let mut loops = Vec::new();
-        for (loop_index, path) in paths.into_iter().enumerate() {
-            let mut trims = Vec::new();
-            for index in 0..4 {
-                let from = path[index];
-                let to = path[(index + 1) % 4];
-                let edge_index = edges.len();
-                edges.push(
-                    BrepEdge::try_new(
-                        [from, to],
-                        LineSegment::try_new(
-                            vertices[from].point(),
-                            vertices[to].point(),
-                            Tolerance::DEFAULT,
-                        )
-                        .unwrap()
-                        .to_nurbs()
-                        .unwrap(),
-                        0.0,
-                    )
-                    .unwrap(),
-                );
-                let from_point = vertices[from].point();
-                let to_point = vertices[to].point();
-                trims.push(
-                    BrepTrim::try_new(
-                        [from, to],
-                        Some(edge_index),
-                        false,
-                        NurbsCurve2::try_line(
-                            Point2::try_new(from_point.x() / 10.0, from_point.y() / 10.0).unwrap(),
-                            Point2::try_new(to_point.x() / 10.0, to_point.y() / 10.0).unwrap(),
-                        )
-                        .unwrap(),
-                        BrepTrimType::Boundary,
-                        if loop_index == 0 {
-                            [
-                                SurfaceIso::South,
-                                SurfaceIso::East,
-                                SurfaceIso::North,
-                                SurfaceIso::West,
-                            ][index]
-                        } else {
-                            SurfaceIso::NotIso
-                        },
-                        [0.0, 0.0],
-                    )
-                    .unwrap(),
-                );
-            }
-            loops.push(
-                BrepLoop::try_new(
-                    if loop_index == 0 {
-                        BrepLoopType::Outer
-                    } else {
-                        BrepLoopType::Inner
-                    },
-                    trims,
-                )
-                .unwrap(),
-            );
-        }
-        let surface = NurbsSurface::try_bilinear(model_points[..4].try_into().unwrap()).unwrap();
-        let brep = Brep::try_new(
-            vertices,
-            edges,
-            vec![BrepFace::try_new(surface, false, loops).unwrap()],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
+    fn planar_trimmed_face_tessellation_preserves_an_inner_hole() {
+        let brep = planar_polygon_brep(&[
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, 10.0, 0.0),
+                point(0.0, 10.0, 0.0),
+            ],
+            vec![
+                point(3.0, 3.0, 0.0),
+                point(3.0, 7.0, 0.0),
+                point(7.0, 7.0, 0.0),
+                point(7.0, 3.0, 0.0),
+            ],
+        ]);
 
         assert!(brep.is_manifold());
         assert!(!brep.is_closed());
         assert!((brep.area(Tolerance::DEFAULT).unwrap() - 84.0).abs() < 1.0e-12);
-        assert!(matches!(
-            brep.tessellate(1, Tolerance::DEFAULT),
-            Err(GeometryError::UnsupportedBrepTrimTessellation { face: 0 })
-        ));
+        for samples_per_span in [1, 3] {
+            let mesh = brep
+                .tessellate(samples_per_span, Tolerance::DEFAULT)
+                .unwrap();
+            assert!((mesh.area().unwrap() - 84.0).abs() < 1.0e-12);
+            assert_eq!(mesh.topology().boundary_edge_count(), 8 * samples_per_span);
+            assert_eq!(mesh.topology().orientation_conflict_edge_count(), 0);
+        }
+    }
+
+    #[test]
+    fn planar_trimmed_face_tessellation_handles_concavity_multiple_holes_and_translation() {
+        let offset = 1.0e12;
+        let at = |x: Real, y: Real| point(offset + x, -offset + y, 4.0e12);
+        let brep = planar_polygon_brep(&[
+            vec![
+                at(0.0, 0.0),
+                at(10.0, 0.0),
+                at(10.0, 10.0),
+                at(6.0, 10.0),
+                at(6.0, 4.0),
+                at(0.0, 4.0),
+            ],
+            vec![at(1.0, 1.0), at(1.0, 3.0), at(3.0, 3.0), at(3.0, 1.0)],
+            vec![at(7.0, 5.0), at(7.0, 7.0), at(9.0, 7.0), at(9.0, 5.0)],
+        ]);
+        let expected_area = 56.0;
+
+        assert!((brep.area(Tolerance::DEFAULT).unwrap() - expected_area).abs() < 1.0e-12);
+        for samples_per_span in [1, 2, 5] {
+            let mesh = brep
+                .tessellate(samples_per_span, Tolerance::DEFAULT)
+                .unwrap();
+            let area = mesh.area().unwrap();
+            assert!(
+                (area - expected_area).abs() < 1.0e-6,
+                "samples {samples_per_span}, area {area}"
+            );
+            assert_eq!(mesh.topology().boundary_edge_count(), 14 * samples_per_span);
+            assert_eq!(mesh.topology().orientation_conflict_edge_count(), 0);
+        }
     }
 }

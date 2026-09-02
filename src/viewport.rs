@@ -1446,6 +1446,43 @@ mod tests {
     }
 
     #[test]
+    fn shaded_trimmed_brep_does_not_pick_through_an_inner_loop() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let closed_rectangle = |min_x, min_y, max_x, max_y| {
+            Polyline3::try_new(
+                vec![
+                    point(min_x, min_y, 0.0),
+                    point(max_x, min_y, 0.0),
+                    point(max_x, max_y, 0.0),
+                    point(min_x, max_y, 0.0),
+                    point(min_x, min_y, 0.0),
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap()
+        };
+        let outer = closed_rectangle(-3.0, -3.0, 3.0, 3.0);
+        let hole = closed_rectangle(-1.0, -1.0, 1.0, 1.0);
+        let brep_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        let material = shaded.project(point(2.0, 0.0, 0.0), rect).unwrap();
+        let through_hole = shaded.project(point(0.0, 0.0, 0.0), rect).unwrap();
+
+        assert_eq!(shaded.pick_object(material, rect, &document), Some(brep_id));
+        assert_eq!(shaded.pick_object(through_hole, rect, &document), None);
+    }
+
+    #[test]
     fn picking_ignores_locked_or_hidden_objects_and_prefers_point_features() {
         let viewport = Viewport {
             display_mode: DisplayMode::Shaded,

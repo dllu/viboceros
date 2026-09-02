@@ -500,8 +500,8 @@ solid/shell B-reps and assemblies, apply instance transforms, and robustly
 tessellate exact trimmed surfaces into validated display meshes. Parser,
 topology, and unsupported-representation losses are reported instead of being
 silent. STL and STEP export tessellate visible NURBS surfaces plus full-domain
-and simply trimmed planar B-rep faces; STEP writes the results as faceted shells
-with shared topology and planar faces. B-rep faces with holes or nonplanar
-general trims are rejected until constrained trim clipping is implemented
-rather than being silently filled. Editable STEP B-rep interchange and
-production surface and solid modelling are not implemented yet.
+and trimmed planar B-rep faces; exact outer and inner p-curves are sampled into
+a constrained triangulation so holes remain open. STEP writes the results as
+faceted shells with shared topology and planar faces. Nonplanar general trims
+remain explicit errors rather than being silently filled. Editable STEP B-rep
+interchange and production surface and solid modelling are not implemented yet.

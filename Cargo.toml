@@ -28,6 +28,7 @@ nalgebra = "0.35.0"
 monstertruck = { version = "0.4.0", default-features = false, features = ["assembly", "meshing", "step"] }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.143"
+spade = "2.15.1"
 thiserror = "2.0.16"
 uuid = { version = "1.18.1", features = ["v4"] }
 
