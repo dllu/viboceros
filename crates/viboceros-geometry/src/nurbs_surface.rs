@@ -7,8 +7,8 @@ use crate::nurbs::{
 };
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
-    Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
-    vector::product_three,
+    Plane, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    require_finite, vector::product_three,
 };
 
 /// A finite tensor-product non-uniform rational B-spline surface.
@@ -1806,6 +1806,61 @@ impl NurbsSurface {
         )
     }
 
+    /// Returns the surface plane when the exact rational control net and
+    /// sampled differential orientation are planar at model tolerance.
+    ///
+    /// Testing the control net is sufficient to prove that the full rational
+    /// surface lies in the plane. Mid-span derivatives additionally reject a
+    /// folded or orientation-reversing parameterization.
+    pub fn plane(&self, tolerance: Tolerance) -> Result<Option<Plane>, GeometryError> {
+        let mut derivative_crosses = Vec::new();
+        let mut largest = None;
+        let mut largest_area = 0.0;
+        for (u_start, u_end) in self.spans_u() {
+            let u = u_start * 0.5 + u_end * 0.5;
+            for (v_start, v_end) in self.spans_v() {
+                let v = v_start * 0.5 + v_end * 0.5;
+                let (point, derivative_u, derivative_v) = self.evaluate_with_derivatives(u, v)?;
+                let cross = derivative_u.cross(derivative_v)?;
+                let area = cross.length()?;
+                if area > 0.0 {
+                    derivative_crosses.push(cross);
+                    if area > largest_area {
+                        largest_area = area;
+                        largest = Some((point, cross));
+                    }
+                }
+            }
+        }
+        let Some((origin, cross)) = largest else {
+            return Ok(None);
+        };
+        let normal = cross.normalized_nonzero()?;
+        for sample in derivative_crosses {
+            let length = sample.length()?;
+            if sample.dot(normal.as_vector())? <= tolerance.angular() * length {
+                return Ok(None);
+            }
+        }
+        for control in &self.control_points {
+            let point = control.point();
+            let distance = origin.vector_to(point)?.dot(normal.as_vector())?.abs();
+            let coordinate_scale = origin
+                .to_array()
+                .into_iter()
+                .chain(point.to_array())
+                .map(Real::abs)
+                .fold(0.0, Real::max);
+            let allowed = tolerance
+                .absolute()
+                .max(tolerance.relative() * coordinate_scale);
+            if distance > allowed {
+                return Ok(None);
+            }
+        }
+        Ok(Some(Plane::new(origin, normal)))
+    }
+
     /// Produces a regular display mesh inside every nonempty knot-span pair.
     /// Span boundaries are sampled independently so a fully multiple knot
     /// cannot bridge a discontinuity. Boundary samples that meet within model
@@ -1814,6 +1869,52 @@ impl NurbsSurface {
     pub fn tessellate(
         &self,
         samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        self.tessellate_grid(samples_per_span, false, tolerance)
+    }
+
+    /// Creates an editable triangle/quad mesh using Rhino-style normalized
+    /// density. Regular parameter cells remain quadrilaterals, while cells at
+    /// singular surface sides become triangles. A single degree-one span uses
+    /// its control quadrilateral, matching Rhino's common coarse-surface case.
+    pub fn polygon_mesh(
+        &self,
+        density: Real,
+        simple_planes: bool,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        let samples_per_span =
+            self.polygon_mesh_samples_per_span(density, simple_planes, tolerance)?;
+        self.tessellate_grid(samples_per_span, true, tolerance)
+    }
+
+    pub(crate) fn polygon_mesh_samples_per_span(
+        &self,
+        density: Real,
+        simple_planes: bool,
+        tolerance: Tolerance,
+    ) -> Result<usize, GeometryError> {
+        if !density.is_finite() || !(0.0..=1.0).contains(&density) {
+            return Err(GeometryError::InvalidMeshDensity(density));
+        }
+        if (self.degree_u == 1 && self.degree_v == 1)
+            || (simple_planes && self.plane(tolerance)?.is_some())
+        {
+            return Ok(1);
+        }
+
+        // Four samples at density zero matches Rhino's coarse curved-surface
+        // floor. Three binary refinement levels reach 32 samples per knot
+        // span at density one without permitting unbounded allocations.
+        let refinement_level = (density * 3.0).round() as u32;
+        Ok(4_usize << refinement_level)
+    }
+
+    pub(crate) fn tessellate_grid(
+        &self,
+        samples_per_span: usize,
+        preserve_quads: bool,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
         if samples_per_span == 0 {
@@ -1837,7 +1938,7 @@ impl NurbsSurface {
         }
 
         let mut vertices = Vec::with_capacity(capacity);
-        let mut triangles = Vec::new();
+        let mut faces = Vec::new();
         let domain_u_end = *self.domain_u().end();
         let domain_v_end = *self.domain_v().end();
         let side = samples_per_span + 1;
@@ -1876,16 +1977,11 @@ impl NurbsSurface {
                             .checked_add(row_stride)
                             .ok_or(GeometryError::TooManyMeshVertices)?;
                         let upper_right = upper_left + 1;
-                        push_if_nondegenerate(
+                        push_tessellation_cell(
                             &vertices,
-                            &mut triangles,
-                            [lower_left, lower_right, upper_right],
-                            tolerance,
-                        )?;
-                        push_if_nondegenerate(
-                            &vertices,
-                            &mut triangles,
-                            [lower_left, upper_right, upper_left],
+                            &mut faces,
+                            [lower_left, lower_right, upper_right, upper_left],
+                            preserve_quads,
                             tolerance,
                         )?;
                     }
@@ -1899,7 +1995,7 @@ impl NurbsSurface {
             samples_per_span,
             tolerance,
         )?;
-        TriangleMesh::try_new(vertices, triangles, tolerance)
+        TriangleMesh::try_new_faces(vertices, faces, tolerance)
     }
 
     fn evaluate_homogeneous(&self, u: Real, v: Real) -> Result<[Real; 4], GeometryError> {
@@ -2905,23 +3001,52 @@ fn snap_first_point_to_second_if_near(
     Ok(())
 }
 
-fn push_if_nondegenerate(
+fn push_tessellation_cell(
     vertices: &[Point3],
-    triangles: &mut Vec<[u32; 3]>,
-    triangle: [u32; 3],
+    faces: &mut Vec<MeshFace>,
+    [lower_left, lower_right, upper_right, upper_left]: [u32; 4],
+    preserve_quads: bool,
     tolerance: Tolerance,
 ) -> Result<(), GeometryError> {
-    let points = triangle.map(|index| vertices[index as usize]);
-    let Ok(first) = points[0].vector_to(points[1])?.normalized(tolerance) else {
-        return Ok(());
-    };
-    let Ok(second) = points[0].vector_to(points[2])?.normalized(tolerance) else {
-        return Ok(());
-    };
-    if first.as_vector().cross(second.as_vector())?.length()? > tolerance.angular() {
-        triangles.push(triangle);
+    let first = [lower_left, lower_right, upper_right];
+    let second = [lower_left, upper_right, upper_left];
+    let first_is_valid = tessellation_triangle_is_nondegenerate(vertices, first, tolerance)?;
+    let second_is_valid = tessellation_triangle_is_nondegenerate(vertices, second, tolerance)?;
+    if preserve_quads
+        && first_is_valid
+        && second_is_valid
+        && vertices[lower_right as usize] != vertices[upper_left as usize]
+    {
+        faces.push(MeshFace::Quad([
+            lower_left,
+            lower_right,
+            upper_right,
+            upper_left,
+        ]));
+    } else {
+        if first_is_valid {
+            faces.push(MeshFace::Triangle(first));
+        }
+        if second_is_valid {
+            faces.push(MeshFace::Triangle(second));
+        }
     }
     Ok(())
+}
+
+fn tessellation_triangle_is_nondegenerate(
+    vertices: &[Point3],
+    triangle: [u32; 3],
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let points = triangle.map(|index| vertices[index as usize]);
+    let Ok(first) = points[0].vector_to(points[1])?.normalized(tolerance) else {
+        return Ok(false);
+    };
+    let Ok(second) = points[0].vector_to(points[2])?.normalized(tolerance) else {
+        return Ok(false);
+    };
+    Ok(first.as_vector().cross(second.as_vector())?.length()? > tolerance.angular())
 }
 
 #[cfg(test)]
@@ -4660,6 +4785,81 @@ mod tests {
     }
 
     #[test]
+    fn polygon_meshing_preserves_quads_and_classifies_planarity() {
+        let planar = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 6.0, 0.0),
+            point(0.0, 6.0, 0.0),
+        ])
+        .unwrap();
+        let plane = planar.plane(Tolerance::DEFAULT).unwrap().unwrap();
+        assert_eq!(plane.origin().z(), 0.0);
+        assert_eq!(plane.normal().z(), 1.0);
+        let mesh = planar.polygon_mesh(0.5, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(mesh.vertices().len(), 4);
+        assert_eq!(mesh.faces(), &[MeshFace::Quad([0, 1, 3, 2])]);
+
+        let twisted = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 6.0, 4.0),
+            point(0.0, 6.0, 0.0),
+        ])
+        .unwrap();
+        assert_eq!(twisted.plane(Tolerance::DEFAULT).unwrap(), None);
+        let mesh = twisted.polygon_mesh(1.0, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(mesh.face_count(), 1);
+        assert!(mesh.faces()[0].is_quad());
+    }
+
+    #[test]
+    fn curved_polygon_mesh_density_is_bounded_and_validated() {
+        let middle_weight = 0.5_f64.sqrt();
+        let mut controls = Vec::new();
+        for z in [0.0, 3.0] {
+            controls.extend([
+                WeightedPoint3::try_new(point(1.0, 0.0, z), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0, z), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0, z), 1.0).unwrap(),
+            ]);
+        }
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            3,
+            2,
+            controls,
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let coarse = surface
+            .polygon_mesh(0.0, false, Tolerance::DEFAULT)
+            .unwrap();
+        let default = surface
+            .polygon_mesh(0.5, false, Tolerance::DEFAULT)
+            .unwrap();
+        let dense = surface
+            .polygon_mesh(1.0, false, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(coarse.face_count(), 16);
+        assert_eq!(default.face_count(), 256);
+        assert_eq!(dense.face_count(), 1024);
+        assert!(dense.faces().iter().all(|face| face.is_quad()));
+        for invalid in [-0.1, 1.1, Real::INFINITY] {
+            assert_eq!(
+                surface.polygon_mesh(invalid, false, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidMeshDensity(invalid))
+            );
+        }
+        assert!(matches!(
+            surface.polygon_mesh(Real::NAN, false, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidMeshDensity(value)) if value.is_nan()
+        ));
+    }
+
+    #[test]
     fn rejects_zero_tessellation_resolution_and_degenerate_surface() {
         let surface = NurbsSurface::try_bilinear([
             point(0.0, 0.0, 0.0),
@@ -4687,6 +4887,11 @@ mod tests {
         let mesh = singular_boundary.tessellate(1, Tolerance::DEFAULT).unwrap();
         assert_eq!(mesh.triangles().len(), 1);
         assert_eq!(mesh.face_normal(0).unwrap().z(), 1.0);
+        let polygon_mesh = singular_boundary
+            .polygon_mesh(0.5, false, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(polygon_mesh.faces().len(), 1);
+        assert!(polygon_mesh.faces()[0].is_triangle());
     }
 
     #[test]

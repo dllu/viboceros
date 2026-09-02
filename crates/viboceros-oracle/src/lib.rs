@@ -345,6 +345,19 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
     },
+    NurbsSurfaceMesh {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        density: f64,
+        #[serde(default)]
+        simple_planes: bool,
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -427,6 +440,7 @@ impl Operation {
             | Self::MeshSplitEdge { id, .. }
             | Self::MeshFillHole { id, .. }
             | Self::MeshFillHoles { id, .. }
+            | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1556,6 +1570,36 @@ fn execute(
                 }),
                 elapsed,
             )
+        }
+        Operation::NurbsSurfaceMesh {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            density,
+            simple_planes,
+            ..
+        } => {
+            let surface = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (mesh, elapsed) = measure(iterations, || {
+                black_box(&surface).polygon_mesh(
+                    black_box(*density),
+                    black_box(*simple_planes),
+                    tolerance,
+                )
+            })?;
+            (canonical_polygon_mesh_face_value(&mesh), elapsed)
         }
         Operation::NurbsSurfaceExtractPoints {
             degree_u,
@@ -4290,6 +4334,41 @@ fn polygon_mesh_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
+fn canonical_polygon_mesh_face_value(mesh: &TriangleMesh) -> Value {
+    let mut triangle_count = 0;
+    let mut quad_count = 0;
+    let mut faces = mesh
+        .faces()
+        .iter()
+        .map(|face| {
+            if face.is_quad() {
+                quad_count += 1;
+            } else {
+                triangle_count += 1;
+            }
+            let points = face
+                .indices()
+                .iter()
+                .map(|&raw| mesh.vertices()[raw as usize].to_array())
+                .collect::<Vec<_>>();
+            (0..points.len())
+                .map(|offset| {
+                    let mut rotation = points.clone();
+                    rotation.rotate_left(offset);
+                    rotation
+                })
+                .min_by(|left, right| compare_point_lists(left, right))
+                .expect("every validated polygon mesh face has at least three vertices")
+        })
+        .collect::<Vec<_>>();
+    faces.sort_by(|left, right| compare_point_lists(left, right));
+    json!({
+        "faces": faces,
+        "quad_count": quad_count,
+        "triangle_count": triangle_count,
+    })
+}
+
 fn mesh_fill_hole_value(
     mesh: &TriangleMesh,
     source_vertex_count: usize,
@@ -5360,6 +5439,41 @@ mod tests {
         assert_eq!(
             response.results[2].value,
             json!([[0.0, 0.0, 0.0], [2.0, 0.0, 0.0], [1.0, 2.0, 0.0]])
+        );
+    }
+
+    #[test]
+    fn meshes_bilinear_surface_as_canonical_quad_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::NurbsSurfaceMesh {
+            id: "bilinear".to_owned(),
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: vec![
+                control([0.0, 0.0, 0.0], 1.0),
+                control([2.0, 0.0, 0.0], 1.0),
+                control([0.0, 3.0, 0.0], 1.0),
+                control([2.0, 3.0, 0.0], 1.0),
+            ],
+            knots_u: vec![0.0, 0.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            density: 0.5,
+            simple_planes: false,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "faces": [[
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [2.0, 3.0, 0.0],
+                    [0.0, 3.0, 0.0],
+                ]],
+                "quad_count": 1,
+                "triangle_count": 0,
+            })
         );
     }
 

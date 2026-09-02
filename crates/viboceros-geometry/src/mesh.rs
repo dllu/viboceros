@@ -210,14 +210,14 @@ impl MeshFace {
         }
     }
 
-    fn reversed(self) -> Self {
+    pub(crate) fn reversed(self) -> Self {
         match self {
             Self::Triangle([a, b, c]) => Self::Triangle([a, c, b]),
             Self::Quad([a, b, c, d]) => Self::Quad([a, d, c, b]),
         }
     }
 
-    fn remapped(self, mut map: impl FnMut(u32) -> u32) -> Self {
+    pub(crate) fn remapped(self, mut map: impl FnMut(u32) -> u32) -> Self {
         match self {
             Self::Triangle(indices) => Self::Triangle(indices.map(&mut map)),
             Self::Quad(indices) => Self::Quad(indices.map(&mut map)),

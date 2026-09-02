@@ -1785,22 +1785,71 @@ impl Brep {
         samples_per_span: usize,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
+        self.tessellate_impl(samples_per_span, false, false, tolerance)
+    }
+
+    /// Creates one editable triangle/quad mesh for this B-rep.
+    ///
+    /// Full rectangular surface cells remain quadrilaterals and trimmed
+    /// regions remain constrained triangles. With smooth seams, boundary
+    /// samples are snapped to shared exact edges and closed solids are
+    /// required to remain watertight. Jagged seams intentionally disable
+    /// shared-edge snapping and permit naked edges between faces.
+    pub fn polygon_mesh(
+        &self,
+        density: Real,
+        simple_planes: bool,
+        jagged_seams: bool,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        let samples_per_span = self
+            .faces
+            .iter()
+            .map(|face| {
+                face.surface
+                    .polygon_mesh_samples_per_span(density, simple_planes, tolerance)
+            })
+            .collect::<Result<Vec<_>, _>>()?
+            .into_iter()
+            .max()
+            .expect("a validated B-rep has at least one face");
+        self.tessellate_impl(samples_per_span, true, jagged_seams, tolerance)
+    }
+
+    fn tessellate_impl(
+        &self,
+        samples_per_span: usize,
+        preserve_quads: bool,
+        jagged_seams: bool,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
         if samples_per_span == 0 {
             return Err(GeometryError::InvalidTessellationResolution);
         }
         let mut vertices = Vec::new();
-        let mut triangles = Vec::new();
+        let mut faces = Vec::new();
         for (face_index, face) in self.faces.iter().enumerate() {
             let mesh = if face_covers_full_surface_domain(face, tolerance)? {
-                let surface_mesh = face.surface.tessellate(samples_per_span, tolerance)?;
+                let surface_mesh = if preserve_quads {
+                    face.surface
+                        .tessellate_grid(samples_per_span, true, tolerance)?
+                } else {
+                    face.surface.tessellate(samples_per_span, tolerance)?
+                };
                 let mut face_vertices = surface_mesh.vertices().to_vec();
-                self.snap_face_boundary_vertices(
-                    face,
-                    &mut face_vertices,
-                    samples_per_span,
+                if !jagged_seams {
+                    self.snap_face_boundary_vertices(
+                        face,
+                        &mut face_vertices,
+                        samples_per_span,
+                        tolerance,
+                    )?;
+                }
+                TriangleMesh::try_new_faces(
+                    face_vertices,
+                    surface_mesh.faces().to_vec(),
                     tolerance,
-                )?;
-                TriangleMesh::try_new(face_vertices, surface_mesh.triangles().to_vec(), tolerance)?
+                )?
             } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
                 self.tessellate_planar_trimmed_face(face_index, face, samples_per_span, tolerance)?
             } else {
@@ -1816,27 +1865,23 @@ impl Brep {
                 return Err(GeometryError::TooManyMeshVertices);
             }
             vertices.extend(mesh.vertices());
-            for triangle in mesh.triangles() {
-                let mut triangle = [
-                    triangle[0]
+            for source_face in mesh.faces() {
+                let mut mapped = source_face.remapped(|vertex| {
+                    vertex
                         .checked_add(offset)
-                        .ok_or(GeometryError::TooManyMeshVertices)?,
-                    triangle[1]
-                        .checked_add(offset)
-                        .ok_or(GeometryError::TooManyMeshVertices)?,
-                    triangle[2]
-                        .checked_add(offset)
-                        .ok_or(GeometryError::TooManyMeshVertices)?,
-                ];
+                        .expect("the combined mesh vertex range was checked")
+                });
                 if face.reversed {
-                    triangle.swap(1, 2);
+                    mapped = mapped.reversed();
                 }
-                triangles.push(triangle);
+                faces.push(mapped);
             }
         }
-        let mesh = TriangleMesh::try_new(vertices, triangles, tolerance)?;
+        let mesh = TriangleMesh::try_new_faces(vertices, faces, tolerance)?;
         let topology = mesh.topology();
-        if (self.is_closed() && !topology.is_closed()) || (self.is_solid() && !topology.is_solid())
+        if !jagged_seams
+            && ((self.is_closed() && !topology.is_closed())
+                || (self.is_solid() && !topology.is_solid()))
         {
             return Err(GeometryError::UnstitchedBrepTessellation {
                 boundary_edges: topology.boundary_edge_count(),
@@ -3198,45 +3243,10 @@ fn planar_surface_plane(
     surface: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Option<PlanarSurfacePlane>, GeometryError> {
-    let mut samples = Vec::new();
-    let mut largest_cross = None;
-    let mut largest_area = 0.0;
-    for (u_start, u_end) in surface.spans_u() {
-        let u = u_start * 0.5 + u_end * 0.5;
-        for (v_start, v_end) in surface.spans_v() {
-            let v = v_start * 0.5 + v_end * 0.5;
-            let (point, derivative_u, derivative_v) = surface.evaluate_with_derivatives(u, v)?;
-            let cross = derivative_u.cross(derivative_v)?;
-            let area = cross.length()?;
-            if area > 0.0 {
-                samples.push(cross);
-                if area > largest_area {
-                    largest_area = area;
-                    largest_cross = Some((point, cross));
-                }
-            }
-        }
-    }
-    let Some((point, cross)) = largest_cross else {
-        return Ok(None);
-    };
-    let normal = cross.normalized_nonzero()?;
-    for sample in samples {
-        let length = sample.length()?;
-        if sample.dot(normal.as_vector())? <= tolerance.angular() * length {
-            return Ok(None);
-        }
-    }
-    for control in surface.control_points() {
-        let distance = point
-            .vector_to(control.point())?
-            .dot(normal.as_vector())?
-            .abs();
-        if distance > tolerance.absolute() {
-            return Ok(None);
-        }
-    }
-    Ok(Some(PlanarSurfacePlane { point, normal }))
+    Ok(surface.plane(tolerance)?.map(|plane| PlanarSurfacePlane {
+        point: plane.origin(),
+        normal: plane.normal(),
+    }))
 }
 
 fn integrate_planar_trimmed_face_volume(
@@ -4552,6 +4562,34 @@ mod tests {
     }
 
     #[test]
+    fn polygon_meshing_preserves_box_quads_and_watertight_topology() {
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mesh = brep
+            .polygon_mesh(0.5, false, false, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(mesh.vertices().len(), 24);
+        assert_eq!(mesh.face_count(), 6);
+        assert!(mesh.faces().iter().all(|face| face.is_quad()));
+        assert!(mesh.topology().is_solid());
+
+        assert_eq!(
+            brep.polygon_mesh(-0.1, false, false, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidMeshDensity(-0.1))
+        );
+    }
+
+    #[test]
     fn exact_planar_face_retains_concave_and_rational_trim_boundaries() {
         let profile = Polyline3::try_new(
             vec![
@@ -5578,6 +5616,12 @@ mod tests {
             assert_eq!(mesh.topology().boundary_edge_count(), 8 * samples_per_span);
             assert_eq!(mesh.topology().orientation_conflict_edge_count(), 0);
         }
+        let polygon_mesh = brep
+            .polygon_mesh(0.5, false, false, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(polygon_mesh.faces().iter().all(|face| face.is_triangle()));
+        assert!((polygon_mesh.area().unwrap() - 84.0).abs() < 1.0e-12);
+        assert_eq!(polygon_mesh.topology().boundary_edge_count(), 8);
     }
 
     #[test]

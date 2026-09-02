@@ -265,6 +265,29 @@ def _polygon_mesh_value(mesh):
     }
 
 
+def _canonical_polygon_mesh_face_value(mesh):
+    faces = []
+    triangle_count = 0
+    quad_count = 0
+    for index in range(mesh.Faces.Count):
+        face = mesh.Faces[index]
+        indices = [int(face.A), int(face.B), int(face.C)]
+        if face.IsQuad:
+            indices.append(int(face.D))
+            quad_count += 1
+        else:
+            triangle_count += 1
+        points = [tuple(_xyz(mesh.Vertices[vertex])) for vertex in indices]
+        rotations = [tuple(points[offset:] + points[:offset]) for offset in range(len(points))]
+        faces.append(min(rotations))
+    faces.sort()
+    return {
+        "faces": faces,
+        "quad_count": quad_count,
+        "triangle_count": triangle_count,
+    }
+
+
 def _mesh_fill_hole_value(mesh, source_vertex_count, source_face_count):
     patch_triangles = []
     for index in range(source_face_count, mesh.Faces.Count):
@@ -4616,6 +4639,47 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, extract_non_manifold)
         finally:
             source.Dispose()
+
+    if kind == "nurbs_surface_mesh":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        surface = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if surface is None:
+            raise ValueError("could not allocate NURBS surface")
+        _set_surface_controls(
+            surface, operation["control_points"], count_u, count_v
+        )
+        _set_knots(surface.KnotsU, operation["knots_u"], "surface U knot")
+        _set_knots(surface.KnotsV, operation["knots_v"], "surface V knot")
+        if not surface.IsValid:
+            surface.Dispose()
+            raise ValueError("NURBS surface is invalid")
+        density = _finite(operation.get("density", 0.5), "mesh density")
+        if density < 0.0 or density > 1.0:
+            surface.Dispose()
+            raise ValueError("mesh density must lie in [0, 1]")
+        parameters = Rhino.Geometry.MeshingParameters(density)
+        parameters.JaggedSeams = bool(operation.get("jagged_seams", False))
+        parameters.SimplePlanes = bool(operation.get("simple_planes", False))
+
+        def mesh_surface():
+            mesh = Rhino.Geometry.Mesh.CreateFromSurface(surface, parameters)
+            if mesh is None:
+                raise ValueError("could not mesh NURBS surface")
+            try:
+                return _canonical_polygon_mesh_face_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, mesh_surface)
+        finally:
+            parameters.Dispose()
+            surface.Dispose()
 
     if kind == "nurbs_surface_extract_points":
         degree_u = int(operation["degree_u"])

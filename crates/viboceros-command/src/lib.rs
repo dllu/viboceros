@@ -94,6 +94,9 @@ impl CommandRegistry {
             .register(PlanarSurfaceCommand)
             .expect("unique built-in command");
         registry
+            .register(MeshCommand)
+            .expect("unique built-in command");
+        registry
             .register(BoxCommand)
             .expect("unique built-in command");
         registry
@@ -1385,6 +1388,119 @@ impl Command for PlanarSurfaceCommand {
             }
         ))
     }
+}
+
+const MESH_USAGE: &str = "Mesh [Density=0..1] [JaggedSeams=Yes|No] [SimplePlanes=Yes|No]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshCommandOptions {
+    density: Real,
+    jagged_seams: bool,
+    simple_planes: bool,
+}
+
+struct MeshCommand;
+
+impl Command for MeshCommand {
+    fn name(&self) -> &'static str {
+        "Mesh"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_mesh_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.geometry().clone(), object.attributes().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        if selected.len() > MAX_SPAN_OUTPUT_OBJECTS {
+            return Err(too_many_span_outputs("Mesh"));
+        }
+
+        let mut total_vertex_count = 0_usize;
+        let mut total_face_count = 0_usize;
+        let mut outputs = Vec::with_capacity(selected.len());
+        for (geometry, attributes) in selected {
+            let mesh = match geometry {
+                Geometry::NurbsSurface(surface) => surface.polygon_mesh(
+                    options.density,
+                    options.simple_planes,
+                    document.tolerance(),
+                )?,
+                Geometry::Brep(brep) => brep.polygon_mesh(
+                    options.density,
+                    options.simple_planes,
+                    options.jagged_seams,
+                    document.tolerance(),
+                )?,
+                _ => return Err(CommandError::UnsupportedMeshGeometry),
+            };
+            total_vertex_count = total_vertex_count
+                .checked_add(mesh.vertices().len())
+                .ok_or(GeometryError::TooManyMeshVertices)?;
+            total_face_count = total_face_count
+                .checked_add(mesh.face_count())
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+            outputs.push((mesh, attributes));
+        }
+
+        let output_count = outputs.len();
+        for (mesh, attributes) in outputs {
+            document.add_geometry_with_attributes(Geometry::Mesh(mesh), attributes)?;
+        }
+        Ok(format!(
+            "Created {output_count} polygon mesh(es) with {total_vertex_count} point(s) and {total_face_count} polygon(s); source object(s) retained"
+        ))
+    }
+}
+
+fn parse_mesh_arguments(arguments: &[&str]) -> Result<MeshCommandOptions, CommandError> {
+    let mut density = 0.5;
+    let mut density_seen = false;
+    let mut jagged_seams = false;
+    let mut jagged_seams_seen = false;
+    let mut simple_planes = false;
+    let mut simple_planes_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else if option_name_eq(argument, "Density")
+            || option_name_eq(argument, "JaggedSeams")
+            || option_name_eq(argument, "SimplePlanes")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(MESH_USAGE))?;
+            (argument, *value, 2)
+        } else {
+            return Err(CommandError::Usage(MESH_USAGE));
+        };
+        if option_name_eq(name, "Density") && !density_seen {
+            density = parse_finite_real(value.trim_start_matches('_'))?;
+            if !(0.0..=1.0).contains(&density) {
+                return Err(GeometryError::InvalidMeshDensity(density).into());
+            }
+            density_seen = true;
+        } else if option_name_eq(name, "JaggedSeams") && !jagged_seams_seen {
+            jagged_seams = parse_yes_no(value).ok_or(CommandError::Usage(MESH_USAGE))?;
+            jagged_seams_seen = true;
+        } else if option_name_eq(name, "SimplePlanes") && !simple_planes_seen {
+            simple_planes = parse_yes_no(value).ok_or(CommandError::Usage(MESH_USAGE))?;
+            simple_planes_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(MeshCommandOptions {
+        density,
+        jagged_seams,
+        simple_planes,
+    })
 }
 
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
@@ -12726,6 +12842,9 @@ pub enum CommandError {
     #[error("none of the selected curves is a closed, nondegenerate planar boundary")]
     NoPlanarSurfaceBoundaries,
 
+    #[error("Mesh supports selected NURBS surfaces and B-reps only")]
+    UnsupportedMeshGeometry,
+
     #[error("ExtrudeCrv currently supports Output=Surface only")]
     UnsupportedCurveExtrusionOutput,
 
@@ -12884,7 +13003,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -18954,6 +19073,177 @@ mod tests {
                 .is_err()
         );
         assert_eq!(document.objects().len(), 0);
+    }
+
+    #[test]
+    fn mesh_creates_unselected_attribute_copies_without_source_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 6.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 6.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let solid = Brep::try_box(frame, [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]], tolerance).unwrap();
+        let surface_attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Panel mesh")
+            .with_object_color(ColorRgb::new(23, 61, 149));
+        let solid_attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Solid mesh")
+            .with_object_color(ColorRgb::new(193, 83, 31));
+        let surface_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface.clone()),
+                surface_attributes.clone(),
+            )
+            .unwrap();
+        let solid_id = document
+            .add_geometry_with_attributes(Geometry::Brep(solid.clone()), solid_attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("NURBS sources".to_owned()), [surface_id, solid_id])
+            .unwrap();
+        document
+            .select_objects_direct([surface_id, solid_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Mesh").unwrap(),
+            "Created 2 polygon mesh(es) with 28 point(s) and 7 polygon(s); source object(s) retained"
+        );
+        assert_eq!(document.objects().len(), 4);
+        assert!(document.is_selected(surface_id));
+        assert!(document.is_selected(solid_id));
+        let outputs = document
+            .objects()
+            .filter(|object| ![surface_id, solid_id].contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        assert!(
+            outputs
+                .iter()
+                .all(|output| !document.is_selected(output.id()))
+        );
+        let panel = outputs
+            .iter()
+            .find(|output| output.attributes().name() == Some("Panel mesh"))
+            .unwrap();
+        assert_eq!(panel.attributes(), &surface_attributes);
+        let Geometry::Mesh(panel_mesh) = panel.geometry() else {
+            panic!("Mesh must create polygon meshes")
+        };
+        assert_eq!(
+            panel_mesh.faces(),
+            &[viboceros_geometry::MeshFace::Quad([0, 1, 3, 2])]
+        );
+        let solid_output = outputs
+            .iter()
+            .find(|output| output.attributes().name() == Some("Solid mesh"))
+            .unwrap();
+        assert_eq!(solid_output.attributes(), &solid_attributes);
+        let Geometry::Mesh(solid_mesh) = solid_output.geometry() else {
+            panic!("Mesh must create polygon meshes")
+        };
+        assert_eq!(solid_mesh.face_count(), 6);
+        assert!(solid_mesh.faces().iter().all(|face| face.is_quad()));
+        assert!(solid_mesh.topology().is_solid());
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([surface_id, solid_id])
+        );
+        assert_eq!(document.undo_label(), Some("Mesh"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(surface)
+        );
+        assert_eq!(
+            document.object(solid_id).unwrap().geometry(),
+            &Geometry::Brep(solid)
+        );
+    }
+
+    #[test]
+    fn mesh_options_validate_and_mixed_geometry_rolls_back_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert_eq!(
+            parse_mesh_arguments(&[]).unwrap(),
+            MeshCommandOptions {
+                density: 0.5,
+                jagged_seams: false,
+                simple_planes: false,
+            }
+        );
+        assert!(matches!(
+            registry.execute(&mut document, "Mesh"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        for command in [
+            "Mesh Density=-0.1",
+            "Mesh Density=1.1",
+            "Mesh Density=nan",
+            "Mesh Density=0.5 Density=0.25",
+            "Mesh JaggedSeams=Maybe",
+            "Mesh SimplePlanes=Yes SimplePlanes=No",
+            "Mesh Unknown=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0);
+        }
+
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(4.0, 3.0, 1.0).unwrap(),
+            Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(10.0, 10.0, 10.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([surface_id, point_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(
+                &mut document,
+                "Mesh Density 0.25 JaggedSeams Yes SimplePlanes No"
+            ),
+            Err(CommandError::UnsupportedMeshGeometry)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(surface)
+        );
     }
 
     #[test]

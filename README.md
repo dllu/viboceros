@@ -35,6 +35,7 @@ ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
+Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 DupBorder OutputLayer=Current
@@ -218,6 +219,16 @@ surfaces. Every original rational curve remains an exact boundary edge and
 parameter-space trim, so curved, concave, and holed regions shade and export
 without filling excluded areas. Inputs are retained by default;
 `DeleteInput=Yes` removes each successfully used boundary.
+`Mesh` creates editable polygon meshes from selected NURBS surfaces and B-reps
+while retaining the selected sources. The new meshes copy source names, layers,
+colors, and display attributes, remain unselected, and do not inherit source
+groups, matching Rhino's derived-object behavior. `Density=0..1` selects a
+bounded per-knot-span sampling level; `SimplePlanes=Yes` minimizes entirely
+planar inputs, and `JaggedSeams=Yes` disables shared-edge snapping on B-reps.
+Regular surface cells remain quadrilaterals, singular sides and planar trim
+regions use triangles, and smooth-seam closed solids must remain watertight.
+Unsupported nonplanar general trims fail atomically rather than being silently
+meshed as untrimmed surfaces.
 `Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
 a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without

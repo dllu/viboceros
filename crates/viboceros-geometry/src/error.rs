@@ -1,6 +1,6 @@
 use thiserror::Error;
 
-use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSITY};
+use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSITY, Real};
 
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
@@ -150,6 +150,9 @@ pub enum GeometryError {
 
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
+
+    #[error("mesh density must be finite and lie in [0, 1], got {0}")]
+    InvalidMeshDensity(Real),
 
     #[error(
         "surface wire density must be from {MIN_SURFACE_WIRE_DENSITY} through {MAX_SURFACE_WIRE_DENSITY}, got {0}"
