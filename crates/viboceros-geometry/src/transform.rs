@@ -72,6 +72,36 @@ impl AffineTransform3 {
         Self::try_with_fixed_point(linear, fixed_point)
     }
 
+    /// Shears along `shear_direction` in proportion to displacement along
+    /// `reference_direction`, retaining `fixed_point`. The two unit directions
+    /// must be perpendicular so the map preserves volume and remains a pure
+    /// shear rather than including an axial scale.
+    pub fn try_shear(
+        fixed_point: Point3,
+        reference_direction: UnitVector3,
+        shear_direction: UnitVector3,
+        factor: Real,
+        tolerance: crate::Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([factor], "shear factor")?;
+        let reference = reference_direction.as_vector();
+        let shear = shear_direction.as_vector();
+        if reference.dot(shear)?.abs() > tolerance.angular() {
+            return Err(GeometryError::Degenerate {
+                context: "shear directions",
+            });
+        }
+        let reference = reference.to_array();
+        let shear = shear.to_array();
+        let linear = std::array::from_fn(|row| {
+            std::array::from_fn(|column| {
+                let identity = if row == column { 1.0 } else { 0.0 };
+                factor.mul_add(shear[row] * reference[column], identity)
+            })
+        });
+        Self::try_with_fixed_point(linear, fixed_point)
+    }
+
     pub fn try_rotation(
         fixed_point: Point3,
         axis: UnitVector3,
@@ -437,6 +467,41 @@ mod tests {
         assert!(AffineTransform3::try_nonuniform_scale(center, [1.0, Real::NAN, 1.0]).is_err());
         assert!(
             AffineTransform3::try_directional_scale(center, direction, Real::INFINITY).is_err()
+        );
+    }
+
+    #[test]
+    fn shear_uses_perpendicular_directions_and_retains_its_fixed_point() {
+        let fixed = point(1.0, 2.0, 3.0);
+        let reference = UnitVector3::try_new(0.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let shear_direction = UnitVector3::try_new(-1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let transform =
+            AffineTransform3::try_shear(fixed, reference, shear_direction, 0.5, Tolerance::DEFAULT)
+                .unwrap();
+
+        assert_eq!(transform.transform_point(fixed).unwrap(), fixed);
+        assert_eq!(
+            transform.transform_point(point(4.0, -2.0, 5.0)).unwrap(),
+            point(6.0, -2.0, 5.0)
+        );
+        assert_eq!(
+            transform.transform_point(point(-3.0, 2.0, 7.0)).unwrap(),
+            point(-3.0, 2.0, 7.0)
+        );
+
+        assert!(
+            AffineTransform3::try_shear(fixed, reference, reference, 0.5, Tolerance::DEFAULT,)
+                .is_err()
+        );
+        assert!(
+            AffineTransform3::try_shear(
+                fixed,
+                reference,
+                shear_direction,
+                Real::NAN,
+                Tolerance::DEFAULT,
+            )
+            .is_err()
         );
     }
 

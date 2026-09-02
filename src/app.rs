@@ -98,6 +98,10 @@ enum InteractiveCommand {
     Mirror {
         start: Option<Point3>,
     },
+    Shear {
+        origin: Option<Point3>,
+        reference: Option<Point3>,
+    },
 }
 
 impl InteractiveCommand {
@@ -123,6 +127,7 @@ impl InteractiveCommand {
             Self::Rotate { .. } => "Rotate",
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Mirror { .. } => "Mirror",
+            Self::Shear { .. } => "Shear",
         }
     }
 
@@ -291,6 +296,16 @@ impl InteractiveCommand {
             Self::Mirror { start: Some(_) } => {
                 "Mirror: pick the second axis point in the viewport (Esc to cancel)"
             }
+            Self::Shear { origin: None, .. } => {
+                "Shear: pick the fixed origin in the viewport (Esc to cancel)"
+            }
+            Self::Shear {
+                origin: Some(_),
+                reference: None,
+            } => "Shear: pick the reference direction in the viewport (Esc to cancel)",
+            Self::Shear {
+                reference: Some(_), ..
+            } => "Shear: pick the target angle in the viewport (Esc to cancel)",
         }
     }
 
@@ -319,7 +334,8 @@ impl InteractiveCommand {
             | Self::Rotate3D {
                 points: [None, _, _],
             }
-            | Self::Mirror { start: None } => None,
+            | Self::Mirror { start: None }
+            | Self::Shear { origin: None, .. } => None,
             Self::Line { start }
             | Self::Circle { center: start }
             | Self::Rectangle { first: start }
@@ -351,6 +367,10 @@ impl InteractiveCommand {
             | Self::Rotate {
                 center: Some(center),
                 ..
+            }
+            | Self::Shear {
+                origin: Some(center),
+                ..
             } => Some(center),
             Self::Rotate3D {
                 points: [Some(start), _, _],
@@ -360,7 +380,9 @@ impl InteractiveCommand {
 
     const fn reference(self) -> Option<Point3> {
         match self {
-            Self::Scale { reference, .. } | Self::Rotate { reference, .. } => reference,
+            Self::Scale { reference, .. }
+            | Self::Rotate { reference, .. }
+            | Self::Shear { reference, .. } => reference,
             Self::Rotate3D {
                 points: [_, _, reference],
             } => reference,
@@ -684,6 +706,10 @@ impl VibocerosApp {
                 },
                 "rotate3d" => InteractiveCommand::Rotate3D { points: [None; 3] },
                 "mirror" => InteractiveCommand::Mirror { start: None },
+                "shear" => InteractiveCommand::Shear {
+                    origin: None,
+                    reference: None,
+                },
                 _ => return false,
             }
         };
@@ -701,6 +727,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate { .. }
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Mirror { .. }
+                | InteractiveCommand::Shear { .. }
         ) && self.document.selected_object_count() == 0
         {
             self.push_log("Error: no objects are selected".to_owned());
@@ -1250,6 +1277,47 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::Shear { origin: None, .. } => {
+                let command = InteractiveCommand::Shear {
+                    origin: Some(point),
+                    reference: None,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Origin: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Shear {
+                origin: Some(origin),
+                reference: None,
+            } => {
+                if same_top_point(origin, point, self.document.tolerance()) {
+                    self.push_log("Error: shear reference must differ from its origin".to_owned());
+                    return;
+                }
+                let command = InteractiveCommand::Shear {
+                    origin: Some(origin),
+                    reference: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Reference: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Shear {
+                origin: Some(origin),
+                reference: Some(reference),
+            } => {
+                if same_top_point(origin, point, self.document.tolerance()) {
+                    self.push_log("Error: shear target must differ from its origin".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Shear {} {} {}",
+                    format_model_point(origin),
+                    format_model_point(reference),
+                    format_model_point(point)
+                ));
+            }
         }
     }
 
@@ -1360,6 +1428,7 @@ impl VibocerosApp {
         let mut scale_clicked = false;
         let mut rotate_clicked = false;
         let mut mirror_clicked = false;
+        let mut shear_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
         let selectable_previous = self.document.selectable_previous_object_count();
@@ -1540,6 +1609,10 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Mirror"))
                     .on_hover_text("Mirror selected objects across a two-point top-view axis")
                     .clicked();
+                shear_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Shear"))
+                    .on_hover_text("Shear selected objects using three top-view points")
+                    .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
@@ -1643,6 +1716,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("Rotate");
         } else if mirror_clicked {
             self.try_start_interactive_command("Mirror");
+        } else if shear_clicked {
+            self.try_start_interactive_command("Shear");
         }
     }
 
@@ -2506,6 +2581,7 @@ mod tests {
             "Rotate",
             "Rotate3D",
             "Mirror",
+            "Shear",
         ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
@@ -2590,6 +2666,30 @@ mod tests {
         app.accept_drafting_point(point(0.0, 1.0, 0.0));
         assert!(position(&app).is_near(point(-1.0, 2.0, 0.0), app.document.tolerance()));
         assert_eq!(app.document.undo_label(), Some("Rotate3D"));
+        app.document.undo().unwrap();
+
+        assert!(app.try_start_interactive_command("Shear"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 0.0, 1.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Shear {
+                origin: Some(point(0.0, 0.0, 0.0)),
+                reference: None,
+            })
+        );
+        app.accept_drafting_point(point(1.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 0.0, 2.0));
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::Shear {
+                origin: Some(_),
+                reference: Some(_),
+            })
+        ));
+        app.accept_drafting_point(point(1.0, 1.0, 0.0));
+        assert!(position(&app).is_near(point(2.0, 3.0, 0.0), app.document.tolerance()));
+        assert_eq!(app.document.undo_label(), Some("Shear"));
         app.document.undo().unwrap();
 
         assert!(app.try_start_interactive_command("Mirror"));

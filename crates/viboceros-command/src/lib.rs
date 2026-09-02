@@ -303,6 +303,9 @@ impl CommandRegistry {
             .register(MirrorCommand)
             .expect("unique built-in command");
         registry
+            .register(ShearCommand)
+            .expect("unique built-in command");
+        registry
             .register(ClearCommand)
             .expect("unique built-in command");
         registry
@@ -4940,6 +4943,7 @@ const ROTATE_USAGE: &str = "Rotate center degrees | center reference target [Cop
 const ROTATE_3D_USAGE: &str =
     "Rotate3D axis-start axis-end degrees | axis-start axis-end reference target [Copy=Yes|No]";
 const MIRROR_USAGE: &str = "Mirror axis-start axis-end [Copy=Yes|No]";
+const SHEAR_USAGE: &str = "Shear origin reference degrees | origin reference target [Copy=Yes|No]";
 
 struct RotateCommand;
 
@@ -5034,6 +5038,52 @@ impl Command for MirrorCommand {
             apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
         Ok(format!(
             "Mirrored {transformed} object(s), creating {copied} copy object(s)"
+        ))
+    }
+}
+
+struct ShearCommand;
+
+impl Command for ShearCommand {
+    fn name(&self) -> &'static str {
+        "Shear"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (positional, copy) = parse_transform_copy_arguments(arguments, SHEAR_USAGE)?;
+        let (origin, origin_consumed) = parse_point(&positional)?;
+        let (reference, reference_consumed) = parse_point(&positional[origin_consumed..])?;
+        let consumed = origin_consumed + reference_consumed;
+        let remaining = &positional[consumed..];
+        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_finite_real(remaining[0])?.to_radians()
+        } else {
+            let (target, target_consumed) = parse_point(remaining)?;
+            require_consumed(remaining, target_consumed, SHEAR_USAGE)?;
+            top_view_angle(origin, reference, target, document.tolerance())?
+        };
+        let reference_direction =
+            top_view_vector(origin, reference)?.normalized(document.tolerance())?;
+        let shear_direction = UnitVector3::try_new(
+            -reference_direction.y(),
+            reference_direction.x(),
+            0.0,
+            document.tolerance(),
+        )?;
+        let factor = angle_radians.tan();
+        let transform = AffineTransform3::try_shear(
+            origin,
+            reference_direction,
+            shear_direction,
+            factor,
+            document.tolerance(),
+        )?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Sheared {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
+            angle_radians.to_degrees()
         ))
     }
 }
@@ -6080,7 +6130,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -11275,6 +11325,86 @@ mod tests {
             "Scale2D 0,0,0 0",
             "ScaleNU 0,0,0 1 0 1",
             "ScaleNU 0,0,0 1 2 3 Copy=Yes Copy=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn shear_matches_rhino_top_view_basis_angles_copy_and_atomic_errors() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 2,3,4").unwrap();
+        let original = document.objects().next().unwrap().id();
+        document
+            .select_object(original, SelectionMode::Replace)
+            .unwrap();
+        let position = |document: &Document, id: ObjectId| {
+            let Geometry::Point(point) = document.object(id).unwrap().geometry() else {
+                panic!("expected a point")
+            };
+            *point
+        };
+
+        registry
+            .execute(&mut document, "Shear 0,0,0 1,0,0 45")
+            .unwrap();
+        assert!(position(&document, original).is_near(
+            Point3::try_new(2.0, 5.0, 4.0).unwrap(),
+            document.tolerance()
+        ));
+        assert_eq!(document.undo_label(), Some("Shear"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Shear 0,0,0 2,0,0 -30")
+            .unwrap();
+        assert!(position(&document, original).is_near(
+            Point3::try_new(2.0, 1.845_299_461_620_748_5, 4.0).unwrap(),
+            document.tolerance()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Shear 1,2,3 1,5,3 30")
+            .unwrap();
+        assert!(position(&document, original).is_near(
+            Point3::try_new(1.422_649_730_810_374_3, 3.0, 4.0).unwrap(),
+            document.tolerance()
+        ));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Shear 0,0,0 2,0,0 2,2,0 Copy=Yes")
+            .unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
+        let copy = document.objects().nth(1).unwrap().id();
+        assert!(position(&document, copy).is_near(
+            Point3::try_new(2.0, 5.0, 4.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(document.is_selected(original));
+        assert!(!document.is_selected(copy));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "Shear 0,0,0 0,0,5 45",
+            "Shear 0,0,0 1,0,0 0,0,0",
+            "Shear 0,0,0 1,0,0 45 Copy=Yes Copy=No",
+            "Shear 0,0,0 1,0,0 45 extra",
         ] {
             assert!(
                 registry.execute(&mut document, command).is_err(),
