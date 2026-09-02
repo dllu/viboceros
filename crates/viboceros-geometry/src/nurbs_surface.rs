@@ -121,6 +121,62 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact ruled surface swept by a NURBS curve between two
+    /// translation offsets.
+    ///
+    /// The curve is the U direction. V is degree one and parameterized by the
+    /// physical distance between the offsets, matching Rhino straight
+    /// extrusions. Rational weights and the complete U knot vector are
+    /// preserved exactly.
+    pub fn try_extruded_curve(
+        curve: &crate::NurbsCurve,
+        start_offset: Vector3,
+        end_offset: Vector3,
+    ) -> Result<Self, GeometryError> {
+        let path = Vector3::try_new(
+            end_offset.x() - start_offset.x(),
+            end_offset.y() - start_offset.y(),
+            end_offset.z() - start_offset.z(),
+        )?;
+        let path_length = path.length()?;
+        if path_length == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "curve extrusion path",
+            });
+        }
+
+        let control_count_u = curve.control_points().len();
+        let control_count =
+            control_count_u
+                .checked_mul(2)
+                .ok_or(GeometryError::InvalidControlNet {
+                    context: "extruded control-point count overflowed usize",
+                })?;
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidControlNet {
+                context: "extruded control net exceeds addressable memory",
+            }
+        })?;
+        for offset in [start_offset, end_offset] {
+            for control in curve.control_points() {
+                controls.push(WeightedPoint3::try_new(
+                    control.point().translated(offset)?,
+                    control.weight(),
+                )?);
+            }
+        }
+        Self::try_new_rational(
+            curve.degree(),
+            1,
+            control_count_u,
+            2,
+            controls,
+            curve.knots().to_vec(),
+            vec![0.0, 0.0, path_length, path_length],
+        )
+    }
+
     /// Constructs a bilinear surface from four perimeter-ordered corners.
     /// The order is first, adjacent second, opposite third, adjacent fourth.
     pub fn try_bilinear(corners: [Point3; 4]) -> Result<Self, GeometryError> {
@@ -1321,6 +1377,52 @@ mod tests {
         assert!(Tolerance::DEFAULT.approx_eq(vertical.x(), 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(vertical.y(), 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(vertical.z(), 3.0));
+    }
+
+    #[test]
+    fn exact_curve_extrusion_preserves_u_data_and_uses_path_length_for_v() {
+        let middle_weight = 0.5_f64.sqrt();
+        let curve = crate::NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0, 0.0), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0, 0.0), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_extruded_curve(
+            &curve,
+            Vector3::try_new(0.0, 0.0, -2.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 3.0).unwrap(),
+        )
+        .unwrap();
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 3);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.knots_u(), curve.knots());
+        assert_eq!(surface.knots_v(), &[0.0, 0.0, 5.0, 5.0]);
+        assert!(surface.is_rational());
+        for u in [2.0, 3.25, 7.0] {
+            let base = curve.evaluate(u).unwrap();
+            assert_point_near(
+                surface.evaluate(u, 0.0).unwrap(),
+                base.translated(Vector3::try_new(0.0, 0.0, -2.0).unwrap())
+                    .unwrap(),
+            );
+            assert_point_near(
+                surface.evaluate(u, 5.0).unwrap(),
+                base.translated(Vector3::try_new(0.0, 0.0, 3.0).unwrap())
+                    .unwrap(),
+            );
+        }
+        let (_, _, derivative_v) = surface.evaluate_with_derivatives(4.0, 2.5).unwrap();
+        assert_eq!(derivative_v, Vector3::try_new(0.0, 0.0, 1.0).unwrap());
+
+        let zero = Vector3::try_new(0.0, 0.0, 0.0).unwrap();
+        assert!(NurbsSurface::try_extruded_curve(&curve, zero, zero).is_err());
     }
 
     #[test]

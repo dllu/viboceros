@@ -87,6 +87,9 @@ impl CommandRegistry {
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtrudeCurveCommand)
+            .expect("unique built-in command");
+        registry
             .register(LayerCommand)
             .expect("unique built-in command");
         registry
@@ -5165,6 +5168,129 @@ impl Command for ToNurbsCommand {
     }
 }
 
+const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Solid=No]";
+
+struct ExtrudeCurveCommand;
+
+impl Command for ExtrudeCurveCommand {
+    fn name(&self) -> &'static str {
+        "ExtrudeCrv"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (start_offset, end_offset, delete_input, both_sides) =
+            parse_curve_extrusion(arguments, document.tolerance())?;
+        let mut extrusions = Vec::new();
+        for id in selected {
+            let Some(curve) = document
+                .object(id)
+                .expect("selected objects exist")
+                .geometry()
+                .nurbs_curve_representation()?
+            else {
+                continue;
+            };
+            extrusions.push((
+                id,
+                NurbsSurface::try_extruded_curve(&curve, start_offset, end_offset)?,
+            ));
+        }
+        if extrusions.is_empty() {
+            return Err(CommandError::NoExtrudableCurves);
+        }
+
+        let output_count = extrusions.len();
+        for (_, surface) in &extrusions {
+            document.add_geometry(Geometry::NurbsSurface(surface.clone()))?;
+        }
+        if delete_input {
+            for (id, _) in extrusions {
+                document.delete_object(id)?;
+            }
+        }
+        Ok(format!(
+            "Extruded {output_count} curve object(s) into exact NURBS surfaces{}{}",
+            if both_sides { " on both sides" } else { "" },
+            if delete_input {
+                ", deleting the input curves"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
+fn parse_curve_extrusion(
+    arguments: &[&str],
+    tolerance: Tolerance,
+) -> Result<(Vector3, Vector3, bool, bool), CommandError> {
+    let mut positional = Vec::new();
+    let mut both_sides = None;
+    let mut delete_input = None;
+    let mut output_seen = false;
+    let mut solid_seen = false;
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            positional.push(*argument);
+            continue;
+        };
+        if option_name_eq(name, "BothSides") && both_sides.is_none() {
+            both_sides = parse_yes_no(value);
+            if both_sides.is_none() {
+                return Err(CommandError::Usage(EXTRUDE_CURVE_USAGE));
+            }
+        } else if option_name_eq(name, "DeleteInput") && delete_input.is_none() {
+            delete_input = parse_yes_no(value);
+            if delete_input.is_none() {
+                return Err(CommandError::Usage(EXTRUDE_CURVE_USAGE));
+            }
+        } else if option_name_eq(name, "Output") && !output_seen {
+            if !value
+                .trim_start_matches('_')
+                .eq_ignore_ascii_case("Surface")
+            {
+                return Err(CommandError::UnsupportedCurveExtrusionOutput);
+            }
+            output_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            let solid = parse_yes_no(value).ok_or(CommandError::Usage(EXTRUDE_CURVE_USAGE))?;
+            if solid {
+                return Err(CommandError::SolidCurveExtrusionUnsupported);
+            }
+            solid_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTRUDE_CURVE_USAGE));
+        }
+    }
+
+    let direction = if positional.len() == 1 && !positional[0].contains(',') {
+        Vector3::try_new(0.0, 0.0, parse_finite_real(positional[0])?)?
+    } else {
+        let (base, base_consumed) = parse_point(&positional)?;
+        let (target, target_consumed) = parse_point(&positional[base_consumed..])?;
+        require_consumed(
+            &positional,
+            base_consumed + target_consumed,
+            EXTRUDE_CURVE_USAGE,
+        )?;
+        base.vector_to(target)?
+    };
+    direction.normalized(tolerance)?;
+    let both_sides = both_sides.unwrap_or(false);
+    let start_offset = if both_sides {
+        direction.scaled(-1.0)?
+    } else {
+        Vector3::try_new(0.0, 0.0, 0.0)?
+    };
+    Ok((
+        start_offset,
+        direction,
+        delete_input.unwrap_or(false),
+        both_sides,
+    ))
+}
+
 fn parse_delete_input(
     arguments: &[&str],
     usage: &'static str,
@@ -6179,6 +6305,15 @@ pub enum CommandError {
     #[error("none of the selected objects is a supported non-NURBS curve")]
     NoConvertibleNurbsCurves,
 
+    #[error("none of the selected objects is an extrudable curve")]
+    NoExtrudableCurves,
+
+    #[error("ExtrudeCrv currently supports Output=Surface only")]
+    UnsupportedCurveExtrusionOutput,
+
+    #[error("solid curve extrusion requires capped polysurface support")]
+    SolidCurveExtrusionUnsupported,
+
     #[error("the document contains no visible mesh or NURBS surface to export")]
     NoMeshToExport,
 
@@ -6235,7 +6370,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -11809,6 +11944,203 @@ mod tests {
             Err(CommandError::NoConvertibleNurbsCurves)
         ));
         assert_eq!(document.objects().len(), 7);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn extrude_curve_matches_rhino_domains_attributes_groups_and_delete_input() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let output_layer = document.current_layer_id();
+        let input_layer = document
+            .add_layer("Profiles", ColorRgb::new(91, 92, 93))
+            .unwrap();
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let polyline = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 0.0).unwrap(),
+            ],
+            tolerance,
+        )
+        .unwrap();
+        let circle = Circle3::try_new(
+            Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let existing_nurbs = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(12.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(13.0, 2.0, 0.0).unwrap(), 0.75).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(15.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let geometries = [
+            ("line", Geometry::Line(line)),
+            ("polyline", Geometry::Polyline(polyline.clone())),
+            ("circle", Geometry::Circle(circle)),
+            ("nurbs", Geometry::NurbsCurve(existing_nurbs.clone())),
+            (
+                "point",
+                Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()),
+            ),
+        ];
+        let source_ids = geometries
+            .into_iter()
+            .map(|(name, geometry)| {
+                document
+                    .add_geometry_with_attributes(
+                        geometry,
+                        ObjectAttributes::on_layer(input_layer)
+                            .with_name(name)
+                            .with_object_color(ColorRgb::new(12, 34, 56)),
+                    )
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        let group = document
+            .add_group(
+                Some("Extrusion profiles".to_owned()),
+                source_ids.iter().copied(),
+            )
+            .unwrap();
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "ExtrudeCrv 5 Output=Surface Solid=No")
+            .unwrap();
+        assert_eq!(document.objects().len(), 9);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.group(group).unwrap().members().len(), 5);
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        let outputs = document
+            .objects()
+            .filter(|object| !source_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 4);
+        for output in &outputs {
+            assert!(!document.is_selected(output.id()));
+            assert_eq!(output.attributes().layer_id(), output_layer);
+            assert_eq!(output.attributes().name(), None);
+            assert_eq!(output.attributes().color_source(), ObjectColorSource::Layer);
+            assert_eq!(output.attributes().object_color(), ColorRgb::BLACK);
+        }
+        let surfaces = outputs
+            .iter()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => surface,
+                _ => panic!("ExtrudeCrv must create NURBS surfaces"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(surfaces[0].knots_u(), &[0.0, 0.0, 4.0, 4.0]);
+        assert_eq!(surfaces[0].knots_v(), &[0.0, 0.0, 5.0, 5.0]);
+        assert_eq!(
+            surfaces[0].evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            surfaces[0].evaluate(4.0, 5.0).unwrap(),
+            Point3::try_new(4.0, 0.0, 5.0).unwrap()
+        );
+        assert_eq!(surfaces[1].knots_u(), &[0.0, 0.0, 2.0, 5.0, 5.0]);
+        assert_eq!(surfaces[2].domain_u(), 0.0..=circle.length().unwrap());
+        assert!(surfaces[2].is_rational());
+        assert_eq!(surfaces[3].knots_u(), existing_nurbs.knots());
+        assert_eq!(surfaces[3].domain_u(), 2.0..=7.0);
+        assert_eq!(document.undo_label(), Some("ExtrudeCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.group(group).unwrap().members().len(), 5);
+        registry
+            .execute(
+                &mut document,
+                "ExtrudeCrv 0,0,0 0,3,4 BothSides=Yes DeleteInput=Yes",
+            )
+            .unwrap();
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source_ids[4]]
+        );
+        assert!(
+            source_ids[..4]
+                .iter()
+                .all(|id| document.object(*id).is_none())
+        );
+        assert!(document.is_selected(source_ids[4]));
+        let both_sides_outputs = document
+            .objects()
+            .filter(|object| object.id() != source_ids[4])
+            .collect::<Vec<_>>();
+        assert_eq!(both_sides_outputs.len(), 4);
+        assert!(
+            both_sides_outputs
+                .iter()
+                .all(|object| !document.is_selected(object.id()))
+        );
+        let Geometry::NurbsSurface(both_sides_line) = both_sides_outputs[0].geometry() else {
+            panic!("expected an extruded line surface")
+        };
+        assert_eq!(both_sides_line.domain_v(), 0.0..=10.0);
+        assert_eq!(
+            both_sides_line.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(0.0, -3.0, -4.0).unwrap()
+        );
+        assert_eq!(
+            both_sides_line.evaluate(0.0, 10.0).unwrap(),
+            Point3::try_new(0.0, 3.0, 4.0).unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.group(group).unwrap().members().len(), 5);
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "ExtrudeCrv 0",
+            "ExtrudeCrv 0,0,0 0,0,0",
+            "ExtrudeCrv 5 BothSides=Yes BothSides=No",
+            "ExtrudeCrv 5 DeleteInput=Maybe",
+            "ExtrudeCrv 5 Output=SubD",
+            "ExtrudeCrv 5 Solid=Yes",
+            "ExtrudeCrv 5 extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 5);
+        assert_eq!(document.group(group).unwrap().members().len(), 5);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document
+            .select_objects_direct([source_ids[4]], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtrudeCrv 5"),
+            Err(CommandError::NoExtrudableCurves)
+        ));
+        assert_eq!(document.objects().len(), 5);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

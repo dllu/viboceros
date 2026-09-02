@@ -102,6 +102,11 @@ enum InteractiveCommand {
         origin: Option<Point3>,
         reference: Option<Point3>,
     },
+    ExtrudeCurve {
+        base: Option<Point3>,
+        both_sides: bool,
+        delete_input: bool,
+    },
 }
 
 impl InteractiveCommand {
@@ -128,6 +133,7 @@ impl InteractiveCommand {
             Self::Rotate3D { .. } => "Rotate3D",
             Self::Mirror { .. } => "Mirror",
             Self::Shear { .. } => "Shear",
+            Self::ExtrudeCurve { .. } => "ExtrudeCrv",
         }
     }
 
@@ -306,6 +312,12 @@ impl InteractiveCommand {
             Self::Shear {
                 reference: Some(_), ..
             } => "Shear: pick the target angle in the viewport (Esc to cancel)",
+            Self::ExtrudeCurve { base: None, .. } => {
+                "ExtrudeCrv: pick the direction base point in the viewport (Esc to cancel)"
+            }
+            Self::ExtrudeCurve { base: Some(_), .. } => {
+                "ExtrudeCrv: pick the direction target point in the viewport (Esc to cancel)"
+            }
         }
     }
 
@@ -335,7 +347,8 @@ impl InteractiveCommand {
                 points: [None, _, _],
             }
             | Self::Mirror { start: None }
-            | Self::Shear { origin: None, .. } => None,
+            | Self::Shear { origin: None, .. }
+            | Self::ExtrudeCurve { base: None, .. } => None,
             Self::Line { start }
             | Self::Circle { center: start }
             | Self::Rectangle { first: start }
@@ -343,7 +356,8 @@ impl InteractiveCommand {
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
             | Self::Array { start, .. }
-            | Self::Mirror { start } => start,
+            | Self::Mirror { start }
+            | Self::ExtrudeCurve { base: start, .. } => start,
             Self::Ellipse { center, .. } | Self::Polygon { center, .. } => center,
             Self::Arc {
                 points: [_, Some(point)],
@@ -507,6 +521,39 @@ impl VibocerosApp {
                 }
             }
             InteractiveCommand::Curve { degree, closure }
+        } else if normalized == "extrudecrv" {
+            let mut both_sides = false;
+            let mut delete_input = false;
+            let mut both_sides_seen = false;
+            let mut delete_input_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let parsed = if value.eq_ignore_ascii_case("Yes") {
+                    true
+                } else if value.eq_ignore_ascii_case("No") {
+                    false
+                } else {
+                    return false;
+                };
+                if name.eq_ignore_ascii_case("BothSides") && !both_sides_seen {
+                    both_sides = parsed;
+                    both_sides_seen = true;
+                } else if name.eq_ignore_ascii_case("DeleteInput") && !delete_input_seen {
+                    delete_input = parsed;
+                    delete_input_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::ExtrudeCurve {
+                base: None,
+                both_sides,
+                delete_input,
+            }
         } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
@@ -728,6 +775,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Rotate3D { .. }
                 | InteractiveCommand::Mirror { .. }
                 | InteractiveCommand::Shear { .. }
+                | InteractiveCommand::ExtrudeCurve { .. }
         ) && self.document.selected_object_count() == 0
         {
             self.push_log("Error: no objects are selected".to_owned());
@@ -1318,6 +1366,38 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::ExtrudeCurve {
+                base: None,
+                both_sides,
+                delete_input,
+            } => {
+                let command = InteractiveCommand::ExtrudeCurve {
+                    base: Some(point),
+                    both_sides,
+                    delete_input,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Direction base: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::ExtrudeCurve {
+                base: Some(base),
+                both_sides,
+                delete_input,
+            } => {
+                if base.is_near(point, self.document.tolerance()) {
+                    self.push_log("Error: extrusion direction points must differ".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtrudeCrv {} {} BothSides={} DeleteInput={}",
+                    format_model_point(base),
+                    format_model_point(point),
+                    if both_sides { "Yes" } else { "No" },
+                    if delete_input { "Yes" } else { "No" }
+                ));
+            }
         }
     }
 
@@ -1431,6 +1511,7 @@ impl VibocerosApp {
         let mut shear_clicked = false;
         let mut project_to_cplane_clicked = false;
         let mut to_nurbs_clicked = false;
+        let mut extrude_curve_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
         let selectable_previous = self.document.selectable_previous_object_count();
@@ -1625,6 +1706,10 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("To NURBS"))
                     .on_hover_text("Create exact NURBS copies of supported selected curves")
                     .clicked();
+                extrude_curve_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extrude Curve"))
+                    .on_hover_text("Extrude selected curves along a picked direction")
+                    .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
@@ -1734,6 +1819,8 @@ impl VibocerosApp {
             self.execute_command("ProjectToCPlane");
         } else if to_nurbs_clicked {
             self.execute_command("ToNURBS");
+        } else if extrude_curve_clicked {
+            self.try_start_interactive_command("ExtrudeCrv");
         }
     }
 
@@ -2598,11 +2685,65 @@ mod tests {
             "Rotate3D",
             "Mirror",
             "Shear",
+            "ExtrudeCrv",
         ] {
             assert!(app.try_start_interactive_command(command));
             assert_eq!(app.active_command, None);
             assert!(app.command_log.back().unwrap().contains("no objects"));
         }
+    }
+
+    #[test]
+    fn interactive_curve_extrusion_uses_two_direction_points_and_options() {
+        let mut app = test_app();
+        let source = app
+            .document
+            .add_geometry(Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    app.document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ExtrudeCrv BothSides=Yes DeleteInput=No"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtrudeCurve {
+                base: None,
+                both_sides: true,
+                delete_input: false,
+            })
+        );
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtrudeCurve {
+                base: Some(point(0.0, 0.0, 0.0)),
+                both_sides: true,
+                delete_input: false,
+            })
+        );
+        app.accept_drafting_point(point(0.0, 2.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().len(), 2);
+        assert!(app.document.is_selected(source));
+        let output = app.document.objects().nth(1).unwrap();
+        assert!(!app.document.is_selected(output.id()));
+        let Geometry::NurbsSurface(surface) = output.geometry() else {
+            panic!("expected an extruded NURBS surface")
+        };
+        assert_eq!(surface.domain_v(), 0.0..=4.0);
+        assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), point(0.0, -2.0, 0.0));
+        assert_eq!(surface.evaluate(0.0, 4.0).unwrap(), point(0.0, 2.0, 0.0));
+        assert_eq!(app.document.undo_label(), Some("ExtrudeCrv"));
+        assert!(!app.try_start_interactive_command("ExtrudeCrv BothSides=Maybe"));
     }
 
     #[test]

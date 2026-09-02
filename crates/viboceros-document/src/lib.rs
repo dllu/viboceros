@@ -184,6 +184,15 @@ impl Geometry {
         })
     }
 
+    /// Returns an exact NURBS representation for every supported curve,
+    /// cloning an object that is already a NURBS curve.
+    pub fn nurbs_curve_representation(&self) -> Result<Option<NurbsCurve>, GeometryError> {
+        match self {
+            Self::NurbsCurve(curve) => Ok(Some(curve.clone())),
+            _ => self.converted_to_nurbs_curve(),
+        }
+    }
+
     pub fn transformed(
         &self,
         transform: AffineTransform3,
