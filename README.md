@@ -30,6 +30,7 @@ ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 Sphere 0,0,0 5
+Cylinder 0,0,0 5 10 Solid=No
 Layer New Construction
 Layer Hide Construction
 Layer Show Construction
@@ -172,6 +173,10 @@ domains follow Rhino's chord-length, arc-length, and angular conventions.
 a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
 arguments starts the two-pick viewport workflow.
+`Cylinder` creates the exact open 9-by-2 rational NURBS wall from a center,
+radius (or base-circle point), and signed height. `Axis=` accepts an arbitrary
+axis, while `BothSides=Yes` makes the height symmetric about the base center.
+The current surface document model accepts `Solid=No`; caps await B-rep support.
 `ExtrudeCrv` creates exact rational NURBS surfaces from selected analytic,
 polyline, and NURBS curves. A numeric distance uses World Z; two points define
 an arbitrary direction; entering it without either starts the two-pick viewport

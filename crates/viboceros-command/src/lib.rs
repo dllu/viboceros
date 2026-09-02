@@ -90,6 +90,9 @@ impl CommandRegistry {
             .register(SphereCommand)
             .expect("unique built-in command");
         registry
+            .register(CylinderCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtrudeCurveCommand)
             .expect("unique built-in command");
         registry
@@ -996,6 +999,118 @@ impl Command for SphereCommand {
         let surface = NurbsSurface::try_sphere(frame, radius)?;
         let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
         Ok(format!("Added NURBS sphere {id} (radius {radius:.6})"))
+    }
+}
+
+const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=No]";
+
+struct CylinderCommand;
+
+impl Command for CylinderCommand {
+    fn name(&self) -> &'static str {
+        "Cylinder"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Cyl"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (center, center_consumed) = parse_point(arguments)?;
+        let remaining = &arguments[center_consumed..];
+        let positional_count = remaining
+            .iter()
+            .take_while(|argument| !argument.contains('='))
+            .count();
+        let (numeric_radius, radius_point, height, option_start) = if remaining
+            .first()
+            .is_some_and(|argument| argument.contains(','))
+        {
+            if positional_count != 2 {
+                return Err(CommandError::Usage(CYLINDER_USAGE));
+            }
+            let (point, consumed) = parse_point(remaining)?;
+            debug_assert_eq!(consumed, 1);
+            (None, Some(point), parse_finite_real(remaining[1])?, 2)
+        } else if positional_count == 2 {
+            (
+                Some(parse_finite_real(remaining[0])?),
+                None,
+                parse_finite_real(remaining[1])?,
+                2,
+            )
+        } else if positional_count == 4 {
+            let (point, consumed) = parse_point(remaining)?;
+            debug_assert_eq!(consumed, 3);
+            (None, Some(point), parse_finite_real(remaining[3])?, 4)
+        } else {
+            return Err(CommandError::Usage(CYLINDER_USAGE));
+        };
+
+        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+        let mut both_sides = false;
+        let mut solid = false;
+        let mut axis_seen = false;
+        let mut both_sides_seen = false;
+        let mut solid_seen = false;
+        for argument in &remaining[option_start..] {
+            let Some((name, value)) = argument.split_once('=') else {
+                return Err(CommandError::Usage(CYLINDER_USAGE));
+            };
+            let value = value.trim_start_matches('_');
+            if option_name_eq(name, "Axis") && !axis_seen {
+                let (point, consumed) = parse_point(&[value])?;
+                if consumed != 1 {
+                    return Err(CommandError::Usage(CYLINDER_USAGE));
+                }
+                axis = Vector3::try_from(point.to_array())?;
+                axis_seen = true;
+            } else if option_name_eq(name, "BothSides") && !both_sides_seen {
+                both_sides = parse_yes_no(value).ok_or(CommandError::Usage(CYLINDER_USAGE))?;
+                both_sides_seen = true;
+            } else if option_name_eq(name, "Solid") && !solid_seen {
+                solid = parse_yes_no(value).ok_or(CommandError::Usage(CYLINDER_USAGE))?;
+                solid_seen = true;
+            } else {
+                return Err(CommandError::Usage(CYLINDER_USAGE));
+            }
+        }
+        if solid {
+            return Err(CommandError::SolidPrimitiveUnsupported);
+        }
+
+        let tolerance = document.tolerance();
+        let base_frame = Frame3::try_from_normal(center, axis, tolerance)?;
+        let (frame, radius) = if let Some(point) = radius_point {
+            let radial = center.vector_to(point)?;
+            let axial_distance = radial.dot(base_frame.z_axis().as_vector())?;
+            let axial = base_frame.z_axis().as_vector().scaled(axial_distance)?;
+            let projected = Vector3::try_new(
+                radial.x() - axial.x(),
+                radial.y() - axial.y(),
+                radial.z() - axial.z(),
+            )?;
+            (
+                Frame3::try_from_x_and_normal(center, projected, axis, tolerance)?,
+                projected.length()?,
+            )
+        } else {
+            (
+                base_frame,
+                numeric_radius.expect("numeric and point radius cases are exhaustive"),
+            )
+        };
+        let [start_height, end_height] = if both_sides {
+            let magnitude = height.abs();
+            [-magnitude, magnitude]
+        } else {
+            [0.0, height]
+        };
+        let surface = NurbsSurface::try_cylinder(frame, radius, start_height, end_height)?;
+        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+        Ok(format!(
+            "Added open NURBS cylinder {id} (radius {radius:.6}, heights {start_height:.6} to {end_height:.6})"
+        ))
     }
 }
 
@@ -6737,6 +6852,9 @@ pub enum CommandError {
     #[error("solid curve extrusion requires capped polysurface support")]
     SolidCurveExtrusionUnsupported,
 
+    #[error("solid primitives require capped polysurface support")]
+    SolidPrimitiveUnsupported,
+
     #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
     UnsupportedCurveAlongCurveOutput,
 
@@ -6828,7 +6946,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -6918,6 +7036,66 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Sphere"));
+    }
+
+    #[test]
+    fn cylinder_creates_exact_signed_and_both_sides_surfaces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Cylinder 1,2,3 2.5 -4 Solid=No")
+            .unwrap();
+        let cylinder_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(cylinder_id));
+        let Geometry::NurbsSurface(surface) = document.object(cylinder_id).unwrap().geometry()
+        else {
+            panic!("Cylinder must create a NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), -4.0..=0.0);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            Point3::try_new(3.5, 2.0, -1.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Cylinder"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "_Cyl 1,2,3 4,7,3 4 Axis=0,1,0 BothSides=Yes Solid=No",
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(both_sides) = document.objects().next().unwrap().geometry()
+        else {
+            panic!("Cyl alias must create a NURBS surface")
+        };
+        assert_eq!(both_sides.domain_v(), -4.0..=4.0);
+        assert_eq!(
+            both_sides.evaluate(0.0, -4.0).unwrap(),
+            Point3::try_new(4.0, -2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            both_sides.evaluate(0.0, 4.0).unwrap(),
+            Point3::try_new(4.0, 6.0, 3.0).unwrap()
+        );
+
+        for invalid in [
+            "Cylinder 0,0,0 1 2 Solid=Yes",
+            "Cylinder 0,0,0 1 0",
+            "Cylinder 0,0,0 0 2",
+            "Cylinder 0,0,0 0,0,2 3 Axis=0,0,1",
+            "Cylinder 0,0,0 1 2 Axis=0,0,0",
+            "Cylinder 0,0,0 1 2 BothSides=Maybe",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Cylinder"));
     }
 
     #[test]

@@ -374,6 +374,98 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact open NURBS wall of a right circular cylinder.
+    ///
+    /// U is Rhino/OpenNURBS' four-span rational quadratic circle on
+    /// `[0, 2π]`. V is linear over the increasing signed height interval.
+    /// The supplied frame origin is height zero; reversed endpoints therefore
+    /// preserve the same surface and parameterization.
+    pub fn try_cylinder(
+        frame: Frame3,
+        radius: Real,
+        start_height: Real,
+        end_height: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([radius, start_height, end_height], "cylinder dimensions")?;
+        if radius <= 0.0 || start_height == end_height {
+            return Err(GeometryError::Degenerate {
+                context: "cylinder",
+            });
+        }
+
+        let circle_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let origin = frame.origin().to_array();
+        let x_axis = frame.x_axis().as_vector().to_array();
+        let y_axis = frame.y_axis().as_vector().to_array();
+        let z_axis = frame.z_axis().as_vector().to_array();
+        let [height_start, height_end] = if start_height < end_height {
+            [start_height, end_height]
+        } else {
+            [end_height, start_height]
+        };
+        let mut controls = Vec::with_capacity(18);
+        for height in [height_start, height_end] {
+            for ([x, y], weight) in circle_coordinates.into_iter().zip(circle_weights) {
+                let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                    let radial_coordinate = x.mul_add(x_axis[coordinate], y * y_axis[coordinate]);
+                    radius.mul_add(
+                        radial_coordinate,
+                        height.mul_add(z_axis[coordinate], origin[coordinate]),
+                    )
+                }))?;
+                controls.push(WeightedPoint3::try_new(point, weight)?);
+            }
+        }
+
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let tau = std::f64::consts::TAU;
+        Self::try_new_rational(
+            2,
+            1,
+            9,
+            2,
+            controls,
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                3.0 * half_pi,
+                3.0 * half_pi,
+                tau,
+                tau,
+                tau,
+            ],
+            vec![height_start, height_start, height_end, height_end],
+        )
+    }
+
     /// Constructs an exact rational surface by revolving a NURBS profile.
     ///
     /// U is the quadratic rational revolution direction and V preserves the
@@ -1792,6 +1884,72 @@ mod tests {
         assert!(NurbsSurface::try_sphere(frame, 0.0).is_err());
         assert!(NurbsSurface::try_sphere(frame, -1.0).is_err());
         assert!(NurbsSurface::try_sphere(frame, Real::INFINITY).is_err());
+    }
+
+    #[test]
+    fn exact_cylinder_matches_opennurbs_signed_height_layout() {
+        let center = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            center,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_cylinder(frame, 2.5, 0.0, -4.0).unwrap();
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), -4.0..=0.0);
+        assert_eq!(surface.knots_v(), &[-4.0, -4.0, 0.0, 0.0]);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            point(1.0, 4.5, -1.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().point(),
+            point(-1.5, 4.5, -1.0)
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            point(1.0, 4.5, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 1).unwrap().weight(),
+            std::f64::consts::FRAC_1_SQRT_2
+        );
+
+        for u_index in 0..32 {
+            for v_index in 0..=8 {
+                let u = std::f64::consts::TAU * u_index as Real / 32.0;
+                let v = -4.0 + 4.0 * v_index as Real / 8.0;
+                let point = surface.evaluate(u, v).unwrap();
+                let axial = center
+                    .vector_to(point)
+                    .unwrap()
+                    .dot(frame.z_axis().as_vector())
+                    .unwrap();
+                let axis_point = center
+                    .translated(frame.z_axis().as_vector().scaled(axial).unwrap())
+                    .unwrap();
+                assert!(Tolerance::DEFAULT.approx_eq(point.distance_to(axis_point).unwrap(), 2.5));
+            }
+        }
+        let reversed = NurbsSurface::try_cylinder(frame, 2.5, -4.0, 0.0).unwrap();
+        assert_eq!(surface, reversed);
+        assert!(
+            !surface
+                .tessellate(2, Tolerance::DEFAULT)
+                .unwrap()
+                .triangles()
+                .is_empty()
+        );
+        assert!(NurbsSurface::try_cylinder(frame, 0.0, 0.0, 1.0).is_err());
+        assert!(NurbsSurface::try_cylinder(frame, 1.0, 2.0, 2.0).is_err());
+        assert!(NurbsSurface::try_cylinder(frame, 1.0, 0.0, Real::NAN).is_err());
     }
 
     #[test]
