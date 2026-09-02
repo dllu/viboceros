@@ -33,6 +33,9 @@ pub enum GeometryError {
         actual: usize,
     },
 
+    #[error("a closed control-point curve requires at least three input controls, got {actual}")]
+    InsufficientClosedControlPoints { actual: usize },
+
     #[error(
         "a NURBS direction with this degree and control-point count requires {expected} knots, got {actual}"
     )]

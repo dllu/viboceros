@@ -8,11 +8,12 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveInterpolationOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, Ellipse3, Frame3, GeometryError,
-    InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES,
-    MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure,
-    Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, ControlPointCurveClosure,
+    CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample, Ellipse3, Frame3,
+    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS,
+    MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -675,7 +676,7 @@ impl Command for CopyToLayerCommand {
 
 struct ControlPointCurveCommand;
 
-const CURVE_USAGE: &str = "Curve point1 point2 ... [Degree=1..11]";
+const CURVE_USAGE: &str = "Curve point1 point2 ... [Degree=1..11] [Close=Open|Smooth|Sharp]";
 
 struct CurveCommand;
 
@@ -687,20 +688,37 @@ impl Command for CurveCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let mut control_points = Vec::new();
         let mut requested_degree = 3;
+        let mut closure = ControlPointCurveClosure::Open;
         let mut degree_seen = false;
+        let mut close_seen = false;
         let mut index = 0;
         while index < arguments.len() {
             let argument = arguments[index];
             if let Some((name, value)) = argument.split_once('=') {
                 let value = value.trim_start_matches('_');
-                if !option_name_eq(name, "Degree") || degree_seen {
+                if option_name_eq(name, "Degree") && !degree_seen {
+                    requested_degree = value
+                        .parse::<usize>()
+                        .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?
+                        .clamp(1, MAX_CURVE_COMMAND_DEGREE);
+                    degree_seen = true;
+                } else if option_name_eq(name, "Close") && !close_seen {
+                    closure =
+                        if value.eq_ignore_ascii_case("Open") || value.eq_ignore_ascii_case("No") {
+                            ControlPointCurveClosure::Open
+                        } else if value.eq_ignore_ascii_case("Smooth")
+                            || value.eq_ignore_ascii_case("Yes")
+                        {
+                            ControlPointCurveClosure::Smooth
+                        } else if value.eq_ignore_ascii_case("Sharp") {
+                            ControlPointCurveClosure::Sharp
+                        } else {
+                            return Err(CommandError::Usage(CURVE_USAGE));
+                        };
+                    close_seen = true;
+                } else {
                     return Err(CommandError::Usage(CURVE_USAGE));
                 }
-                requested_degree = value
-                    .parse::<usize>()
-                    .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?
-                    .clamp(1, MAX_CURVE_COMMAND_DEGREE);
-                degree_seen = true;
                 index += 1;
             } else {
                 let (point, consumed) = parse_point(&arguments[index..])?;
@@ -710,11 +728,21 @@ impl Command for CurveCommand {
         }
 
         let control_point_count = control_points.len();
-        let curve = NurbsCurve::try_control_point_curve(requested_degree, control_points)?;
+        let curve = NurbsCurve::try_control_point_curve_with_closure(
+            requested_degree,
+            control_points,
+            closure,
+        )?;
         let degree = curve.degree();
+        let topology = match closure {
+            ControlPointCurveClosure::Open => "",
+            ControlPointCurveClosure::Smooth if curve.is_periodic() => "periodic ",
+            ControlPointCurveClosure::Smooth => "closed ",
+            ControlPointCurveClosure::Sharp => "sharp closed ",
+        };
         let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
         Ok(format!(
-            "Added degree {degree} curve {id} ({control_point_count} control points)"
+            "Added {topology}degree {degree} curve {id} ({control_point_count} control points)"
         ))
     }
 }
@@ -7677,6 +7705,51 @@ mod tests {
     }
 
     #[test]
+    fn curve_supports_smooth_periodic_and_sharp_closed_seams() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let message = registry
+            .execute(
+                &mut document,
+                "Curve Degree=4 Close=Smooth 0,0,0 1,2,.5 4,-1,2 4.5,3,-.5 10,0,1 8,-4,2 2,-3,-1 -2,1,.25",
+            )
+            .unwrap();
+        assert!(message.contains("periodic degree 4 curve"));
+        let Geometry::NurbsCurve(periodic) = document.objects().next().unwrap().geometry() else {
+            panic!("expected a periodic control-point curve")
+        };
+        assert_eq!(periodic.degree(), 4);
+        assert_eq!(periodic.control_points().len(), 12);
+        assert!(periodic.is_periodic());
+        assert!(periodic.is_closed().unwrap());
+
+        let message = registry
+            .execute(
+                &mut document,
+                "Curve Close=Sharp Degree=5 0,0,0 2,3,1 10,0,0",
+            )
+            .unwrap();
+        assert!(message.contains("sharp closed degree 3 curve"));
+        let Geometry::NurbsCurve(sharp) = document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected a sharp closed control-point curve")
+        };
+        assert_eq!(sharp.degree(), 3);
+        assert_eq!(sharp.control_points().len(), 4);
+        assert!(!sharp.is_periodic());
+        assert!(sharp.is_closed().unwrap());
+
+        let message = registry
+            .execute(&mut document, "Curve Degree=1 Close=Smooth 0,0 2,3 10,0")
+            .unwrap();
+        assert!(message.contains("closed degree 1 curve"));
+        let Geometry::NurbsCurve(linear) = document.objects().nth(2).unwrap().geometry() else {
+            panic!("expected a closed degree-one control-point curve")
+        };
+        assert!(linear.is_closed().unwrap());
+        assert!(!linear.is_periodic());
+    }
+
+    #[test]
     fn invalid_curve_arguments_are_atomic() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -7684,6 +7757,9 @@ mod tests {
             "Curve 0,0",
             "Curve 0,0 1,1 Degree=3 Degree=4",
             "Curve 0,0 1,1 Knots=Chord",
+            "Curve 0,0 1,1 2,0 Close=Bad",
+            "Curve 0,0 1,1 Close=Smooth",
+            "Curve 0,0 1,1 2,0 Close=Sharp Close=Smooth",
         ] {
             assert!(registry.execute(&mut document, input).is_err(), "{input}");
             assert_eq!(document.objects().len(), 0);

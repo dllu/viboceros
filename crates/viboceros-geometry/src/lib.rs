@@ -38,7 +38,7 @@ pub use interpolation::{
 pub use line::LineSegment;
 pub use mesh::{MeshFaceExtraction, MeshTopology, TriangleMesh};
 pub use morph::{PointMorph, SurfacePointMorph};
-pub use nurbs::{NurbsCurve, WeightedPoint3};
+pub use nurbs::{ControlPointCurveClosure, NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;

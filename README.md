@@ -131,6 +131,8 @@ Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Curve`,
 points in the viewport; press Enter to finish a polyline or curve. `Curve`
 creates an open control-point curve, defaults to degree three, accepts degrees
 through 11, and lowers the degree when too few controls are supplied.
+`Close=Smooth` creates a periodic seam (degree one remains linear and closed);
+`Close=Sharp` repeats the first control to create a kinked, non-periodic seam.
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.
 It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp

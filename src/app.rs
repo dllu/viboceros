@@ -3,7 +3,9 @@ use std::collections::{BTreeSet, VecDeque};
 use eframe::egui::{self, RichText};
 use viboceros_command::{CommandRegistry, MAX_CURVE_COMMAND_DEGREE};
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
-use viboceros_geometry::{CircularArc3, Ellipse3, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance};
+use viboceros_geometry::{
+    CircularArc3, ControlPointCurveClosure, Ellipse3, MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance,
+};
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
@@ -29,6 +31,7 @@ enum InteractiveCommand {
     Polyline,
     Curve {
         degree: usize,
+        closure: ControlPointCurveClosure,
     },
     InterpCrv,
     Rectangle {
@@ -373,26 +376,41 @@ impl VibocerosApp {
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
         let command = if normalized == "curve" {
-            let degree = match arguments.as_slice() {
-                [] => 3,
-                [option] => {
-                    let Some((name, value)) = option.split_once('=') else {
+            let mut degree = 3;
+            let mut closure = ControlPointCurveClosure::Open;
+            let mut degree_seen = false;
+            let mut close_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Degree") && !degree_seen {
+                    let Ok(parsed) = value.parse::<usize>() else {
                         return false;
                     };
-                    if !name
-                        .trim_start_matches(['_', '-'])
-                        .eq_ignore_ascii_case("Degree")
-                    {
-                        return false;
-                    }
-                    let Ok(degree) = value.trim_start_matches('_').parse::<usize>() else {
-                        return false;
-                    };
-                    degree.clamp(1, MAX_CURVE_COMMAND_DEGREE)
+                    degree = parsed.clamp(1, MAX_CURVE_COMMAND_DEGREE);
+                    degree_seen = true;
+                } else if name.eq_ignore_ascii_case("Close") && !close_seen {
+                    closure =
+                        if value.eq_ignore_ascii_case("Open") || value.eq_ignore_ascii_case("No") {
+                            ControlPointCurveClosure::Open
+                        } else if value.eq_ignore_ascii_case("Smooth")
+                            || value.eq_ignore_ascii_case("Yes")
+                        {
+                            ControlPointCurveClosure::Smooth
+                        } else if value.eq_ignore_ascii_case("Sharp") {
+                            ControlPointCurveClosure::Sharp
+                        } else {
+                            return false;
+                        };
+                    close_seen = true;
+                } else {
+                    return false;
                 }
-                _ => return false,
-            };
-            InteractiveCommand::Curve { degree }
+            }
+            InteractiveCommand::Curve { degree, closure }
         } else if matches!(normalized.as_str(), "polygon" | "poly") {
             let side_count = match arguments.as_slice() {
                 [] => 4,
@@ -1101,10 +1119,17 @@ impl VibocerosApp {
         else {
             return;
         };
-        if self.curve_points.len() < 2 {
+        let minimum_point_count = match command {
+            InteractiveCommand::Curve {
+                closure: ControlPointCurveClosure::Smooth | ControlPointCurveClosure::Sharp,
+                ..
+            } => 3,
+            _ => 2,
+        };
+        if self.curve_points.len() < minimum_point_count {
             self.push_log(format!(
-                "Error: {} requires at least two points",
-                command.name()
+                "Error: {} requires at least {minimum_point_count} points",
+                command.name(),
             ));
             return;
         }
@@ -1116,8 +1141,13 @@ impl VibocerosApp {
             .collect::<Vec<_>>()
             .join(" ");
         let input = match command {
-            InteractiveCommand::Curve { degree } => {
-                format!("Curve {arguments} Degree={degree}")
+            InteractiveCommand::Curve { degree, closure } => {
+                let closure = match closure {
+                    ControlPointCurveClosure::Open => "Open",
+                    ControlPointCurveClosure::Smooth => "Smooth",
+                    ControlPointCurveClosure::Sharp => "Sharp",
+                };
+                format!("Curve {arguments} Degree={degree} Close={closure}")
             }
             _ => format!("{} {arguments}", command.name()),
         };
@@ -1932,7 +1962,10 @@ mod tests {
         assert!(app.try_start_interactive_command("Curve Degree=5"));
         assert_eq!(
             app.active_command,
-            Some(InteractiveCommand::Curve { degree: 5 })
+            Some(InteractiveCommand::Curve {
+                degree: 5,
+                closure: ControlPointCurveClosure::Open,
+            })
         );
 
         let controls = [
@@ -1964,15 +1997,55 @@ mod tests {
         );
         assert_eq!(app.document.undo_label(), Some("Curve"));
 
+        assert!(app.try_start_interactive_command("Curve Close=Smooth Degree=3"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Curve {
+                degree: 3,
+                closure: ControlPointCurveClosure::Smooth,
+            })
+        );
+        let periodic_controls = [
+            point(20.0, 0.0, 0.0),
+            point(22.0, 3.0, 0.0),
+            point(25.0, 0.0, 0.0),
+            point(22.0, -2.0, 0.0),
+        ];
+        for control in &periodic_controls[..2] {
+            app.accept_drafting_point(*control);
+        }
+        app.run_command();
+        assert!(matches!(
+            app.active_command,
+            Some(InteractiveCommand::Curve {
+                closure: ControlPointCurveClosure::Smooth,
+                ..
+            })
+        ));
+        assert_eq!(app.document.objects().len(), 1);
+        for control in &periodic_controls[2..] {
+            app.accept_drafting_point(*control);
+        }
+        app.run_command();
+        let Geometry::NurbsCurve(periodic) = app.document.objects().nth(1).unwrap().geometry()
+        else {
+            panic!("expected an interactive periodic control-point curve")
+        };
+        assert!(periodic.is_periodic());
+        assert!(periodic.is_closed().unwrap());
+
         assert!(app.try_start_interactive_command("Curve Degree=15"));
         assert_eq!(
             app.active_command,
-            Some(InteractiveCommand::Curve { degree: 11 })
+            Some(InteractiveCommand::Curve {
+                degree: 11,
+                closure: ControlPointCurveClosure::Open,
+            })
         );
         app.accept_drafting_point(point(20.0, 0.0, 0.0));
         app.cancel_interactive_command(false);
         assert!(app.curve_points.is_empty());
-        assert_eq!(app.document.objects().len(), 1);
+        assert_eq!(app.document.objects().len(), 2);
     }
 
     #[test]

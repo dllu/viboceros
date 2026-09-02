@@ -10,6 +10,17 @@ pub(crate) const CURVE_COINCIDENCE_ABSOLUTE: Real = 2.328_306_436_538_696_3e-10;
 const CURVE_COINCIDENCE_RELATIVE: Real = 2.273_736_754_432_320_6e-13;
 const OPENNURBS_SQRT_EPSILON: Real = 1.490_116_119_385e-8;
 
+/// Topology requested for a Rhino `Curve`-style control-point curve.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ControlPointCurveClosure {
+    /// Leaves the natural endpoints independent.
+    Open,
+    /// Repeats controls and uniform knots to form a smooth periodic seam.
+    Smooth,
+    /// Repeats only the first control to form a non-periodic kinked seam.
+    Sharp,
+}
+
 /// A Euclidean control point paired with a strictly positive rational weight.
 ///
 /// Positive weights make every evaluated point a convex combination of its
@@ -103,29 +114,59 @@ impl NurbsCurve {
         requested_degree: usize,
         control_points: Vec<Point3>,
     ) -> Result<Self, GeometryError> {
+        Self::try_control_point_curve_with_closure(
+            requested_degree,
+            control_points,
+            ControlPointCurveClosure::Open,
+        )
+    }
+
+    /// Constructs a Rhino `Curve`-style control-point curve with the requested
+    /// seam topology.
+    pub fn try_control_point_curve_with_closure(
+        requested_degree: usize,
+        mut control_points: Vec<Point3>,
+        closure: ControlPointCurveClosure,
+    ) -> Result<Self, GeometryError> {
         if requested_degree == 0 {
             return Err(GeometryError::InvalidDegree);
         }
-        if control_points.len() < 2 {
-            return Err(GeometryError::InsufficientControlPoints {
-                degree: 1,
-                required: 2,
-                actual: control_points.len(),
-            });
+
+        if closure != ControlPointCurveClosure::Open
+            && control_points.len() > 1
+            && control_points.first() == control_points.last()
+        {
+            control_points.pop();
         }
 
-        let degree = requested_degree.min(control_points.len() - 1);
-        let domain_end = control_polygon_length(&control_points)?;
-        if domain_end <= 0.0 {
-            return Err(GeometryError::Degenerate {
-                context: "control-point curve",
-            });
+        match closure {
+            ControlPointCurveClosure::Open => {
+                if control_points.len() < 2 {
+                    return Err(GeometryError::InsufficientControlPoints {
+                        degree: 1,
+                        required: 2,
+                        actual: control_points.len(),
+                    });
+                }
+                let degree = requested_degree.min(control_points.len() - 1);
+                clamped_control_point_curve(degree, control_points)
+            }
+            ControlPointCurveClosure::Smooth | ControlPointCurveClosure::Sharp => {
+                if control_points.len() < 3 {
+                    return Err(GeometryError::InsufficientClosedControlPoints {
+                        actual: control_points.len(),
+                    });
+                }
+                if closure == ControlPointCurveClosure::Smooth {
+                    let degree = requested_degree.min(control_points.len());
+                    periodic_control_point_curve(degree, control_points)
+                } else {
+                    control_points.push(control_points[0]);
+                    let degree = requested_degree.min(control_points.len() - 1);
+                    clamped_control_point_curve(degree, control_points)
+                }
+            }
         }
-        let knots = clamped_uniform_knots(degree, control_points.len())?
-            .into_iter()
-            .map(|knot| knot * domain_end)
-            .collect();
-        Self::try_new(degree, control_points, knots)
     }
 
     #[inline]
@@ -438,6 +479,62 @@ fn control_polygon_length(control_points: &[Point3]) -> Result<Real, GeometryErr
     let length = sum + correction;
     require_finite([length], "control polygon length")?;
     Ok(length)
+}
+
+fn clamped_control_point_curve(
+    degree: usize,
+    control_points: Vec<Point3>,
+) -> Result<NurbsCurve, GeometryError> {
+    let domain_end = control_polygon_length(&control_points)?;
+    if domain_end <= 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "control-point curve",
+        });
+    }
+    let knots = clamped_uniform_knots(degree, control_points.len())?
+        .into_iter()
+        .map(|knot| knot * domain_end)
+        .collect();
+    NurbsCurve::try_new(degree, control_points, knots)
+}
+
+fn periodic_control_point_curve(
+    degree: usize,
+    unique_control_points: Vec<Point3>,
+) -> Result<NurbsCurve, GeometryError> {
+    let unique_count = unique_control_points.len();
+    let control_count =
+        unique_count
+            .checked_add(degree)
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "periodic control-point count overflowed usize",
+            })?;
+    let lead_count = (degree - 1) / 2;
+    let tail_count = degree - lead_count;
+    let mut control_points = Vec::with_capacity(control_count);
+    control_points.extend_from_slice(&unique_control_points[unique_count - lead_count..]);
+    control_points.extend_from_slice(&unique_control_points);
+    control_points.extend_from_slice(&unique_control_points[..tail_count]);
+
+    let domain_end = control_polygon_length(&control_points)?;
+    if domain_end <= 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "control-point curve",
+        });
+    }
+    let step = domain_end / unique_count as Real;
+    require_finite([step], "periodic control-point curve knot step")?;
+    let knot_count = control_count
+        .checked_add(degree)
+        .and_then(|count| count.checked_add(1))
+        .ok_or(GeometryError::InvalidKnotVector {
+            context: "periodic control-point curve knot count overflowed usize",
+        })?;
+    let knots = (0..knot_count)
+        .map(|index| (index as Real - degree as Real) * step)
+        .collect::<Vec<_>>();
+    require_finite(knots.iter().copied(), "periodic control-point curve knots")?;
+    NurbsCurve::try_new(degree, control_points, knots)
 }
 
 pub(crate) fn bspline_basis_values(
@@ -854,6 +951,152 @@ mod tests {
                 context: "control-point curve"
             })
         ));
+    }
+
+    #[test]
+    fn smooth_control_point_curve_matches_rhino_periodic_layout() {
+        let unique = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 2.0, 0.5).unwrap(),
+            Point3::try_new(4.0, -1.0, 2.0).unwrap(),
+            Point3::try_new(4.5, 3.0, -0.5).unwrap(),
+            Point3::try_new(10.0, 0.0, 1.0).unwrap(),
+            Point3::try_new(8.0, -4.0, 2.0).unwrap(),
+            Point3::try_new(2.0, -3.0, -1.0).unwrap(),
+            Point3::try_new(-2.0, 1.0, 0.25).unwrap(),
+        ];
+        let curve = NurbsCurve::try_control_point_curve_with_closure(
+            4,
+            unique.clone(),
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert_eq!(curve.degree(), 4);
+        assert!(curve.is_periodic());
+        assert!(curve.is_closed().unwrap());
+        let expected_controls = unique[7..]
+            .iter()
+            .chain(&unique)
+            .chain(&unique[..3])
+            .copied()
+            .collect::<Vec<_>>();
+        assert_eq!(
+            curve
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            expected_controls
+        );
+        assert!((*curve.domain().end() - 46.426_262_339_780_31).abs() <= 2.0e-14);
+        let short_knots = &curve.knots()[1..curve.knots().len() - 1];
+        for (actual, expected) in short_knots.iter().zip([
+            -17.409_848_377_417_617,
+            -11.606_565_584_945_077,
+            -5.803_282_792_472_538_5,
+            0.0,
+            5.803_282_792_472_538_5,
+            11.606_565_584_945_077,
+            17.409_848_377_417_617,
+            23.213_131_169_890_154,
+            29.016_413_962_362_69,
+            34.819_696_754_835_235,
+            40.622_979_547_307_77,
+            46.426_262_339_780_31,
+            52.229_545_132_252_845,
+            58.032_827_924_725_38,
+            63.836_110_717_197_926,
+        ]) {
+            assert!((*actual - expected).abs() <= 3.0e-14);
+        }
+
+        let lowered = NurbsCurve::try_control_point_curve_with_closure(
+            11,
+            unique.clone(),
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert_eq!(lowered.degree(), 8);
+        assert_eq!(lowered.control_points().len(), 16);
+        assert_eq!(lowered.control_points()[0].point(), unique[5]);
+        assert!(lowered.is_periodic());
+        assert!((*lowered.domain().end() - 70.187_373_289_648_95).abs() <= 3.0e-14);
+    }
+
+    #[test]
+    fn closed_control_point_curves_match_rhino_degree_lowering_and_seams() {
+        let points = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 3.0, 1.0).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+        ];
+        let smooth = NurbsCurve::try_control_point_curve_with_closure(
+            5,
+            points.clone(),
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert_eq!(smooth.degree(), 3);
+        assert!(smooth.is_periodic());
+        assert_eq!(
+            smooth
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                points[2], points[0], points[1], points[2], points[0], points[1]
+            ]
+        );
+        assert!((*smooth.domain().end() - 36.085_640_040_590_51).abs() <= 2.0e-14);
+
+        let sharp = NurbsCurve::try_control_point_curve_with_closure(
+            5,
+            points.clone(),
+            ControlPointCurveClosure::Sharp,
+        )
+        .unwrap();
+        assert_eq!(sharp.degree(), 3);
+        assert!(!sharp.is_periodic());
+        assert!(sharp.is_closed().unwrap());
+        assert_eq!(
+            sharp
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![points[0], points[1], points[2], points[0]]
+        );
+        assert!((*sharp.domain().end() - 22.343_982_653_816_568).abs() <= 2.0e-14);
+
+        let linear = NurbsCurve::try_control_point_curve_with_closure(
+            1,
+            points.clone(),
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert_eq!(linear.degree(), 1);
+        assert!(!linear.is_periodic());
+        assert!(linear.is_closed().unwrap());
+
+        let mut explicitly_closed = points.clone();
+        explicitly_closed.push(points[0]);
+        let normalized = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            explicitly_closed,
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert_eq!(normalized, smooth);
+
+        assert_eq!(
+            NurbsCurve::try_control_point_curve_with_closure(
+                3,
+                points[..2].to_vec(),
+                ControlPointCurveClosure::Sharp,
+            ),
+            Err(GeometryError::InsufficientClosedControlPoints { actual: 2 })
+        );
     }
 
     #[test]
