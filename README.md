@@ -120,6 +120,7 @@ ExtractPt OutputLayer=Input Output=Points
 ExtractPt OutputLayer=Input Output=PointCloud
 ExtractIsocurve 2,1,0 Direction=Both
 ConvertToSingleSpans Direction=Both DeleteInput=No
+ConvertToBeziers DeleteInput=No
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
@@ -229,6 +230,11 @@ exact knot spans in `Direction=U`, `V`, or `Both`. Rational weights, source
 parameter values, attributes, and group membership are preserved. Inputs are
 retained by default; `DeleteInput=Yes` replaces them in one undoable edit, and
 surfaces already single-span in the requested direction are left untouched.
+`ConvertToBeziers` decomposes selected NURBS curves and untrimmed NURBS surfaces
+exactly at every nonempty knot span. It preserves rational weights, source
+parameters, attributes, and group membership. Inputs are retained by default;
+`DeleteInput=Yes` replaces them with fresh pieces in one undoable edit. A
+single-span input still produces a fresh Bezier object.
 `Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
 (or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
 while `BothSides=Yes` makes the height symmetric about the base center.
