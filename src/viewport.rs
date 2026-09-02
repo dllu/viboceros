@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
 };
@@ -9,7 +11,7 @@ use viboceros_drafting::{
 };
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real,
-    Tolerance, TriangleMesh, UnitVector3,
+    Tolerance, TriangleMesh,
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
@@ -21,7 +23,11 @@ const SURFACE_SAMPLES_PER_SPAN: usize = 8;
 const SELECTED_COLOR: Color32 = Color32::from_rgb(255, 145, 0);
 const LOCKED_COLOR: Color32 = Color32::from_gray(145);
 const GRID_SPACING: Real = 1.0;
-const PERSPECTIVE_CAMERA_DISTANCE: Real = 20.0;
+const DEFAULT_PERSPECTIVE_CAMERA_DISTANCE: Real = 50.0;
+const MIN_PERSPECTIVE_CAMERA_DISTANCE: Real = 0.01;
+const MAX_PERSPECTIVE_CAMERA_DISTANCE: Real = 1.0e9;
+const PERSPECTIVE_VERTICAL_FOV_RADIANS: Real = 35.0 * std::f64::consts::PI / 180.0;
+const SMOOTH_SHADING_COSINE: Real = std::f64::consts::FRAC_1_SQRT_2;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ViewKind {
@@ -167,6 +173,7 @@ pub struct Viewport {
     pan: Vec2,
     orbit_yaw: Real,
     orbit_pitch: Real,
+    perspective_camera_distance: Real,
     selection_drag_start: Option<Pos2>,
 }
 
@@ -185,6 +192,7 @@ impl Viewport {
             pan: Vec2::ZERO,
             orbit_yaw: -std::f64::consts::FRAC_PI_4,
             orbit_pitch: std::f64::consts::FRAC_PI_6,
+            perspective_camera_distance: DEFAULT_PERSPECTIVE_CAMERA_DISTANCE,
             selection_drag_start: None,
         }
     }
@@ -347,26 +355,36 @@ impl Viewport {
 
     fn project(&self, point: Point3, rect: Rect) -> Option<Pos2> {
         let origin = self.world_origin(rect);
-        let (horizontal, vertical) = match self.kind {
-            ViewKind::Top => (point.x(), point.y()),
-            ViewKind::Front => (point.x(), point.z()),
-            ViewKind::Right => (point.y(), point.z()),
+        let (horizontal_pixels, vertical_pixels) = match self.kind {
+            ViewKind::Top => (
+                point.x() * f64::from(self.pixels_per_unit),
+                point.y() * f64::from(self.pixels_per_unit),
+            ),
+            ViewKind::Front => (
+                point.x() * f64::from(self.pixels_per_unit),
+                point.z() * f64::from(self.pixels_per_unit),
+            ),
+            ViewKind::Right => (
+                point.y() * f64::from(self.pixels_per_unit),
+                point.z() * f64::from(self.pixels_per_unit),
+            ),
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let relative = NaVector3::new(point.x(), point.y(), point.z());
-                let depth = PERSPECTIVE_CAMERA_DISTANCE + relative.dot(&forward);
+                let camera = -forward * self.perspective_camera_distance;
+                let relative = NaVector3::new(point.x(), point.y(), point.z()) - camera;
+                let depth = relative.dot(&forward);
                 if !depth.is_finite() || depth <= 1.0e-6 {
                     return None;
                 }
-                let perspective = PERSPECTIVE_CAMERA_DISTANCE / depth;
+                let focal_length = self.perspective_focal_length_pixels(rect);
                 (
-                    relative.dot(&right) * perspective,
-                    relative.dot(&up) * perspective,
+                    relative.dot(&right) / depth * focal_length,
+                    relative.dot(&up) / depth * focal_length,
                 )
             }
         };
-        let x = f64::from(origin.x) + horizontal * f64::from(self.pixels_per_unit);
-        let y = f64::from(origin.y) - vertical * f64::from(self.pixels_per_unit);
+        let x = f64::from(origin.x) + horizontal_pixels;
+        let y = f64::from(origin.y) - vertical_pixels;
         if !x.is_finite()
             || !y.is_finite()
             || x.abs() > f64::from(f32::MAX)
@@ -379,18 +397,25 @@ impl Viewport {
 
     fn unproject(&self, position: Pos2, rect: Rect, elevation: Real) -> Option<Point3> {
         let origin = self.world_origin(rect);
-        let scale = Real::from(self.pixels_per_unit);
-        let horizontal = Real::from(position.x - origin.x) / scale;
-        let vertical = Real::from(origin.y - position.y) / scale;
         match self.kind {
-            ViewKind::Top => Point3::try_new(horizontal, vertical, elevation).ok(),
-            ViewKind::Front => Point3::try_new(horizontal, elevation, vertical).ok(),
-            ViewKind::Right => Point3::try_new(elevation, horizontal, vertical).ok(),
+            ViewKind::Top | ViewKind::Front | ViewKind::Right => {
+                let scale = Real::from(self.pixels_per_unit);
+                let horizontal = Real::from(position.x - origin.x) / scale;
+                let vertical = Real::from(origin.y - position.y) / scale;
+                match self.kind {
+                    ViewKind::Top => Point3::try_new(horizontal, vertical, elevation).ok(),
+                    ViewKind::Front => Point3::try_new(horizontal, elevation, vertical).ok(),
+                    ViewKind::Right => Point3::try_new(elevation, horizontal, vertical).ok(),
+                    ViewKind::Perspective => unreachable!(),
+                }
+            }
             ViewKind::Perspective => {
                 let (right, up, forward) = self.perspective_basis();
-                let camera = -forward * PERSPECTIVE_CAMERA_DISTANCE;
-                let ray =
-                    right * horizontal + up * vertical + forward * PERSPECTIVE_CAMERA_DISTANCE;
+                let camera = -forward * self.perspective_camera_distance;
+                let focal_length = self.perspective_focal_length_pixels(rect);
+                let horizontal = Real::from(position.x - origin.x) / focal_length;
+                let vertical = Real::from(origin.y - position.y) / focal_length;
+                let ray = forward + right * horizontal + up * vertical;
                 if !ray.z.is_finite() || ray.z.abs() <= 1.0e-12 {
                     return None;
                 }
@@ -417,8 +442,41 @@ impl Viewport {
         (right, up, forward)
     }
 
+    fn perspective_focal_length_pixels(&self, rect: Rect) -> Real {
+        let viewport_height = Real::from(rect.height().max(1.0));
+        viewport_height / (2.0 * (PERSPECTIVE_VERTICAL_FOV_RADIANS / 2.0).tan())
+    }
+
+    fn pixels_per_model_unit_at_origin(&self, rect: Rect) -> f32 {
+        match self.kind {
+            ViewKind::Perspective => {
+                (self.perspective_focal_length_pixels(rect) / self.perspective_camera_distance)
+                    as f32
+            }
+            ViewKind::Top | ViewKind::Front | ViewKind::Right => self.pixels_per_unit,
+        }
+    }
+
     fn zoom_by(&mut self, factor: f32, pointer: Option<Pos2>, rect: Rect) {
         if !factor.is_finite() || factor <= 0.0 {
+            return;
+        }
+        if self.kind == ViewKind::Perspective {
+            let anchor = pointer.and_then(|pointer| self.unproject(pointer, rect, 0.0));
+            let old_distance = self.perspective_camera_distance;
+            let new_distance = (old_distance / Real::from(factor)).clamp(
+                MIN_PERSPECTIVE_CAMERA_DISTANCE,
+                MAX_PERSPECTIVE_CAMERA_DISTANCE,
+            );
+            if new_distance == old_distance {
+                return;
+            }
+            self.perspective_camera_distance = new_distance;
+            if let (Some(pointer), Some(anchor)) = (pointer, anchor)
+                && let Some(projected) = self.project(anchor, rect)
+            {
+                self.pan += pointer - projected;
+            }
             return;
         }
         let old_scale = self.pixels_per_unit;
@@ -480,7 +538,7 @@ impl Viewport {
                 orthogonal_track(
                     raw_point,
                     anchor,
-                    Real::from(TRACK_CAPTURE_PIXELS / self.pixels_per_unit),
+                    Real::from(TRACK_CAPTURE_PIXELS / self.pixels_per_model_unit_at_origin(rect)),
                 )
                 .ok()
                 .flatten()
@@ -989,11 +1047,12 @@ impl Viewport {
     }
 
     fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
-        let half_count = ((rect.width().max(rect.height()) / self.pixels_per_unit * 1.5).ceil()
+        let pixels_per_model_unit = self.pixels_per_model_unit_at_origin(rect);
+        let half_count = ((rect.width().max(rect.height()) / pixels_per_model_unit * 1.5).ceil()
             as i32)
             .clamp(10, 250);
         let extent = Real::from(half_count) * GRID_SPACING;
-        if self.pixels_per_unit * GRID_SPACING as f32 >= 8.0 {
+        if pixels_per_model_unit * GRID_SPACING as f32 >= 8.0 {
             let grid_stroke = Stroke::new(1.0, Color32::from_gray(218));
             for index in -half_count..=half_count {
                 if index == 0 {
@@ -1258,34 +1317,7 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            for triangle_index in 0..mesh.triangles().len() {
-                let Some(points) = mesh.triangle_points(triangle_index) else {
-                    continue;
-                };
-                let [Some(first), Some(second), Some(third)] =
-                    points.map(|point| self.project(point, rect))
-                else {
-                    continue;
-                };
-                let fill = match self.display_mode {
-                    DisplayMode::Wireframe => Color32::TRANSPARENT,
-                    DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
-                        |_| blend_toward_white(style.color, 0.35),
-                        |normal| shaded_color(style.color, normal),
-                    ),
-                    DisplayMode::Ghosted => Color32::from_rgba_unmultiplied(
-                        style.color.r(),
-                        style.color.g(),
-                        style.color.b(),
-                        35,
-                    ),
-                };
-                painter.add(egui::Shape::convex_polygon(
-                    vec![first, second, third],
-                    fill,
-                    Stroke::NONE,
-                ));
-            }
+            self.paint_mesh_faces(painter, rect, &mesh, style.color);
         }
 
         let stroke = Stroke::new(style.width, style.color);
@@ -1307,34 +1339,7 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            for triangle_index in 0..mesh.triangles().len() {
-                let Some(points) = mesh.triangle_points(triangle_index) else {
-                    continue;
-                };
-                let [Some(first), Some(second), Some(third)] =
-                    points.map(|point| self.project(point, rect))
-                else {
-                    continue;
-                };
-                let fill = match self.display_mode {
-                    DisplayMode::Wireframe => Color32::TRANSPARENT,
-                    DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
-                        |_| blend_toward_white(style.color, 0.35),
-                        |normal| shaded_color(style.color, normal),
-                    ),
-                    DisplayMode::Ghosted => Color32::from_rgba_unmultiplied(
-                        style.color.r(),
-                        style.color.g(),
-                        style.color.b(),
-                        35,
-                    ),
-                };
-                painter.add(egui::Shape::convex_polygon(
-                    vec![first, second, third],
-                    fill,
-                    Stroke::NONE,
-                ));
-            }
+            self.paint_mesh_faces(painter, rect, &mesh, style.color);
         }
         let stroke = Stroke::new(style.width, style.color);
         if let Ok(curves) = brep.wireframe_curves(style.wire_density, tolerance) {
@@ -1354,30 +1359,7 @@ impl Viewport {
         tolerance: Tolerance,
     ) {
         let edge = Stroke::new(width, color);
-        for triangle_index in 0..mesh.triangles().len() {
-            let Some(points) = mesh.triangle_points(triangle_index) else {
-                continue;
-            };
-            let projected = points.map(|point| self.project(point, rect));
-            let [Some(first), Some(second), Some(third)] = projected else {
-                continue;
-            };
-            let fill = match self.display_mode {
-                DisplayMode::Wireframe => Color32::TRANSPARENT,
-                DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
-                    |_| blend_toward_white(color, 0.35),
-                    |normal| shaded_color(color, normal),
-                ),
-                DisplayMode::Ghosted => {
-                    Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35)
-                }
-            };
-            painter.add(egui::Shape::convex_polygon(
-                vec![first, second, third],
-                fill,
-                Stroke::NONE,
-            ));
-        }
+        self.paint_mesh_faces(painter, rect, mesh, color);
         if let Ok(lines) = mesh.wireframe_lines(tolerance) {
             for line in lines {
                 if let (Some(start), Some(end)) = (
@@ -1386,6 +1368,79 @@ impl Viewport {
                 ) {
                     painter.line_segment([start, end], edge);
                 }
+            }
+        }
+    }
+
+    fn paint_mesh_faces(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        mesh: &TriangleMesh,
+        color: Color32,
+    ) {
+        if self.display_mode == DisplayMode::Wireframe {
+            return;
+        }
+
+        let corner_normals =
+            (self.display_mode == DisplayMode::Shaded).then(|| smooth_corner_normals(mesh));
+        let ghosted = Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35);
+        let mut projected_triangles = Vec::with_capacity(mesh.triangles().len());
+        for triangle_index in 0..mesh.triangles().len() {
+            let Some(points) = mesh.triangle_points(triangle_index) else {
+                continue;
+            };
+            let [Some(first), Some(second), Some(third)] =
+                points.map(|point| self.project(point, rect))
+            else {
+                continue;
+            };
+            let colors = corner_normals.as_ref().map_or([ghosted; 3], |normals| {
+                normals[triangle_index].map(|normal| shaded_color(color, normal))
+            });
+            let depth = points
+                .into_iter()
+                .map(|point| self.view_depth(point))
+                .sum::<Real>()
+                / 3.0;
+            projected_triangles.push((depth, [first, second, third], colors));
+        }
+
+        // egui intentionally has no depth buffer. Painter ordering therefore
+        // has to put farther facets first so the visible side of a closed
+        // surface wins over its back side.
+        projected_triangles.sort_by(|left, right| right.0.total_cmp(&left.0));
+        let mut painted = egui::Mesh::default();
+        for (_, points, colors) in projected_triangles {
+            let Ok(first_index) = u32::try_from(painted.vertices.len()) else {
+                break;
+            };
+            let Some(second_index) = first_index.checked_add(1) else {
+                break;
+            };
+            let Some(third_index) = first_index.checked_add(2) else {
+                break;
+            };
+            for (point, vertex_color) in points.into_iter().zip(colors) {
+                painted.colored_vertex(point, vertex_color);
+            }
+            painted.add_triangle(first_index, second_index, third_index);
+        }
+        if !painted.is_empty() {
+            painter.add(egui::Shape::mesh(painted));
+        }
+    }
+
+    fn view_depth(&self, point: Point3) -> Real {
+        match self.kind {
+            ViewKind::Top => -point.z(),
+            ViewKind::Front => point.y(),
+            ViewKind::Right => -point.x(),
+            ViewKind::Perspective => {
+                let (_, _, forward) = self.perspective_basis();
+                let camera = -forward * self.perspective_camera_distance;
+                (NaVector3::new(point.x(), point.y(), point.z()) - camera).dot(&forward)
             }
         }
     }
@@ -1635,12 +1690,68 @@ fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) 
     Color32::from_rgb(color.red, color.green, color.blue)
 }
 
-fn shaded_color(color: Color32, normal: UnitVector3) -> Color32 {
-    // A fixed camera-space key light keeps the placeholder top viewport
-    // deterministic while making face orientation legible.
+fn smooth_corner_normals(mesh: &TriangleMesh) -> Vec<[NaVector3<Real>; 3]> {
+    let fallback = NaVector3::new(0.0, 0.0, 1.0);
+    let face_normals = (0..mesh.triangles().len())
+        .map(|index| {
+            mesh.face_normal(index)
+                .map(|normal| NaVector3::new(normal.x(), normal.y(), normal.z()))
+                .unwrap_or(fallback)
+        })
+        .collect::<Vec<_>>();
+
+    // Surface tessellation intentionally duplicates vertices at knot-span
+    // boundaries. Group exact coincident samples so continuous spans shade as
+    // one surface, then use the crease angle below to keep analytic caps and
+    // other genuinely sharp joins hard.
+    let mut incident_faces: HashMap<[u64; 3], Vec<usize>> = HashMap::new();
+    for (face_index, triangle) in mesh.triangles().iter().enumerate() {
+        for &vertex_index in triangle {
+            let point = mesh.vertices()[vertex_index as usize];
+            incident_faces
+                .entry(point_position_key(point))
+                .or_default()
+                .push(face_index);
+        }
+    }
+
+    mesh.triangles()
+        .iter()
+        .enumerate()
+        .map(|(face_index, triangle)| {
+            let reference = face_normals[face_index];
+            triangle.map(|vertex_index| {
+                let point = mesh.vertices()[vertex_index as usize];
+                let mut sum = NaVector3::zeros();
+                for &incident in &incident_faces[&point_position_key(point)] {
+                    let candidate = face_normals[incident];
+                    if reference.dot(&candidate) >= SMOOTH_SHADING_COSINE {
+                        sum += candidate;
+                    }
+                }
+                sum.try_normalize(Real::EPSILON).unwrap_or(reference)
+            })
+        })
+        .collect()
+}
+
+fn point_position_key(point: Point3) -> [u64; 3] {
+    [point.x(), point.y(), point.z()].map(|value| {
+        if value == 0.0 {
+            0.0_f64.to_bits()
+        } else {
+            value.to_bits()
+        }
+    })
+}
+
+fn shaded_color(color: Color32, normal: NaVector3<Real>) -> Color32 {
+    // Absolute diffuse response gives both sides the same material instead of
+    // making back-facing (or oppositely wound) surface patches look inverted.
     let illumination = normal
-        .x()
-        .mul_add(-0.35, normal.y().mul_add(-0.45, normal.z() * 0.82))
+        .x
+        .mul_add(-0.35, normal.y.mul_add(-0.45, normal.z * 0.82))
+        .abs()
         .clamp(0.0, 1.0) as f32;
     blend_toward_white(color, 0.35 + 0.55 * illumination)
 }
@@ -1974,14 +2085,32 @@ mod tests {
     }
 
     #[test]
-    fn shaded_faces_respond_to_the_fixed_light_direction() {
-        let up =
-            UnitVector3::try_new(0.0, 0.0, 1.0, viboceros_geometry::Tolerance::DEFAULT).unwrap();
-        let down =
-            UnitVector3::try_new(0.0, 0.0, -1.0, viboceros_geometry::Tolerance::DEFAULT).unwrap();
+    fn shaded_faces_are_lit_the_same_from_either_side() {
+        let up = NaVector3::new(0.0, 0.0, 1.0);
+        let down = NaVector3::new(0.0, 0.0, -1.0);
         let lit = shaded_color(Color32::BLACK, up);
-        let unlit = shaded_color(Color32::BLACK, down);
-        assert!(lit.r() > unlit.r());
+        let reverse_lit = shaded_color(Color32::BLACK, down);
+        assert_eq!(lit, reverse_lit);
+    }
+
+    #[test]
+    fn smooth_shading_keeps_ninety_degree_mesh_edges_hard() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ],
+            vec![[0, 1, 2], [0, 1, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let normals = smooth_corner_normals(&mesh);
+        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].z, 1.0));
+        assert!(Tolerance::DEFAULT.approx_eq(normals[0][0].y, 0.0));
+        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].y, -1.0));
+        assert!(Tolerance::DEFAULT.approx_eq(normals[1][0].z, 0.0));
     }
 
     #[test]
@@ -2024,6 +2153,31 @@ mod tests {
         viewport.zoom_by(2.0, Some(screen), rect);
         let after_zoom = viewport.project(model, rect).unwrap();
         assert!((after_zoom - screen).length() <= f32::EPSILON);
+    }
+
+    #[test]
+    fn perspective_zoom_dollies_the_camera_without_changing_the_lens() {
+        let mut viewport = Viewport::new(ViewKind::Perspective);
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let model = point(5.0, 0.0, 0.0);
+        let origin = viewport.world_origin(rect);
+        let before = viewport.project(model, rect).unwrap();
+        let focal_length = viewport.perspective_focal_length_pixels(rect);
+        let camera_distance = viewport.perspective_camera_distance;
+
+        viewport.zoom_by(0.5, None, rect);
+
+        let after = viewport.project(model, rect).unwrap();
+        assert_eq!(viewport.perspective_focal_length_pixels(rect), focal_length);
+        assert_eq!(viewport.perspective_camera_distance, camera_distance * 2.0);
+        assert!((after - origin).length() < (before - origin).length());
+
+        let on_construction_plane = point(3.25, -2.75, 0.0);
+        let projected = viewport.project(on_construction_plane, rect).unwrap();
+        let round_trip = viewport.unproject(projected, rect, 0.0).unwrap();
+        assert!((round_trip.x() - on_construction_plane.x()).abs() < 1.0e-5);
+        assert!((round_trip.y() - on_construction_plane.y()).abs() < 1.0e-5);
+        assert!(round_trip.z().abs() < 1.0e-5);
     }
 
     #[test]
