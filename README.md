@@ -32,6 +32,7 @@ InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Box 0,0,0 8,5,0 3
+BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
@@ -196,6 +197,13 @@ ellipsoid; entering it without arguments starts the four-pick viewport workflow.
 World XY. The height may be a signed number or a point, and the result is one
 closed B-rep with eight shared vertices, twelve shared edges, six outward
 bilinear faces, and exact rational parameter-space trims.
+`BoundingBox` creates one cumulative World-coordinate enclosure of the selected
+objects by default; `Cumulative=No` creates one per object. `Output=` supports
+exact B-rep solids, shared-vertex triangle meshes, six grouped rectangle curves,
+or report-only `None`. World-plane selections produce a rectangle or mesh plane.
+`CoordinateSystem=CPlane` is accepted and currently shares the World XY basis;
+analytic bounds are tight, while NURBS bounds conservatively enclose their
+positive-weight control geometry.
 `Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
 (or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
 while `BothSides=Yes` makes the height symmetric about the base center.

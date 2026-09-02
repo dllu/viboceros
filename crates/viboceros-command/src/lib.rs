@@ -96,6 +96,9 @@ impl CommandRegistry {
             .register(BoxCommand)
             .expect("unique built-in command");
         registry
+            .register(BoundingBoxCommand)
+            .expect("unique built-in command");
+        registry
             .register(SphereCommand)
             .expect("unique built-in command");
         registry
@@ -1184,6 +1187,305 @@ impl Command for BoxCommand {
         let id = document.add_geometry(Geometry::Brep(brep))?;
         Ok(format!("Added closed B-rep box {id}"))
     }
+}
+
+const BOUNDING_BOX_USAGE: &str = "BoundingBox [CoordinateSystem=World|CPlane] [Cumulative=Yes|No] [Output=Solids|Meshes|Curves|None]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum BoundingBoxCoordinateSystem {
+    World,
+    ConstructionPlane,
+}
+
+impl BoundingBoxCoordinateSystem {
+    const fn label(self) -> &'static str {
+        match self {
+            Self::World => "World",
+            Self::ConstructionPlane => "CPlane",
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum BoundingBoxOutput {
+    Solids,
+    Meshes,
+    Curves,
+    None,
+}
+
+struct BoundingBoxOptions {
+    coordinate_system: BoundingBoxCoordinateSystem,
+    cumulative: bool,
+    output: BoundingBoxOutput,
+}
+
+struct StagedBoundingBox {
+    geometries: Vec<Geometry>,
+    group_geometries: bool,
+}
+
+struct BoundingBoxCommand;
+
+impl Command for BoundingBoxCommand {
+    fn name(&self) -> &'static str {
+        "BoundingBox"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["BBox"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_bounding_box_options(arguments)?;
+        let selected = document.selected_objects().collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let bounds = if options.cumulative {
+            let first = selected[0].geometry().bounds();
+            vec![selected[1..].iter().try_fold(first, |bounds, object| {
+                bounds.union(object.geometry().bounds())
+            })?]
+        } else {
+            selected
+                .iter()
+                .map(|object| object.geometry().bounds())
+                .collect()
+        };
+        let reports = bounds
+            .iter()
+            .enumerate()
+            .map(|(index, bounds)| bounding_box_report(index, *bounds))
+            .collect::<Result<Vec<_>, _>>()?;
+        if options.output == BoundingBoxOutput::None {
+            return Ok(format!(
+                "{} bounding box(es) in {} coordinates: {}",
+                bounds.len(),
+                options.coordinate_system.label(),
+                reports.join("; ")
+            ));
+        }
+
+        let staged = bounds
+            .iter()
+            .map(|bounds| stage_bounding_box(*bounds, options.output, document.tolerance()))
+            .collect::<Result<Vec<_>, _>>()?;
+        let mut object_count = 0_usize;
+        let mut group_count = 0_usize;
+        for staged_box in staged {
+            let mut ids = Vec::with_capacity(staged_box.geometries.len());
+            for geometry in staged_box.geometries {
+                ids.push(document.add_geometry(geometry)?);
+                object_count += 1;
+            }
+            if staged_box.group_geometries {
+                let name = document.next_unused_group_name();
+                document.add_group(Some(name), ids)?;
+                group_count += 1;
+            }
+        }
+        Ok(format!(
+            "Created {object_count} bounding-box object(s) for {} {} bound(s){}: {}",
+            bounds.len(),
+            options.coordinate_system.label(),
+            if group_count == 0 {
+                String::new()
+            } else {
+                format!(" in {group_count} group(s)")
+            },
+            reports.join("; ")
+        ))
+    }
+}
+
+fn parse_bounding_box_options(arguments: &[&str]) -> Result<BoundingBoxOptions, CommandError> {
+    let mut coordinate_system = None;
+    let mut cumulative = None;
+    let mut output = None;
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(BOUNDING_BOX_USAGE));
+        };
+        if option_name_eq(name, "CoordinateSystem") && coordinate_system.is_none() {
+            coordinate_system = if value.eq_ignore_ascii_case("World") {
+                Some(BoundingBoxCoordinateSystem::World)
+            } else if value.eq_ignore_ascii_case("CPlane") {
+                Some(BoundingBoxCoordinateSystem::ConstructionPlane)
+            } else {
+                return Err(CommandError::Usage(BOUNDING_BOX_USAGE));
+            };
+        } else if option_name_eq(name, "Cumulative") && cumulative.is_none() {
+            cumulative = Some(parse_yes_no(value).ok_or(CommandError::Usage(BOUNDING_BOX_USAGE))?);
+        } else if option_name_eq(name, "Output") && output.is_none() {
+            output = if value.eq_ignore_ascii_case("Solids") || value.eq_ignore_ascii_case("Solid")
+            {
+                Some(BoundingBoxOutput::Solids)
+            } else if value.eq_ignore_ascii_case("Meshes") || value.eq_ignore_ascii_case("Mesh") {
+                Some(BoundingBoxOutput::Meshes)
+            } else if value.eq_ignore_ascii_case("Curves") || value.eq_ignore_ascii_case("Curve") {
+                Some(BoundingBoxOutput::Curves)
+            } else if value.eq_ignore_ascii_case("None") {
+                Some(BoundingBoxOutput::None)
+            } else {
+                return Err(CommandError::Usage(BOUNDING_BOX_USAGE));
+            };
+        } else {
+            return Err(CommandError::Usage(BOUNDING_BOX_USAGE));
+        }
+    }
+    Ok(BoundingBoxOptions {
+        // The current construction plane is World XY, so both accepted
+        // coordinate-system choices intentionally share the same basis.
+        coordinate_system: coordinate_system.unwrap_or(BoundingBoxCoordinateSystem::World),
+        cumulative: cumulative.unwrap_or(true),
+        output: output.unwrap_or(BoundingBoxOutput::Solids),
+    })
+}
+
+fn stage_bounding_box(
+    bounds: BoundingBox3,
+    output: BoundingBoxOutput,
+    tolerance: Tolerance,
+) -> Result<StagedBoundingBox, CommandError> {
+    let extents = bounds.min().vector_to(bounds.max())?.to_array();
+    let varying_axes = extents
+        .iter()
+        .enumerate()
+        .filter_map(|(axis, extent)| (*extent > tolerance.absolute()).then_some(axis))
+        .collect::<Vec<_>>();
+    match varying_axes.as_slice() {
+        [_, _, _] => stage_three_dimensional_bounding_box(bounds, output, tolerance),
+        [first, second] => {
+            let rectangle = bounding_rectangle(bounds, [*first, *second], tolerance)?;
+            let geometry = if output == BoundingBoxOutput::Meshes {
+                Geometry::Mesh(TriangleMesh::try_new(
+                    rectangle.vertices()[..4].to_vec(),
+                    vec![[0, 1, 2], [0, 2, 3]],
+                    tolerance,
+                )?)
+            } else {
+                Geometry::Polyline(rectangle)
+            };
+            Ok(StagedBoundingBox {
+                geometries: vec![geometry],
+                group_geometries: false,
+            })
+        }
+        _ => Err(CommandError::DegenerateBoundingBox),
+    }
+}
+
+fn stage_three_dimensional_bounding_box(
+    bounds: BoundingBox3,
+    output: BoundingBoxOutput,
+    tolerance: Tolerance,
+) -> Result<StagedBoundingBox, CommandError> {
+    let corners = bounding_box_corners(bounds)?;
+    let geometries = match output {
+        BoundingBoxOutput::Solids => {
+            let extents = bounds.min().vector_to(bounds.max())?;
+            let frame = Frame3::try_from_directions(
+                bounds.min(),
+                Vector3::try_new(1.0, 0.0, 0.0)?,
+                Vector3::try_new(0.0, 1.0, 0.0)?,
+                tolerance,
+            )?;
+            vec![Geometry::Brep(Brep::try_box(
+                frame,
+                [[0.0, extents.x()], [0.0, extents.y()], [0.0, extents.z()]],
+                tolerance,
+            )?)]
+        }
+        BoundingBoxOutput::Meshes => vec![Geometry::Mesh(TriangleMesh::try_new(
+            corners.to_vec(),
+            vec![
+                [0, 2, 1],
+                [1, 2, 3],
+                [4, 5, 6],
+                [5, 7, 6],
+                [0, 1, 5],
+                [0, 5, 4],
+                [2, 6, 7],
+                [2, 7, 3],
+                [0, 4, 6],
+                [0, 6, 2],
+                [1, 3, 7],
+                [1, 7, 5],
+            ],
+            tolerance,
+        )?)],
+        BoundingBoxOutput::Curves => [
+            [0, 1, 3, 2, 0],
+            [4, 5, 7, 6, 4],
+            [0, 1, 5, 4, 0],
+            [2, 3, 7, 6, 2],
+            [0, 2, 6, 4, 0],
+            [1, 3, 7, 5, 1],
+        ]
+        .into_iter()
+        .map(|indices| {
+            Polyline3::try_new(indices.map(|index| corners[index]).to_vec(), tolerance)
+                .map(Geometry::Polyline)
+        })
+        .collect::<Result<Vec<_>, _>>()?,
+        BoundingBoxOutput::None => unreachable!("report-only output is handled before staging"),
+    };
+    Ok(StagedBoundingBox {
+        group_geometries: output == BoundingBoxOutput::Curves,
+        geometries,
+    })
+}
+
+fn bounding_box_corners(bounds: BoundingBox3) -> Result<[Point3; 8], GeometryError> {
+    let min = bounds.min();
+    let max = bounds.max();
+    Ok([
+        min,
+        Point3::try_new(max.x(), min.y(), min.z())?,
+        Point3::try_new(min.x(), max.y(), min.z())?,
+        Point3::try_new(max.x(), max.y(), min.z())?,
+        Point3::try_new(min.x(), min.y(), max.z())?,
+        Point3::try_new(max.x(), min.y(), max.z())?,
+        Point3::try_new(min.x(), max.y(), max.z())?,
+        max,
+    ])
+}
+
+fn bounding_rectangle(
+    bounds: BoundingBox3,
+    axes: [usize; 2],
+    tolerance: Tolerance,
+) -> Result<Polyline3, GeometryError> {
+    let min = bounds.min().to_array();
+    let max = bounds.max().to_array();
+    let mut first = min;
+    first[axes[0]] = max[axes[0]];
+    let mut opposite = first;
+    opposite[axes[1]] = max[axes[1]];
+    let mut second = min;
+    second[axes[1]] = max[axes[1]];
+    Polyline3::try_new(
+        vec![
+            bounds.min(),
+            Point3::try_from(first)?,
+            Point3::try_from(opposite)?,
+            Point3::try_from(second)?,
+            bounds.min(),
+        ],
+        tolerance,
+    )
+}
+
+fn bounding_box_report(index: usize, bounds: BoundingBox3) -> Result<String, GeometryError> {
+    let size = bounds.min().vector_to(bounds.max())?;
+    Ok(format!(
+        "#{} min {} max {} size {}",
+        index + 1,
+        format_point(bounds.min()),
+        format_point(bounds.max()),
+        format_vector(size)
+    ))
 }
 
 struct SphereCommand;
@@ -7325,6 +7627,9 @@ pub enum CommandError {
     #[error("the two Box base corners must lie on the same World XY plane")]
     BoxBaseCornersNotCoplanar,
 
+    #[error("BoundingBox requires extents in at least two coordinate directions")]
+    DegenerateBoundingBox,
+
     #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
     UnsupportedCurveAlongCurveOutput,
 
@@ -7418,7 +7723,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -10129,6 +10434,153 @@ mod tests {
             );
             assert_eq!(document.objects().len(), 0);
         }
+    }
+
+    #[test]
+    fn bounding_box_creates_solid_mesh_and_grouped_curve_enclosures_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 1,2,3 2").unwrap();
+        registry.execute(&mut document, "Point 5,-2,9").unwrap();
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        registry.execute(&mut document, "Layer New Bounds").unwrap();
+        let output_layer = document.current_layer_id();
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry.execute(&mut document, "BBox").unwrap();
+        assert!(message.contains("#1 min -1.000000,-2.000000,3.000000"));
+        assert!(message.contains("max 5.000000,4.000000,9.000000"));
+        assert_eq!(document.objects().len(), 3);
+        let solid = document.objects().last().unwrap();
+        assert_eq!(solid.attributes().layer_id(), output_layer);
+        assert!(!document.is_selected(solid.id()));
+        let Geometry::Brep(solid) = solid.geometry() else {
+            panic!("BoundingBox must create a solid B-rep by default")
+        };
+        assert!(solid.is_solid());
+        assert_eq!(
+            solid.bounds().min(),
+            Point3::try_new(-1.0, -2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            solid.bounds().max(),
+            Point3::try_new(5.0, 4.0, 9.0).unwrap()
+        );
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        assert_eq!(document.undo_label(), Some("BoundingBox"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        let history = document.undo_label().map(str::to_owned);
+        let report = registry
+            .execute(&mut document, "BoundingBox Output=None")
+            .unwrap();
+        assert!(report.contains("size 6.000000,6.000000,6.000000"));
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry
+            .execute(
+                &mut document,
+                "BoundingBox CoordinateSystem=CPlane Output=Meshes",
+            )
+            .unwrap();
+        let Geometry::Mesh(mesh) = document.objects().last().unwrap().geometry() else {
+            panic!("BoundingBox Output=Meshes must create a mesh")
+        };
+        assert_eq!(mesh.vertices().len(), 8);
+        assert_eq!(mesh.triangles().len(), 12);
+        assert!(mesh.topology().is_solid());
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "BoundingBox Output=Curves")
+            .unwrap();
+        assert_eq!(document.objects().len(), 8);
+        assert_eq!(document.groups().len(), 1);
+        let group = document.groups().next().unwrap();
+        assert_eq!(group.members().len(), 6);
+        assert!(group.members().all(|id| {
+            matches!(document.object(id).unwrap().geometry(), Geometry::Polyline(polyline) if polyline.is_closed())
+                && !document.is_selected(id)
+        }));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 0);
+
+        for invalid in [
+            "BoundingBox Output=SubD",
+            "BoundingBox Cumulative=Maybe",
+            "BoundingBox CoordinateSystem=Object",
+            "BoundingBox Output=Solids Output=Meshes",
+            "BoundingBox extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.objects().len(), 2);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+    }
+
+    #[test]
+    fn bounding_box_handles_planar_individual_meshes_and_report_only_points() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Rectangle 0,0,2 3,4,2")
+            .unwrap();
+        registry
+            .execute(&mut document, "Rectangle 10,20,7 12,25,7")
+            .unwrap();
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "BoundingBox Cumulative=No Output=Meshes CoordinateSystem=World",
+            )
+            .unwrap();
+        let outputs = document.objects().skip(2).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for output in outputs {
+            let Geometry::Mesh(mesh) = output.geometry() else {
+                panic!("a planar mesh bounding box must be a mesh plane")
+            };
+            assert_eq!(mesh.vertices().len(), 4);
+            assert_eq!(mesh.triangles().len(), 2);
+            assert!(!mesh.topology().is_closed());
+            assert!(!document.is_selected(output.id()));
+        }
+
+        let mut point_document = Document::default();
+        registry
+            .execute(&mut point_document, "Point 1,2,3")
+            .unwrap();
+        registry.execute(&mut point_document, "SelAll").unwrap();
+        let history = point_document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut point_document, "BoundingBox"),
+            Err(CommandError::DegenerateBoundingBox)
+        ));
+        assert_eq!(point_document.objects().len(), 1);
+        assert_eq!(point_document.undo_label(), history.as_deref());
+        let report = registry
+            .execute(&mut point_document, "BBox Output=None")
+            .unwrap();
+        assert!(report.contains("size 0.000000,0.000000,0.000000"));
+        assert_eq!(point_document.undo_label(), history.as_deref());
     }
 
     #[test]

@@ -1799,6 +1799,7 @@ impl VibocerosApp {
         let mut length_clicked = false;
         let mut area_clicked = false;
         let mut volume_clicked = false;
+        let mut bounding_box_clicked = false;
         let mut move_clicked = false;
         let mut copy_clicked = false;
         let mut scale_clicked = false;
@@ -1968,11 +1969,15 @@ impl VibocerosApp {
                     .clicked();
                 area_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Area"))
-                    .on_hover_text("Measure selected planar or mesh area")
+                    .on_hover_text("Measure selected planar, surface, B-rep, or mesh area")
                     .clicked();
                 volume_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Volume"))
-                    .on_hover_text("Measure signed volume of selected closed meshes")
+                    .on_hover_text("Measure signed volume of selected closed meshes or B-reps")
+                    .clicked();
+                bounding_box_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Bounding Box"))
+                    .on_hover_text("Create one World-coordinate enclosure for the selection")
                     .clicked();
                 move_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Move"))
@@ -2131,6 +2136,8 @@ impl VibocerosApp {
             self.execute_command("Area");
         } else if volume_clicked {
             self.execute_command("Volume");
+        } else if bounding_box_clicked {
+            self.execute_command("BoundingBox");
         } else if move_clicked {
             self.try_start_interactive_command("Move");
         } else if copy_clicked {
