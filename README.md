@@ -37,6 +37,7 @@ PlanarSrf DeleteInput=No
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 DupBorder OutputLayer=Current
+DupFaceBorder Faces=2,0 OutputLayer=Input
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
@@ -224,6 +225,14 @@ omitted. B-reps preserve each exact naked edge, while mesh edges are welded by
 exact location into boundary polylines. Multi-edge borders are grouped until
 the document gains an exact polycurve primitive. Results use the current layer
 and become selected by default; `OutputLayer=Input` uses each source layer.
+`DupFaceBorder` duplicates the exact non-seam border of the nearest selected
+surface or B-rep face, or accepts ordered zero-based `Faces=0,2`/`Faces=All`
+selectors. Omit the selector for a one-pick viewport workflow. Linear edge
+chains become one closed polyline; curved multi-edge chains retain exact NURBS
+segments in a group until polycurves are available. Holes and disconnected
+borders remain separate, singular and seam trims are omitted, and fresh
+selected results default to the current layer (`OutputLayer=Input` is also
+supported).
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

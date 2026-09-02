@@ -103,6 +103,9 @@ impl CommandRegistry {
             .register(DuplicateBorderCommand)
             .expect("unique built-in command");
         registry
+            .register(DuplicateFaceBorderCommand)
+            .expect("unique built-in command");
+        registry
             .register(SphereCommand)
             .expect("unique built-in command");
         registry
@@ -1491,7 +1494,7 @@ impl Command for BoundingBoxCommand {
 
 const DUPLICATE_BORDER_USAGE: &str = "DupBorder [OutputLayer=Current|Input]";
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum DuplicateBorderOutputLayer {
     Current,
     Input,
@@ -3360,27 +3363,53 @@ enum ExtractSurfaceOutputLayer {
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-enum ExtractSurfaceFaceSelection {
+enum SurfaceFaceIndices {
     All,
     Indices(Vec<usize>),
 }
 
 #[derive(Clone, Debug, PartialEq)]
-enum ExtractSurfaceSelection {
+enum SurfaceFaceSelection {
     Point(Point3),
-    Faces(ExtractSurfaceFaceSelection),
+    Faces(SurfaceFaceIndices),
+}
+
+#[derive(Clone, Copy)]
+enum SurfaceFaceCommand {
+    ExtractSurface,
+    DuplicateFaceBorder,
+}
+
+impl SurfaceFaceCommand {
+    fn face_index_out_of_range(self, face: usize, face_count: usize) -> CommandError {
+        match self {
+            Self::ExtractSurface => {
+                CommandError::ExtractSurfaceFaceIndexOutOfRange { face, face_count }
+            }
+            Self::DuplicateFaceBorder => {
+                CommandError::DuplicateFaceBorderFaceIndexOutOfRange { face, face_count }
+            }
+        }
+    }
+
+    fn no_face_at_location(self) -> CommandError {
+        match self {
+            Self::ExtractSurface => CommandError::NoExtractableSurfaces,
+            Self::DuplicateFaceBorder => CommandError::NoDuplicateFaceBorders,
+        }
+    }
 }
 
 #[derive(Clone, Debug, PartialEq)]
 struct ExtractSurfaceOptions {
-    selection: ExtractSurfaceSelection,
+    selection: SurfaceFaceSelection,
     copy: bool,
     output_layer: ExtractSurfaceOutputLayer,
 }
 
 struct ExtractSurfaceCommand;
 
-struct ExtractSurfaceSource {
+struct SurfaceFaceSource {
     id: ObjectId,
     geometry: Geometry,
     attributes: ObjectAttributes,
@@ -3413,7 +3442,7 @@ impl Command for ExtractSurfaceCommand {
                 ) {
                     return Err(CommandError::UnsupportedExtractSurfaceGeometry);
                 }
-                Ok(ExtractSurfaceSource {
+                Ok(SurfaceFaceSource {
                     id: object.id(),
                     geometry: object.geometry().clone(),
                     attributes: object.attributes().clone(),
@@ -3424,8 +3453,12 @@ impl Command for ExtractSurfaceCommand {
             return Err(CommandError::NoObjectsSelected);
         }
 
-        let selections =
-            selected_extract_surface_faces(&sources, &options.selection, document.tolerance())?;
+        let selections = selected_surface_faces(
+            &sources,
+            &options.selection,
+            document.tolerance(),
+            SurfaceFaceCommand::ExtractSurface,
+        )?;
         let mut output_count = 0_usize;
         let mut plans = Vec::with_capacity(selections.len());
         for (source_index, face_indices) in selections {
@@ -3510,25 +3543,23 @@ impl Command for ExtractSurfaceCommand {
     }
 }
 
-fn selected_extract_surface_faces(
-    sources: &[ExtractSurfaceSource],
-    selection: &ExtractSurfaceSelection,
+fn selected_surface_faces(
+    sources: &[SurfaceFaceSource],
+    selection: &SurfaceFaceSelection,
     tolerance: Tolerance,
+    command: SurfaceFaceCommand,
 ) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
     match selection {
-        ExtractSurfaceSelection::Faces(selection) => sources
+        SurfaceFaceSelection::Faces(selection) => sources
             .iter()
             .enumerate()
             .map(|(source_index, source)| {
                 let face_count = extract_surface_face_count(&source.geometry);
                 let face_indices = match selection {
-                    ExtractSurfaceFaceSelection::All => (0..face_count).collect(),
-                    ExtractSurfaceFaceSelection::Indices(indices) => {
+                    SurfaceFaceIndices::All => (0..face_count).collect(),
+                    SurfaceFaceIndices::Indices(indices) => {
                         if let Some(&face) = indices.iter().find(|&&face| face >= face_count) {
-                            return Err(CommandError::ExtractSurfaceFaceIndexOutOfRange {
-                                face,
-                                face_count,
-                            });
+                            return Err(command.face_index_out_of_range(face, face_count));
                         }
                         indices.clone()
                     }
@@ -3536,7 +3567,7 @@ fn selected_extract_surface_faces(
                 Ok((source_index, face_indices))
             })
             .collect(),
-        ExtractSurfaceSelection::Point(point) => {
+        SurfaceFaceSelection::Point(point) => {
             let mut best: Option<(Real, usize, usize)> = None;
             for (source_index, source) in sources.iter().enumerate() {
                 let candidate = match &source.geometry {
@@ -3555,7 +3586,7 @@ fn selected_extract_surface_faces(
                                 .map(|distance| (distance, face))
                         })
                         .transpose()?,
-                    _ => unreachable!("ExtractSrf sources were validated above"),
+                    _ => unreachable!("surface-face sources were validated above"),
                 };
                 let Some((distance, face)) = candidate else {
                     continue;
@@ -3565,7 +3596,7 @@ fn selected_extract_surface_faces(
                 }
             }
             let Some((_, source, face)) = best else {
-                return Err(CommandError::NoExtractableSurfaces);
+                return Err(command.no_face_at_location());
             };
             Ok(vec![(source, vec![face])])
         }
@@ -3628,24 +3659,7 @@ fn parse_extract_surface_arguments(
             && face_selection.is_none()
         {
             let value = value.trim_start_matches('_');
-            face_selection = Some(if value.eq_ignore_ascii_case("All") {
-                ExtractSurfaceFaceSelection::All
-            } else {
-                let indices = value
-                    .split(',')
-                    .map(|index| {
-                        index
-                            .parse::<usize>()
-                            .map_err(|_| CommandError::Usage(EXTRACT_SURFACE_USAGE))
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
-                if indices.is_empty()
-                    || indices.iter().copied().collect::<BTreeSet<_>>().len() != indices.len()
-                {
-                    return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
-                }
-                ExtractSurfaceFaceSelection::Indices(indices)
-            });
+            face_selection = Some(parse_surface_face_indices(value, EXTRACT_SURFACE_USAGE)?);
         } else {
             return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
         }
@@ -3654,15 +3668,258 @@ fn parse_extract_surface_arguments(
 
     let selection = if let Some(face_selection) = face_selection {
         require_consumed(&positional, 0, EXTRACT_SURFACE_USAGE)?;
-        ExtractSurfaceSelection::Faces(face_selection)
+        SurfaceFaceSelection::Faces(face_selection)
     } else {
         let (point, consumed) = parse_point(&positional)?;
         require_consumed(&positional, consumed, EXTRACT_SURFACE_USAGE)?;
-        ExtractSurfaceSelection::Point(point)
+        SurfaceFaceSelection::Point(point)
     };
     Ok(ExtractSurfaceOptions {
         selection,
         copy,
+        output_layer,
+    })
+}
+
+fn parse_surface_face_indices(
+    value: &str,
+    usage: &'static str,
+) -> Result<SurfaceFaceIndices, CommandError> {
+    let value = value.trim_start_matches('_');
+    if value.eq_ignore_ascii_case("All") {
+        return Ok(SurfaceFaceIndices::All);
+    }
+    let indices = value
+        .split(',')
+        .map(|index| {
+            index
+                .parse::<usize>()
+                .map_err(|_| CommandError::Usage(usage))
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    if indices.is_empty() || indices.iter().copied().collect::<BTreeSet<_>>().len() != indices.len()
+    {
+        return Err(CommandError::Usage(usage));
+    }
+    Ok(SurfaceFaceIndices::Indices(indices))
+}
+
+const DUPLICATE_FACE_BORDER_USAGE: &str =
+    "DupFaceBorder (point|Faces=All|Faces=0,2,...) [OutputLayer=Current|Input]";
+
+#[derive(Clone, Debug, PartialEq)]
+struct DuplicateFaceBorderOptions {
+    selection: SurfaceFaceSelection,
+    output_layer: DuplicateBorderOutputLayer,
+}
+
+struct DuplicateFaceBorderCommand;
+
+impl Command for DuplicateFaceBorderCommand {
+    fn name(&self) -> &'static str {
+        "DupFaceBorder"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["DuplicateFaceBorder"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_duplicate_face_border_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                if !matches!(
+                    object.geometry(),
+                    Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                ) {
+                    return Err(CommandError::UnsupportedDuplicateFaceBorderGeometry);
+                }
+                Ok(SurfaceFaceSource {
+                    id: object.id(),
+                    geometry: object.geometry().clone(),
+                    attributes: object.attributes().clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let selections = selected_surface_faces(
+            &sources,
+            &options.selection,
+            document.tolerance(),
+            SurfaceFaceCommand::DuplicateFaceBorder,
+        )?;
+        let current_layer = document.current_layer_id();
+        let mut staged = Vec::<(LayerId, Vec<Vec<Geometry>>)>::new();
+        let mut output_count = 0_usize;
+        let mut border_count = 0_usize;
+        for (source_index, faces) in selections {
+            let source = &sources[source_index];
+            let mut source_borders = Vec::new();
+            for face in faces {
+                let components = match &source.geometry {
+                    Geometry::NurbsSurface(surface) => {
+                        debug_assert_eq!(face, 0);
+                        let mut components = surface.natural_boundary_curve_loops()?;
+                        components.reverse();
+                        for component in &mut components {
+                            if component.len() > 1 {
+                                component.rotate_right(1);
+                            }
+                        }
+                        components
+                    }
+                    Geometry::Brep(brep) => brep.face_boundary_curve_components(face)?,
+                    _ => unreachable!("surface-face sources were validated above"),
+                };
+                for component in components {
+                    let geometries =
+                        stage_duplicate_face_border_component(component, document.tolerance())?;
+                    output_count = output_count
+                        .checked_add(geometries.len())
+                        .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
+                        .ok_or_else(|| too_many_span_outputs("DupFaceBorder"))?;
+                    border_count += 1;
+                    source_borders.push(geometries);
+                }
+            }
+            if !source_borders.is_empty() {
+                let layer = match options.output_layer {
+                    DuplicateBorderOutputLayer::Current => current_layer,
+                    DuplicateBorderOutputLayer::Input => source.attributes.layer_id(),
+                };
+                staged.push((layer, source_borders));
+            }
+        }
+        if staged.is_empty() {
+            return Err(CommandError::NoDuplicateFaceBorders);
+        }
+
+        let source_count = staged.len();
+        let mut output_ids = Vec::with_capacity(output_count);
+        let mut grouped_count = 0_usize;
+        for (layer, borders) in staged {
+            for border in borders {
+                let mut border_ids = Vec::with_capacity(border.len());
+                for geometry in border {
+                    let id = document.add_geometry_with_attributes(
+                        geometry,
+                        ObjectAttributes::on_layer(layer),
+                    )?;
+                    border_ids.push(id);
+                    output_ids.push(id);
+                }
+                if border_ids.len() > 1 {
+                    document.add_group(None, border_ids)?;
+                    grouped_count += 1;
+                }
+            }
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Duplicated {output_count} curve object(s) in {border_count} face border(s) from {source_count} object(s){}",
+            if grouped_count == 0 {
+                String::new()
+            } else {
+                format!("; grouped {grouped_count} multi-edge border(s)")
+            }
+        ))
+    }
+}
+
+fn stage_duplicate_face_border_component(
+    curves: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+) -> Result<Vec<Geometry>, GeometryError> {
+    debug_assert!(!curves.is_empty());
+    if curves.len() > 1
+        && curves
+            .iter()
+            .all(|curve| curve.degree() == 1 && curve.control_points().len() == 2)
+    {
+        let endpoints = curves
+            .iter()
+            .map(|curve| {
+                Ok([
+                    curve.evaluate(*curve.domain().start())?,
+                    curve.evaluate(*curve.domain().end())?,
+                ])
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if endpoints.windows(2).all(|pair| pair[0][1] == pair[1][0]) {
+            let mut vertices = Vec::with_capacity(endpoints.len() + 1);
+            vertices.push(endpoints[0][0]);
+            vertices.extend(endpoints.into_iter().map(|points| points[1]));
+            if let Ok(polyline) = Polyline3::try_new(vertices, tolerance) {
+                return Ok(vec![Geometry::Polyline(polyline)]);
+            }
+        }
+    }
+    Ok(curves.into_iter().map(Geometry::NurbsCurve).collect())
+}
+
+fn parse_duplicate_face_border_arguments(
+    arguments: &[&str],
+) -> Result<DuplicateFaceBorderOptions, CommandError> {
+    let mut output_layer = DuplicateBorderOutputLayer::Current;
+    let mut face_selection = None;
+    let mut output_layer_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "OutputLayer")
+            || option_name_eq(argument, "Faces")
+            || option_name_eq(argument, "FaceIndices")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if option_name_eq(name, "OutputLayer") && !output_layer_seen {
+            let value = value.trim_start_matches('_');
+            output_layer = if value.eq_ignore_ascii_case("Current") {
+                DuplicateBorderOutputLayer::Current
+            } else if value.eq_ignore_ascii_case("Input") {
+                DuplicateBorderOutputLayer::Input
+            } else {
+                return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
+            };
+            output_layer_seen = true;
+        } else if (option_name_eq(name, "Faces") || option_name_eq(name, "FaceIndices"))
+            && face_selection.is_none()
+        {
+            face_selection = Some(parse_surface_face_indices(
+                value,
+                DUPLICATE_FACE_BORDER_USAGE,
+            )?);
+        } else {
+            return Err(CommandError::Usage(DUPLICATE_FACE_BORDER_USAGE));
+        }
+        index += consumed;
+    }
+    let selection = if let Some(face_selection) = face_selection {
+        require_consumed(&positional, 0, DUPLICATE_FACE_BORDER_USAGE)?;
+        SurfaceFaceSelection::Faces(face_selection)
+    } else {
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, DUPLICATE_FACE_BORDER_USAGE)?;
+        SurfaceFaceSelection::Point(point)
+    };
+    Ok(DuplicateFaceBorderOptions {
+        selection,
         output_layer,
     })
 }
@@ -9371,6 +9628,17 @@ pub enum CommandError {
     #[error("none of the selected objects has an open border")]
     NoDuplicateBorders,
 
+    #[error("DupFaceBorder supports selected NURBS surfaces and B-reps only")]
+    UnsupportedDuplicateFaceBorderGeometry,
+
+    #[error(
+        "DupFaceBorder face index {face} is outside the selected object's face count {face_count}"
+    )]
+    DuplicateFaceBorderFaceIndexOutOfRange { face: usize, face_count: usize },
+
+    #[error("the requested face has no duplicable border")]
+    NoDuplicateFaceBorders,
+
     #[error(
         "ExtractControlPolygon supports selected lines, analytic curves, polylines, NURBS curves, and untrimmed NURBS surfaces only"
     )]
@@ -9641,7 +9909,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupFaceBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -13507,6 +13775,346 @@ mod tests {
             assert_eq!(document.objects().len(), 2);
             assert_eq!(document.undo_label(), history.as_deref());
         }
+    }
+
+    #[test]
+    fn duplicate_face_border_preserves_face_order_and_rhino_output_attributes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Input").unwrap();
+        let input_layer = document.current_layer_id();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::Brep(box_brep),
+                ObjectAttributes::on_layer(input_layer)
+                    .with_name("Colored shell")
+                    .with_object_color(ColorRgb::new(17, 83, 149)),
+            )
+            .unwrap();
+        let source_group = document
+            .add_group(Some("Source group".to_owned()), [source])
+            .unwrap();
+        registry.execute(&mut document, "Layer New Output").unwrap();
+        let output_layer = document.current_layer_id();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "DupFaceBorder Faces=2,0 OutputLayer=Current",)
+                .unwrap(),
+            "Duplicated 2 curve object(s) in 2 face border(s) from 1 object(s)"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert!(!document.is_selected(source));
+        assert_eq!(
+            document
+                .group(source_group)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![source]
+        );
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        assert!(outputs.iter().all(|output| {
+            document.is_selected(output.id())
+                && output.attributes().layer_id() == output_layer
+                && output.attributes().name().is_none()
+                && output.attributes().color_source() == ObjectColorSource::Layer
+                && document
+                    .group(source_group)
+                    .unwrap()
+                    .members()
+                    .all(|member| member != output.id())
+        }));
+        let boundaries = outputs
+            .iter()
+            .map(|output| match output.geometry() {
+                Geometry::Polyline(polyline) => polyline.vertices(),
+                _ => panic!("linear face borders should join into one polyline"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            boundaries[0],
+            &[
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+            ]
+        );
+        assert_eq!(
+            boundaries[1],
+            &[
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ]
+        );
+        assert_eq!(document.undo_label(), Some("DupFaceBorder"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            document
+                .group(source_group)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert!(!document.is_selected(source));
+    }
+
+    #[test]
+    fn duplicate_face_border_point_mode_joins_a_natural_surface_boundary() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Input").unwrap();
+        let input_layer = document.current_layer_id();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(24.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(24.0, 3.0, 0.0).unwrap(),
+            Point3::try_new(20.0, 3.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface),
+                ObjectAttributes::on_layer(input_layer).with_name("Input surface"),
+            )
+            .unwrap();
+        registry.execute(&mut document, "Layer New Output").unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "DuplicateFaceBorder 22,1,7 OutputLayer=Input",
+                )
+                .unwrap(),
+            "Duplicated 1 curve object(s) in 1 face border(s) from 1 object(s)"
+        );
+        let output = document.objects().last().unwrap();
+        assert_eq!(output.attributes().layer_id(), input_layer);
+        assert!(output.attributes().name().is_none());
+        let Geometry::Polyline(polyline) = output.geometry() else {
+            panic!("a bilinear surface border should join into one polyline")
+        };
+        assert_eq!(
+            polyline.vertices(),
+            &[
+                Point3::try_new(20.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(24.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(24.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 3.0, 0.0).unwrap(),
+            ]
+        );
+
+        let mut curved_document = Document::default();
+        let curved_surface = rational_multi_span_surface();
+        let mut expected = curved_surface.natural_boundary_curve_loops().unwrap();
+        expected.reverse();
+        expected[0].rotate_right(1);
+        let curved_source = curved_document
+            .add_geometry(Geometry::NurbsSurface(curved_surface))
+            .unwrap();
+        curved_document
+            .select_objects_direct([curved_source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut curved_document, "DupFaceBorder Faces=0")
+                .unwrap(),
+            "Duplicated 4 curve object(s) in 1 face border(s) from 1 object(s); grouped 1 multi-edge border(s)"
+        );
+        let group = curved_document.groups().next().unwrap();
+        assert_eq!(group.members().len(), 4);
+        let curves = curved_document
+            .objects()
+            .skip(1)
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.clone(),
+                _ => panic!("curved borders must retain exact NURBS segments"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(curves, expected.remove(0));
+    }
+
+    #[test]
+    fn duplicate_face_border_orders_holes_and_omits_wall_seams() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance()).unwrap();
+        let outer = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 6.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 6.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            ],
+            document.tolerance(),
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let holes = [
+            Circle3::try_new(
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                1.0,
+                normal,
+                document.tolerance(),
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap(),
+            Circle3::try_new(
+                Point3::try_new(6.0, 3.0, 0.0).unwrap(),
+                0.5,
+                normal,
+                document.tolerance(),
+            )
+            .unwrap()
+            .to_nurbs()
+            .unwrap(),
+        ];
+        let face = Brep::try_planar_face_with_holes(&outer, &holes, document.tolerance()).unwrap();
+        let expected = [
+            face.edges()[2].curve().clone(),
+            face.edges()[1].curve().clone(),
+            face.edges()[0].curve().clone(),
+        ];
+        let face_id = document.add_geometry(Geometry::Brep(face)).unwrap();
+        document
+            .select_objects_direct([face_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "DupFaceBorder Faces=0")
+                .unwrap(),
+            "Duplicated 3 curve object(s) in 3 face border(s) from 1 object(s)"
+        );
+        assert_eq!(document.groups().len(), 0);
+        let actual = document
+            .objects()
+            .skip(1)
+            .map(|output| match output.geometry() {
+                Geometry::NurbsCurve(curve) => curve.clone(),
+                _ => panic!("single-edge face borders must retain exact NURBS curves"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected);
+
+        let mut cylinder_document = Document::default();
+        let cylinder = Brep::try_extruded_curve(
+            &holes[0],
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 5.0).unwrap(),
+            cylinder_document.tolerance(),
+        )
+        .unwrap();
+        let expected_rims = [
+            cylinder.edges()[1].curve().clone(),
+            cylinder.edges()[0].curve().clone(),
+        ];
+        let cylinder_id = cylinder_document
+            .add_geometry(Geometry::Brep(cylinder))
+            .unwrap();
+        cylinder_document
+            .select_objects_direct([cylinder_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut cylinder_document, "DupFaceBorder Faces=0")
+            .unwrap();
+        let actual_rims = cylinder_document
+            .objects()
+            .skip(1)
+            .map(|output| match output.geometry() {
+                Geometry::NurbsCurve(curve) => curve.clone(),
+                _ => panic!("cylinder rims must remain exact NURBS curves"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(actual_rims, expected_rims);
+    }
+
+    #[test]
+    fn duplicate_face_border_rejects_invalid_or_borderless_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Torus 0,0,0 4 1").unwrap();
+        let torus = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([torus], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DupFaceBorder Faces=0"),
+            Err(CommandError::NoDuplicateFaceBorders)
+        ));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert!(matches!(
+            registry.execute(&mut document, "DupFaceBorder Faces=1"),
+            Err(CommandError::DuplicateFaceBorderFaceIndexOutOfRange {
+                face: 1,
+                face_count: 1,
+            })
+        ));
+
+        for invalid in [
+            "DupFaceBorder Faces=0,0",
+            "DupFaceBorder Faces=",
+            "DupFaceBorder Faces=0 1,2,3",
+            "DupFaceBorder 1,2,3 OutputLayer=Other",
+            "DupFaceBorder 1,2,3 OutputLayer=Input OutputLayer=Current",
+            "DupFaceBorder FaceIndices=0 Faces=0",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.objects().len(), 1);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+
+        registry.execute(&mut document, "Point 10,10,10").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DupFaceBorder Faces=0"),
+            Err(CommandError::UnsupportedDuplicateFaceBorderGeometry)
+        ));
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "DupFaceBorder Faces=0"),
+            Err(CommandError::NoObjectsSelected)
+        ));
     }
 
     #[test]

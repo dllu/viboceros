@@ -89,6 +89,9 @@ enum InteractiveCommand {
         copy: bool,
         output_on_current_layer: bool,
     },
+    DupFaceBorder {
+        output_on_current_layer: bool,
+    },
     ExtractIsocurve {
         direction: InteractiveIsocurveDirection,
         ignore_trims: bool,
@@ -168,6 +171,7 @@ impl InteractiveCommand {
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
+            Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -267,6 +271,9 @@ impl InteractiveCommand {
             },
             Self::ExtractSrf { .. } => {
                 "ExtractSrf: pick a face location on a selected surface or B-rep (Esc to cancel)"
+            }
+            Self::DupFaceBorder { .. } => {
+                "DupFaceBorder: pick a face location on a selected surface or B-rep (Esc to cancel)"
             }
             Self::ExtractIsocurve { .. } => {
                 "ExtractIsocurve: pick a location on the selected surface or B-rep face (Esc to cancel)"
@@ -423,6 +430,7 @@ impl InteractiveCommand {
                 corners: [None, _, _],
             }
             | Self::ExtractSrf { .. }
+            | Self::DupFaceBorder { .. }
             | Self::ExtractIsocurve { .. }
             | Self::Move { start: None }
             | Self::Copy { start: None }
@@ -788,6 +796,31 @@ impl VibocerosApp {
                 copy,
                 output_on_current_layer,
             }
+        } else if matches!(normalized.as_str(), "dupfaceborder" | "duplicatefaceborder") {
+            let mut output_on_current_layer = true;
+            let mut output_layer_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("OutputLayer") && !output_layer_seen {
+                    output_on_current_layer = if value.eq_ignore_ascii_case("Current") {
+                        true
+                    } else if value.eq_ignore_ascii_case("Input") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    output_layer_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::DupFaceBorder {
+                output_on_current_layer,
+            }
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
             let mut ignore_trims = false;
@@ -1053,6 +1086,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
+                | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::ExtractIsocurve { .. }
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
@@ -1437,6 +1471,20 @@ impl VibocerosApp {
                     "ExtractSrf {} Copy={} OutputLayer={}",
                     format_model_point(point),
                     if copy { "Yes" } else { "No" },
+                    if output_on_current_layer {
+                        "Current"
+                    } else {
+                        "Input"
+                    },
+                ));
+            }
+            InteractiveCommand::DupFaceBorder {
+                output_on_current_layer,
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "DupFaceBorder {} OutputLayer={}",
+                    format_model_point(point),
                     if output_on_current_layer {
                         "Current"
                     } else {
@@ -1939,6 +1987,7 @@ impl VibocerosApp {
         let mut extract_points_clicked = false;
         let mut extract_control_polygon_clicked = false;
         let mut extract_surface_clicked = false;
+        let mut duplicate_face_border_clicked = false;
         let mut duplicate_border_clicked = false;
         let mut extract_isocurve_clicked = false;
         let mut extract_all_isocurves_clicked = false;
@@ -2119,6 +2168,10 @@ impl VibocerosApp {
                 extract_surface_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Surface"))
                     .on_hover_text("Pick a selected NURBS surface or B-rep face to extract")
+                    .clicked();
+                duplicate_face_border_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Dup Face Border"))
+                    .on_hover_text("Pick a selected NURBS surface or B-rep face border to duplicate")
                     .clicked();
                 duplicate_border_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Dup Border"))
@@ -2319,6 +2372,8 @@ impl VibocerosApp {
             self.execute_command("ExtractControlPolygon");
         } else if extract_surface_clicked {
             self.try_start_interactive_command("ExtractSrf");
+        } else if duplicate_face_border_clicked {
+            self.try_start_interactive_command("DupFaceBorder");
         } else if duplicate_border_clicked {
             self.execute_command("DupBorder");
         } else if extract_isocurve_clicked {
@@ -3118,6 +3173,43 @@ mod tests {
     }
 
     #[test]
+    fn interactive_duplicate_face_border_uses_one_face_location_pick() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,2 4,0,2 4,3,2 0,3,2");
+        let source = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("DuplicateFaceBorder OutputLayer=Input"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::DupFaceBorder {
+                output_on_current_layer: false,
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("face location"));
+        app.accept_drafting_point(point(2.0, 1.0, 5.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.object(source).is_some());
+        assert_eq!(app.document.objects().len(), 2);
+        assert!(!app.document.is_selected(source));
+        assert_eq!(app.document.selected_object_count(), 1);
+        assert!(matches!(
+            app.document.selected_objects().next().unwrap().geometry(),
+            Geometry::Polyline(_)
+        ));
+        assert_eq!(app.document.undo_label(), Some("DupFaceBorder"));
+        assert!(!app.try_start_interactive_command("DupFaceBorder OutputLayer=Other"));
+        assert!(
+            !app.try_start_interactive_command(
+                "DupFaceBorder OutputLayer=Input OutputLayer=Current"
+            )
+        );
+    }
+
+    #[test]
     fn interactive_extract_isocurve_uses_one_surface_location_pick() {
         let mut app = test_app();
         app.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
@@ -3397,6 +3489,7 @@ mod tests {
             "ExtrudeCrv",
             "ExtrudeCrvToPoint",
             "ExtractSrf",
+            "DupFaceBorder",
             "ExtractIsocurve",
             "Revolve",
         ] {
