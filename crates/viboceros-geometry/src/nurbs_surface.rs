@@ -1364,14 +1364,14 @@ impl NurbsSurface {
         surface_wire_parameters(self.spans_v(), wire_density)
     }
 
-    /// Returns the exact topological boundaries, seams, and interior
-    /// isoparametric curves displayed for this standalone surface.
-    pub fn wireframe_curves(
-        &self,
-        wire_density: i32,
-    ) -> Result<Vec<crate::NurbsCurve>, GeometryError> {
-        let parameters_u = self.wire_parameters_u(wire_density)?;
-        let parameters_v = self.wire_parameters_v(wire_density)?;
+    /// Returns the standalone surface's exact topological edges in
+    /// OpenNURBS order.
+    ///
+    /// Closed directions contribute one seam rather than two coincident
+    /// sides, while collapsed singular sides are omitted. Consequently an
+    /// open patch has four edges, a cylinder has two rims and one seam, a
+    /// sphere has one seam, and a torus has two seams.
+    pub fn natural_edge_curves(&self) -> Result<Vec<crate::NurbsCurve>, GeometryError> {
         let closed_u = self.is_closed_u()?;
         let closed_v = self.is_closed_v()?;
         let u_start = *self.domain_u().start();
@@ -1402,6 +1402,19 @@ impl NurbsSurface {
                 push_surface_wire(&mut curves, self.isocurve_u(v_start)?)?;
             }
         }
+
+        Ok(curves)
+    }
+
+    /// Returns the exact topological boundaries, seams, and interior
+    /// isoparametric curves displayed for this standalone surface.
+    pub fn wireframe_curves(
+        &self,
+        wire_density: i32,
+    ) -> Result<Vec<crate::NurbsCurve>, GeometryError> {
+        let parameters_u = self.wire_parameters_u(wire_density)?;
+        let parameters_v = self.wire_parameters_v(wire_density)?;
+        let mut curves = self.natural_edge_curves()?;
 
         for v in interior_wire_parameters(&parameters_v) {
             push_surface_wire(&mut curves, self.isocurve_u(v)?)?;
@@ -3015,6 +3028,7 @@ mod tests {
         let patch_loops = patch.natural_boundary_curve_loops().unwrap();
         assert_eq!(patch_loops.len(), 1);
         assert_eq!(patch_loops[0].len(), 4);
+        assert_eq!(patch.natural_edge_curves().unwrap(), patch_loops[0]);
         let expected = [
             (point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0)),
             (point(4.0, 0.0, 0.0), point(4.0, 3.0, 0.0)),
@@ -3051,18 +3065,26 @@ mod tests {
                 .iter()
                 .all(|boundary| boundary[0].is_rational())
         );
+        let cylinder_edges = cylinder.natural_edge_curves().unwrap();
+        assert_eq!(cylinder_edges.len(), 3);
+        assert!(cylinder_edges[0].is_closed().unwrap());
+        assert!(!cylinder_edges[1].is_closed().unwrap());
+        assert!(cylinder_edges[2].is_closed().unwrap());
 
         let cone = NurbsSurface::try_cone(frame, 2.0, 5.0).unwrap();
         assert_eq!(cone.natural_boundary_curve_loops().unwrap().len(), 1);
+        assert_eq!(cone.natural_edge_curves().unwrap().len(), 2);
 
         let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
         assert!(sphere.is_closed_u().unwrap());
         assert!(sphere.natural_boundary_curve_loops().unwrap().is_empty());
+        assert_eq!(sphere.natural_edge_curves().unwrap().len(), 1);
 
         let torus = NurbsSurface::try_torus(frame, 4.0, 1.0).unwrap();
         assert!(torus.is_closed_u().unwrap());
         assert!(torus.is_closed_v().unwrap());
         assert!(torus.natural_boundary_curve_loops().unwrap().is_empty());
+        assert_eq!(torus.natural_edge_curves().unwrap().len(), 2);
     }
 
     #[test]

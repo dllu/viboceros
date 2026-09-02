@@ -37,6 +37,7 @@ PlanarSrf DeleteInput=No
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 DupBorder OutputLayer=Current
+DupEdge Edges=2,0 OutputLayer=Input
 DupFaceBorder Faces=2,0 OutputLayer=Input
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
@@ -225,6 +226,13 @@ omitted. B-reps preserve each exact naked edge, while mesh edges are welded by
 exact location into boundary polylines. Multi-edge borders are grouped until
 the document gains an exact polycurve primitive. Results use the current layer
 and become selected by default; `OutputLayer=Input` uses each source layer.
+`DupEdge` duplicates the exact edge nearest a model-space point, or accepts an
+ordered zero-based `Edges=0,2`/`Edges=All` selector for every selected NURBS
+surface, B-rep, or mesh. Standalone closed-surface seams remain selectable,
+collapsed singular sides are omitted, B-rep rational edge curves stay exact,
+and mesh indices follow exact-location-welded topology order. Omit the selector
+for a one-pick viewport workflow. Fresh selected results default to the current
+layer; `OutputLayer=Input` uses each source layer.
 `DupFaceBorder` duplicates the exact non-seam border of the nearest selected
 surface or B-rep face, or accepts ordered zero-based `Faces=0,2`/`Faces=All`
 selectors. Omit the selector for a one-pick viewport workflow. Linear edge

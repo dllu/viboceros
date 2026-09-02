@@ -51,6 +51,27 @@ impl LineSegment {
         self.start.translated(offset)
     }
 
+    /// Returns the normalized parameter of the point on this finite segment
+    /// nearest to `target`.
+    pub fn closest_parameter(
+        self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Real, GeometryError> {
+        let direction = self.direction(tolerance)?;
+        let length = self.length()?;
+        let along = self.start.vector_to(target)?.dot(direction.as_vector())?;
+        Ok((along / length).clamp(0.0, 1.0))
+    }
+
+    pub fn closest_point(
+        self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Point3, GeometryError> {
+        self.point_at(self.closest_parameter(target, tolerance)?)
+    }
+
     /// Returns Rhino's exact degree-one, arc-length-parameterized NURBS form.
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
         let domain_end = self.length()?;
@@ -127,6 +148,36 @@ mod tests {
         assert_eq!(curve.domain(), 0.0..=length);
         assert_eq!(curve.knots(), &[0.0, 0.0, length, length]);
         assert_eq!(curve.evaluate(length * 0.5).unwrap(), point(3.0, 4.0, 5.0));
+    }
+
+    #[test]
+    fn closest_point_projects_to_the_finite_segment() {
+        let line = LineSegment::try_new(
+            point(-2.0, 1.0, 3.0),
+            point(4.0, 1.0, 3.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            line.closest_parameter(point(1.0, 8.0, -2.0), Tolerance::DEFAULT)
+                .unwrap(),
+            0.5
+        );
+        assert_eq!(
+            line.closest_point(point(1.0, 8.0, -2.0), Tolerance::DEFAULT)
+                .unwrap(),
+            point(1.0, 1.0, 3.0)
+        );
+        assert_eq!(
+            line.closest_point(point(-9.0, 1.0, 3.0), Tolerance::DEFAULT)
+                .unwrap(),
+            line.start()
+        );
+        assert_eq!(
+            line.closest_point(point(12.0, 1.0, 3.0), Tolerance::DEFAULT)
+                .unwrap(),
+            line.end()
+        );
     }
 
     #[test]
