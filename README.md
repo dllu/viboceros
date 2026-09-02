@@ -138,6 +138,7 @@ Flip
 UnifyMeshNormals
 Weld 180
 Unweld 45 ModifyNormals=Yes
+UnweldEdge Edges=0,2 ModifyNormals=Yes
 CombineIdenticalMeshVertices
 CullUnusedMeshVertices
 SplitDisjointMesh
@@ -527,6 +528,12 @@ rebuilds affected vertices in OpenNURBS radial order, and compacts unused
 vertices. The zero-degree default separates every adjacent face region;
 `ModifyNormals=Yes|No` is accepted for Rhino script compatibility while mesh
 normals remain derived data.
+`UnweldEdge` adds seams at selected exact-location mesh topology edges. Use
+`Edges=0,2`, `Edges=All`, or omit the selector to pick one edge in the viewport.
+It partitions closed and high-valence radial face fans, handles non-manifold
+edges, and preserves existing seams; naked or already-unwelded selections only
+trigger Rhino-compatible vertex compaction. `ModifyNormals=Yes|No` is accepted,
+but normals remain derived data.
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,
 face order, and winding.

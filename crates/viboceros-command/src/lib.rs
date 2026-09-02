@@ -293,6 +293,9 @@ impl CommandRegistry {
             .register(UnweldCommand)
             .expect("unique built-in command");
         registry
+            .register(UnweldEdgeCommand)
+            .expect("unique built-in command");
+        registry
             .register(CombineIdenticalMeshVerticesCommand)
             .expect("unique built-in command");
         registry
@@ -5816,6 +5819,179 @@ fn parse_unweld_arguments(arguments: &[&str]) -> Result<UnweldOptions, CommandEr
     Ok(UnweldOptions { angle_degrees })
 }
 
+const UNWELD_EDGE_USAGE: &str = "UnweldEdge (point|Edges=All|Edges=0,2,...) [ModifyNormals=Yes|No]";
+
+#[derive(Clone, Debug, PartialEq)]
+enum UnweldEdgeSelection {
+    Point(Point3),
+    Edges(SurfaceFaceIndices),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct UnweldEdgeOptions {
+    selection: UnweldEdgeSelection,
+}
+
+struct UnweldEdgeSource {
+    id: ObjectId,
+    mesh: TriangleMesh,
+}
+
+struct UnweldEdgeCommand;
+
+impl Command for UnweldEdgeCommand {
+    fn name(&self) -> &'static str {
+        "UnweldEdge"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["UnweldMeshEdge"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_unweld_edge_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedUnweldEdgeGeometry);
+                };
+                Ok(UnweldEdgeSource {
+                    id: object.id(),
+                    mesh: mesh.clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selections = selected_unweld_edges(&sources, &options.selection, document.tolerance())?;
+        let mesh_count = sources.len();
+        let mut selected_edge_count = 0_usize;
+        let mut separated_edge_count = 0_usize;
+        let mut replacements = Vec::new();
+        for (source_index, edge_indices) in selections {
+            selected_edge_count += edge_indices.len();
+            let source = &sources[source_index];
+            let (unwelded, separated) = source.mesh.unwelded_topology_edges(&edge_indices)?;
+            separated_edge_count += separated;
+            if unwelded != source.mesh {
+                replacements.push((source.id, Geometry::Mesh(unwelded)));
+            }
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoSelectedMeshEdgesToUnweld);
+        }
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Processed {selected_edge_count} selected mesh edge(s) in {changed_mesh_count} changed mesh(es): {separated_edge_count} new seam(s); {} mesh(es) unchanged",
+            mesh_count - changed_mesh_count
+        ))
+    }
+}
+
+fn selected_unweld_edges(
+    sources: &[UnweldEdgeSource],
+    selection: &UnweldEdgeSelection,
+    tolerance: Tolerance,
+) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
+    match selection {
+        UnweldEdgeSelection::Edges(selection) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let edge_count = source.mesh.topology().edge_count();
+                let edge_indices = match selection {
+                    SurfaceFaceIndices::All => (0..edge_count).collect(),
+                    SurfaceFaceIndices::Indices(indices) => {
+                        if let Some(&edge) = indices.iter().find(|&&edge| edge >= edge_count) {
+                            return Err(CommandError::UnweldEdgeIndexOutOfRange {
+                                edge,
+                                edge_count,
+                            });
+                        }
+                        indices.clone()
+                    }
+                };
+                Ok((source_index, edge_indices))
+            })
+            .collect(),
+        UnweldEdgeSelection::Point(target) => {
+            let mut best = None;
+            for (source_index, source) in sources.iter().enumerate() {
+                for (edge_index, edge) in source
+                    .mesh
+                    .wireframe_lines(tolerance)?
+                    .into_iter()
+                    .enumerate()
+                {
+                    let closest = edge.closest_point(*target, tolerance)?;
+                    let distance = closest.distance_to(*target)?;
+                    if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                        best = Some((distance, source_index, edge_index));
+                    }
+                }
+            }
+            let Some((_, source, edge)) = best else {
+                return Err(CommandError::NoSelectedMeshEdgesToUnweld);
+            };
+            Ok(vec![(source, vec![edge])])
+        }
+    }
+}
+
+fn parse_unweld_edge_arguments(arguments: &[&str]) -> Result<UnweldEdgeOptions, CommandError> {
+    let mut edge_selection = None;
+    let mut modify_normals_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Edges")
+            || option_name_eq(argument, "EdgeIndices")
+            || option_name_eq(argument, "ModifyNormals")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(UNWELD_EDGE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        if let Some((name, value, consumed)) = option {
+            if (option_name_eq(name, "Edges") || option_name_eq(name, "EdgeIndices"))
+                && edge_selection.is_none()
+            {
+                edge_selection = Some(parse_surface_face_indices(value, UNWELD_EDGE_USAGE)?);
+            } else if option_name_eq(name, "ModifyNormals") && !modify_normals_seen {
+                parse_yes_no(value).ok_or(CommandError::Usage(UNWELD_EDGE_USAGE))?;
+                modify_normals_seen = true;
+            } else {
+                return Err(CommandError::Usage(UNWELD_EDGE_USAGE));
+            }
+            index += consumed;
+        } else {
+            positional.push(argument);
+            index += 1;
+        }
+    }
+    let selection = if let Some(edges) = edge_selection {
+        require_consumed(&positional, 0, UNWELD_EDGE_USAGE)?;
+        UnweldEdgeSelection::Edges(edges)
+    } else {
+        if positional.is_empty() {
+            return Err(CommandError::Usage(UNWELD_EDGE_USAGE));
+        }
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, UNWELD_EDGE_USAGE)?;
+        UnweldEdgeSelection::Point(point)
+    };
+    Ok(UnweldEdgeOptions { selection })
+}
+
 struct CombineIdenticalMeshVerticesCommand;
 
 impl Command for CombineIdenticalMeshVerticesCommand {
@@ -10708,6 +10884,15 @@ pub enum CommandError {
     #[error("none of the selected meshes contains edges to unweld or unused vertices to compact")]
     NoMeshEdgesToUnweld,
 
+    #[error("UnweldEdge supports selected meshes only")]
+    UnsupportedUnweldEdgeGeometry,
+
+    #[error("UnweldEdge edge index {edge} is outside the selected mesh's edge count {edge_count}")]
+    UnweldEdgeIndexOutOfRange { edge: usize, edge_count: usize },
+
+    #[error("none of the selected mesh edges requires unwelding or compaction")]
+    NoSelectedMeshEdgesToUnweld,
+
     #[error("CombineIdenticalMeshVertices supports selected meshes only")]
     UnsupportedCombineIdenticalMeshVerticesGeometry,
 
@@ -10930,7 +11115,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, Volume, Weld"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, Volume, Weld"
         );
     }
 
@@ -13130,6 +13315,178 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut mixed, "Unweld 45"),
             Err(CommandError::UnsupportedUnweldGeometry)
+        ));
+        assert_eq!(
+            mixed.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn unweld_edge_preserves_identity_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Creases")
+            .unwrap();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document.add_geometry(Geometry::Mesh(mesh.clone())).unwrap();
+        let attributes = document.object(source).unwrap().attributes().clone();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "Group CreaseEdge").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "UnweldEdge Edges=0 ModifyNormals=No")
+                .unwrap(),
+            "Processed 1 selected mesh edge(s) in 1 changed mesh(es): 1 new seam(s); 0 mesh(es) unchanged"
+        );
+        assert_eq!(document.undo_label(), Some("UnweldEdge"));
+        assert!(document.is_selected(source));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        assert!(
+            document
+                .group_by_name("CreaseEdge")
+                .unwrap()
+                .members()
+                .any(|member| member == source)
+        );
+        let Geometry::Mesh(unwelded) = document.object(source).unwrap().geometry() else {
+            panic!("expected unwelded mesh")
+        };
+        assert_eq!(
+            unwelded.vertices(),
+            &[
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+            ]
+        );
+        assert_eq!(unwelded.triangles(), &[[2, 5, 0], [4, 3, 1]]);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh.clone())
+        );
+        assert_eq!(
+            registry
+                .execute(&mut document, "UnweldMeshEdge 2,-0.1,0 ModifyNormals Yes",)
+                .unwrap(),
+            "Processed 1 selected mesh edge(s) in 1 changed mesh(es): 1 new seam(s); 0 mesh(es) unchanged"
+        );
+
+        let mut compact = Document::default();
+        let with_unused = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+                point(99.0, 99.0, 99.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            compact.tolerance(),
+        )
+        .unwrap();
+        let compact_id = compact.add_geometry(Geometry::Mesh(with_unused)).unwrap();
+        compact
+            .select_object(compact_id, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut compact, "UnweldEdge EdgeIndices 1")
+                .unwrap(),
+            "Processed 1 selected mesh edge(s) in 1 changed mesh(es): 0 new seam(s); 0 mesh(es) unchanged"
+        );
+        let Geometry::Mesh(compacted) = compact.object(compact_id).unwrap().geometry() else {
+            panic!("expected compacted mesh")
+        };
+        assert_eq!(compacted.vertices().len(), 4);
+    }
+
+    #[test]
+    fn unweld_edge_rejects_noops_mixed_selection_and_bad_arguments_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let triangle = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut document = Document::default();
+        let source = document
+            .add_geometry(Geometry::Mesh(triangle.clone()))
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "UnweldEdge Edges=0"),
+            Err(CommandError::NoSelectedMeshEdgesToUnweld)
+        ));
+        for command in [
+            "UnweldEdge",
+            "UnweldEdge Edges=",
+            "UnweldEdge Edges=0,0",
+            "UnweldEdge Edges=3",
+            "UnweldEdge Edges=0 1,2,3",
+            "UnweldEdge 1,2,3 Edges=0",
+            "UnweldEdge ModifyNormals=Maybe Edges=0",
+            "UnweldEdge Edges=0 ModifyNormals=No ModifyNormals=Yes",
+            "UnweldEdge Unknown=0",
+        ] {
+            assert!(registry.execute(&mut document, command).is_err());
+            assert_eq!(document.undo_label(), history.as_deref());
+            assert_eq!(
+                document.object(source).unwrap().geometry(),
+                &Geometry::Mesh(triangle.clone())
+            );
+        }
+
+        let shared = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut mixed = Document::default();
+        mixed.add_geometry(Geometry::Mesh(shared)).unwrap();
+        mixed
+            .add_geometry(Geometry::Point(point(9.0, 9.0, 0.0)))
+            .unwrap();
+        registry.execute(&mut mixed, "SelAll").unwrap();
+        let before = mixed.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut mixed, "UnweldEdge Edges=0"),
+            Err(CommandError::UnsupportedUnweldEdgeGeometry)
         ));
         assert_eq!(
             mixed.objects().collect::<Vec<_>>(),

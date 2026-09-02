@@ -236,6 +236,36 @@ def _mesh_value(mesh):
     }
 
 
+def _mesh_unweld_value(mesh):
+    face_points = []
+    point_groups = {}
+    for face_index in range(mesh.Faces.Count):
+        face = mesh.Faces[face_index]
+        raw_vertices = [int(face.A), int(face.B), int(face.C)]
+        if not face.IsTriangle:
+            raw_vertices.append(int(face.D))
+        face_points.append([_xyz(mesh.Vertices[raw]) for raw in raw_vertices])
+        for raw in raw_vertices:
+            point = tuple(_xyz(mesh.Vertices[raw]))
+            raw_groups = point_groups.setdefault(point, {})
+            raw_groups.setdefault(raw, []).append(face_index)
+    vertex_face_groups = []
+    for point in sorted(point_groups):
+        face_groups = [
+            sorted(faces) for faces in point_groups[point].values()
+        ]
+        face_groups.sort()
+        vertex_face_groups.append({
+            "face_groups": face_groups,
+            "point": list(point),
+        })
+    return {
+        "face_points": face_points,
+        "vertex_count": int(mesh.Vertices.Count),
+        "vertex_face_groups": vertex_face_groups,
+    }
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "document_surface_orient_cycle":
@@ -3942,6 +3972,39 @@ def _execute(operation, iterations, tolerance):
                 mesh.Dispose()
         try:
             return _measure(iterations, unweld_mesh)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_unweld_edge":
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        edge_indices = operation["edge_indices"]
+        if not isinstance(edge_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in edge_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh unweld edge indices must be integers")
+        edge_indices = [int(index) for index in edge_indices]
+        modify_normals = operation["modify_normals"]
+        if not isinstance(modify_normals, bool):
+            source.Dispose()
+            raise ValueError("mesh unweld edge modify_normals must be a boolean")
+        def unweld_mesh_edges():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Vertices.Count)
+                accepted = bool(mesh.UnweldEdge(edge_indices, modify_normals))
+                return {
+                    "accepted": accepted,
+                    "added_vertices": int(mesh.Vertices.Count) - before,
+                    "mesh": _mesh_unweld_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+        try:
+            return _measure(iterations, unweld_mesh_edges)
         finally:
             source.Dispose()
 

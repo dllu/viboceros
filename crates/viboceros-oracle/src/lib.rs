@@ -1,6 +1,6 @@
 //! Versioned compatibility-probe protocol used to compare Viboceros with Rhino.
 
-use std::collections::BTreeSet;
+use std::collections::{BTreeMap, BTreeSet};
 use std::fs;
 use std::hint::black_box;
 use std::path::{Path, PathBuf};
@@ -251,6 +251,13 @@ pub enum Operation {
         angle_radians: f64,
         modify_normals: bool,
     },
+    MeshUnweldEdge {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        edge_indices: Vec<usize>,
+        modify_normals: bool,
+    },
     MeshCullUnusedVertices {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -338,6 +345,7 @@ impl Operation {
             | Self::MeshCombineIdenticalVertices { id, .. }
             | Self::MeshWeld { id, .. }
             | Self::MeshUnweld { id, .. }
+            | Self::MeshUnweldEdge { id, .. }
             | Self::MeshCullUnusedVertices { id, .. }
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
@@ -1000,6 +1008,35 @@ fn execute(
                 json!({
                     "added_vertices": added_vertices,
                     "mesh": mesh_value(&unwelded),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshUnweldEdge {
+            vertices,
+            triangles,
+            edge_indices,
+            modify_normals: _,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let before = mesh.vertices().len() as i64;
+            let ((unwelded, _), elapsed) = measure(iterations, || {
+                black_box(&mesh).unwelded_topology_edges(black_box(edge_indices))
+            })?;
+            let added_vertices = unwelded.vertices().len() as i64 - before;
+            (
+                json!({
+                    "accepted": !edge_indices.is_empty(),
+                    "added_vertices": added_vertices,
+                    "mesh": mesh_unweld_value(&unwelded),
                 }),
                 elapsed,
             )
@@ -3820,6 +3857,58 @@ fn mesh_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
+fn mesh_unweld_value(mesh: &TriangleMesh) -> Value {
+    let face_points = mesh
+        .faces()
+        .iter()
+        .map(|face| {
+            face.indices()
+                .iter()
+                .map(|&raw| mesh.vertices()[raw as usize].to_array())
+                .collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>();
+    let mut point_groups = BTreeMap::<[u64; 3], ([f64; 3], BTreeMap<u32, Vec<usize>>)>::new();
+    for (face_index, face) in mesh.faces().iter().enumerate() {
+        for &raw in face.indices() {
+            let point = mesh.vertices()[raw as usize].to_array();
+            point_groups
+                .entry(point.map(f64::to_bits))
+                .or_insert_with(|| (point, BTreeMap::new()))
+                .1
+                .entry(raw)
+                .or_default()
+                .push(face_index);
+        }
+    }
+    let mut vertex_face_groups = point_groups
+        .into_values()
+        .map(|(point, raw_groups)| {
+            let mut face_groups = raw_groups.into_values().collect::<Vec<_>>();
+            face_groups.sort();
+            (point, face_groups)
+        })
+        .collect::<Vec<_>>();
+    vertex_face_groups.sort_by(|(left, _), (right, _)| {
+        left.iter()
+            .zip(right)
+            .map(|(left, right)| left.total_cmp(right))
+            .find(|ordering| !ordering.is_eq())
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    json!({
+        "face_points": face_points,
+        "vertex_count": mesh.vertices().len(),
+        "vertex_face_groups": vertex_face_groups
+            .into_iter()
+            .map(|(point, face_groups)| json!({
+                "face_groups": face_groups,
+                "point": point,
+            }))
+            .collect::<Vec<_>>(),
+    })
+}
+
 fn canonical_join_segments(
     joined: &[viboceros_geometry::JoinedPolyline3],
 ) -> Vec<Vec<[[f64; 3]; 2]>> {
@@ -5012,6 +5101,44 @@ mod tests {
                         [0.0, 0.0, 0.0],
                         [4.0, 0.0, 0.0],
                         [4.0, 0.0, 0.0],
+                    ],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn unwelds_selected_mesh_edges_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshUnweldEdge {
+            id: "unwelded-edge".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [0.0, 3.0, 0.0],
+                [0.0, -3.0, 0.0],
+                [99.0, 99.0, 99.0],
+            ],
+            triangles: vec![[0, 1, 2], [1, 0, 3]],
+            edge_indices: vec![0],
+            modify_normals: false,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "added_vertices": 1,
+                "mesh": {
+                    "face_points": [
+                        [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 3.0, 0.0]],
+                        [[4.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, -3.0, 0.0]],
+                    ],
+                    "vertex_count": 6,
+                    "vertex_face_groups": [
+                        {"face_groups": [[1]], "point": [0.0, -3.0, 0.0]},
+                        {"face_groups": [[0], [1]], "point": [0.0, 0.0, 0.0]},
+                        {"face_groups": [[0]], "point": [0.0, 3.0, 0.0]},
+                        {"face_groups": [[0], [1]], "point": [4.0, 0.0, 0.0]},
                     ],
                 },
             })

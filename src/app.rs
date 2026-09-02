@@ -95,6 +95,9 @@ enum InteractiveCommand {
     DupEdge {
         output_on_current_layer: bool,
     },
+    UnweldEdge {
+        modify_normals: bool,
+    },
     DupMeshEdge {
         break_angle_degrees: f64,
     },
@@ -180,6 +183,7 @@ impl InteractiveCommand {
             Self::ExtractSrf { .. } => "ExtractSrf",
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
+            Self::UnweldEdge { .. } => "UnweldEdge",
             Self::DupMeshEdge { .. } => "DupMeshEdge",
             Self::DupMeshHoleBoundary => "DupMeshHoleBoundary",
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
@@ -287,6 +291,9 @@ impl InteractiveCommand {
             }
             Self::DupEdge { .. } => {
                 "DupEdge: pick an edge location on a selected surface, B-rep, or mesh (Esc to cancel)"
+            }
+            Self::UnweldEdge { .. } => {
+                "UnweldEdge: pick a topology edge on a selected mesh (Esc to cancel)"
             }
             Self::DupMeshEdge { .. } => {
                 "DupMeshEdge: pick a logical edge on a selected mesh (Esc to cancel)"
@@ -451,6 +458,7 @@ impl InteractiveCommand {
             | Self::ExtractSrf { .. }
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
+            | Self::UnweldEdge { .. }
             | Self::DupMeshEdge { .. }
             | Self::DupMeshHoleBoundary
             | Self::ExtractIsocurve { .. }
@@ -868,6 +876,29 @@ impl VibocerosApp {
             InteractiveCommand::DupEdge {
                 output_on_current_layer,
             }
+        } else if matches!(normalized.as_str(), "unweldedge" | "unweldmeshedge") {
+            let mut modify_normals = true;
+            let mut modify_normals_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("ModifyNormals") && !modify_normals_seen {
+                    modify_normals = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    modify_normals_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::UnweldEdge { modify_normals }
         } else if matches!(normalized.as_str(), "dupmeshedge" | "duplicatemeshedge") {
             let mut break_angle_degrees = 90.0;
             let mut break_angle_seen = false;
@@ -1168,6 +1199,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
+                | InteractiveCommand::UnweldEdge { .. }
                 | InteractiveCommand::DupMeshEdge { .. }
                 | InteractiveCommand::DupMeshHoleBoundary
                 | InteractiveCommand::ExtractIsocurve { .. }
@@ -1587,6 +1619,14 @@ impl VibocerosApp {
                     } else {
                         "Input"
                     },
+                ));
+            }
+            InteractiveCommand::UnweldEdge { modify_normals } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "UnweldEdge {} ModifyNormals={}",
+                    format_model_point(point),
+                    if modify_normals { "Yes" } else { "No" },
                 ));
             }
             InteractiveCommand::DupMeshEdge {
@@ -2091,6 +2131,7 @@ impl VibocerosApp {
         let mut unify_mesh_normals_clicked = false;
         let mut weld_clicked = false;
         let mut unweld_clicked = false;
+        let mut unweld_edge_clicked = false;
         let mut combine_mesh_vertices_clicked = false;
         let mut cull_unused_mesh_vertices_clicked = false;
         let mut split_disjoint_mesh_clicked = false;
@@ -2251,6 +2292,10 @@ impl VibocerosApp {
                 unweld_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Unweld"))
                     .on_hover_text("Separate all selected-mesh face regions at zero degrees")
+                    .clicked();
+                unweld_edge_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Unweld Edge"))
+                    .on_hover_text("Pick a selected-mesh topology edge to make into a seam")
                     .clicked();
                 combine_mesh_vertices_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Combine Vertices"))
@@ -2497,6 +2542,8 @@ impl VibocerosApp {
             self.execute_command("Weld");
         } else if unweld_clicked {
             self.execute_command("Unweld");
+        } else if unweld_edge_clicked {
+            self.try_start_interactive_command("UnweldEdge");
         } else if combine_mesh_vertices_clicked {
             self.execute_command("CombineIdenticalMeshVertices");
         } else if cull_unused_mesh_vertices_clicked {
@@ -3423,6 +3470,48 @@ mod tests {
     }
 
     #[test]
+    fn interactive_unweld_edge_uses_one_topology_edge_pick() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, -3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("UnweldMeshEdge ModifyNormals=No"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::UnweldEdge {
+                modify_normals: false,
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("topology edge"));
+        app.accept_drafting_point(point(2.0, -0.1, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.is_selected(source));
+        let Geometry::Mesh(unwelded) = app.document.object(source).unwrap().geometry() else {
+            panic!("expected unwelded mesh")
+        };
+        assert_eq!(unwelded.vertices().len(), 6);
+        assert_eq!(app.document.undo_label(), Some("UnweldEdge"));
+        assert!(!app.try_start_interactive_command("UnweldEdge ModifyNormals=Maybe"));
+        assert!(
+            !app.try_start_interactive_command("UnweldEdge ModifyNormals=No ModifyNormals=Yes")
+        );
+    }
+
+    #[test]
     fn interactive_duplicate_mesh_edge_uses_one_logical_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -3789,6 +3878,7 @@ mod tests {
             "DupFaceBorder",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
+            "UnweldEdge",
             "ExtractIsocurve",
             "Revolve",
         ] {
