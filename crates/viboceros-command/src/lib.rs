@@ -326,6 +326,9 @@ impl CommandRegistry {
             .register(TriangulateMeshCommand)
             .expect("unique built-in command");
         registry
+            .register(SwapMeshEdgeCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractNonManifoldMeshEdgesCommand)
             .expect("unique built-in command");
         registry
@@ -7301,6 +7304,157 @@ impl Command for TriangulateMeshCommand {
     }
 }
 
+const SWAP_MESH_EDGE_USAGE: &str = "SwapMeshEdge (point|Edge=index)";
+
+#[derive(Clone, Debug, PartialEq)]
+enum SwapMeshEdgeSelection {
+    Point(Point3),
+    Edge(usize),
+}
+
+struct SwapMeshEdgeCommand;
+
+impl Command for SwapMeshEdgeCommand {
+    fn name(&self) -> &'static str {
+        "SwapMeshEdge"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selection = parse_swap_mesh_edge_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedSwapMeshEdgeGeometry);
+                };
+                Ok(MeshTopologySource {
+                    id: object.id(),
+                    mesh: mesh.clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selections = selected_swap_mesh_edges(&sources, &selection, document.tolerance())?;
+        let mesh_count = sources.len();
+        let mut replacements = Vec::new();
+        for (source_index, edge_index) in selections {
+            let source = &sources[source_index];
+            if let Some(swapped) = source
+                .mesh
+                .swap_topology_edge(edge_index, document.tolerance())?
+            {
+                replacements.push((source.id, Geometry::Mesh(swapped)));
+            }
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoSwappableMeshEdges);
+        }
+        let swapped_edge_count = replacements.len();
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Swapped {swapped_edge_count} mesh edge(s) in {changed_mesh_count} mesh(es); {} mesh(es) unchanged",
+            mesh_count - changed_mesh_count
+        ))
+    }
+}
+
+fn selected_swap_mesh_edges(
+    sources: &[MeshTopologySource],
+    selection: &SwapMeshEdgeSelection,
+    tolerance: Tolerance,
+) -> Result<Vec<(usize, usize)>, CommandError> {
+    match selection {
+        SwapMeshEdgeSelection::Edge(edge) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let edge_count = source.mesh.topology().edge_count();
+                if *edge >= edge_count {
+                    return Err(CommandError::SwapMeshEdgeIndexOutOfRange {
+                        edge: *edge,
+                        edge_count,
+                    });
+                }
+                Ok((source_index, *edge))
+            })
+            .collect(),
+        SwapMeshEdgeSelection::Point(target) => {
+            let mut best = None;
+            for (source_index, source) in sources.iter().enumerate() {
+                for (edge_index, edge) in source
+                    .mesh
+                    .wireframe_lines(tolerance)?
+                    .into_iter()
+                    .enumerate()
+                {
+                    let closest = edge.closest_point(*target, tolerance)?;
+                    let distance = closest.distance_to(*target)?;
+                    if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                        best = Some((distance, source_index, edge_index));
+                    }
+                }
+            }
+            let Some((_, source, edge)) = best else {
+                return Err(CommandError::NoSwappableMeshEdges);
+            };
+            Ok(vec![(source, edge)])
+        }
+    }
+}
+
+fn parse_swap_mesh_edge_arguments(
+    arguments: &[&str],
+) -> Result<SwapMeshEdgeSelection, CommandError> {
+    let mut edge_selection = None;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Edge") || option_name_eq(argument, "EdgeIndex") {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(SWAP_MESH_EDGE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        if let Some((name, value, consumed)) = option {
+            if (option_name_eq(name, "Edge") || option_name_eq(name, "EdgeIndex"))
+                && edge_selection.is_none()
+            {
+                edge_selection = Some(
+                    value
+                        .trim_start_matches('_')
+                        .parse::<usize>()
+                        .map_err(|_| CommandError::Usage(SWAP_MESH_EDGE_USAGE))?,
+                );
+            } else {
+                return Err(CommandError::Usage(SWAP_MESH_EDGE_USAGE));
+            }
+            index += consumed;
+        } else {
+            positional.push(argument);
+            index += 1;
+        }
+    }
+    if let Some(edge) = edge_selection {
+        require_consumed(&positional, 0, SWAP_MESH_EDGE_USAGE)?;
+        Ok(SwapMeshEdgeSelection::Edge(edge))
+    } else {
+        if positional.is_empty() {
+            return Err(CommandError::Usage(SWAP_MESH_EDGE_USAGE));
+        }
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, SWAP_MESH_EDGE_USAGE)?;
+        Ok(SwapMeshEdgeSelection::Point(point))
+    }
+}
+
 const EXTRACT_NON_MANIFOLD_USAGE: &str =
     "ExtractNonManifoldMeshEdges [ExtractHangingFacesOnly=Yes|No] [MinimumFaceCount=count]";
 
@@ -11956,6 +12110,17 @@ pub enum CommandError {
     #[error("TriangulateMesh supports selected meshes only")]
     UnsupportedTriangulateMeshGeometry,
 
+    #[error("SwapMeshEdge supports selected meshes only")]
+    UnsupportedSwapMeshEdgeGeometry,
+
+    #[error(
+        "SwapMeshEdge edge index {edge} is outside the selected mesh's edge count {edge_count}"
+    )]
+    SwapMeshEdgeIndexOutOfRange { edge: usize, edge_count: usize },
+
+    #[error("none of the selected mesh edges can be swapped")]
+    NoSwappableMeshEdges,
+
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
 
@@ -12154,7 +12319,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -16380,6 +16545,169 @@ mod tests {
             before.iter().collect::<Vec<_>>()
         );
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn swaps_mesh_edge_with_rhino_order_identity_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Retopology")
+            .unwrap();
+        let vertices = vec![
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(99.0, 99.0, 99.0).unwrap(),
+        ];
+        let mesh = TriangleMesh::try_new(
+            vertices.clone(),
+            vec![[0, 1, 2], [0, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let naked = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Swappable mesh")
+            .with_object_color(ColorRgb::new(211, 77, 31));
+        let source = document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh.clone()), attributes.clone())
+            .unwrap();
+        let unchanged = document
+            .add_geometry(Geometry::Mesh(naked.clone()))
+            .unwrap();
+        let group = document
+            .add_group(Some("Retopology group".to_owned()), [source])
+            .unwrap();
+        document
+            .select_objects_direct([source, unchanged], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "SwapMeshEdge Edge=1")
+                .unwrap(),
+            "Swapped 1 mesh edge(s) in 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert!(document.is_selected(source));
+        assert!(document.is_selected(unchanged));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        let Geometry::Mesh(swapped) = document.object(source).unwrap().geometry() else {
+            panic!("expected edge-swapped mesh")
+        };
+        assert_eq!(swapped.vertices(), vertices);
+        assert_eq!(swapped.triangles(), &[[0, 1, 3], [2, 3, 1]]);
+        assert_eq!(
+            document.object(unchanged).unwrap().geometry(),
+            &Geometry::Mesh(naked.clone())
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("SwapMeshEdge"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh.clone())
+        );
+        assert_eq!(
+            registry
+                .execute(&mut document, "SwapMeshEdge 1,1,0")
+                .unwrap(),
+            "Swapped 1 mesh edge(s) in 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        assert!(matches!(
+            document.object(source).unwrap().geometry(),
+            Geometry::Mesh(result) if result.triangles() == [[0, 1, 3], [2, 3, 1]]
+        ));
+    }
+
+    #[test]
+    fn swap_mesh_edge_rejects_unsupported_unswappable_and_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "SwapMeshEdge Edge=0"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        let triangle = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry(Geometry::Mesh(triangle.clone()))
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "SwapMeshEdge Edge=0"),
+            Err(CommandError::NoSwappableMeshEdges)
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SwapMeshEdge 1,0,0"),
+            Err(CommandError::NoSwappableMeshEdges)
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "SwapMeshEdge Edge=3"),
+            Err(CommandError::SwapMeshEdgeIndexOutOfRange {
+                edge: 3,
+                edge_count: 3,
+            })
+        ));
+        for invalid in [
+            "SwapMeshEdge",
+            "SwapMeshEdge Edge=",
+            "SwapMeshEdge Edge=-1",
+            "SwapMeshEdge Edge=0 Edge=1",
+            "SwapMeshEdge Edge=0 1,2,3",
+            "SwapMeshEdge Unknown=0",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let point = document
+            .add_geometry(Geometry::Point(Point3::try_new(5.0, 5.0, 5.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([source, point], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "SwapMeshEdge Edge=0"),
+            Err(CommandError::UnsupportedSwapMeshEdgeGeometry)
+        ));
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(triangle)
+        );
     }
 
     #[test]

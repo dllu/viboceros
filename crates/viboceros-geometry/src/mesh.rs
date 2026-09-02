@@ -337,6 +337,76 @@ impl TriangleMesh {
         ))
     }
 
+    /// Replaces one welded interior triangle edge with the opposite diagonal.
+    ///
+    /// The topology edge index uses the deterministic order exposed by
+    /// [`Self::wireframe_lines`]. A swap is available only when exactly two
+    /// consistently oriented triangle faces share both raw edge vertices.
+    /// Vertices and face slots are retained verbatim, matching Rhino's
+    /// `MeshTopologyEdgeList::SwapEdge` ordering. `None` indicates that the
+    /// selected edge is not swappable or that the replacement would violate
+    /// this mesh type's non-degenerate-face invariant.
+    pub fn swap_topology_edge(
+        &self,
+        edge_index: usize,
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, GeometryError> {
+        let data = self.topology_data();
+        let edge_count = data.edges.len();
+        let Some(incidence) = data.edges.values().nth(edge_index) else {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_index,
+                edge_count,
+            });
+        };
+        if incidence.count != 2 {
+            return Ok(None);
+        }
+        let first = incidence
+            .first_use
+            .expect("an edge used twice records its first face");
+        let second = incidence
+            .second_use
+            .expect("an edge used twice records its second face");
+        if first.forward == second.forward || first.raw_vertices != second.raw_vertices {
+            return Ok(None);
+        }
+        let (forward, backward) = if first.forward {
+            (first, second)
+        } else {
+            (second, first)
+        };
+        let MeshFace::Triangle(forward_face) = self.faces[forward.face] else {
+            return Ok(None);
+        };
+        let MeshFace::Triangle(backward_face) = self.faces[backward.face] else {
+            return Ok(None);
+        };
+        let forward_opposite = forward_face[(forward.side + 2) % 3];
+        let backward_opposite = backward_face[(backward.side + 2) % 3];
+        let [edge_start, edge_end] = forward.raw_vertices;
+        let backward_replacement = [edge_start, backward_opposite, forward_opposite];
+        let forward_replacement = [edge_end, forward_opposite, backward_opposite];
+        for (face_index, triangle) in [
+            (backward.face, backward_replacement),
+            (forward.face, forward_replacement),
+        ] {
+            match validate_triangle(&self.vertices, triangle, face_index, false, tolerance) {
+                Ok(()) => {}
+                Err(GeometryError::DegenerateTriangle { .. }) => return Ok(None),
+                Err(error) => return Err(error),
+            }
+        }
+
+        let mut faces = self.faces.clone();
+        faces[backward.face] = MeshFace::Triangle(backward_replacement);
+        faces[forward.face] = MeshFace::Triangle(forward_replacement);
+        Ok(Some(Self::from_validated_parts(
+            self.vertices.clone(),
+            faces,
+        )))
+    }
+
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
         let triangle = *self.triangles.get(index)?;
         Some([
@@ -2742,6 +2812,17 @@ mod tests {
         incidence.count > 1 && edge_uses_are_unwelded(&incidence.uses().collect::<Vec<_>>())
     }
 
+    fn topology_edge_index_between(mesh: &TriangleMesh, first: Point3, second: Point3) -> usize {
+        let data = mesh.topology_data();
+        data.edges
+            .keys()
+            .position(|&(a, b)| {
+                (data.topological_points[a] == first && data.topological_points[b] == second)
+                    || (data.topological_points[a] == second && data.topological_points[b] == first)
+            })
+            .expect("test topology edge exists")
+    }
+
     #[test]
     fn validates_indices_degeneracy_and_orientation() {
         let vertices = vec![
@@ -2896,6 +2977,142 @@ mod tests {
         assert_eq!(
             triangle_only.triangulate_quads(Tolerance::DEFAULT),
             Ok((triangle_only.clone(), 0))
+        );
+    }
+
+    #[test]
+    fn swaps_welded_triangle_edge_in_rhino_face_order() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(99.0, 99.0, 99.0),
+        ];
+        for (faces, expected) in [
+            (vec![[0, 1, 2], [0, 2, 3]], vec![[0, 1, 3], [2, 3, 1]]),
+            (vec![[0, 2, 3], [0, 1, 2]], vec![[2, 3, 1], [0, 1, 3]]),
+            (vec![[1, 2, 0], [2, 3, 0]], vec![[0, 1, 3], [2, 3, 1]]),
+        ] {
+            let mesh = TriangleMesh::try_new(vertices.clone(), faces, Tolerance::DEFAULT).unwrap();
+            let edge =
+                topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(2.0, 2.0, 0.0));
+            let swapped = mesh
+                .swap_topology_edge(edge, Tolerance::DEFAULT)
+                .unwrap()
+                .unwrap();
+            assert_eq!(swapped.vertices(), vertices);
+            assert_eq!(swapped.triangles(), expected);
+        }
+
+        let shuffled_vertices = vec![
+            point(2.0, 2.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(0.0, 2.0, 0.0),
+        ];
+        let shuffled = TriangleMesh::try_new(
+            shuffled_vertices.clone(),
+            vec![[2, 1, 0], [2, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&shuffled, point(0.0, 0.0, 0.0), point(2.0, 2.0, 0.0));
+        let swapped = shuffled
+            .swap_topology_edge(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(swapped.vertices(), shuffled_vertices);
+        assert_eq!(swapped.triangles(), &[[2, 1, 3], [0, 3, 1]]);
+    }
+
+    #[test]
+    fn rejects_mesh_edges_that_rhino_does_not_swap() {
+        let edge_points = [point(0.0, 0.0, 0.0), point(2.0, 2.0, 0.0)];
+        let rejected = [
+            TriangleMesh::try_new(
+                vec![
+                    edge_points[0],
+                    point(2.0, 0.0, 0.0),
+                    edge_points[1],
+                    point(0.0, 2.0, 0.0),
+                ],
+                vec![[0, 1, 2], [0, 3, 2]],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            TriangleMesh::try_new(
+                vec![
+                    edge_points[0],
+                    point(2.0, 0.0, 0.0),
+                    edge_points[1],
+                    edge_points[0],
+                    point(0.0, 2.0, 0.0),
+                    edge_points[1],
+                ],
+                vec![[0, 1, 2], [3, 5, 4]],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+            TriangleMesh::try_new_faces(
+                vec![
+                    edge_points[0],
+                    point(2.0, 0.0, 0.0),
+                    edge_points[1],
+                    point(0.0, 2.0, 0.0),
+                    point(-1.0, 1.0, 0.0),
+                ],
+                vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Quad([0, 2, 3, 4])],
+                Tolerance::DEFAULT,
+            )
+            .unwrap(),
+        ];
+        for mesh in rejected {
+            let edge = topology_edge_index_between(&mesh, edge_points[0], edge_points[1]);
+            assert_eq!(
+                mesh.swap_topology_edge(edge, Tolerance::DEFAULT).unwrap(),
+                None
+            );
+        }
+
+        let naked = TriangleMesh::try_new(
+            vec![edge_points[0], point(2.0, 0.0, 0.0), edge_points[1]],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&naked, edge_points[0], edge_points[1]);
+        assert_eq!(
+            naked.swap_topology_edge(edge, Tolerance::DEFAULT).unwrap(),
+            None
+        );
+    }
+
+    #[test]
+    fn swap_mesh_edge_preserves_the_valid_mesh_invariant() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(2.0, 0.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(2.0, 2.0, 0.0));
+        assert_eq!(
+            mesh.swap_topology_edge(edge, Tolerance::DEFAULT).unwrap(),
+            None
+        );
+        assert_eq!(
+            mesh.swap_topology_edge(mesh.topology().edge_count(), Tolerance::DEFAULT),
+            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: mesh.topology().edge_count(),
+                edge_count: mesh.topology().edge_count(),
+            })
         );
     }
 

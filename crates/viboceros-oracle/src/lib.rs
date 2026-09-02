@@ -315,6 +315,12 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
     },
+    MeshSwapEdge {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        edge_points: [[f64; 3]; 2],
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -392,6 +398,7 @@ impl Operation {
             | Self::MeshExtractFaces { id, .. }
             | Self::MeshDeleteFaces { id, .. }
             | Self::MeshTriangulate { id, .. }
+            | Self::MeshSwapEdge { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1337,6 +1344,43 @@ fn execute(
                 json!({
                     "converted_quad_count": converted_quad_count,
                     "mesh": polygon_mesh_value(&triangulated),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshSwapEdge {
+            vertices,
+            faces,
+            edge_points,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let endpoints = [point(edge_points[0])?, point(edge_points[1])?];
+            let edge_index = mesh
+                .wireframe_lines(tolerance)?
+                .into_iter()
+                .position(|edge| {
+                    (edge.start() == endpoints[0] && edge.end() == endpoints[1])
+                        || (edge.start() == endpoints[1] && edge.end() == endpoints[0])
+                })
+                .ok_or(ProbeError::FixtureInvariant(
+                    "mesh swap endpoints do not identify a topology edge",
+                ))?;
+            let (swapped, elapsed) = measure(iterations, || {
+                black_box(&mesh).swap_topology_edge(black_box(edge_index), tolerance)
+            })?;
+            let accepted = swapped.is_some();
+            (
+                json!({
+                    "accepted": accepted,
+                    "mesh": polygon_mesh_value(swapped.as_ref().unwrap_or(&mesh)),
                 }),
                 elapsed,
             )
@@ -5828,6 +5872,51 @@ mod tests {
                         [14, 16, 17],
                         [19, 20, 21],
                     ],
+                    "vertices": vertices,
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn swaps_mesh_edges_for_oracle_comparison() {
+        let vertices = vec![
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [2.0, 2.0, 0.0],
+            [0.0, 2.0, 0.0],
+        ];
+        let response = run_request(&request(vec![
+            Operation::MeshSwapEdge {
+                id: "swapped".to_owned(),
+                vertices: vertices.clone(),
+                faces: vec![vec![0, 1, 2], vec![0, 2, 3]],
+                edge_points: [[0.0, 0.0, 0.0], [2.0, 2.0, 0.0]],
+            },
+            Operation::MeshSwapEdge {
+                id: "orientation-conflict".to_owned(),
+                vertices: vertices.clone(),
+                faces: vec![vec![0, 1, 2], vec![0, 3, 2]],
+                edge_points: [[0.0, 0.0, 0.0], [2.0, 2.0, 0.0]],
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "mesh": {
+                    "faces": [[0, 1, 3], [2, 3, 1]],
+                    "vertices": vertices,
+                },
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "accepted": false,
+                "mesh": {
+                    "faces": [[0, 1, 2], [0, 3, 2]],
                     "vertices": vertices,
                 },
             })

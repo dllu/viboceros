@@ -130,6 +130,7 @@ ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
 DeleteFaces Faces=2,0
 TriangulateMesh
+SwapMeshEdge Edge=1
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -291,6 +292,12 @@ object. SubD input awaits a native SubD geometry type.
 diagonal, choosing A-C on exact ties. First triangles replace their source
 quads in place and second triangles append in source-quad order; vertices,
 object identity, attributes, groups, and selection remain unchanged.
+`SwapMeshEdge` replaces a welded interior edge shared by exactly two
+consistently oriented triangle faces with their opposite diagonal. Use
+`Edge=1` for the deterministic exact-location topology index, or omit it to
+pick one edge in the viewport. Vertex storage, face slots, object identity,
+attributes, groups, and selection are preserved. Swaps that would create a
+degenerate face are rejected to retain Viboceros's validated-mesh invariant.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the
