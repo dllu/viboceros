@@ -41,6 +41,7 @@ struct BridgeObject {
   uint8_t color_red = 0;
   uint8_t color_green = 0;
   uint8_t color_blue = 0;
+  int32_t wire_density = 1;
   uint32_t degree_u = 0;
   uint32_t degree_v = 0;
   size_t control_point_count_u = 0;
@@ -581,6 +582,7 @@ ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
       ON_Color(source.color_red, source.color_green, source.color_blue);
   attributes->SetColorSource(
       static_cast<ON::object_color_source>(source.color_source));
+  attributes->m_wire_density = source.wire_density;
   return attributes;
 }
 
@@ -1211,6 +1213,7 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         object.color_red = static_cast<uint8_t>(attributes->m_color.Red());
         object.color_green = static_cast<uint8_t>(attributes->m_color.Green());
         object.color_blue = static_cast<uint8_t>(attributes->m_color.Blue());
+        object.wire_density = attributes->m_wire_density;
         const int group_count = attributes->GroupCount();
         const int* group_list = attributes->GroupList();
         if (group_count > 0 && group_list == nullptr) {
@@ -1335,6 +1338,7 @@ extern "C" int32_t vibo_3dm_object(
            object.color_red,
            object.color_green,
            object.color_blue,
+           object.wire_density,
            object.degree_u,
            object.degree_v,
            object.control_point_count_u,

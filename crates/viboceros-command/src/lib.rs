@@ -8021,7 +8021,8 @@ impl Command for ImportThreeDmCommand {
                 ))
                 .with_color_source(document_color_source_from_3dm(object.color_source))
                 .with_visibility(object.visible)
-                .with_locked(object.locked);
+                .with_locked(object.locked)
+                .try_with_wire_density(object.wire_density)?;
             if let Some(name) = object.name {
                 attributes = attributes.with_name(name);
             }
@@ -8142,6 +8143,7 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError>
                 color_source: three_dm_color_source_from_document(
                     object.attributes().color_source(),
                 ),
+                wire_density: object.attributes().wire_density(),
                 group_indices: group_indices_by_object
                     .get(&object.id())
                     .cloned()

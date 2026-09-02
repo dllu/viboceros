@@ -2997,6 +2997,7 @@ fn three_dm_group_round_trip(
                 locked: false,
                 object_color,
                 color_source,
+                wire_density: 1,
                 group_indices,
             })
         },

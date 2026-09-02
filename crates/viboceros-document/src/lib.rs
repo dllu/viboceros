@@ -16,6 +16,10 @@ use viboceros_geometry::{
     TriangleMesh,
 };
 
+pub const MIN_SURFACE_WIRE_DENSITY: i32 = -1;
+pub const MAX_SURFACE_WIRE_DENSITY: i32 = 99;
+pub const DEFAULT_SURFACE_WIRE_DENSITY: i32 = 1;
+
 use duplicate::DuplicateGeometryFamily;
 use history::{Edit, HISTORY_LIMIT, History, HistoryEntry, PendingTransaction};
 
@@ -292,6 +296,7 @@ pub struct ObjectAttributes {
     layer_id: LayerId,
     object_color: ColorRgb,
     color_source: ObjectColorSource,
+    wire_density: i32,
     visible: bool,
     locked: bool,
 }
@@ -303,6 +308,7 @@ impl ObjectAttributes {
             layer_id,
             object_color: ColorRgb::BLACK,
             color_source: ObjectColorSource::Layer,
+            wire_density: DEFAULT_SURFACE_WIRE_DENSITY,
             visible: true,
             locked: false,
         }
@@ -328,6 +334,14 @@ impl ObjectAttributes {
     pub const fn with_color_source(mut self, source: ObjectColorSource) -> Self {
         self.color_source = source;
         self
+    }
+
+    pub fn try_with_wire_density(mut self, wire_density: i32) -> Result<Self, DocumentError> {
+        if !(MIN_SURFACE_WIRE_DENSITY..=MAX_SURFACE_WIRE_DENSITY).contains(&wire_density) {
+            return Err(DocumentError::InvalidSurfaceWireDensity(wire_density));
+        }
+        self.wire_density = wire_density;
+        Ok(self)
     }
 
     pub const fn with_visibility(mut self, visible: bool) -> Self {
@@ -361,6 +375,10 @@ impl ObjectAttributes {
 
     pub const fn color_source(&self) -> ObjectColorSource {
         self.color_source
+    }
+
+    pub const fn wire_density(&self) -> i32 {
+        self.wire_density
     }
 
     /// Resolves display color in the current material- and instance-free
@@ -2410,6 +2428,11 @@ pub enum DocumentError {
     #[error("the requested object copies exceed addressable memory")]
     TooManyObjectCopies,
 
+    #[error(
+        "surface wire density must be from {MIN_SURFACE_WIRE_DENSITY} through {MAX_SURFACE_WIRE_DENSITY}, got {0}"
+    )]
+    InvalidSurfaceWireDensity(i32),
+
     #[error("a group must contain at least one object")]
     EmptyGroup,
 
@@ -2826,6 +2849,35 @@ mod tests {
             document.layer(document.current_layer_id()).unwrap().name(),
             "Default"
         );
+    }
+
+    #[test]
+    fn surface_wire_density_is_validated_at_attribute_construction() {
+        let document = Document::default();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id());
+        assert_eq!(attributes.wire_density(), DEFAULT_SURFACE_WIRE_DENSITY);
+        assert_eq!(
+            attributes
+                .clone()
+                .try_with_wire_density(MIN_SURFACE_WIRE_DENSITY)
+                .unwrap()
+                .wire_density(),
+            MIN_SURFACE_WIRE_DENSITY
+        );
+        assert_eq!(
+            attributes
+                .clone()
+                .try_with_wire_density(MAX_SURFACE_WIRE_DENSITY)
+                .unwrap()
+                .wire_density(),
+            MAX_SURFACE_WIRE_DENSITY
+        );
+        for invalid in [MIN_SURFACE_WIRE_DENSITY - 1, MAX_SURFACE_WIRE_DENSITY + 1] {
+            assert!(matches!(
+                attributes.clone().try_with_wire_density(invalid),
+                Err(DocumentError::InvalidSurfaceWireDensity(actual)) if actual == invalid
+            ));
+        }
     }
 
     #[test]

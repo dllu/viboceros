@@ -518,9 +518,10 @@ curves, untrimmed NURBS surfaces, triangle meshes, and editable rational NURBS
 B-reps. B-rep interchange retains shared vertices and edges, exact edge and
 parameter-space trim curves, face surfaces and orientation, outer and inner
 loops, boundary/mated/seam/singular trims, and modelling tolerances. Layer and
-object state are also preserved, including the raw RGB display color and its
-layer/object/material/parent source. Named group definitions and ordered
-membership survive round trips, including overlapping and empty groups.
+object state are also preserved, including the raw RGB display color, its
+layer/object/material/parent source, and surface wire density. Named group
+definitions and ordered membership survive round trips, including overlapping
+and empty groups.
 Circles, arcs, ellipses, and polylines are exported without approximation as
 rational NURBS curves; canonical degree-one curves return as editable
 polylines. Unsupported object types and specialized B-rep trim forms are

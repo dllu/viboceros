@@ -63,6 +63,7 @@ pub struct ThreeDmObject {
     pub locked: bool,
     pub object_color: [u8; 3],
     pub color_source: ThreeDmColorSource,
+    pub wire_density: i32,
     /// Indices into [`ThreeDmModel::groups`] in source-attribute order.
     pub group_indices: Vec<usize>,
 }
@@ -77,6 +78,7 @@ impl ThreeDmObject {
             locked: false,
             object_color: [0, 0, 0],
             color_source: ThreeDmColorSource::Layer,
+            wire_density: 1,
             group_indices: Vec::new(),
         }
     }
@@ -227,6 +229,7 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             color_red: object.object_color[0],
             color_green: object.object_color[1],
             color_blue: object.object_color[2],
+            wire_density: object.wire_density,
             degree_u: payload.degree_u,
             degree_v: payload.degree_v,
             control_point_count_u: payload.control_point_count_u,
@@ -587,6 +590,7 @@ fn decode_object(
         locked: info.locked != 0,
         object_color: [info.color_red, info.color_green, info.color_blue],
         color_source,
+        wire_density: info.wire_density,
         group_indices,
     })
 }
@@ -637,6 +641,12 @@ fn validate_model(model: &ThreeDmModel) -> Result<(), ThreeDmError> {
                     "object {index} repeats group {group_index}"
                 )));
             }
+        }
+        if !(-1..=99).contains(&object.wire_density) {
+            return Err(ThreeDmError::InvalidModel(format!(
+                "object {index} has wire density {} outside -1 through 99",
+                object.wire_density
+            )));
         }
     }
     Ok(())
@@ -872,6 +882,7 @@ mod ffi {
         pub color_red: u8,
         pub color_green: u8,
         pub color_blue: u8,
+        pub wire_density: i32,
         pub degree_u: u32,
         pub degree_v: u32,
         pub control_point_count_u: usize,
@@ -910,6 +921,7 @@ mod ffi {
         pub color_red: u8,
         pub color_green: u8,
         pub color_blue: u8,
+        pub wire_density: i32,
         pub degree_u: u32,
         pub degree_v: u32,
         pub control_point_count_u: usize,
@@ -1162,6 +1174,7 @@ mod tests {
                     locked: true,
                     object_color: [90, 80, 70],
                     color_source: ThreeDmColorSource::Parent,
+                    wire_density: 7,
                     group_indices: vec![1],
                 },
                 ThreeDmObject {
@@ -1203,6 +1216,7 @@ mod tests {
             assert_eq!(decoded.locked, original.locked);
             assert_eq!(decoded.object_color, original.object_color);
             assert_eq!(decoded.color_source, original.color_source);
+            assert_eq!(decoded.wire_density, original.wire_density);
             assert_eq!(decoded.group_indices, original.group_indices);
             match (&decoded.geometry, &original.geometry) {
                 (ThreeDmGeometry::Brep(decoded), ThreeDmGeometry::Brep(original)) => {
@@ -1357,7 +1371,22 @@ mod tests {
         assert!(matches!(
             write_3dm_file(
                 temporary_path("repeated-group.3dm"),
-                &ThreeDmModel::new(vec![layer], vec![group], vec![repeated_membership],),
+                &ThreeDmModel::new(vec![layer.clone()], vec![group], vec![repeated_membership],),
+            ),
+            Err(ThreeDmError::InvalidModel(_))
+        ));
+
+        let invalid_density = ThreeDmObject {
+            wire_density: 100,
+            ..ThreeDmObject::new(
+                ThreeDmGeometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()),
+                0,
+            )
+        };
+        assert!(matches!(
+            write_3dm_file(
+                temporary_path("invalid-wire-density.3dm"),
+                &ThreeDmModel::new(vec![layer], Vec::new(), vec![invalid_density]),
             ),
             Err(ThreeDmError::InvalidModel(_))
         ));
