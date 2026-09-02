@@ -1,0 +1,97 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_cone",
+      "id": "open-four",
+      "origin": [0, 0, 5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height_to_base": -5,
+      "vertical": 1,
+      "around": 4,
+      "solid": false,
+      "quad_caps": false
+    },
+    {
+      "op": "mesh_cone",
+      "id": "closed-triangle-five",
+      "origin": [1, 2, 8],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height_to_base": -5,
+      "vertical": 2,
+      "around": 5,
+      "solid": true,
+      "quad_caps": false
+    },
+    {
+      "op": "mesh_cone",
+      "id": "closed-quad-six",
+      "origin": [0, 0, 4],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 3,
+      "height_to_base": -4,
+      "vertical": 3,
+      "around": 6,
+      "solid": true,
+      "quad_caps": true
+    },
+    {
+      "op": "mesh_cone",
+      "id": "closed-quad-four",
+      "origin": [0, 0, 5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height_to_base": -5,
+      "vertical": 2,
+      "around": 4,
+      "solid": true,
+      "quad_caps": true
+    },
+    {
+      "op": "mesh_cone",
+      "id": "odd-quad-fallback",
+      "origin": [0, 0, 5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height_to_base": -5,
+      "vertical": 3,
+      "around": 7,
+      "solid": true,
+      "quad_caps": true
+    },
+    {
+      "op": "mesh_cone",
+      "id": "positive-height-to-base",
+      "origin": [2, 3, -4],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 1.5,
+      "height_to_base": 6,
+      "vertical": 2,
+      "around": 8,
+      "solid": true,
+      "quad_caps": false
+    },
+    {
+      "op": "mesh_cone",
+      "id": "oblique-offset",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radius": 1.5,
+      "height_to_base": -5,
+      "vertical": 2,
+      "around": 6,
+      "solid": true,
+      "quad_caps": true
+    }
+  ]
+}

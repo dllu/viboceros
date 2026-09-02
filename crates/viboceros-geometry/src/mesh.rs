@@ -19,7 +19,10 @@ pub const MAX_MESH_BOX_FACES: usize = 1_000_000;
 /// Resource ceiling for one generated mesh-cylinder shell.
 pub const MAX_MESH_CYLINDER_FACES: usize = 1_000_000;
 
-/// Polygon style used for a generated mesh-cylinder cap.
+/// Resource ceiling for one generated mesh-cone shell.
+pub const MAX_MESH_CONE_FACES: usize = 1_000_000;
+
+/// Polygon style used for a generated radial mesh-primitive cap.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MeshCapFaceStyle {
     Triangles,
@@ -34,6 +37,15 @@ pub struct MeshCylinderOptions {
     pub cap_bottom: bool,
     pub cap_top: bool,
     pub circumscribe: bool,
+    pub cap_style: MeshCapFaceStyle,
+}
+
+/// Topology controls for an exact polygonal cone primitive.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MeshConeOptions {
+    pub vertical_count: usize,
+    pub around_count: usize,
+    pub solid: bool,
     pub cap_style: MeshCapFaceStyle,
 }
 
@@ -587,7 +599,7 @@ impl TriangleMesh {
             .checked_mul(options.around_count)
             .ok_or(GeometryError::TooManyMeshFaces)?;
         let cap_count = usize::from(options.cap_bottom) + usize::from(options.cap_top);
-        let cap_face_count = mesh_cylinder_cap_face_count(options);
+        let cap_face_count = mesh_radial_cap_face_count(options.around_count, options.cap_style);
         let face_count = cap_face_count
             .checked_mul(cap_count)
             .and_then(|caps| wall_face_count.checked_add(caps))
@@ -679,7 +691,7 @@ impl TriangleMesh {
             }
         }
         if options.cap_bottom {
-            append_mesh_cylinder_cap(
+            append_mesh_radial_cap(
                 &mut vertices,
                 &mut faces,
                 frame,
@@ -689,12 +701,171 @@ impl TriangleMesh {
             )?;
         }
         if options.cap_top {
-            append_mesh_cylinder_cap(
+            append_mesh_radial_cap(
                 &mut vertices,
                 &mut faces,
                 frame,
                 &radial_coordinates,
                 heights[1],
+                options.cap_style,
+            )?;
+        }
+        debug_assert_eq!(vertices.len(), vertex_count);
+        debug_assert_eq!(faces.len(), face_count);
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's ordered polygonal cone wall and optional base cap.
+    ///
+    /// The frame origin is the apex and `height_to_base` is the signed base
+    /// offset on frame Z, matching `Mesh.CreateFromCone`. The apex is stored
+    /// once, followed by progressively larger height-major rings. A requested
+    /// cap has independent raw vertices that exact-location topology joins to
+    /// the final wall ring.
+    pub fn try_cone_grid(
+        apex_frame: Frame3,
+        radius: Real,
+        height_to_base: Real,
+        options: MeshConeOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([radius, height_to_base], "mesh-cone dimensions")?;
+        if options.vertical_count == 0 || options.around_count < 3 {
+            return Err(GeometryError::InvalidMeshConeFaceCount {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            });
+        }
+        if radius <= 0.0 || height_to_base == 0.0 {
+            return Err(GeometryError::InvalidMeshConeDimensions);
+        }
+
+        let wall_face_count = options
+            .vertical_count
+            .checked_mul(options.around_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        let cap_face_count = if options.solid {
+            mesh_radial_cap_face_count(options.around_count, options.cap_style)
+        } else {
+            0
+        };
+        let face_count = wall_face_count
+            .checked_add(cap_face_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_CONE_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+
+        let wall_vertex_count = options
+            .vertical_count
+            .checked_mul(options.around_count)
+            .and_then(|rings| rings.checked_add(1))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let cap_vertex_count = if !options.solid {
+            0
+        } else if options.cap_style == MeshCapFaceStyle::Quadrilaterals && options.around_count == 4
+        {
+            options.around_count
+        } else {
+            options
+                .around_count
+                .checked_add(1)
+                .ok_or(GeometryError::TooManyMeshVertices)?
+        };
+        let vertex_count = wall_vertex_count
+            .checked_add(cap_vertex_count)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if vertex_count
+            .checked_sub(1)
+            .is_some_and(|last_index| u32::try_from(last_index).is_err())
+        {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+
+        let angle_step = std::f64::consts::TAU / options.around_count as Real;
+        let radius_step = radius / options.vertical_count as Real;
+        let height_step = height_to_base / options.vertical_count as Real;
+        require_finite([angle_step, radius_step, height_step], "mesh-cone sampling")?;
+
+        let mut unit_radial_coordinates = Vec::new();
+        unit_radial_coordinates
+            .try_reserve_exact(options.around_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let mut base_radial_coordinates = Vec::new();
+        base_radial_coordinates
+            .try_reserve_exact(options.around_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for around_index in 0..options.around_count {
+            let angle = (around_index as Real).mul_add(angle_step, 0.0);
+            let (sine, cosine) = angle.sin_cos();
+            unit_radial_coordinates.push([cosine, sine]);
+            base_radial_coordinates.push([radius * cosine, radius * sine]);
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        vertices.push(apex_frame.origin());
+        for vertical_index in 1..=options.vertical_count {
+            let ring_radius = mesh_grid_sample(
+                [0.0, radius],
+                radius_step,
+                options.vertical_count,
+                vertical_index,
+            );
+            let height = mesh_grid_sample(
+                [0.0, height_to_base],
+                height_step,
+                options.vertical_count,
+                vertical_index,
+            );
+            for [cosine, sine] in &unit_radial_coordinates {
+                vertices.push(mesh_frame_point(
+                    apex_frame,
+                    ring_radius * cosine,
+                    ring_radius * sine,
+                    height,
+                )?);
+            }
+        }
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for around_index in 0..options.around_count {
+            let next = (around_index + 1) % options.around_count;
+            faces.push(MeshFace::Triangle([
+                0,
+                u32::try_from(1 + next).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(1 + around_index).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            ]));
+        }
+        for vertical_index in 0..options.vertical_count.saturating_sub(1) {
+            let inner_offset = 1 + vertical_index * options.around_count;
+            let outer_offset = inner_offset + options.around_count;
+            for around_index in 0..options.around_count {
+                let next = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(inner_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(inner_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(outer_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(outer_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        }
+        if options.solid {
+            append_mesh_radial_cap(
+                &mut vertices,
+                &mut faces,
+                apex_frame,
+                &base_radial_coordinates,
+                height_to_base,
                 options.cap_style,
             )?;
         }
@@ -3635,21 +3806,19 @@ fn mesh_grid_sample(interval: [Real; 2], step: Real, count: usize, index: usize)
     }
 }
 
-fn mesh_cylinder_cap_face_count(options: MeshCylinderOptions) -> usize {
-    if options.cap_style == MeshCapFaceStyle::Quadrilaterals
-        && options.around_count.is_multiple_of(2)
-    {
-        if options.around_count == 4 {
+fn mesh_radial_cap_face_count(around_count: usize, style: MeshCapFaceStyle) -> usize {
+    if style == MeshCapFaceStyle::Quadrilaterals && around_count.is_multiple_of(2) {
+        if around_count == 4 {
             1
         } else {
-            options.around_count / 2
+            around_count / 2
         }
     } else {
-        options.around_count
+        around_count
     }
 }
 
-fn append_mesh_cylinder_cap(
+fn append_mesh_radial_cap(
     vertices: &mut Vec<Point3>,
     faces: &mut Vec<MeshFace>,
     frame: Frame3,
@@ -4583,6 +4752,166 @@ mod tests {
                 2.0,
                 [0.0, 5.0],
                 options(MAX_MESH_CYLINDER_FACES + 1, 3),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_mesh_cone_rings_apex_and_caps() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 5.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let open = TriangleMesh::try_cone_grid(
+            frame,
+            2.0,
+            -5.0,
+            MeshConeOptions {
+                vertical_count: 1,
+                around_count: 4,
+                solid: false,
+                cap_style: MeshCapFaceStyle::Triangles,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(open.vertices().len(), 5);
+        assert_eq!(open.face_count(), 4);
+        assert_eq!(open.vertices()[0], point(0.0, 0.0, 5.0));
+        assert_eq!(open.vertices()[1], point(2.0, 0.0, 0.0));
+        assert_eq!(
+            open.faces(),
+            &[
+                MeshFace::Triangle([0, 2, 1]),
+                MeshFace::Triangle([0, 3, 2]),
+                MeshFace::Triangle([0, 4, 3]),
+                MeshFace::Triangle([0, 1, 4]),
+            ]
+        );
+        assert_eq!(open.topology().boundary_edge_count(), 4);
+
+        let triangles = TriangleMesh::try_cone_grid(
+            frame,
+            2.0,
+            -5.0,
+            MeshConeOptions {
+                vertical_count: 2,
+                around_count: 5,
+                solid: true,
+                cap_style: MeshCapFaceStyle::Triangles,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(triangles.vertices().len(), 17);
+        assert_eq!(triangles.face_count(), 15);
+        assert_eq!(triangles.faces()[0], MeshFace::Triangle([0, 2, 1]));
+        assert_eq!(triangles.faces()[5], MeshFace::Quad([1, 2, 7, 6]));
+        assert_eq!(triangles.faces()[10], MeshFace::Triangle([11, 12, 13]));
+        assert_eq!(triangles.vertices()[11], point(0.0, 0.0, 0.0));
+        assert!(triangles.topology().is_solid());
+        assert!(triangles.signed_volume().unwrap() < 0.0);
+
+        let quads = TriangleMesh::try_cone_grid(
+            frame,
+            3.0,
+            -5.0,
+            MeshConeOptions {
+                vertical_count: 3,
+                around_count: 6,
+                solid: true,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(quads.vertices().len(), 26);
+        assert_eq!(quads.face_count(), 21);
+        assert_eq!(quads.faces()[6], MeshFace::Quad([1, 2, 8, 7]));
+        assert_eq!(quads.faces()[18], MeshFace::Quad([19, 20, 21, 22]));
+        assert_eq!(quads.faces()[20], MeshFace::Quad([19, 24, 25, 20]));
+
+        let four = TriangleMesh::try_cone_grid(
+            frame,
+            2.0,
+            5.0,
+            MeshConeOptions {
+                vertical_count: 2,
+                around_count: 4,
+                solid: true,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(four.vertices().len(), 13);
+        assert_eq!(four.face_count(), 9);
+        assert_eq!(four.faces()[8], MeshFace::Quad([9, 10, 11, 12]));
+        assert!(four.topology().is_solid());
+        assert!(four.signed_volume().unwrap() > 0.0);
+    }
+
+    #[test]
+    fn mesh_cone_rejects_invalid_counts_dimensions_and_resource_overflow() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 5.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let options = |vertical_count, around_count| MeshConeOptions {
+            vertical_count,
+            around_count,
+            solid: true,
+            cap_style: MeshCapFaceStyle::Triangles,
+        };
+        assert_eq!(
+            TriangleMesh::try_cone_grid(frame, 2.0, -5.0, options(0, 4), Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshConeFaceCount {
+                vertical_count: 0,
+                around_count: 4,
+            })
+        );
+        assert!(matches!(
+            TriangleMesh::try_cone_grid(frame, 2.0, -5.0, options(1, 2), Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshConeFaceCount { .. })
+        ));
+        for (radius, height) in [(0.0, -5.0), (2.0, 0.0)] {
+            assert_eq!(
+                TriangleMesh::try_cone_grid(
+                    frame,
+                    radius,
+                    height,
+                    options(1, 4),
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidMeshConeDimensions)
+            );
+        }
+        assert!(matches!(
+            TriangleMesh::try_cone_grid(
+                frame,
+                2.0,
+                Real::INFINITY,
+                options(1, 4),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::NonFinite {
+                context: "mesh-cone dimensions"
+            })
+        ));
+        assert_eq!(
+            TriangleMesh::try_cone_grid(
+                frame,
+                2.0,
+                -5.0,
+                options(MAX_MESH_CONE_FACES + 1, 3),
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::TooManyMeshFaces)

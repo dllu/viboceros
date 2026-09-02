@@ -37,6 +37,7 @@ SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2
+MeshCone 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshCylinder 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
@@ -239,6 +240,12 @@ and `ZCount` set the side divisions and default to 1. Each of Rhino's bottom,
 top, front, right, back, and left grids retains independent raw vertices while
 exact-location topology forms one outward-oriented solid; one box is bounded
 to one million faces and invalid extents fail atomically.
+`MeshCone` draws a polygonal cone from a base center, numeric or picked radius,
+and signed apex height. `VerticalFaces` and `AroundFaces` default to 10,
+`Solid=Yes` adds a topology-joined base cap, and `CapFaceStyle=Tri|Quad` selects
+triangle fans or Rhino's even-sided quad fan; odd side counts fall back to
+triangles. `Axis=x,y,z` orients typed commands, the three-pick toolbar workflow
+uses World Z, and one cone is bounded to one million faces.
 `MeshCylinder` draws a polygonal cylinder from a center, numeric or picked
 radius, and signed height. `VerticalFaces` and `AroundFaces` default to 10,
 `Solid=Yes` adds independently stored but topology-joined caps, and

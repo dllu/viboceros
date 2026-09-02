@@ -238,6 +238,17 @@ pub enum GeometryError {
     #[error("mesh-cylinder radius must be positive and its height interval strictly increasing")]
     InvalidMeshCylinderDimensions,
 
+    #[error(
+        "mesh-cone face counts require at least one vertical face and three around faces, got {vertical_count} by {around_count}"
+    )]
+    InvalidMeshConeFaceCount {
+        vertical_count: usize,
+        around_count: usize,
+    },
+
+    #[error("mesh-cone radius must be positive and its height nonzero")]
+    InvalidMeshConeDimensions,
+
     #[error("a mesh face subset must contain at least one face")]
     EmptyMeshFaceSubset,
 

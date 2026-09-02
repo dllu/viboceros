@@ -44,9 +44,9 @@ pub use interpolation::{
 };
 pub use line::LineSegment;
 pub use mesh::{
-    MAX_MESH_BOX_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MeshCapFaceStyle,
-    MeshCylinderOptions, MeshEdgeFilter, MeshFace, MeshFaceExtraction, MeshHoleFill, MeshTopology,
-    TriangleMesh,
+    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES,
+    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFace,
+    MeshFaceExtraction, MeshHoleFill, MeshTopology, TriangleMesh,
 };
 pub use morph::{PointMorph, SurfacePointMorph};
 pub use nurbs::{ControlPointCurveClosure, NurbsCurve, WeightedPoint3};

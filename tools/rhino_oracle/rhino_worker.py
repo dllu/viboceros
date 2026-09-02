@@ -4825,6 +4825,39 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_cylinder)
 
+    if kind == "mesh_cone":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "mesh-cone radius")
+        height_to_base = _finite(
+            operation["height_to_base"], "mesh-cone height"
+        )
+        cone = Rhino.Geometry.Cone(plane, height_to_base, radius)
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        solid = bool(operation["solid"])
+        quad_caps = bool(operation["quad_caps"])
+
+        def create_mesh_cone():
+            mesh = Rhino.Geometry.Mesh.CreateFromCone(
+                cone,
+                vertical,
+                around,
+                solid,
+                quad_caps,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh cone")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_cone)
+
     if kind == "nurbs_surface_mesh":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
