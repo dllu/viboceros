@@ -1,8 +1,10 @@
+use std::collections::BTreeMap;
+
 use spade::{
     ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
 };
 
-use crate::nurbs::find_span_in_knots;
+use crate::nurbs::{CURVE_COINCIDENCE_ABSOLUTE, find_span_in_knots};
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
     NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
@@ -1045,6 +1047,102 @@ impl Brep {
         &self.faces
     }
 
+    /// Duplicates every face as an independent, validated one-face B-rep.
+    ///
+    /// Source-order vertices and edges used by each face are compacted and
+    /// remapped. Edges formerly mated to another face become boundaries,
+    /// while multiple uses within the same loop remain seams. This matches
+    /// the topology produced by Rhino's `BrepFace.DuplicateFace`/`Explode`
+    /// path without approximating trims or underlying surfaces.
+    pub fn explode_faces(&self, tolerance: Tolerance) -> Result<Vec<Self>, GeometryError> {
+        let mut parts = Vec::with_capacity(self.faces.len());
+        for face in &self.faces {
+            let mut used_vertices = vec![false; self.vertices.len()];
+            let mut used_edges = vec![false; self.edges.len()];
+            let mut total_edge_uses = vec![0_usize; self.edges.len()];
+            let mut loop_edge_uses = Vec::with_capacity(face.loops.len());
+            for face_loop in &face.loops {
+                let mut uses = BTreeMap::new();
+                for trim in &face_loop.trims {
+                    for vertex in trim.vertices {
+                        used_vertices[vertex] = true;
+                    }
+                    if let Some(edge) = trim.edge {
+                        used_edges[edge] = true;
+                        total_edge_uses[edge] += 1;
+                        *uses.entry(edge).or_insert(0_usize) += 1;
+                        for vertex in self.edges[edge].vertices {
+                            used_vertices[vertex] = true;
+                        }
+                    }
+                }
+                loop_edge_uses.push(uses);
+            }
+
+            let mut vertex_map = vec![usize::MAX; self.vertices.len()];
+            let mut vertices =
+                Vec::with_capacity(used_vertices.iter().filter(|used| **used).count());
+            for (source, vertex) in self.vertices.iter().copied().enumerate() {
+                if used_vertices[source] {
+                    vertex_map[source] = vertices.len();
+                    vertices.push(vertex);
+                }
+            }
+            let mut edge_map = vec![usize::MAX; self.edges.len()];
+            let mut edges = Vec::with_capacity(used_edges.iter().filter(|used| **used).count());
+            for (source, edge) in self.edges.iter().enumerate() {
+                if used_edges[source] {
+                    edge_map[source] = edges.len();
+                    edges.push(BrepEdge::try_new(
+                        edge.vertices.map(|vertex| vertex_map[vertex]),
+                        edge.curve.clone(),
+                        edge.tolerance,
+                    )?);
+                }
+            }
+
+            let loops = face
+                .loops
+                .iter()
+                .enumerate()
+                .map(|(loop_index, face_loop)| {
+                    let trims = face_loop
+                        .trims
+                        .iter()
+                        .map(|trim| {
+                            let trim_type = match trim.edge {
+                                None => BrepTrimType::Singular,
+                                Some(edge) if total_edge_uses[edge] == 1 => BrepTrimType::Boundary,
+                                Some(edge)
+                                    if loop_edge_uses[loop_index]
+                                        .get(&edge)
+                                        .is_some_and(|uses| *uses >= 2) =>
+                                {
+                                    BrepTrimType::Seam
+                                }
+                                Some(_) => BrepTrimType::Mated,
+                            };
+                            BrepTrim::try_new(
+                                trim.vertices.map(|vertex| vertex_map[vertex]),
+                                trim.edge.map(|edge| edge_map[edge]),
+                                trim.reversed_3d,
+                                trim.curve.clone(),
+                                trim_type,
+                                trim.iso,
+                                trim.tolerance,
+                            )
+                        })
+                        .collect::<Result<Vec<_>, _>>()?;
+                    BrepLoop::try_new(face_loop.loop_type, trims)
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            let face = BrepFace::try_new(face.surface.clone(), face.reversed, loops)?;
+            recompute_duplicated_face_vertex_tolerances(&mut vertices, &edges, &face)?;
+            parts.push(Self::try_new(vertices, edges, vec![face], tolerance)?);
+        }
+        Ok(parts)
+    }
+
     /// Returns every topological edge once, followed by the exact trimmed
     /// interior isocurves selected by the OpenNURBS wire-density rules.
     pub fn wireframe_curves(
@@ -1861,6 +1959,47 @@ impl Brep {
         }
         uses
     }
+}
+
+fn recompute_duplicated_face_vertex_tolerances(
+    vertices: &mut [BrepVertex],
+    edges: &[BrepEdge],
+    face: &BrepFace,
+) -> Result<(), GeometryError> {
+    for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
+        let point = vertex.point;
+        let mut maximum_distance = 0.0_f64;
+        for edge in edges {
+            let domain = edge.curve.domain();
+            for (end, parameter) in [*domain.start(), *domain.end()].into_iter().enumerate() {
+                if edge.vertices[end] == vertex_index {
+                    maximum_distance =
+                        maximum_distance.max(point.distance_to(edge.curve.evaluate(parameter)?)?);
+                }
+            }
+        }
+        for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
+            if trim.edge.is_none() {
+                continue;
+            }
+            let parameters = [trim.curve.start_point()?, trim.curve.end_point()?];
+            for (end, parameter) in parameters.into_iter().enumerate() {
+                if trim.vertices[end] == vertex_index {
+                    maximum_distance = maximum_distance.max(
+                        point.distance_to(face.surface.evaluate(parameter.x(), parameter.y())?)?,
+                    );
+                }
+            }
+        }
+        vertex.tolerance = if maximum_distance <= CURVE_COINCIDENCE_ABSOLUTE {
+            0.0
+        } else {
+            let expanded = maximum_distance * 1.001;
+            require_finite([expanded], "duplicated B-rep face vertex tolerance")?;
+            expanded
+        };
+    }
+    Ok(())
 }
 
 fn push_brep_wire(curves: &mut Vec<NurbsCurve>, curve: NurbsCurve) -> Result<(), GeometryError> {
@@ -3849,6 +3988,88 @@ mod tests {
                     .unwrap()
                     .triangles()
                     .is_empty()
+            );
+        }
+    }
+
+    #[test]
+    fn exploding_faces_compacts_topology_and_reclassifies_only_mated_edges() {
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut box_brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        box_brep.vertices[0].tolerance = 7.0;
+        let box_parts = box_brep.explode_faces(Tolerance::DEFAULT).unwrap();
+        assert_eq!(box_parts.len(), 6);
+        for (part, source_face) in box_parts.iter().zip(box_brep.faces()) {
+            assert_eq!(part.vertices().len(), 4);
+            assert_eq!(part.edges().len(), 4);
+            assert_eq!(part.faces().len(), 1);
+            assert!(!part.is_closed());
+            assert_eq!(part.faces()[0].surface(), source_face.surface());
+            assert_eq!(part.faces()[0].is_reversed(), source_face.is_reversed());
+            assert!(
+                part.vertices()
+                    .iter()
+                    .all(|vertex| vertex.tolerance() == 0.0)
+            );
+            assert!(
+                part.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .all(|trim| trim.trim_type() == BrepTrimType::Boundary)
+            );
+        }
+
+        let circle = Circle3::try_new(
+            point(10.0, 0.0, 0.0),
+            2.0,
+            UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let cylinder = Brep::try_extruded_curve(
+            &circle,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 5.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder_parts = cylinder.explode_faces(Tolerance::DEFAULT).unwrap();
+        assert_eq!(cylinder_parts.len(), 3);
+        assert_eq!(cylinder_parts[0].vertices().len(), 2);
+        assert_eq!(cylinder_parts[0].edges().len(), 3);
+        assert_eq!(cylinder_parts[1].vertices().len(), 1);
+        assert_eq!(cylinder_parts[1].edges().len(), 1);
+        assert_eq!(cylinder_parts[2].vertices().len(), 1);
+        assert_eq!(cylinder_parts[2].edges().len(), 1);
+        assert_eq!(
+            cylinder_parts[0].faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(BrepTrim::trim_type)
+                .collect::<Vec<_>>(),
+            vec![
+                BrepTrimType::Boundary,
+                BrepTrimType::Seam,
+                BrepTrimType::Boundary,
+                BrepTrimType::Seam,
+            ]
+        );
+        for cap in &cylinder_parts[1..] {
+            assert_eq!(
+                cap.faces()[0].loops()[0].trims()[0].trim_type(),
+                BrepTrimType::Boundary
             );
         }
     }

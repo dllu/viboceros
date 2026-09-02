@@ -5281,6 +5281,32 @@ struct ExplodeCommand;
 enum ExplodedParts {
     Lines(Vec<LineSegment>),
     Points(Vec<Point3>),
+    Surfaces(Vec<Brep>),
+    Meshes(Vec<TriangleMesh>),
+}
+
+impl ExplodedParts {
+    fn output_count(&self) -> usize {
+        match self {
+            Self::Lines(parts) => parts.len(),
+            Self::Points(parts) => parts.len(),
+            Self::Surfaces(parts) => parts.len(),
+            Self::Meshes(parts) => parts.len(),
+        }
+    }
+
+    const fn selects_outputs(&self) -> bool {
+        !matches!(self, Self::Points(_))
+    }
+
+    fn into_geometries(self) -> Vec<Geometry> {
+        match self {
+            Self::Lines(parts) => parts.into_iter().map(Geometry::Line).collect(),
+            Self::Points(parts) => parts.into_iter().map(Geometry::Point).collect(),
+            Self::Surfaces(parts) => parts.into_iter().map(Geometry::Brep).collect(),
+            Self::Meshes(parts) => parts.into_iter().map(Geometry::Mesh).collect(),
+        }
+    }
 }
 
 impl Command for ExplodeCommand {
@@ -5307,24 +5333,47 @@ impl Command for ExplodeCommand {
         if selected.is_empty() {
             return Err(CommandError::NoObjectsSelected);
         }
-        let exploded = selected
-            .iter()
-            .filter_map(|(id, geometry, attributes)| match geometry {
-                Geometry::Polyline(polyline) => Some((
-                    *id,
-                    ExplodedParts::Lines(polyline.segments().collect()),
-                    attributes.clone(),
-                )),
-                Geometry::PointCloud(cloud) => Some((
-                    *id,
-                    ExplodedParts::Points(cloud.points().to_vec()),
-                    attributes.clone(),
-                )),
+        let mut exploded = Vec::new();
+        let mut output_count = 0_usize;
+        for (id, geometry, attributes) in &selected {
+            let parts = match geometry {
+                Geometry::Polyline(polyline) => {
+                    let mut parts = polyline.segments().collect::<Vec<_>>();
+                    parts.reverse();
+                    Some(ExplodedParts::Lines(parts))
+                }
+                Geometry::PointCloud(cloud) => {
+                    let mut parts = cloud.points().to_vec();
+                    parts.reverse();
+                    Some(ExplodedParts::Points(parts))
+                }
+                Geometry::Brep(brep) if brep.faces().len() > 1 => {
+                    let mut parts = brep.explode_faces(document.tolerance())?;
+                    parts.reverse();
+                    Some(ExplodedParts::Surfaces(parts))
+                }
+                Geometry::Mesh(mesh) => {
+                    let mut parts = mesh.explode_pieces();
+                    if parts.len() <= 1 {
+                        None
+                    } else {
+                        parts.reverse();
+                        Some(ExplodedParts::Meshes(parts))
+                    }
+                }
                 _ => None,
-            })
-            .collect::<Vec<_>>();
+            };
+            let Some(parts) = parts else {
+                continue;
+            };
+            output_count = output_count
+                .checked_add(parts.output_count())
+                .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
+                .ok_or_else(|| too_many_span_outputs("Explode"))?;
+            exploded.push((*id, parts, attributes.clone()));
+        }
         if exploded.is_empty() {
-            return Err(CommandError::NoExplodablePolylines);
+            return Err(CommandError::NoExplodableObjects);
         }
         let exploded_ids = exploded
             .iter()
@@ -5339,44 +5388,81 @@ impl Command for ExplodeCommand {
             .iter()
             .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Lines(_)))
             .count();
-        let point_cloud_count = exploded.len() - polyline_count;
+        let point_cloud_count = exploded
+            .iter()
+            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Points(_)))
+            .count();
+        let polysurface_count = exploded
+            .iter()
+            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Surfaces(_)))
+            .count();
+        let mesh_count = exploded
+            .iter()
+            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Meshes(_)))
+            .count();
         let line_count = exploded
             .iter()
             .map(|(_, parts, _)| match parts {
                 ExplodedParts::Lines(lines) => lines.len(),
-                ExplodedParts::Points(_) => 0,
+                ExplodedParts::Points(_)
+                | ExplodedParts::Surfaces(_)
+                | ExplodedParts::Meshes(_) => 0,
             })
             .sum::<usize>();
         let point_count = exploded
             .iter()
             .map(|(_, parts, _)| match parts {
-                ExplodedParts::Lines(_) => 0,
+                ExplodedParts::Lines(_) | ExplodedParts::Surfaces(_) | ExplodedParts::Meshes(_) => {
+                    0
+                }
                 ExplodedParts::Points(points) => points.len(),
             })
             .sum::<usize>();
-        for (id, _, _) in &exploded {
-            document.delete_object(*id)?;
-        }
-        let mut selected_result_ids = Vec::with_capacity(line_count);
-        for (_, parts, attributes) in exploded {
-            match parts {
-                ExplodedParts::Lines(lines) => {
-                    for line in lines {
-                        selected_result_ids.push(document.add_geometry_with_attributes(
-                            Geometry::Line(line),
-                            attributes.clone(),
-                        )?);
-                    }
+        let surface_count = exploded
+            .iter()
+            .map(|(_, parts, _)| match parts {
+                ExplodedParts::Surfaces(surfaces) => surfaces.len(),
+                ExplodedParts::Lines(_) | ExplodedParts::Points(_) | ExplodedParts::Meshes(_) => 0,
+            })
+            .sum::<usize>();
+        let mesh_part_count = exploded
+            .iter()
+            .map(|(_, parts, _)| match parts {
+                ExplodedParts::Meshes(meshes) => meshes.len(),
+                ExplodedParts::Lines(_) | ExplodedParts::Points(_) | ExplodedParts::Surfaces(_) => {
+                    0
                 }
-                ExplodedParts::Points(points) => {
-                    for point in points {
-                        document.add_geometry_with_attributes(
-                            Geometry::Point(point),
-                            attributes.clone(),
-                        )?;
-                    }
+            })
+            .sum::<usize>();
+        let source_groups = exploded
+            .iter()
+            .map(|(source, _, _)| {
+                let groups = document
+                    .groups()
+                    .filter(|group| group.members().any(|member| member == *source))
+                    .map(|group| group.id())
+                    .collect::<Vec<_>>();
+                (*source, groups)
+            })
+            .collect::<BTreeMap<_, _>>();
+
+        let selected_output_capacity = output_count - point_count;
+        let mut selected_result_ids = Vec::with_capacity(selected_output_capacity);
+        for (source, parts, attributes) in exploded {
+            let select_outputs = parts.selects_outputs();
+            let geometries = parts.into_geometries();
+            let mut part_ids = Vec::with_capacity(geometries.len());
+            for geometry in geometries {
+                let id = document.add_geometry_with_attributes(geometry, attributes.clone())?;
+                part_ids.push(id);
+                if select_outputs {
+                    selected_result_ids.push(id);
                 }
             }
+            for group in &source_groups[&source] {
+                document.add_group_members(*group, part_ids.iter().copied())?;
+            }
+            document.delete_object(source)?;
         }
         replace_selection(
             document,
@@ -5385,17 +5471,38 @@ impl Command for ExplodeCommand {
                 .chain(selected_result_ids.iter().copied()),
         )?;
         let unchanged_count = selected.len() - exploded_ids.len();
-        Ok(match (polyline_count, point_cloud_count) {
-            (0, _) => format!(
-                "Exploded {point_cloud_count} point cloud(s) into {point_count} point(s); {unchanged_count} object(s) unchanged"
-            ),
-            (_, 0) => format!(
-                "Exploded {polyline_count} polyline(s) into {line_count} line(s); {unchanged_count} object(s) unchanged"
-            ),
-            _ => format!(
-                "Exploded {polyline_count} polyline(s) into {line_count} line(s) and {point_cloud_count} point cloud(s) into {point_count} point(s); {unchanged_count} object(s) unchanged"
-            ),
-        })
+        let mut summaries = Vec::new();
+        if polyline_count > 0 {
+            summaries.push(format!(
+                "{polyline_count} polyline(s) into {line_count} line(s)"
+            ));
+        }
+        if point_cloud_count > 0 {
+            summaries.push(format!(
+                "{point_cloud_count} point cloud(s) into {point_count} point(s)"
+            ));
+        }
+        if polysurface_count > 0 {
+            summaries.push(format!(
+                "{polysurface_count} polysurface(s) into {surface_count} surface(s)"
+            ));
+        }
+        if mesh_count > 0 {
+            summaries.push(format!(
+                "{mesh_count} mesh(es) into {mesh_part_count} part(s)"
+            ));
+        }
+        let last = summaries
+            .pop()
+            .expect("at least one selected object was exploded");
+        let summary = if summaries.is_empty() {
+            last
+        } else {
+            format!("{} and {last}", summaries.join(", "))
+        };
+        Ok(format!(
+            "Exploded {summary}; {unchanged_count} object(s) unchanged"
+        ))
     }
 }
 
@@ -8935,8 +9042,8 @@ pub enum CommandError {
     #[error("the selected curves do not have endpoints within the document tolerance")]
     NoJoinableCurves,
 
-    #[error("none of the selected objects is an explodable polyline or point cloud")]
-    NoExplodablePolylines,
+    #[error("none of the selected objects can be exploded")]
+    NoExplodableObjects,
 
     #[error("DupBorder supports selected NURBS surfaces, B-reps, and triangle meshes only")]
     UnsupportedDuplicateBorderGeometry,
@@ -10485,6 +10592,15 @@ mod tests {
         let current_cloud = document.object(current_cloud_id).unwrap();
         assert_eq!(current_cloud.attributes().layer_id(), second_layer);
         assert_eq!(current_cloud.attributes().name(), None);
+        let Geometry::PointCloud(current_cloud_geometry) = current_cloud.geometry() else {
+            panic!("expected a current-layer point cloud")
+        };
+        let expected_exploded_points = current_cloud_geometry
+            .points()
+            .iter()
+            .rev()
+            .copied()
+            .collect::<Vec<_>>();
 
         registry.execute(&mut document, "SelNone").unwrap();
         assert_eq!(
@@ -10506,6 +10622,17 @@ mod tests {
                 && object.attributes().layer_id() == second_layer
                 && object.attributes().name().is_none()
         }));
+        assert_eq!(
+            document
+                .objects()
+                .skip(2)
+                .filter_map(|object| match object.geometry() {
+                    Geometry::Point(point) => Some(*point),
+                    _ => None,
+                })
+                .collect::<Vec<_>>(),
+            expected_exploded_points
+        );
         registry.execute(&mut document, "Undo").unwrap();
         assert!(matches!(
             document.object(current_cloud_id).unwrap().geometry(),
@@ -11534,6 +11661,11 @@ mod tests {
         registry
             .execute(&mut document, "Rectangle 0,0 4,3")
             .unwrap();
+        registry.execute(&mut document, "SelLast").unwrap();
+        registry
+            .execute(&mut document, "SetObjectName Boundary")
+            .unwrap();
+        registry.execute(&mut document, "Group Outline").unwrap();
         registry
             .execute(&mut document, "Layer Current Default")
             .unwrap();
@@ -11558,7 +11690,42 @@ mod tests {
             document
                 .objects()
                 .filter(|object| matches!(object.geometry(), Geometry::Line(_)))
-                .all(|object| object.attributes().layer_id() == construction)
+                .all(|object| {
+                    object.attributes().layer_id() == construction
+                        && object.attributes().name() == Some("Boundary")
+                })
+        );
+        let lines = document
+            .objects()
+            .filter_map(|object| match object.geometry() {
+                Geometry::Line(line) => Some((line.start(), line.end())),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            lines,
+            vec![
+                (
+                    Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                ),
+                (
+                    Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                    Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                ),
+                (
+                    Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                ),
+                (
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                ),
+            ]
+        );
+        assert_eq!(
+            document.group_by_name("Outline").unwrap().members().count(),
+            4
         );
         assert_eq!(document.selected_object_count(), 5);
         assert_eq!(document.undo_label(), Some("Explode"));
@@ -11572,10 +11739,197 @@ mod tests {
                 .count(),
             1
         );
+        assert_eq!(
+            document.group_by_name("Outline").unwrap().members().count(),
+            1
+        );
         let history = document.undo_label().map(str::to_owned);
         assert!(matches!(
             registry.execute(&mut document, "Explode"),
-            Err(CommandError::NoExplodablePolylines)
+            Err(CommandError::NoExplodableObjects)
+        ));
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn explodes_polysurfaces_and_unwelded_mesh_parts_with_rhino_topology_and_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Shells").unwrap();
+        let layer = document.current_layer_id();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_id = document
+            .add_geometry_with_attributes(
+                Geometry::Brep(box_brep.clone()),
+                ObjectAttributes::on_layer(layer)
+                    .with_name("Named shell")
+                    .with_object_color(ColorRgb::new(17, 83, 149))
+                    .try_with_wire_density(3)
+                    .unwrap(),
+            )
+            .unwrap();
+        let box_group = document
+            .add_group(Some("Shell group".to_owned()), [box_id])
+            .unwrap();
+        document
+            .select_object(box_id, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Explode").unwrap(),
+            "Exploded 1 polysurface(s) into 6 surface(s); 0 object(s) unchanged"
+        );
+        assert!(document.object(box_id).is_none());
+        assert_eq!(document.objects().len(), 6);
+        assert_eq!(document.selected_object_count(), 6);
+        assert_eq!(document.group(box_group).unwrap().members().count(), 6);
+        for (object, source_face) in document.objects().zip(box_brep.faces().iter().rev()) {
+            assert_eq!(object.attributes().layer_id(), layer);
+            assert_eq!(object.attributes().name(), Some("Named shell"));
+            assert_eq!(
+                object.attributes().object_color(),
+                ColorRgb::new(17, 83, 149)
+            );
+            assert_eq!(
+                object.attributes().color_source(),
+                ObjectColorSource::Object
+            );
+            assert_eq!(object.attributes().wire_density(), 3);
+            assert!(document.is_selected(object.id()));
+            let Geometry::Brep(face) = object.geometry() else {
+                panic!("exploded polysurface part must remain an exact B-rep face")
+            };
+            assert_eq!(face.faces().len(), 1);
+            assert_eq!(face.faces()[0].surface(), source_face.surface());
+            assert_eq!(face.faces()[0].is_reversed(), source_face.is_reversed());
+            assert!(
+                face.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .all(|trim| trim.trim_type() == viboceros_geometry::BrepTrimType::Boundary)
+            );
+        }
+        assert_eq!(document.undo_label(), Some("Explode"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.object(box_id).is_some());
+        assert_eq!(
+            document
+                .group(box_group)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![box_id]
+        );
+
+        let mut document = Document::default();
+        let unwelded = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let unwelded_id = document
+            .add_geometry_with_attributes(
+                Geometry::Mesh(unwelded.clone()),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_name("Fold"),
+            )
+            .unwrap();
+        let mesh_group = document
+            .add_group(Some("Mesh group".to_owned()), [unwelded_id])
+            .unwrap();
+        let welded = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 2.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let welded_id = document.add_geometry(Geometry::Mesh(welded)).unwrap();
+        document
+            .select_object(unwelded_id, SelectionMode::Replace)
+            .unwrap();
+        document
+            .select_object(welded_id, SelectionMode::Add)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Explode").unwrap(),
+            "Exploded 1 mesh(es) into 2 part(s); 1 object(s) unchanged"
+        );
+        assert!(document.object(unwelded_id).is_none());
+        assert!(document.object(welded_id).is_some());
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.selected_object_count(), 3);
+        let mesh_outputs = document
+            .objects()
+            .filter(|object| object.id() != welded_id)
+            .collect::<Vec<_>>();
+        assert_eq!(mesh_outputs.len(), 2);
+        assert_eq!(
+            document
+                .group(mesh_group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            mesh_outputs
+                .iter()
+                .map(|object| object.id())
+                .collect::<BTreeSet<_>>()
+        );
+        for object in &mesh_outputs {
+            assert_eq!(object.attributes().name(), Some("Fold"));
+            assert!(document.is_selected(object.id()));
+        }
+        let Geometry::Mesh(first) = mesh_outputs[0].geometry() else {
+            panic!("first exploded mesh part must be a mesh")
+        };
+        let Geometry::Mesh(second) = mesh_outputs[1].geometry() else {
+            panic!("second exploded mesh part must be a mesh")
+        };
+        assert_eq!(first.vertices(), &unwelded.vertices()[3..]);
+        assert_eq!(second.vertices(), &unwelded.vertices()[..3]);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(document.object(unwelded_id).is_some());
+        assert!(document.object(welded_id).is_some());
+        assert_eq!(
+            document
+                .group(mesh_group)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![unwelded_id]
+        );
+        document
+            .select_objects_direct([welded_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Explode"),
+            Err(CommandError::NoExplodableObjects)
         ));
         assert_eq!(document.objects().len(), 2);
         assert_eq!(document.undo_label(), history.as_deref());

@@ -2002,7 +2002,7 @@ impl VibocerosApp {
                     .clicked();
                 explode_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Explode"))
-                    .on_hover_text("Explode selected polylines into line segments")
+                    .on_hover_text("Explode curves, point clouds, polysurfaces, and mesh parts")
                     .clicked();
                 flip_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Flip"))

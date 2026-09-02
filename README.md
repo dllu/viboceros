@@ -309,8 +309,11 @@ settings can follow the count. `Array 3 2` picks two top-view corners for a
 rectangular array. A third count adds Z levels and requires `ZDistance=...`;
 `Mode=Fill` treats the picked rectangle as the outside array span. `Join`
 connects unambiguous line/polyline endpoint chains within the document
-tolerance, while `Explode` turns polylines back into attribute-preserving line
-segments and frees point-cloud members as point objects. `Length` measures
+tolerance. `Explode` turns polylines into line segments, frees point-cloud
+members as points, duplicates polysurface faces as exact trimmed B-reps, and
+splits meshes at disconnected or unwelded edges. Parts are emitted in Rhino's
+reverse component order, inherit attributes, and replace their source in every
+existing group. `Length` measures
 analytic, polyline, and NURBS curves with controlled accuracy; `Area` measures
 circles, ellipses, closed planar polylines, exact NURBS surfaces, B-reps, and
 meshes. Full-domain NURBS faces are integrated per knot-span rectangle, while

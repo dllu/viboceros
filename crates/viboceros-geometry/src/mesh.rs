@@ -87,6 +87,8 @@ impl EdgeIncidence {
 struct EdgeUse {
     face: usize,
     forward: bool,
+    /// Raw mesh vertex indices ordered like the canonical topology edge.
+    raw_vertices: [u32; 2],
 }
 
 #[derive(Debug)]
@@ -518,6 +520,46 @@ impl TriangleMesh {
             .collect()
     }
 
+    /// Splits the mesh into the parts Rhino's `Explode` command sees across
+    /// unwelded edges.
+    ///
+    /// Exact coincident positions establish topological edges. Such an edge
+    /// remains welded when its incident faces reuse a raw vertex index at
+    /// either endpoint; it is unwelded only when every incident use has a
+    /// distinct raw index at both endpoints. A lone shared vertex never joins
+    /// parts. Results retain source face order and preserve logical quads.
+    pub fn explode_pieces(&self) -> Vec<Self> {
+        let data = self.topology_data();
+        let mut parents = (0..self.faces.len()).collect::<Vec<_>>();
+        let mut ranks = vec![0_u8; self.faces.len()];
+        for incidence in data.edges.values() {
+            let uses = incidence.uses().collect::<Vec<_>>();
+            if uses.len() == 1 || edge_uses_are_unwelded(&uses) {
+                continue;
+            }
+            for edge_use in &uses[1..] {
+                union_faces(&mut parents, &mut ranks, uses[0].face, edge_use.face);
+            }
+        }
+
+        let mut component_by_root = BTreeMap::new();
+        let mut component_faces = Vec::<Vec<usize>>::new();
+        for face in 0..self.faces.len() {
+            let root = face_root(&mut parents, face);
+            let component_count = component_faces.len();
+            let component = *component_by_root.entry(root).or_insert_with(|| {
+                component_faces.push(Vec::new());
+                component_count
+            });
+            component_faces[component].push(face);
+        }
+
+        component_faces
+            .into_iter()
+            .map(|faces| self.piece_from_faces(&faces))
+            .collect()
+    }
+
     /// Removes faces around exact-location edges used by at least
     /// `minimum_face_count` faces. With `hanging_faces_only`, a qualifying
     /// face must also touch an edge used by exactly one face.
@@ -754,18 +796,21 @@ impl TriangleMesh {
         for (face_index, face) in self.faces.iter().enumerate() {
             let indices = face.indices();
             for edge in 0..indices.len() {
-                let from = topological_vertices[indices[edge] as usize];
-                let to = topological_vertices[indices[(edge + 1) % indices.len()] as usize];
+                let raw_from = indices[edge];
+                let raw_to = indices[(edge + 1) % indices.len()];
+                let from = topological_vertices[raw_from as usize];
+                let to = topological_vertices[raw_to as usize];
                 debug_assert_ne!(from, to, "validated mesh edge collapsed");
-                let (edge, forward) = if from < to {
-                    ((from, to), true)
+                let (edge, forward, raw_vertices) = if from < to {
+                    ((from, to), true, [raw_from, raw_to])
                 } else {
-                    ((to, from), false)
+                    ((to, from), false, [raw_to, raw_from])
                 };
                 let incidence = edges.entry(edge).or_default();
                 incidence.add_use(EdgeUse {
                     face: face_index,
                     forward,
+                    raw_vertices,
                 });
             }
         }
@@ -1013,6 +1058,19 @@ fn compare_points_descending(left: &Point3, right: &Point3) -> std::cmp::Orderin
         })
         .find(|ordering| !ordering.is_eq())
         .unwrap_or(std::cmp::Ordering::Equal)
+}
+
+fn edge_uses_are_unwelded(uses: &[EdgeUse]) -> bool {
+    let mut first_endpoint_indices = BTreeSet::new();
+    let mut second_endpoint_indices = BTreeSet::new();
+    for edge_use in uses {
+        if !first_endpoint_indices.insert(edge_use.raw_vertices[0])
+            || !second_endpoint_indices.insert(edge_use.raw_vertices[1])
+        {
+            return false;
+        }
+    }
+    true
 }
 
 fn face_root(parents: &mut [usize], face: usize) -> usize {
@@ -1592,6 +1650,57 @@ mod tests {
         let pieces = duplicate_edge.disjoint_pieces();
         assert_eq!(pieces.len(), 1);
         assert_eq!(pieces[0], duplicate_edge);
+    }
+
+    #[test]
+    fn explode_pieces_split_only_edges_unwelded_at_both_raw_endpoints() {
+        let welded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 2.0),
+            ],
+            vec![[0, 1, 2], [1, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(welded.explode_pieces(), vec![welded.clone()]);
+
+        let unwelded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 2.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(unwelded.disjoint_pieces().len(), 1);
+        let pieces = unwelded.explode_pieces();
+        assert_eq!(pieces.len(), 2);
+        assert_eq!(pieces[0].triangles(), &[[0, 1, 2]]);
+        assert_eq!(pieces[1].triangles(), &[[0, 1, 2]]);
+        assert_eq!(pieces[0].vertices(), &unwelded.vertices()[..3]);
+        assert_eq!(pieces[1].vertices(), &unwelded.vertices()[3..]);
+
+        let half_welded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 2.0),
+            ],
+            vec![[0, 1, 2], [3, 0, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(half_welded.explode_pieces(), vec![half_welded.clone()]);
     }
 
     #[test]
