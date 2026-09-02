@@ -43,7 +43,7 @@ pub use interpolation::{
     MAX_CURVE_INTERPOLATION_POINTS,
 };
 pub use line::LineSegment;
-pub use mesh::{MeshFaceExtraction, MeshTopology, TriangleMesh};
+pub use mesh::{MeshFace, MeshFaceExtraction, MeshTopology, TriangleMesh};
 pub use morph::{PointMorph, SurfacePointMorph};
 pub use nurbs::{ControlPointCurveClosure, NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;

@@ -6,7 +6,7 @@ use crate::{
     UnitVector3, require_finite,
 };
 
-/// Exact location-welded edge topology for a triangle mesh.
+/// Exact location-welded edge topology for a polygon mesh.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MeshTopology {
     topological_vertex_count: usize,
@@ -117,11 +117,66 @@ impl MeshFaceExtraction {
     }
 }
 
-/// An indexed, oriented triangle mesh with validated finite vertices and
-/// non-degenerate faces.
+/// One validated triangle or quadrilateral in a polygon mesh.
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+pub enum MeshFace {
+    Triangle([u32; 3]),
+    Quad([u32; 4]),
+}
+
+impl MeshFace {
+    #[inline]
+    pub const fn vertex_count(self) -> usize {
+        match self {
+            Self::Triangle(_) => 3,
+            Self::Quad(_) => 4,
+        }
+    }
+
+    #[inline]
+    pub const fn is_triangle(self) -> bool {
+        matches!(self, Self::Triangle(_))
+    }
+
+    #[inline]
+    pub const fn is_quad(self) -> bool {
+        matches!(self, Self::Quad(_))
+    }
+
+    #[inline]
+    pub fn indices(&self) -> &[u32] {
+        match self {
+            Self::Triangle(indices) => indices,
+            Self::Quad(indices) => indices,
+        }
+    }
+
+    fn reversed(self) -> Self {
+        match self {
+            Self::Triangle([a, b, c]) => Self::Triangle([a, c, b]),
+            Self::Quad([a, b, c, d]) => Self::Quad([a, d, c, b]),
+        }
+    }
+
+    fn remapped(self, mut map: impl FnMut(u32) -> u32) -> Self {
+        match self {
+            Self::Triangle(indices) => Self::Triangle(indices.map(&mut map)),
+            Self::Quad(indices) => Self::Quad(indices.map(&mut map)),
+        }
+    }
+}
+
+/// An indexed, oriented polygon mesh with validated finite vertices and
+/// non-degenerate triangle and quadrilateral faces.
+///
+/// `TriangleMesh` retains its original public name for API compatibility, but
+/// quadrilateral faces remain first-class so topology and 3DM interchange do
+/// not invent diagonal edges. [`Self::triangles`] provides a deterministic
+/// `0-2` triangulation for algorithms and formats that require triangles.
 #[derive(Clone, Debug, PartialEq)]
 pub struct TriangleMesh {
     vertices: Vec<Point3>,
+    faces: Vec<MeshFace>,
     triangles: Vec<[u32; 3]>,
 }
 
@@ -131,7 +186,19 @@ impl TriangleMesh {
         triangles: Vec<[u32; 3]>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        if triangles.is_empty() {
+        Self::try_new_faces(
+            vertices,
+            triangles.into_iter().map(MeshFace::Triangle).collect(),
+            tolerance,
+        )
+    }
+
+    pub fn try_new_faces(
+        vertices: Vec<Point3>,
+        faces: Vec<MeshFace>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if faces.is_empty() {
             return Err(GeometryError::EmptyMesh);
         }
         if vertices
@@ -142,52 +209,64 @@ impl TriangleMesh {
             return Err(GeometryError::TooManyMeshVertices);
         }
 
-        for (triangle_index, triangle) in triangles.iter().copied().enumerate() {
-            let point_at = |vertex_index| {
-                vertices.get(vertex_index as usize).copied().ok_or(
-                    GeometryError::InvalidTriangleIndex {
-                        triangle: triangle_index,
-                        vertex: vertex_index,
-                    },
-                )
-            };
-            let points = [
-                point_at(triangle[0])?,
-                point_at(triangle[1])?,
-                point_at(triangle[2])?,
-            ];
-            let first_edge = points[0]
-                .vector_to(points[1])?
-                .normalized(tolerance)
-                .map_err(|_| GeometryError::DegenerateTriangle {
-                    triangle: triangle_index,
-                })?;
-            let second_edge = points[0]
-                .vector_to(points[2])?
-                .normalized(tolerance)
-                .map_err(|_| GeometryError::DegenerateTriangle {
-                    triangle: triangle_index,
-                })?;
-            let sine = first_edge
-                .as_vector()
-                .cross(second_edge.as_vector())?
-                .length()?;
-            if sine <= tolerance.angular() {
-                return Err(GeometryError::DegenerateTriangle {
-                    triangle: triangle_index,
-                });
+        let mut triangles = Vec::new();
+        triangles
+            .try_reserve(faces.len().saturating_mul(2))
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for (face_index, face) in faces.iter().copied().enumerate() {
+            match face {
+                MeshFace::Triangle(triangle) => {
+                    validate_triangle(&vertices, triangle, face_index, false, tolerance)?;
+                    triangles.push(triangle);
+                }
+                MeshFace::Quad([a, b, c, d]) => {
+                    validate_triangle(&vertices, [a, b, c], face_index, true, tolerance)?;
+                    validate_triangle(&vertices, [a, c, d], face_index, true, tolerance)?;
+                    if vertices[b as usize] == vertices[d as usize] {
+                        return Err(GeometryError::DegenerateQuad { face: face_index });
+                    }
+                    triangles.extend([[a, b, c], [a, c, d]]);
+                }
             }
         }
 
         Ok(Self {
             vertices,
+            faces,
             triangles,
         })
+    }
+
+    fn from_validated_parts(vertices: Vec<Point3>, faces: Vec<MeshFace>) -> Self {
+        let mut triangles = Vec::with_capacity(faces.len().saturating_mul(2));
+        for face in &faces {
+            match *face {
+                MeshFace::Triangle(triangle) => triangles.push(triangle),
+                MeshFace::Quad([a, b, c, d]) => {
+                    triangles.extend([[a, b, c], [a, c, d]]);
+                }
+            }
+        }
+        Self {
+            vertices,
+            faces,
+            triangles,
+        }
     }
 
     #[inline]
     pub fn vertices(&self) -> &[Point3] {
         &self.vertices
+    }
+
+    #[inline]
+    pub fn faces(&self) -> &[MeshFace] {
+        &self.faces
+    }
+
+    #[inline]
+    pub const fn face_count(&self) -> usize {
+        self.faces.len()
     }
 
     #[inline]
@@ -197,14 +276,10 @@ impl TriangleMesh {
 
     /// Reverses every face winding without changing mesh vertex or face order.
     pub fn reversed(&self) -> Self {
-        let mut triangles = self.triangles.clone();
-        for triangle in &mut triangles {
-            triangle.swap(1, 2);
-        }
-        Self {
-            vertices: self.vertices.clone(),
-            triangles,
-        }
+        Self::from_validated_parts(
+            self.vertices.clone(),
+            self.faces.iter().copied().map(MeshFace::reversed).collect(),
+        )
     }
 
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
@@ -243,9 +318,7 @@ impl TriangleMesh {
             boundary_edge_count,
             non_manifold_edge_count,
             orientation_conflict_edge_count,
-            closed: self.vertices.len() >= 4
-                && self.triangles.len() >= 4
-                && boundary_edge_count == 0,
+            closed: self.vertices.len() >= 4 && self.faces.len() >= 4 && boundary_edge_count == 0,
         }
     }
 
@@ -352,7 +425,7 @@ impl TriangleMesh {
     /// impose an ambiguous orientation constraint.
     pub fn unified_face_orientations(&self) -> Result<(Self, usize), GeometryError> {
         let data = self.topology_data();
-        let mut neighbors = vec![Vec::<(usize, bool)>::new(); self.triangles.len()];
+        let mut neighbors = vec![Vec::<(usize, bool)>::new(); self.faces.len()];
         for incidence in data.edges.values() {
             if incidence.count != 2 {
                 continue;
@@ -370,9 +443,9 @@ impl TriangleMesh {
             neighbors[second.face].push((first.face, opposite_parity));
         }
 
-        let mut flipped = vec![None; self.triangles.len()];
+        let mut flipped = vec![None; self.faces.len()];
         let mut pending = VecDeque::new();
-        for root in 0..self.triangles.len() {
+        for root in 0..self.faces.len() {
             if flipped[root].is_some() {
                 continue;
             }
@@ -396,19 +469,16 @@ impl TriangleMesh {
             }
         }
 
-        let mut triangles = self.triangles.clone();
+        let mut faces = self.faces.clone();
         let mut flipped_face_count = 0;
-        for (triangle, flip) in triangles.iter_mut().zip(flipped) {
+        for (face, flip) in faces.iter_mut().zip(flipped) {
             if flip.expect("every face component receives an orientation") {
-                triangle.swap(1, 2);
+                *face = face.reversed();
                 flipped_face_count += 1;
             }
         }
         Ok((
-            Self {
-                vertices: self.vertices.clone(),
-                triangles,
-            },
+            Self::from_validated_parts(self.vertices.clone(), faces),
             flipped_face_count,
         ))
     }
@@ -418,8 +488,8 @@ impl TriangleMesh {
     /// order and compacts referenced raw vertices in first-use order.
     pub fn disjoint_pieces(&self) -> Vec<Self> {
         let data = self.topology_data();
-        let mut parents = (0..self.triangles.len()).collect::<Vec<_>>();
-        let mut ranks = vec![0_u8; self.triangles.len()];
+        let mut parents = (0..self.faces.len()).collect::<Vec<_>>();
+        let mut ranks = vec![0_u8; self.faces.len()];
         for incidence in data.edges.values() {
             let mut uses = incidence.uses();
             let Some(first) = uses.next() else {
@@ -432,7 +502,7 @@ impl TriangleMesh {
 
         let mut component_by_root = BTreeMap::new();
         let mut component_faces = Vec::<Vec<usize>>::new();
-        for face in 0..self.triangles.len() {
+        for face in 0..self.faces.len() {
             let root = face_root(&mut parents, face);
             let component_count = component_faces.len();
             let component = *component_by_root.entry(root).or_insert_with(|| {
@@ -462,8 +532,8 @@ impl TriangleMesh {
             ));
         }
         let data = self.topology_data();
-        let mut touches_qualifying_edge = vec![false; self.triangles.len()];
-        let mut touches_boundary_edge = vec![false; self.triangles.len()];
+        let mut touches_qualifying_edge = vec![false; self.faces.len()];
+        let mut touches_boundary_edge = vec![false; self.faces.len()];
         for incidence in data.edges.values() {
             if incidence.count >= minimum_face_count {
                 for edge_use in incidence.uses() {
@@ -490,7 +560,7 @@ impl TriangleMesh {
         if extracted_faces.is_empty() {
             return Ok(None);
         }
-        let remainder_faces = (0..self.triangles.len())
+        let remainder_faces = (0..self.faces.len())
             .filter(|&face| !extracted_mask[face])
             .collect::<Vec<_>>();
         let extracted = self.subset_preserving_vertex_order(&extracted_faces);
@@ -507,16 +577,20 @@ impl TriangleMesh {
     /// first source face in each class is retained so the result is stable.
     pub fn extract_duplicate_faces(&self) -> Option<MeshFaceExtraction> {
         let mut representative_locations = BTreeSet::new();
-        let mut extracted_mask = vec![false; self.triangles.len()];
-        for (face, triangle) in self.triangles.iter().enumerate() {
-            let mut locations = triangle.map(|vertex| {
-                self.vertices[vertex as usize]
-                    .to_array()
-                    .map(canonical_coordinate_bits)
-            });
+        let mut extracted_mask = vec![false; self.faces.len()];
+        for (face_index, face) in self.faces.iter().enumerate() {
+            let mut locations = face
+                .indices()
+                .iter()
+                .map(|&vertex| {
+                    self.vertices[vertex as usize]
+                        .to_array()
+                        .map(canonical_coordinate_bits)
+                })
+                .collect::<Vec<_>>();
             locations.sort_unstable();
             if !representative_locations.insert(locations) {
-                extracted_mask[face] = true;
+                extracted_mask[face_index] = true;
             }
         }
         let extracted_faces = extracted_mask
@@ -527,7 +601,7 @@ impl TriangleMesh {
         if extracted_faces.is_empty() {
             return None;
         }
-        let remainder_faces = (0..self.triangles.len())
+        let remainder_faces = (0..self.faces.len())
             .filter(|&face| !extracted_mask[face])
             .collect::<Vec<_>>();
         Some(MeshFaceExtraction {
@@ -564,11 +638,12 @@ impl TriangleMesh {
                 )
             })
             .collect::<BTreeMap<_, _>>();
-        let triangles = self
-            .triangles
+        let faces = self
+            .faces
             .iter()
-            .map(|triangle| {
-                triangle.map(|source| {
+            .copied()
+            .map(|face| {
+                face.remapped(|source| {
                     let key = self.vertices[source as usize]
                         .to_array()
                         .map(canonical_coordinate_bits);
@@ -576,13 +651,7 @@ impl TriangleMesh {
                 })
             })
             .collect();
-        (
-            Self {
-                vertices,
-                triangles,
-            },
-            removed,
-        )
+        (Self::from_validated_parts(vertices, faces), removed)
     }
 
     /// Removes vertices that are not referenced by any face. Referenced
@@ -590,8 +659,8 @@ impl TriangleMesh {
     /// vertices remain distinct. Face order and winding are unchanged.
     pub fn culled_unused_vertices(&self) -> (Self, usize) {
         let mut used = vec![false; self.vertices.len()];
-        for triangle in &self.triangles {
-            for &vertex in triangle {
+        for face in &self.faces {
+            for &vertex in face.indices() {
                 used[vertex as usize] = true;
             }
         }
@@ -612,16 +681,14 @@ impl TriangleMesh {
                 .expect("a culled mesh cannot have more vertices than its source");
             vertices.push(point);
         }
-        let triangles = self
-            .triangles
+        let faces = self
+            .faces
             .iter()
-            .map(|triangle| triangle.map(|vertex| vertex_remap[vertex as usize]))
+            .copied()
+            .map(|face| face.remapped(|vertex| vertex_remap[vertex as usize]))
             .collect();
         (
-            Self {
-                vertices,
-                triangles,
-            },
+            Self::from_validated_parts(vertices, faces),
             removed_vertex_count,
         )
     }
@@ -629,7 +696,7 @@ impl TriangleMesh {
     fn subset_preserving_vertex_order(&self, faces: &[usize]) -> Self {
         let mut used = vec![false; self.vertices.len()];
         for &face in faces {
-            for vertex in self.triangles[face] {
+            for &vertex in self.faces[face].indices() {
                 used[vertex as usize] = true;
             }
         }
@@ -643,22 +710,19 @@ impl TriangleMesh {
                 .expect("a mesh subset cannot have more vertices than its source");
             vertices.push(point);
         }
-        let triangles = faces
+        let retained_faces = faces
             .iter()
-            .map(|&face| self.triangles[face].map(|vertex| vertex_remap[vertex as usize]))
+            .map(|&face| self.faces[face].remapped(|vertex| vertex_remap[vertex as usize]))
             .collect();
-        Self {
-            vertices,
-            triangles,
-        }
+        Self::from_validated_parts(vertices, retained_faces)
     }
 
     fn piece_from_faces(&self, faces: &[usize]) -> Self {
         let mut vertex_remap = vec![None; self.vertices.len()];
         let mut vertices = Vec::new();
-        let mut triangles = Vec::with_capacity(faces.len());
+        let mut retained_faces = Vec::with_capacity(faces.len());
         for &face in faces {
-            let triangle = self.triangles[face].map(|source| {
+            let retained_face = self.faces[face].remapped(|source| {
                 let source = source as usize;
                 *vertex_remap[source].get_or_insert_with(|| {
                     let target = u32::try_from(vertices.len())
@@ -667,12 +731,9 @@ impl TriangleMesh {
                     target
                 })
             });
-            triangles.push(triangle);
+            retained_faces.push(retained_face);
         }
-        Self {
-            vertices,
-            triangles,
-        }
+        Self::from_validated_parts(vertices, retained_faces)
     }
 
     fn topology_data(&self) -> MeshTopologyData {
@@ -690,21 +751,22 @@ impl TriangleMesh {
         }
 
         let mut edges = BTreeMap::<(usize, usize), EdgeIncidence>::new();
-        for (face, triangle) in self.triangles.iter().enumerate() {
-            let vertices = triangle.map(|index| topological_vertices[index as usize]);
-            for [from, to] in [
-                [vertices[0], vertices[1]],
-                [vertices[1], vertices[2]],
-                [vertices[2], vertices[0]],
-            ] {
-                debug_assert_ne!(from, to, "validated triangle edge collapsed");
+        for (face_index, face) in self.faces.iter().enumerate() {
+            let indices = face.indices();
+            for edge in 0..indices.len() {
+                let from = topological_vertices[indices[edge] as usize];
+                let to = topological_vertices[indices[(edge + 1) % indices.len()] as usize];
+                debug_assert_ne!(from, to, "validated mesh edge collapsed");
                 let (edge, forward) = if from < to {
                     ((from, to), true)
                 } else {
                     ((to, from), false)
                 };
                 let incidence = edges.entry(edge).or_default();
-                incidence.add_use(EdgeUse { face, forward });
+                incidence.add_use(EdgeUse {
+                    face: face_index,
+                    forward,
+                });
             }
         }
 
@@ -837,8 +899,62 @@ impl TriangleMesh {
             .iter()
             .map(|point| transform.transform_point(*point))
             .collect::<Result<_, _>>()?;
-        Self::try_new(vertices, self.triangles.clone(), tolerance)
+        Self::try_new_faces(vertices, self.faces.clone(), tolerance)
     }
+}
+
+fn validate_triangle(
+    vertices: &[Point3],
+    triangle: [u32; 3],
+    face_index: usize,
+    from_quad: bool,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let point_at = |vertex_index| {
+        vertices.get(vertex_index as usize).copied().ok_or({
+            if from_quad {
+                GeometryError::InvalidQuadIndex {
+                    face: face_index,
+                    vertex: vertex_index,
+                }
+            } else {
+                GeometryError::InvalidTriangleIndex {
+                    triangle: face_index,
+                    vertex: vertex_index,
+                }
+            }
+        })
+    };
+    let points = [
+        point_at(triangle[0])?,
+        point_at(triangle[1])?,
+        point_at(triangle[2])?,
+    ];
+    let degenerate = || {
+        if from_quad {
+            GeometryError::DegenerateQuad { face: face_index }
+        } else {
+            GeometryError::DegenerateTriangle {
+                triangle: face_index,
+            }
+        }
+    };
+    let first_edge = points[0]
+        .vector_to(points[1])?
+        .normalized(tolerance)
+        .map_err(|_| degenerate())?;
+    let second_edge = points[0]
+        .vector_to(points[2])?
+        .normalized(tolerance)
+        .map_err(|_| degenerate())?;
+    let sine = first_edge
+        .as_vector()
+        .cross(second_edge.as_vector())?
+        .length()?;
+    if sine <= tolerance.angular() {
+        return Err(degenerate());
+    }
+    Ok(())
 }
 
 fn trace_boundary_path(
@@ -977,6 +1093,76 @@ mod tests {
         )
         .unwrap();
         assert_eq!(square.area().unwrap(), 1.0);
+    }
+
+    #[test]
+    fn preserves_quadrilateral_faces_without_topology_diagonals() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 3.0, 0.0),
+            point(0.0, 3.0, 0.0),
+        ];
+        let mesh = TriangleMesh::try_new_faces(
+            vertices.clone(),
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(mesh.faces(), &[MeshFace::Quad([0, 1, 2, 3])]);
+        assert_eq!(mesh.triangles(), &[[0, 1, 2], [0, 2, 3]]);
+        assert_eq!(mesh.topology().edge_count(), 4);
+        assert_eq!(mesh.wireframe_lines(Tolerance::DEFAULT).unwrap().len(), 4);
+        assert_eq!(mesh.area().unwrap(), 6.0);
+        assert_eq!(mesh.reversed().faces(), &[MeshFace::Quad([0, 3, 2, 1])]);
+
+        assert!(matches!(
+            TriangleMesh::try_new_faces(
+                vertices.clone(),
+                vec![MeshFace::Quad([0, 1, 2, 4])],
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidQuadIndex { face: 0, vertex: 4 })
+        ));
+        assert!(matches!(
+            TriangleMesh::try_new_faces(
+                vertices,
+                vec![MeshFace::Quad([0, 1, 2, 1])],
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::DegenerateQuad { face: 0 })
+        ));
+    }
+
+    #[test]
+    fn computes_closed_quad_mesh_topology_and_volume() {
+        let cube = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(1.0, 0.0, 1.0),
+                point(1.0, 1.0, 1.0),
+                point(0.0, 1.0, 1.0),
+            ],
+            vec![
+                MeshFace::Quad([0, 3, 2, 1]),
+                MeshFace::Quad([4, 5, 6, 7]),
+                MeshFace::Quad([0, 1, 5, 4]),
+                MeshFace::Quad([1, 2, 6, 5]),
+                MeshFace::Quad([2, 3, 7, 6]),
+                MeshFace::Quad([3, 0, 4, 7]),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(cube.face_count(), 6);
+        assert_eq!(cube.triangles().len(), 12);
+        assert_eq!(cube.topology().edge_count(), 12);
+        assert!(cube.topology().is_solid());
+        assert!((cube.signed_volume().unwrap() - 1.0).abs() < 1.0e-12);
     }
 
     #[test]

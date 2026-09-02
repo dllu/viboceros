@@ -11,7 +11,8 @@ derivatives and exact knot refinement, splitting, and interval trimming,
 rational NURBS surfaces with analytic partial derivatives and exact tensor
 splitting and rectangular domain trimming,
 validated shared-topology B-reps with exact rational parameter-space trims,
-validated triangle meshes, layers, groups, and bounded undo/redo.
+validated mixed triangle/quad polygon meshes, layers, groups, and bounded
+undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
 and use a balanced XY spatial index for top-view snapping and picking.
 The top viewport can pan and zoom in wireframe, shaded, or ghosted mode. Its
@@ -357,8 +358,9 @@ polylines and multi-segment degree-one NURBS curves, but excludes line objects
 and two-control-point degree-one NURBS curves. `SelShortCrv` takes an explicit
 positive maximum length and includes curves exactly on that boundary; it uses
 the same controlled length calculation as `Length`. Mesh closure uses exact
-location-welded edge topology, so indexed meshes and STL-style triangle soup
-classify consistently.
+location-welded polygon-edge topology, so quad meshes, indexed triangle meshes,
+and STL-style triangle soup classify consistently; quad diagonals are used only
+when an operation explicitly needs triangles.
 `SelLast` selects every object changed by the latest object-editing transaction,
 including multi-object imports and command outputs. `SelPrev` swaps the current
 and previous selection sets. Both replace by default, matching Rhino; set
@@ -524,8 +526,9 @@ Python/RhinoCommon bridge.
 
 Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
-curves, untrimmed NURBS surfaces, triangle meshes, and editable rational NURBS
-B-reps. B-rep interchange retains shared vertices and edges, exact edge and
+curves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable
+rational NURBS B-reps. Mesh faces retain their arity in 3DM round trips. B-rep
+interchange retains shared vertices and edges, exact edge and
 parameter-space trim curves, face surfaces and orientation, outer and inner
 loops, boundary/mated/seam/singular trims, and modelling tolerances. Layer and
 object state are also preserved, including the raw RGB display color, its

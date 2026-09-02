@@ -537,7 +537,10 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
                               {point.x, point.y, point.z});
   }
 
-  output.indices.reserve(static_cast<size_t>(mesh.FaceCount()) * 6);
+  // OpenNURBS stores both triangles and quads in four slots, with a triangle
+  // repeating its third index in the fourth slot. Preserve that distinction
+  // across the bridge instead of triangulating quads and inventing diagonals.
+  output.indices.reserve(static_cast<size_t>(mesh.FaceCount()) * 4);
   for (int index = 0; index < mesh.FaceCount(); ++index) {
     const ON_MeshFace& face = mesh.m_F[index];
     const int vertex_count = face.IsTriangle() ? 3 : 4;
@@ -549,13 +552,8 @@ bool append_mesh(const ON_Mesh& mesh, BridgeObject& output) {
     output.indices.insert(output.indices.end(),
                           {static_cast<uint32_t>(face.vi[0]),
                            static_cast<uint32_t>(face.vi[1]),
-                           static_cast<uint32_t>(face.vi[2])});
-    if (face.IsQuad()) {
-      output.indices.insert(output.indices.end(),
-                            {static_cast<uint32_t>(face.vi[0]),
-                             static_cast<uint32_t>(face.vi[2]),
-                             static_cast<uint32_t>(face.vi[3])});
-    }
+                           static_cast<uint32_t>(face.vi[2]),
+                           static_cast<uint32_t>(face.vi[3])});
   }
   return true;
 }
@@ -1075,17 +1073,17 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
     }
     case VIBO_OBJECT_TRIANGLE_MESH: {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
-          source.index_count == 0 || source.index_count % 3 != 0 ||
+          source.index_count == 0 || source.index_count % 4 != 0 ||
           source.indices == nullptr ||
           source.coordinate_count / 3 >
               static_cast<size_t>(std::numeric_limits<int>::max()) ||
-          source.index_count / 3 >
+          source.index_count / 4 >
               static_cast<size_t>(std::numeric_limits<int>::max())) {
-        error = "triangle mesh dimensions are inconsistent";
+        error = "polygon mesh dimensions are inconsistent";
         return nullptr;
       }
       const size_t vertex_count = source.coordinate_count / 3;
-      const size_t face_count = source.index_count / 3;
+      const size_t face_count = source.index_count / 4;
       auto* mesh = new ON_Mesh(static_cast<int>(face_count),
                                static_cast<int>(vertex_count), false, false);
       for (size_t index = 0; index < vertex_count; ++index) {
@@ -1098,15 +1096,27 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         }
       }
       for (size_t index = 0; index < face_count; ++index) {
-        const uint32_t* face = source.indices + index * 3;
+        const uint32_t* face = source.indices + index * 4;
         if (face[0] >= vertex_count || face[1] >= vertex_count ||
-            face[2] >= vertex_count ||
-            !mesh->SetTriangle(static_cast<int>(index),
-                               static_cast<int>(face[0]),
-                               static_cast<int>(face[1]),
-                               static_cast<int>(face[2]))) {
+            face[2] >= vertex_count || face[3] >= vertex_count) {
           delete mesh;
-          error = "triangle mesh has an invalid face";
+          error = "polygon mesh has an invalid face";
+          return nullptr;
+        }
+        const bool face_set =
+            face[2] == face[3]
+                ? mesh->SetTriangle(static_cast<int>(index),
+                                    static_cast<int>(face[0]),
+                                    static_cast<int>(face[1]),
+                                    static_cast<int>(face[2]))
+                : mesh->SetQuad(static_cast<int>(index),
+                                static_cast<int>(face[0]),
+                                static_cast<int>(face[1]),
+                                static_cast<int>(face[2]),
+                                static_cast<int>(face[3]));
+        if (!face_set) {
+          delete mesh;
+          error = "polygon mesh has an invalid face";
           return nullptr;
         }
       }

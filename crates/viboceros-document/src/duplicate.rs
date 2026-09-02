@@ -1,4 +1,4 @@
-use viboceros_geometry::{GeometryError, NurbsCurve, Point3, Tolerance};
+use viboceros_geometry::{GeometryError, MeshFace, NurbsCurve, Point3, Tolerance};
 
 use super::Geometry;
 
@@ -147,7 +147,7 @@ impl Geometry {
             Self::Brep(_) => DuplicateGeometryKey::Brep,
             Self::Mesh(mesh) => DuplicateGeometryKey::Mesh {
                 vertices: mesh.vertices().iter().copied().map(point_key).collect(),
-                triangles: mesh.triangles().to_vec(),
+                faces: mesh.faces().to_vec(),
             },
         })
     }
@@ -213,7 +213,7 @@ enum DuplicateGeometryKey {
     Brep,
     Mesh {
         vertices: Vec<[u64; 3]>,
-        triangles: Vec<[u32; 3]>,
+        faces: Vec<MeshFace>,
     },
 }
 

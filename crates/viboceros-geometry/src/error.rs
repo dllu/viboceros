@@ -190,11 +190,14 @@ pub enum GeometryError {
     #[error("a revolution sweep must be finite, non-zero, and no greater than one turn")]
     InvalidRevolutionSweep,
 
-    #[error("a triangle mesh must contain at least one triangle")]
+    #[error("a polygon mesh must contain at least one face")]
     EmptyMesh,
 
-    #[error("a triangle mesh has too many vertices for 32-bit indices")]
+    #[error("a polygon mesh has too many vertices for 32-bit indices")]
     TooManyMeshVertices,
+
+    #[error("a polygon mesh contains too many faces")]
+    TooManyMeshFaces,
 
     #[error("triangle {triangle} references missing vertex index {vertex}")]
     InvalidTriangleIndex { triangle: usize, vertex: u32 },
@@ -204,6 +207,12 @@ pub enum GeometryError {
 
     #[error("triangle {triangle} is degenerate at the requested tolerance")]
     DegenerateTriangle { triangle: usize },
+
+    #[error("quad {face} references missing vertex index {vertex}")]
+    InvalidQuadIndex { face: usize, vertex: u32 },
+
+    #[error("quad {face} is degenerate at the requested tolerance")]
+    DegenerateQuad { face: usize },
 
     #[error("mesh face winding constraints describe a non-orientable surface")]
     NonOrientableMesh,

@@ -4574,7 +4574,7 @@ fn mesh_face_extraction_counts(inputs: &[MeshFaceExtractionInput]) -> MeshFaceEx
     let extracted_faces = inputs
         .iter()
         .filter_map(|input| input.extraction.as_ref())
-        .map(|(_, extracted)| extracted.triangles().len())
+        .map(|(_, extracted)| extracted.face_count())
         .sum();
     MeshFaceExtractionCounts {
         extracted_meshes,

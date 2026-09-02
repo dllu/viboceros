@@ -186,12 +186,12 @@ pub trait PointMorph {
         mesh: &TriangleMesh,
         tolerance: Tolerance,
     ) -> Result<TriangleMesh, GeometryError> {
-        TriangleMesh::try_new(
+        TriangleMesh::try_new_faces(
             mesh.vertices()
                 .iter()
                 .map(|point| self.morph_point(*point))
                 .collect::<Result<Vec<_>, _>>()?,
-            mesh.triangles().to_vec(),
+            mesh.faces().to_vec(),
             tolerance,
         )
     }

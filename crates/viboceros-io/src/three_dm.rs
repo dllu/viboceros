@@ -6,8 +6,8 @@ use std::slice;
 
 use thiserror::Error;
 use viboceros_geometry::{
-    Brep, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Tolerance,
-    TriangleMesh, WeightedPoint3,
+    Brep, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    Tolerance, TriangleMesh, WeightedPoint3,
 };
 
 use crate::three_dm_brep::{self, BrepCodecError};
@@ -546,7 +546,7 @@ fn decode_object(
             if !coordinates.is_empty()
                 && coordinates.len() % 3 == 0
                 && !indices.is_empty()
-                && indices.len() % 3 == 0
+                && indices.len() % 4 == 0
                 && knots_u.is_empty()
                 && knots_v.is_empty()
                 && brep_data.is_empty() =>
@@ -555,11 +555,17 @@ fn decode_object(
                 .chunks_exact(3)
                 .map(point)
                 .collect::<Result<Vec<_>, _>>()?;
-            let triangles = indices
-                .chunks_exact(3)
-                .map(|face| [face[0], face[1], face[2]])
+            let faces = indices
+                .chunks_exact(4)
+                .map(|face| {
+                    if face[2] == face[3] {
+                        MeshFace::Triangle([face[0], face[1], face[2]])
+                    } else {
+                        MeshFace::Quad([face[0], face[1], face[2], face[3]])
+                    }
+                })
                 .collect();
-            ThreeDmGeometry::Mesh(TriangleMesh::try_new(vertices, triangles, tolerance)?)
+            ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(vertices, faces, tolerance)?)
         }
         OBJECT_BREP
             if info.degree_u == 0
@@ -787,7 +793,14 @@ impl ObjectPayload {
                     .collect(),
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
-                indices: mesh.triangles().iter().flatten().copied().collect(),
+                indices: mesh
+                    .faces()
+                    .iter()
+                    .flat_map(|face| match *face {
+                        MeshFace::Triangle([a, b, c]) => [a, b, c, c],
+                        MeshFace::Quad(indices) => indices,
+                    })
+                    .collect(),
                 brep_data: Vec::new(),
             },
         })
@@ -1040,13 +1053,14 @@ mod tests {
             vec![0.0, 0.0, 1.0, 1.0],
         )
         .unwrap();
-        let mesh = TriangleMesh::try_new(
+        let mesh = TriangleMesh::try_new_faces(
             vec![
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 0.0).unwrap(),
                 Point3::try_new(0.0, 1.0, 0.0).unwrap(),
             ],
-            vec![[0, 1, 2]],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
             Tolerance::DEFAULT,
         )
         .unwrap();
