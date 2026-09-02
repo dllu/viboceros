@@ -11,6 +11,7 @@ mod ellipse;
 mod error;
 mod frame;
 mod integration;
+mod interpolation;
 mod line;
 mod mesh;
 mod morph;
@@ -30,6 +31,10 @@ pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
 pub use ellipse::Ellipse3;
 pub use error::GeometryError;
 pub use frame::Frame3;
+pub use interpolation::{
+    CurveInterpolationOptions, CurveKnotSpacing, InterpolatedCurveClosure,
+    MAX_CURVE_INTERPOLATION_POINTS,
+};
 pub use line::LineSegment;
 pub use mesh::{MeshFaceExtraction, MeshTopology, TriangleMesh};
 pub use morph::{PointMorph, SurfacePointMorph};

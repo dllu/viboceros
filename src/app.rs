@@ -27,6 +27,7 @@ enum InteractiveCommand {
         first_axis: Option<Point3>,
     },
     Polyline,
+    InterpCrv,
     Rectangle {
         first: Option<Point3>,
     },
@@ -81,6 +82,7 @@ impl InteractiveCommand {
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
+            Self::InterpCrv => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
@@ -127,6 +129,9 @@ impl InteractiveCommand {
                 ..
             } => "Ellipse: pick the second-axis radius in the viewport (Esc to cancel)",
             Self::Polyline => "Polyline: pick vertices; press Enter to finish (Esc to cancel)",
+            Self::InterpCrv => {
+                "InterpCrv: pick points on the curve; press Enter to finish (Esc to cancel)"
+            }
             Self::Rectangle { first: None } => {
                 "Rectangle: pick the first corner in the viewport (Esc to cancel)"
             }
@@ -222,6 +227,7 @@ impl InteractiveCommand {
             | Self::Arc { points: [None, _] }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
+            | Self::InterpCrv
             | Self::Rectangle { first: None }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
@@ -277,6 +283,10 @@ impl InteractiveCommand {
             _ => None,
         }
     }
+
+    const fn collects_curve_points(self) -> bool {
+        matches!(self, Self::Polyline | Self::InterpCrv)
+    }
 }
 
 pub struct VibocerosApp {
@@ -288,7 +298,7 @@ pub struct VibocerosApp {
     osnap: bool,
     smart_track: bool,
     active_command: Option<InteractiveCommand>,
-    polyline_points: Vec<Point3>,
+    curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
 }
 
@@ -308,7 +318,7 @@ impl VibocerosApp {
             osnap: true,
             smart_track: true,
             active_command: None,
-            polyline_points: Vec::new(),
+            curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
     }
@@ -316,8 +326,11 @@ impl VibocerosApp {
     fn run_command(&mut self) {
         let input = self.command_input.trim().to_owned();
         if input.is_empty() {
-            if self.active_command == Some(InteractiveCommand::Polyline) {
-                self.finish_interactive_polyline();
+            if self
+                .active_command
+                .is_some_and(InteractiveCommand::collects_curve_points)
+            {
+                self.finish_interactive_curve();
             }
             return;
         }
@@ -524,6 +537,7 @@ impl VibocerosApp {
                     first_axis: None,
                 },
                 "polyline" | "pline" => InteractiveCommand::Polyline,
+                "interpcrv" | "interpcurve" => InteractiveCommand::InterpCrv,
                 "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
                 "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
                 "move" | "m" => InteractiveCommand::Move { start: None },
@@ -565,7 +579,7 @@ impl VibocerosApp {
 
     fn cancel_interactive_command(&mut self, announce: bool) {
         let command = self.active_command.take();
-        self.polyline_points.clear();
+        self.curve_points.clear();
         if let Some(command) = command
             && announce
         {
@@ -713,16 +727,33 @@ impl VibocerosApp {
                 ));
             }
             InteractiveCommand::Polyline => {
-                if let Some(previous) = self.polyline_points.last()
+                if let Some(previous) = self.curve_points.last()
                     && previous.is_near(point, self.document.tolerance())
                 {
                     self.push_log("Error: adjacent polyline vertices must differ".to_owned());
                     return;
                 }
-                self.polyline_points.push(point);
+                self.curve_points.push(point);
                 self.push_log(format!(
                     "Vertex {}: {}",
-                    self.polyline_points.len(),
+                    self.curve_points.len(),
+                    format_model_point(point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::InterpCrv => {
+                if let Some(previous) = self.curve_points.last()
+                    && previous.is_near(point, self.document.tolerance())
+                {
+                    self.push_log(
+                        "Error: adjacent curve interpolation points must differ".to_owned(),
+                    );
+                    return;
+                }
+                self.curve_points.push(point);
+                self.push_log(format!(
+                    "Point {}: {}",
+                    self.curve_points.len(),
                     format_model_point(point)
                 ));
                 self.push_log(command.prompt().to_owned());
@@ -1019,19 +1050,28 @@ impl VibocerosApp {
         }
     }
 
-    fn finish_interactive_polyline(&mut self) {
-        if self.polyline_points.len() < 2 {
-            self.push_log("Error: a polyline requires at least two vertices".to_owned());
+    fn finish_interactive_curve(&mut self) {
+        let Some(command) = self
+            .active_command
+            .filter(|command| command.collects_curve_points())
+        else {
+            return;
+        };
+        if self.curve_points.len() < 2 {
+            self.push_log(format!(
+                "Error: {} requires at least two points",
+                command.name()
+            ));
             return;
         }
-        let points = std::mem::take(&mut self.polyline_points);
+        let points = std::mem::take(&mut self.curve_points);
         self.active_command = None;
         let arguments = points
             .into_iter()
             .map(format_model_point)
             .collect::<Vec<_>>()
             .join(" ");
-        self.execute_command(&format!("Polyline {arguments}"));
+        self.execute_command(&format!("{} {arguments}", command.name()));
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
@@ -1493,8 +1533,11 @@ impl VibocerosApp {
                         egui::TextEdit::singleline(&mut self.command_input)
                             .desired_width(f32::INFINITY)
                             .hint_text(if self.active_command.is_some() {
-                                if self.active_command == Some(InteractiveCommand::Polyline) {
-                                    "Pick vertices; press Enter to finish or Esc to cancel"
+                                if self
+                                    .active_command
+                                    .is_some_and(InteractiveCommand::collects_curve_points)
+                                {
+                                    "Pick curve points; press Enter to finish or Esc to cancel"
                                 } else {
                                     "Pick in the viewport or press Esc"
                                 }
@@ -1525,12 +1568,14 @@ impl eframe::App for VibocerosApp {
                 }
             }
         }
-        if self.active_command == Some(InteractiveCommand::Polyline)
+        if self
+            .active_command
+            .is_some_and(InteractiveCommand::collects_curve_points)
             && self.command_input.trim().is_empty()
             && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Enter))
         {
-            self.finish_interactive_polyline();
+            self.finish_interactive_curve();
         }
         if self.active_command.is_none()
             && self.document.selected_object_count() > 0
@@ -1546,8 +1591,11 @@ impl eframe::App for VibocerosApp {
             active: self.active_command.is_some(),
             osnap: self.osnap,
             smart_track: self.smart_track,
-            anchor: if self.active_command == Some(InteractiveCommand::Polyline) {
-                self.polyline_points.last().copied()
+            anchor: if self
+                .active_command
+                .is_some_and(InteractiveCommand::collects_curve_points)
+            {
+                self.curve_points.last().copied()
             } else {
                 self.active_command.and_then(InteractiveCommand::anchor)
             },
@@ -1555,9 +1603,9 @@ impl eframe::App for VibocerosApp {
         };
         let mut viewport_output = ViewportOutput::default();
         egui::CentralPanel::default().show(ui, |ui| {
-            viewport_output =
-                self.viewport
-                    .show(ui, &self.document, drafting, &self.polyline_points);
+            viewport_output = self
+                .viewport
+                .show(ui, &self.document, drafting, &self.curve_points);
         });
         if viewport_output.cancelled {
             self.cancel_interactive_command(true);
@@ -1610,7 +1658,7 @@ mod tests {
             osnap: true,
             smart_track: true,
             active_command: None,
-            polyline_points: Vec::new(),
+            curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
     }
@@ -1805,15 +1853,15 @@ mod tests {
         let third = point(3.0, 2.0, 1.0);
         app.accept_drafting_point(first);
         app.accept_drafting_point(first);
-        assert_eq!(app.polyline_points, vec![first]);
+        assert_eq!(app.curve_points, vec![first]);
         app.accept_drafting_point(second);
         app.accept_drafting_point(third);
         app.accept_drafting_point(first);
-        assert_eq!(app.polyline_points.last(), Some(&first));
+        assert_eq!(app.curve_points.last(), Some(&first));
 
         app.run_command();
         assert_eq!(app.active_command, None);
-        assert!(app.polyline_points.is_empty());
+        assert!(app.curve_points.is_empty());
         let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
             panic!("expected an interactive polyline")
         };
@@ -1824,7 +1872,53 @@ mod tests {
         assert!(app.try_start_interactive_command("Polyline"));
         app.accept_drafting_point(point(5.0, 5.0, 0.0));
         app.cancel_interactive_command(false);
-        assert!(app.polyline_points.is_empty());
+        assert!(app.curve_points.is_empty());
+        assert_eq!(app.document.objects().len(), 1);
+    }
+
+    #[test]
+    fn interactive_interp_crv_collects_points_until_enter() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("InterpCurve"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::InterpCrv));
+
+        let points = [
+            point(0.0, 0.0, 0.0),
+            point(1.0, 2.0, 0.0),
+            point(4.0, -1.0, 0.0),
+            point(6.0, 0.0, 0.0),
+        ];
+        app.accept_drafting_point(points[0]);
+        app.accept_drafting_point(points[0]);
+        assert_eq!(app.curve_points, vec![points[0]]);
+        for point in &points[1..] {
+            app.accept_drafting_point(*point);
+        }
+        app.run_command();
+
+        assert_eq!(app.active_command, None);
+        assert!(app.curve_points.is_empty());
+        let Geometry::NurbsCurve(curve) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactive interpolated curve")
+        };
+        let mut parameter = 0.0;
+        for (index, expected) in points.into_iter().enumerate() {
+            assert!(
+                curve
+                    .evaluate(parameter)
+                    .unwrap()
+                    .is_near(expected, Tolerance::DEFAULT)
+            );
+            if let Some(next) = points.get(index + 1) {
+                parameter += expected.distance_to(*next).unwrap();
+            }
+        }
+        assert_eq!(app.document.undo_label(), Some("InterpCrv"));
+
+        assert!(app.try_start_interactive_command("InterpCrv"));
+        app.accept_drafting_point(point(10.0, 10.0, 0.0));
+        app.cancel_interactive_command(false);
+        assert!(app.curve_points.is_empty());
         assert_eq!(app.document.objects().len(), 1);
     }
 

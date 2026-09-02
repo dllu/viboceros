@@ -92,6 +92,21 @@ pub enum GeometryError {
     #[error("adaptive curve morph supports at most {maximum} control points")]
     TooManyMorphCurveControlPoints { maximum: usize },
 
+    #[error("an interpolated curve requires at least two points, got {actual}")]
+    InsufficientCurveInterpolationPoints { actual: usize },
+
+    #[error("curve interpolation supports degree 1 or 3, got {actual}")]
+    UnsupportedCurveInterpolationDegree { actual: usize },
+
+    #[error("curve interpolation supports at most {maximum} points")]
+    TooManyCurveInterpolationPoints { maximum: usize },
+
+    #[error("curve interpolation point {second_index} coincides with its predecessor")]
+    CoincidentCurveInterpolationPoints { second_index: usize },
+
+    #[error("curve interpolation tangents require an open degree-three curve")]
+    CurveInterpolationTangentsRequireOpenCubic,
+
     #[error("arc-length distance {distance} is outside [0, {length}]")]
     ArcLengthOutOfDomain { distance: f64, length: f64 },
 

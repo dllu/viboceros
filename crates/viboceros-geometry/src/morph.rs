@@ -2,7 +2,8 @@ use faer::{Mat, prelude::*};
 
 use crate::{
     Frame3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3,
-    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
+    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    nurbs::bspline_basis_values, require_finite,
 };
 
 const MORPH_CURVE_DEGREE: usize = 3;
@@ -214,7 +215,12 @@ fn interpolate_morphed_curve(
     let mut basis_rows = Vec::with_capacity(control_count);
     let mut targets = Vec::with_capacity(control_count);
     for parameter in parameters {
-        basis_rows.push(cubic_basis_values(&knots, control_count, parameter)?);
+        basis_rows.push(bspline_basis_values(
+            &knots,
+            MORPH_CURVE_DEGREE,
+            control_count,
+            parameter,
+        )?);
         targets.push(morph.morph_point(curve.evaluate(parameter)?)?.to_array());
     }
 
@@ -227,52 +233,6 @@ fn interpolate_morphed_curve(
         .map(|row| Point3::try_new(solution[(row, 0)], solution[(row, 1)], solution[(row, 2)]))
         .collect::<Result<Vec<_>, _>>()?;
     NurbsCurve::try_new(MORPH_CURVE_DEGREE, controls, knots)
-}
-
-fn cubic_basis_values(
-    knots: &[Real],
-    control_count: usize,
-    parameter: Real,
-) -> Result<Vec<Real>, GeometryError> {
-    let last_control = control_count - 1;
-    let span = if parameter >= knots[control_count] {
-        last_control
-    } else if parameter <= knots[MORPH_CURVE_DEGREE] {
-        MORPH_CURVE_DEGREE
-    } else {
-        let mut low = MORPH_CURVE_DEGREE;
-        let mut high = control_count;
-        let mut middle = (low + high) / 2;
-        while parameter < knots[middle] || parameter >= knots[middle + 1] {
-            if parameter < knots[middle] {
-                high = middle;
-            } else {
-                low = middle;
-            }
-            middle = (low + high) / 2;
-        }
-        middle
-    };
-
-    let mut local = [0.0; MORPH_CURVE_DEGREE + 1];
-    local[0] = 1.0;
-    for column in 1..=MORPH_CURVE_DEGREE {
-        let mut saved = 0.0;
-        for row in 0..column {
-            let left_knot = knots[span + 1 - column + row];
-            let right_knot = knots[span + row + 1];
-            let left_fraction = stable_interval_fraction(left_knot, parameter, right_knot)?;
-            let value = local[row];
-            local[row] = (1.0 - left_fraction).mul_add(value, saved);
-            saved = left_fraction * value;
-        }
-        local[column] = saved;
-    }
-    require_finite(local, "cubic morph interpolation basis")?;
-
-    let mut values = vec![0.0; control_count];
-    values[span - MORPH_CURVE_DEGREE..=span].copy_from_slice(&local);
-    Ok(values)
 }
 
 fn stable_mean3(first: Real, second: Real, third: Real) -> Result<Real, GeometryError> {
@@ -290,28 +250,6 @@ fn stable_lerp(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryE
     let parameter = start.mul_add(1.0 - fraction, end * fraction);
     require_finite([parameter], "cubic morph sample parameter")?;
     Ok(parameter)
-}
-
-fn stable_interval_fraction(
-    interval_start: Real,
-    value: Real,
-    interval_end: Real,
-) -> Result<Real, GeometryError> {
-    let denominator = interval_end - interval_start;
-    let fraction = if denominator.is_finite() && denominator > 0.0 {
-        (value - interval_start) / denominator
-    } else if denominator.is_infinite() && interval_start < interval_end {
-        let scaled_start = interval_start * 0.5;
-        (value * 0.5 - scaled_start) / (interval_end * 0.5 - scaled_start)
-    } else {
-        return Err(GeometryError::SingularSystem);
-    };
-    if !fraction.is_finite() {
-        return Err(GeometryError::NonFinite {
-            context: "cubic morph interpolation basis",
-        });
-    }
-    Ok(fraction.clamp(0.0, 1.0))
 }
 
 /// Rhino-compatible plane-to-surface ("splop") point morph.

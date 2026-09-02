@@ -379,27 +379,81 @@ impl NurbsCurve {
     }
 
     fn find_span(&self, parameter: Real) -> usize {
-        let last_control_point = self.control_points.len() - 1;
-        if parameter >= self.knots[last_control_point + 1] {
-            return last_control_point;
-        }
-        if parameter <= self.knots[self.degree] {
-            return self.degree;
-        }
-
-        let mut low = self.degree;
-        let mut high = last_control_point + 1;
-        let mut middle = (low + high) / 2;
-        while parameter < self.knots[middle] || parameter >= self.knots[middle + 1] {
-            if parameter < self.knots[middle] {
-                high = middle;
-            } else {
-                low = middle;
-            }
-            middle = (low + high) / 2;
-        }
-        middle
+        find_span_in_knots(
+            &self.knots,
+            self.degree,
+            self.control_points.len(),
+            parameter,
+        )
     }
+}
+
+pub(crate) fn bspline_basis_values(
+    knots: &[Real],
+    degree: usize,
+    control_count: usize,
+    parameter: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    debug_assert_eq!(knots.len(), control_count + degree + 1);
+    debug_assert!(degree >= 1 && control_count > degree);
+    let domain_start = knots[degree];
+    let domain_end = knots[control_count];
+    require_finite([parameter], "B-spline basis parameter")?;
+    if parameter < domain_start || parameter > domain_end {
+        return Err(GeometryError::ParameterOutOfDomain {
+            parameter,
+            domain_start,
+            domain_end,
+        });
+    }
+    let span = find_span_in_knots(knots, degree, control_count, parameter);
+    let mut local = vec![0.0; degree + 1];
+    local[0] = 1.0;
+    for column in 1..=degree {
+        let mut saved = 0.0;
+        for row in 0..column {
+            let left_knot = knots[span + 1 - column + row];
+            let right_knot = knots[span + row + 1];
+            let left_fraction = interval_fraction(parameter, left_knot, right_knot)?;
+            let value = local[row];
+            local[row] = (1.0 - left_fraction).mul_add(value, saved);
+            saved = left_fraction * value;
+        }
+        local[column] = saved;
+    }
+    require_finite(local.iter().copied(), "B-spline basis")?;
+
+    let mut values = vec![0.0; control_count];
+    values[span - degree..=span].copy_from_slice(&local);
+    Ok(values)
+}
+
+fn find_span_in_knots(
+    knots: &[Real],
+    degree: usize,
+    control_count: usize,
+    parameter: Real,
+) -> usize {
+    let last_control_point = control_count - 1;
+    if parameter >= knots[control_count] {
+        return last_control_point;
+    }
+    if parameter <= knots[degree] {
+        return degree;
+    }
+
+    let mut low = degree;
+    let mut high = control_count;
+    let mut middle = (low + high) / 2;
+    while parameter < knots[middle] || parameter >= knots[middle + 1] {
+        if parameter < knots[middle] {
+            high = middle;
+        } else {
+            low = middle;
+        }
+        middle = (low + high) / 2;
+    }
+    middle
 }
 
 pub(crate) fn curve_points_coincident(left: Point3, right: Point3) -> bool {
@@ -516,7 +570,7 @@ pub(crate) fn stable_divided_difference(
     }
 }
 
-fn interval_fraction(
+pub(crate) fn interval_fraction(
     value: Real,
     interval_start: Real,
     interval_end: Real,

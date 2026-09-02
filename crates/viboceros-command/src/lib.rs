@@ -8,8 +8,9 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveRef, CurveSample, Ellipse3, Frame3,
-    GeometryError, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES,
+    AffineTransform3, BoundingBox3, Circle3, CircularArc3, CurveInterpolationOptions,
+    CurveKnotSpacing, CurveRef, CurveSample, Ellipse3, Frame3, GeometryError,
+    InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES,
     MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3, PolylineClosure,
     Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
@@ -73,6 +74,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ControlPointCurveCommand)
+            .expect("unique built-in command");
+        registry
+            .register(InterpCurveCommand)
             .expect("unique built-in command");
         registry
             .register(SrfPtCommand)
@@ -699,6 +703,122 @@ impl Command for ControlPointCurveCommand {
             "Added degree {degree} control-point curve {id} ({control_point_count} control points)"
         ))
     }
+}
+
+const INTERP_CRV_USAGE: &str = "InterpCrv point1 point2 ... [Degree=1|3] [Knots=Uniform|Chord|SqrtChrd] [Close=Open|Smooth|Sharp] [StartTangent=x,y,z] [EndTangent=x,y,z]";
+
+struct InterpCurveCommand;
+
+impl Command for InterpCurveCommand {
+    fn name(&self) -> &'static str {
+        "InterpCrv"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["InterpCurve"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (points, options) = parse_interp_curve_arguments(arguments)?;
+        let point_count = points.len();
+        let curve = NurbsCurve::try_interpolate(&points, options, document.tolerance())?;
+        let degree = curve.degree();
+        let periodic = curve.is_periodic();
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added {}degree {degree} interpolated curve {id} through {point_count} point(s)",
+            if periodic { "periodic " } else { "" }
+        ))
+    }
+}
+
+fn parse_interp_curve_arguments(
+    arguments: &[&str],
+) -> Result<(Vec<Point3>, CurveInterpolationOptions), CommandError> {
+    let mut points = Vec::new();
+    let mut degree = 3;
+    let mut knot_spacing = CurveKnotSpacing::Chord;
+    let mut closure = InterpolatedCurveClosure::Open;
+    let mut start_tangent = None;
+    let mut end_tangent = None;
+    let mut degree_seen = false;
+    let mut knots_seen = false;
+    let mut close_seen = false;
+    let mut start_tangent_seen = false;
+    let mut end_tangent_seen = false;
+    let mut index = 0;
+
+    while index < arguments.len() {
+        let argument = arguments[index];
+        if let Some((name, value)) = argument.split_once('=') {
+            let value = value.trim_start_matches('_');
+            if option_name_eq(name, "Degree") && !degree_seen {
+                degree = value
+                    .parse::<usize>()
+                    .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+                degree_seen = true;
+            } else if option_name_eq(name, "Knots") && !knots_seen {
+                knot_spacing = if value.eq_ignore_ascii_case("Uniform") {
+                    CurveKnotSpacing::Uniform
+                } else if value.eq_ignore_ascii_case("Chord") {
+                    CurveKnotSpacing::Chord
+                } else if value.eq_ignore_ascii_case("SqrtChrd")
+                    || value.eq_ignore_ascii_case("SqrtChord")
+                    || value.eq_ignore_ascii_case("ChordSquareRoot")
+                    || value.eq_ignore_ascii_case("SquareRootChord")
+                {
+                    CurveKnotSpacing::SquareRootChord
+                } else {
+                    return Err(CommandError::Usage(INTERP_CRV_USAGE));
+                };
+                knots_seen = true;
+            } else if option_name_eq(name, "Close") && !close_seen {
+                closure = if value.eq_ignore_ascii_case("Open") || value.eq_ignore_ascii_case("No")
+                {
+                    InterpolatedCurveClosure::Open
+                } else if value.eq_ignore_ascii_case("Smooth") || value.eq_ignore_ascii_case("Yes")
+                {
+                    InterpolatedCurveClosure::Smooth
+                } else if value.eq_ignore_ascii_case("Sharp") {
+                    InterpolatedCurveClosure::Sharp
+                } else {
+                    return Err(CommandError::Usage(INTERP_CRV_USAGE));
+                };
+                close_seen = true;
+            } else if option_name_eq(name, "StartTangent") && !start_tangent_seen {
+                start_tangent = Some(parse_interp_curve_tangent(value)?);
+                start_tangent_seen = true;
+            } else if option_name_eq(name, "EndTangent") && !end_tangent_seen {
+                end_tangent = Some(parse_interp_curve_tangent(value)?);
+                end_tangent_seen = true;
+            } else {
+                return Err(CommandError::Usage(INTERP_CRV_USAGE));
+            }
+            index += 1;
+        } else {
+            let (point, consumed) = parse_point(&arguments[index..])?;
+            points.push(point);
+            index += consumed;
+        }
+    }
+
+    let mut options = CurveInterpolationOptions::new(degree, knot_spacing, closure);
+    if let Some(tangent) = start_tangent {
+        options = options.with_start_tangent(tangent);
+    }
+    if let Some(tangent) = end_tangent {
+        options = options.with_end_tangent(tangent);
+    }
+    Ok((points, options))
+}
+
+fn parse_interp_curve_tangent(value: &str) -> Result<Vector3, CommandError> {
+    if !value.contains(',') {
+        return Err(CommandError::Usage(INTERP_CRV_USAGE));
+    }
+    let (point, consumed) = parse_point(&[value])?;
+    debug_assert_eq!(consumed, 1);
+    Ok(Vector3::try_from(point.to_array())?)
 }
 
 struct SrfPtCommand;
@@ -5622,7 +5742,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7438,6 +7558,84 @@ mod tests {
             curve.evaluate(1.0).unwrap(),
             Point3::try_new(8.0, 0.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn creates_interpolated_curves_with_rhino_style_options() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let message = registry
+            .execute(&mut document, "InterpCrv 0,0 1,2 4,-1 6,0")
+            .unwrap();
+        assert!(message.contains("degree 3 interpolated curve"));
+        let Geometry::NurbsCurve(default_curve) = document.objects().next().unwrap().geometry()
+        else {
+            panic!("expected an interpolated NURBS curve")
+        };
+        let expected_points = [
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(4.0, -1.0, 0.0).unwrap(),
+            Point3::try_new(6.0, 0.0, 0.0).unwrap(),
+        ];
+        let mut parameter = 0.0;
+        for (index, expected) in expected_points.into_iter().enumerate() {
+            assert!(
+                default_curve
+                    .evaluate(parameter)
+                    .unwrap()
+                    .is_near(expected, Tolerance::DEFAULT)
+            );
+            if let Some(next) = expected_points.get(index + 1) {
+                parameter += expected.distance_to(*next).unwrap();
+            }
+        }
+
+        registry
+            .execute(
+                &mut document,
+                "InterpCurve Knots=SqrtChrd Close=Smooth 0,0 3,0 3,2 0,2",
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(periodic) = document.objects().nth(1).unwrap().geometry() else {
+            panic!("expected a periodic NURBS curve")
+        };
+        assert!(periodic.is_periodic());
+        assert!(periodic.is_closed().unwrap());
+
+        registry
+            .execute(
+                &mut document,
+                "InterpCrv Degree=3 StartTangent=-1,0,0 EndTangent=0,1,0 10,0 12,2",
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(tangent_curve) = document.objects().nth(2).unwrap().geometry()
+        else {
+            panic!("expected a tangent-constrained NURBS curve")
+        };
+        assert_eq!(tangent_curve.degree(), 3);
+        assert_eq!(tangent_curve.control_points().len(), 4);
+        assert!(tangent_curve.control_points()[1].point().x() < 10.0);
+
+        let message = registry
+            .execute(&mut document, "InterpCrv 20,0 24,0")
+            .unwrap();
+        assert!(message.contains("degree 1 interpolated curve"));
+    }
+
+    #[test]
+    fn invalid_interp_crv_options_are_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for input in [
+            "InterpCrv 0,0 1,1 Degree=2",
+            "InterpCrv 0,0 1,1 Knots=Bad",
+            "InterpCrv 0,0 1,1 Degree=3 Degree=3",
+            "InterpCrv 0,0 1,1 Close=Smooth StartTangent=1,0,0",
+        ] {
+            assert!(registry.execute(&mut document, input).is_err(), "{input}");
+            assert_eq!(document.objects().len(), 0);
+        }
     }
 
     #[test]
