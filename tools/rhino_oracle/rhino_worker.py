@@ -265,6 +265,31 @@ def _polygon_mesh_value(mesh):
     }
 
 
+def _mesh_fill_hole_value(mesh, source_vertex_count, source_face_count):
+    patch_triangles = []
+    for index in range(source_face_count, mesh.Faces.Count):
+        face = mesh.Faces[index]
+        if not face.IsTriangle:
+            raise ValueError("mesh hole patch unexpectedly contains a quad")
+        triangle = [
+            int(face.A) - source_vertex_count,
+            int(face.B) - source_vertex_count,
+            int(face.C) - source_vertex_count,
+        ]
+        if any(vertex < 0 for vertex in triangle):
+            raise ValueError("mesh hole patch unexpectedly reuses a source vertex")
+        triangle.sort()
+        patch_triangles.append(triangle)
+    patch_triangles.sort()
+    return {
+        "added_vertices": [
+            _xyz(mesh.Vertices[index])
+            for index in range(source_vertex_count, mesh.Vertices.Count)
+        ],
+        "patch_triangles": patch_triangles,
+    }
+
+
 def _mesh_unweld_value(mesh):
     face_points = []
     point_groups = {}
@@ -4493,6 +4518,70 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, split_mesh_edge)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_fill_hole":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        edge_points = [_point(point) for point in operation["edge_points"]]
+        if len(edge_points) != 2:
+            source.Dispose()
+            raise ValueError("mesh fill hole requires two endpoint locations")
+        topology_edge_index = -1
+        for edge_index in range(source.TopologyEdges.Count):
+            line = source.TopologyEdges.EdgeLine(edge_index)
+            if (
+                (line.From == edge_points[0] and line.To == edge_points[1])
+                or (line.From == edge_points[1] and line.To == edge_points[0])
+            ):
+                topology_edge_index = edge_index
+                break
+        if topology_edge_index < 0:
+            source.Dispose()
+            raise ValueError("mesh fill hole endpoints do not identify an edge")
+
+        def fill_mesh_hole():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                # Rhino 8's public binding exposes the historical spelling;
+                # current RhinoCommon documentation aliases it as FillHole.
+                accepted = bool(mesh.FileHole(topology_edge_index))
+                return {
+                    "accepted": accepted,
+                    "mesh": _mesh_fill_hole_value(
+                        mesh, source.Vertices.Count, source.Faces.Count
+                    ),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, fill_mesh_hole)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_fill_holes":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+
+        def fill_mesh_holes():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                accepted = bool(mesh.FillHoles())
+                return {
+                    "accepted": accepted,
+                    "mesh": _mesh_fill_hole_value(
+                        mesh, source.Vertices.Count, source.Faces.Count
+                    ),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, fill_mesh_holes)
         finally:
             source.Dispose()
 

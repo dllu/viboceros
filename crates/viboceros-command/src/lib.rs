@@ -335,6 +335,12 @@ impl CommandRegistry {
             .register(SplitMeshEdgeCommand)
             .expect("unique built-in command");
         registry
+            .register(FillMeshHoleCommand)
+            .expect("unique built-in command");
+        registry
+            .register(FillMeshHolesCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractNonManifoldMeshEdgesCommand)
             .expect("unique built-in command");
         registry
@@ -7724,6 +7730,257 @@ fn parse_split_mesh_edge_arguments(
     }
 }
 
+const FILL_MESH_HOLE_USAGE: &str = "FillMeshHole (point|Edge=index) [JoinMesh=Yes|No]";
+
+#[derive(Clone, Debug, PartialEq)]
+struct FillMeshHoleOptions {
+    selection: MeshTopologyEdgeSelection,
+    join_mesh: bool,
+}
+
+struct FillMeshHoleSource {
+    id: ObjectId,
+    mesh: TriangleMesh,
+    attributes: ObjectAttributes,
+}
+
+struct FillMeshHolePlan {
+    source: ObjectId,
+    filled: TriangleMesh,
+    patch: TriangleMesh,
+    attributes: ObjectAttributes,
+}
+
+struct FillMeshHoleCommand;
+
+impl Command for FillMeshHoleCommand {
+    fn name(&self) -> &'static str {
+        "FillMeshHole"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_fill_mesh_hole_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                let Geometry::Mesh(mesh) = object.geometry() else {
+                    return Err(CommandError::UnsupportedFillMeshHoleGeometry);
+                };
+                Ok(FillMeshHoleSource {
+                    id: object.id(),
+                    mesh: mesh.clone(),
+                    attributes: object.attributes().clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        let topology_sources = sources
+            .iter()
+            .map(|source| MeshTopologySource {
+                id: source.id,
+                mesh: source.mesh.clone(),
+            })
+            .collect::<Vec<_>>();
+        let selections = selected_fill_mesh_hole_edges(
+            &topology_sources,
+            &options.selection,
+            document.tolerance(),
+        )?;
+        if selections.len() > MAX_SPAN_OUTPUT_OBJECTS {
+            return Err(too_many_span_outputs("FillMeshHole"));
+        }
+
+        let mut plans = Vec::new();
+        for (source_index, edge_index) in selections {
+            let source = &sources[source_index];
+            let Some(fill) = source
+                .mesh
+                .fill_topology_hole(edge_index, document.tolerance())?
+            else {
+                continue;
+            };
+            let (filled, patch) = fill.into_parts();
+            plans.push(FillMeshHolePlan {
+                source: source.id,
+                filled,
+                patch,
+                attributes: source.attributes.clone(),
+            });
+        }
+        if plans.is_empty() {
+            return Err(CommandError::NoFillableMeshHoles);
+        }
+        let filled_face_count = plans
+            .iter()
+            .map(|plan| plan.patch.face_count())
+            .sum::<usize>();
+        let filled_hole_count = plans.len();
+
+        if options.join_mesh {
+            let changed_mesh_count = document.replace_object_geometries(
+                plans
+                    .into_iter()
+                    .map(|plan| (plan.source, Geometry::Mesh(plan.filled))),
+            )?;
+            Ok(format!(
+                "Filled {filled_hole_count} mesh hole(s) with {filled_face_count} triangle(s) in {changed_mesh_count} joined mesh(es)"
+            ))
+        } else {
+            let mut output_ids = Vec::with_capacity(plans.len());
+            for plan in plans {
+                output_ids.push(
+                    document.add_geometry_with_attributes(
+                        Geometry::Mesh(plan.patch),
+                        plan.attributes,
+                    )?,
+                );
+            }
+            document.select_objects_direct(output_ids, SelectionMode::Replace)?;
+            Ok(format!(
+                "Filled {filled_hole_count} mesh hole(s) with {filled_face_count} triangle(s) in separate patch mesh(es)"
+            ))
+        }
+    }
+}
+
+fn selected_fill_mesh_hole_edges(
+    sources: &[MeshTopologySource],
+    selection: &MeshTopologyEdgeSelection,
+    tolerance: Tolerance,
+) -> Result<Vec<(usize, usize)>, CommandError> {
+    match selection {
+        MeshTopologyEdgeSelection::Edge(edge) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let edge_count = source.mesh.topology().edge_count();
+                if *edge >= edge_count {
+                    return Err(CommandError::FillMeshHoleEdgeIndexOutOfRange {
+                        edge: *edge,
+                        edge_count,
+                    });
+                }
+                Ok((source_index, *edge))
+            })
+            .collect(),
+        MeshTopologyEdgeSelection::Point(target) => {
+            let Some((source, edge)) = closest_mesh_topology_edge(sources, *target, tolerance)?
+            else {
+                return Err(CommandError::NoFillableMeshHoles);
+            };
+            Ok(vec![(source, edge)])
+        }
+    }
+}
+
+fn parse_fill_mesh_hole_arguments(arguments: &[&str]) -> Result<FillMeshHoleOptions, CommandError> {
+    let mut edge = None;
+    let mut join_mesh = true;
+    let mut join_mesh_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Edge")
+            || option_name_eq(argument, "EdgeIndex")
+            || option_name_eq(argument, "JoinMesh")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(FILL_MESH_HOLE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if (option_name_eq(name, "Edge") || option_name_eq(name, "EdgeIndex")) && edge.is_none() {
+            edge = Some(
+                value
+                    .trim_start_matches('_')
+                    .parse::<usize>()
+                    .map_err(|_| CommandError::Usage(FILL_MESH_HOLE_USAGE))?,
+            );
+        } else if option_name_eq(name, "JoinMesh") && !join_mesh_seen {
+            join_mesh = parse_yes_no(value).ok_or(CommandError::Usage(FILL_MESH_HOLE_USAGE))?;
+            join_mesh_seen = true;
+        } else {
+            return Err(CommandError::Usage(FILL_MESH_HOLE_USAGE));
+        }
+        index += consumed;
+    }
+
+    let selection = if let Some(edge) = edge {
+        require_consumed(&positional, 0, FILL_MESH_HOLE_USAGE)?;
+        MeshTopologyEdgeSelection::Edge(edge)
+    } else {
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, FILL_MESH_HOLE_USAGE)?;
+        MeshTopologyEdgeSelection::Point(point)
+    };
+    Ok(FillMeshHoleOptions {
+        selection,
+        join_mesh,
+    })
+}
+
+struct FillMeshHolesCommand;
+
+impl Command for FillMeshHolesCommand {
+    fn name(&self) -> &'static str {
+        "FillMeshHoles"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "FillMeshHoles")?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selected_mesh_count = selected.len();
+        let mut filled_hole_count = 0_usize;
+        let mut filled_face_count = 0_usize;
+        let mut replacements = Vec::new();
+        for (id, geometry) in selected {
+            let Geometry::Mesh(mesh) = geometry else {
+                return Err(CommandError::UnsupportedFillMeshHolesGeometry);
+            };
+            let source_face_count = mesh.face_count();
+            let (filled, hole_count) = mesh.fill_holes(document.tolerance())?;
+            if hole_count == 0 {
+                continue;
+            }
+            filled_hole_count = filled_hole_count
+                .checked_add(hole_count)
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+            filled_face_count = filled_face_count
+                .checked_add(filled.face_count() - source_face_count)
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+            replacements.push((id, Geometry::Mesh(filled)));
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoFillableMeshHoles);
+        }
+
+        let changed_mesh_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Filled {filled_hole_count} mesh hole(s) with {filled_face_count} triangle(s) in {changed_mesh_count} mesh(es); {} mesh(es) unchanged",
+            selected_mesh_count - changed_mesh_count
+        ))
+    }
+}
+
 const EXTRACT_NON_MANIFOLD_USAGE: &str =
     "ExtractNonManifoldMeshEdges [ExtractHangingFacesOnly=Yes|No] [MinimumFaceCount=count]";
 
@@ -12415,6 +12672,20 @@ pub enum CommandError {
     #[error("none of the selected mesh edges can be split")]
     NoSplittableMeshEdges,
 
+    #[error("FillMeshHole supports selected meshes only")]
+    UnsupportedFillMeshHoleGeometry,
+
+    #[error(
+        "FillMeshHole edge index {edge} is outside the selected mesh's edge count {edge_count}"
+    )]
+    FillMeshHoleEdgeIndexOutOfRange { edge: usize, edge_count: usize },
+
+    #[error("no selected mesh has a fillable closed naked boundary")]
+    NoFillableMeshHoles,
+
+    #[error("FillMeshHoles supports selected meshes only")]
+    UnsupportedFillMeshHolesGeometry,
+
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
 
@@ -12613,7 +12884,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -17396,6 +17667,367 @@ mod tests {
         assert_eq!(
             document.object(source).unwrap().geometry(),
             &Geometry::Mesh(mesh)
+        );
+    }
+
+    #[test]
+    fn fills_mesh_holes_in_place_with_identity_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+            ],
+            vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Hole target")
+            .with_object_color(ColorRgb::new(31, 117, 211));
+        let source = document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Repair group".to_owned()), [source])
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "FillMeshHole Edge=0")
+                .unwrap(),
+            "Filled 1 mesh hole(s) with 1 triangle(s) in 1 joined mesh(es)"
+        );
+        assert!(document.is_selected(source));
+        assert_eq!(document.object(source).unwrap().attributes(), &attributes);
+        let Geometry::Mesh(filled) = document.object(source).unwrap().geometry() else {
+            panic!("expected hole-filled mesh")
+        };
+        assert_eq!(filled.face_count(), 4);
+        assert_eq!(filled.vertices().len(), 8);
+        assert!(filled.topology().is_solid());
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("FillMeshHole"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+    }
+
+    #[test]
+    fn fill_mesh_hole_point_pick_can_create_an_independent_patch() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let make_open_tetrahedron = |offset: Real| {
+            TriangleMesh::try_new(
+                vec![
+                    Point3::try_new(offset, 0.0, 0.0).unwrap(),
+                    Point3::try_new(offset + 4.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(offset, 4.0, 0.0).unwrap(),
+                    Point3::try_new(offset, 0.0, 4.0).unwrap(),
+                ],
+                vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+        };
+        let first_mesh = make_open_tetrahedron(0.0);
+        let second_mesh = make_open_tetrahedron(10.0);
+        let first = document
+            .add_geometry(Geometry::Mesh(first_mesh.clone()))
+            .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Separate cap")
+            .with_object_color(ColorRgb::new(17, 29, 43));
+        let second = document
+            .add_geometry_with_attributes(Geometry::Mesh(second_mesh.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Source only".to_owned()), [second])
+            .unwrap();
+        document
+            .select_objects_direct([first, second], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "FillMeshHole 11,0,0 JoinMesh=No")
+                .unwrap(),
+            "Filled 1 mesh hole(s) with 1 triangle(s) in separate patch mesh(es)"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(
+            document.object(first).unwrap().geometry(),
+            &Geometry::Mesh(first_mesh.clone())
+        );
+        assert_eq!(
+            document.object(second).unwrap().geometry(),
+            &Geometry::Mesh(second_mesh.clone())
+        );
+        let patch = document
+            .objects()
+            .find(|object| object.id() != first && object.id() != second)
+            .unwrap();
+        assert_eq!(patch.attributes(), &attributes);
+        assert!(document.is_selected(patch.id()));
+        assert_eq!(document.selected_object_count(), 1);
+        assert!(matches!(patch.geometry(), Geometry::Mesh(mesh) if mesh.face_count() == 1));
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![second]
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.object(first).unwrap().geometry(),
+            &Geometry::Mesh(first_mesh)
+        );
+        assert_eq!(
+            document.object(second).unwrap().geometry(),
+            &Geometry::Mesh(second_mesh)
+        );
+    }
+
+    #[test]
+    fn fill_mesh_hole_rejects_invalid_non_naked_and_unsupported_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHole Edge=0"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        let square = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry(Geometry::Mesh(square.clone()))
+            .unwrap();
+        document
+            .select_object(source, SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHole 2,2,0"),
+            Err(CommandError::NoFillableMeshHoles)
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHole Edge=5"),
+            Err(CommandError::FillMeshHoleEdgeIndexOutOfRange {
+                edge: 5,
+                edge_count: 5,
+            })
+        ));
+        for invalid in [
+            "FillMeshHole",
+            "FillMeshHole Edge=",
+            "FillMeshHole Edge=-1",
+            "FillMeshHole Edge=0 Edge=1",
+            "FillMeshHole Edge=0 1,2,3",
+            "FillMeshHole Edge=0 JoinMesh=Maybe",
+            "FillMeshHole Edge=0 JoinMesh=Yes JoinMesh=No",
+            "FillMeshHole Unknown=0",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let point = document
+            .add_geometry(Geometry::Point(Point3::try_new(9.0, 9.0, 9.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([source, point], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHole Edge=0"),
+            Err(CommandError::UnsupportedFillMeshHoleGeometry)
+        ));
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Mesh(square)
+        );
+    }
+
+    #[test]
+    fn fill_mesh_holes_repairs_every_selected_boundary_and_preserves_document_state() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let open = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(14.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 4.0).unwrap(),
+            ],
+            vec![
+                [0, 1, 3],
+                [1, 2, 3],
+                [2, 0, 3],
+                [4, 5, 7],
+                [5, 6, 7],
+                [6, 4, 7],
+            ],
+            document.tolerance(),
+        )
+        .unwrap();
+        let closed = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(24.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(20.0, 0.0, 4.0).unwrap(),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Two repairs")
+            .with_object_color(ColorRgb::new(23, 61, 149));
+        let open_id = document
+            .add_geometry_with_attributes(Geometry::Mesh(open.clone()), attributes.clone())
+            .unwrap();
+        let closed_id = document
+            .add_geometry(Geometry::Mesh(closed.clone()))
+            .unwrap();
+        let group = document
+            .add_group(Some("Repair candidates".to_owned()), [open_id, closed_id])
+            .unwrap();
+        document
+            .select_objects_direct([open_id, closed_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "FillMeshHoles").unwrap(),
+            "Filled 2 mesh hole(s) with 2 triangle(s) in 1 mesh(es); 1 mesh(es) unchanged"
+        );
+        let Geometry::Mesh(filled) = document.object(open_id).unwrap().geometry() else {
+            panic!("expected repaired mesh")
+        };
+        assert_eq!(filled.face_count(), 8);
+        assert_eq!(filled.vertices().len(), 14);
+        assert!(filled.topology().is_solid());
+        assert_eq!(document.object(open_id).unwrap().attributes(), &attributes);
+        assert_eq!(
+            document.object(closed_id).unwrap().geometry(),
+            &Geometry::Mesh(closed)
+        );
+        assert!(document.is_selected(open_id));
+        assert!(document.is_selected(closed_id));
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([open_id, closed_id])
+        );
+        assert_eq!(document.undo_label(), Some("FillMeshHoles"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(open_id).unwrap().geometry(),
+            &Geometry::Mesh(open)
+        );
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([open_id, closed_id])
+        );
+    }
+
+    #[test]
+    fn fill_mesh_holes_rejects_noop_arguments_and_mixed_geometry_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHoles"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        let closed = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 4.0).unwrap(),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let mesh_id = document
+            .add_geometry(Geometry::Mesh(closed.clone()))
+            .unwrap();
+        document
+            .select_object(mesh_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHoles"),
+            Err(CommandError::NoFillableMeshHoles)
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHoles Unexpected"),
+            Err(CommandError::Usage("FillMeshHoles"))
+        ));
+
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(9.0, 9.0, 9.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([mesh_id, point_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "FillMeshHoles"),
+            Err(CommandError::UnsupportedFillMeshHolesGeometry)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+        assert_eq!(
+            document.object(mesh_id).unwrap().geometry(),
+            &Geometry::Mesh(closed)
         );
     }
 

@@ -334,6 +334,17 @@ pub enum Operation {
         edge_points: [[f64; 3]; 2],
         parameter: f64,
     },
+    MeshFillHole {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        edge_points: [[f64; 3]; 2],
+    },
+    MeshFillHoles {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -414,6 +425,8 @@ impl Operation {
             | Self::MeshSwapEdge { id, .. }
             | Self::MeshCollapseEdge { id, .. }
             | Self::MeshSplitEdge { id, .. }
+            | Self::MeshFillHole { id, .. }
+            | Self::MeshFillHoles { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1474,6 +1487,72 @@ fn execute(
                 json!({
                     "accepted": accepted,
                     "mesh": polygon_mesh_value(split.as_ref().unwrap_or(&mesh)),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshFillHole {
+            vertices,
+            faces,
+            edge_points,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let endpoints = [point(edge_points[0])?, point(edge_points[1])?];
+            let edge_index = mesh
+                .wireframe_lines(tolerance)?
+                .into_iter()
+                .position(|edge| {
+                    (edge.start() == endpoints[0] && edge.end() == endpoints[1])
+                        || (edge.start() == endpoints[1] && edge.end() == endpoints[0])
+                })
+                .ok_or(ProbeError::FixtureInvariant(
+                    "mesh fill-hole endpoints do not identify a topology edge",
+                ))?;
+            let (fill, elapsed) = measure(iterations, || {
+                black_box(&mesh).fill_topology_hole(black_box(edge_index), tolerance)
+            })?;
+            let accepted = fill.is_some();
+            (
+                json!({
+                    "accepted": accepted,
+                    "mesh": mesh_fill_hole_value(
+                        fill.as_ref().map_or(&mesh, |fill| fill.filled()),
+                        mesh.vertices().len(),
+                        mesh.face_count(),
+                    )?,
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshFillHoles {
+            vertices, faces, ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let ((filled, _filled_hole_count), elapsed) =
+                measure(iterations, || black_box(&mesh).fill_holes(tolerance))?;
+            (
+                json!({
+                    "accepted": true,
+                    "mesh": mesh_fill_hole_value(
+                        &filled,
+                        mesh.vertices().len(),
+                        mesh.face_count(),
+                    )?,
                 }),
                 elapsed,
             )
@@ -4211,6 +4290,41 @@ fn polygon_mesh_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
+fn mesh_fill_hole_value(
+    mesh: &TriangleMesh,
+    source_vertex_count: usize,
+    source_face_count: usize,
+) -> Result<Value, ProbeError> {
+    let mut patch_triangles = Vec::new();
+    let source_vertex_offset = u32::try_from(source_vertex_count)
+        .map_err(|_| ProbeError::FixtureInvariant("mesh hole source has too many vertices"))?;
+    for face in &mesh.faces()[source_face_count..] {
+        let MeshFace::Triangle(mut triangle) = *face else {
+            return Err(ProbeError::FixtureInvariant(
+                "mesh hole patch unexpectedly contains a quad",
+            ));
+        };
+        for vertex in &mut triangle {
+            *vertex =
+                vertex
+                    .checked_sub(source_vertex_offset)
+                    .ok_or(ProbeError::FixtureInvariant(
+                        "mesh hole patch unexpectedly reuses a source vertex",
+                    ))?;
+        }
+        triangle.sort_unstable();
+        patch_triangles.push(triangle);
+    }
+    patch_triangles.sort_unstable();
+    Ok(json!({
+        "added_vertices": mesh.vertices()[source_vertex_count..]
+            .iter()
+            .map(|point| point.to_array())
+            .collect::<Vec<_>>(),
+        "patch_triangles": patch_triangles,
+    }))
+}
+
 fn mesh_unweld_value(mesh: &TriangleMesh) -> Value {
     let face_points = mesh
         .faces()
@@ -6095,6 +6209,99 @@ mod tests {
                 "mesh": {
                     "faces": [[0, 1, 2]],
                     "vertices": vertices,
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn fills_mesh_holes_for_oracle_comparison() {
+        let vertices = vec![
+            [0.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0],
+            [0.0, 4.0, 0.0],
+            [0.0, 0.0, 4.0],
+        ];
+        let response = run_request(&request(vec![
+            Operation::MeshFillHole {
+                id: "filled".to_owned(),
+                vertices: vertices.clone(),
+                faces: vec![vec![0, 1, 3], vec![1, 2, 3], vec![2, 0, 3]],
+                edge_points: [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]],
+            },
+            Operation::MeshFillHole {
+                id: "interior".to_owned(),
+                vertices: vertices[..3].to_vec(),
+                faces: vec![vec![0, 1, 2], vec![0, 2, 1]],
+                edge_points: [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0]],
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "mesh": {
+                    "added_vertices": [
+                        [0.0, 0.0, 0.0],
+                        [4.0, 0.0, 0.0],
+                        [0.0, 4.0, 0.0],
+                        [0.0, 0.0, 0.0],
+                    ],
+                    "patch_triangles": [[0, 1, 2]],
+                },
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "accepted": false,
+                "mesh": {
+                    "added_vertices": [],
+                    "patch_triangles": [],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn fills_all_mesh_holes_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshFillHoles {
+            id: "all".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [0.0, 4.0, 0.0],
+                [0.0, 0.0, 4.0],
+                [10.0, 0.0, 0.0],
+                [14.0, 0.0, 0.0],
+                [10.0, 4.0, 0.0],
+                [10.0, 0.0, 4.0],
+            ],
+            faces: vec![
+                vec![0, 1, 3],
+                vec![1, 2, 3],
+                vec![2, 0, 3],
+                vec![4, 5, 7],
+                vec![5, 6, 7],
+                vec![6, 4, 7],
+            ],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "mesh": {
+                    "added_vertices": [
+                        [0.0, 0.0, 0.0],
+                        [4.0, 0.0, 0.0],
+                        [0.0, 4.0, 0.0],
+                        [10.0, 0.0, 0.0],
+                        [14.0, 0.0, 0.0],
+                        [10.0, 4.0, 0.0],
+                    ],
+                    "patch_triangles": [[0, 1, 2], [3, 4, 5]],
                 },
             })
         );

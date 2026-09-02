@@ -134,6 +134,8 @@ TriangulateMesh
 SwapMeshEdge Edge=1
 CollapseMeshEdge Edge=1
 SplitMeshEdge Edge=1 Parameter=0.25
+FillMeshHole Edge=1 JoinMesh=Yes
+FillMeshHoles
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -318,6 +320,21 @@ order. Welded faces share one appended split vertex, while unwelded replacement
 triangles remain fully separated. Exact endpoint parameters preserve Rhino's
 coincident topology behavior. Object identity, attributes, groups, selection,
 and undo are retained; tolerance-degenerate results are rejected atomically.
+`FillMeshHole` follows the closed naked boundary containing a picked topology
+edge and fills it with a constrained-Delaunay triangle patch. Use `Edge=1`,
+pick near an edge, or enter the bare command for a one-pick viewport workflow.
+`JoinMesh=Yes` (the default) keeps the source identity, attributes, groups, and
+selection; `JoinMesh=No` creates a separately selected patch with the source
+attributes. The joined representation preserves Rhino's duplicated raw
+boundary storage while exact-location topology closes the seam. Patch winding
+is made consistent with the source, tilted and mildly nonplanar boundaries are
+projected stably, and ambiguous branched or self-crossing boundaries are
+rejected atomically.
+`FillMeshHoles` fills every simple closed naked boundary on every selected
+mesh, including outer borders, and keeps each repaired mesh's identity,
+attributes, groups, and selection. It stages the full selection atomically,
+leaves already-closed meshes unchanged, and rejects ambiguous branched or
+self-crossing boundary topology rather than guessing a repair.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

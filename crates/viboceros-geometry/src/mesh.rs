@@ -1,5 +1,9 @@
 use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
+use spade::{
+    ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
+};
+
 use crate::vector::product_three;
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, LineSegment, Point3, Polyline3, Real, Tolerance,
@@ -115,11 +119,47 @@ struct MeshTopologyData {
     edges: BTreeMap<(usize, usize), EdgeIncidence>,
 }
 
+#[derive(Clone, Copy, Debug)]
+struct MeshHoleTriangulationVertex {
+    position: TriangulationPoint2<Real>,
+    source_index: usize,
+}
+
+impl HasPosition for MeshHoleTriangulationVertex {
+    type Scalar = Real;
+
+    fn position(&self) -> TriangulationPoint2<Self::Scalar> {
+        self.position
+    }
+}
+
 /// The two parts produced by extracting faces from a mesh.
 #[derive(Clone, Debug, PartialEq)]
 pub struct MeshFaceExtraction {
     remainder: Option<TriangleMesh>,
     extracted: TriangleMesh,
+}
+
+/// The joined mesh and independent triangular patch produced by filling one
+/// naked mesh boundary.
+#[derive(Clone, Debug, PartialEq)]
+pub struct MeshHoleFill {
+    filled: TriangleMesh,
+    patch: TriangleMesh,
+}
+
+impl MeshHoleFill {
+    pub const fn filled(&self) -> &TriangleMesh {
+        &self.filled
+    }
+
+    pub const fn patch(&self) -> &TriangleMesh {
+        &self.patch
+    }
+
+    pub fn into_parts(self) -> (TriangleMesh, TriangleMesh) {
+        (self.filled, self.patch)
+    }
 }
 
 impl MeshFaceExtraction {
@@ -676,6 +716,206 @@ impl TriangleMesh {
             }
         }
         Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
+    }
+
+    /// Fills the closed naked boundary containing one topology edge.
+    ///
+    /// The selected index follows [`Self::wireframe_lines`]. `None` means the
+    /// edge is not naked, its boundary branches or does not close, or its
+    /// projected polygon cannot be constrained-triangulated. Boundary points
+    /// are copied into a separate raw-vertex patch, including Rhino's unused
+    /// closing duplicate in the joined result. Exact-location topology still
+    /// joins the patch to the source. Generated winding is made opposite the
+    /// face at the selected edge so a consistently oriented input remains
+    /// consistently oriented after filling.
+    pub fn fill_topology_hole(
+        &self,
+        edge_index: usize,
+        tolerance: Tolerance,
+    ) -> Result<Option<MeshHoleFill>, GeometryError> {
+        let data = self.topology_data();
+        let edge_count = data.edges.len();
+        let Some((&selected_edge, selected_incidence)) = data.edges.iter().nth(edge_index) else {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_index,
+                edge_count,
+            });
+        };
+        if selected_incidence.count != 1 {
+            return Ok(None);
+        }
+
+        let naked_edges = data
+            .edges
+            .iter()
+            .filter_map(|(&edge, incidence)| (incidence.count == 1).then_some(edge))
+            .collect::<Vec<_>>();
+        let Some(selected_naked_edge) = naked_edges
+            .iter()
+            .position(|&candidate| candidate == selected_edge)
+        else {
+            return Ok(None);
+        };
+        let mut adjacency = vec![Vec::new(); data.topological_vertex_count];
+        for (naked_edge_index, &(first, second)) in naked_edges.iter().enumerate() {
+            adjacency[first].push(naked_edge_index);
+            adjacency[second].push(naked_edge_index);
+        }
+
+        let mut boundary = Vec::new();
+        let start = selected_edge.0;
+        let mut current = start;
+        let mut current_edge = selected_naked_edge;
+        let mut used = vec![false; naked_edges.len()];
+        loop {
+            if used[current_edge] {
+                return Ok(None);
+            }
+            used[current_edge] = true;
+            boundary.push(current);
+            let (first, second) = naked_edges[current_edge];
+            let next = if current == first {
+                second
+            } else if current == second {
+                first
+            } else {
+                return Ok(None);
+            };
+            if next == start {
+                break;
+            }
+            if adjacency[next].len() != 2 {
+                return Ok(None);
+            }
+            let Some(next_edge) = adjacency[next]
+                .iter()
+                .copied()
+                .find(|&candidate| !used[candidate])
+            else {
+                return Ok(None);
+            };
+            current = next;
+            current_edge = next_edge;
+        }
+        if boundary.len() < 3
+            || adjacency[start].len() != 2
+            || boundary.iter().copied().collect::<BTreeSet<_>>().len() != boundary.len()
+        {
+            return Ok(None);
+        }
+
+        let boundary_points = boundary
+            .iter()
+            .map(|&vertex| data.topological_points[vertex])
+            .collect::<Vec<_>>();
+        let Some(projected) = project_mesh_hole_boundary(&boundary_points)? else {
+            return Ok(None);
+        };
+        let Some(mut patch_triangles) = triangulate_projected_mesh_hole(&projected)? else {
+            return Ok(None);
+        };
+        let boundary_area = projected_polygon_doubled_area(&projected);
+        let selected_forward = selected_incidence
+            .first_use
+            .expect("a naked edge records one face use")
+            .forward;
+        let desired_positive = (boundary_area > 0.0) != selected_forward;
+        for triangle in &mut patch_triangles {
+            let points = triangle.map(|vertex| projected[vertex as usize]);
+            let positive = mesh_hole_cross(points[0], points[1], points[2]) > 0.0;
+            if positive != desired_positive {
+                triangle.swap(1, 2);
+            }
+        }
+
+        let patch_faces = patch_triangles
+            .iter()
+            .copied()
+            .map(MeshFace::Triangle)
+            .collect::<Vec<_>>();
+        let patch = Self::try_new_faces(boundary_points.clone(), patch_faces, tolerance)?;
+
+        let added_vertex_count = boundary_points.len().saturating_add(1);
+        let total_vertex_count = self
+            .vertices
+            .len()
+            .checked_add(added_vertex_count)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if total_vertex_count
+            .checked_sub(1)
+            .is_some_and(|last| u32::try_from(last).is_err())
+        {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+        let offset = u32::try_from(self.vertices.len())
+            .expect("the checked appended mesh vertex range starts within u32");
+        let mut vertices = self.vertices.clone();
+        vertices
+            .try_reserve(added_vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        vertices.extend(boundary_points.iter().copied());
+        vertices.push(boundary_points[0]);
+        let mut faces = self.faces.clone();
+        faces
+            .try_reserve(patch_triangles.len())
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for triangle in patch_triangles {
+            let mapped = triangle.map(|vertex| {
+                offset
+                    .checked_add(vertex)
+                    .expect("the reserved mesh vertex range fits in u32")
+            });
+            faces.push(MeshFace::Triangle(mapped));
+        }
+        let filled = Self::try_new_faces(vertices, faces, tolerance)?;
+        Ok(Some(MeshHoleFill { filled, patch }))
+    }
+
+    /// Fills every unambiguous closed naked boundary with triangles.
+    ///
+    /// Boundaries are processed in deterministic topology-edge order and the
+    /// search restarts after each patch because topology indices change. This
+    /// mirrors Rhino's all-holes operation, including treating outer naked
+    /// borders as holes, while omitting the singular operation's unused
+    /// closing duplicate after each boundary. The returned count is the
+    /// number of filled boundary loops.
+    pub fn fill_holes(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
+        let mut filled = self.clone();
+        let mut filled_hole_count = 0_usize;
+        loop {
+            let edge_count = filled.topology().edge_count();
+            let mut next = None;
+            for edge_index in 0..edge_count {
+                if let Some(fill) = filled.fill_topology_hole(edge_index, tolerance)? {
+                    next = Some(fill.filled);
+                    break;
+                }
+            }
+            let Some(mut next) = next else {
+                break;
+            };
+            let closing_duplicate = next
+                .vertices
+                .pop()
+                .expect("a filled boundary appends an unused closing vertex");
+            debug_assert!(
+                !next
+                    .faces
+                    .iter()
+                    .flat_map(MeshFace::indices)
+                    .any(|&vertex| vertex as usize == next.vertices.len()),
+                "the closing boundary duplicate is unused"
+            );
+            debug_assert!(
+                next.vertices.contains(&closing_duplicate),
+                "the removed vertex duplicates the boundary start"
+            );
+            filled = Self::from_validated_parts(next.vertices, next.faces);
+            filled_hole_count = filled_hole_count
+                .checked_add(1)
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+        }
+        Ok((filled, filled_hole_count))
     }
 
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
@@ -2323,6 +2563,276 @@ impl TriangleMesh {
     }
 }
 
+fn triangulate_projected_mesh_hole(
+    projected: &[[Real; 2]],
+) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
+    if projected.len() > u32::MAX as usize {
+        return Err(GeometryError::TooManyMeshVertices);
+    }
+    let doubled_area = projected_polygon_doubled_area(projected);
+    let epsilon = 64.0 * Real::EPSILON * projected.len() as Real;
+    if !doubled_area.is_finite() || doubled_area.abs() <= epsilon {
+        return Ok(None);
+    }
+
+    let vertices = projected
+        .iter()
+        .enumerate()
+        .map(|(source_index, point)| MeshHoleTriangulationVertex {
+            position: TriangulationPoint2::new(point[0], point[1]),
+            source_index,
+        })
+        .collect::<Vec<_>>();
+    let mut triangulation =
+        match ConstrainedDelaunayTriangulation::<MeshHoleTriangulationVertex>::bulk_load(vertices) {
+            Ok(triangulation) => triangulation,
+            Err(_) => return Ok(None),
+        };
+    if triangulation.num_vertices() != projected.len() {
+        return Ok(None);
+    }
+    let mut handles = vec![None; projected.len()];
+    for vertex in triangulation.vertices() {
+        handles[vertex.data().source_index] = Some(vertex.fix());
+    }
+    for source in 0..projected.len() {
+        let Some(from) = handles[source] else {
+            return Ok(None);
+        };
+        let Some(to) = handles[(source + 1) % projected.len()] else {
+            return Ok(None);
+        };
+        let before = triangulation.num_constraints();
+        if triangulation.try_add_constraint(from, to).is_empty()
+            || triangulation.num_constraints() != before + 1
+        {
+            return Ok(None);
+        }
+    }
+
+    let mut triangles = Vec::with_capacity(projected.len().saturating_sub(2));
+    let mut actual_area = 0.0;
+    let mut area_correction = 0.0;
+    for face in triangulation.inner_faces() {
+        let face_vertices = face.vertices();
+        let face_points = face_vertices.map(|vertex| {
+            let point = vertex.data().position;
+            [point.x, point.y]
+        });
+        let centroid = [
+            (face_points[0][0] + face_points[1][0] + face_points[2][0]) / 3.0,
+            (face_points[0][1] + face_points[1][1] + face_points[2][1]) / 3.0,
+        ];
+        if !point_in_mesh_hole_polygon(centroid, projected, epsilon) {
+            continue;
+        }
+        let triangle_area = mesh_hole_cross(face_points[0], face_points[1], face_points[2]);
+        if triangle_area <= epsilon {
+            return Ok(None);
+        }
+        compensated_mesh_hole_sum(&mut actual_area, &mut area_correction, triangle_area);
+        let mut triangle = [0_u32; 3];
+        for (target, vertex) in triangle.iter_mut().zip(face_vertices) {
+            *target = u32::try_from(vertex.data().source_index)
+                .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        }
+        triangles.push(triangle);
+    }
+    if triangles.len() != projected.len() - 2 {
+        return Ok(None);
+    }
+    let actual_area = actual_area + area_correction;
+    let area_tolerance = 4096.0 * Real::EPSILON * projected.len() as Real;
+    if (actual_area - doubled_area.abs()).abs() > area_tolerance {
+        return Ok(None);
+    }
+    Ok(Some(triangles))
+}
+
+fn project_mesh_hole_boundary(points: &[Point3]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
+    let Some(origin) = points.first() else {
+        return Ok(None);
+    };
+    let direct = points
+        .iter()
+        .map(|point| {
+            [
+                point.x() - origin.x(),
+                point.y() - origin.y(),
+                point.z() - origin.z(),
+            ]
+        })
+        .collect::<Vec<_>>();
+    let mut relative = if direct.iter().flatten().all(|value| value.is_finite()) {
+        direct
+    } else {
+        let global_scale = points
+            .iter()
+            .flat_map(|point| [point.x().abs(), point.y().abs(), point.z().abs()])
+            .fold(0.0, Real::max);
+        if global_scale == 0.0 {
+            return Ok(None);
+        }
+        let scaled_origin = [
+            origin.x() / global_scale,
+            origin.y() / global_scale,
+            origin.z() / global_scale,
+        ];
+        points
+            .iter()
+            .map(|point| {
+                [
+                    point.x() / global_scale - scaled_origin[0],
+                    point.y() / global_scale - scaled_origin[1],
+                    point.z() / global_scale - scaled_origin[2],
+                ]
+            })
+            .collect()
+    };
+    let scale = relative
+        .iter()
+        .flatten()
+        .map(|value| value.abs())
+        .fold(0.0, Real::max);
+    if scale == 0.0 {
+        return Ok(None);
+    }
+    for point in &mut relative {
+        for coordinate in point {
+            *coordinate /= scale;
+        }
+    }
+
+    let mut normal_sum = [0.0; 3];
+    let mut normal_correction = [0.0; 3];
+    for index in 0..relative.len() {
+        let first = relative[index];
+        let second = relative[(index + 1) % relative.len()];
+        let cross = [
+            first[1].mul_add(second[2], -first[2] * second[1]),
+            first[2].mul_add(second[0], -first[0] * second[2]),
+            first[0].mul_add(second[1], -first[1] * second[0]),
+        ];
+        for coordinate in 0..3 {
+            compensated_mesh_hole_sum(
+                &mut normal_sum[coordinate],
+                &mut normal_correction[coordinate],
+                cross[coordinate],
+            );
+        }
+    }
+    let normal: [Real; 3] =
+        std::array::from_fn(|coordinate| normal_sum[coordinate] + normal_correction[coordinate]);
+    let normal_scale = normal.iter().map(|value| value.abs()).fold(0.0, Real::max);
+    if normal_scale <= 64.0 * Real::EPSILON * points.len() as Real {
+        return Ok(None);
+    }
+    let scaled_normal = normal.map(|value| value / normal_scale);
+    let normal_length = scaled_normal
+        .iter()
+        .map(|value| value * value)
+        .sum::<Real>()
+        .sqrt();
+    let normal = scaled_normal.map(|value| value / normal_length);
+
+    let mut tangent = None;
+    for index in 0..relative.len() {
+        let first = relative[index];
+        let second = relative[(index + 1) % relative.len()];
+        let edge =
+            std::array::from_fn::<_, 3, _>(|coordinate| second[coordinate] - first[coordinate]);
+        let normal_component =
+            edge[0].mul_add(normal[0], edge[1].mul_add(normal[1], edge[2] * normal[2]));
+        let planar = std::array::from_fn::<_, 3, _>(|coordinate| {
+            normal_component.mul_add(-normal[coordinate], edge[coordinate])
+        });
+        let squared_length = planar.iter().map(|value| value * value).sum::<Real>();
+        if tangent.is_none_or(|(_, best_length)| squared_length > best_length) {
+            tangent = Some((planar, squared_length));
+        }
+    }
+    let Some((tangent, tangent_squared_length)) = tangent else {
+        return Ok(None);
+    };
+    if tangent_squared_length <= Real::MIN_POSITIVE {
+        return Ok(None);
+    }
+    let tangent_length = tangent_squared_length.sqrt();
+    let x_axis = tangent.map(|value| value / tangent_length);
+    let y_axis = [
+        normal[1].mul_add(x_axis[2], -normal[2] * x_axis[1]),
+        normal[2].mul_add(x_axis[0], -normal[0] * x_axis[2]),
+        normal[0].mul_add(x_axis[1], -normal[1] * x_axis[0]),
+    ];
+    let projected = relative
+        .into_iter()
+        .map(|point| {
+            [
+                point[0].mul_add(x_axis[0], point[1].mul_add(x_axis[1], point[2] * x_axis[2])),
+                point[0].mul_add(y_axis[0], point[1].mul_add(y_axis[1], point[2] * y_axis[2])),
+            ]
+        })
+        .collect::<Vec<_>>();
+    require_finite(projected.iter().flatten().copied(), "mesh hole projection")?;
+    Ok(Some(projected))
+}
+
+fn projected_polygon_doubled_area(points: &[[Real; 2]]) -> Real {
+    let mut sum = 0.0;
+    let mut correction = 0.0;
+    for index in 0..points.len() {
+        let first = points[index];
+        let second = points[(index + 1) % points.len()];
+        compensated_mesh_hole_sum(
+            &mut sum,
+            &mut correction,
+            first[0].mul_add(second[1], -first[1] * second[0]),
+        );
+    }
+    sum + correction
+}
+
+fn mesh_hole_cross(first: [Real; 2], second: [Real; 2], third: [Real; 2]) -> Real {
+    let first_edge = [second[0] - first[0], second[1] - first[1]];
+    let second_edge = [third[0] - first[0], third[1] - first[1]];
+    first_edge[0].mul_add(second_edge[1], -first_edge[1] * second_edge[0])
+}
+
+fn point_in_mesh_hole_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {
+    let mut winding = 0_i64;
+    for index in 0..polygon.len() {
+        let start = polygon[index];
+        let end = polygon[(index + 1) % polygon.len()];
+        let cross = mesh_hole_cross(start, end, point);
+        if cross.abs() <= epsilon
+            && point[0] >= start[0].min(end[0]) - epsilon
+            && point[0] <= start[0].max(end[0]) + epsilon
+            && point[1] >= start[1].min(end[1]) - epsilon
+            && point[1] <= start[1].max(end[1]) + epsilon
+        {
+            return true;
+        }
+        if start[1] <= point[1] {
+            if end[1] > point[1] && cross > epsilon {
+                winding += 1;
+            }
+        } else if end[1] <= point[1] && cross < -epsilon {
+            winding -= 1;
+        }
+    }
+    winding != 0
+}
+
+fn compensated_mesh_hole_sum(sum: &mut Real, correction: &mut Real, value: Real) {
+    let next = *sum + value;
+    if sum.abs() >= value.abs() {
+        *correction += (*sum - next) + value;
+    } else {
+        *correction += (value - next) + *sum;
+    }
+    *sum = next;
+}
+
 fn validate_mesh_edge_filter(filter: MeshEdgeFilter) -> Result<(), GeometryError> {
     let MeshEdgeFilter::FaceAngle {
         greater_than_radians,
@@ -3748,6 +4258,230 @@ mod tests {
                 edge: edge_count,
                 edge_count,
             })
+        );
+    }
+
+    #[test]
+    fn fills_a_naked_mesh_hole_with_an_oriented_delaunay_patch() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
+        let fill = mesh
+            .fill_topology_hole(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+
+        assert_eq!(
+            fill.patch().vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+            ]
+        );
+        let mut patch_triangle = fill.patch().triangles()[0];
+        patch_triangle.sort_unstable();
+        assert_eq!(patch_triangle, [0, 1, 2]);
+        assert_eq!(
+            &fill.filled().vertices()[4..],
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ]
+        );
+        let mut joined_triangle = *fill.filled().triangles().last().unwrap();
+        joined_triangle.sort_unstable();
+        assert_eq!(joined_triangle, [4, 5, 6]);
+        assert!(fill.filled().topology().is_solid());
+    }
+
+    #[test]
+    fn fills_concave_and_nonplanar_mesh_holes_deterministically() {
+        let concave = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(2.0, 2.0, 4.0),
+            ],
+            vec![[0, 1, 5], [1, 2, 5], [2, 3, 5], [3, 4, 5], [4, 0, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&concave, point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0));
+        let patch = concave
+            .fill_topology_hole(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap()
+            .patch()
+            .clone();
+        let mut triangles = patch
+            .triangles()
+            .iter()
+            .map(|triangle| {
+                let mut triangle = *triangle;
+                triangle.sort_unstable();
+                triangle
+            })
+            .collect::<Vec<_>>();
+        triangles.sort_unstable();
+        assert_eq!(triangles, [[0, 1, 3], [0, 3, 4], [1, 2, 3]]);
+
+        let nonplanar = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 1.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, -1.0),
+                point(2.0, 2.0, 4.0),
+            ],
+            vec![[0, 1, 4], [1, 2, 4], [2, 3, 4], [3, 0, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&nonplanar, point(0.0, 0.0, 0.0), point(4.0, 0.0, 1.0));
+        let filled = nonplanar
+            .fill_topology_hole(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap()
+            .filled()
+            .clone();
+        assert_eq!(filled.face_count(), 6);
+        assert!(filled.topology().is_solid());
+    }
+
+    #[test]
+    fn mesh_hole_fill_rejects_non_naked_open_and_branched_boundaries() {
+        let square = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let diagonal =
+            topology_edge_index_between(&square, point(0.0, 0.0, 0.0), point(4.0, 4.0, 0.0));
+        assert_eq!(
+            square
+                .fill_topology_hole(diagonal, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+
+        let branched = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(-2.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 3, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&branched, point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0));
+        assert_eq!(
+            branched
+                .fill_topology_hole(edge, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+
+        let edge_count = square.topology().edge_count();
+        assert_eq!(
+            square.fill_topology_hole(edge_count, Tolerance::DEFAULT),
+            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_count,
+                edge_count,
+            })
+        );
+    }
+
+    #[test]
+    fn fills_all_simple_mesh_holes_without_unused_closing_vertices() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+                point(10.0, 0.0, 0.0),
+                point(14.0, 0.0, 0.0),
+                point(10.0, 4.0, 0.0),
+                point(10.0, 0.0, 4.0),
+            ],
+            vec![
+                [0, 1, 3],
+                [1, 2, 3],
+                [2, 0, 3],
+                [4, 5, 7],
+                [5, 6, 7],
+                [6, 4, 7],
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (filled, hole_count) = mesh.fill_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(hole_count, 2);
+        assert_eq!(filled.face_count(), 8);
+        assert_eq!(filled.vertices().len(), 14);
+        assert_eq!(
+            &filled.vertices()[8..],
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(14.0, 0.0, 0.0),
+                point(10.0, 4.0, 0.0),
+            ]
+        );
+        assert_eq!(filled.topology().boundary_edge_count(), 0);
+        assert_eq!(filled.topology().orientation_conflict_edge_count(), 0);
+
+        let (unchanged, hole_count) = filled.fill_holes(Tolerance::DEFAULT).unwrap();
+        assert_eq!(hole_count, 0);
+        assert_eq!(unchanged, filled);
+    }
+
+    #[test]
+    fn fill_all_holes_leaves_ambiguous_branched_boundaries_unchanged() {
+        let branched = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(-2.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 3, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            branched.fill_holes(Tolerance::DEFAULT).unwrap(),
+            (branched.clone(), 0)
         );
     }
 

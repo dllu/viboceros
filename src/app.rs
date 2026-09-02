@@ -106,6 +106,9 @@ enum InteractiveCommand {
     SplitMeshEdge {
         edge_point: Option<Point3>,
     },
+    FillMeshHole {
+        join_mesh: bool,
+    },
     WeldEdge,
     WeldVertices,
     UnweldEdge {
@@ -204,6 +207,7 @@ impl InteractiveCommand {
             Self::SwapMeshEdge => "SwapMeshEdge",
             Self::CollapseMeshEdge => "CollapseMeshEdge",
             Self::SplitMeshEdge { .. } => "SplitMeshEdge",
+            Self::FillMeshHole { .. } => "FillMeshHole",
             Self::WeldEdge => "WeldEdge",
             Self::WeldVertices => "WeldVertices",
             Self::UnweldEdge { .. } => "UnweldEdge",
@@ -334,6 +338,9 @@ impl InteractiveCommand {
             Self::SplitMeshEdge {
                 edge_point: Some(_),
             } => "SplitMeshEdge: pick the split location along the edge (Esc to cancel)",
+            Self::FillMeshHole { .. } => {
+                "FillMeshHole: pick a closed naked boundary on a selected mesh (Esc to cancel)"
+            }
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
             }
@@ -514,6 +521,7 @@ impl InteractiveCommand {
             | Self::SwapMeshEdge
             | Self::CollapseMeshEdge
             | Self::SplitMeshEdge { edge_point: None }
+            | Self::FillMeshHole { .. }
             | Self::WeldEdge
             | Self::WeldVertices
             | Self::UnweldEdge { .. }
@@ -990,6 +998,29 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::SplitMeshEdge { edge_point: None }
+        } else if normalized == "fillmeshhole" {
+            let mut join_mesh = true;
+            let mut join_mesh_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("JoinMesh") && !join_mesh_seen {
+                    join_mesh = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    join_mesh_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::FillMeshHole { join_mesh }
         } else if matches!(normalized.as_str(), "weldedge" | "weldmeshedge") {
             if !arguments.is_empty() {
                 return false;
@@ -1357,6 +1388,7 @@ impl VibocerosApp {
                 | InteractiveCommand::SwapMeshEdge
                 | InteractiveCommand::CollapseMeshEdge
                 | InteractiveCommand::SplitMeshEdge { .. }
+                | InteractiveCommand::FillMeshHole { .. }
                 | InteractiveCommand::WeldEdge
                 | InteractiveCommand::WeldVertices
                 | InteractiveCommand::UnweldEdge { .. }
@@ -1817,6 +1849,14 @@ impl VibocerosApp {
                     "SplitMeshEdge {} {}",
                     format_model_point(edge_point),
                     format_model_point(point)
+                ));
+            }
+            InteractiveCommand::FillMeshHole { join_mesh } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "FillMeshHole {} JoinMesh={}",
+                    format_model_point(point),
+                    if join_mesh { "Yes" } else { "No" },
                 ));
             }
             InteractiveCommand::WeldEdge => {
@@ -2388,6 +2428,8 @@ impl VibocerosApp {
         let mut swap_mesh_edge_clicked = false;
         let mut collapse_mesh_edge_clicked = false;
         let mut split_mesh_edge_clicked = false;
+        let mut fill_mesh_hole_clicked = false;
+        let mut fill_mesh_holes_clicked = false;
         let mut extract_mesh_edges_clicked = false;
         let mut extract_mesh_faces_clicked = false;
         let mut delete_faces_clicked = false;
@@ -2595,6 +2637,14 @@ impl VibocerosApp {
                 split_mesh_edge_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Split Mesh Edge"))
                     .on_hover_text("Pick a selected-mesh topology edge, then its split location")
+                    .clicked();
+                fill_mesh_hole_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Fill Mesh Hole"))
+                    .on_hover_text("Pick a closed naked boundary on a selected mesh to fill")
+                    .clicked();
+                fill_mesh_holes_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Fill Mesh Holes"))
+                    .on_hover_text("Fill every simple closed naked boundary on selected meshes")
                     .clicked();
                 extract_mesh_edges_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Mesh Edges"))
@@ -2883,6 +2933,10 @@ impl VibocerosApp {
             self.try_start_interactive_command("CollapseMeshEdge");
         } else if split_mesh_edge_clicked {
             self.try_start_interactive_command("SplitMeshEdge");
+        } else if fill_mesh_hole_clicked {
+            self.try_start_interactive_command("FillMeshHole");
+        } else if fill_mesh_holes_clicked {
+            self.execute_command("FillMeshHoles");
         } else if extract_mesh_edges_clicked {
             self.execute_command("ExtractMeshEdges");
         } else if extract_mesh_faces_clicked {
@@ -4306,6 +4360,51 @@ mod tests {
     }
 
     #[test]
+    fn interactive_fill_mesh_hole_uses_one_boundary_pick_and_options() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            vec![[0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("FillMeshHole"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::FillMeshHole { join_mesh: true })
+        );
+        assert!(app.command_log.back().unwrap().contains("naked boundary"));
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.is_selected(source));
+        let Geometry::Mesh(filled) = app.document.object(source).unwrap().geometry() else {
+            panic!("expected hole-filled mesh")
+        };
+        assert!(filled.topology().is_solid());
+        assert_eq!(app.document.undo_label(), Some("FillMeshHole"));
+
+        assert!(app.try_start_interactive_command("FillMeshHole JoinMesh=No"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::FillMeshHole { join_mesh: false })
+        );
+        app.cancel_interactive_command(false);
+        assert!(!app.try_start_interactive_command("FillMeshHole Edge=0"));
+        assert!(!app.try_start_interactive_command("FillMeshHole JoinMesh=Maybe"));
+    }
+
+    #[test]
     fn interactive_weld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -4833,6 +4932,7 @@ mod tests {
             "SwapMeshEdge",
             "CollapseMeshEdge",
             "SplitMeshEdge",
+            "FillMeshHole",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
             "WeldEdge",
