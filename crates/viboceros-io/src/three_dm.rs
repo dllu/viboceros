@@ -1078,6 +1078,12 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        let apex_extrusion_brep = Brep::try_extruded_curve_to_point(
+            &extrusion_profile,
+            Point3::try_new(11.0, 2.0, 5.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -1134,6 +1140,7 @@ mod tests {
                 ThreeDmObject::new(ThreeDmGeometry::Brep(cylinder_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(cone_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(extrusion_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(apex_extrusion_brep), 0),
             ],
         )
     }

@@ -215,8 +215,11 @@ open and nonplanar profiles remain exact NURBS surfaces.
 curves to one apex. Its U direction runs from the profile to the apex while V
 preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
 form. Enter it without an apex to pick one in the viewport. Inputs are retained
-by default; `DeleteInput=Yes` removes them. `Output=Surface` and `Solid=No` are
-accepted explicitly; SubD and capped-solid output are not yet represented.
+by default; `DeleteInput=Yes` removes them. `Solid=Yes` turns each closed planar
+profile into an exact closed B-rep with a singular-apex ruled wall, planar
+trimmed cap, shared rational rim, and one twice-used wall seam; open and
+nonplanar profiles remain surfaces. `Output=Surface` and `Solid=No` are accepted
+explicitly; SubD output is not yet represented.
 `ExtrudeCrvAlongCrv` creates an exact fixed-orientation sum surface from each
 selected profile and a curve path. Name the path with `PathName=`, or select it
 last; the toolbar uses the last-selected convention. The path is retained and

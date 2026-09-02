@@ -116,6 +116,7 @@ enum InteractiveCommand {
     },
     ExtrudeCurveToPoint {
         delete_input: bool,
+        solid: bool,
     },
     Revolve {
         axis_start: Option<Point3>,
@@ -625,26 +626,44 @@ impl VibocerosApp {
             }
         } else if normalized == "extrudecrvtopoint" {
             let mut delete_input = false;
+            let mut solid = false;
             let mut delete_input_seen = false;
+            let mut solid_seen = false;
+            let mut output_seen = false;
             for option in arguments {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
                 };
                 let name = name.trim_start_matches(['_', '-']);
                 let value = value.trim_start_matches('_');
-                if !name.eq_ignore_ascii_case("DeleteInput") || delete_input_seen {
-                    return false;
-                }
-                delete_input = if value.eq_ignore_ascii_case("Yes") {
+                let yes_no = if value.eq_ignore_ascii_case("Yes") {
                     true
                 } else if value.eq_ignore_ascii_case("No") {
                     false
                 } else {
+                    if name.eq_ignore_ascii_case("Output")
+                        && !output_seen
+                        && value.eq_ignore_ascii_case("Surface")
+                    {
+                        output_seen = true;
+                        continue;
+                    }
                     return false;
                 };
-                delete_input_seen = true;
+                if name.eq_ignore_ascii_case("DeleteInput") && !delete_input_seen {
+                    delete_input = yes_no;
+                    delete_input_seen = true;
+                } else if name.eq_ignore_ascii_case("Solid") && !solid_seen {
+                    solid = yes_no;
+                    solid_seen = true;
+                } else {
+                    return false;
+                }
             }
-            InteractiveCommand::ExtrudeCurveToPoint { delete_input }
+            InteractiveCommand::ExtrudeCurveToPoint {
+                delete_input,
+                solid,
+            }
         } else if normalized == "revolve" {
             let mut start_angle_degrees = 0.0;
             let mut sweep_degrees = 360.0;
@@ -1627,12 +1646,16 @@ impl VibocerosApp {
                     if delete_input { "Yes" } else { "No" }
                 ));
             }
-            InteractiveCommand::ExtrudeCurveToPoint { delete_input } => {
+            InteractiveCommand::ExtrudeCurveToPoint {
+                delete_input,
+                solid,
+            } => {
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "ExtrudeCrvToPoint {} DeleteInput={}",
+                    "ExtrudeCrvToPoint {} DeleteInput={} Solid={}",
                     format_model_point(point),
-                    if delete_input { "Yes" } else { "No" }
+                    if delete_input { "Yes" } else { "No" },
+                    if solid { "Yes" } else { "No" }
                 ));
             }
             InteractiveCommand::Revolve {
@@ -3163,6 +3186,7 @@ mod tests {
             app.active_command,
             Some(InteractiveCommand::ExtrudeCurveToPoint {
                 delete_input: false,
+                solid: false,
             })
         );
         app.accept_drafting_point(point(1.0, 2.0, 5.0));
@@ -3184,6 +3208,51 @@ mod tests {
         );
         assert_eq!(app.document.undo_label(), Some("ExtrudeCrvToPoint"));
         assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint DeleteInput=Maybe"));
+    }
+
+    #[test]
+    fn interactive_curve_to_point_preserves_solid_option_through_apex_pick() {
+        let mut app = test_app();
+        let rectangle = viboceros_geometry::Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app
+            .document
+            .add_geometry(Geometry::Polyline(rectangle))
+            .unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command(
+            "ExtrudeCrvToPoint Solid=Yes Output=Surface DeleteInput=No"
+        ));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtrudeCurveToPoint {
+                delete_input: false,
+                solid: true,
+            })
+        );
+        app.accept_drafting_point(point(1.0, 2.0, 6.0));
+        assert_eq!(app.active_command, None);
+        let output = app.document.objects().nth(1).unwrap();
+        let Geometry::Brep(brep) = output.geometry() else {
+            panic!("expected an interactive capped apex B-rep")
+        };
+        assert!(brep.is_solid());
+        assert!((brep.signed_volume(app.document.tolerance()).unwrap() - 12.0).abs() < 1.0e-11);
+        assert_eq!(app.document.undo_label(), Some("ExtrudeCrvToPoint"));
+        assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint Solid=Yes Solid=No"));
+        assert!(!app.try_start_interactive_command("ExtrudeCrvToPoint Output=SubD"));
     }
 
     #[test]
