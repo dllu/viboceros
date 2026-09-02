@@ -8,7 +8,8 @@ The current foundation supports finite 3D points, vectors, line segments,
 analytic circles, circular arcs, and ellipses, validated open and closed
 polylines, planes, bounding boxes, rational NURBS curves with analytic first
 derivatives and exact knot refinement, splitting, and interval trimming,
-rational NURBS surfaces with analytic partial derivatives,
+rational NURBS surfaces with analytic partial derivatives and exact tensor
+splitting and rectangular domain trimming,
 validated shared-topology B-reps with exact rational parameter-space trims,
 validated triangle meshes, layers, groups, and bounded undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,

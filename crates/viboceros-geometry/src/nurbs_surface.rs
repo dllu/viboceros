@@ -1016,6 +1016,47 @@ impl NurbsSurface {
         crate::NurbsCurve::try_new_rational(self.degree_v, controls, self.knots_v.clone())
     }
 
+    /// Splits this tensor surface at a parameter strictly inside its U domain.
+    /// Both results preserve V data and source parameter values and are
+    /// clamped in U at every active end.
+    pub fn try_split_u(&self, u: Real) -> Result<(Self, Self), GeometryError> {
+        let left = self.map_u_control_curves(|curve| Ok(curve.try_split(u)?.0))?;
+        let right = self.map_u_control_curves(|curve| Ok(curve.try_split(u)?.1))?;
+        Ok((left, right))
+    }
+
+    /// Splits this tensor surface at a parameter strictly inside its V domain.
+    /// Both results preserve U data and source parameter values and are
+    /// clamped in V at every active end.
+    pub fn try_split_v(&self, v: Real) -> Result<(Self, Self), GeometryError> {
+        let low = self.map_v_control_curves(|curve| Ok(curve.try_split(v)?.0))?;
+        let high = self.map_v_control_curves(|curve| Ok(curve.try_split(v)?.1))?;
+        Ok((low, high))
+    }
+
+    /// Restricts the active U domain without changing surface parameterization
+    /// or the retained geometric image. A full-domain trim is a no-op and
+    /// therefore preserves periodic form.
+    pub fn try_trimmed_u(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.map_u_control_curves(|curve| curve.try_trimmed(interval.clone()))
+    }
+
+    /// Restricts the active V domain without changing surface parameterization
+    /// or the retained geometric image. A full-domain trim is a no-op and
+    /// therefore preserves periodic form.
+    pub fn try_trimmed_v(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.map_v_control_curves(|curve| curve.try_trimmed(interval.clone()))
+    }
+
+    /// Extracts an exact rectangular subdomain of this tensor surface.
+    pub fn try_trimmed(
+        &self,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        self.try_trimmed_u(u)?.try_trimmed_v(v)
+    }
+
     /// Returns whether the natural U direction closes without a border.
     pub fn is_closed_u(&self) -> Result<bool, GeometryError> {
         if self.is_periodic_u() {
@@ -1742,6 +1783,127 @@ impl NurbsSurface {
             }
         }
         Ok(active)
+    }
+
+    fn map_u_control_curves(
+        &self,
+        mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, GeometryError>,
+    ) -> Result<Self, GeometryError> {
+        let mut controls = Vec::new();
+        let mut output_knots = None;
+        let mut output_count = None;
+        for row in self.control_points.chunks_exact(self.control_point_count_u) {
+            let curve = crate::NurbsCurve::try_new_rational(
+                self.degree_u,
+                row.to_vec(),
+                self.knots_u.clone(),
+            )?;
+            let mapped = map(&curve)?;
+            if mapped.degree() != self.degree_u
+                || output_count.is_some_and(|count| count != mapped.control_points().len())
+                || output_knots
+                    .as_ref()
+                    .is_some_and(|knots| knots != mapped.knots())
+            {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "U control curves produced inconsistent subdivision layouts",
+                });
+            }
+            if output_count.is_none() {
+                let control_count = mapped
+                    .control_points()
+                    .len()
+                    .checked_mul(self.control_point_count_v)
+                    .ok_or(GeometryError::InvalidControlNet {
+                        context: "subdivided surface control-point count overflowed usize",
+                    })?;
+                controls.try_reserve_exact(control_count).map_err(|_| {
+                    GeometryError::InvalidControlNet {
+                        context: "subdivided surface control net exceeds addressable memory",
+                    }
+                })?;
+            }
+            output_count.get_or_insert(mapped.control_points().len());
+            output_knots.get_or_insert_with(|| mapped.knots().to_vec());
+            controls.extend_from_slice(mapped.control_points());
+        }
+        let control_point_count_u = output_count.ok_or(GeometryError::InvalidControlNet {
+            context: "a surface has no U control curves",
+        })?;
+        let knots_u = output_knots.ok_or(GeometryError::InvalidControlNet {
+            context: "a surface has no U control-curve knot vector",
+        })?;
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            control_point_count_u,
+            self.control_point_count_v,
+            controls,
+            knots_u,
+            self.knots_v.clone(),
+        )
+    }
+
+    fn map_v_control_curves(
+        &self,
+        mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, GeometryError>,
+    ) -> Result<Self, GeometryError> {
+        let mut columns = Vec::with_capacity(self.control_point_count_u);
+        let mut output_knots = None;
+        let mut output_count = None;
+        for u in 0..self.control_point_count_u {
+            let column = (0..self.control_point_count_v)
+                .map(|v| self.control_points[self.control_index(u, v)])
+                .collect::<Vec<_>>();
+            let curve =
+                crate::NurbsCurve::try_new_rational(self.degree_v, column, self.knots_v.clone())?;
+            let mapped = map(&curve)?;
+            if mapped.degree() != self.degree_v
+                || output_count.is_some_and(|count| count != mapped.control_points().len())
+                || output_knots
+                    .as_ref()
+                    .is_some_and(|knots| knots != mapped.knots())
+            {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "V control curves produced inconsistent subdivision layouts",
+                });
+            }
+            output_count.get_or_insert(mapped.control_points().len());
+            output_knots.get_or_insert_with(|| mapped.knots().to_vec());
+            columns.push(mapped.control_points().to_vec());
+        }
+        let control_point_count_v = output_count.ok_or(GeometryError::InvalidControlNet {
+            context: "a surface has no V control curves",
+        })?;
+        let knots_v = output_knots.ok_or(GeometryError::InvalidControlNet {
+            context: "a surface has no V control-curve knot vector",
+        })?;
+        let control_count = self
+            .control_point_count_u
+            .checked_mul(control_point_count_v)
+            .ok_or(GeometryError::InvalidControlNet {
+                context: "subdivided surface control-point count overflowed usize",
+            })?;
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidControlNet {
+                context: "subdivided surface control net exceeds addressable memory",
+            }
+        })?;
+        for v in 0..control_point_count_v {
+            for column in &columns {
+                controls.push(column[v]);
+            }
+        }
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            control_point_count_v,
+            controls,
+            self.knots_u.clone(),
+            knots_v,
+        )
     }
 
     #[inline]
@@ -3980,5 +4142,184 @@ mod tests {
         let mesh = singular_boundary.tessellate(1, Tolerance::DEFAULT).unwrap();
         assert_eq!(mesh.triangles().len(), 1);
         assert_eq!(mesh.face_normal(0).unwrap().z(), 1.0);
+    }
+
+    #[test]
+    fn tensor_surface_splits_preserve_rational_nonclamped_evaluation() {
+        let mut controls = Vec::new();
+        for v in 0..4 {
+            for u in 0..4 {
+                controls.push(
+                    WeightedPoint3::try_new(
+                        point(
+                            u as Real * 2.0 + v as Real * 0.25,
+                            v as Real * 1.5 - u as Real * 0.4,
+                            (u * v) as Real * 0.3,
+                        ),
+                        0.5 + (u + 2 * v) as Real * 0.2,
+                    )
+                    .unwrap(),
+                );
+            }
+        }
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            2,
+            4,
+            4,
+            controls,
+            vec![-2.0, -1.0, 0.0, 0.7, 2.0, 3.0, 4.0],
+            vec![8.0, 9.0, 10.0, 11.5, 14.0, 15.0, 16.0],
+        )
+        .unwrap();
+
+        let (left, right) = surface.try_split_u(0.9).unwrap();
+        assert_eq!(left.domain_u(), 0.0..=0.9);
+        assert_eq!(right.domain_u(), 0.9..=2.0);
+        assert_eq!(left.knots_v(), surface.knots_v());
+        assert_eq!(right.knots_v(), surface.knots_v());
+        assert!(
+            left.knots_u()[left.knots_u().len() - 3..]
+                .iter()
+                .all(|knot| *knot == 0.9)
+        );
+        assert!(right.knots_u()[..3].iter().all(|knot| *knot == 0.9));
+        for v in [10.0, 10.8, 12.6, 14.0] {
+            for u in [0.0, 0.3, 0.9, 1.4, 2.0] {
+                let piece = if u <= 0.9 { &left } else { &right };
+                assert_point_near(
+                    piece.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+                let (_, actual_u, actual_v) = piece.evaluate_with_derivatives(u, v).unwrap();
+                let (_, expected_u, expected_v) = surface.evaluate_with_derivatives(u, v).unwrap();
+                for (actual, expected) in [
+                    (actual_u.x(), expected_u.x()),
+                    (actual_u.y(), expected_u.y()),
+                    (actual_u.z(), expected_u.z()),
+                    (actual_v.x(), expected_v.x()),
+                    (actual_v.y(), expected_v.y()),
+                    (actual_v.z(), expected_v.z()),
+                ] {
+                    assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+                }
+            }
+        }
+
+        let (low, high) = surface.try_split_v(12.2).unwrap();
+        assert_eq!(low.domain_v(), 10.0..=12.2);
+        assert_eq!(high.domain_v(), 12.2..=14.0);
+        assert_eq!(low.knots_u(), surface.knots_u());
+        assert_eq!(high.knots_u(), surface.knots_u());
+        for u in [0.0, 0.6, 1.3, 2.0] {
+            for v in [10.0, 11.0, 12.2, 13.0, 14.0] {
+                let piece = if v <= 12.2 { &low } else { &high };
+                assert_point_near(
+                    piece.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn rectangular_surface_trim_preserves_parameters_and_clamps_both_directions() {
+        let surface = NurbsSurface::try_new(
+            2,
+            2,
+            4,
+            4,
+            (0..4)
+                .flat_map(|v| {
+                    (0..4).map(move |u| {
+                        point(
+                            u as Real + v as Real * 0.2,
+                            v as Real - u as Real * 0.1,
+                            (u * v) as Real * 0.25,
+                        )
+                    })
+                })
+                .collect(),
+            vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0],
+            vec![8.0, 9.0, 10.0, 11.0, 14.0, 15.0, 16.0],
+        )
+        .unwrap();
+        let trimmed = surface.try_trimmed(0.25..=1.6, 10.4..=13.2).unwrap();
+        assert_eq!(trimmed.domain_u(), 0.25..=1.6);
+        assert_eq!(trimmed.domain_v(), 10.4..=13.2);
+        assert!(trimmed.knots_u()[..3].iter().all(|knot| *knot == 0.25));
+        assert!(
+            trimmed.knots_u()[trimmed.knots_u().len() - 3..]
+                .iter()
+                .all(|knot| *knot == 1.6)
+        );
+        assert!(trimmed.knots_v()[..3].iter().all(|knot| *knot == 10.4));
+        assert!(
+            trimmed.knots_v()[trimmed.knots_v().len() - 3..]
+                .iter()
+                .all(|knot| *knot == 13.2)
+        );
+        for u_sample in 0..=8 {
+            let u_fraction = u_sample as Real / 8.0;
+            let u = 0.25_f64.mul_add(1.0 - u_fraction, 1.6 * u_fraction);
+            for v_sample in 0..=8 {
+                let v_fraction = v_sample as Real / 8.0;
+                let v = 10.4_f64.mul_add(1.0 - v_fraction, 13.2 * v_fraction);
+                assert_point_near(
+                    trimmed.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+        assert_eq!(
+            surface
+                .try_trimmed(surface.domain_u(), surface.domain_v())
+                .unwrap(),
+            surface
+        );
+
+        assert!(surface.try_split_u(0.0).is_err());
+        assert!(surface.try_split_v(14.0).is_err());
+        assert!(surface.try_trimmed_u(1.0..=0.5).is_err());
+        assert!(surface.try_trimmed_v(9.0..=12.0).is_err());
+    }
+
+    #[test]
+    fn splitting_periodic_surface_direction_produces_clamped_patches() {
+        let profile = crate::NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(-3.0, 0.0, 0.0),
+                point(-1.0, 3.0, 0.0),
+                point(2.0, 4.0, 0.0),
+                point(5.0, 1.0, 0.0),
+                point(4.0, -3.0, 0.0),
+                point(0.0, -4.0, 0.0),
+            ],
+            crate::ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_extruded_curve(
+            &profile,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 5.0).unwrap(),
+        )
+        .unwrap();
+        assert!(surface.is_periodic_u());
+        let split = surface.parameter_at_u(0.37).unwrap();
+        let (left, right) = surface.try_split_u(split).unwrap();
+        assert!(!left.is_periodic_u());
+        assert!(!right.is_periodic_u());
+        for u_sample in 0..=20 {
+            let u = surface.parameter_at_u(u_sample as Real / 20.0).unwrap();
+            for v in [0.0, 2.5, 5.0] {
+                let piece = if u <= split { &left } else { &right };
+                assert_point_near(
+                    piece.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+        assert_eq!(surface.try_trimmed_u(surface.domain_u()).unwrap(), surface);
     }
 }
