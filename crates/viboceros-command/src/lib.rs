@@ -24,6 +24,7 @@ use viboceros_io::{
 const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 const MAX_ARRAY_OBJECTS: usize = 1_000_000;
+const MAX_SINGLE_SPAN_SURFACES: usize = 1_000_000;
 pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 
 pub trait Command: Send + Sync {
@@ -248,6 +249,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ExtractIsocurveCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ConvertToSingleSpansCommand)
             .expect("unique built-in command");
         registry
             .register(CloseCrvCommand)
@@ -3370,6 +3374,280 @@ fn nurbs_curve_has_extent(curve: &NurbsCurve) -> bool {
         .control_points()
         .iter()
         .any(|control| control.point() != first)
+}
+
+const CONVERT_TO_SINGLE_SPANS_USAGE: &str =
+    "ConvertToSingleSpans [Direction=U|V|Both] [DeleteInput=Yes|No]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SingleSpanDirection {
+    U,
+    V,
+    Both,
+}
+
+impl SingleSpanDirection {
+    const fn splits_u(self) -> bool {
+        matches!(self, Self::U | Self::Both)
+    }
+
+    const fn splits_v(self) -> bool {
+        matches!(self, Self::V | Self::Both)
+    }
+
+    const fn label(self) -> &'static str {
+        match self {
+            Self::U => "U",
+            Self::V => "V",
+            Self::Both => "U/V",
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+struct ConvertToSingleSpansOptions {
+    direction: SingleSpanDirection,
+    delete_input: bool,
+}
+
+struct SingleSpanSurfaceInput {
+    id: ObjectId,
+    attributes: ObjectAttributes,
+    group_ids: Vec<GroupId>,
+    patches: Vec<NurbsSurface>,
+}
+
+struct ConvertToSingleSpansCommand;
+
+impl Command for ConvertToSingleSpansCommand {
+    fn name(&self) -> &'static str {
+        "ConvertToSingleSpans"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["ConvertSurfaceToSingleSpans"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_convert_to_single_spans_options(arguments)?;
+        let selected_ids = document.selected_object_ids().collect::<Vec<_>>();
+        if selected_ids.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut source_surfaces = Vec::with_capacity(selected_ids.len());
+        let mut total_patch_count = 0_usize;
+        let mut unchanged_ids = Vec::new();
+        for id in selected_ids {
+            let object = document
+                .object(id)
+                .expect("selected object identities belong to the document");
+            let Geometry::NurbsSurface(surface) = object.geometry() else {
+                return Err(CommandError::UnsupportedConvertToSingleSpansGeometry);
+            };
+            let u_span_count = if options.direction.splits_u() {
+                surface.spans_u().count()
+            } else {
+                1
+            };
+            let v_span_count = if options.direction.splits_v() {
+                surface.spans_v().count()
+            } else {
+                1
+            };
+            let patch_count = u_span_count.checked_mul(v_span_count).ok_or(
+                CommandError::TooManySingleSpanSurfaces {
+                    maximum: MAX_SINGLE_SPAN_SURFACES,
+                },
+            )?;
+            if patch_count == 1 {
+                unchanged_ids.push(id);
+                continue;
+            }
+            total_patch_count = total_patch_count.checked_add(patch_count).ok_or(
+                CommandError::TooManySingleSpanSurfaces {
+                    maximum: MAX_SINGLE_SPAN_SURFACES,
+                },
+            )?;
+            if total_patch_count > MAX_SINGLE_SPAN_SURFACES {
+                return Err(CommandError::TooManySingleSpanSurfaces {
+                    maximum: MAX_SINGLE_SPAN_SURFACES,
+                });
+            }
+            let group_ids = document
+                .groups()
+                .filter(|group| group.members().any(|member| member == id))
+                .map(|group| group.id())
+                .collect();
+            source_surfaces.push((id, surface.clone(), object.attributes().clone(), group_ids));
+        }
+        if source_surfaces.is_empty() {
+            return Err(CommandError::NoMultiSpanSurfaces);
+        }
+
+        let mut inputs = Vec::with_capacity(source_surfaces.len());
+        for (id, surface, attributes, group_ids) in source_surfaces {
+            inputs.push(SingleSpanSurfaceInput {
+                id,
+                attributes,
+                group_ids,
+                patches: single_span_surface_patches(&surface, options.direction)?,
+            });
+        }
+        debug_assert_eq!(
+            inputs
+                .iter()
+                .map(|input| input.patches.len())
+                .sum::<usize>(),
+            total_patch_count
+        );
+
+        let converted_count = inputs.len();
+        let mut group_additions = BTreeMap::<GroupId, Vec<ObjectId>>::new();
+        let mut created_count = 0_usize;
+        if options.delete_input {
+            let mut replacements = Vec::with_capacity(inputs.len());
+            for input in &inputs {
+                let first = input
+                    .patches
+                    .first()
+                    .ok_or(CommandError::NoMultiSpanSurfaces)?;
+                replacements.push((input.id, Geometry::NurbsSurface(first.clone())));
+            }
+            let replaced = document.replace_object_geometries(replacements)?;
+            debug_assert_eq!(replaced, converted_count);
+
+            let mut output_ids = unchanged_ids.clone();
+            output_ids
+                .try_reserve_exact(total_patch_count)
+                .map_err(|_| CommandError::TooManySingleSpanSurfaces {
+                    maximum: MAX_SINGLE_SPAN_SURFACES,
+                })?;
+            for input in inputs {
+                output_ids.push(input.id);
+                for patch in input.patches.into_iter().skip(1) {
+                    let id = document.add_geometry_with_attributes(
+                        Geometry::NurbsSurface(patch),
+                        input.attributes.clone(),
+                    )?;
+                    output_ids.push(id);
+                    created_count += 1;
+                    for group_id in &input.group_ids {
+                        group_additions.entry(*group_id).or_default().push(id);
+                    }
+                }
+            }
+            for (group_id, additions) in group_additions {
+                document.add_group_members(group_id, additions)?;
+            }
+            replace_selection(document, output_ids)?;
+        } else {
+            for input in inputs {
+                for patch in input.patches {
+                    let id = document.add_geometry_with_attributes(
+                        Geometry::NurbsSurface(patch),
+                        input.attributes.clone(),
+                    )?;
+                    created_count += 1;
+                    for group_id in &input.group_ids {
+                        group_additions.entry(*group_id).or_default().push(id);
+                    }
+                }
+            }
+            for (group_id, additions) in group_additions {
+                document.add_group_members(group_id, additions)?;
+            }
+        }
+
+        Ok(format!(
+            "Converted {converted_count} surface(s) into {total_patch_count} exact {} single-span surface(s), creating {created_count} object(s); {} surface(s) unchanged{}",
+            options.direction.label(),
+            unchanged_ids.len(),
+            if options.delete_input {
+                String::new()
+            } else {
+                "; inputs retained".to_owned()
+            }
+        ))
+    }
+}
+
+fn single_span_surface_patches(
+    surface: &NurbsSurface,
+    direction: SingleSpanDirection,
+) -> Result<Vec<NurbsSurface>, CommandError> {
+    let u_spans = if direction.splits_u() {
+        surface.spans_u().collect::<Vec<_>>()
+    } else {
+        let domain = surface.domain_u();
+        vec![(*domain.start(), *domain.end())]
+    };
+    let v_spans = if direction.splits_v() {
+        surface.spans_v().collect::<Vec<_>>()
+    } else {
+        let domain = surface.domain_v();
+        vec![(*domain.start(), *domain.end())]
+    };
+    let patch_count = u_spans.len().checked_mul(v_spans.len()).ok_or(
+        CommandError::TooManySingleSpanSurfaces {
+            maximum: MAX_SINGLE_SPAN_SURFACES,
+        },
+    )?;
+    if patch_count > MAX_SINGLE_SPAN_SURFACES {
+        return Err(CommandError::TooManySingleSpanSurfaces {
+            maximum: MAX_SINGLE_SPAN_SURFACES,
+        });
+    }
+    let mut patches = Vec::new();
+    patches.try_reserve_exact(patch_count).map_err(|_| {
+        CommandError::TooManySingleSpanSurfaces {
+            maximum: MAX_SINGLE_SPAN_SURFACES,
+        }
+    })?;
+    for &(u_start, u_end) in &u_spans {
+        for &(v_start, v_end) in &v_spans {
+            patches.push(surface.try_trimmed(u_start..=u_end, v_start..=v_end)?);
+        }
+    }
+    Ok(patches)
+}
+
+fn parse_convert_to_single_spans_options(
+    arguments: &[&str],
+) -> Result<ConvertToSingleSpansOptions, CommandError> {
+    let mut direction = SingleSpanDirection::Both;
+    let mut delete_input = false;
+    let mut direction_seen = false;
+    let mut delete_input_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) =
+            orient_option(arguments, index, CONVERT_TO_SINGLE_SPANS_USAGE)?;
+        if option_name_eq(name, "Direction") && !direction_seen {
+            let value = value.trim_start_matches(['_', '-']);
+            direction = if value.eq_ignore_ascii_case("U") {
+                SingleSpanDirection::U
+            } else if value.eq_ignore_ascii_case("V") {
+                SingleSpanDirection::V
+            } else if value.eq_ignore_ascii_case("Both") {
+                SingleSpanDirection::Both
+            } else {
+                return Err(CommandError::Usage(CONVERT_TO_SINGLE_SPANS_USAGE));
+            };
+            direction_seen = true;
+        } else if option_name_eq(name, "DeleteInput") && !delete_input_seen {
+            delete_input =
+                parse_yes_no(value).ok_or(CommandError::Usage(CONVERT_TO_SINGLE_SPANS_USAGE))?;
+            delete_input_seen = true;
+        } else {
+            return Err(CommandError::Usage(CONVERT_TO_SINGLE_SPANS_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(ConvertToSingleSpansOptions {
+        direction,
+        delete_input,
+    })
 }
 
 const CLOSE_CRV_USAGE: &str = "CloseCrv [CloseWideGapsWithLine=Yes|No] [Tolerance=value]";
@@ -8081,6 +8359,15 @@ pub enum CommandError {
     #[error("the requested surface location has no non-degenerate isocurve")]
     NoExtractableIsocurves,
 
+    #[error("ConvertToSingleSpans supports selected untrimmed NURBS surfaces only")]
+    UnsupportedConvertToSingleSpansGeometry,
+
+    #[error("none of the selected surfaces has multiple spans in the requested direction")]
+    NoMultiSpanSurfaces,
+
+    #[error("ConvertToSingleSpans would create more than {maximum} surface objects")]
+    TooManySingleSpanSurfaces { maximum: usize },
+
     #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedLengthGeometry,
 
@@ -8244,6 +8531,36 @@ mod tests {
     use viboceros_document::SelectionMode;
     use viboceros_geometry::WeightedPoint3;
 
+    fn rational_multi_span_surface() -> NurbsSurface {
+        let mut controls = Vec::new();
+        for v in 0..4 {
+            for u in 0..4 {
+                controls.push(
+                    WeightedPoint3::try_new(
+                        Point3::try_new(
+                            u as Real * 2.0 + v as Real * 0.25,
+                            v as Real * 1.5 - u as Real * 0.4,
+                            (u * v) as Real * 0.3,
+                        )
+                        .unwrap(),
+                        0.5 + (u + 2 * v) as Real * 0.2,
+                    )
+                    .unwrap(),
+                );
+            }
+        }
+        NurbsSurface::try_new_rational(
+            2,
+            2,
+            4,
+            4,
+            controls,
+            vec![-2.0, -1.0, 0.0, 0.7, 2.0, 3.0, 4.0],
+            vec![8.0, 9.0, 10.0, 11.5, 14.0, 15.0, 16.0],
+        )
+        .unwrap()
+    }
+
     #[test]
     fn dispatches_case_insensitively_and_accepts_rhino_prefix() {
         let registry = CommandRegistry::with_builtins();
@@ -8275,7 +8592,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -11658,6 +11975,269 @@ mod tests {
             matches!(object.geometry(), Geometry::NurbsCurve(_))
                 && solid_document.is_selected(object.id())
         }));
+    }
+
+    #[test]
+    fn convert_to_single_spans_creates_exact_rational_patches_and_retains_inputs() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = rational_multi_span_surface();
+        let attributes =
+            ObjectAttributes::on_layer(document.current_layer_id()).with_name("Rational sheet");
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface.clone()),
+                attributes.clone(),
+            )
+            .unwrap();
+        let single = document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_bilinear([
+                    Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(24.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(24.0, 3.0, 0.0).unwrap(),
+                    Point3::try_new(20.0, 3.0, 0.0).unwrap(),
+                ])
+                .unwrap(),
+            ))
+            .unwrap();
+        let group = document
+            .add_group(Some("Sheets".to_owned()), [source, single])
+            .unwrap();
+        document
+            .select_objects_direct([source, single], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ConvertToSingleSpans")
+                .unwrap(),
+            "Converted 1 surface(s) into 4 exact U/V single-span surface(s), creating 4 object(s); 1 surface(s) unchanged; inputs retained"
+        );
+        assert_eq!(document.objects().len(), 6);
+        assert_eq!(document.group(group).unwrap().members().len(), 6);
+        assert!(document.is_selected(source));
+        assert!(document.is_selected(single));
+
+        let expected_domains = [
+            (0.0..=0.7, 10.0..=11.5),
+            (0.0..=0.7, 11.5..=14.0),
+            (0.7..=2.0, 10.0..=11.5),
+            (0.7..=2.0, 11.5..=14.0),
+        ];
+        for (object, (domain_u, domain_v)) in document.objects().skip(2).zip(expected_domains) {
+            assert!(!document.is_selected(object.id()));
+            assert_eq!(object.attributes(), &attributes);
+            let Geometry::NurbsSurface(patch) = object.geometry() else {
+                panic!("ConvertToSingleSpans must output NURBS surfaces")
+            };
+            assert_eq!(patch.domain_u(), domain_u);
+            assert_eq!(patch.domain_v(), domain_v);
+            assert_eq!(patch.spans_u().count(), 1);
+            assert_eq!(patch.spans_v().count(), 1);
+            assert_eq!(patch.control_point_count_u(), patch.degree_u() + 1);
+            assert_eq!(patch.control_point_count_v(), patch.degree_v() + 1);
+            let u = (*domain_u.start() + *domain_u.end()) * 0.5;
+            let v = (*domain_v.start() + *domain_v.end()) * 0.5;
+            assert!(
+                patch
+                    .evaluate(u, v)
+                    .unwrap()
+                    .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT)
+            );
+        }
+        assert_eq!(document.undo_label(), Some("ConvertToSingleSpans"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::NurbsSurface(surface)
+        );
+    }
+
+    #[test]
+    fn convert_to_single_spans_can_replace_inputs_in_one_direction() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = rational_multi_span_surface();
+        let attributes =
+            ObjectAttributes::on_layer(document.current_layer_id()).with_name("Directional sheet");
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface.clone()),
+                attributes.clone(),
+            )
+            .unwrap();
+        let group = document
+            .add_group(Some("Split strips".to_owned()), [source])
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ConvertSurfaceToSingleSpans Direction _U DeleteInput _Yes",
+                )
+                .unwrap(),
+            "Converted 1 surface(s) into 2 exact U single-span surface(s), creating 1 object(s); 0 surface(s) unchanged"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.group(group).unwrap().members().len(), 2);
+        assert!(document.objects().all(|object| {
+            document.is_selected(object.id()) && object.attributes() == &attributes
+        }));
+
+        for (object, domain_u) in document.objects().zip([0.0..=0.7, 0.7..=2.0]) {
+            let Geometry::NurbsSurface(strip) = object.geometry() else {
+                panic!("directional conversion must output NURBS surfaces")
+            };
+            assert_eq!(strip.domain_u(), domain_u);
+            assert_eq!(strip.domain_v(), surface.domain_v());
+            assert_eq!(strip.spans_u().count(), 1);
+            assert_eq!(strip.spans_v().count(), 2);
+            assert_eq!(strip.knots_v(), surface.knots_v());
+            for v in [10.0, 12.0, 14.0] {
+                let u = (*domain_u.start() + *domain_u.end()) * 0.5;
+                assert!(
+                    strip
+                        .evaluate(u, v)
+                        .unwrap()
+                        .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT)
+                );
+            }
+        }
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.group(group).unwrap().members().len(), 1);
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::NurbsSurface(surface)
+        );
+    }
+
+    #[test]
+    fn convert_to_single_spans_opens_periodic_surface_directions_exactly() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let profile = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                Point3::try_new(-3.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(-1.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(4.0, -3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, -4.0, 0.0).unwrap(),
+            ],
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_extruded_curve(
+            &profile,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 5.0).unwrap(),
+        )
+        .unwrap();
+        assert!(surface.is_periodic_u());
+        let span_count = surface.spans_u().count();
+        let source = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(
+                &mut document,
+                "ConvertToSingleSpans Direction=U DeleteInput=Yes",
+            )
+            .unwrap();
+        assert!(message.contains(&format!("into {span_count} exact U single-span surface(s)")));
+        assert_eq!(document.objects().len(), span_count);
+        let expected_spans = surface.spans_u().collect::<Vec<_>>();
+        for (object, (u_start, u_end)) in document.objects().zip(expected_spans) {
+            assert!(document.is_selected(object.id()));
+            let Geometry::NurbsSurface(patch) = object.geometry() else {
+                panic!("periodic conversion must output NURBS surface patches")
+            };
+            assert!(!patch.is_periodic_u());
+            assert_eq!(patch.domain_u(), u_start..=u_end);
+            assert_eq!(patch.domain_v(), surface.domain_v());
+            assert_eq!(patch.spans_u().count(), 1);
+            let u = (u_start + u_end) * 0.5;
+            for v in [0.0, 2.5, 5.0] {
+                assert!(
+                    patch
+                        .evaluate(u, v)
+                        .unwrap()
+                        .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT)
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn convert_to_single_spans_rejects_noops_mixed_geometry_and_invalid_options_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let single = document
+            .add_geometry(Geometry::NurbsSurface(
+                NurbsSurface::try_bilinear([
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(3.0, 2.0, 0.0).unwrap(),
+                    Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                ])
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([single], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ConvertToSingleSpans Direction=Both"),
+            Err(CommandError::NoMultiSpanSurfaces)
+        ));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let multi = document
+            .add_geometry(Geometry::NurbsSurface(rational_multi_span_surface()))
+            .unwrap();
+        let point = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([multi, point], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ConvertToSingleSpans Direction=V"),
+            Err(CommandError::UnsupportedConvertToSingleSpansGeometry)
+        ));
+        for invalid in [
+            "ConvertToSingleSpans Direction=Sideways",
+            "ConvertToSingleSpans Direction=U Direction=V",
+            "ConvertToSingleSpans DeleteInput=Maybe",
+            "ConvertToSingleSpans DeleteInput=No DeleteInput=Yes",
+            "ConvertToSingleSpans Other=Both",
+            "ConvertToSingleSpans Direction",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

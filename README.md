@@ -119,6 +119,7 @@ CrvEnd
 ExtractPt OutputLayer=Input Output=Points
 ExtractPt OutputLayer=Input Output=PointCloud
 ExtractIsocurve 2,1,0 Direction=Both
+ConvertToSingleSpans Direction=Both DeleteInput=No
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 Flip
@@ -223,6 +224,11 @@ holes; rational p-curve intersections determine the retained parameter
 intervals without faceting the output. Extracted curves preserve the varying
 direction's degree and parameter values even at non-clamped spans. Omit the
 point to pick a surface location in the viewport. `ExtractAll` remains pending.
+`ConvertToSingleSpans` decomposes selected untrimmed NURBS surfaces at their
+exact knot spans in `Direction=U`, `V`, or `Both`. Rational weights, source
+parameter values, attributes, and group membership are preserved. Inputs are
+retained by default; `DeleteInput=Yes` replaces them in one undoable edit, and
+surfaces already single-span in the requested direction are left untouched.
 `Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
 (or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
 while `BothSides=Yes` makes the height symmetric about the base center.

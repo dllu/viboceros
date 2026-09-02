@@ -1856,6 +1856,7 @@ impl VibocerosApp {
         let mut extract_points_clicked = false;
         let mut duplicate_border_clicked = false;
         let mut extract_isocurve_clicked = false;
+        let mut convert_to_single_spans_clicked = false;
         let mut length_clicked = false;
         let mut area_clicked = false;
         let mut volume_clicked = false;
@@ -2031,6 +2032,12 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Extract Iso"))
                     .on_hover_text("Pick an exact U isocurve on a selected NURBS surface")
                     .clicked();
+                convert_to_single_spans_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Single Spans"))
+                    .on_hover_text(
+                        "Create exact U/V single-span patches from selected NURBS surfaces",
+                    )
+                    .clicked();
                 length_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Length"))
                     .on_hover_text("Measure selected curve length")
@@ -2202,6 +2209,8 @@ impl VibocerosApp {
             self.execute_command("DupBorder");
         } else if extract_isocurve_clicked {
             self.try_start_interactive_command("ExtractIsocurve");
+        } else if convert_to_single_spans_clicked {
+            self.execute_command("ConvertToSingleSpans");
         } else if length_clicked {
             self.execute_command("Length");
         } else if area_clicked {
