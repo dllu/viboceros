@@ -96,6 +96,9 @@ impl CommandRegistry {
             .register(ConeCommand)
             .expect("unique built-in command");
         registry
+            .register(TorusCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtrudeCurveCommand)
             .expect("unique built-in command");
         registry
@@ -1007,11 +1010,20 @@ impl Command for SphereCommand {
 
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=No]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=No]";
+const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum AxialPrimitiveRadius {
     Numeric(Real),
     Point(Point3),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct RadialPrimitivePositionals {
+    center: Point3,
+    radius: AxialPrimitiveRadius,
+    value: Real,
+    option_start: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -1024,18 +1036,17 @@ struct AxialPrimitiveOptions {
     solid: bool,
 }
 
-fn parse_axial_primitive_options(
+fn parse_radial_primitive_positionals(
     arguments: &[&str],
     usage: &'static str,
-    supports_both_sides: bool,
-) -> Result<AxialPrimitiveOptions, CommandError> {
+) -> Result<RadialPrimitivePositionals, CommandError> {
     let (center, center_consumed) = parse_point(arguments)?;
     let remaining = &arguments[center_consumed..];
     let positional_count = remaining
         .iter()
         .take_while(|argument| !argument.contains('='))
         .count();
-    let (radius, height, option_start) = if remaining
+    let (radius, value, option_start) = if remaining
         .first()
         .is_some_and(|argument| argument.contains(','))
     {
@@ -1067,23 +1078,42 @@ fn parse_axial_primitive_options(
         return Err(CommandError::Usage(usage));
     };
 
+    Ok(RadialPrimitivePositionals {
+        center,
+        radius,
+        value,
+        option_start: center_consumed + option_start,
+    })
+}
+
+fn parse_axis_option(value: &str, usage: &'static str) -> Result<Vector3, CommandError> {
+    let (point, consumed) = parse_point(&[value])?;
+    if consumed != 1 {
+        return Err(CommandError::Usage(usage));
+    }
+    Ok(Vector3::try_from(point.to_array())?)
+}
+
+fn parse_axial_primitive_options(
+    arguments: &[&str],
+    usage: &'static str,
+    supports_both_sides: bool,
+) -> Result<AxialPrimitiveOptions, CommandError> {
+    let positionals = parse_radial_primitive_positionals(arguments, usage)?;
+
     let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
     let mut both_sides = false;
     let mut solid = false;
     let mut axis_seen = false;
     let mut both_sides_seen = false;
     let mut solid_seen = false;
-    for argument in &remaining[option_start..] {
+    for argument in &arguments[positionals.option_start..] {
         let Some((name, value)) = argument.split_once('=') else {
             return Err(CommandError::Usage(usage));
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            let (point, consumed) = parse_point(&[value])?;
-            if consumed != 1 {
-                return Err(CommandError::Usage(usage));
-            }
-            axis = Vector3::try_from(point.to_array())?;
+            axis = parse_axis_option(value, usage)?;
             axis_seen = true;
         } else if supports_both_sides && option_name_eq(name, "BothSides") && !both_sides_seen {
             both_sides = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
@@ -1096,9 +1126,9 @@ fn parse_axial_primitive_options(
         }
     }
     Ok(AxialPrimitiveOptions {
-        center,
-        radius,
-        height,
+        center: positionals.center,
+        radius: positionals.radius,
+        height: positionals.value,
         axis,
         both_sides,
         solid,
@@ -1106,12 +1136,14 @@ fn parse_axial_primitive_options(
 }
 
 fn axial_primitive_frame(
-    options: AxialPrimitiveOptions,
+    center: Point3,
+    radius: AxialPrimitiveRadius,
+    axis: Vector3,
     tolerance: Tolerance,
 ) -> Result<(Frame3, Real), CommandError> {
-    let base_frame = Frame3::try_from_normal(options.center, options.axis, tolerance)?;
-    if let AxialPrimitiveRadius::Point(point) = options.radius {
-        let radial = options.center.vector_to(point)?;
+    let base_frame = Frame3::try_from_normal(center, axis, tolerance)?;
+    if let AxialPrimitiveRadius::Point(point) = radius {
+        let radial = center.vector_to(point)?;
         let axial_distance = radial.dot(base_frame.z_axis().as_vector())?;
         let axial = base_frame.z_axis().as_vector().scaled(axial_distance)?;
         let projected = Vector3::try_new(
@@ -1120,11 +1152,11 @@ fn axial_primitive_frame(
             radial.z() - axial.z(),
         )?;
         Ok((
-            Frame3::try_from_x_and_normal(options.center, projected, options.axis, tolerance)?,
+            Frame3::try_from_x_and_normal(center, projected, axis, tolerance)?,
             projected.length()?,
         ))
     } else {
-        let AxialPrimitiveRadius::Numeric(radius) = options.radius else {
+        let AxialPrimitiveRadius::Numeric(radius) = radius else {
             unreachable!("axial primitive radius variants are exhaustive")
         };
         Ok((base_frame, radius))
@@ -1149,7 +1181,8 @@ impl Command for CylinderCommand {
         }
 
         let tolerance = document.tolerance();
-        let (frame, radius) = axial_primitive_frame(options, tolerance)?;
+        let (frame, radius) =
+            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
         let [start_height, end_height] = if options.both_sides {
             let magnitude = options.height.abs();
             [-magnitude, magnitude]
@@ -1177,7 +1210,8 @@ impl Command for ConeCommand {
             return Err(CommandError::SolidPrimitiveUnsupported);
         }
         let tolerance = document.tolerance();
-        let (base_frame, radius) = axial_primitive_frame(options, tolerance)?;
+        let (base_frame, radius) =
+            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
         let apex = options
             .center
             .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
@@ -1192,6 +1226,40 @@ impl Command for ConeCommand {
         Ok(format!(
             "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
             options.height
+        ))
+    }
+}
+
+struct TorusCommand;
+
+impl Command for TorusCommand {
+    fn name(&self) -> &'static str {
+        "Torus"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let positionals = parse_radial_primitive_positionals(arguments, TORUS_USAGE)?;
+        let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+        let mut axis_seen = false;
+        for argument in &arguments[positionals.option_start..] {
+            let Some((name, value)) = argument.split_once('=') else {
+                return Err(CommandError::Usage(TORUS_USAGE));
+            };
+            if !option_name_eq(name, "Axis") || axis_seen {
+                return Err(CommandError::Usage(TORUS_USAGE));
+            }
+            axis = parse_axis_option(value.trim_start_matches('_'), TORUS_USAGE)?;
+            axis_seen = true;
+        }
+
+        let tolerance = document.tolerance();
+        let (frame, major_radius) =
+            axial_primitive_frame(positionals.center, positionals.radius, axis, tolerance)?;
+        let minor_radius = positionals.value;
+        let surface = NurbsSurface::try_torus(frame, major_radius, minor_radius)?;
+        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+        Ok(format!(
+            "Added NURBS torus {id} (major radius {major_radius:.6}, minor radius {minor_radius:.6})"
         ))
     }
 }
@@ -7028,7 +7096,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -7237,6 +7305,74 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Cone"));
+    }
+
+    #[test]
+    fn torus_creates_exact_tensor_surface_with_oriented_point_radius() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Torus 1,2,3 5 1.5")
+            .unwrap();
+        let torus_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(torus_id));
+        let Geometry::NurbsSurface(surface) = document.object(torus_id).unwrap().geometry() else {
+            panic!("Torus must create a NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 9);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU * 5.0);
+        assert_eq!(surface.domain_v(), 0.0..=std::f64::consts::TAU * 1.5);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            Point3::try_new(7.5, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            surface
+                .evaluate(std::f64::consts::TAU * 5.0 * 0.25, 0.0)
+                .unwrap(),
+            Point3::try_new(1.0, 8.5, 3.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Torus"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Torus 1,2,3 4,7,3 1.5 Axis=0,1,0")
+            .unwrap();
+        let Geometry::NurbsSurface(oriented) = document.objects().next().unwrap().geometry() else {
+            panic!("Torus must support a point radius and arbitrary axis")
+        };
+        let domain_v = std::f64::consts::TAU * 1.5;
+        assert_eq!(oriented.domain_u(), 0.0..=std::f64::consts::TAU * 3.0);
+        assert_eq!(
+            oriented.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(5.5, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            oriented.evaluate(0.0, domain_v * 0.25).unwrap(),
+            Point3::try_new(4.0, 3.5, 3.0).unwrap()
+        );
+
+        for invalid in [
+            "Torus 0,0,0 1 0",
+            "Torus 0,0,0 1 1",
+            "Torus 0,0,0 1 2",
+            "Torus 0,0,0 -2 1",
+            "Torus 0,0,0 0,0,2 1 Axis=0,0,1",
+            "Torus 0,0,0 3 1 Axis=0,0,0",
+            "Torus 0,0,0 3 1 Solid=No",
+            "Torus 0,0,0 3 1 BothSides=Yes",
+            "Torus 0,0,0 3 1 Axis=0,0,1 Axis=0,1,0",
+            "Torus 0,0,0 3 1 Other=Yes",
+            "Torus 0,0,0 3 1 2",
+            "Torus 0,0,0 inf 1",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Torus"));
     }
 
     #[test]

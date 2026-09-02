@@ -562,6 +562,104 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact rational quadratic NURBS form of a ring torus.
+    ///
+    /// Both directions have four quadratic spans and nine controls. Matching
+    /// `ON_Torus::GetNurbForm`, U follows the major circle with an arc-length
+    /// domain of `2π * major_radius`, while V follows the minor circle with an
+    /// arc-length domain of `2π * minor_radius`. Tensor weights are the exact
+    /// products of the two circular weights.
+    pub fn try_torus(
+        frame: Frame3,
+        major_radius: Real,
+        minor_radius: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([major_radius, minor_radius], "torus radii")?;
+        if minor_radius <= 0.0 || major_radius <= minor_radius {
+            return Err(GeometryError::Degenerate { context: "torus" });
+        }
+        let domain_u = std::f64::consts::TAU * major_radius;
+        let domain_v = std::f64::consts::TAU * minor_radius;
+        require_finite([domain_u, domain_v], "torus parameter domains")?;
+
+        let circle_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let origin = frame.origin().to_array();
+        let x_axis = frame.x_axis().as_vector().to_array();
+        let y_axis = frame.y_axis().as_vector().to_array();
+        let z_axis = frame.z_axis().as_vector().to_array();
+        let mut controls = Vec::with_capacity(81);
+        for ([minor_radial, minor_height], minor_weight) in
+            circle_coordinates.into_iter().zip(circle_weights)
+        {
+            let radial = minor_radius.mul_add(minor_radial, major_radius);
+            let height = minor_radius * minor_height;
+            for ([major_x, major_y], major_weight) in
+                circle_coordinates.into_iter().zip(circle_weights)
+            {
+                let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                    let radial_coordinate =
+                        major_x.mul_add(x_axis[coordinate], major_y * y_axis[coordinate]);
+                    radial.mul_add(
+                        radial_coordinate,
+                        height.mul_add(z_axis[coordinate], origin[coordinate]),
+                    )
+                }))?;
+                controls.push(WeightedPoint3::try_new(point, major_weight * minor_weight)?);
+            }
+        }
+
+        let circle_knots = |domain: Real| {
+            let quarter = domain * 0.25;
+            let half = domain * 0.5;
+            let three_quarters = domain * 0.75;
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                quarter,
+                quarter,
+                half,
+                half,
+                three_quarters,
+                three_quarters,
+                domain,
+                domain,
+                domain,
+            ]
+        };
+        Self::try_new_rational(
+            2,
+            2,
+            9,
+            9,
+            controls,
+            circle_knots(domain_u),
+            circle_knots(domain_v),
+        )
+    }
+
     /// Constructs an exact rational surface by revolving a NURBS profile.
     ///
     /// U is the quadratic rational revolution direction and V preserves the
@@ -2114,6 +2212,107 @@ mod tests {
         assert!(NurbsSurface::try_cone(frame, 0.0, 1.0).is_err());
         assert!(NurbsSurface::try_cone(frame, 1.0, 0.0).is_err());
         assert!(NurbsSurface::try_cone(frame, 1.0, Real::INFINITY).is_err());
+    }
+
+    #[test]
+    fn exact_torus_matches_opennurbs_tensor_domains_and_weights() {
+        let center = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            center,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let major_radius = 5.0;
+        let minor_radius = 1.5;
+        let domain_u = std::f64::consts::TAU * major_radius;
+        let domain_v = std::f64::consts::TAU * minor_radius;
+        let surface = NurbsSurface::try_torus(frame, major_radius, minor_radius).unwrap();
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 9);
+        assert_eq!(surface.domain_u(), 0.0..=domain_u);
+        assert_eq!(surface.domain_v(), 0.0..=domain_v);
+        assert_eq!(surface.knots_u()[3], domain_u * 0.25);
+        assert_eq!(surface.knots_u()[7], domain_u * 0.75);
+        assert_eq!(surface.knots_v()[3], domain_v * 0.25);
+        assert_eq!(surface.knots_v()[7], domain_v * 0.75);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            point(1.0, 8.5, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().point(),
+            point(-5.5, 8.5, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            point(1.0, 8.5, 4.5)
+        );
+        assert_eq!(
+            surface.control_point(0, 2).unwrap().point(),
+            point(1.0, 7.0, 4.5)
+        );
+        assert_eq!(
+            surface.control_point(0, 4).unwrap().point(),
+            point(1.0, 5.5, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().weight(),
+            std::f64::consts::FRAC_1_SQRT_2
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().weight(),
+            std::f64::consts::FRAC_1_SQRT_2
+        );
+        assert!(Tolerance::DEFAULT.approx_eq(surface.control_point(1, 1).unwrap().weight(), 0.5));
+
+        assert_point_near(surface.evaluate(0.0, 0.0).unwrap(), point(1.0, 8.5, 3.0));
+        assert_point_near(
+            surface.evaluate(domain_u * 0.25, 0.0).unwrap(),
+            point(-5.5, 2.0, 3.0),
+        );
+        assert_point_near(
+            surface.evaluate(0.0, domain_v * 0.25).unwrap(),
+            point(1.0, 7.0, 4.5),
+        );
+        for u_index in 0..32 {
+            for v_index in 0..32 {
+                let u = domain_u * u_index as Real / 32.0;
+                let v = domain_v * v_index as Real / 32.0;
+                let point = surface.evaluate(u, v).unwrap();
+                let offset = center.vector_to(point).unwrap();
+                let axial = offset.dot(frame.z_axis().as_vector()).unwrap();
+                let axial_vector = frame.z_axis().as_vector().scaled(axial).unwrap();
+                let radial = Vector3::try_new(
+                    offset.x() - axial_vector.x(),
+                    offset.y() - axial_vector.y(),
+                    offset.z() - axial_vector.z(),
+                )
+                .unwrap()
+                .length()
+                .unwrap();
+                assert!(
+                    Tolerance::DEFAULT
+                        .approx_eq((radial - major_radius).hypot(axial), minor_radius)
+                );
+            }
+        }
+        assert!(
+            !surface
+                .tessellate(2, Tolerance::DEFAULT)
+                .unwrap()
+                .triangles()
+                .is_empty()
+        );
+        assert!(NurbsSurface::try_torus(frame, 1.0, 0.0).is_err());
+        assert!(NurbsSurface::try_torus(frame, 1.0, 1.0).is_err());
+        assert!(NurbsSurface::try_torus(frame, 1.0, 2.0).is_err());
+        assert!(NurbsSurface::try_torus(frame, Real::INFINITY, 1.0).is_err());
+        assert!(NurbsSurface::try_torus(frame, Real::MAX, 1.0).is_err());
     }
 
     #[test]

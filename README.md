@@ -32,6 +32,7 @@ SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 Sphere 0,0,0 5
 Cylinder 0,0,0 5 10 Solid=No
 Cone 0,0,0 5 10 Solid=No
+Torus 0,0,0 5 1.5
 Layer New Construction
 Layer Hide Construction
 Layer Show Construction
@@ -181,6 +182,10 @@ The current surface document model accepts `Solid=No`; caps await B-rep support.
 `Cone` uses the same center, numeric radius or base-point radius, signed height,
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
 surface with a weighted collapsed apex. `Solid=No` is currently required.
+`Torus` creates an exact closed 9-by-9 rational quadratic surface from a center,
+major radius (or point on the major circle), and minor radius. `Axis=` orients
+the torus; the major radius must exceed the positive minor radius. Its U and V
+domains are the major- and minor-circle circumferences, matching OpenNURBS.
 `ExtrudeCrv` creates exact rational NURBS surfaces from selected analytic,
 polyline, and NURBS curves. A numeric distance uses World Z; two points define
 an arbitrary direction; entering it without either starts the two-pick viewport
