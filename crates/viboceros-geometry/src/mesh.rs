@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, BTreeSet, VecDeque};
 
 use crate::vector::product_three;
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, Point3, Real, Tolerance, UnitVector3,
+    AffineTransform3, BoundingBox3, GeometryError, Point3, Polyline3, Real, Tolerance, UnitVector3,
     require_finite,
 };
 
@@ -92,6 +92,7 @@ struct EdgeUse {
 #[derive(Debug)]
 struct MeshTopologyData {
     topological_vertex_count: usize,
+    topological_points: Vec<Point3>,
     edges: BTreeMap<(usize, usize), EdgeIncidence>,
 }
 
@@ -246,6 +247,84 @@ impl TriangleMesh {
                 && self.triangles.len() >= 4
                 && boundary_edge_count == 0,
         }
+    }
+
+    /// Returns each exact-location-welded naked border as a polyline.
+    ///
+    /// Manifold boundaries are returned as closed, face-oriented loops.
+    /// Non-manifold boundary graphs are split deterministically into maximal
+    /// trails at branch vertices, with every edge represented exactly once.
+    pub fn boundary_polylines(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Polyline3>, GeometryError> {
+        let data = self.topology_data();
+        let boundary_edges = data
+            .edges
+            .iter()
+            .filter(|(_, incidence)| incidence.count == 1)
+            .map(|(&(first, second), incidence)| {
+                if incidence
+                    .first_use
+                    .expect("a boundary edge records its face use")
+                    .forward
+                {
+                    [first, second]
+                } else {
+                    [second, first]
+                }
+            })
+            .collect::<Vec<_>>();
+        if boundary_edges.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        let mut adjacency = vec![Vec::new(); data.topological_vertex_count];
+        for (edge_index, [first, second]) in boundary_edges.iter().copied().enumerate() {
+            adjacency[first].push(edge_index);
+            adjacency[second].push(edge_index);
+        }
+        let mut used = vec![false; boundary_edges.len()];
+        let mut paths = Vec::new();
+        for vertex in 0..adjacency.len() {
+            if adjacency[vertex].len() == 2 {
+                continue;
+            }
+            for edge in adjacency[vertex].iter().copied() {
+                if !used[edge] {
+                    paths.push(trace_boundary_path(
+                        vertex,
+                        edge,
+                        &boundary_edges,
+                        &adjacency,
+                        &mut used,
+                    ));
+                }
+            }
+        }
+        for edge in 0..boundary_edges.len() {
+            if !used[edge] {
+                paths.push(trace_boundary_path(
+                    boundary_edges[edge][0],
+                    edge,
+                    &boundary_edges,
+                    &adjacency,
+                    &mut used,
+                ));
+            }
+        }
+
+        paths
+            .into_iter()
+            .map(|path| {
+                Polyline3::try_new(
+                    path.into_iter()
+                        .map(|vertex| data.topological_points[vertex])
+                        .collect(),
+                    tolerance,
+                )
+            })
+            .collect()
     }
 
     /// Reorients each manifold-connected face component consistently while
@@ -579,11 +658,15 @@ impl TriangleMesh {
 
     fn topology_data(&self) -> MeshTopologyData {
         let mut locations = BTreeMap::<[u64; 3], usize>::new();
+        let mut topological_points = Vec::new();
         let mut topological_vertices = Vec::with_capacity(self.vertices.len());
         for vertex in &self.vertices {
             let key = vertex.to_array().map(canonical_coordinate_bits);
-            let location_count = locations.len();
-            let id = *locations.entry(key).or_insert(location_count);
+            let id = *locations.entry(key).or_insert_with(|| {
+                let id = topological_points.len();
+                topological_points.push(*vertex);
+                id
+            });
             topological_vertices.push(id);
         }
 
@@ -608,6 +691,7 @@ impl TriangleMesh {
 
         MeshTopologyData {
             topological_vertex_count: locations.len(),
+            topological_points,
             edges,
         }
     }
@@ -736,6 +820,43 @@ impl TriangleMesh {
             .collect::<Result<_, _>>()?;
         Self::try_new(vertices, self.triangles.clone(), tolerance)
     }
+}
+
+fn trace_boundary_path(
+    start: usize,
+    first_edge: usize,
+    edges: &[[usize; 2]],
+    adjacency: &[Vec<usize>],
+    used: &mut [bool],
+) -> Vec<usize> {
+    let mut path = vec![start];
+    let mut current = start;
+    let mut edge = first_edge;
+    loop {
+        debug_assert!(!used[edge]);
+        used[edge] = true;
+        let [first, second] = edges[edge];
+        let next = if current == first {
+            second
+        } else {
+            debug_assert_eq!(current, second);
+            first
+        };
+        path.push(next);
+        if next == start || adjacency[next].len() != 2 {
+            break;
+        }
+        let Some(next_edge) = adjacency[next]
+            .iter()
+            .copied()
+            .find(|candidate| !used[*candidate])
+        else {
+            break;
+        };
+        current = next;
+        edge = next_edge;
+    }
+    path
 }
 
 fn canonical_coordinate_bits(coordinate: Real) -> u64 {
@@ -891,6 +1012,82 @@ mod tests {
         assert!(!unoriented.is_oriented());
         assert_eq!(unoriented.orientation_conflict_edge_count(), 3);
         assert!(!unoriented.is_solid());
+    }
+
+    #[test]
+    fn extracts_welded_mesh_boundary_loops_without_internal_edges() {
+        let square_soup = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let borders = square_soup.boundary_polylines(Tolerance::DEFAULT).unwrap();
+        assert_eq!(borders.len(), 1);
+        assert!(borders[0].is_closed());
+        assert_eq!(borders[0].segment_count(), 4);
+        assert!((borders[0].length().unwrap() - 8.0).abs() < 1.0e-12);
+
+        let ring = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(1.0, 1.0, 0.0),
+                point(3.0, 1.0, 0.0),
+                point(3.0, 3.0, 0.0),
+                point(1.0, 3.0, 0.0),
+            ],
+            vec![
+                [0, 1, 5],
+                [0, 5, 4],
+                [1, 2, 6],
+                [1, 6, 5],
+                [2, 3, 7],
+                [2, 7, 6],
+                [3, 0, 4],
+                [3, 4, 7],
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut lengths = ring
+            .boundary_polylines(Tolerance::DEFAULT)
+            .unwrap()
+            .into_iter()
+            .map(|border| {
+                assert!(border.is_closed());
+                border.length().unwrap()
+            })
+            .collect::<Vec<_>>();
+        lengths.sort_by(Real::total_cmp);
+        assert_eq!(lengths, [8.0, 16.0]);
+
+        let closed = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(0.0, 0.0, 1.0),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(
+            closed
+                .boundary_polylines(Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]

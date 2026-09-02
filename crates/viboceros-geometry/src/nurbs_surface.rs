@@ -981,6 +981,116 @@ impl NurbsSurface {
         })
     }
 
+    /// Extracts the exact U-direction isocurve at a fixed V parameter.
+    ///
+    /// The returned curve retains the surface's complete U knot vector and
+    /// degree. Its homogeneous controls are obtained by evaluating every
+    /// control-net column in V, so this also works at non-clamped and periodic
+    /// parameter values where copying a control row would be incorrect.
+    pub fn isocurve_u(&self, v: Real) -> Result<crate::NurbsCurve, GeometryError> {
+        let span_v = checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
+        let controls = self.isocurve_controls(
+            SurfaceIsoDirection::U,
+            span_v,
+            v,
+            self.degree_v,
+            &self.knots_v,
+        )?;
+        crate::NurbsCurve::try_new_rational(self.degree_u, controls, self.knots_u.clone())
+    }
+
+    /// Extracts the exact V-direction isocurve at a fixed U parameter.
+    ///
+    /// The returned curve retains the surface's complete V knot vector and
+    /// degree. Its homogeneous controls are obtained by evaluating every
+    /// control-net row in U, including for non-clamped and periodic surfaces.
+    pub fn isocurve_v(&self, u: Real) -> Result<crate::NurbsCurve, GeometryError> {
+        let span_u = checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
+        let controls = self.isocurve_controls(
+            SurfaceIsoDirection::V,
+            span_u,
+            u,
+            self.degree_u,
+            &self.knots_u,
+        )?;
+        crate::NurbsCurve::try_new_rational(self.degree_v, controls, self.knots_v.clone())
+    }
+
+    /// Returns whether the natural U direction closes without a border.
+    pub fn is_closed_u(&self) -> Result<bool, GeometryError> {
+        if self.is_periodic_u() {
+            return Ok(true);
+        }
+        let domain = self.domain_u();
+        let start = self.isocurve_v(*domain.start())?;
+        let end = self.isocurve_v(*domain.end())?;
+        Ok(isocurve_controls_coincident(&start, &end))
+    }
+
+    /// Returns whether the natural V direction closes without a border.
+    pub fn is_closed_v(&self) -> Result<bool, GeometryError> {
+        if self.is_periodic_v() {
+            return Ok(true);
+        }
+        let domain = self.domain_v();
+        let start = self.isocurve_u(*domain.start())?;
+        let end = self.isocurve_u(*domain.end())?;
+        Ok(isocurve_controls_coincident(&start, &end))
+    }
+
+    /// Extracts every non-degenerate natural border as exact NURBS curves.
+    ///
+    /// Each inner vector is one connected border. A rectangular open patch
+    /// therefore has four perimeter-ordered curves, a cylinder has two
+    /// one-curve circular borders, and a surface closed in both directions has
+    /// none. Singular collapsed sides, such as a cone apex or sphere pole, are
+    /// omitted because they are points rather than curve borders.
+    pub fn natural_boundary_curve_loops(
+        &self,
+    ) -> Result<Vec<Vec<crate::NurbsCurve>>, GeometryError> {
+        let closed_u = self.is_closed_u()?;
+        let closed_v = self.is_closed_v()?;
+        if closed_u && closed_v {
+            return Ok(Vec::new());
+        }
+
+        let u_domain = self.domain_u();
+        let v_domain = self.domain_v();
+        if !closed_u && !closed_v {
+            let candidates = [
+                self.isocurve_u(*v_domain.start())?,
+                self.isocurve_v(*u_domain.end())?,
+                self.isocurve_u(*v_domain.end())?.reversed()?,
+                self.isocurve_v(*u_domain.start())?.reversed()?,
+            ];
+            let perimeter = candidates
+                .into_iter()
+                .filter(curve_has_extent)
+                .collect::<Vec<_>>();
+            return Ok((!perimeter.is_empty())
+                .then_some(perimeter)
+                .into_iter()
+                .collect());
+        }
+
+        let candidates = if closed_u {
+            vec![
+                self.isocurve_u(*v_domain.start())?,
+                self.isocurve_u(*v_domain.end())?.reversed()?,
+            ]
+        } else {
+            vec![
+                self.isocurve_v(*u_domain.end())?,
+                self.isocurve_v(*u_domain.start())?.reversed()?,
+            ]
+        };
+        Ok(candidates
+            .into_iter()
+            .filter(curve_has_extent)
+            .map(|curve| vec![curve])
+            .collect())
+    }
+
     /// Returns control-net locations in Rhino `ExtractPt` grip order. Repeated
     /// periodic controls and exact clamped closing seams are represented by a
     /// single grip in each direction.
@@ -1020,6 +1130,61 @@ impl NurbsSurface {
             }
         }
         points
+    }
+
+    fn isocurve_controls(
+        &self,
+        direction: SurfaceIsoDirection,
+        fixed_span: usize,
+        fixed_parameter: Real,
+        fixed_degree: usize,
+        fixed_knots: &[Real],
+    ) -> Result<Vec<WeightedPoint3>, GeometryError> {
+        let first_fixed = fixed_span - fixed_degree;
+        let varying_count = match direction {
+            SurfaceIsoDirection::U => self.control_point_count_u,
+            SurfaceIsoDirection::V => self.control_point_count_v,
+        };
+        let mut result = Vec::with_capacity(varying_count);
+        for varying in 0..varying_count {
+            let control_at = |fixed| match direction {
+                SurfaceIsoDirection::U => self.control_points[self.control_index(varying, fixed)],
+                SurfaceIsoDirection::V => self.control_points[self.control_index(fixed, varying)],
+            };
+            let weight_scale = (0..=fixed_degree)
+                .map(|local_fixed| control_at(first_fixed + local_fixed).weight())
+                .fold(0.0_f64, Real::max);
+            debug_assert!(weight_scale > 0.0);
+            let mut active = Vec::with_capacity(fixed_degree + 1);
+            for local_fixed in 0..=fixed_degree {
+                let fixed = first_fixed + local_fixed;
+                let control = control_at(fixed);
+                let weight = control.weight() / weight_scale;
+                let point = control.point();
+                let homogeneous = [
+                    point.x() * weight,
+                    point.y() * weight,
+                    point.z() * weight,
+                    weight,
+                ];
+                require_finite(homogeneous, "homogeneous NURBS isocurve control point")?;
+                active.push(homogeneous);
+            }
+            let homogeneous = de_boor(
+                fixed_knots,
+                fixed_degree,
+                fixed_span,
+                fixed_parameter,
+                active,
+            )?;
+            let weight = homogeneous[3] * weight_scale;
+            require_finite([weight], "NURBS isocurve weight")?;
+            result.push(WeightedPoint3::try_new(
+                project_homogeneous(homogeneous)?,
+                weight,
+            )?);
+        }
+        Ok(result)
     }
 
     pub fn domain_u(&self) -> RangeInclusive<Real> {
@@ -1623,6 +1788,43 @@ impl NurbsSurface {
         }
         Ok(parameters)
     }
+}
+
+fn curve_has_extent(curve: &crate::NurbsCurve) -> bool {
+    let first = curve.control_points()[0].point();
+    curve
+        .control_points()
+        .iter()
+        .any(|control| control.point() != first)
+}
+
+fn isocurve_controls_coincident(left: &crate::NurbsCurve, right: &crate::NurbsCurve) -> bool {
+    if left.degree() != right.degree()
+        || left.knots() != right.knots()
+        || left.control_points().len() != right.control_points().len()
+    {
+        return false;
+    }
+    let left_scale = left
+        .control_points()
+        .iter()
+        .map(|control| control.weight())
+        .fold(0.0_f64, Real::max);
+    let right_scale = right
+        .control_points()
+        .iter()
+        .map(|control| control.weight())
+        .fold(0.0_f64, Real::max);
+    left.control_points()
+        .iter()
+        .zip(right.control_points())
+        .all(|(left, right)| {
+            let left_weight = left.weight() / left_scale;
+            let right_weight = right.weight() / right_scale;
+            curve_points_coincident(left.point(), right.point())
+                && (left_weight - right_weight).abs()
+                    <= 64.0 * Real::EPSILON * left_weight.abs().max(right_weight.abs()).max(1.0)
+        })
 }
 
 #[derive(Clone, Copy)]
@@ -2237,6 +2439,125 @@ mod tests {
         assert_eq!(derivative_v, Vector3::try_new(0.0, 2.0, 2.0).unwrap());
         let normal = surface.normal_at(0.5, 0.5, Tolerance::DEFAULT).unwrap();
         assert!(normal.y() < 0.0 && normal.z() > 0.0);
+    }
+
+    #[test]
+    fn exact_isocurves_match_non_clamped_rational_surface_evaluation() {
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..4).map(move |u| {
+                    WeightedPoint3::try_new(
+                        point(u as Real, v as Real, (u * v) as Real * 0.25),
+                        1.0 + (u + 2 * v) as Real * 0.125,
+                    )
+                    .unwrap()
+                })
+            })
+            .collect();
+        let knots_u = vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0];
+        let knots_v = vec![-3.0, -1.0, 0.0, 0.6, 2.0, 4.0, 5.0];
+        let surface =
+            NurbsSurface::try_new_rational(2, 2, 4, 4, controls, knots_u.clone(), knots_v.clone())
+                .unwrap();
+
+        let u_curve = surface.isocurve_u(0.73).unwrap();
+        assert_eq!(u_curve.degree(), 2);
+        assert_eq!(u_curve.knots(), knots_u);
+        assert!(u_curve.is_rational());
+        for u in [0.0, 0.19, 0.8, 1.37, 2.0] {
+            assert_point_near(
+                u_curve.evaluate(u).unwrap(),
+                surface.evaluate(u, 0.73).unwrap(),
+            );
+        }
+        let non_clamped_boundary = surface.isocurve_u(*surface.domain_v().start()).unwrap();
+        assert_ne!(
+            non_clamped_boundary.control_points()[0].point(),
+            surface.control_point(0, 0).unwrap().point()
+        );
+        for u in [0.0, 0.8, 2.0] {
+            assert_point_near(
+                non_clamped_boundary.evaluate(u).unwrap(),
+                surface.evaluate(u, *surface.domain_v().start()).unwrap(),
+            );
+        }
+
+        let v_curve = surface.isocurve_v(1.21).unwrap();
+        assert_eq!(v_curve.degree(), 2);
+        assert_eq!(v_curve.knots(), knots_v);
+        assert!(v_curve.is_rational());
+        for v in [0.0, 0.17, 0.6, 1.41, 2.0] {
+            assert_point_near(
+                v_curve.evaluate(v).unwrap(),
+                surface.evaluate(1.21, v).unwrap(),
+            );
+        }
+        assert!(surface.isocurve_u(-0.1).is_err());
+        assert!(surface.isocurve_v(2.1).is_err());
+    }
+
+    #[test]
+    fn natural_boundary_loops_omit_closed_seams_and_singular_sides() {
+        let patch = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(4.0, 0.0, 0.0),
+            point(4.0, 3.0, 0.0),
+            point(0.0, 3.0, 0.0),
+        ])
+        .unwrap();
+        assert!(!patch.is_closed_u().unwrap());
+        assert!(!patch.is_closed_v().unwrap());
+        let patch_loops = patch.natural_boundary_curve_loops().unwrap();
+        assert_eq!(patch_loops.len(), 1);
+        assert_eq!(patch_loops[0].len(), 4);
+        let expected = [
+            (point(0.0, 0.0, 0.0), point(4.0, 0.0, 0.0)),
+            (point(4.0, 0.0, 0.0), point(4.0, 3.0, 0.0)),
+            (point(4.0, 3.0, 0.0), point(0.0, 3.0, 0.0)),
+            (point(0.0, 3.0, 0.0), point(0.0, 0.0, 0.0)),
+        ];
+        for (curve, (start, end)) in patch_loops[0].iter().zip(expected) {
+            assert_eq!(curve.evaluate(*curve.domain().start()).unwrap(), start);
+            assert_eq!(curve.evaluate(*curve.domain().end()).unwrap(), end);
+        }
+
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, -1.0, 4.0).unwrap();
+        assert!(cylinder.is_closed_u().unwrap());
+        assert!(!cylinder.is_closed_v().unwrap());
+        let cylinder_loops = cylinder.natural_boundary_curve_loops().unwrap();
+        assert_eq!(
+            cylinder_loops.iter().map(Vec::len).collect::<Vec<_>>(),
+            [1, 1]
+        );
+        assert!(
+            cylinder_loops
+                .iter()
+                .all(|boundary| boundary[0].is_closed().unwrap())
+        );
+        assert!(
+            cylinder_loops
+                .iter()
+                .all(|boundary| boundary[0].is_rational())
+        );
+
+        let cone = NurbsSurface::try_cone(frame, 2.0, 5.0).unwrap();
+        assert_eq!(cone.natural_boundary_curve_loops().unwrap().len(), 1);
+
+        let sphere = NurbsSurface::try_sphere(frame, 2.0).unwrap();
+        assert!(sphere.is_closed_u().unwrap());
+        assert!(sphere.natural_boundary_curve_loops().unwrap().is_empty());
+
+        let torus = NurbsSurface::try_torus(frame, 4.0, 1.0).unwrap();
+        assert!(torus.is_closed_u().unwrap());
+        assert!(torus.is_closed_v().unwrap());
+        assert!(torus.natural_boundary_curve_loops().unwrap().is_empty());
     }
 
     #[test]

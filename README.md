@@ -33,6 +33,7 @@ SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
+DupBorder OutputLayer=Current
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
@@ -205,6 +206,13 @@ or report-only `None`. World-plane selections produce a rectangle or mesh plane.
 `CoordinateSystem=CPlane` is accepted and currently shares the World XY basis;
 analytic bounds are tight, while NURBS bounds conservatively enclose their
 positive-weight control geometry.
+`DupBorder` duplicates the open boundaries of selected NURBS surfaces, B-reps,
+and triangle meshes. Surface borders are exact rational isocurves, including
+at non-clamped domain ends; closed seams and collapsed singular sides are
+omitted. B-reps preserve each exact naked edge, while mesh edges are welded by
+exact location into boundary polylines. Multi-edge borders are grouped until
+the document gains an exact polycurve primitive. Results use the current layer
+and become selected by default; `OutputLayer=Input` uses each source layer.
 `Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
 (or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
 while `BothSides=Yes` makes the height symmetric about the base center.

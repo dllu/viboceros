@@ -99,6 +99,9 @@ impl CommandRegistry {
             .register(BoundingBoxCommand)
             .expect("unique built-in command");
         registry
+            .register(DuplicateBorderCommand)
+            .expect("unique built-in command");
+        registry
             .register(SphereCommand)
             .expect("unique built-in command");
         registry
@@ -1465,6 +1468,212 @@ impl Command for BoundingBoxCommand {
             reports.join("; ")
         ))
     }
+}
+
+const DUPLICATE_BORDER_USAGE: &str = "DupBorder [OutputLayer=Current|Input]";
+
+#[derive(Clone, Copy)]
+enum DuplicateBorderOutputLayer {
+    Current,
+    Input,
+}
+
+struct StagedDuplicateBorder {
+    loops: Vec<Vec<Geometry>>,
+    attributes: ObjectAttributes,
+}
+
+struct DuplicateBorderCommand;
+
+impl Command for DuplicateBorderCommand {
+    fn name(&self) -> &'static str {
+        "DupBorder"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["DuplicateBorder"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let output_layer = parse_duplicate_border_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.geometry().clone(), object.attributes().layer_id()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let current_layer = document.current_layer_id();
+        let mut staged = Vec::new();
+        for (geometry, input_layer) in selected {
+            let loops: Vec<Vec<Geometry>> = match geometry {
+                Geometry::NurbsSurface(surface) => surface
+                    .natural_boundary_curve_loops()?
+                    .into_iter()
+                    .map(|boundary| {
+                        boundary
+                            .into_iter()
+                            .map(Geometry::NurbsCurve)
+                            .collect::<Vec<_>>()
+                    })
+                    .collect(),
+                Geometry::Brep(brep) => brep_naked_edge_curve_components(&brep)
+                    .into_iter()
+                    .map(|boundary| {
+                        boundary
+                            .into_iter()
+                            .map(Geometry::NurbsCurve)
+                            .collect::<Vec<_>>()
+                    })
+                    .collect(),
+                Geometry::Mesh(mesh) => mesh
+                    .boundary_polylines(document.tolerance())?
+                    .into_iter()
+                    .map(|boundary| vec![Geometry::Polyline(boundary)])
+                    .collect(),
+                Geometry::Point(_)
+                | Geometry::PointCloud(_)
+                | Geometry::Line(_)
+                | Geometry::Circle(_)
+                | Geometry::Arc(_)
+                | Geometry::Ellipse(_)
+                | Geometry::Polyline(_)
+                | Geometry::NurbsCurve(_) => {
+                    return Err(CommandError::UnsupportedDuplicateBorderGeometry);
+                }
+            };
+            if loops.is_empty() {
+                continue;
+            }
+            let layer = match output_layer {
+                DuplicateBorderOutputLayer::Current => current_layer,
+                DuplicateBorderOutputLayer::Input => input_layer,
+            };
+            staged.push(StagedDuplicateBorder {
+                loops,
+                attributes: ObjectAttributes::on_layer(layer),
+            });
+        }
+        if staged.is_empty() {
+            return Err(CommandError::NoDuplicateBorders);
+        }
+
+        let source_count = staged.len();
+        let border_count = staged
+            .iter()
+            .map(|source| source.loops.len())
+            .sum::<usize>();
+        let curve_count = staged
+            .iter()
+            .flat_map(|source| &source.loops)
+            .map(Vec::len)
+            .sum::<usize>();
+        let mut output_ids = Vec::with_capacity(curve_count);
+        let mut grouped_count = 0;
+        for source in staged {
+            for boundary in source.loops {
+                let mut boundary_ids = Vec::with_capacity(boundary.len());
+                for geometry in boundary {
+                    let id = document
+                        .add_geometry_with_attributes(geometry, source.attributes.clone())?;
+                    boundary_ids.push(id);
+                    output_ids.push(id);
+                }
+                if boundary_ids.len() > 1 {
+                    document.add_group(None, boundary_ids)?;
+                    grouped_count += 1;
+                }
+            }
+        }
+        replace_selection(document, output_ids)?;
+        Ok(format!(
+            "Duplicated {curve_count} border curve(s) in {border_count} border(s) from {source_count} object(s){}",
+            if grouped_count == 0 {
+                String::new()
+            } else {
+                format!("; grouped {grouped_count} multi-edge border(s)")
+            }
+        ))
+    }
+}
+
+fn parse_duplicate_border_arguments(
+    arguments: &[&str],
+) -> Result<DuplicateBorderOutputLayer, CommandError> {
+    if arguments.is_empty() {
+        return Ok(DuplicateBorderOutputLayer::Current);
+    }
+    let (name, value, consumed) = if let Some((name, value)) = arguments[0].split_once('=') {
+        (name, value, 1)
+    } else {
+        let value = arguments
+            .get(1)
+            .ok_or(CommandError::Usage(DUPLICATE_BORDER_USAGE))?;
+        (arguments[0], *value, 2)
+    };
+    require_consumed(arguments, consumed, DUPLICATE_BORDER_USAGE)?;
+    if !option_name_eq(name, "OutputLayer") {
+        return Err(CommandError::Usage(DUPLICATE_BORDER_USAGE));
+    }
+    let value = value.trim_start_matches('_');
+    if value.eq_ignore_ascii_case("Current") {
+        Ok(DuplicateBorderOutputLayer::Current)
+    } else if value.eq_ignore_ascii_case("Input") {
+        Ok(DuplicateBorderOutputLayer::Input)
+    } else {
+        Err(CommandError::Usage(DUPLICATE_BORDER_USAGE))
+    }
+}
+
+fn brep_naked_edge_curve_components(brep: &Brep) -> Vec<Vec<NurbsCurve>> {
+    let naked = (0..brep.edges().len())
+        .filter(|edge| brep.edge_use_count(*edge) == Some(1))
+        .collect::<Vec<_>>();
+    let mut edges_at_vertex = BTreeMap::<usize, Vec<usize>>::new();
+    for (local_edge, &edge_index) in naked.iter().enumerate() {
+        let vertices = brep.edges()[edge_index].vertices();
+        edges_at_vertex
+            .entry(vertices[0])
+            .or_default()
+            .push(local_edge);
+        if vertices[1] != vertices[0] {
+            edges_at_vertex
+                .entry(vertices[1])
+                .or_default()
+                .push(local_edge);
+        }
+    }
+
+    let mut visited = vec![false; naked.len()];
+    let mut components = Vec::new();
+    for root in 0..naked.len() {
+        if visited[root] {
+            continue;
+        }
+        visited[root] = true;
+        let mut pending = vec![root];
+        let mut component = Vec::new();
+        while let Some(local_edge) = pending.pop() {
+            component.push(local_edge);
+            for vertex in brep.edges()[naked[local_edge]].vertices() {
+                for &neighbor in &edges_at_vertex[&vertex] {
+                    if !visited[neighbor] {
+                        visited[neighbor] = true;
+                        pending.push(neighbor);
+                    }
+                }
+            }
+        }
+        component.sort_unstable();
+        components.push(
+            component
+                .into_iter()
+                .map(|local_edge| brep.edges()[naked[local_edge]].curve().clone())
+                .collect(),
+        );
+    }
+    components
 }
 
 fn parse_bounding_box_options(arguments: &[&str]) -> Result<BoundingBoxOptions, CommandError> {
@@ -7697,6 +7906,12 @@ pub enum CommandError {
     #[error("none of the selected objects is an explodable polyline or point cloud")]
     NoExplodablePolylines,
 
+    #[error("DupBorder supports selected NURBS surfaces, B-reps, and triangle meshes only")]
+    UnsupportedDuplicateBorderGeometry,
+
+    #[error("none of the selected objects has an open border")]
+    NoDuplicateBorders,
+
     #[error("Length supports selected lines, analytic curves, polylines, and NURBS curves only")]
     UnsupportedLengthGeometry,
 
@@ -7891,7 +8106,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -10882,6 +11097,195 @@ mod tests {
             .unwrap();
         assert!(report.contains("size 0.000000,0.000000,0.000000"));
         assert_eq!(point_document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn duplicate_border_extracts_exact_surface_boundaries_and_respects_output_layer() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "SrfPt 0,0,2 4,0,2 4,3,2 0,3,2")
+            .unwrap();
+        let source = document.objects().next().unwrap().id();
+        let input_layer = document.object(source).unwrap().attributes().layer_id();
+        registry
+            .execute(&mut document, "Layer New Borders")
+            .unwrap();
+        let border_layer = document.current_layer_id();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry.execute(&mut document, "DupBorder").unwrap();
+        assert!(message.contains("4 border curve(s) in 1 border(s)"));
+        assert!(message.contains("grouped 1 multi-edge border(s)"));
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 4);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.groups().next().unwrap().members().len(), 4);
+        assert!(!document.is_selected(source));
+        assert!(outputs.iter().all(|object| {
+            object.attributes().layer_id() == border_layer
+                && document.is_selected(object.id())
+                && matches!(object.geometry(), Geometry::NurbsCurve(_))
+        }));
+        let expected = [
+            (
+                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 2.0).unwrap(),
+            ),
+            (
+                Point3::try_new(4.0, 0.0, 2.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 2.0).unwrap(),
+            ),
+            (
+                Point3::try_new(4.0, 3.0, 2.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 2.0).unwrap(),
+            ),
+            (
+                Point3::try_new(0.0, 3.0, 2.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 2.0).unwrap(),
+            ),
+        ];
+        for (object, (start, end)) in outputs.into_iter().zip(expected) {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                unreachable!()
+            };
+            assert_eq!(curve.evaluate(*curve.domain().start()).unwrap(), start);
+            assert_eq!(curve.evaluate(*curve.domain().end()).unwrap(), end);
+        }
+        assert_eq!(document.undo_label(), Some("DupBorder"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.groups().len(), 0);
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "DuplicateBorder OutputLayer _Input")
+            .unwrap();
+        assert!(
+            document
+                .objects()
+                .skip(1)
+                .all(|object| object.attributes().layer_id() == input_layer)
+        );
+    }
+
+    #[test]
+    fn duplicate_border_preserves_brep_holes_and_welds_mesh_borders() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance()).unwrap();
+        let center = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let outer = Circle3::try_new(center, 5.0, normal, document.tolerance())
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let inner = Circle3::try_new(center, 2.0, normal, document.tolerance())
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let face = Brep::try_planar_face_with_holes(
+            &outer,
+            std::slice::from_ref(&inner),
+            document.tolerance(),
+        )
+        .unwrap();
+        let face_id = document.add_geometry(Geometry::Brep(face)).unwrap();
+        document
+            .select_objects_direct([face_id], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "DupBorder").unwrap();
+
+        let exact_borders = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(exact_borders.len(), 2);
+        assert_eq!(document.groups().len(), 0);
+        let mut radii = exact_borders
+            .iter()
+            .map(|object| {
+                let Geometry::NurbsCurve(curve) = object.geometry() else {
+                    panic!("a B-rep edge must remain an exact NURBS curve")
+                };
+                assert!(curve.is_rational());
+                assert!(curve.is_closed().unwrap());
+                curve.evaluate(*curve.domain().start()).unwrap().x().abs()
+            })
+            .collect::<Vec<_>>();
+        radii.sort_by(Real::total_cmp);
+        assert_eq!(radii, [2.0, 5.0]);
+
+        let mut mesh_document = Document::default();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            mesh_document.tolerance(),
+        )
+        .unwrap();
+        let mesh_id = mesh_document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        mesh_document
+            .select_objects_direct([mesh_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut mesh_document, "DupBorder OutputLayer=Current")
+            .unwrap();
+        assert_eq!(mesh_document.objects().len(), 2);
+        let Geometry::Polyline(border) = mesh_document.objects().last().unwrap().geometry() else {
+            panic!("a mesh border must be one welded polyline")
+        };
+        assert!(border.is_closed());
+        assert_eq!(border.segment_count(), 4);
+        assert_eq!(border.length().unwrap(), 10.0);
+    }
+
+    #[test]
+    fn duplicate_border_rejects_unsupported_or_borderless_inputs_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Torus 0,0,0 4 1").unwrap();
+        let torus = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([torus], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DupBorder"),
+            Err(CommandError::NoDuplicateBorders)
+        ));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        let line = document.objects().last().unwrap().id();
+        document
+            .select_objects_direct([torus, line], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "DupBorder"),
+            Err(CommandError::UnsupportedDuplicateBorderGeometry)
+        ));
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.undo_label(), history.as_deref());
+        for invalid in [
+            "DupBorder OutputLayer=Other",
+            "DupBorder OutputLayer",
+            "DupBorder OutputLayer=Input extra",
+            "DupBorder OutputLayer=Input OutputLayer=Current",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+            assert_eq!(document.objects().len(), 2);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
     }
 
     #[test]
