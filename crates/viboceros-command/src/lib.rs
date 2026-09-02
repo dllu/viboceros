@@ -97,6 +97,9 @@ impl CommandRegistry {
             .register(MeshCommand)
             .expect("unique built-in command");
         registry
+            .register(MeshToNurbCommand)
+            .expect("unique built-in command");
+        registry
             .register(BoxCommand)
             .expect("unique built-in command");
         registry
@@ -1500,6 +1503,111 @@ fn parse_mesh_arguments(arguments: &[&str]) -> Result<MeshCommandOptions, Comman
         density,
         jagged_seams,
         simple_planes,
+    })
+}
+
+const MESH_TO_NURB_USAGE: &str = "MeshToNURB [TrimTriangularFaces=Yes|No] [UseNgons=Yes|No]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshToNurbCommandOptions {
+    trim_triangular_faces: bool,
+    use_ngons: bool,
+}
+
+struct MeshToNurbCommand;
+
+impl Command for MeshToNurbCommand {
+    fn name(&self) -> &'static str {
+        "MeshToNURB"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let MeshToNurbCommandOptions {
+            trim_triangular_faces,
+            use_ngons: _,
+        } = parse_mesh_to_nurb_arguments(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Mesh(mesh) => Ok((mesh.clone(), object.attributes().clone())),
+                _ => Err(CommandError::UnsupportedMeshToNurbGeometry),
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut total_face_count = 0_usize;
+        let mut outputs = Vec::new();
+        for (mesh, attributes) in selected {
+            total_face_count = total_face_count
+                .checked_add(mesh.face_count())
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+            let pieces = mesh.disjoint_pieces();
+            if outputs
+                .len()
+                .checked_add(pieces.len())
+                .is_none_or(|count| count > MAX_SPAN_OUTPUT_OBJECTS)
+            {
+                return Err(too_many_span_outputs("MeshToNURB"));
+            }
+            for piece in pieces {
+                outputs.push((
+                    Brep::try_from_mesh(&piece, trim_triangular_faces, document.tolerance())?,
+                    attributes.clone(),
+                ));
+            }
+        }
+
+        let output_count = outputs.len();
+        for (brep, attributes) in outputs {
+            document.add_geometry_with_attributes(Geometry::Brep(brep), attributes)?;
+        }
+        Ok(format!(
+            "Created {output_count} NURBS B-rep(s) from {total_face_count} mesh face(s); source mesh(es) retained"
+        ))
+    }
+}
+
+fn parse_mesh_to_nurb_arguments(
+    arguments: &[&str],
+) -> Result<MeshToNurbCommandOptions, CommandError> {
+    let mut trim_triangular_faces = true;
+    let mut trim_seen = false;
+    let mut use_ngons = true;
+    let mut use_ngons_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else if option_name_eq(argument, "TrimTriangularFaces")
+            || option_name_eq(argument, "UseNgons")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(MESH_TO_NURB_USAGE))?;
+            (argument, *value, 2)
+        } else {
+            return Err(CommandError::Usage(MESH_TO_NURB_USAGE));
+        };
+        if option_name_eq(name, "TrimTriangularFaces") && !trim_seen {
+            trim_triangular_faces =
+                parse_yes_no(value).ok_or(CommandError::Usage(MESH_TO_NURB_USAGE))?;
+            trim_seen = true;
+        } else if option_name_eq(name, "UseNgons") && !use_ngons_seen {
+            // The core mesh type currently stores only native triangles and
+            // quads, so both policies are identical until n-gons are retained.
+            use_ngons = parse_yes_no(value).ok_or(CommandError::Usage(MESH_TO_NURB_USAGE))?;
+            use_ngons_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_TO_NURB_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(MeshToNurbCommandOptions {
+        trim_triangular_faces,
+        use_ngons,
     })
 }
 
@@ -12845,6 +12953,9 @@ pub enum CommandError {
     #[error("Mesh supports selected NURBS surfaces and B-reps only")]
     UnsupportedMeshGeometry,
 
+    #[error("MeshToNURB supports selected polygon meshes only")]
+    UnsupportedMeshToNurbGeometry,
+
     #[error("ExtrudeCrv currently supports Output=Surface only")]
     UnsupportedCurveExtrusionOutput,
 
@@ -13003,7 +13114,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -19243,6 +19354,161 @@ mod tests {
         assert_eq!(
             document.object(surface_id).unwrap().geometry(),
             &Geometry::NurbsSurface(surface)
+        );
+    }
+
+    #[test]
+    fn mesh_to_nurb_splits_disjoint_pieces_and_preserves_derived_attributes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(14.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(14.0, 3.0, 1.0).unwrap(),
+                Point3::try_new(10.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![
+                viboceros_geometry::MeshFace::Triangle([0, 1, 2]),
+                viboceros_geometry::MeshFace::Quad([3, 4, 5, 6]),
+            ],
+            document.tolerance(),
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Faceted shell")
+            .with_object_color(ColorRgb::new(23, 61, 149));
+        let source_id = document
+            .add_geometry_with_attributes(Geometry::Mesh(mesh.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Mesh source".to_owned()), [source_id])
+            .unwrap();
+        document
+            .select_objects_direct([source_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "MeshToNURB").unwrap(),
+            "Created 2 NURBS B-rep(s) from 2 mesh face(s); source mesh(es) retained"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert!(document.is_selected(source_id));
+        let outputs = document
+            .objects()
+            .filter(|object| object.id() != source_id)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        assert!(
+            outputs
+                .iter()
+                .all(|object| !document.is_selected(object.id()))
+        );
+        assert!(
+            outputs
+                .iter()
+                .all(|object| object.attributes() == &attributes)
+        );
+        let Geometry::Brep(triangle) = outputs[0].geometry() else {
+            panic!("MeshToNURB must create B-reps")
+        };
+        assert_eq!(triangle.faces().len(), 1);
+        assert_eq!(triangle.faces()[0].loops()[0].trims().len(), 3);
+        let Geometry::Brep(quad) = outputs[1].geometry() else {
+            panic!("MeshToNURB must create B-reps")
+        };
+        assert_eq!(quad.faces().len(), 1);
+        assert_eq!(quad.faces()[0].loops()[0].trims().len(), 4);
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source_id]
+        );
+        assert_eq!(document.undo_label(), Some("MeshToNURB"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::Mesh(mesh)
+        );
+    }
+
+    #[test]
+    fn mesh_to_nurb_options_and_mixed_selection_are_atomic() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert_eq!(
+            parse_mesh_to_nurb_arguments(&[]).unwrap(),
+            MeshToNurbCommandOptions {
+                trim_triangular_faces: true,
+                use_ngons: true,
+            }
+        );
+        assert!(matches!(
+            registry.execute(&mut document, "MeshToNURB"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        for command in [
+            "MeshToNURB TrimTriangularFaces=Maybe",
+            "MeshToNURB TrimTriangularFaces=Yes TrimTriangularFaces=No",
+            "MeshToNURB UseNgons=Maybe",
+            "MeshToNURB Unknown=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0);
+        }
+
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let mesh_id = document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        document
+            .select_objects_direct([mesh_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshToNURB TrimTriangularFaces No UseNgons No",
+            )
+            .unwrap();
+        let Geometry::Brep(untrimmed) = document.objects().last().unwrap().geometry() else {
+            panic!("MeshToNURB must create a B-rep")
+        };
+        let trims = untrimmed.faces()[0].loops()[0].trims();
+        assert_eq!(trims.len(), 4);
+        assert_eq!(
+            trims[3].trim_type(),
+            viboceros_geometry::BrepTrimType::Singular
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(10.0, 10.0, 10.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects_direct([mesh_id, point_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "MeshToNURB"),
+            Err(CommandError::UnsupportedMeshToNurbGeometry)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
         );
     }
 

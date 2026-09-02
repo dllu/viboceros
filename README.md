@@ -36,6 +36,7 @@ InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
+MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 DupBorder OutputLayer=Current
@@ -229,6 +230,14 @@ Regular surface cells remain quadrilaterals, singular sides and planar trim
 regions use triangles, and smooth-seam closed solids must remain watertight.
 Unsupported nonplanar general trims fail atomically rather than being silently
 meshed as untrimmed surfaces.
+`MeshToNURB` duplicates every selected mesh polygon as an exact degree-one
+NURBS face. Quads remain potentially warped bilinear surfaces; triangles are
+trimmed planar parallelograms by default, or untrimmed patches with a collapsed
+side when `TrimTriangularFaces=No`. Exact-location edges become shared B-rep
+topology and edge-disconnected pieces become separate, unselected objects.
+Sources and their selections are retained, derived attributes are copied, and
+source groups are not inherited. `UseNgons` is accepted for Rhino script
+compatibility; the current native mesh model contains triangles and quads only.
 `Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
 a center and numeric radius or point on the sphere. Its longitude domain is
 `[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without

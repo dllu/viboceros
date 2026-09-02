@@ -6,8 +6,8 @@ use spade::{
 
 use crate::nurbs::{CURVE_COINCIDENCE_ABSOLUTE, find_span_in_knots};
 use crate::{
-    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
-    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, MeshFace, NurbsCurve,
+    NurbsCurve2, NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
     WeightedPoint2, WeightedPoint3, integration::integrate_adaptive,
     nurbs_surface::integrate_area_patch, require_finite, vector::product_three,
 };
@@ -375,6 +375,194 @@ impl Brep {
         };
         brep.validate(tolerance)?;
         Ok(brep)
+    }
+
+    /// Converts every polygon of a mesh into one degree-one NURBS face.
+    ///
+    /// Exact-location mesh vertices and edges become shared B-rep topology.
+    /// Quads retain their potentially warped bilinear shape. Triangles become
+    /// either trimmed planar parallelograms or untrimmed bilinear surfaces
+    /// whose west side is collapsed, matching Rhino's `Brep.CreateFromMesh`
+    /// construction and parameter domains.
+    pub fn try_from_mesh(
+        mesh: &TriangleMesh,
+        trim_triangular_faces: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut vertex_indices = BTreeMap::<[u64; 3], usize>::new();
+        let mut vertices = Vec::new();
+        let mut raw_to_brep = Vec::with_capacity(mesh.vertices().len());
+        for &point in mesh.vertices() {
+            let key = point.to_array().map(canonical_brep_coordinate_bits);
+            let index = if let Some(&index) = vertex_indices.get(&key) {
+                index
+            } else {
+                let index = vertices.len();
+                vertices.push(BrepVertex::try_new(point, 0.0)?);
+                vertex_indices.insert(key, index);
+                index
+            };
+            raw_to_brep.push(index);
+        }
+
+        // OpenNURBS builds the complete mesh-topology vertex table, marks
+        // vertices touched by faces, and then compacts it. Preserve that
+        // order even when an unused raw vertex is the first occurrence of a
+        // location referenced again later.
+        let mut used_vertices = vec![false; vertices.len()];
+        for face in mesh.faces() {
+            for &raw in face.indices() {
+                used_vertices[raw_to_brep[raw as usize]] = true;
+            }
+        }
+        let mut vertex_remap = vec![usize::MAX; vertices.len()];
+        let mut retained_vertices =
+            Vec::with_capacity(used_vertices.iter().filter(|&&used| used).count());
+        for (source, (vertex, used)) in vertices.into_iter().zip(used_vertices).enumerate() {
+            if used {
+                vertex_remap[source] = retained_vertices.len();
+                retained_vertices.push(vertex);
+            }
+        }
+        for vertex in &mut raw_to_brep {
+            *vertex = vertex_remap[*vertex];
+        }
+        let vertices = retained_vertices;
+
+        let mut edge_use_counts = BTreeMap::<(usize, usize), usize>::new();
+        for face in mesh.faces() {
+            let indices = face.indices();
+            for side in 0..indices.len() {
+                let start = raw_to_brep[indices[side] as usize];
+                let end = raw_to_brep[indices[(side + 1) % indices.len()] as usize];
+                let key = ordered_pair(start, end);
+                let uses = edge_use_counts.entry(key).or_default();
+                *uses = uses.checked_add(1).ok_or(GeometryError::TooManyMeshFaces)?;
+            }
+        }
+        let edge_keys = edge_use_counts.keys().copied().collect::<Vec<_>>();
+        let edge_indices = edge_keys
+            .iter()
+            .copied()
+            .enumerate()
+            .map(|(index, key)| (key, index))
+            .collect::<BTreeMap<_, _>>();
+        let edges = edge_keys
+            .iter()
+            .map(|&(start, end)| {
+                BrepEdge::try_new(
+                    [start, end],
+                    NurbsCurve::try_new(
+                        1,
+                        vec![vertices[start].point, vertices[end].point],
+                        vec![0.0, 0.0, 1.0, 1.0],
+                    )?,
+                    0.0,
+                )
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+
+        let mut faces = Vec::with_capacity(mesh.face_count());
+        for face in mesh.faces() {
+            let face_vertices = face
+                .indices()
+                .iter()
+                .map(|&raw| raw_to_brep[raw as usize])
+                .collect::<Vec<_>>();
+            let face_points = face_vertices
+                .iter()
+                .map(|&vertex| vertices[vertex].point)
+                .collect::<Vec<_>>();
+            let surface_corners = match *face {
+                MeshFace::Triangle(_) if trim_triangular_faces => {
+                    let fourth =
+                        face_points[0].translated(face_points[1].vector_to(face_points[2])?)?;
+                    [face_points[0], face_points[1], face_points[2], fourth]
+                }
+                MeshFace::Triangle(_) => [
+                    face_points[0],
+                    face_points[1],
+                    face_points[2],
+                    face_points[0],
+                ],
+                MeshFace::Quad(_) => [
+                    face_points[0],
+                    face_points[1],
+                    face_points[2],
+                    face_points[3],
+                ],
+            };
+            let surface = mesh_face_bilinear_surface(surface_corners)?;
+            let domain_u = surface.domain_u();
+            let domain_v = surface.domain_v();
+            let parameters = [
+                Point2::try_new(*domain_u.start(), *domain_v.start())?,
+                Point2::try_new(*domain_u.end(), *domain_v.start())?,
+                Point2::try_new(*domain_u.end(), *domain_v.end())?,
+                Point2::try_new(*domain_u.start(), *domain_v.end())?,
+            ];
+            let (parameter_sides, iso): (&[(usize, usize)], &[SurfaceIso]) = match *face {
+                MeshFace::Triangle(_) if trim_triangular_faces => (
+                    &[(0, 1), (1, 2), (2, 0)],
+                    &[SurfaceIso::South, SurfaceIso::East, SurfaceIso::NotIso],
+                ),
+                MeshFace::Triangle(_) => (
+                    &[(0, 1), (1, 2), (2, 3)],
+                    &[SurfaceIso::South, SurfaceIso::East, SurfaceIso::North],
+                ),
+                MeshFace::Quad(_) => (
+                    &[(0, 1), (1, 2), (2, 3), (3, 0)],
+                    &[
+                        SurfaceIso::South,
+                        SurfaceIso::East,
+                        SurfaceIso::North,
+                        SurfaceIso::West,
+                    ],
+                ),
+            };
+            let mut trims = Vec::with_capacity(
+                parameter_sides.len() + usize::from(face.is_triangle() && !trim_triangular_faces),
+            );
+            for (side, (&(parameter_start, parameter_end), &iso)) in
+                parameter_sides.iter().zip(iso).enumerate()
+            {
+                let start = face_vertices[side];
+                let end = face_vertices[(side + 1) % face_vertices.len()];
+                let edge_key = ordered_pair(start, end);
+                let edge = edge_indices[&edge_key];
+                let trim_type = if edge_use_counts[&edge_key] == 1 {
+                    BrepTrimType::Boundary
+                } else {
+                    BrepTrimType::Mated
+                };
+                trims.push(BrepTrim::try_new(
+                    [start, end],
+                    Some(edge),
+                    [start, end] != edges[edge].vertices,
+                    NurbsCurve2::try_line(parameters[parameter_start], parameters[parameter_end])?,
+                    trim_type,
+                    iso,
+                    [0.0, 0.0],
+                )?);
+            }
+            if face.is_triangle() && !trim_triangular_faces {
+                trims.push(BrepTrim::try_new(
+                    [face_vertices[0], face_vertices[0]],
+                    None,
+                    false,
+                    NurbsCurve2::try_line(parameters[3], parameters[0])?,
+                    BrepTrimType::Singular,
+                    SurfaceIso::West,
+                    [0.0, 0.0],
+                )?);
+            }
+            faces.push(BrepFace::try_new(
+                surface,
+                false,
+                vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
+            )?);
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
     }
 
     /// Constructs an exact six-face solid box over increasing frame-axis intervals.
@@ -2222,6 +2410,47 @@ impl Brep {
         }
         uses
     }
+}
+
+fn ordered_pair(first: usize, second: usize) -> (usize, usize) {
+    if first < second {
+        (first, second)
+    } else {
+        (second, first)
+    }
+}
+
+fn canonical_brep_coordinate_bits(coordinate: Real) -> u64 {
+    if coordinate == 0.0 {
+        0
+    } else {
+        coordinate.to_bits()
+    }
+}
+
+fn mesh_face_bilinear_surface(corners: [Point3; 4]) -> Result<NurbsSurface, GeometryError> {
+    const OPENNURBS_ZERO_TOLERANCE: Real = 2.328_306_436_538_696_3e-10;
+    let mut domain_u_end = corners[0]
+        .distance_to(corners[1])?
+        .max(corners[3].distance_to(corners[2])?);
+    if domain_u_end <= OPENNURBS_ZERO_TOLERANCE {
+        domain_u_end = 1.0;
+    }
+    let mut domain_v_end = corners[1]
+        .distance_to(corners[2])?
+        .max(corners[0].distance_to(corners[3])?);
+    if domain_v_end <= OPENNURBS_ZERO_TOLERANCE {
+        domain_v_end = 1.0;
+    }
+    NurbsSurface::try_new(
+        1,
+        1,
+        2,
+        2,
+        vec![corners[0], corners[1], corners[3], corners[2]],
+        vec![0.0, 0.0, domain_u_end, domain_u_end],
+        vec![0.0, 0.0, domain_v_end, domain_v_end],
+    )
 }
 
 fn recompute_duplicated_face_vertex_tolerances(
@@ -4587,6 +4816,153 @@ mod tests {
             brep.polygon_mesh(-0.1, false, false, Tolerance::DEFAULT),
             Err(GeometryError::InvalidMeshDensity(-0.1))
         );
+    }
+
+    #[test]
+    fn mesh_to_nurbs_matches_rhino_triangle_surfaces_and_parameter_domains() {
+        let source = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let untrimmed = Brep::try_from_mesh(&source, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(untrimmed.vertices().len(), 3);
+        assert_eq!(untrimmed.edges().len(), 3);
+        assert!(
+            untrimmed
+                .edges()
+                .iter()
+                .all(|edge| edge.curve().domain() == (0.0..=1.0))
+        );
+        let face = &untrimmed.faces()[0];
+        assert_eq!(face.surface().degree_u(), 1);
+        assert_eq!(face.surface().degree_v(), 1);
+        assert_eq!(face.surface().domain_u(), 0.0..=4.0);
+        assert_eq!(face.surface().domain_v(), 0.0..=5.0);
+        assert_eq!(face.loops()[0].trims().len(), 4);
+        assert_eq!(
+            face.loops()[0]
+                .trims()
+                .iter()
+                .map(BrepTrim::trim_type)
+                .collect::<Vec<_>>(),
+            vec![
+                BrepTrimType::Boundary,
+                BrepTrimType::Boundary,
+                BrepTrimType::Boundary,
+                BrepTrimType::Singular,
+            ]
+        );
+        assert_eq!(face.loops()[0].trims()[3].iso(), SurfaceIso::West);
+        assert_eq!(
+            face.surface().evaluate(0.0, 0.0).unwrap(),
+            point(0.0, 0.0, 0.0)
+        );
+        assert_eq!(
+            face.surface().evaluate(4.0, 0.0).unwrap(),
+            point(4.0, 0.0, 0.0)
+        );
+        assert_eq!(
+            face.surface().evaluate(4.0, 5.0).unwrap(),
+            point(0.0, 3.0, 0.0)
+        );
+        assert_eq!(
+            face.surface().evaluate(0.0, 5.0).unwrap(),
+            point(0.0, 0.0, 0.0)
+        );
+
+        let trimmed = Brep::try_from_mesh(&source, true, Tolerance::DEFAULT).unwrap();
+        let face = &trimmed.faces()[0];
+        assert_eq!(face.loops()[0].trims().len(), 3);
+        assert_eq!(face.loops()[0].trims()[2].iso(), SurfaceIso::NotIso);
+        assert_eq!(
+            face.surface().evaluate(0.0, 5.0).unwrap(),
+            point(-4.0, 3.0, 0.0)
+        );
+        for brep in [&untrimmed, &trimmed] {
+            assert!((brep.area(Tolerance::DEFAULT).unwrap() - 6.0).abs() < 1.0e-12);
+            let mesh = brep.tessellate(1, Tolerance::DEFAULT).unwrap();
+            assert_eq!(mesh.face_count(), 1);
+            assert!(mesh.faces()[0].is_triangle());
+        }
+
+        let with_unused = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(9.0, 9.0, 9.0),
+            ],
+            vec![[2, 1, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let compacted = Brep::try_from_mesh(&with_unused, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            compacted
+                .vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ]
+        );
+    }
+
+    #[test]
+    fn mesh_to_nurbs_preserves_warped_quads_and_closed_shared_topology() {
+        let warped = TriangleMesh::try_new_faces(
+            vec![
+                point(10.0, 0.0, 0.0),
+                point(14.0, 0.0, 0.0),
+                point(14.0, 3.0, 2.0),
+                point(10.0, 3.0, 0.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let warped_brep = Brep::try_from_mesh(&warped, true, Tolerance::DEFAULT).unwrap();
+        let surface = warped_brep.faces()[0].surface();
+        assert_eq!(surface.domain_u(), 0.0..=20.0_f64.sqrt());
+        assert_eq!(surface.domain_v(), 0.0..=13.0_f64.sqrt());
+        assert_eq!(
+            surface
+                .evaluate(*surface.domain_u().end(), *surface.domain_v().end())
+                .unwrap(),
+            point(14.0, 3.0, 2.0)
+        );
+
+        let tetrahedron = TriangleMesh::try_new(
+            vec![
+                point(20.0, 0.0, 0.0),
+                point(24.0, 0.0, 0.0),
+                point(20.0, 4.0, 0.0),
+                point(20.0, 0.0, 4.0),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for trim_triangles in [false, true] {
+            let brep =
+                Brep::try_from_mesh(&tetrahedron, trim_triangles, Tolerance::DEFAULT).unwrap();
+            assert_eq!(brep.vertices().len(), 4);
+            assert_eq!(brep.edges().len(), 6);
+            assert_eq!(brep.faces().len(), 4);
+            assert!(brep.is_solid());
+            assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 64.0 / 6.0).abs() < 1.0e-10);
+        }
     }
 
     #[test]

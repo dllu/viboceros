@@ -14,10 +14,10 @@ use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
-    AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, Frame3, GeometryError,
-    LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_polylines,
+    AffineTransform3, Brep, BrepLoopType, BrepTrimType, Circle3, CircularArc3, CurveRef, Ellipse3,
+    Frame3, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -345,6 +345,12 @@ pub enum Operation {
         vertices: Vec<[f64; 3]>,
         faces: Vec<Vec<u32>>,
     },
+    MeshToNurb {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        trim_triangular_faces: bool,
+    },
     NurbsSurfaceMesh {
         id: String,
         degree_u: usize,
@@ -440,6 +446,7 @@ impl Operation {
             | Self::MeshSplitEdge { id, .. }
             | Self::MeshFillHole { id, .. }
             | Self::MeshFillHoles { id, .. }
+            | Self::MeshToNurb { id, .. }
             | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
@@ -1570,6 +1577,29 @@ fn execute(
                 }),
                 elapsed,
             )
+        }
+        Operation::MeshToNurb {
+            vertices,
+            faces,
+            trim_triangular_faces,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let (brep, elapsed) = measure(iterations, || {
+                Brep::try_from_mesh(
+                    black_box(&mesh),
+                    black_box(*trim_triangular_faces),
+                    tolerance,
+                )
+            })?;
+            (mesh_to_nurb_brep_value(&brep)?, elapsed)
         }
         Operation::NurbsSurfaceMesh {
             degree_u,
@@ -4369,6 +4399,91 @@ fn canonical_polygon_mesh_face_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
+fn mesh_to_nurb_brep_value(brep: &Brep) -> Result<Value, GeometryError> {
+    let faces = brep
+        .faces()
+        .iter()
+        .map(|face| {
+            let surface = face.surface();
+            let u = [*surface.domain_u().start(), *surface.domain_u().end()];
+            let v = [*surface.domain_v().start(), *surface.domain_v().end()];
+            let corners = [
+                surface.evaluate(u[0], v[0])?.to_array(),
+                surface.evaluate(u[1], v[0])?.to_array(),
+                surface.evaluate(u[1], v[1])?.to_array(),
+                surface.evaluate(u[0], v[1])?.to_array(),
+            ];
+            let loops = face
+                .loops()
+                .iter()
+                .map(|face_loop| {
+                    let trims = face_loop
+                        .trims()
+                        .iter()
+                        .map(|trim| {
+                            Ok(json!({
+                                "edge": trim.edge(),
+                                "end": trim.curve().end_point()?.to_array(),
+                                "iso": surface_iso_name(trim.iso()),
+                                "reversed": trim.is_reversed_3d(),
+                                "start": trim.curve().start_point()?.to_array(),
+                                "type": brep_trim_type_name(trim.trim_type()),
+                            }))
+                        })
+                        .collect::<Result<Vec<_>, GeometryError>>()?;
+                    Ok(json!({
+                        "trims": trims,
+                        "type": brep_loop_type_name(face_loop.loop_type()),
+                    }))
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            Ok(json!({
+                "corners": corners,
+                "degree": [surface.degree_u(), surface.degree_v()],
+                "loops": loops,
+                "reversed": face.is_reversed(),
+            }))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    Ok(json!({
+        "edge_count": brep.edges().len(),
+        "edges": brep.edges().iter().map(|edge| json!({
+            "domain": [*edge.curve().domain().start(), *edge.curve().domain().end()],
+            "vertices": edge.vertices(),
+        })).collect::<Vec<_>>(),
+        "faces": faces,
+        "is_solid": brep.is_solid(),
+        "vertex_count": brep.vertices().len(),
+        "vertices": brep.vertices().iter().map(|vertex| vertex.point().to_array()).collect::<Vec<_>>(),
+    }))
+}
+
+const fn brep_loop_type_name(loop_type: BrepLoopType) -> &'static str {
+    match loop_type {
+        BrepLoopType::Outer => "Outer",
+        BrepLoopType::Inner => "Inner",
+    }
+}
+
+const fn brep_trim_type_name(trim_type: BrepTrimType) -> &'static str {
+    match trim_type {
+        BrepTrimType::Boundary => "Boundary",
+        BrepTrimType::Mated => "Mated",
+        BrepTrimType::Seam => "Seam",
+        BrepTrimType::Singular => "Singular",
+    }
+}
+
+const fn surface_iso_name(iso: SurfaceIso) -> &'static str {
+    match iso {
+        SurfaceIso::NotIso => "None",
+        SurfaceIso::South => "South",
+        SurfaceIso::East => "East",
+        SurfaceIso::North => "North",
+        SurfaceIso::West => "West",
+    }
+}
+
 fn mesh_fill_hole_value(
     mesh: &TriangleMesh,
     source_vertex_count: usize,
@@ -5473,6 +5588,49 @@ mod tests {
                 ]],
                 "quad_count": 1,
                 "triangle_count": 0,
+            })
+        );
+    }
+
+    #[test]
+    fn converts_mesh_triangle_to_trimmed_nurbs_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshToNurb {
+            id: "trimmed-triangle".to_owned(),
+            vertices: vec![[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 3.0, 0.0]],
+            faces: vec![vec![0, 1, 2]],
+            trim_triangular_faces: true,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "edge_count": 3,
+                "edges": [
+                    {"domain": [0.0, 1.0], "vertices": [0, 1]},
+                    {"domain": [0.0, 1.0], "vertices": [0, 2]},
+                    {"domain": [0.0, 1.0], "vertices": [1, 2]},
+                ],
+                "faces": [{
+                    "corners": [
+                        [0.0, 0.0, 0.0],
+                        [4.0, 0.0, 0.0],
+                        [0.0, 3.0, 0.0],
+                        [-4.0, 3.0, 0.0],
+                    ],
+                    "degree": [1, 1],
+                    "loops": [{
+                        "trims": [
+                            {"edge": 0, "end": [4.0, 0.0], "iso": "South", "reversed": false, "start": [0.0, 0.0], "type": "Boundary"},
+                            {"edge": 2, "end": [4.0, 5.0], "iso": "East", "reversed": false, "start": [4.0, 0.0], "type": "Boundary"},
+                            {"edge": 1, "end": [0.0, 0.0], "iso": "None", "reversed": true, "start": [4.0, 5.0], "type": "Boundary"},
+                        ],
+                        "type": "Outer",
+                    }],
+                    "reversed": false,
+                }],
+                "is_solid": false,
+                "vertex_count": 3,
+                "vertices": [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 3.0, 0.0]],
             })
         );
     }

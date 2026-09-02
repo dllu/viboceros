@@ -2425,6 +2425,7 @@ impl VibocerosApp {
         let mut cull_unused_mesh_vertices_clicked = false;
         let mut split_disjoint_mesh_clicked = false;
         let mut mesh_clicked = false;
+        let mut mesh_to_nurb_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
         let mut collapse_mesh_edge_clicked = false;
@@ -2626,6 +2627,10 @@ impl VibocerosApp {
                 mesh_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Mesh NURBS"))
                     .on_hover_text("Create editable polygon meshes from selected NURBS objects")
+                    .clicked();
+                mesh_to_nurb_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Mesh → NURBS"))
+                    .on_hover_text("Duplicate selected mesh faces as degree-one NURBS B-reps")
                     .clicked();
                 triangulate_mesh_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Triangulate Mesh"))
@@ -2932,6 +2937,8 @@ impl VibocerosApp {
             self.execute_command("SplitDisjointMesh");
         } else if mesh_clicked {
             self.execute_command("Mesh");
+        } else if mesh_to_nurb_clicked {
+            self.execute_command("MeshToNURB");
         } else if triangulate_mesh_clicked {
             self.execute_command("TriangulateMesh");
         } else if swap_mesh_edge_clicked {

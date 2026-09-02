@@ -65,6 +65,10 @@ def _xyz(value):
     return [float(value.X), float(value.Y), float(value.Z)]
 
 
+def _xy(value):
+    return [float(value.X), float(value.Y)]
+
+
 def _finite(value, context):
     number = float(value)
     if math.isnan(number) or math.isinf(number):
@@ -285,6 +289,59 @@ def _canonical_polygon_mesh_face_value(mesh):
         "faces": faces,
         "quad_count": quad_count,
         "triangle_count": triangle_count,
+    }
+
+
+def _mesh_to_nurb_brep_value(brep):
+    faces = []
+    for face in brep.Faces:
+        surface = face.UnderlyingSurface()
+        domain_u = surface.Domain(0)
+        domain_v = surface.Domain(1)
+        loops = []
+        for loop in face.Loops:
+            trims = []
+            for trim in loop.Trims:
+                trims.append(
+                    {
+                        "edge": None if trim.Edge is None else int(trim.Edge.EdgeIndex),
+                        "end": _xy(trim.PointAtEnd),
+                        "iso": str(trim.IsoStatus),
+                        "reversed": bool(trim.IsReversed()),
+                        "start": _xy(trim.PointAtStart),
+                        "type": str(trim.TrimType),
+                    }
+                )
+            loops.append({"trims": trims, "type": str(loop.LoopType)})
+        faces.append(
+            {
+                "corners": [
+                    _xyz(surface.PointAt(domain_u.T0, domain_v.T0)),
+                    _xyz(surface.PointAt(domain_u.T1, domain_v.T0)),
+                    _xyz(surface.PointAt(domain_u.T1, domain_v.T1)),
+                    _xyz(surface.PointAt(domain_u.T0, domain_v.T1)),
+                ],
+                "degree": [int(surface.Degree(0)), int(surface.Degree(1))],
+                "loops": loops,
+                "reversed": bool(face.OrientationIsReversed),
+            }
+        )
+    return {
+        "edge_count": int(brep.Edges.Count),
+        "edges": [
+            {
+                "domain": [float(edge.Domain.T0), float(edge.Domain.T1)],
+                "vertices": [
+                    int(edge.StartVertex.VertexIndex),
+                    int(edge.EndVertex.VertexIndex),
+                ],
+            }
+            for edge in brep.Edges
+        ],
+        "faces": faces,
+        "is_solid": bool(brep.IsSolid),
+        "vertex_count": int(brep.Vertices.Count),
+        "vertices": [_xyz(vertex.Location) for vertex in brep.Vertices],
     }
 
 
@@ -4637,6 +4694,24 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, extract_non_manifold)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_to_nurb":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+        trimmed = bool(operation["trim_triangular_faces"])
+
+        def convert_mesh():
+            brep = Rhino.Geometry.Brep.CreateFromMesh(source, trimmed)
+            if brep is None:
+                raise ValueError("could not convert mesh to B-rep")
+            try:
+                return _mesh_to_nurb_brep_value(brep)
+            finally:
+                brep.Dispose()
+
+        try:
+            return _measure(iterations, convert_mesh)
         finally:
             source.Dispose()
 
