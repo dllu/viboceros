@@ -95,6 +95,7 @@ enum InteractiveCommand {
     DupEdge {
         output_on_current_layer: bool,
     },
+    DupMeshHoleBoundary,
     ExtractIsocurve {
         direction: InteractiveIsocurveDirection,
         ignore_trims: bool,
@@ -176,6 +177,7 @@ impl InteractiveCommand {
             Self::ExtractSrf { .. } => "ExtractSrf",
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
+            Self::DupMeshHoleBoundary => "DupMeshHoleBoundary",
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -281,6 +283,9 @@ impl InteractiveCommand {
             }
             Self::DupEdge { .. } => {
                 "DupEdge: pick an edge location on a selected surface, B-rep, or mesh (Esc to cancel)"
+            }
+            Self::DupMeshHoleBoundary => {
+                "DupMeshHoleBoundary: pick a closed naked mesh boundary (Esc to cancel)"
             }
             Self::ExtractIsocurve { .. } => {
                 "ExtractIsocurve: pick a location on the selected surface or B-rep face (Esc to cancel)"
@@ -439,6 +444,7 @@ impl InteractiveCommand {
             | Self::ExtractSrf { .. }
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
+            | Self::DupMeshHoleBoundary
             | Self::ExtractIsocurve { .. }
             | Self::Move { start: None }
             | Self::Copy { start: None }
@@ -854,6 +860,14 @@ impl VibocerosApp {
             InteractiveCommand::DupEdge {
                 output_on_current_layer,
             }
+        } else if matches!(
+            normalized.as_str(),
+            "dupmeshholeboundary" | "duplicatemeshholeboundary"
+        ) {
+            if !arguments.is_empty() {
+                return false;
+            }
+            InteractiveCommand::DupMeshHoleBoundary
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
             let mut ignore_trims = false;
@@ -1121,6 +1135,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtractSrf { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
+                | InteractiveCommand::DupMeshHoleBoundary
                 | InteractiveCommand::ExtractIsocurve { .. }
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
@@ -1538,6 +1553,13 @@ impl VibocerosApp {
                     } else {
                         "Input"
                     },
+                ));
+            }
+            InteractiveCommand::DupMeshHoleBoundary => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "DupMeshHoleBoundary {}",
+                    format_model_point(point)
                 ));
             }
             InteractiveCommand::ExtractIsocurve {
@@ -2037,6 +2059,7 @@ impl VibocerosApp {
         let mut extract_surface_clicked = false;
         let mut duplicate_face_border_clicked = false;
         let mut duplicate_edge_clicked = false;
+        let mut duplicate_mesh_hole_boundary_clicked = false;
         let mut duplicate_border_clicked = false;
         let mut extract_isocurve_clicked = false;
         let mut extract_all_isocurves_clicked = false;
@@ -2225,6 +2248,10 @@ impl VibocerosApp {
                 duplicate_edge_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Dup Edge"))
                     .on_hover_text("Pick a selected surface, B-rep, or mesh edge to duplicate")
+                    .clicked();
+                duplicate_mesh_hole_boundary_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Dup Mesh Hole"))
+                    .on_hover_text("Pick a closed naked boundary on a selected mesh to duplicate")
                     .clicked();
                 duplicate_border_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Dup Border"))
@@ -2429,6 +2456,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("DupFaceBorder");
         } else if duplicate_edge_clicked {
             self.try_start_interactive_command("DupEdge");
+        } else if duplicate_mesh_hole_boundary_clicked {
+            self.try_start_interactive_command("DupMeshHoleBoundary");
         } else if duplicate_border_clicked {
             self.execute_command("DupBorder");
         } else if extract_isocurve_clicked {
@@ -2718,6 +2747,7 @@ fn point_is_near_axis(
 mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
+    use viboceros_geometry::{MeshFace, TriangleMesh};
 
     fn test_app() -> VibocerosApp {
         VibocerosApp {
@@ -2736,6 +2766,29 @@ mod tests {
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    fn rectangular_annulus_mesh(tolerance: Tolerance) -> TriangleMesh {
+        TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, 10.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(3.0, 3.0, 0.0),
+                point(7.0, 3.0, 0.0),
+                point(7.0, 7.0, 0.0),
+                point(3.0, 7.0, 0.0),
+            ],
+            vec![
+                MeshFace::Quad([0, 1, 5, 4]),
+                MeshFace::Quad([1, 2, 6, 5]),
+                MeshFace::Quad([2, 3, 7, 6]),
+                MeshFace::Quad([3, 0, 4, 7]),
+            ],
+            tolerance,
+        )
+        .unwrap()
     }
 
     #[test]
@@ -3299,6 +3352,43 @@ mod tests {
     }
 
     #[test]
+    fn interactive_duplicate_mesh_hole_boundary_uses_one_boundary_pick() {
+        let mut app = test_app();
+        let mesh = rectangular_annulus_mesh(app.document.tolerance());
+        let expected = mesh
+            .boundary_polylines(app.document.tolerance())
+            .unwrap()
+            .into_iter()
+            .find(|boundary| {
+                app.document
+                    .tolerance()
+                    .approx_eq(boundary.length().unwrap(), 16.0)
+            })
+            .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("DuplicateMeshHoleBoundary"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::DupMeshHoleBoundary)
+        );
+        assert!(app.command_log.back().unwrap().contains("closed naked"));
+        app.accept_drafting_point(point(3.1, 5.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.object(source).is_some());
+        assert!(!app.document.is_selected(source));
+        assert_eq!(app.document.objects().len(), 2);
+        let output = app.document.selected_objects().next().unwrap();
+        assert!(matches!(output.geometry(), Geometry::Polyline(boundary) if boundary == &expected));
+        assert_eq!(app.document.undo_label(), Some("DupMeshHoleBoundary"));
+        assert!(!app.try_start_interactive_command("DupMeshHoleBoundary Boundaries=All"));
+    }
+
+    #[test]
     fn interactive_extract_isocurve_uses_one_surface_location_pick() {
         let mut app = test_app();
         app.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
@@ -3580,6 +3670,7 @@ mod tests {
             "ExtractSrf",
             "DupEdge",
             "DupFaceBorder",
+            "DupMeshHoleBoundary",
             "ExtractIsocurve",
             "Revolve",
         ] {

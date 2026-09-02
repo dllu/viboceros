@@ -197,6 +197,26 @@ impl Polyline3 {
         Ok(length)
     }
 
+    /// Returns the point on this polyline nearest to `target`, breaking exact
+    /// ties by segment order.
+    pub fn closest_point(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Point3, GeometryError> {
+        let mut best = None;
+        for segment in self.segments() {
+            let point = segment.closest_point(target, tolerance)?;
+            let distance = point.distance_to(target)?;
+            if best.is_none_or(|(best_distance, _)| distance < best_distance) {
+                best = Some((distance, point));
+            }
+        }
+        Ok(best
+            .expect("a validated polyline has at least one segment")
+            .1)
+    }
+
     pub fn reversed(&self) -> Self {
         let mut vertices = self.vertices.clone();
         vertices.reverse();
@@ -871,6 +891,31 @@ mod tests {
             ]
         );
         assert_eq!(reversed.reversed(), polyline);
+    }
+
+    #[test]
+    fn closest_point_checks_every_segment_and_clamps_at_ends() {
+        let polyline = Polyline3::try_new(
+            vec![
+                point(0.0, 0.0, 1.0),
+                point(4.0, 0.0, 1.0),
+                point(4.0, 3.0, 1.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            polyline
+                .closest_point(point(3.0, 2.0, 7.0), Tolerance::DEFAULT)
+                .unwrap(),
+            point(4.0, 2.0, 1.0)
+        );
+        assert_eq!(
+            polyline
+                .closest_point(point(-5.0, -2.0, 1.0), Tolerance::DEFAULT)
+                .unwrap(),
+            point(0.0, 0.0, 1.0)
+        );
     }
 
     #[test]

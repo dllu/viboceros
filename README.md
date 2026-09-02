@@ -39,6 +39,7 @@ BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
 DupBorder OutputLayer=Current
 DupEdge Edges=2,0 OutputLayer=Input
 DupFaceBorder Faces=2,0 OutputLayer=Input
+DupMeshHoleBoundary Boundaries=All
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
@@ -233,6 +234,12 @@ collapsed singular sides are omitted, B-rep rational edge curves stay exact,
 and mesh indices follow exact-location-welded topology order. Omit the selector
 for a one-pick viewport workflow. Fresh selected results default to the current
 layer; `OutputLayer=Input` uses each source layer.
+`DupMeshHoleBoundary` duplicates the closed naked loop nearest a model-space
+point on selected polygon meshes, or accepts ordered zero-based
+`Boundaries=0,2`/`Boundaries=All` selectors for every selected mesh. Boundaries
+use exact-location-welded topology, remain closed polylines in deterministic
+topology order, and fresh selected results use the current layer. Omit the
+selector for a one-pick viewport workflow.
 `DupFaceBorder` duplicates the exact non-seam border of the nearest selected
 surface or B-rep face, or accepts ordered zero-based `Faces=0,2`/`Faces=All`
 selectors. Omit the selector for a one-pick viewport workflow. Linear edge
