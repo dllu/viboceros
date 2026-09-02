@@ -208,6 +208,11 @@ pub enum GeometryError {
     #[error("a polygon mesh contains too many faces")]
     TooManyMeshFaces,
 
+    #[error(
+        "a mesh face-angle interval must be finite and satisfy 0 <= greater than < less than <= pi"
+    )]
+    InvalidMeshFaceAngleInterval,
+
     #[error("triangle {triangle} references missing vertex index {vertex}")]
     InvalidTriangleIndex { triangle: usize, vertex: u32 },
 

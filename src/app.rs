@@ -2049,6 +2049,7 @@ impl VibocerosApp {
         let mut combine_mesh_vertices_clicked = false;
         let mut cull_unused_mesh_vertices_clicked = false;
         let mut split_disjoint_mesh_clicked = false;
+        let mut extract_mesh_edges_clicked = false;
         let mut extract_non_manifold_clicked = false;
         let mut extract_duplicate_faces_clicked = false;
         let mut close_curve_clicked = false;
@@ -2208,6 +2209,10 @@ impl VibocerosApp {
                 split_disjoint_mesh_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Split Pieces"))
                     .on_hover_text("Separate edge-disconnected parts of selected meshes")
+                    .clicked();
+                extract_mesh_edges_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Extract Mesh Edges"))
+                    .on_hover_text("Extract naked and unwelded edges from selected meshes")
                     .clicked();
                 extract_non_manifold_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Non-Manifold"))
@@ -2436,6 +2441,8 @@ impl VibocerosApp {
             self.execute_command("CullUnusedMeshVertices");
         } else if split_disjoint_mesh_clicked {
             self.execute_command("SplitDisjointMesh");
+        } else if extract_mesh_edges_clicked {
+            self.execute_command("ExtractMeshEdges");
         } else if extract_non_manifold_clicked {
             self.execute_command("ExtractNonManifoldMeshEdges");
         } else if extract_duplicate_faces_clicked {

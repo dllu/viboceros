@@ -11,9 +11,9 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, CircularArc3,
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
-    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve,
-    NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshEdgeFilter, MeshFaceExtraction,
+    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -291,6 +291,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(SplitDisjointMeshCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExtractMeshEdgesCommand)
             .expect("unique built-in command");
         registry
             .register(ExtractNonManifoldMeshEdgesCommand)
@@ -5609,6 +5612,160 @@ struct SplitMeshInput {
     pieces: Vec<TriangleMesh>,
 }
 
+const EXTRACT_MESH_EDGES_USAGE: &str = "ExtractMeshEdges [ExtractBy=Unwelded|BreakAngle|Naked] [GreaterThanAngle=degrees] [LessThanAngle=degrees] [JoinResults=Yes|No]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ExtractMeshEdgeKind {
+    Unwelded,
+    BreakAngle,
+    Naked,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct ExtractMeshEdgesOptions {
+    kind: ExtractMeshEdgeKind,
+    greater_than_degrees: Real,
+    less_than_degrees: Real,
+    join_results: bool,
+}
+
+impl ExtractMeshEdgesOptions {
+    fn filter(self) -> MeshEdgeFilter {
+        match self.kind {
+            ExtractMeshEdgeKind::Unwelded => MeshEdgeFilter::Unwelded,
+            ExtractMeshEdgeKind::Naked => MeshEdgeFilter::Naked,
+            ExtractMeshEdgeKind::BreakAngle => MeshEdgeFilter::FaceAngle {
+                greater_than_radians: self.greater_than_degrees.to_radians(),
+                less_than_radians: self.less_than_degrees.to_radians(),
+            },
+        }
+    }
+}
+
+struct ExtractMeshEdgesCommand;
+
+impl Command for ExtractMeshEdgesCommand {
+    fn name(&self) -> &'static str {
+        "ExtractMeshEdges"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_extract_mesh_edges_arguments(arguments)?;
+        let mut staged = Vec::new();
+        let mut source_count = 0_usize;
+        for object in document.selected_objects() {
+            let Geometry::Mesh(mesh) = object.geometry() else {
+                return Err(CommandError::UnsupportedExtractMeshEdgesGeometry);
+            };
+            source_count += 1;
+            if options.join_results {
+                staged.extend(
+                    mesh.filtered_edge_polylines(options.filter(), document.tolerance())?
+                        .into_iter()
+                        .map(Geometry::Polyline),
+                );
+            } else {
+                staged.extend(
+                    mesh.filtered_edge_lines(options.filter(), document.tolerance())?
+                        .into_iter()
+                        .map(Geometry::Line),
+                );
+            }
+            if staged.len() > MAX_SPAN_OUTPUT_OBJECTS {
+                return Err(too_many_span_outputs("ExtractMeshEdges"));
+            }
+        }
+        if source_count == 0 {
+            return Err(CommandError::NoObjectsSelected);
+        }
+        if staged.is_empty() {
+            return Err(CommandError::NoExtractableMeshEdges);
+        }
+
+        let output_count = staged.len();
+        let layer = document.current_layer_id();
+        let mut output_ids = Vec::with_capacity(output_count);
+        for geometry in staged {
+            output_ids.push(
+                document
+                    .add_geometry_with_attributes(geometry, ObjectAttributes::on_layer(layer))?,
+            );
+        }
+        document.select_objects_direct(output_ids, SelectionMode::Add)?;
+        Ok(format!(
+            "Extracted {output_count} mesh edge curve(s) from {source_count} mesh(es)"
+        ))
+    }
+}
+
+fn parse_extract_mesh_edges_arguments(
+    arguments: &[&str],
+) -> Result<ExtractMeshEdgesOptions, CommandError> {
+    let mut options = ExtractMeshEdgesOptions {
+        kind: ExtractMeshEdgeKind::Unwelded,
+        greater_than_degrees: 0.0,
+        less_than_degrees: 180.0,
+        join_results: false,
+    };
+    let mut extract_by_seen = false;
+    let mut greater_seen = false;
+    let mut less_seen = false;
+    let mut join_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_MESH_EDGES_USAGE))?;
+            (argument, *value, 2)
+        };
+        if option_name_eq(name, "ExtractBy") && !extract_by_seen {
+            let value = value.trim_start_matches('_');
+            options.kind = if value.eq_ignore_ascii_case("Unwelded") {
+                ExtractMeshEdgeKind::Unwelded
+            } else if value.eq_ignore_ascii_case("BreakAngle") {
+                ExtractMeshEdgeKind::BreakAngle
+            } else if value.eq_ignore_ascii_case("Naked") {
+                ExtractMeshEdgeKind::Naked
+            } else {
+                return Err(CommandError::Usage(EXTRACT_MESH_EDGES_USAGE));
+            };
+            extract_by_seen = true;
+        } else if (option_name_eq(name, "GreaterThanAngle") || option_name_eq(name, "GreaterThan"))
+            && !greater_seen
+        {
+            options.greater_than_degrees = parse_finite_real(value)?;
+            greater_seen = true;
+        } else if (option_name_eq(name, "LessThanAngle") || option_name_eq(name, "LessThan"))
+            && !less_seen
+        {
+            options.less_than_degrees = parse_finite_real(value)?;
+            less_seen = true;
+        } else if option_name_eq(name, "JoinResults") && !join_seen {
+            options.join_results =
+                parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_MESH_EDGES_USAGE))?;
+            join_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTRACT_MESH_EDGES_USAGE));
+        }
+        index += consumed;
+    }
+    if (greater_seen || less_seen) && options.kind != ExtractMeshEdgeKind::BreakAngle {
+        return Err(CommandError::Usage(EXTRACT_MESH_EDGES_USAGE));
+    }
+    if options.kind == ExtractMeshEdgeKind::BreakAngle
+        && !(options.greater_than_degrees >= 0.0
+            && options.greater_than_degrees < options.less_than_degrees
+            && options.less_than_degrees <= 180.0)
+    {
+        return Err(GeometryError::InvalidMeshFaceAngleInterval.into());
+    }
+    Ok(options)
+}
+
 const EXTRACT_NON_MANIFOLD_USAGE: &str =
     "ExtractNonManifoldMeshEdges [ExtractHangingFacesOnly=Yes|No] [MinimumFaceCount=count]";
 
@@ -10178,6 +10335,12 @@ pub enum CommandError {
     #[error("none of the selected meshes contains multiple edge-connected pieces")]
     NoDisjointMeshes,
 
+    #[error("ExtractMeshEdges supports selected polygon meshes only")]
+    UnsupportedExtractMeshEdgesGeometry,
+
+    #[error("none of the selected meshes has an edge matching the extraction filter")]
+    NoExtractableMeshEdges,
+
     #[error("ExtractNonManifoldMeshEdges supports selected meshes only")]
     UnsupportedExtractNonManifoldGeometry,
 
@@ -10376,7 +10539,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -12603,6 +12766,212 @@ mod tests {
             connected_only.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn extract_mesh_edges_defaults_to_unwelded_lines_with_fresh_attributes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Input").unwrap();
+        let input_layer = document.current_layer_id();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let expected = mesh
+            .filtered_edge_lines(MeshEdgeFilter::Unwelded, document.tolerance())
+            .unwrap();
+        assert_eq!(expected.len(), 5);
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::Mesh(mesh),
+                ObjectAttributes::on_layer(input_layer)
+                    .with_name("Unwelded source")
+                    .with_object_color(ColorRgb::new(17, 83, 149)),
+            )
+            .unwrap();
+        let source_group = document
+            .add_group(Some("Source group".to_owned()), [source])
+            .unwrap();
+        registry.execute(&mut document, "Layer New Output").unwrap();
+        let output_layer = document.current_layer_id();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "ExtractMeshEdges").unwrap(),
+            "Extracted 5 mesh edge curve(s) from 1 mesh(es)"
+        );
+        assert!(document.is_selected(source));
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 5);
+        for (output, expected) in outputs.iter().zip(expected) {
+            assert!(document.is_selected(output.id()));
+            assert_eq!(output.attributes().layer_id(), output_layer);
+            assert_eq!(output.attributes().name(), None);
+            assert_eq!(output.attributes().color_source(), ObjectColorSource::Layer);
+            assert!(matches!(output.geometry(), Geometry::Line(line) if line == &expected));
+        }
+        assert_eq!(document.selected_object_count(), 6);
+        assert_eq!(
+            document
+                .group(source_group)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![source]
+        );
+        assert_eq!(document.undo_label(), Some("ExtractMeshEdges"));
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.is_selected(source));
+    }
+
+    #[test]
+    fn extract_mesh_edges_joins_naked_loops_and_filters_face_angles() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let flat = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let flat_id = document.add_geometry(Geometry::Mesh(flat)).unwrap();
+        document
+            .select_objects_direct([flat_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshEdges ExtractBy=Naked JoinResults=Yes"
+                )
+                .unwrap(),
+            "Extracted 1 mesh edge curve(s) from 1 mesh(es)"
+        );
+        let Geometry::Polyline(boundary) = document.objects().last().unwrap().geometry() else {
+            panic!("joined naked edges must form a polyline")
+        };
+        assert!(boundary.is_closed());
+        assert_eq!(boundary.segment_count(), 4);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let folded = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(14.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 3.0).unwrap(),
+            ],
+            vec![[0, 1, 2], [0, 3, 1]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let expected = folded
+            .filtered_edge_lines(
+                MeshEdgeFilter::FaceAngle {
+                    greater_than_radians: 89.0_f64.to_radians(),
+                    less_than_radians: 91.0_f64.to_radians(),
+                },
+                document.tolerance(),
+            )
+            .unwrap();
+        let folded_id = document.add_geometry(Geometry::Mesh(folded)).unwrap();
+        document
+            .select_objects_direct([folded_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractMeshEdges ExtractBy=BreakAngle GreaterThanAngle=89 LessThanAngle=91 JoinResults=No"
+                )
+                .unwrap(),
+            "Extracted 1 mesh edge curve(s) from 1 mesh(es)"
+        );
+        assert_eq!(expected.len(), 1);
+        assert!(
+            matches!(document.objects().last().unwrap().geometry(), Geometry::Line(line) if line == &expected[0])
+        );
+        assert!(document.is_selected(folded_id));
+        assert!(!document.is_selected(flat_id));
+    }
+
+    #[test]
+    fn extract_mesh_edges_rejects_empty_unsupported_and_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshEdges"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        let line = document.objects().next().unwrap().id();
+        document
+            .select_objects_direct([line], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshEdges"),
+            Err(CommandError::UnsupportedExtractMeshEdgesGeometry)
+        ));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let closed = TriangleMesh::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [0, 3, 2], [1, 2, 3]],
+            document.tolerance(),
+        )
+        .unwrap();
+        let closed_id = document.add_geometry(Geometry::Mesh(closed)).unwrap();
+        document
+            .select_objects_direct([closed_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractMeshEdges"),
+            Err(CommandError::NoExtractableMeshEdges)
+        ));
+        for invalid in [
+            "ExtractMeshEdges ExtractBy=Creases",
+            "ExtractMeshEdges ExtractBy=Naked GreaterThanAngle=10",
+            "ExtractMeshEdges ExtractBy=BreakAngle GreaterThanAngle=-1",
+            "ExtractMeshEdges ExtractBy=BreakAngle GreaterThanAngle=30 LessThanAngle=30",
+            "ExtractMeshEdges ExtractBy=BreakAngle LessThanAngle=181",
+            "ExtractMeshEdges ExtractBy=BreakAngle GreaterThanAngle=nan",
+            "ExtractMeshEdges JoinResults=Maybe",
+            "ExtractMeshEdges ExtractBy=Naked ExtractBy=Unwelded",
+            "ExtractMeshEdges extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.objects().len(), 2);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
     }
 
     #[test]

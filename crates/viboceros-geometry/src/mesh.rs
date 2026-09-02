@@ -17,6 +17,21 @@ pub struct MeshTopology {
     closed: bool,
 }
 
+/// Selects topology edges for mesh-curve extraction.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum MeshEdgeFilter {
+    /// Edges used by exactly one polygon face.
+    Naked,
+    /// Naked edges and coincident seams whose faces use distinct raw vertices.
+    Unwelded,
+    /// Edges whose greatest incident-face normal angle lies strictly inside
+    /// this radian interval.
+    FaceAngle {
+        greater_than_radians: Real,
+        less_than_radians: Real,
+    },
+}
+
 impl MeshTopology {
     pub const fn topological_vertex_count(self) -> usize {
         self.topological_vertex_count
@@ -341,6 +356,63 @@ impl TriangleMesh {
                 )
             })
             .collect()
+    }
+
+    /// Returns selected exact-location topology edges as canonical lines.
+    ///
+    /// [`MeshEdgeFilter::Unwelded`] follows Rhino/OpenNURBS terminology: a
+    /// naked edge is included, and an interior seam is included only when all
+    /// incident faces use distinct raw vertex indices at both endpoints.
+    pub fn filtered_edge_lines(
+        &self,
+        filter: MeshEdgeFilter,
+        tolerance: Tolerance,
+    ) -> Result<Vec<LineSegment>, GeometryError> {
+        validate_mesh_edge_filter(filter)?;
+        let data = self.topology_data();
+        let face_normals = matches!(filter, MeshEdgeFilter::FaceAngle { .. })
+            .then(|| self.polygon_face_normals())
+            .transpose()?;
+        data.edges
+            .iter()
+            .filter(|(_, incidence)| {
+                mesh_edge_matches_filter(incidence, filter, face_normals.as_deref())
+            })
+            .map(|(&(first, second), _)| {
+                LineSegment::try_new(
+                    data.topological_points[first],
+                    data.topological_points[second],
+                    tolerance,
+                )
+            })
+            .collect()
+    }
+
+    /// Joins selected topology edges into deterministic, edge-exact trails.
+    ///
+    /// Each selected edge appears once. An Euler trail is used when a
+    /// connected network has zero or two odd vertices; more highly branched
+    /// networks are decomposed into the minimum number of open trails by
+    /// temporarily pairing their odd vertices.
+    pub fn filtered_edge_polylines(
+        &self,
+        filter: MeshEdgeFilter,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Polyline3>, GeometryError> {
+        validate_mesh_edge_filter(filter)?;
+        let data = self.topology_data();
+        let face_normals = matches!(filter, MeshEdgeFilter::FaceAngle { .. })
+            .then(|| self.polygon_face_normals())
+            .transpose()?;
+        let edges = data
+            .edges
+            .iter()
+            .filter_map(|(&(first, second), incidence)| {
+                mesh_edge_matches_filter(incidence, filter, face_normals.as_deref())
+                    .then_some([first, second])
+            })
+            .collect::<Vec<_>>();
+        topology_edge_polylines(&data.topological_points, &edges, tolerance)
     }
 
     /// Returns each exact-location-welded naked border as a polyline.
@@ -822,6 +894,22 @@ impl TriangleMesh {
         }
     }
 
+    fn polygon_face_normals(&self) -> Result<Vec<UnitVector3>, GeometryError> {
+        self.faces
+            .iter()
+            .map(|face| match *face {
+                MeshFace::Triangle([a, b, c]) => self.vertices[a as usize]
+                    .vector_to(self.vertices[b as usize])?
+                    .cross(self.vertices[a as usize].vector_to(self.vertices[c as usize])?)?
+                    .normalized_nonzero(),
+                MeshFace::Quad([a, b, c, d]) => self.vertices[a as usize]
+                    .vector_to(self.vertices[c as usize])?
+                    .cross(self.vertices[b as usize].vector_to(self.vertices[d as usize])?)?
+                    .normalized_nonzero(),
+            })
+            .collect()
+    }
+
     pub fn face_normal(&self, index: usize) -> Result<UnitVector3, GeometryError> {
         let points = self
             .triangle_points(index)
@@ -946,6 +1034,217 @@ impl TriangleMesh {
             .collect::<Result<_, _>>()?;
         Self::try_new_faces(vertices, self.faces.clone(), tolerance)
     }
+}
+
+fn validate_mesh_edge_filter(filter: MeshEdgeFilter) -> Result<(), GeometryError> {
+    let MeshEdgeFilter::FaceAngle {
+        greater_than_radians,
+        less_than_radians,
+    } = filter
+    else {
+        return Ok(());
+    };
+    if greater_than_radians.is_finite()
+        && less_than_radians.is_finite()
+        && greater_than_radians >= 0.0
+        && greater_than_radians < less_than_radians
+        && less_than_radians <= std::f64::consts::PI
+    {
+        Ok(())
+    } else {
+        Err(GeometryError::InvalidMeshFaceAngleInterval)
+    }
+}
+
+fn mesh_edge_matches_filter(
+    incidence: &EdgeIncidence,
+    filter: MeshEdgeFilter,
+    face_normals: Option<&[UnitVector3]>,
+) -> bool {
+    match filter {
+        MeshEdgeFilter::Naked => incidence.count == 1,
+        MeshEdgeFilter::Unwelded => {
+            incidence.count == 1 || edge_uses_are_unwelded(&incidence.uses().collect::<Vec<_>>())
+        }
+        MeshEdgeFilter::FaceAngle {
+            greater_than_radians,
+            less_than_radians,
+        } => {
+            let uses = incidence.uses().collect::<Vec<_>>();
+            if uses.len() < 2 {
+                return false;
+            }
+            let normals = face_normals.expect("face-angle filtering computes polygon normals");
+            let mut greatest_angle: Real = 0.0;
+            for left in 0..uses.len() - 1 {
+                for right in left + 1..uses.len() {
+                    let cosine = normals[uses[left].face]
+                        .as_vector()
+                        .dot(normals[uses[right].face].as_vector())
+                        .expect("finite unit-vector dot products cannot fail")
+                        .clamp(-1.0, 1.0);
+                    greatest_angle = greatest_angle.max(cosine.acos());
+                }
+            }
+            greatest_angle > greater_than_radians && greatest_angle < less_than_radians
+        }
+    }
+}
+
+#[derive(Clone, Copy)]
+struct AugmentedTopologyEdge {
+    vertices: [usize; 2],
+    virtual_edge: bool,
+}
+
+fn topology_edge_polylines(
+    points: &[Point3],
+    edges: &[[usize; 2]],
+    tolerance: Tolerance,
+) -> Result<Vec<Polyline3>, GeometryError> {
+    let components = topology_edge_components(points.len(), edges);
+    let mut polylines = Vec::new();
+    for component in components {
+        let mut degrees = vec![0_usize; points.len()];
+        let mut augmented = component
+            .iter()
+            .map(|&edge| {
+                let vertices = edges[edge];
+                degrees[vertices[0]] += 1;
+                degrees[vertices[1]] += 1;
+                AugmentedTopologyEdge {
+                    vertices,
+                    virtual_edge: false,
+                }
+            })
+            .collect::<Vec<_>>();
+        let odd_vertices = degrees
+            .iter()
+            .enumerate()
+            .filter_map(|(vertex, &degree)| (degree % 2 == 1).then_some(vertex))
+            .collect::<Vec<_>>();
+        debug_assert_eq!(odd_vertices.len() % 2, 0);
+        for pair in odd_vertices.chunks_exact(2) {
+            augmented.push(AugmentedTopologyEdge {
+                vertices: [pair[0], pair[1]],
+                virtual_edge: true,
+            });
+        }
+
+        let start = odd_vertices
+            .first()
+            .copied()
+            .unwrap_or(augmented[0].vertices[0]);
+        let (walk_vertices, walk_edges) = topology_euler_circuit(points.len(), &augmented, start);
+        let virtual_positions = walk_edges
+            .iter()
+            .enumerate()
+            .filter_map(|(position, &edge)| augmented[edge].virtual_edge.then_some(position))
+            .collect::<Vec<_>>();
+        if virtual_positions.is_empty() {
+            polylines.push(Polyline3::try_new(
+                walk_vertices
+                    .into_iter()
+                    .map(|vertex| points[vertex])
+                    .collect(),
+                tolerance,
+            )?);
+            continue;
+        }
+
+        let edge_count = walk_edges.len();
+        for (position, &virtual_position) in virtual_positions.iter().enumerate() {
+            let stop = virtual_positions[(position + 1) % virtual_positions.len()];
+            let mut edge_position = (virtual_position + 1) % edge_count;
+            let mut trail = vec![points[walk_vertices[edge_position]]];
+            while edge_position != stop {
+                debug_assert!(!augmented[walk_edges[edge_position]].virtual_edge);
+                trail.push(points[walk_vertices[(edge_position + 1) % edge_count]]);
+                edge_position = (edge_position + 1) % edge_count;
+            }
+            if trail.len() >= 2 {
+                polylines.push(Polyline3::try_new(trail, tolerance)?);
+            }
+        }
+    }
+    Ok(polylines)
+}
+
+fn topology_edge_components(vertex_count: usize, edges: &[[usize; 2]]) -> Vec<Vec<usize>> {
+    let mut adjacency = vec![Vec::new(); vertex_count];
+    for (edge, vertices) in edges.iter().copied().enumerate() {
+        adjacency[vertices[0]].push(edge);
+        adjacency[vertices[1]].push(edge);
+    }
+    let mut visited = vec![false; edges.len()];
+    let mut components = Vec::new();
+    for first in 0..edges.len() {
+        if visited[first] {
+            continue;
+        }
+        visited[first] = true;
+        let mut pending = vec![first];
+        let mut component = Vec::new();
+        while let Some(edge) = pending.pop() {
+            component.push(edge);
+            for vertex in edges[edge] {
+                for &neighbor in &adjacency[vertex] {
+                    if !visited[neighbor] {
+                        visited[neighbor] = true;
+                        pending.push(neighbor);
+                    }
+                }
+            }
+        }
+        component.sort_unstable();
+        components.push(component);
+    }
+    components
+}
+
+fn topology_euler_circuit(
+    vertex_count: usize,
+    edges: &[AugmentedTopologyEdge],
+    start: usize,
+) -> (Vec<usize>, Vec<usize>) {
+    let mut adjacency = vec![Vec::new(); vertex_count];
+    for (edge, topology_edge) in edges.iter().enumerate() {
+        adjacency[topology_edge.vertices[0]].push(edge);
+        adjacency[topology_edge.vertices[1]].push(edge);
+    }
+    let mut next_adjacency = vec![0_usize; vertex_count];
+    let mut used = vec![false; edges.len()];
+    let mut vertex_stack = vec![start];
+    let mut edge_stack = Vec::new();
+    let mut reversed_vertices = Vec::with_capacity(edges.len() + 1);
+    let mut reversed_edges = Vec::with_capacity(edges.len());
+    while let Some(&vertex) = vertex_stack.last() {
+        while next_adjacency[vertex] < adjacency[vertex].len()
+            && used[adjacency[vertex][next_adjacency[vertex]]]
+        {
+            next_adjacency[vertex] += 1;
+        }
+        if let Some(&edge) = adjacency[vertex].get(next_adjacency[vertex]) {
+            used[edge] = true;
+            next_adjacency[vertex] += 1;
+            let [first, second] = edges[edge].vertices;
+            vertex_stack.push(if vertex == first { second } else { first });
+            edge_stack.push(edge);
+        } else {
+            reversed_vertices.push(
+                vertex_stack
+                    .pop()
+                    .expect("an Euler traversal has a current vertex"),
+            );
+            if let Some(edge) = edge_stack.pop() {
+                reversed_edges.push(edge);
+            }
+        }
+    }
+    debug_assert!(used.into_iter().all(|edge| edge));
+    reversed_vertices.reverse();
+    reversed_edges.reverse();
+    (reversed_vertices, reversed_edges)
 }
 
 fn validate_triangle(
@@ -1351,6 +1650,207 @@ mod tests {
                 .unwrap()
                 .is_empty()
         );
+    }
+
+    #[test]
+    fn filters_naked_unwelded_and_face_angle_edges() {
+        let welded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            welded
+                .filtered_edge_lines(MeshEdgeFilter::Naked, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            4
+        );
+        assert_eq!(
+            welded
+                .filtered_edge_lines(MeshEdgeFilter::Unwelded, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            4
+        );
+
+        let unwelded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            unwelded
+                .filtered_edge_lines(MeshEdgeFilter::Naked, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            4
+        );
+        assert_eq!(
+            unwelded
+                .filtered_edge_lines(MeshEdgeFilter::Unwelded, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            5
+        );
+
+        let folded = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(0.0, 0.0, 3.0),
+            ],
+            vec![[0, 1, 2], [0, 3, 1]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let around_right_angle = MeshEdgeFilter::FaceAngle {
+            greater_than_radians: 89.0_f64.to_radians(),
+            less_than_radians: 91.0_f64.to_radians(),
+        };
+        assert_eq!(
+            folded
+                .filtered_edge_lines(around_right_angle, Tolerance::DEFAULT)
+                .unwrap(),
+            vec![
+                LineSegment::try_new(
+                    point(0.0, 0.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap()
+            ]
+        );
+        for strict_boundary in [
+            MeshEdgeFilter::FaceAngle {
+                greater_than_radians: 90.0_f64.to_radians(),
+                less_than_radians: 91.0_f64.to_radians(),
+            },
+            MeshEdgeFilter::FaceAngle {
+                greater_than_radians: 89.0_f64.to_radians(),
+                less_than_radians: 90.0_f64.to_radians(),
+            },
+        ] {
+            assert!(
+                folded
+                    .filtered_edge_lines(strict_boundary, Tolerance::DEFAULT)
+                    .unwrap()
+                    .is_empty()
+            );
+        }
+    }
+
+    #[test]
+    fn joins_branched_unwelded_edges_into_edge_exact_euler_trails() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 3.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let polylines = mesh
+            .filtered_edge_polylines(MeshEdgeFilter::Unwelded, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(polylines.len(), 1);
+        assert_eq!(
+            polylines[0].vertices(),
+            &[
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 3.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 3.0, 0.0),
+                point(4.0, 3.0, 0.0),
+            ]
+        );
+        assert_eq!(polylines[0].segment_count(), 5);
+    }
+
+    #[test]
+    fn decomposes_many_odd_edge_vertices_without_losing_edges() {
+        let points = [
+            point(0.0, 0.0, 0.0),
+            point(-1.0, 0.0, 0.0),
+            point(0.0, 1.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(0.0, -1.0, 0.0),
+        ];
+        let edges = [[0, 1], [0, 2], [0, 3], [0, 4]];
+        let polylines = topology_edge_polylines(&points, &edges, Tolerance::DEFAULT).unwrap();
+        assert_eq!(polylines.len(), 2);
+        assert_eq!(
+            polylines
+                .iter()
+                .map(Polyline3::segment_count)
+                .sum::<usize>(),
+            edges.len()
+        );
+        let mut actual = BTreeSet::new();
+        for segment in polylines.iter().flat_map(Polyline3::segments) {
+            let mut vertices = [segment.start(), segment.end()].map(|point| {
+                points
+                    .iter()
+                    .position(|candidate| *candidate == point)
+                    .unwrap()
+            });
+            vertices.sort_unstable();
+            assert!(actual.insert(vertices));
+        }
+        assert_eq!(actual, edges.into_iter().collect());
+    }
+
+    #[test]
+    fn rejects_invalid_mesh_face_angle_intervals() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for (greater, less) in [
+            (-1.0, 1.0),
+            (1.0, 1.0),
+            (0.0, std::f64::consts::PI + 1.0),
+            (Real::NAN, 1.0),
+            (0.0, Real::INFINITY),
+        ] {
+            assert_eq!(
+                mesh.filtered_edge_lines(
+                    MeshEdgeFilter::FaceAngle {
+                        greater_than_radians: greater,
+                        less_than_radians: less,
+                    },
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidMeshFaceAngleInterval)
+            );
+        }
     }
 
     #[test]

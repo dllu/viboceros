@@ -125,6 +125,7 @@ ExtractPt OutputLayer=Input Output=PointCloud
 ExtractControlPolygon OutputLayer=Current
 ExtractSrf 2,1,0 Copy=No OutputLayer=Input
 ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
+ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -248,6 +249,14 @@ segments in a group until polycurves are available. Holes and disconnected
 borders remain separate, singular and seam trims are omitted, and fresh
 selected results default to the current layer (`OutputLayer=Input` is also
 supported).
+`ExtractMeshEdges` creates fresh current-layer curves from selected polygon
+meshes. `ExtractBy=Unwelded` (the default) includes both naked edges and seams
+whose coincident endpoints use distinct raw mesh vertices; `ExtractBy=Naked`
+keeps only one-face edges. `ExtractBy=BreakAngle` accepts strict
+`GreaterThanAngle=`/`LessThanAngle=` bounds in degrees. `JoinResults=Yes`
+combines each filtered edge network into deterministic edge-exact polylines,
+including branched Euler trails; the default emits individual lines. Sources
+and results remain selected, matching Rhino's extraction workflow.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the
