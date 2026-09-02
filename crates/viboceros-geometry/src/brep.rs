@@ -1047,20 +1047,60 @@ impl Brep {
         &self.faces
     }
 
-    /// Duplicates every face as an independent, validated one-face B-rep.
+    /// Duplicates a non-empty, unique face subset as one validated B-rep.
     ///
-    /// Source-order vertices and edges used by each face are compacted and
-    /// remapped. Edges formerly mated to another face become boundaries,
-    /// while multiple uses within the same loop remain seams. This matches
-    /// the topology produced by Rhino's `BrepFace.DuplicateFace`/`Explode`
-    /// path without approximating trims or underlying surfaces.
-    pub fn explode_faces(&self, tolerance: Tolerance) -> Result<Vec<Self>, GeometryError> {
-        let mut parts = Vec::with_capacity(self.faces.len());
-        for face in &self.faces {
-            let mut used_vertices = vec![false; self.vertices.len()];
-            let mut used_edges = vec![false; self.edges.len()];
-            let mut total_edge_uses = vec![0_usize; self.edges.len()];
-            let mut loop_edge_uses = Vec::with_capacity(face.loops.len());
+    /// Faces retain the requested order while vertices and edges retain source
+    /// order. Edges mated only to omitted faces become boundaries, seams remain
+    /// seams, and vertex tolerances are recomputed like OpenNURBS
+    /// `ON_Brep::DuplicateFaces`.
+    pub fn duplicate_faces(
+        &self,
+        face_indices: &[usize],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.copy_face_subset(face_indices, tolerance, true)
+    }
+
+    /// Copies a non-empty, unique face subset while preserving source vertex
+    /// tolerances, matching OpenNURBS `ON_Brep::SubBrep` and the remainder left
+    /// by Rhino's `ExtractSrf` command.
+    pub fn sub_brep(
+        &self,
+        face_indices: &[usize],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.copy_face_subset(face_indices, tolerance, false)
+    }
+
+    fn copy_face_subset(
+        &self,
+        face_indices: &[usize],
+        tolerance: Tolerance,
+        recompute_vertex_tolerances: bool,
+    ) -> Result<Self, GeometryError> {
+        if face_indices.is_empty() {
+            return Err(GeometryError::EmptyBrepFaceSubset);
+        }
+        let mut selected_faces = vec![false; self.faces.len()];
+        for &face in face_indices {
+            let Some(selected) = selected_faces.get_mut(face) else {
+                return Err(GeometryError::BrepFaceIndexOutOfRange {
+                    face,
+                    face_count: self.faces.len(),
+                });
+            };
+            if std::mem::replace(selected, true) {
+                return Err(GeometryError::DuplicateBrepFaceIndex { face });
+            }
+        }
+
+        let mut used_vertices = vec![false; self.vertices.len()];
+        let mut used_edges = vec![false; self.edges.len()];
+        let mut total_edge_uses = vec![0_usize; self.edges.len()];
+        let mut loop_edge_uses = Vec::with_capacity(face_indices.len());
+        for &face_index in face_indices {
+            let face = &self.faces[face_index];
+            let mut face_loop_edge_uses = Vec::with_capacity(face.loops.len());
             for face_loop in &face.loops {
                 let mut uses = BTreeMap::new();
                 for trim in &face_loop.trims {
@@ -1076,32 +1116,36 @@ impl Brep {
                         }
                     }
                 }
-                loop_edge_uses.push(uses);
+                face_loop_edge_uses.push(uses);
             }
+            loop_edge_uses.push(face_loop_edge_uses);
+        }
 
-            let mut vertex_map = vec![usize::MAX; self.vertices.len()];
-            let mut vertices =
-                Vec::with_capacity(used_vertices.iter().filter(|used| **used).count());
-            for (source, vertex) in self.vertices.iter().copied().enumerate() {
-                if used_vertices[source] {
-                    vertex_map[source] = vertices.len();
-                    vertices.push(vertex);
-                }
+        let mut vertex_map = vec![usize::MAX; self.vertices.len()];
+        let mut vertices = Vec::with_capacity(used_vertices.iter().filter(|used| **used).count());
+        for (source, vertex) in self.vertices.iter().copied().enumerate() {
+            if used_vertices[source] {
+                vertex_map[source] = vertices.len();
+                vertices.push(vertex);
             }
-            let mut edge_map = vec![usize::MAX; self.edges.len()];
-            let mut edges = Vec::with_capacity(used_edges.iter().filter(|used| **used).count());
-            for (source, edge) in self.edges.iter().enumerate() {
-                if used_edges[source] {
-                    edge_map[source] = edges.len();
-                    edges.push(BrepEdge::try_new(
-                        edge.vertices.map(|vertex| vertex_map[vertex]),
-                        edge.curve.clone(),
-                        edge.tolerance,
-                    )?);
-                }
+        }
+        let mut edge_map = vec![usize::MAX; self.edges.len()];
+        let mut edges = Vec::with_capacity(used_edges.iter().filter(|used| **used).count());
+        for (source, edge) in self.edges.iter().enumerate() {
+            if used_edges[source] {
+                edge_map[source] = edges.len();
+                edges.push(BrepEdge::try_new(
+                    edge.vertices.map(|vertex| vertex_map[vertex]),
+                    edge.curve.clone(),
+                    edge.tolerance,
+                )?);
             }
+        }
 
-            let loops = face
+        let mut faces = Vec::with_capacity(face_indices.len());
+        for (selection_index, &face_index) in face_indices.iter().enumerate() {
+            let source_face = &self.faces[face_index];
+            let loops = source_face
                 .loops
                 .iter()
                 .enumerate()
@@ -1114,7 +1158,7 @@ impl Brep {
                                 None => BrepTrimType::Singular,
                                 Some(edge) if total_edge_uses[edge] == 1 => BrepTrimType::Boundary,
                                 Some(edge)
-                                    if loop_edge_uses[loop_index]
+                                    if loop_edge_uses[selection_index][loop_index]
                                         .get(&edge)
                                         .is_some_and(|uses| *uses >= 2) =>
                                 {
@@ -1136,11 +1180,29 @@ impl Brep {
                     BrepLoop::try_new(face_loop.loop_type, trims)
                 })
                 .collect::<Result<Vec<_>, GeometryError>>()?;
-            let face = BrepFace::try_new(face.surface.clone(), face.reversed, loops)?;
-            recompute_duplicated_face_vertex_tolerances(&mut vertices, &edges, &face)?;
-            parts.push(Self::try_new(vertices, edges, vec![face], tolerance)?);
+            faces.push(BrepFace::try_new(
+                source_face.surface.clone(),
+                source_face.reversed,
+                loops,
+            )?);
         }
-        Ok(parts)
+        if recompute_vertex_tolerances {
+            recompute_duplicated_face_vertex_tolerances(&mut vertices, &edges, &faces)?;
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
+    /// Duplicates every face as an independent, validated one-face B-rep.
+    ///
+    /// Source-order vertices and edges used by each face are compacted and
+    /// remapped. Edges formerly mated to another face become boundaries,
+    /// while multiple uses within the same loop remain seams. This matches
+    /// the topology produced by Rhino's `BrepFace.DuplicateFace`/`Explode`
+    /// path without approximating trims or underlying surfaces.
+    pub fn explode_faces(&self, tolerance: Tolerance) -> Result<Vec<Self>, GeometryError> {
+        (0..self.faces.len())
+            .map(|face| self.duplicate_faces(&[face], tolerance))
+            .collect()
     }
 
     /// Returns every topological edge once, followed by the exact trimmed
@@ -1964,7 +2026,7 @@ impl Brep {
 fn recompute_duplicated_face_vertex_tolerances(
     vertices: &mut [BrepVertex],
     edges: &[BrepEdge],
-    face: &BrepFace,
+    faces: &[BrepFace],
 ) -> Result<(), GeometryError> {
     for (vertex_index, vertex) in vertices.iter_mut().enumerate() {
         let point = vertex.point;
@@ -1978,16 +2040,19 @@ fn recompute_duplicated_face_vertex_tolerances(
                 }
             }
         }
-        for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
-            if trim.edge.is_none() {
-                continue;
-            }
-            let parameters = [trim.curve.start_point()?, trim.curve.end_point()?];
-            for (end, parameter) in parameters.into_iter().enumerate() {
-                if trim.vertices[end] == vertex_index {
-                    maximum_distance = maximum_distance.max(
-                        point.distance_to(face.surface.evaluate(parameter.x(), parameter.y())?)?,
-                    );
+        for face in faces {
+            for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
+                if trim.edge.is_none() {
+                    continue;
+                }
+                let parameters = [trim.curve.start_point()?, trim.curve.end_point()?];
+                for (end, parameter) in parameters.into_iter().enumerate() {
+                    if trim.vertices[end] == vertex_index {
+                        maximum_distance =
+                            maximum_distance.max(point.distance_to(
+                                face.surface.evaluate(parameter.x(), parameter.y())?,
+                            )?);
+                    }
                 }
             }
         }
@@ -4072,6 +4137,86 @@ mod tests {
                 BrepTrimType::Boundary
             );
         }
+    }
+
+    #[test]
+    fn face_subsets_retain_requested_face_order_and_only_surviving_adjacency() {
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut box_brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        box_brep.vertices[0].tolerance = 7.0;
+
+        let adjacent = box_brep
+            .duplicate_faces(&[2, 0], Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(adjacent.faces().len(), 2);
+        assert_eq!(adjacent.edges().len(), 7);
+        assert_eq!(adjacent.vertices().len(), 6);
+        assert_eq!(adjacent.faces()[0].surface(), box_brep.faces()[2].surface());
+        assert_eq!(adjacent.faces()[1].surface(), box_brep.faces()[0].surface());
+        assert_eq!(
+            adjacent
+                .faces()
+                .iter()
+                .flat_map(|face| face.loops()[0].trims())
+                .filter(|trim| trim.trim_type() == BrepTrimType::Mated)
+                .count(),
+            2
+        );
+        assert!(
+            adjacent
+                .vertices()
+                .iter()
+                .all(|vertex| vertex.tolerance() == 0.0)
+        );
+
+        let remainder = box_brep
+            .sub_brep(&[1, 3, 4, 5], Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(remainder.faces().len(), 4);
+        assert_eq!(
+            remainder.faces()[0].surface(),
+            box_brep.faces()[1].surface()
+        );
+        assert!(
+            remainder
+                .vertices()
+                .iter()
+                .any(|vertex| vertex.point() == box_brep.vertices()[0].point()
+                    && vertex.tolerance() == 7.0)
+        );
+        assert!(
+            remainder
+                .faces()
+                .iter()
+                .flat_map(|face| face.loops()[0].trims())
+                .any(|trim| trim.trim_type() == BrepTrimType::Boundary)
+        );
+
+        assert_eq!(
+            box_brep.duplicate_faces(&[], Tolerance::DEFAULT),
+            Err(GeometryError::EmptyBrepFaceSubset)
+        );
+        assert_eq!(
+            box_brep.duplicate_faces(&[6], Tolerance::DEFAULT),
+            Err(GeometryError::BrepFaceIndexOutOfRange {
+                face: 6,
+                face_count: 6,
+            })
+        );
+        assert_eq!(
+            box_brep.duplicate_faces(&[1, 1], Tolerance::DEFAULT),
+            Err(GeometryError::DuplicateBrepFaceIndex { face: 1 })
+        );
     }
 
     #[test]

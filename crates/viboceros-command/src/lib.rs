@@ -251,6 +251,9 @@ impl CommandRegistry {
             .register(ExtractControlPolygonCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtractSurfaceCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtractIsocurveCommand)
             .expect("unique built-in command");
         registry
@@ -3345,6 +3348,323 @@ fn parse_extract_control_polygon_arguments(
     } else {
         Err(CommandError::Usage(EXTRACT_CONTROL_POLYGON_USAGE))
     }
+}
+
+const EXTRACT_SURFACE_USAGE: &str =
+    "ExtractSrf (point|Faces=All|Faces=0,2,...) [Copy=Yes|No] [OutputLayer=Input|Current]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ExtractSurfaceOutputLayer {
+    Input,
+    Current,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum ExtractSurfaceFaceSelection {
+    All,
+    Indices(Vec<usize>),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+enum ExtractSurfaceSelection {
+    Point(Point3),
+    Faces(ExtractSurfaceFaceSelection),
+}
+
+#[derive(Clone, Debug, PartialEq)]
+struct ExtractSurfaceOptions {
+    selection: ExtractSurfaceSelection,
+    copy: bool,
+    output_layer: ExtractSurfaceOutputLayer,
+}
+
+struct ExtractSurfaceCommand;
+
+struct ExtractSurfaceSource {
+    id: ObjectId,
+    geometry: Geometry,
+    attributes: ObjectAttributes,
+}
+
+struct ExtractSurfacePlan {
+    source: ObjectId,
+    extracted: Vec<Geometry>,
+    remainder: Option<Geometry>,
+    attributes: ObjectAttributes,
+}
+
+impl Command for ExtractSurfaceCommand {
+    fn name(&self) -> &'static str {
+        "ExtractSrf"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["ExtractSurface"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_extract_surface_arguments(arguments)?;
+        let sources = document
+            .selected_objects()
+            .map(|object| {
+                if !matches!(
+                    object.geometry(),
+                    Geometry::NurbsSurface(_) | Geometry::Brep(_)
+                ) {
+                    return Err(CommandError::UnsupportedExtractSurfaceGeometry);
+                }
+                Ok(ExtractSurfaceSource {
+                    id: object.id(),
+                    geometry: object.geometry().clone(),
+                    attributes: object.attributes().clone(),
+                })
+            })
+            .collect::<Result<Vec<_>, CommandError>>()?;
+        if sources.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let selections =
+            selected_extract_surface_faces(&sources, &options.selection, document.tolerance())?;
+        let mut output_count = 0_usize;
+        let mut plans = Vec::with_capacity(selections.len());
+        for (source_index, face_indices) in selections {
+            output_count = output_count
+                .checked_add(face_indices.len())
+                .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
+                .ok_or_else(|| too_many_span_outputs("ExtractSrf"))?;
+            let source = &sources[source_index];
+            let (extracted, remainder) = match &source.geometry {
+                Geometry::NurbsSurface(surface) => {
+                    debug_assert_eq!(face_indices, [0]);
+                    (vec![Geometry::NurbsSurface(surface.clone())], None)
+                }
+                Geometry::Brep(brep) => {
+                    let extracted = face_indices
+                        .iter()
+                        .map(|&face| {
+                            brep.duplicate_faces(&[face], document.tolerance())
+                                .map(Geometry::Brep)
+                        })
+                        .collect::<Result<Vec<_>, GeometryError>>()?;
+                    let remainder = if options.copy {
+                        None
+                    } else {
+                        let selected = face_indices.iter().copied().collect::<BTreeSet<_>>();
+                        let remainder_faces = (0..brep.faces().len())
+                            .filter(|face| !selected.contains(face))
+                            .collect::<Vec<_>>();
+                        if remainder_faces.is_empty() {
+                            None
+                        } else {
+                            Some(Geometry::Brep(
+                                brep.sub_brep(&remainder_faces, document.tolerance())?,
+                            ))
+                        }
+                    };
+                    (extracted, remainder)
+                }
+                _ => unreachable!("ExtractSrf sources were validated above"),
+            };
+            plans.push(ExtractSurfacePlan {
+                source: source.id,
+                extracted,
+                remainder,
+                attributes: source.attributes.clone(),
+            });
+        }
+        let source_count = plans.len();
+
+        if !options.copy {
+            document.replace_object_geometries(plans.iter().filter_map(|plan| {
+                plan.remainder
+                    .as_ref()
+                    .map(|remainder| (plan.source, remainder.clone()))
+            }))?;
+            for plan in &plans {
+                if plan.remainder.is_none() {
+                    document.delete_object(plan.source)?;
+                }
+            }
+        }
+
+        let current_layer = document.current_layer_id();
+        let mut output_ids = Vec::with_capacity(output_count);
+        for plan in plans {
+            let attributes = match options.output_layer {
+                ExtractSurfaceOutputLayer::Input => plan.attributes,
+                ExtractSurfaceOutputLayer::Current => plan.attributes.with_layer(current_layer),
+            };
+            for geometry in plan.extracted {
+                output_ids
+                    .push(document.add_geometry_with_attributes(geometry, attributes.clone())?);
+            }
+        }
+        replace_selection(document, output_ids.iter().copied())?;
+        Ok(format!(
+            "Extracted {} surface(s) from {} object(s); source faces {}",
+            output_ids.len(),
+            source_count,
+            if options.copy { "copied" } else { "removed" }
+        ))
+    }
+}
+
+fn selected_extract_surface_faces(
+    sources: &[ExtractSurfaceSource],
+    selection: &ExtractSurfaceSelection,
+    tolerance: Tolerance,
+) -> Result<Vec<(usize, Vec<usize>)>, CommandError> {
+    match selection {
+        ExtractSurfaceSelection::Faces(selection) => sources
+            .iter()
+            .enumerate()
+            .map(|(source_index, source)| {
+                let face_count = extract_surface_face_count(&source.geometry);
+                let face_indices = match selection {
+                    ExtractSurfaceFaceSelection::All => (0..face_count).collect(),
+                    ExtractSurfaceFaceSelection::Indices(indices) => {
+                        if let Some(&face) = indices.iter().find(|&&face| face >= face_count) {
+                            return Err(CommandError::ExtractSurfaceFaceIndexOutOfRange {
+                                face,
+                                face_count,
+                            });
+                        }
+                        indices.clone()
+                    }
+                };
+                Ok((source_index, face_indices))
+            })
+            .collect(),
+        ExtractSurfaceSelection::Point(point) => {
+            let mut best: Option<(Real, usize, usize)> = None;
+            for (source_index, source) in sources.iter().enumerate() {
+                let candidate = match &source.geometry {
+                    Geometry::NurbsSurface(surface) => {
+                        let (u, v) = surface.closest_parameters(*point, tolerance)?;
+                        let distance = surface.evaluate(u, v)?.distance_to(*point)?;
+                        Some((distance, 0))
+                    }
+                    Geometry::Brep(brep) => brep
+                        .closest_face_parameters(*point, tolerance)?
+                        .map(|(face, u, v)| {
+                            brep.faces()[face]
+                                .surface()
+                                .evaluate(u, v)
+                                .and_then(|surface_point| surface_point.distance_to(*point))
+                                .map(|distance| (distance, face))
+                        })
+                        .transpose()?,
+                    _ => unreachable!("ExtractSrf sources were validated above"),
+                };
+                let Some((distance, face)) = candidate else {
+                    continue;
+                };
+                if best.is_none_or(|(best_distance, _, _)| distance < best_distance) {
+                    best = Some((distance, source_index, face));
+                }
+            }
+            let Some((_, source, face)) = best else {
+                return Err(CommandError::NoExtractableSurfaces);
+            };
+            Ok(vec![(source, vec![face])])
+        }
+    }
+}
+
+fn extract_surface_face_count(geometry: &Geometry) -> usize {
+    match geometry {
+        Geometry::NurbsSurface(_) => 1,
+        Geometry::Brep(brep) => brep.faces().len(),
+        _ => 0,
+    }
+}
+
+fn parse_extract_surface_arguments(
+    arguments: &[&str],
+) -> Result<ExtractSurfaceOptions, CommandError> {
+    let mut copy = false;
+    let mut output_layer = ExtractSurfaceOutputLayer::Input;
+    let mut face_selection = None;
+    let mut copy_seen = false;
+    let mut output_layer_seen = false;
+    let mut positional = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let option = if let Some((name, value)) = argument.split_once('=') {
+            Some((name, value, 1))
+        } else if option_name_eq(argument, "Copy")
+            || option_name_eq(argument, "OutputLayer")
+            || option_name_eq(argument, "Faces")
+            || option_name_eq(argument, "FaceIndices")
+        {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(EXTRACT_SURFACE_USAGE))?;
+            Some((argument, *value, 2))
+        } else {
+            None
+        };
+        let Some((name, value, consumed)) = option else {
+            positional.push(argument);
+            index += 1;
+            continue;
+        };
+        if option_name_eq(name, "Copy") && !copy_seen {
+            copy = parse_yes_no(value).ok_or(CommandError::Usage(EXTRACT_SURFACE_USAGE))?;
+            copy_seen = true;
+        } else if option_name_eq(name, "OutputLayer") && !output_layer_seen {
+            let value = value.trim_start_matches('_');
+            output_layer = if value.eq_ignore_ascii_case("Input") {
+                ExtractSurfaceOutputLayer::Input
+            } else if value.eq_ignore_ascii_case("Current") {
+                ExtractSurfaceOutputLayer::Current
+            } else {
+                return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+            };
+            output_layer_seen = true;
+        } else if (option_name_eq(name, "Faces") || option_name_eq(name, "FaceIndices"))
+            && face_selection.is_none()
+        {
+            let value = value.trim_start_matches('_');
+            face_selection = Some(if value.eq_ignore_ascii_case("All") {
+                ExtractSurfaceFaceSelection::All
+            } else {
+                let indices = value
+                    .split(',')
+                    .map(|index| {
+                        index
+                            .parse::<usize>()
+                            .map_err(|_| CommandError::Usage(EXTRACT_SURFACE_USAGE))
+                    })
+                    .collect::<Result<Vec<_>, _>>()?;
+                if indices.is_empty()
+                    || indices.iter().copied().collect::<BTreeSet<_>>().len() != indices.len()
+                {
+                    return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+                }
+                ExtractSurfaceFaceSelection::Indices(indices)
+            });
+        } else {
+            return Err(CommandError::Usage(EXTRACT_SURFACE_USAGE));
+        }
+        index += consumed;
+    }
+
+    let selection = if let Some(face_selection) = face_selection {
+        require_consumed(&positional, 0, EXTRACT_SURFACE_USAGE)?;
+        ExtractSurfaceSelection::Faces(face_selection)
+    } else {
+        let (point, consumed) = parse_point(&positional)?;
+        require_consumed(&positional, consumed, EXTRACT_SURFACE_USAGE)?;
+        ExtractSurfaceSelection::Point(point)
+    };
+    Ok(ExtractSurfaceOptions {
+        selection,
+        copy,
+        output_layer,
+    })
 }
 
 const EXTRACT_ISOCURVE_USAGE: &str =
@@ -9059,6 +9379,17 @@ pub enum CommandError {
     #[error("none of the selected objects has an extractable control polygon")]
     NoExtractableControlPolygons,
 
+    #[error("ExtractSrf supports selected NURBS surfaces and B-reps only")]
+    UnsupportedExtractSurfaceGeometry,
+
+    #[error(
+        "ExtractSrf face index {face} is outside the selected object's face count {face_count}"
+    )]
+    ExtractSurfaceFaceIndexOutOfRange { face: usize, face_count: usize },
+
+    #[error("the requested location does not identify an extractable surface face")]
+    NoExtractableSurfaces,
+
     #[error("ExtractIsocurve supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractIsocurveGeometry,
 
@@ -9310,7 +9641,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, DupBorder, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -10504,6 +10835,250 @@ mod tests {
             Err(CommandError::Geometry(
                 GeometryError::DegeneratePolylineSegment { segment: 0 }
             ))
+        ));
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn extracts_brep_faces_in_order_while_preserving_remainder_identity_and_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Layer New Input").unwrap();
+        let input_layer = document.current_layer_id();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::Brep(box_brep.clone()),
+                ObjectAttributes::on_layer(input_layer)
+                    .with_name("Panel shell")
+                    .with_object_color(ColorRgb::new(17, 83, 149))
+                    .try_with_wire_density(3)
+                    .unwrap(),
+            )
+            .unwrap();
+        let group = document
+            .add_group(Some("Shell group".to_owned()), [source])
+            .unwrap();
+        registry.execute(&mut document, "Layer New Output").unwrap();
+        let output_layer = document.current_layer_id();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractSrf Faces=2,0 Copy=No OutputLayer=Current",
+                )
+                .unwrap(),
+            "Extracted 2 surface(s) from 1 object(s); source faces removed"
+        );
+        assert_eq!(document.objects().len(), 3);
+        assert!(!document.is_selected(source));
+        let source_object = document.object(source).unwrap();
+        assert_eq!(source_object.attributes().layer_id(), input_layer);
+        assert_eq!(source_object.attributes().name(), Some("Panel shell"));
+        let Geometry::Brep(remainder) = source_object.geometry() else {
+            panic!("ExtractSrf remainder must retain exact B-rep geometry")
+        };
+        assert_eq!(
+            remainder,
+            &box_brep
+                .sub_brep(&[1, 3, 4, 5], Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+
+        let outputs = document
+            .objects()
+            .filter(|object| object.id() != source)
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for object in &outputs {
+            assert!(document.is_selected(object.id()));
+            assert_eq!(object.attributes().layer_id(), output_layer);
+            assert_eq!(object.attributes().name(), Some("Panel shell"));
+            assert_eq!(
+                object.attributes().object_color(),
+                ColorRgb::new(17, 83, 149)
+            );
+            assert_eq!(
+                object.attributes().color_source(),
+                ObjectColorSource::Object
+            );
+            assert_eq!(object.attributes().wire_density(), 3);
+            assert!(
+                document
+                    .group(group)
+                    .unwrap()
+                    .members()
+                    .all(|member| member != object.id())
+            );
+        }
+        let output_faces = outputs
+            .iter()
+            .map(|object| match object.geometry() {
+                Geometry::Brep(brep) => &brep.faces()[0],
+                _ => panic!("ExtractSrf output must be an exact one-face B-rep"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(output_faces[0].surface(), box_brep.faces()[2].surface());
+        assert_eq!(output_faces[1].surface(), box_brep.faces()[0].surface());
+        assert!(output_faces.iter().all(|face| {
+            face.loops()
+                .iter()
+                .flat_map(|face_loop| face_loop.trims())
+                .all(|trim| trim.trim_type() == viboceros_geometry::BrepTrimType::Boundary)
+        }));
+        assert_eq!(document.undo_label(), Some("ExtractSrf"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Brep(box_brep.clone())
+        );
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            vec![source]
+        );
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtractSurface FaceIndices=5,1 Copy=Yes OutputLayer=Input",
+                )
+                .unwrap(),
+            "Extracted 2 surface(s) from 1 object(s); source faces copied"
+        );
+        assert_eq!(
+            document.object(source).unwrap().geometry(),
+            &Geometry::Brep(box_brep.clone())
+        );
+        assert!(!document.is_selected(source));
+        let copies = document
+            .selected_objects()
+            .map(|object| {
+                assert_eq!(object.attributes().layer_id(), input_layer);
+                assert!(
+                    document
+                        .group(group)
+                        .unwrap()
+                        .members()
+                        .all(|member| member != object.id())
+                );
+                match object.geometry() {
+                    Geometry::Brep(brep) => brep.faces()[0].surface(),
+                    _ => panic!("ExtractSrf copy must be an exact one-face B-rep"),
+                }
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            copies,
+            vec![box_brep.faces()[5].surface(), box_brep.faces()[1].surface()]
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "ExtractSrf Faces=All")
+                .unwrap(),
+            "Extracted 6 surface(s) from 1 object(s); source faces removed"
+        );
+        assert!(document.object(source).is_none());
+        assert!(document.group(group).is_none());
+        assert_eq!(document.selected_object_count(), 6);
+        for (object, source_face) in document.selected_objects().zip(box_brep.faces()) {
+            let Geometry::Brep(face) = object.geometry() else {
+                panic!("ExtractSrf output must remain an exact one-face B-rep")
+            };
+            assert_eq!(face.faces()[0].surface(), source_face.surface());
+        }
+    }
+
+    #[test]
+    fn extract_surface_point_mode_handles_single_surfaces_and_failures_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 2.0).unwrap(),
+            Point3::try_new(4.0, 0.0, 2.0).unwrap(),
+            Point3::try_new(4.0, 3.0, 2.0).unwrap(),
+            Point3::try_new(0.0, 3.0, 2.0).unwrap(),
+        ])
+        .unwrap();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(surface.clone()),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_name("Sheet"),
+            )
+            .unwrap();
+        let group = document
+            .add_group(Some("Sheet group".to_owned()), [source])
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "ExtractSrf 2,1,5").unwrap(),
+            "Extracted 1 surface(s) from 1 object(s); source faces removed"
+        );
+        assert!(document.object(source).is_none());
+        assert!(document.group(group).is_none());
+        assert_eq!(document.selected_object_count(), 1);
+        let output = document.selected_objects().next().unwrap();
+        assert_eq!(output.attributes().name(), Some("Sheet"));
+        assert_eq!(output.geometry(), &Geometry::NurbsSurface(surface));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        let object_count = document.objects().len();
+        for invalid in [
+            "ExtractSrf Faces=1",
+            "ExtractSrf Faces=0,0",
+            "ExtractSrf Faces=0 1,1,2",
+            "ExtractSrf Faces=0 Copy=Maybe",
+            "ExtractSrf Faces=0 OutputLayer=Other",
+            "ExtractSrf Faces=",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.objects().len(), object_count);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+
+        registry.execute(&mut document, "Point 10,10").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        let object_count = document.objects().len();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractSrf Faces=0"),
+            Err(CommandError::UnsupportedExtractSurfaceGeometry)
         ));
         assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.undo_label(), history.as_deref());

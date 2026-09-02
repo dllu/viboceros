@@ -67,6 +67,15 @@ pub enum GeometryError {
     #[error("invalid B-rep topology: {context}")]
     InvalidBrepTopology { context: &'static str },
 
+    #[error("a B-rep face subset must contain at least one face")]
+    EmptyBrepFaceSubset,
+
+    #[error("B-rep face index {face} is outside the face count {face_count}")]
+    BrepFaceIndexOutOfRange { face: usize, face_count: usize },
+
+    #[error("B-rep face index {face} appears more than once")]
+    DuplicateBrepFaceIndex { face: usize },
+
     #[error("NURBS weight {index} must be finite and strictly positive")]
     InvalidWeight { index: usize },
 

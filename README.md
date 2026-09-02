@@ -120,6 +120,8 @@ CrvEnd
 ExtractPt OutputLayer=Input Output=Points
 ExtractPt OutputLayer=Input Output=PointCloud
 ExtractControlPolygon OutputLayer=Current
+ExtractSrf 2,1,0 Copy=No OutputLayer=Input
+ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -228,6 +230,15 @@ untrimmed NURBS surface control nets. Periodic control windows align to the
 active domain, closed seams remain explicit, and singular surface sides become
 triangles without artificial quad diagonals. Results default to the current
 layer; `OutputLayer=Input` and `TargetObject` use each source object's layer.
+`ExtractSrf` separates the nearest exact face at a model-space point, or accepts
+an ordered zero-based list such as `Faces=0,2` (`Faces=All` is also supported).
+The face list applies to every selected NURBS surface or B-rep; entering the
+command without a selector starts a one-pick viewport workflow. `Copy=No` is
+the default: an unextracted B-rep remainder keeps the source identity,
+attributes, and groups, while a fully extracted source is deleted. Extracted
+faces preserve attributes, become selected independent objects, and never
+inherit source groups. `Copy=Yes` retains the source. Output defaults to the
+input layer; `OutputLayer=Current` changes only the result layer.
 `ExtractIsocurve` creates the exact U, V, or both rational isocurves nearest a
 model-space point on every selected NURBS surface or B-rep. B-rep results come
 from the nearest trimmed face and are split exactly around outer boundaries and
