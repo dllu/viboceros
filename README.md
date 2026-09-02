@@ -129,6 +129,7 @@ ExtractSrf Faces=0,2 Copy=Yes OutputLayer=Current
 ExtractMeshEdges ExtractBy=Unwelded JoinResults=Yes
 ExtractMeshFaces Faces=2,0 MakeCopy=No
 DeleteFaces Faces=2,0
+TriangulateMesh
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -286,6 +287,10 @@ viewport workflow. A partial edit keeps the unselected source object's
 identity, attributes, groups, and surviving source face order. Mesh results
 compact unused vertices in source order; deleting every face removes the
 object. SubD input awaits a native SubD geometry type.
+`TriangulateMesh` splits every quad on selected meshes along its shortest 3D
+diagonal, choosing A-C on exact ties. First triangles replace their source
+quads in place and second triangles append in source-quad order; vertices,
+object identity, attributes, groups, and selection remain unchanged.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

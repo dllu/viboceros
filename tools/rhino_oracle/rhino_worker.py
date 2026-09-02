@@ -193,21 +193,28 @@ def _set_surface_controls(surface, controls, count_u, count_v):
                 raise ValueError("invalid NURBS surface control point")
 
 
-def _triangle_mesh(vertices, triangles):
+def _polygon_mesh(vertices, faces):
     mesh = Rhino.Geometry.Mesh()
     try:
         for vertex in vertices:
             if mesh.Vertices.Add(_point(vertex)) < 0:
                 raise ValueError("could not add mesh vertex")
-        for triangle in triangles:
-            if len(triangle) != 3:
-                raise ValueError("mesh face must contain exactly three indices")
+        for face in faces:
+            if len(face) not in (3, 4):
+                raise ValueError("mesh face must contain three or four indices")
             if any(
-                isinstance(index, bool) or int(index) != index for index in triangle
+                isinstance(index, bool) or int(index) != index for index in face
             ):
                 raise ValueError("mesh face index must be an integer")
-            indices = [int(index) for index in triangle]
-            if mesh.Faces.AddFace(indices[0], indices[1], indices[2]) < 0:
+            indices = [int(index) for index in face]
+            added = (
+                mesh.Faces.AddFace(indices[0], indices[1], indices[2])
+                if len(indices) == 3
+                else mesh.Faces.AddFace(
+                    indices[0], indices[1], indices[2], indices[3]
+                )
+            )
+            if added < 0:
                 raise ValueError("could not add mesh face")
         if not mesh.IsValid:
             raise ValueError("mesh is invalid")
@@ -215,6 +222,12 @@ def _triangle_mesh(vertices, triangles):
     except Exception:
         mesh.Dispose()
         raise
+
+
+def _triangle_mesh(vertices, triangles):
+    if any(len(triangle) != 3 for triangle in triangles):
+        raise ValueError("triangle mesh face must contain exactly three indices")
+    return _polygon_mesh(vertices, triangles)
 
 
 def _mesh_triangles(mesh):
@@ -230,6 +243,22 @@ def _mesh_triangles(mesh):
 def _mesh_value(mesh):
     return {
         "triangles": _mesh_triangles(mesh),
+        "vertices": [
+            _xyz(mesh.Vertices[index]) for index in range(mesh.Vertices.Count)
+        ],
+    }
+
+
+def _polygon_mesh_value(mesh):
+    faces = []
+    for index in range(mesh.Faces.Count):
+        face = mesh.Faces[index]
+        indices = [int(face.A), int(face.B), int(face.C)]
+        if face.IsQuad:
+            indices.append(int(face.D))
+        faces.append(indices)
+    return {
+        "faces": faces,
         "vertices": [
             _xyz(mesh.Vertices[index]) for index in range(mesh.Vertices.Count)
         ],
@@ -4321,6 +4350,30 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, delete_faces)
+        finally:
+            source.Dispose()
+
+    if kind == "mesh_triangulate":
+        source = _polygon_mesh(operation["vertices"], operation["faces"])
+
+        def triangulate_mesh():
+            mesh = source.DuplicateMesh()
+            if mesh is None:
+                raise ValueError("could not duplicate mesh")
+            try:
+                before = int(mesh.Faces.QuadCount)
+                if not mesh.Faces.ConvertQuadsToTriangles():
+                    raise ValueError("mesh triangulation failed")
+                converted = before - int(mesh.Faces.QuadCount)
+                return {
+                    "converted_quad_count": converted,
+                    "mesh": _polygon_mesh_value(mesh),
+                }
+            finally:
+                mesh.Dispose()
+
+        try:
+            return _measure(iterations, triangulate_mesh)
         finally:
             source.Dispose()
 

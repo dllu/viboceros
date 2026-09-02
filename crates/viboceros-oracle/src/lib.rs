@@ -15,7 +15,7 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, Circle3, CircularArc3, CurveRef, Ellipse3, Frame3, GeometryError,
-    LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
+    LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
     SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
     join_polylines,
 };
@@ -310,6 +310,11 @@ pub enum Operation {
         triangles: Vec<[u32; 3]>,
         face_indices: Vec<usize>,
     },
+    MeshTriangulate {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -386,6 +391,7 @@ impl Operation {
             | Self::MeshExtractDuplicateFaces { id, .. }
             | Self::MeshExtractFaces { id, .. }
             | Self::MeshDeleteFaces { id, .. }
+            | Self::MeshTriangulate { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1310,6 +1316,27 @@ fn execute(
                 json!({
                     "deleted_face_count": face_indices.len(),
                     "remainder": remainder.as_ref().map(mesh_value),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshTriangulate {
+            vertices, faces, ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let ((triangulated, converted_quad_count), elapsed) =
+                measure(iterations, || black_box(&mesh).triangulate_quads(tolerance))?;
+            (
+                json!({
+                    "converted_quad_count": converted_quad_count,
+                    "mesh": polygon_mesh_value(&triangulated),
                 }),
                 elapsed,
             )
@@ -4027,6 +4054,26 @@ fn mesh_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
+fn polygon_mesh_faces(faces: &[Vec<u32>]) -> Result<Vec<MeshFace>, ProbeError> {
+    faces
+        .iter()
+        .map(|face| match *face.as_slice() {
+            [a, b, c] => Ok(MeshFace::Triangle([a, b, c])),
+            [a, b, c, d] => Ok(MeshFace::Quad([a, b, c, d])),
+            _ => Err(ProbeError::FixtureInvariant(
+                "polygon mesh faces must contain three or four indices",
+            )),
+        })
+        .collect()
+}
+
+fn polygon_mesh_value(mesh: &TriangleMesh) -> Value {
+    json!({
+        "faces": mesh.faces().iter().map(|face| face.indices()).collect::<Vec<_>>(),
+        "vertices": mesh.vertices().iter().map(|point| point.to_array()).collect::<Vec<_>>(),
+    })
+}
+
 fn mesh_unweld_value(mesh: &TriangleMesh) -> Value {
     let face_points = mesh
         .faces()
@@ -5721,6 +5768,68 @@ mod tests {
             json!({
                 "deleted_face_count": 4,
                 "remainder": null,
+            })
+        );
+    }
+
+    #[test]
+    fn triangulates_mesh_quads_for_oracle_comparison() {
+        let vertices = vec![
+            [-3.0, 0.0, 0.0],
+            [-2.0, 0.0, 0.0],
+            [-3.0, 1.0, 0.0],
+            [0.0, 0.0, 0.0],
+            [4.0, 0.0, 0.0],
+            [1.0, 1.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [7.0, 0.0, 0.0],
+            [8.0, 0.0, 0.0],
+            [7.0, 1.0, 0.0],
+            [10.0, 0.0, 0.0],
+            [11.0, 0.0, 0.0],
+            [12.0, 2.0, 0.0],
+            [10.0, 1.0, 0.0],
+            [15.0, 0.0, 0.0],
+            [16.0, 0.0, 0.0],
+            [16.0, 1.0, 0.0],
+            [15.0, 1.0, 0.0],
+            [20.0, 0.0, 0.0],
+            [22.0, 0.0, 0.0],
+            [22.0, 2.0, 1.0],
+            [20.0, 2.0, 0.0],
+        ];
+        let response = run_request(&request(vec![Operation::MeshTriangulate {
+            id: "triangulate".to_owned(),
+            vertices: vertices.clone(),
+            faces: vec![
+                vec![0, 1, 2],
+                vec![3, 4, 5, 6],
+                vec![7, 8, 9],
+                vec![10, 11, 12, 13],
+                vec![14, 15, 16, 17],
+                vec![18, 19, 20, 21],
+            ],
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "converted_quad_count": 4,
+                "mesh": {
+                    "faces": [
+                        [0, 1, 2],
+                        [3, 4, 5],
+                        [7, 8, 9],
+                        [10, 11, 13],
+                        [14, 15, 16],
+                        [18, 19, 21],
+                        [3, 5, 6],
+                        [11, 12, 13],
+                        [14, 16, 17],
+                        [19, 20, 21],
+                    ],
+                    "vertices": vertices,
+                },
             })
         );
     }

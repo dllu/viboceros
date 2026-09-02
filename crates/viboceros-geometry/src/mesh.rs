@@ -301,6 +301,42 @@ impl TriangleMesh {
         )
     }
 
+    /// Splits every quadrilateral along its shortest three-dimensional
+    /// diagonal, choosing A-C on an exact tie.
+    ///
+    /// Each first triangle replaces its source quad in place. Second
+    /// triangles are appended in source-quad order, matching OpenNURBS and
+    /// Rhino's `ConvertQuadsToTriangles` face ordering. Vertices are retained
+    /// verbatim, including unused vertices.
+    pub fn triangulate_quads(&self, tolerance: Tolerance) -> Result<(Self, usize), GeometryError> {
+        let quad_count = self.faces.iter().filter(|face| face.is_quad()).count();
+        if quad_count == 0 {
+            return Ok((self.clone(), 0));
+        }
+        let mut faces = self.faces.clone();
+        faces
+            .try_reserve(quad_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for face_index in 0..self.faces.len() {
+            let MeshFace::Quad([a, b, c, d]) = self.faces[face_index] else {
+                continue;
+            };
+            let diagonal_ac = self.vertices[a as usize].distance_to(self.vertices[c as usize])?;
+            let diagonal_bd = self.vertices[b as usize].distance_to(self.vertices[d as usize])?;
+            if diagonal_ac <= diagonal_bd {
+                faces[face_index] = MeshFace::Triangle([a, b, c]);
+                faces.push(MeshFace::Triangle([a, c, d]));
+            } else {
+                faces[face_index] = MeshFace::Triangle([a, b, d]);
+                faces.push(MeshFace::Triangle([b, c, d]));
+            }
+        }
+        Ok((
+            Self::try_new_faces(self.vertices.clone(), faces, tolerance)?,
+            quad_count,
+        ))
+    }
+
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
         let triangle = *self.triangles.get(index)?;
         Some([
@@ -2785,6 +2821,82 @@ mod tests {
             ),
             Err(GeometryError::DegenerateQuad { face: 0 })
         ));
+    }
+
+    #[test]
+    fn triangulates_quads_by_shortest_diagonal_in_rhino_face_order() {
+        let vertices = vec![
+            point(-3.0, 0.0, 0.0),
+            point(-2.0, 0.0, 0.0),
+            point(-3.0, 1.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(4.0, 0.0, 0.0),
+            point(1.0, 1.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(7.0, 0.0, 0.0),
+            point(8.0, 0.0, 0.0),
+            point(7.0, 1.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(11.0, 0.0, 0.0),
+            point(12.0, 2.0, 0.0),
+            point(10.0, 1.0, 0.0),
+            point(15.0, 0.0, 0.0),
+            point(16.0, 0.0, 0.0),
+            point(16.0, 1.0, 0.0),
+            point(15.0, 1.0, 0.0),
+            point(20.0, 0.0, 0.0),
+            point(22.0, 0.0, 0.0),
+            point(22.0, 2.0, 1.0),
+            point(20.0, 2.0, 0.0),
+            point(99.0, 99.0, 99.0),
+        ];
+        let mesh = TriangleMesh::try_new_faces(
+            vertices.clone(),
+            vec![
+                MeshFace::Triangle([0, 1, 2]),
+                MeshFace::Quad([3, 4, 5, 6]),
+                MeshFace::Triangle([7, 8, 9]),
+                MeshFace::Quad([10, 11, 12, 13]),
+                MeshFace::Quad([14, 15, 16, 17]),
+                MeshFace::Quad([18, 19, 20, 21]),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let (triangulated, converted) = mesh.triangulate_quads(Tolerance::DEFAULT).unwrap();
+        assert_eq!(converted, 4);
+        assert_eq!(triangulated.vertices(), vertices);
+        assert_eq!(
+            triangulated.faces(),
+            &[
+                MeshFace::Triangle([0, 1, 2]),
+                MeshFace::Triangle([3, 4, 5]),
+                MeshFace::Triangle([7, 8, 9]),
+                MeshFace::Triangle([10, 11, 13]),
+                MeshFace::Triangle([14, 15, 16]),
+                MeshFace::Triangle([18, 19, 21]),
+                MeshFace::Triangle([3, 5, 6]),
+                MeshFace::Triangle([11, 12, 13]),
+                MeshFace::Triangle([14, 16, 17]),
+                MeshFace::Triangle([19, 20, 21]),
+            ]
+        );
+
+        let triangle_only = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, 1.0, 0.0),
+            ],
+            vec![[0, 1, 2]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            triangle_only.triangulate_quads(Tolerance::DEFAULT),
+            Ok((triangle_only.clone(), 0))
+        );
     }
 
     #[test]
