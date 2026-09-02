@@ -38,6 +38,9 @@ enum InteractiveCommand {
     Circle {
         center: Option<Point3>,
     },
+    Sphere {
+        center: Option<Point3>,
+    },
     Arc {
         points: [Option<Point3>; 2],
     },
@@ -124,6 +127,7 @@ impl InteractiveCommand {
             Self::Point => "Point",
             Self::Line { .. } => "Line",
             Self::Circle { .. } => "Circle",
+            Self::Sphere { .. } => "Sphere",
             Self::Arc { .. } => "Arc",
             Self::Ellipse { .. } => "Ellipse",
             Self::Polyline => "Polyline",
@@ -162,6 +166,12 @@ impl InteractiveCommand {
             }
             Self::Circle { center: Some(_) } => {
                 "Circle: pick a point on the circle in the viewport (Esc to cancel)"
+            }
+            Self::Sphere { center: None } => {
+                "Sphere: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::Sphere { center: Some(_) } => {
+                "Sphere: pick a point on the sphere in the viewport (Esc to cancel)"
             }
             Self::Arc { points } => match points {
                 [None, _] => "Arc: pick the start point in the viewport (Esc to cancel)",
@@ -347,6 +357,7 @@ impl InteractiveCommand {
             Self::Point
             | Self::Line { start: None }
             | Self::Circle { center: None }
+            | Self::Sphere { center: None }
             | Self::Arc { points: [None, _] }
             | Self::Ellipse { center: None, .. }
             | Self::Polyline
@@ -376,6 +387,7 @@ impl InteractiveCommand {
             } => None,
             Self::Line { start }
             | Self::Circle { center: start }
+            | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
             | Self::Move { start }
             | Self::Copy { start }
@@ -823,6 +835,7 @@ impl VibocerosApp {
                 "point" | "pt" => InteractiveCommand::Point,
                 "line" | "l" => InteractiveCommand::Line { start: None },
                 "circle" | "c" => InteractiveCommand::Circle { center: None },
+                "sphere" | "sph" => InteractiveCommand::Sphere { center: None },
                 "arc" | "a" => InteractiveCommand::Arc { points: [None; 2] },
                 "ellipse" | "ell" => InteractiveCommand::Ellipse {
                     center: None,
@@ -948,6 +961,28 @@ impl VibocerosApp {
                 self.active_command = None;
                 self.execute_command(&format!(
                     "Circle {} {}",
+                    format_model_point(center),
+                    format_model_point(point)
+                ));
+            }
+            InteractiveCommand::Sphere { center: None } => {
+                let command = InteractiveCommand::Sphere {
+                    center: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Sphere {
+                center: Some(center),
+            } => {
+                if center.is_near(point, self.document.tolerance()) {
+                    self.push_log("Error: sphere point must differ from its center".to_owned());
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Sphere {} {}",
                     format_model_point(center),
                     format_model_point(point)
                 ));
@@ -1659,6 +1694,7 @@ impl VibocerosApp {
         let mut shear_clicked = false;
         let mut project_to_cplane_clicked = false;
         let mut to_nurbs_clicked = false;
+        let mut sphere_clicked = false;
         let mut extrude_curve_clicked = false;
         let mut extrude_curve_to_point_clicked = false;
         let mut extrude_curve_along_curve_clicked = false;
@@ -1857,6 +1893,10 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("To NURBS"))
                     .on_hover_text("Create exact NURBS copies of supported selected curves")
                     .clicked();
+                sphere_clicked = ui
+                    .button("Sphere")
+                    .on_hover_text("Create an exact NURBS sphere from two viewport points")
+                    .clicked();
                 extrude_curve_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extrude Curve"))
                     .on_hover_text("Extrude selected curves along a picked direction")
@@ -1984,6 +2024,8 @@ impl VibocerosApp {
             self.execute_command("ProjectToCPlane");
         } else if to_nurbs_clicked {
             self.execute_command("ToNURBS");
+        } else if sphere_clicked {
+            self.try_start_interactive_command("Sphere");
         } else if extrude_curve_clicked {
             self.try_start_interactive_command("ExtrudeCrv");
         } else if extrude_curve_to_point_clicked {
@@ -2328,6 +2370,34 @@ mod tests {
             Geometry::Arc(_)
         ));
         assert_eq!(app.document.undo_label(), Some("Arc"));
+    }
+
+    #[test]
+    fn interactive_sphere_uses_center_and_radius_point_transactionally() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Sph"));
+        let center = point(1.0, 2.0, 3.0);
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(center);
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Sphere {
+                center: Some(center)
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+        assert!(app.command_log.back().unwrap().contains("sphere point"));
+
+        app.accept_drafting_point(point(4.0, 2.0, 3.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::NurbsSurface(surface) = app.document.objects().next().unwrap().geometry()
+        else {
+            panic!("expected an interactively created NURBS sphere")
+        };
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 5);
+        assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), point(4.0, 2.0, 3.0));
+        assert_eq!(app.document.undo_label(), Some("Sphere"));
     }
 
     #[test]

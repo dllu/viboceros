@@ -279,6 +279,101 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact rational quadratic NURBS form of a sphere.
+    ///
+    /// The 9-by-5 control net, fully multiple quadrant knots, longitude
+    /// domain `[0, 2π]`, and latitude domain `[-π/2, π/2]` match
+    /// `ON_Sphere::GetNurbForm`. U follows the frame's xy plane and V runs
+    /// from the negative to the positive frame z-axis.
+    pub fn try_sphere(frame: Frame3, radius: Real) -> Result<Self, GeometryError> {
+        require_finite([radius], "sphere radius")?;
+        if radius <= 0.0 {
+            return Err(GeometryError::Degenerate { context: "sphere" });
+        }
+
+        let longitude_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let longitude_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let latitude_coordinates: [[Real; 2]; 5] =
+            [[0.0, -1.0], [1.0, -1.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]];
+        let latitude_weights: [Real; 5] = [1.0, diagonal_weight, 1.0, diagonal_weight, 1.0];
+        let origin = frame.origin().to_array();
+        let x_axis = frame.x_axis().as_vector().to_array();
+        let y_axis = frame.y_axis().as_vector().to_array();
+        let z_axis = frame.z_axis().as_vector().to_array();
+        let mut controls = Vec::with_capacity(45);
+        for ([radial, height], latitude_weight) in
+            latitude_coordinates.into_iter().zip(latitude_weights)
+        {
+            let radial_scale = radius * radial;
+            let height_scale = radius * height;
+            for ([x, y], longitude_weight) in
+                longitude_coordinates.into_iter().zip(longitude_weights)
+            {
+                let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                    let radial_coordinate = x.mul_add(x_axis[coordinate], y * y_axis[coordinate]);
+                    radial_scale.mul_add(
+                        radial_coordinate,
+                        height_scale.mul_add(z_axis[coordinate], origin[coordinate]),
+                    )
+                }))?;
+                controls.push(WeightedPoint3::try_new(
+                    point,
+                    longitude_weight * latitude_weight,
+                )?);
+            }
+        }
+
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let three_half_pi = 3.0 * half_pi;
+        let tau = std::f64::consts::TAU;
+        Self::try_new_rational(
+            2,
+            2,
+            9,
+            5,
+            controls,
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                three_half_pi,
+                three_half_pi,
+                tau,
+                tau,
+                tau,
+            ],
+            vec![
+                -half_pi, -half_pi, -half_pi, 0.0, 0.0, half_pi, half_pi, half_pi,
+            ],
+        )
+    }
+
     /// Constructs an exact rational surface by revolving a NURBS profile.
     ///
     /// U is the quadratic rational revolution direction and V preserves the
@@ -1607,6 +1702,96 @@ mod tests {
         assert!(Tolerance::DEFAULT.approx_eq(vertical.x(), 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(vertical.y(), 0.0));
         assert!(Tolerance::DEFAULT.approx_eq(vertical.z(), 3.0));
+    }
+
+    #[test]
+    fn exact_sphere_matches_opennurbs_control_net_domains_and_orientation() {
+        let center = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            center,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_sphere(frame, 2.5).unwrap();
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let tau = std::f64::consts::TAU;
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 5);
+        assert_eq!(surface.domain_u(), 0.0..=tau);
+        assert_eq!(surface.domain_v(), -half_pi..=half_pi);
+        assert_eq!(
+            surface.knots_u(),
+            &[
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                3.0 * half_pi,
+                3.0 * half_pi,
+                tau,
+                tau,
+                tau,
+            ]
+        );
+        assert_eq!(
+            surface.knots_v(),
+            &[
+                -half_pi, -half_pi, -half_pi, 0.0, 0.0, half_pi, half_pi, half_pi,
+            ]
+        );
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            point(1.0, 2.0, 0.5)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().weight(),
+            0.5_f64.sqrt()
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            point(1.0, 4.5, 0.5)
+        );
+        assert!(Tolerance::DEFAULT.approx_eq(surface.control_point(1, 1).unwrap().weight(), 0.5));
+        assert_eq!(
+            surface.control_point(2, 2).unwrap().point(),
+            point(-1.5, 2.0, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(8, 4).unwrap().point(),
+            point(1.0, 2.0, 5.5)
+        );
+
+        assert_point_near(
+            surface.evaluate(0.0, -half_pi).unwrap(),
+            point(1.0, 2.0, 0.5),
+        );
+        assert_point_near(surface.evaluate(0.0, 0.0).unwrap(), point(1.0, 4.5, 3.0));
+        assert_point_near(
+            surface.evaluate(half_pi, 0.0).unwrap(),
+            point(-1.5, 2.0, 3.0),
+        );
+        for u_index in 0..32 {
+            for v_index in 0..=16 {
+                let u = tau * u_index as Real / 32.0;
+                let v = -half_pi + pi * v_index as Real / 16.0;
+                let radius = surface.evaluate(u, v).unwrap().distance_to(center).unwrap();
+                assert!(Tolerance::DEFAULT.approx_eq(radius, 2.5));
+            }
+        }
+        let display_mesh = surface.tessellate(2, Tolerance::DEFAULT).unwrap();
+        assert!(!display_mesh.triangles().is_empty());
+        assert!(NurbsSurface::try_sphere(frame, 0.0).is_err());
+        assert!(NurbsSurface::try_sphere(frame, -1.0).is_err());
+        assert!(NurbsSurface::try_sphere(frame, Real::INFINITY).is_err());
     }
 
     #[test]

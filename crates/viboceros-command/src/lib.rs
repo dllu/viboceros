@@ -87,6 +87,9 @@ impl CommandRegistry {
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
+            .register(SphereCommand)
+            .expect("unique built-in command");
+        registry
             .register(ExtrudeCurveCommand)
             .expect("unique built-in command");
         registry
@@ -960,6 +963,39 @@ impl Command for SrfPtCommand {
         surface.tessellate(1, document.tolerance())?;
         let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
         Ok(format!("Added four-corner NURBS surface {id}"))
+    }
+}
+
+struct SphereCommand;
+
+impl Command for SphereCommand {
+    fn name(&self) -> &'static str {
+        "Sphere"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Sph"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        const USAGE: &str = "Sphere center radius | Sphere center point-on-sphere";
+        let (center, center_consumed) = parse_point(arguments)?;
+        let remaining = &arguments[center_consumed..];
+        let radius = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_finite_real(remaining[0])?
+        } else {
+            let (point_on_sphere, point_consumed) = parse_point(remaining)?;
+            require_consumed(remaining, point_consumed, USAGE)?;
+            center.distance_to(point_on_sphere)?
+        };
+        let frame = Frame3::try_from_normal(
+            center,
+            Vector3::try_new(0.0, 0.0, 1.0)?,
+            document.tolerance(),
+        )?;
+        let surface = NurbsSurface::try_sphere(frame, radius)?;
+        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+        Ok(format!("Added NURBS sphere {id} (radius {radius:.6})"))
     }
 }
 
@@ -6792,7 +6828,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -6831,6 +6867,57 @@ mod tests {
         assert!(registry.execute(&mut document, "Arc 0,0 1,0 2,0").is_err());
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Circle"));
+    }
+
+    #[test]
+    fn sphere_creates_exact_opennurbs_surface_from_radius_or_point() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Sphere 1,2,3 2.5").unwrap();
+        let sphere_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(sphere_id));
+        let Geometry::NurbsSurface(surface) = document.object(sphere_id).unwrap().geometry() else {
+            panic!("Sphere must create a NURBS surface")
+        };
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 5);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(
+            surface.domain_v(),
+            -std::f64::consts::FRAC_PI_2..=std::f64::consts::FRAC_PI_2
+        );
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            Point3::try_new(1.0, 2.0, 0.5).unwrap()
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            Point3::try_new(3.5, 2.0, 0.5).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Sphere"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry.execute(&mut document, "_Sph 1,2,3 1,5,3").unwrap();
+        let Geometry::NurbsSurface(point_radius_surface) =
+            document.objects().next().unwrap().geometry()
+        else {
+            panic!("Sph alias must create a NURBS surface")
+        };
+        let equator = point_radius_surface.evaluate(0.0, 0.0).unwrap();
+        assert_eq!(equator, Point3::try_new(4.0, 2.0, 3.0).unwrap());
+
+        for invalid in [
+            "Sphere 0,0,0 0",
+            "Sphere 0,0,0 -1",
+            "Sphere 0,0,0 inf",
+            "Sphere 0,0,0 1 2",
+        ] {
+            assert!(registry.execute(&mut document, invalid).is_err());
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Sphere"));
     }
 
     #[test]

@@ -29,6 +29,7 @@ Curve 0,0 2,3 5,3 8,0 Degree=3
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
+Sphere 0,0,0 5
 Layer New Construction
 Layer Hide Construction
 Layer Show Construction
@@ -138,8 +139,8 @@ Help
 ```
 
 Enter `Point`, `Line`, `Circle`, `Arc`, `Ellipse`, `Polyline`, `Curve`,
-`InterpCrv`, `Rectangle`, `Polygon`, or `SrfPt` without coordinates to pick
-points in the viewport; press Enter to finish a polyline or curve. `Curve`
+`InterpCrv`, `Rectangle`, `Polygon`, `SrfPt`, or `Sphere` without coordinates
+to pick points in the viewport; press Enter to finish a polyline or curve. `Curve`
 creates an open control-point curve, defaults to degree three, accepts degrees
 through 11, and lowers the degree when too few controls are supplied.
 `Close=Smooth` creates a periodic seam (degree one remains linear and closed);
@@ -167,6 +168,10 @@ polylines. It retains inputs and creates unselected copies in the same groups
 by default; use `DeleteInputObjects=Yes` to preserve object identities and
 replace the inputs in place. Line, polyline, circle, arc, and ellipse parameter
 domains follow Rhino's chord-length, arc-length, and angular conventions.
+`Sphere` creates Rhino/OpenNURBS' exact 9-by-5 rational quadratic surface from
+a center and numeric radius or point on the sphere. Its longitude domain is
+`[0, 2π]`, its latitude domain is `[-π/2, π/2]`, and entering it without
+arguments starts the two-pick viewport workflow.
 `ExtrudeCrv` creates exact rational NURBS surfaces from selected analytic,
 polyline, and NURBS curves. A numeric distance uses World Z; two points define
 an arbitrary direction; entering it without either starts the two-pick viewport
