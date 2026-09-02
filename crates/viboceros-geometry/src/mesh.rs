@@ -6,9 +6,12 @@ use spade::{
 
 use crate::vector::product_three;
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, LineSegment, Point3, Polyline3, Real, Tolerance,
-    UnitVector3, require_finite,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, Point3, Polyline3, Real,
+    Tolerance, UnitVector3, require_finite,
 };
+
+/// Resource ceiling for one generated mesh-plane grid.
+pub const MAX_MESH_PLANE_FACES: usize = 1_000_000;
 
 /// Exact location-welded edge topology for a polygon mesh.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -294,6 +297,91 @@ impl TriangleMesh {
             faces,
             triangles,
         })
+    }
+
+    /// Constructs an ordered quadrilateral grid over increasing plane intervals.
+    ///
+    /// Vertices run in x-fastest row-major order and faces run in the same
+    /// y-then-x order as RhinoCommon's `Mesh.CreateFromPlane`.
+    pub fn try_plane_grid(
+        frame: Frame3,
+        x_interval: [Real; 2],
+        y_interval: [Real; 2],
+        x_count: usize,
+        y_count: usize,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            x_interval.into_iter().chain(y_interval),
+            "mesh-plane interval",
+        )?;
+        if x_count == 0 || y_count == 0 {
+            return Err(GeometryError::InvalidMeshPlaneFaceCount { x_count, y_count });
+        }
+        if x_interval[0] >= x_interval[1] || y_interval[0] >= y_interval[1] {
+            return Err(GeometryError::InvalidMeshPlaneInterval);
+        }
+
+        let x_vertex_count = x_count
+            .checked_add(1)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let y_vertex_count = y_count
+            .checked_add(1)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        let vertex_count = x_vertex_count
+            .checked_mul(y_vertex_count)
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if vertex_count
+            .checked_sub(1)
+            .is_some_and(|last_index| u32::try_from(last_index).is_err())
+        {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+        let face_count = x_count
+            .checked_mul(y_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_PLANE_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let origin = frame.origin();
+        let x_axis = frame.x_axis().as_vector();
+        let y_axis = frame.y_axis().as_vector();
+        let x_step = (x_interval[1] - x_interval[0]) / x_count as Real;
+        let y_step = (y_interval[1] - y_interval[0]) / y_count as Real;
+        require_finite([x_step, y_step], "mesh-plane interval span")?;
+        for y_index in 0..=y_count {
+            let y = y_interval[0] + y_index as Real * y_step;
+            let y_offset = y_axis.scaled(y)?;
+            for x_index in 0..=x_count {
+                let x = x_interval[0] + x_index as Real * x_step;
+                vertices.push(origin.translated(x_axis.scaled(x)?)?.translated(y_offset)?);
+            }
+        }
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for y_index in 0..y_count {
+            for x_index in 0..x_count {
+                let lower_left = y_index * x_vertex_count + x_index;
+                let upper_left = lower_left + x_vertex_count;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(lower_left).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(lower_left + 1)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_left + 1)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_left).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        }
+        Self::try_new_faces(vertices, faces, tolerance)
     }
 
     fn from_validated_parts(vertices: Vec<Point3>, faces: Vec<MeshFace>) -> Self {
@@ -3571,6 +3659,7 @@ fn union_indices_keep_earlier(parents: &mut [usize], first: usize, second: usize
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Vector3;
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -3682,6 +3771,75 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::DegenerateQuad { face: 0 })
+        ));
+    }
+
+    #[test]
+    fn creates_rhino_ordered_mesh_plane_grids_and_rejects_invalid_extents() {
+        let frame = Frame3::try_from_directions(
+            point(1.0, -2.0, 5.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mesh =
+            TriangleMesh::try_plane_grid(frame, [-2.0, 4.0], [1.0, 10.0], 2, 3, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(mesh.vertices().len(), 12);
+        assert_eq!(mesh.face_count(), 6);
+        assert_eq!(mesh.vertices()[0], point(-1.0, -1.0, 5.0));
+        assert_eq!(mesh.vertices()[2], point(5.0, -1.0, 5.0));
+        assert_eq!(mesh.vertices()[9], point(-1.0, 8.0, 5.0));
+        assert_eq!(mesh.vertices()[11], point(5.0, 8.0, 5.0));
+        assert_eq!(
+            mesh.faces(),
+            &[
+                MeshFace::Quad([0, 1, 4, 3]),
+                MeshFace::Quad([1, 2, 5, 4]),
+                MeshFace::Quad([3, 4, 7, 6]),
+                MeshFace::Quad([4, 5, 8, 7]),
+                MeshFace::Quad([6, 7, 10, 9]),
+                MeshFace::Quad([7, 8, 11, 10]),
+            ]
+        );
+        assert_eq!(mesh.area().unwrap(), 54.0);
+        assert_eq!(mesh.topology().boundary_edge_count(), 10);
+
+        assert_eq!(
+            TriangleMesh::try_plane_grid(frame, [-2.0, 4.0], [1.0, 10.0], 0, 3, Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshPlaneFaceCount {
+                x_count: 0,
+                y_count: 3,
+            })
+        );
+        assert_eq!(
+            TriangleMesh::try_plane_grid(frame, [4.0, -2.0], [1.0, 10.0], 2, 3, Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshPlaneInterval)
+        );
+        assert_eq!(
+            TriangleMesh::try_plane_grid(
+                frame,
+                [-2.0, 4.0],
+                [1.0, 10.0],
+                MAX_MESH_PLANE_FACES + 1,
+                1,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
+        assert!(matches!(
+            TriangleMesh::try_plane_grid(
+                frame,
+                [f64::NAN, 4.0],
+                [1.0, 10.0],
+                2,
+                3,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::NonFinite {
+                context: "mesh-plane interval"
+            })
         ));
     }
 

@@ -36,6 +36,7 @@ InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
+MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
@@ -230,6 +231,12 @@ Regular surface cells remain quadrilaterals, singular sides and planar trim
 regions use triangles, and smooth-seam closed solids must remain watertight.
 Unsupported nonplanar general trims fail atomically rather than being silently
 meshed as untrimmed surfaces.
+`MeshPlane` draws an unselected quadrilateral grid from two opposite top-view
+corners. `XCount` and `YCount` specify face counts and default to 10; corner
+order is normalized, the second corner is projected to the first corner's
+elevation, and vertices/faces follow Rhino's x-fastest row-major ordering.
+One grid is bounded to one million faces and tolerance-degenerate cells are
+rejected atomically.
 `MeshToNURB` duplicates every selected mesh polygon as an exact degree-one
 NURBS face. Quads remain potentially warped bilinear surfaces; triangles are
 trimmed planar parallelograms by default, or untrimmed patches with a collapsed

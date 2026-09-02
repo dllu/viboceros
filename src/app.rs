@@ -1,11 +1,11 @@
 use std::collections::{BTreeSet, VecDeque};
 
 use eframe::egui::{self, RichText};
-use viboceros_command::{CommandRegistry, MAX_CURVE_COMMAND_DEGREE};
+use viboceros_command::{CommandRegistry, DEFAULT_MESH_PLANE_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE};
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
-    CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_REGULAR_POLYGON_SIDES, Point3,
-    Tolerance,
+    CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_PLANE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -79,6 +79,11 @@ enum InteractiveCommand {
     InterpCrv,
     Rectangle {
         first: Option<Point3>,
+    },
+    MeshPlane {
+        first: Option<Point3>,
+        x_count: usize,
+        y_count: usize,
     },
     Polygon {
         side_count: usize,
@@ -197,6 +202,7 @@ impl InteractiveCommand {
             Self::Curve { .. } => "Curve",
             Self::InterpCrv => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
+            Self::MeshPlane { .. } => "MeshPlane",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
@@ -292,6 +298,12 @@ impl InteractiveCommand {
             }
             Self::Rectangle { first: Some(_) } => {
                 "Rectangle: pick the opposite corner in the viewport (Esc to cancel)"
+            }
+            Self::MeshPlane { first: None, .. } => {
+                "MeshPlane: pick the first corner in the viewport (Esc to cancel)"
+            }
+            Self::MeshPlane { first: Some(_), .. } => {
+                "MeshPlane: pick the opposite corner in the viewport (Esc to cancel)"
             }
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
@@ -509,6 +521,7 @@ impl InteractiveCommand {
             | Self::Curve { .. }
             | Self::InterpCrv
             | Self::Rectangle { first: None }
+            | Self::MeshPlane { first: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -550,6 +563,7 @@ impl InteractiveCommand {
             | Self::Circle { center: start }
             | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
+            | Self::MeshPlane { first: start, .. }
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
@@ -707,7 +721,45 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if normalized == "curve" {
+        let command = if normalized == "meshplane" {
+            let mut x_count = DEFAULT_MESH_PLANE_FACE_COUNT;
+            let mut y_count = DEFAULT_MESH_PLANE_FACE_COUNT;
+            let mut x_seen = false;
+            let mut y_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let Ok(count) = value.parse::<usize>() else {
+                    return false;
+                };
+                if count == 0 {
+                    return false;
+                }
+                if name.eq_ignore_ascii_case("XCount") && !x_seen {
+                    x_count = count;
+                    x_seen = true;
+                } else if name.eq_ignore_ascii_case("YCount") && !y_seen {
+                    y_count = count;
+                    y_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            if x_count
+                .checked_mul(y_count)
+                .is_none_or(|face_count| face_count > MAX_MESH_PLANE_FACES)
+            {
+                return false;
+            }
+            InteractiveCommand::MeshPlane {
+                first: None,
+                x_count,
+                y_count,
+            }
+        } else if normalized == "curve" {
             let mut degree = 3;
             let mut closure = ControlPointCurveClosure::Open;
             let mut degree_seen = false;
@@ -1709,6 +1761,44 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
             }
+            InteractiveCommand::MeshPlane {
+                first: None,
+                x_count,
+                y_count,
+            } => {
+                let command = InteractiveCommand::MeshPlane {
+                    first: Some(point),
+                    x_count,
+                    y_count,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("First corner: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshPlane {
+                first: Some(first),
+                x_count,
+                y_count,
+            } => {
+                let tolerance = self.document.tolerance().absolute();
+                if (first.x() - point.x()).abs() <= tolerance
+                    || (first.y() - point.y()).abs() <= tolerance
+                {
+                    self.push_log(
+                        "Error: mesh-plane width and height must both exceed model tolerance"
+                            .to_owned(),
+                    );
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "MeshPlane {} {} XCount={} YCount={}",
+                    format_model_point(first),
+                    format_model_point(point),
+                    x_count,
+                    y_count
+                ));
+            }
             InteractiveCommand::Polygon {
                 side_count,
                 center: None,
@@ -2426,6 +2516,7 @@ impl VibocerosApp {
         let mut split_disjoint_mesh_clicked = false;
         let mut mesh_clicked = false;
         let mut mesh_to_nurb_clicked = false;
+        let mut mesh_plane_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
         let mut collapse_mesh_edge_clicked = false;
@@ -2631,6 +2722,10 @@ impl VibocerosApp {
                 mesh_to_nurb_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Mesh → NURBS"))
                     .on_hover_text("Duplicate selected mesh faces as degree-one NURBS B-reps")
+                    .clicked();
+                mesh_plane_clicked = ui
+                    .button("Mesh Plane")
+                    .on_hover_text("Draw a 10-by-10 quadrilateral mesh plane")
                     .clicked();
                 triangulate_mesh_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Triangulate Mesh"))
@@ -2939,6 +3034,8 @@ impl VibocerosApp {
             self.execute_command("Mesh");
         } else if mesh_to_nurb_clicked {
             self.execute_command("MeshToNURB");
+        } else if mesh_plane_clicked {
+            self.try_start_interactive_command("MeshPlane");
         } else if triangulate_mesh_clicked {
             self.execute_command("TriangulateMesh");
         } else if swap_mesh_edge_clicked {
@@ -3787,6 +3884,37 @@ mod tests {
                 .all(|vertex| vertex.z() == first.z())
         );
         assert_eq!(app.document.undo_label(), Some("Rectangle"));
+    }
+
+    #[test]
+    fn interactive_mesh_plane_retains_counts_and_normalizes_corner_order() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("MeshPlane XCount=2 YCount=3"));
+        let first = point(4.0, 3.0, 2.0);
+        app.accept_drafting_point(first);
+        app.accept_drafting_point(point(4.0, 0.0, 8.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshPlane {
+                first: Some(first),
+                x_count: 2,
+                y_count: 3,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(0.0, 0.0, 8.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created mesh plane")
+        };
+        assert_eq!(mesh.face_count(), 6);
+        assert_eq!(mesh.vertices().len(), 12);
+        assert_eq!(mesh.vertices()[0], point(0.0, 0.0, 2.0));
+        assert_eq!(mesh.vertices()[11], point(4.0, 3.0, 2.0));
+        assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 1, 4, 3]));
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("MeshPlane"));
     }
 
     #[test]

@@ -211,6 +211,12 @@ pub enum GeometryError {
     #[error("a polygon mesh contains too many faces")]
     TooManyMeshFaces,
 
+    #[error("mesh-plane face counts must be positive, got {x_count} by {y_count}")]
+    InvalidMeshPlaneFaceCount { x_count: usize, y_count: usize },
+
+    #[error("mesh-plane intervals must be strictly increasing")]
+    InvalidMeshPlaneInterval,
+
     #[error("a mesh face subset must contain at least one face")]
     EmptyMeshFaceSubset,
 

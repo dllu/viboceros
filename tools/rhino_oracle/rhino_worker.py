@@ -4715,6 +4715,36 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "mesh_plane":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        x_interval = Rhino.Geometry.Interval(
+            _finite(operation["x_interval"][0], "mesh-plane x interval"),
+            _finite(operation["x_interval"][1], "mesh-plane x interval"),
+        )
+        y_interval = Rhino.Geometry.Interval(
+            _finite(operation["y_interval"][0], "mesh-plane y interval"),
+            _finite(operation["y_interval"][1], "mesh-plane y interval"),
+        )
+        x_count = int(operation["x_count"])
+        y_count = int(operation["y_count"])
+
+        def create_mesh_plane():
+            mesh = Rhino.Geometry.Mesh.CreateFromPlane(
+                plane, x_interval, y_interval, x_count, y_count
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh plane")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_plane)
+
     if kind == "nurbs_surface_mesh":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

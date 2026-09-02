@@ -11,9 +11,10 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, CircularArc3,
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
-    MAX_CURVE_DIVISION_POINTS, MAX_REGULAR_POLYGON_SIDES, MeshEdgeFilter, MeshFaceExtraction,
-    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    MAX_CURVE_DIVISION_POINTS, MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshEdgeFilter,
+    MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3,
+    PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -98,6 +99,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(MeshToNurbCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MeshPlaneCommand)
             .expect("unique built-in command");
         registry
             .register(BoxCommand)
@@ -1609,6 +1613,127 @@ fn parse_mesh_to_nurb_arguments(
         trim_triangular_faces,
         use_ngons,
     })
+}
+
+pub const DEFAULT_MESH_PLANE_FACE_COUNT: usize = 10;
+const MESH_PLANE_USAGE: &str =
+    "MeshPlane first-corner opposite-corner [XCount=positive-integer] [YCount=positive-integer]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct MeshPlaneCommandOptions {
+    x_count: usize,
+    y_count: usize,
+}
+
+struct MeshPlaneCommand;
+
+impl Command for MeshPlaneCommand {
+    fn name(&self) -> &'static str {
+        "MeshPlane"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let leading_options = mesh_plane_leading_option_count(arguments);
+        let (first, opposite, options) = if leading_options == 0 {
+            let (first, first_consumed) = parse_point(arguments)?;
+            let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
+            let options =
+                parse_mesh_plane_arguments(&arguments[first_consumed + opposite_consumed..])?;
+            (first, opposite, options)
+        } else {
+            let options = parse_mesh_plane_arguments(&arguments[..leading_options])?;
+            let (first, first_consumed) = parse_point(&arguments[leading_options..])?;
+            let point_start = leading_options + first_consumed;
+            let (opposite, opposite_consumed) = parse_point(&arguments[point_start..])?;
+            require_consumed(arguments, point_start + opposite_consumed, MESH_PLANE_USAGE)?;
+            (first, opposite, options)
+        };
+        let min_x = first.x().min(opposite.x());
+        let max_x = first.x().max(opposite.x());
+        let min_y = first.y().min(opposite.y());
+        let max_y = first.y().max(opposite.y());
+        let frame = Frame3::try_from_directions(
+            Point3::try_new(0.0, 0.0, first.z())?,
+            Vector3::try_new(1.0, 0.0, 0.0)?,
+            Vector3::try_new(0.0, 1.0, 0.0)?,
+            document.tolerance(),
+        )?;
+        let mesh = TriangleMesh::try_plane_grid(
+            frame,
+            [min_x, max_x],
+            [min_y, max_y],
+            options.x_count,
+            options.y_count,
+            document.tolerance(),
+        )?;
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Added mesh plane {id} ({} × {} faces)",
+            options.x_count, options.y_count
+        ))
+    }
+}
+
+fn mesh_plane_leading_option_count(arguments: &[&str]) -> usize {
+    let mut index = 0;
+    while let Some(argument) = arguments.get(index) {
+        let name = argument.split_once('=').map_or(*argument, |(name, _)| name);
+        if !option_name_eq(name, "XCount") && !option_name_eq(name, "YCount") {
+            break;
+        }
+        index = index.saturating_add(if argument.contains('=') { 1 } else { 2 });
+        if index >= arguments.len() {
+            return arguments.len();
+        }
+    }
+    index
+}
+
+fn parse_mesh_plane_arguments(arguments: &[&str]) -> Result<MeshPlaneCommandOptions, CommandError> {
+    let mut options = MeshPlaneCommandOptions {
+        x_count: DEFAULT_MESH_PLANE_FACE_COUNT,
+        y_count: DEFAULT_MESH_PLANE_FACE_COUNT,
+    };
+    let mut x_seen = false;
+    let mut y_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let argument = arguments[index];
+        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
+            (name, value, 1)
+        } else if option_name_eq(argument, "XCount") || option_name_eq(argument, "YCount") {
+            let value = arguments
+                .get(index + 1)
+                .ok_or(CommandError::Usage(MESH_PLANE_USAGE))?;
+            (argument, *value, 2)
+        } else {
+            return Err(CommandError::Usage(MESH_PLANE_USAGE));
+        };
+        let count = value
+            .trim_start_matches('_')
+            .parse::<usize>()
+            .ok()
+            .filter(|count| *count > 0)
+            .ok_or_else(|| CommandError::InvalidMeshPlaneFaceCount(value.to_owned()))?;
+        if option_name_eq(name, "XCount") && !x_seen {
+            options.x_count = count;
+            x_seen = true;
+        } else if option_name_eq(name, "YCount") && !y_seen {
+            options.y_count = count;
+            y_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_PLANE_USAGE));
+        }
+        index += consumed;
+    }
+    if options
+        .x_count
+        .checked_mul(options.y_count)
+        .is_none_or(|face_count| face_count > MAX_MESH_PLANE_FACES)
+    {
+        return Err(GeometryError::TooManyMeshFaces.into());
+    }
+    Ok(options)
 }
 
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
@@ -12543,6 +12668,9 @@ pub enum CommandError {
     #[error("'{0}' is not a valid non-negative integer")]
     InvalidInteger(String),
 
+    #[error("'{0}' is not a valid positive mesh-plane face count")]
+    InvalidMeshPlaneFaceCount(String),
+
     #[error("'{0}' is not a valid r,g,b color with components from 0 through 255")]
     InvalidColor(String),
 
@@ -13114,7 +13242,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshPlane, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -19510,6 +19638,82 @@ mod tests {
             document.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn mesh_plane_creates_an_unselected_rhino_ordered_top_view_grid() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert_eq!(
+            parse_mesh_plane_arguments(&[]).unwrap(),
+            MeshPlaneCommandOptions {
+                x_count: 10,
+                y_count: 10,
+            }
+        );
+        assert_eq!(
+            parse_mesh_plane_arguments(&["_XCount=_2", "-YCount", "3"]).unwrap(),
+            MeshPlaneCommandOptions {
+                x_count: 2,
+                y_count: 3,
+            }
+        );
+
+        let message = registry
+            .execute(&mut document, "MeshPlane XCount=2 YCount=3 4,3,2 0,0,9")
+            .unwrap();
+        assert!(message.ends_with("(2 × 3 faces)"));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.selected_object_count(), 0);
+        let Geometry::Mesh(mesh) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshPlane must create a polygon mesh")
+        };
+        assert_eq!(mesh.vertices().len(), 12);
+        assert_eq!(mesh.face_count(), 6);
+        assert_eq!(mesh.vertices()[0], Point3::try_new(0.0, 0.0, 2.0).unwrap());
+        assert_eq!(mesh.vertices()[11], Point3::try_new(4.0, 3.0, 2.0).unwrap());
+        assert_eq!(
+            mesh.faces(),
+            &[
+                viboceros_geometry::MeshFace::Quad([0, 1, 4, 3]),
+                viboceros_geometry::MeshFace::Quad([1, 2, 5, 4]),
+                viboceros_geometry::MeshFace::Quad([3, 4, 7, 6]),
+                viboceros_geometry::MeshFace::Quad([4, 5, 8, 7]),
+                viboceros_geometry::MeshFace::Quad([6, 7, 10, 9]),
+                viboceros_geometry::MeshFace::Quad([7, 8, 11, 10]),
+            ]
+        );
+        assert_eq!(
+            mesh.face_normal(0).unwrap().as_vector().to_array(),
+            [0.0, 0.0, 1.0]
+        );
+        assert_eq!(document.undo_label(), Some("MeshPlane"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 0);
+    }
+
+    #[test]
+    fn mesh_plane_rejects_invalid_counts_and_rectangles_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "MeshPlane",
+            "MeshPlane 0,0 4,3 XCount=0",
+            "MeshPlane 0,0 4,3 XCount=nope",
+            "MeshPlane 0,0 4,3 XCount=2 XCount=3",
+            "MeshPlane 0,0 4,3 Unknown=2",
+            "MeshPlane 0,0 4,3 XCount=1000001 YCount=1",
+            "MeshPlane 0,0 0,3 XCount=2 YCount=3",
+            "MeshPlane 0,0 4,0 XCount=2 YCount=3",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0, "{command}");
+            assert_eq!(document.undo_label(), None, "{command}");
+        }
     }
 
     #[test]

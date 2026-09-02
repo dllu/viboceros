@@ -351,6 +351,16 @@ pub enum Operation {
         faces: Vec<Vec<u32>>,
         trim_triangular_faces: bool,
     },
+    MeshPlane {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        x_interval: [f64; 2],
+        y_interval: [f64; 2],
+        x_count: usize,
+        y_count: usize,
+    },
     NurbsSurfaceMesh {
         id: String,
         degree_u: usize,
@@ -447,6 +457,7 @@ impl Operation {
             | Self::MeshFillHole { id, .. }
             | Self::MeshFillHoles { id, .. }
             | Self::MeshToNurb { id, .. }
+            | Self::MeshPlane { id, .. }
             | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
@@ -1600,6 +1611,34 @@ fn execute(
                 )
             })?;
             (mesh_to_nurb_brep_value(&brep)?, elapsed)
+        }
+        Operation::MeshPlane {
+            origin,
+            x_axis,
+            y_axis,
+            x_interval,
+            y_interval,
+            x_count,
+            y_count,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_plane_grid(
+                    frame,
+                    black_box(*x_interval),
+                    black_box(*y_interval),
+                    black_box(*x_count),
+                    black_box(*y_count),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
         }
         Operation::NurbsSurfaceMesh {
             degree_u,
@@ -5588,6 +5627,48 @@ mod tests {
                 ]],
                 "quad_count": 1,
                 "triangle_count": 0,
+            })
+        );
+    }
+
+    #[test]
+    fn creates_ordered_mesh_plane_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshPlane {
+            id: "grid".to_owned(),
+            origin: [1.0, -2.0, 5.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            x_interval: [-2.0, 4.0],
+            y_interval: [1.0, 10.0],
+            x_count: 2,
+            y_count: 3,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "faces": [
+                    [0, 1, 4, 3],
+                    [1, 2, 5, 4],
+                    [3, 4, 7, 6],
+                    [4, 5, 8, 7],
+                    [6, 7, 10, 9],
+                    [7, 8, 11, 10],
+                ],
+                "vertices": [
+                    [-1.0, -1.0, 5.0],
+                    [2.0, -1.0, 5.0],
+                    [5.0, -1.0, 5.0],
+                    [-1.0, 2.0, 5.0],
+                    [2.0, 2.0, 5.0],
+                    [5.0, 2.0, 5.0],
+                    [-1.0, 5.0, 5.0],
+                    [2.0, 5.0, 5.0],
+                    [5.0, 5.0, 5.0],
+                    [-1.0, 8.0, 5.0],
+                    [2.0, 8.0, 5.0],
+                    [5.0, 8.0, 5.0],
+                ],
             })
         );
     }
