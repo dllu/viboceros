@@ -50,6 +50,15 @@ pub enum GeometryError {
     #[error("invalid NURBS knot vector: {context}")]
     InvalidKnotVector { context: &'static str },
 
+    #[error("NURBS knot multiplicity must be from 1 through {maximum}, got {actual}")]
+    InvalidKnotMultiplicity { actual: usize, maximum: usize },
+
+    #[error("a NURBS curve split parameter must lie strictly inside its domain")]
+    InvalidCurveSplitParameter,
+
+    #[error("a NURBS curve trim interval must be finite, increasing, and inside its domain")]
+    InvalidCurveTrimInterval,
+
     #[error("invalid B-rep topology: {context}")]
     InvalidBrepTopology { context: &'static str },
 

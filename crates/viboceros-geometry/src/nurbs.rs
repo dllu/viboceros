@@ -436,6 +436,143 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, control_points, knots)
     }
 
+    /// Returns the exact full-knot-vector multiplicity of `parameter`.
+    ///
+    /// Knot equality is intentionally exact. Near knots remain distinct so a
+    /// refinement never changes the caller's requested parameter value.
+    pub fn knot_multiplicity(&self, parameter: Real) -> Result<usize, GeometryError> {
+        self.validate_parameter(parameter)?;
+        Ok(self.knots.iter().filter(|knot| **knot == parameter).count())
+    }
+
+    /// Inserts `parameter` until its full-knot-vector multiplicity is at least
+    /// `target_multiplicity`, without changing the curve's parameterization or
+    /// geometric image.
+    ///
+    /// A multiplicity of `degree + 1` is supported so callers can represent an
+    /// existing discontinuity explicitly. Asking for a multiplicity the curve
+    /// already has is a no-op. Refining either active-domain endpoint performs
+    /// the equivalent shape-preserving full clamp, because a non-clamped
+    /// endpoint is not an ordinary interior knot.
+    pub fn try_insert_knot(
+        &self,
+        parameter: Real,
+        target_multiplicity: usize,
+    ) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        let maximum = self
+            .degree
+            .checked_add(1)
+            .ok_or(GeometryError::InvalidDegree)?;
+        if target_multiplicity == 0 || target_multiplicity > maximum {
+            return Err(GeometryError::InvalidKnotMultiplicity {
+                actual: target_multiplicity,
+                maximum,
+            });
+        }
+
+        let current_multiplicity = self.knot_multiplicity_unchecked(parameter);
+        if current_multiplicity >= target_multiplicity {
+            return Ok(self.clone());
+        }
+        let domain = self.domain();
+        if parameter == *domain.start() {
+            return self.clamped_at_start(parameter);
+        }
+        if parameter == *domain.end() {
+            return self.clamped_at_end(parameter);
+        }
+
+        let mut refined = self.clone();
+        while refined.knot_multiplicity_unchecked(parameter) < target_multiplicity {
+            refined = refined.insert_knot_once(parameter)?;
+        }
+        Ok(refined)
+    }
+
+    /// Splits at a parameter strictly inside the active domain.
+    ///
+    /// Both results retain the source parameter values and are clamped at
+    /// their active ends. At an existing `degree + 1` knot, the independent
+    /// left- and right-hand controls remain independent.
+    pub fn try_split(&self, parameter: Real) -> Result<(Self, Self), GeometryError> {
+        require_finite([parameter], "NURBS curve split parameter")?;
+        let domain = self.domain();
+        if parameter <= *domain.start() || parameter >= *domain.end() {
+            return Err(GeometryError::InvalidCurveSplitParameter);
+        }
+
+        let multiplicity = self.knot_multiplicity_unchecked(parameter);
+        let refined = if multiplicity < self.degree {
+            self.try_insert_knot(parameter, self.degree)?
+        } else {
+            self.clone()
+        };
+        let multiplicity = refined.knot_multiplicity_unchecked(parameter);
+        let first_knot = refined.knots.partition_point(|knot| *knot < parameter);
+        let after_knots = refined.knots.partition_point(|knot| *knot <= parameter);
+
+        let (left_controls, left_knots, right_controls, right_knots) =
+            if multiplicity == self.degree + 1 {
+                (
+                    refined.control_points[..first_knot].to_vec(),
+                    refined.knots[..after_knots].to_vec(),
+                    refined.control_points[first_knot..].to_vec(),
+                    refined.knots[first_knot..].to_vec(),
+                )
+            } else {
+                debug_assert_eq!(multiplicity, self.degree);
+                let shared_control = after_knots - self.degree - 1;
+                let mut left_knots = refined.knots[..after_knots].to_vec();
+                left_knots.push(parameter);
+                let mut right_knots =
+                    Vec::with_capacity(refined.knots.len() - (shared_control + 1) + 1);
+                right_knots.push(parameter);
+                right_knots.extend_from_slice(&refined.knots[shared_control + 1..]);
+                (
+                    refined.control_points[..=shared_control].to_vec(),
+                    left_knots,
+                    refined.control_points[shared_control..].to_vec(),
+                    right_knots,
+                )
+            };
+
+        let left = Self::try_new_rational(self.degree, left_controls, left_knots)?
+            .clamped_to_active_domain()?;
+        let right = Self::try_new_rational(self.degree, right_controls, right_knots)?
+            .clamped_to_active_domain()?;
+        Ok((left, right))
+    }
+
+    /// Extracts an exact subcurve while retaining the source parameter values.
+    /// Partial trims are clamped at both active ends. Trimming to the exact
+    /// existing domain is a no-op, preserving periodic form.
+    pub fn try_trimmed(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        let start = *interval.start();
+        let end = *interval.end();
+        if !start.is_finite() || !end.is_finite() || start >= end {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+        let domain = self.domain();
+        if start < *domain.start() || end > *domain.end() {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+        if start == *domain.start() && end == *domain.end() {
+            return Ok(self.clone());
+        }
+
+        let after_start = if start == *domain.start() {
+            self.clone()
+        } else {
+            self.try_split(start)?.1
+        };
+        if end == *domain.end() {
+            Ok(after_start)
+        } else {
+            Ok(after_start.try_split(end)?.0)
+        }
+    }
+
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
         let control_points = self
             .control_points
@@ -451,6 +588,11 @@ impl NurbsCurve {
     }
 
     fn checked_span(&self, parameter: Real) -> Result<usize, GeometryError> {
+        self.validate_parameter(parameter)?;
+        Ok(self.find_span(parameter))
+    }
+
+    fn validate_parameter(&self, parameter: Real) -> Result<(), GeometryError> {
         require_finite([parameter], "NURBS parameter")?;
         let domain = self.domain();
         let domain_start = *domain.start();
@@ -462,7 +604,119 @@ impl NurbsCurve {
                 domain_end,
             });
         }
-        Ok(self.find_span(parameter))
+        Ok(())
+    }
+
+    fn knot_multiplicity_unchecked(&self, parameter: Real) -> usize {
+        self.knots.iter().filter(|knot| **knot == parameter).count()
+    }
+
+    fn insert_knot_once(&self, parameter: Real) -> Result<Self, GeometryError> {
+        let control_count = self.control_points.len();
+        let last_control = control_count - 1;
+        debug_assert!(parameter > self.knots[self.degree]);
+        debug_assert!(parameter < self.knots[control_count]);
+        let span = self.knots.partition_point(|knot| *knot <= parameter) - 1;
+        let multiplicity = self.knot_multiplicity_unchecked(parameter);
+        debug_assert!(multiplicity <= self.degree);
+        debug_assert!(span >= self.degree && span <= last_control);
+
+        let first_unchanged = span - self.degree;
+        let first_shifted = span - multiplicity + 1;
+        let mut controls = Vec::with_capacity(control_count + 1);
+        for new_index in 0..=control_count {
+            let control = if new_index <= first_unchanged {
+                self.control_points[new_index]
+            } else if new_index < first_shifted {
+                let denominator_start = self.knots[new_index];
+                let denominator_end = self.knots[new_index + self.degree];
+                let alpha = interval_fraction(parameter, denominator_start, denominator_end)?;
+                blend_weighted_control_points(
+                    self.control_points[new_index - 1],
+                    self.control_points[new_index],
+                    alpha,
+                )?
+            } else {
+                self.control_points[new_index - 1]
+            };
+            controls.push(control);
+        }
+
+        let mut knots = Vec::with_capacity(self.knots.len() + 1);
+        knots.extend_from_slice(&self.knots[..=span]);
+        knots.push(parameter);
+        knots.extend_from_slice(&self.knots[span + 1..]);
+        Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    fn clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
+        let start = *self.domain().start();
+        let end = *self.domain().end();
+        self.clamped_at_start(start)?.clamped_at_end(end)
+    }
+
+    fn clamped_at_start(&self, start: Real) -> Result<Self, GeometryError> {
+        if self.knots[..=self.degree].iter().all(|knot| *knot == start) {
+            return Ok(self.clone());
+        }
+
+        let span = self.find_span(start);
+        let (_, right_controls) = self.de_boor_side_controls(span, start)?;
+        let mut controls = Vec::with_capacity(self.control_points.len() - (span - self.degree));
+        controls.extend(right_controls);
+        controls.extend_from_slice(&self.control_points[span + 1..]);
+        let mut knots = Vec::with_capacity(controls.len() + self.degree + 1);
+        knots.resize(self.degree + 1, start);
+        knots.extend_from_slice(&self.knots[span + 1..]);
+        Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    fn clamped_at_end(&self, end: Real) -> Result<Self, GeometryError> {
+        if self.knots[self.knots.len() - self.degree - 1..]
+            .iter()
+            .all(|knot| *knot == end)
+        {
+            return Ok(self.clone());
+        }
+
+        let span = self.find_span(end);
+        let (left_controls, _) = self.de_boor_side_controls(span, end)?;
+        let first_active_control = span - self.degree;
+        let mut controls = Vec::with_capacity(span + 1);
+        controls.extend_from_slice(&self.control_points[..first_active_control]);
+        controls.extend(left_controls);
+        let mut knots = Vec::with_capacity(controls.len() + self.degree + 1);
+        knots.extend_from_slice(&self.knots[..=span]);
+        knots.resize(knots.len() + self.degree + 1, end);
+        Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    fn de_boor_side_controls(
+        &self,
+        span: usize,
+        parameter: Real,
+    ) -> Result<(Vec<WeightedPoint3>, Vec<WeightedPoint3>), GeometryError> {
+        let mut work = self.control_points[span - self.degree..=span].to_vec();
+        let mut left = Vec::with_capacity(self.degree + 1);
+        let mut right = Vec::with_capacity(self.degree + 1);
+        left.push(work[0]);
+        right.push(work[self.degree]);
+        for level in 1..=self.degree {
+            for local_index in (level..=self.degree).rev() {
+                let knot_index = span - self.degree + local_index;
+                let alpha = interval_fraction(
+                    parameter,
+                    self.knots[knot_index],
+                    self.knots[knot_index + self.degree - level + 1],
+                )?;
+                work[local_index] =
+                    blend_weighted_control_points(work[local_index - 1], work[local_index], alpha)?;
+            }
+            left.push(work[level]);
+            right.push(work[self.degree]);
+        }
+        right.reverse();
+        Ok((left, right))
     }
 
     fn active_homogeneous_control_points(
@@ -655,10 +909,18 @@ pub(crate) fn find_span_in_knots(
 ) -> usize {
     let last_control_point = control_count - 1;
     if parameter >= knots[control_count] {
-        return last_control_point;
+        // Select the nonempty span immediately to the left. This also handles
+        // valid full vectors whose equal end knots straddle the active-domain
+        // index instead of occupying only the exterior tail.
+        return (knots.partition_point(|knot| *knot < knots[control_count]) - 1)
+            .clamp(degree, last_control_point);
     }
     if parameter <= knots[degree] {
-        return degree;
+        // Select the nonempty span immediately to the right. A clamped vector
+        // still returns `degree`; a refined non-clamped start can have more
+        // equal knots after that index.
+        return (knots.partition_point(|knot| *knot <= knots[degree]) - 1)
+            .clamp(degree, last_control_point);
     }
 
     let mut low = degree;
@@ -940,6 +1202,59 @@ fn blend_homogeneous<const DIMENSION: usize>(
     Ok(result)
 }
 
+fn blend_weighted_control_points(
+    left: WeightedPoint3,
+    right: WeightedPoint3,
+    alpha: Real,
+) -> Result<WeightedPoint3, GeometryError> {
+    if alpha == 0.0 {
+        return Ok(left);
+    }
+    if alpha == 1.0 {
+        return Ok(right);
+    }
+    if !alpha.is_finite() || !(0.0..=1.0).contains(&alpha) {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "knot-insertion blend factor is outside zero to one",
+        });
+    }
+
+    // Work with weights normalized by their local maximum. This avoids the
+    // overflow in `weight * coordinate` that a literal homogeneous blend can
+    // encounter, while producing the identical projective control point.
+    let scale = left.weight.max(right.weight);
+    let left_weight = left.weight / scale;
+    let right_weight = right.weight / scale;
+    let complement = 1.0 - alpha;
+    let normalized_weight = left_weight.mul_add(complement, right_weight * alpha);
+    if !normalized_weight.is_finite() || normalized_weight <= 0.0 {
+        return Err(GeometryError::NonFinite {
+            context: "knot-insertion control weight",
+        });
+    }
+    let weight = normalized_weight * scale;
+    if !weight.is_finite() || weight <= 0.0 {
+        return Err(GeometryError::NonFinite {
+            context: "knot-insertion control weight",
+        });
+    }
+
+    let right_fraction = ((right_weight * alpha) / normalized_weight).clamp(0.0, 1.0);
+    let left_coordinates = left.point.to_array();
+    let right_coordinates = right.point.to_array();
+    let point: [Real; 3] = std::array::from_fn(|index| {
+        left_coordinates[index].mul_add(
+            1.0 - right_fraction,
+            right_coordinates[index] * right_fraction,
+        )
+    });
+    require_finite(point, "knot-insertion control point")?;
+    Ok(WeightedPoint3 {
+        point: Point3::try_new(point[0], point[1], point[2])?,
+        weight,
+    })
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -950,10 +1265,13 @@ mod tests {
     }
 
     fn assert_point_near(actual: Point3, expected: Point3) {
-        assert!(actual.is_near(
-            expected,
-            Tolerance::try_new(1.0e-12, 1.0e-12, 1.0e-12).unwrap()
-        ));
+        assert!(
+            actual.is_near(
+                expected,
+                Tolerance::try_new(1.0e-12, 1.0e-12, 1.0e-12).unwrap()
+            ),
+            "actual {actual:?}, expected {expected:?}"
+        );
     }
 
     #[test]
@@ -1494,5 +1812,345 @@ mod tests {
         assert_eq!(curve.evaluate(0.5).unwrap(), point(10.0, 0.0));
         assert!(curve.evaluate(0.5_f64.next_down()).unwrap().x() < 1.0);
         assert_eq!(curve.derivative_at(0.5).unwrap().x(), 2.0);
+    }
+
+    #[test]
+    fn knot_insertion_preserves_a_rational_nonuniform_curve() {
+        let curve = NurbsCurve::try_new_rational(
+            3,
+            vec![
+                WeightedPoint3::try_new(point(-3.0, 1.0), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(-1.0, 4.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(2.0, -2.0), 0.4).unwrap(),
+                WeightedPoint3::try_new(point(4.0, 3.0), 3.5).unwrap(),
+                WeightedPoint3::try_new(point(7.0, -1.0), 1.25).unwrap(),
+                WeightedPoint3::try_new(point(9.0, 2.0), 0.9).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 0.35, 0.8, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let refined = curve.try_insert_knot(0.52, 3).unwrap();
+
+        assert_eq!(refined.degree(), curve.degree());
+        assert_eq!(refined.domain(), curve.domain());
+        assert_eq!(refined.knot_multiplicity(0.52).unwrap(), 3);
+        assert_eq!(
+            refined.control_points().len(),
+            curve.control_points().len() + 3
+        );
+        for sample in 0..=64 {
+            let parameter = sample as Real / 64.0;
+            assert_point_near(
+                refined.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+            let actual = refined.derivative_at(parameter).unwrap();
+            let expected = curve.derivative_at(parameter).unwrap();
+            assert!(Tolerance::DEFAULT.approx_eq(actual.x(), expected.x()));
+            assert!(Tolerance::DEFAULT.approx_eq(actual.y(), expected.y()));
+            assert!(Tolerance::DEFAULT.approx_eq(actual.z(), expected.z()));
+        }
+
+        let fully_refined = refined.try_insert_knot(0.52, 4).unwrap();
+        assert_eq!(fully_refined.knot_multiplicity(0.52).unwrap(), 4);
+        for parameter in [0.0, 0.2, 0.52, 0.7, 1.0] {
+            assert_point_near(
+                fully_refined.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
+        let actual = fully_refined.derivative_at(0.52).unwrap();
+        let expected = curve.derivative_at(0.52).unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(actual.x(), expected.x()));
+        assert!(Tolerance::DEFAULT.approx_eq(actual.y(), expected.y()));
+        assert!(Tolerance::DEFAULT.approx_eq(actual.z(), expected.z()));
+        assert_eq!(
+            fully_refined.try_insert_knot(0.52, 2).unwrap(),
+            fully_refined
+        );
+    }
+
+    #[test]
+    fn endpoint_refinement_preserves_nonclamped_curve_evaluation() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(-2.0, 1.0),
+                point(0.0, 4.0),
+                point(5.0, -2.0),
+                point(8.0, 3.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0],
+        )
+        .unwrap();
+
+        for parameter in [0.0, 2.0] {
+            let refined = curve.try_insert_knot(parameter, 3).unwrap();
+            assert_eq!(refined.knot_multiplicity(parameter).unwrap(), 3);
+            for sample in 0..=32 {
+                let t = sample as Real / 16.0;
+                let actual = refined.evaluate(t).unwrap();
+                let expected = curve.evaluate(t).unwrap();
+                assert!(
+                    actual.is_near(
+                        expected,
+                        Tolerance::try_new(1.0e-12, 1.0e-12, 1.0e-12).unwrap()
+                    ),
+                    "refined endpoint {parameter}, sample {t}: actual {actual:?}, expected {expected:?}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn split_preserves_rational_curve_parameters_and_derivatives() {
+        let middle_weight = 0.5_f64.sqrt();
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (left, right) = curve.try_split(0.4).unwrap();
+
+        assert_eq!(left.domain(), 0.0..=0.4);
+        assert_eq!(right.domain(), 0.4..=1.0);
+        assert!(
+            left.knots()[left.knots().len() - 3..]
+                .iter()
+                .all(|knot| *knot == 0.4)
+        );
+        assert!(right.knots()[..3].iter().all(|knot| *knot == 0.4));
+        assert_point_near(left.evaluate(0.4).unwrap(), right.evaluate(0.4).unwrap());
+        for (piece, start, end) in [(&left, 0.0_f64, 0.4_f64), (&right, 0.4, 1.0)] {
+            for sample in 0..=16 {
+                let fraction = sample as Real / 16.0;
+                let parameter = start.mul_add(1.0 - fraction, end * fraction);
+                assert_point_near(
+                    piece.evaluate(parameter).unwrap(),
+                    curve.evaluate(parameter).unwrap(),
+                );
+                let actual = piece.derivative_at(parameter).unwrap();
+                let expected = curve.derivative_at(parameter).unwrap();
+                assert!(Tolerance::DEFAULT.approx_eq(actual.x(), expected.x()));
+                assert!(Tolerance::DEFAULT.approx_eq(actual.y(), expected.y()));
+                assert!(Tolerance::DEFAULT.approx_eq(actual.z(), expected.z()));
+            }
+        }
+    }
+
+    #[test]
+    fn split_reuses_degree_multiplicity_control_and_preserves_full_break() {
+        let continuous = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(1.0, 3.0),
+                point(2.0, 1.0),
+                point(5.0, -2.0),
+                point(8.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 0.5, 0.5, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (left, right) = continuous.try_split(0.5).unwrap();
+        assert_eq!(left.control_points().len(), 3);
+        assert_eq!(right.control_points().len(), 3);
+        assert_eq!(left.control_points()[2], right.control_points()[0]);
+        assert_point_near(
+            left.evaluate(0.5).unwrap(),
+            continuous.evaluate(0.5).unwrap(),
+        );
+        assert_point_near(
+            right.evaluate(0.5).unwrap(),
+            continuous.evaluate(0.5).unwrap(),
+        );
+
+        let discontinuous = NurbsCurve::try_new(
+            1,
+            vec![
+                point(0.0, 0.0),
+                point(1.0, 0.0),
+                point(10.0, 0.0),
+                point(11.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.5, 0.5, 1.0, 1.0],
+        )
+        .unwrap();
+        let (left, right) = discontinuous.try_split(0.5).unwrap();
+        assert_eq!(left.control_points().len(), 2);
+        assert_eq!(right.control_points().len(), 2);
+        assert_eq!(left.evaluate(0.5).unwrap(), point(1.0, 0.0));
+        assert_eq!(right.evaluate(0.5).unwrap(), point(10.0, 0.0));
+        assert_ne!(left.control_points()[1], right.control_points()[0]);
+    }
+
+    #[test]
+    fn partial_trim_is_exact_and_clamps_nonclamped_ends() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(-2.0, 1.0), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 4.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(5.0, -2.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(8.0, 3.0), 1.25).unwrap(),
+            ],
+            vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0],
+        )
+        .unwrap();
+        let trimmed = curve.try_trimmed(0.25..=1.6).unwrap();
+
+        assert_eq!(trimmed.domain(), 0.25..=1.6);
+        assert!(trimmed.knots()[..3].iter().all(|knot| *knot == 0.25));
+        assert!(
+            trimmed.knots()[trimmed.knots().len() - 3..]
+                .iter()
+                .all(|knot| *knot == 1.6)
+        );
+        for sample in 0..=32 {
+            let fraction = sample as Real / 32.0;
+            let parameter = 0.25_f64.mul_add(1.0 - fraction, 1.6 * fraction);
+            assert_point_near(
+                trimmed.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
+
+        let from_start = curve.try_trimmed(0.0..=1.6).unwrap();
+        assert!(from_start.knots()[..3].iter().all(|knot| *knot == 0.0));
+        assert_point_near(
+            from_start.evaluate(0.0).unwrap(),
+            curve.evaluate(0.0).unwrap(),
+        );
+        assert_eq!(curve.try_trimmed(curve.domain()).unwrap(), curve);
+    }
+
+    #[test]
+    fn splitting_periodic_curve_opens_and_clamps_both_pieces() {
+        let curve = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(-3.0, 0.0),
+                point(-1.0, 3.0),
+                point(2.0, 4.0),
+                point(5.0, 1.0),
+                point(4.0, -3.0),
+                point(0.0, -4.0),
+            ],
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let domain = curve.domain();
+        assert_eq!(curve.try_trimmed(domain.clone()).unwrap(), curve);
+        let split = curve.parameter_at(0.43).unwrap();
+        let (left, right) = curve.try_split(split).unwrap();
+
+        assert!(!left.is_periodic());
+        assert!(!right.is_periodic());
+        assert!(
+            left.knots()[..4]
+                .iter()
+                .all(|knot| *knot == *domain.start())
+        );
+        assert!(
+            left.knots()[left.knots().len() - 4..]
+                .iter()
+                .all(|knot| *knot == split)
+        );
+        assert!(right.knots()[..4].iter().all(|knot| *knot == split));
+        assert!(
+            right.knots()[right.knots().len() - 4..]
+                .iter()
+                .all(|knot| *knot == *domain.end())
+        );
+        for sample in 0..=40 {
+            let parameter = curve.parameter_at(sample as Real / 40.0).unwrap();
+            let piece = if parameter <= split { &left } else { &right };
+            assert_point_near(
+                piece.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
+        assert_point_near(
+            left.evaluate(*domain.start()).unwrap(),
+            right.evaluate(*domain.end()).unwrap(),
+        );
+    }
+
+    #[test]
+    fn refinement_handles_large_coordinates_and_weight_ranges() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(-1.0e300, 2.0e299, 0.0).unwrap(), 1.0e-100)
+                    .unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(8.0e299, -4.0e299, 0.0).unwrap(), 1.0e100)
+                    .unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(1.0e300, 6.0e299, 0.0).unwrap(), 2.0e99)
+                    .unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let refined = curve.try_insert_knot(0.5, 2).unwrap();
+        for parameter in [0.0, 0.2, 0.5, 0.8, 1.0] {
+            let actual = refined.evaluate(parameter).unwrap().to_array();
+            let expected = curve.evaluate(parameter).unwrap().to_array();
+            assert!(
+                actual
+                    .into_iter()
+                    .zip(expected)
+                    .all(|(actual, expected)| Tolerance::DEFAULT.approx_eq(actual, expected))
+            );
+        }
+        assert!(refined.control_points().iter().all(|control| {
+            control.weight().is_finite()
+                && control.point().to_array().into_iter().all(Real::is_finite)
+        }));
+    }
+
+    #[test]
+    fn refinement_split_and_trim_reject_invalid_requests() {
+        let curve = NurbsCurve::try_clamped_uniform(
+            2,
+            vec![point(0.0, 0.0), point(1.0, 2.0), point(3.0, 0.0)],
+        )
+        .unwrap();
+        assert_eq!(
+            curve.try_insert_knot(0.5, 0),
+            Err(GeometryError::InvalidKnotMultiplicity {
+                actual: 0,
+                maximum: 3
+            })
+        );
+        assert!(matches!(
+            curve.try_insert_knot(0.5, 4),
+            Err(GeometryError::InvalidKnotMultiplicity { .. })
+        ));
+        assert!(matches!(
+            curve.try_insert_knot(-0.1, 1),
+            Err(GeometryError::ParameterOutOfDomain { .. })
+        ));
+        assert!(curve.try_insert_knot(Real::NAN, 1).is_err());
+        for parameter in [-1.0, 0.0, 1.0, 2.0, Real::NAN] {
+            assert!(curve.try_split(parameter).is_err());
+        }
+        for interval in [
+            0.5..=0.5,
+            0.8..=0.2,
+            -0.1..=0.8,
+            0.2..=1.1,
+            Real::NAN..=0.5,
+            0.2..=Real::INFINITY,
+        ] {
+            assert_eq!(
+                curve.try_trimmed(interval),
+                Err(GeometryError::InvalidCurveTrimInterval)
+            );
+        }
     }
 }
