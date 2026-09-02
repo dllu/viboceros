@@ -49,6 +49,7 @@ id_type!(GroupId);
 pub enum SelectionMode {
     Replace,
     Add,
+    Remove,
     Toggle,
 }
 
@@ -1162,6 +1163,9 @@ impl Document {
             }
             SelectionMode::Add => {
                 next.extend(cluster);
+            }
+            SelectionMode::Remove => {
+                next.retain(|member| !cluster.contains(member));
             }
             SelectionMode::Toggle => {
                 if cluster.iter().all(|member| next.contains(member)) {
@@ -3464,6 +3468,33 @@ mod tests {
         assert!(document.is_selected(first));
         assert_eq!(document.clear_selection(), 1);
         assert_eq!(document.clear_selection(), 0);
+    }
+
+    #[test]
+    fn remove_selection_mode_only_deselects_matching_clusters() {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let second = document
+            .add_geometry(Geometry::Point(Point3::try_new(1.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let third = document
+            .add_geometry(Geometry::Point(Point3::try_new(2.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            document
+                .select_objects([second, third], SelectionMode::Remove)
+                .unwrap(),
+            1
+        );
+        assert!(document.is_selected(first));
+        assert!(!document.is_selected(second));
+        assert!(!document.is_selected(third));
     }
 
     #[test]

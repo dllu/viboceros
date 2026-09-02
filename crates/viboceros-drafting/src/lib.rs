@@ -2,7 +2,7 @@
 
 use thiserror::Error;
 use viboceros_document::{Document, Geometry, ObjectId};
-use viboceros_geometry::{GeometryError, Point3, Real};
+use viboceros_geometry::{GeometryError, Point3, PointCloud3, Real};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ObjectSnapKind {
@@ -56,7 +56,7 @@ impl ObjectSnap {
         self.object_id
     }
 
-    /// Distance from the cursor in the active viewport's XY projection.
+    /// Distance from the cursor in the projection used for the snap query.
     pub const fn distance(self) -> Real {
         self.distance
     }
@@ -113,6 +113,101 @@ pub fn nearest_object_snap(
     capture_radius: Real,
 ) -> Result<Option<ObjectSnap>, DraftingError> {
     validate_capture_radius(capture_radius)?;
+    nearest_object_snap_with_metric(
+        document,
+        &XySnapMetric {
+            cursor,
+            capture_radius,
+        },
+    )
+}
+
+/// Finds the closest visible feature after mapping candidates into an
+/// arbitrary two-dimensional viewport projection. The capture radius and the
+/// returned distance use the same units as `cursor` and `project`.
+pub fn nearest_object_snap_projected(
+    document: &Document,
+    cursor: [Real; 2],
+    capture_radius: Real,
+    project: impl Fn(Point3) -> Option<[Real; 2]>,
+) -> Result<Option<ObjectSnap>, DraftingError> {
+    validate_capture_radius(capture_radius)?;
+    nearest_object_snap_with_metric(
+        document,
+        &ProjectedSnapMetric {
+            cursor,
+            capture_radius,
+            project,
+        },
+    )
+}
+
+trait SnapMetric {
+    fn capture_radius(&self) -> Real;
+    fn distance(&self, point: Point3) -> Option<Real>;
+    fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError>;
+}
+
+struct XySnapMetric {
+    cursor: Point3,
+    capture_radius: Real,
+}
+
+impl SnapMetric for XySnapMetric {
+    fn capture_radius(&self) -> Real {
+        self.capture_radius
+    }
+
+    fn distance(&self, point: Point3) -> Option<Real> {
+        let distance = (point.x() - self.cursor.x()).hypot(point.y() - self.cursor.y());
+        distance.is_finite().then_some(distance)
+    }
+
+    fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
+        Ok(cloud
+            .nearest_xy(self.cursor, self.capture_radius)?
+            .map(|(_, point, _)| point))
+    }
+}
+
+struct ProjectedSnapMetric<F> {
+    cursor: [Real; 2],
+    capture_radius: Real,
+    project: F,
+}
+
+impl<F> SnapMetric for ProjectedSnapMetric<F>
+where
+    F: Fn(Point3) -> Option<[Real; 2]>,
+{
+    fn capture_radius(&self) -> Real {
+        self.capture_radius
+    }
+
+    fn distance(&self, point: Point3) -> Option<Real> {
+        let projected = (self.project)(point)?;
+        let distance = (projected[0] - self.cursor[0]).hypot(projected[1] - self.cursor[1]);
+        distance.is_finite().then_some(distance)
+    }
+
+    fn nearest_point_cloud(&self, cloud: &PointCloud3) -> Result<Option<Point3>, GeometryError> {
+        Ok(cloud
+            .points()
+            .iter()
+            .copied()
+            .filter_map(|point| self.distance(point).map(|distance| (distance, point)))
+            .filter(|(distance, _)| *distance <= self.capture_radius)
+            .min_by(|(first, _), (second, _)| first.total_cmp(second))
+            .map(|(_, point)| point))
+    }
+}
+
+fn nearest_object_snap_with_metric(
+    document: &Document,
+    metric: &impl SnapMetric,
+) -> Result<Option<ObjectSnap>, DraftingError> {
+    let cursor = metric;
+    let capture_radius = metric.capture_radius();
     let mut best = None;
 
     for object in document.objects() {
@@ -134,7 +229,7 @@ pub fn nearest_object_snap(
                 *point,
             ),
             Geometry::PointCloud(cloud) => {
-                if let Some((_, point, _)) = cloud.nearest_xy(cursor, capture_radius)? {
+                if let Some(point) = metric.nearest_point_cloud(cloud)? {
                     consider_candidate(
                         &mut best,
                         cursor,
@@ -396,14 +491,16 @@ fn validate_capture_radius(capture_radius: Real) -> Result<(), DraftingError> {
 
 fn consider_candidate(
     best: &mut Option<ObjectSnap>,
-    cursor: Point3,
+    metric: &impl SnapMetric,
     capture_radius: Real,
     object_id: ObjectId,
     kind: ObjectSnapKind,
     point: Point3,
 ) {
-    let distance = (point.x() - cursor.x()).hypot(point.y() - cursor.y());
-    if !distance.is_finite() || distance > capture_radius {
+    let Some(distance) = metric.distance(point) else {
+        return;
+    };
+    if distance > capture_radius {
         return;
     }
     let candidate = ObjectSnap {
@@ -505,6 +602,28 @@ mod tests {
         assert_eq!(snap.object_id(), cloud_id);
         assert_eq!(snap.kind(), ObjectSnapKind::Point);
         assert_eq!(snap.point(), point(3.0, 5.0, -7.0));
+    }
+
+    #[test]
+    fn projected_snapping_uses_the_requested_view_plane() {
+        let mut document = Document::default();
+        document
+            .add_geometry(Geometry::Point(point(0.0, 0.0, 0.0)))
+            .unwrap();
+        let cloud_id = document
+            .add_geometry(Geometry::PointCloud(
+                PointCloud3::try_new(vec![point(0.0, 4.0, 10.0), point(6.0, 0.0, 10.0)]).unwrap(),
+            ))
+            .unwrap();
+
+        let snap = nearest_object_snap_projected(&document, [0.05, 10.02], 0.1, |candidate| {
+            Some([candidate.x(), candidate.z()])
+        })
+        .unwrap()
+        .unwrap();
+        assert_eq!(snap.object_id(), cloud_id);
+        assert_eq!(snap.point(), point(0.0, 4.0, 10.0));
+        assert!(snap.distance() < 0.1);
     }
 
     #[test]

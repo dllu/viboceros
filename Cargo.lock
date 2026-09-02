@@ -3624,6 +3624,7 @@ name = "viboceros"
 version = "0.1.0"
 dependencies = [
  "eframe",
+ "nalgebra",
  "viboceros-command",
  "viboceros-document",
  "viboceros-drafting",

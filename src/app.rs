@@ -9,7 +9,9 @@ use viboceros_geometry::{
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
-use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, ViewportOutput};
+use crate::viewport::{
+    DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportOutput,
+};
 
 const MAX_LOG_ENTRIES: usize = 100;
 
@@ -558,9 +560,12 @@ pub struct VibocerosApp {
     commands: CommandRegistry,
     command_input: String,
     command_log: VecDeque<String>,
-    viewport: Viewport,
+    viewports: [Viewport; 4],
+    active_viewport: usize,
     osnap: bool,
     smart_track: bool,
+    grid_snap: bool,
+    command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
@@ -578,9 +583,17 @@ impl VibocerosApp {
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
             command_log,
-            viewport: Viewport::default(),
+            viewports: [
+                Viewport::new(ViewKind::Top),
+                Viewport::new(ViewKind::Perspective),
+                Viewport::new(ViewKind::Front),
+                Viewport::new(ViewKind::Right),
+            ],
+            active_viewport: 0,
             osnap: true,
             smart_track: true,
+            grid_snap: true,
+            command_focus_requested: false,
             active_command: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
@@ -2097,6 +2110,38 @@ impl VibocerosApp {
         }
     }
 
+    fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        let selected_kind = if selection.crossing {
+            "crossing"
+        } else {
+            "window"
+        };
+        match self
+            .document
+            .select_objects(selection.object_ids, selection.mode)
+        {
+            Ok(count) => self.push_log(format!(
+                "{selected_kind} selection: {count} object(s) selected"
+            )),
+            Err(error) => self.push_log(format!("Error: {error}")),
+        }
+    }
+
+    fn handle_viewport_action(&mut self, output: ViewportOutput) -> bool {
+        if output.enter_pressed {
+            self.run_command();
+        } else if let Some(point) = output.picked_point {
+            self.accept_drafting_point(point);
+        } else if let Some(click) = output.selection_click {
+            self.apply_selection_click(click);
+        } else if let Some(selection) = output.selection_window {
+            self.apply_selection_window(selection);
+        } else {
+            return false;
+        }
+        true
+    }
+
     fn show_toolbar(&mut self, root: &mut egui::Ui) {
         let can_undo = self.document.can_undo();
         let can_redo = self.document.can_redo();
@@ -2471,23 +2516,47 @@ impl VibocerosApp {
                     .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
+                ui.label("View:");
+                ui.selectable_value(
+                    &mut self.viewports[self.active_viewport].kind,
+                    ViewKind::Top,
+                    "Top",
+                );
+                ui.selectable_value(
+                    &mut self.viewports[self.active_viewport].kind,
+                    ViewKind::Perspective,
+                    "Perspective",
+                );
+                ui.selectable_value(
+                    &mut self.viewports[self.active_viewport].kind,
+                    ViewKind::Front,
+                    "Front",
+                );
+                ui.selectable_value(
+                    &mut self.viewports[self.active_viewport].kind,
+                    ViewKind::Right,
+                    "Right",
+                );
+                ui.separator();
                 ui.label("Display:");
                 ui.selectable_value(
-                    &mut self.viewport.display_mode,
+                    &mut self.viewports[self.active_viewport].display_mode,
                     DisplayMode::Wireframe,
                     "Wireframe",
                 );
                 ui.selectable_value(
-                    &mut self.viewport.display_mode,
+                    &mut self.viewports[self.active_viewport].display_mode,
                     DisplayMode::Shaded,
                     "Shaded",
                 );
                 ui.selectable_value(
-                    &mut self.viewport.display_mode,
+                    &mut self.viewports[self.active_viewport].display_mode,
                     DisplayMode::Ghosted,
                     "Ghosted",
                 );
                 ui.separator();
+                ui.toggle_value(&mut self.grid_snap, "Grid Snap")
+                    .on_hover_text("Snap picked construction-plane points to the unit grid");
                 ui.toggle_value(&mut self.osnap, "Osnap")
                     .on_hover_text(
                         "Snap to visible Point, End, Mid, Center, and Quad features, including locked geometry",
@@ -2714,6 +2783,36 @@ impl VibocerosApp {
         }
     }
 
+    fn capture_global_command_typing(&mut self, root: &mut egui::Ui) {
+        if root.ctx().text_edit_focused()
+            || root.input(|input| input.modifiers.command || input.modifiers.alt)
+        {
+            return;
+        }
+        let typed = root.input_mut(|input| {
+            let mut typed = String::new();
+            input.events.retain(|event| {
+                if let egui::Event::Text(text) = event
+                    && text.chars().any(|character| !character.is_control())
+                {
+                    typed.push_str(text);
+                    false
+                } else {
+                    true
+                }
+            });
+            typed
+        });
+        if !typed.is_empty() {
+            self.queue_command_text(&typed);
+        }
+    }
+
+    fn queue_command_text(&mut self, typed: &str) {
+        self.command_input.push_str(typed);
+        self.command_focus_requested = true;
+    }
+
     fn show_command_line(&mut self, root: &mut egui::Ui) {
         egui::Panel::bottom("command_line")
             .resizable(true)
@@ -2733,8 +2832,15 @@ impl VibocerosApp {
                         .active_command
                         .map_or("Command", InteractiveCommand::name);
                     ui.label(RichText::new(format!("{label}:")).strong());
+                    let command_input_id = ui.make_persistent_id("main_command_input");
+                    let tab = ui.memory(|memory| memory.focused() == Some(command_input_id))
+                        && ui.input_mut(|input| {
+                            input.consume_key(egui::Modifiers::NONE, egui::Key::Tab)
+                        });
                     let response = ui.add(
                         egui::TextEdit::singleline(&mut self.command_input)
+                            .id(command_input_id)
+                            .lock_focus(true)
                             .desired_width(f32::INFINITY)
                             .hint_text(if self.active_command.is_some() {
                                 if self
@@ -2749,15 +2855,59 @@ impl VibocerosApp {
                                 "Point 0,0,0 | Line 0,0,0 10,5,0"
                             }),
                     );
+                    if self.command_focus_requested {
+                        response.request_focus();
+                        self.command_focus_requested = false;
+                    }
                     if response.lost_focus()
                         && ui.input(|input| input.key_pressed(egui::Key::Enter))
                     {
                         self.run_command();
                         response.request_focus();
                     }
+                    if tab
+                        && let Some(completion) =
+                            command_completions(&self.commands, &self.command_input).first()
+                    {
+                        self.command_input.clear();
+                        self.command_input.push_str(completion);
+                        self.command_input.push(' ');
+                        response.request_focus();
+                    }
                 });
+                let completions = command_completions(&self.commands, &self.command_input);
+                if !completions.is_empty() {
+                    let mut chosen = None;
+                    ui.horizontal_wrapped(|ui| {
+                        ui.label(RichText::new("Complete (Tab):").small());
+                        for completion in completions.into_iter().take(8) {
+                            if ui.small_button(completion).clicked() {
+                                chosen = Some(completion);
+                            }
+                        }
+                    });
+                    if let Some(completion) = chosen {
+                        self.command_input.clear();
+                        self.command_input.push_str(completion);
+                        self.command_input.push(' ');
+                        self.command_focus_requested = true;
+                    }
+                }
             });
     }
+}
+
+fn command_completions(commands: &CommandRegistry, input: &str) -> Vec<&'static str> {
+    let input = input.trim_start();
+    if input.is_empty() || input.chars().any(char::is_whitespace) {
+        return Vec::new();
+    }
+    let prefix = input.trim_start_matches(['_', '-']).to_ascii_lowercase();
+    commands
+        .command_names()
+        .into_iter()
+        .filter(|name| name.to_ascii_lowercase().starts_with(&prefix))
+        .collect()
 }
 
 impl eframe::App for VibocerosApp {
@@ -2772,14 +2922,10 @@ impl eframe::App for VibocerosApp {
                 }
             }
         }
-        if self
-            .active_command
-            .is_some_and(InteractiveCommand::collects_curve_points)
-            && self.command_input.trim().is_empty()
-            && !ui.ctx().egui_wants_keyboard_input()
+        if !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Enter))
         {
-            self.finish_interactive_curve();
+            self.run_command();
         }
         if self.active_command.is_none()
             && self.document.selected_object_count() > 0
@@ -2788,6 +2934,7 @@ impl eframe::App for VibocerosApp {
         {
             self.execute_command("Delete");
         }
+        self.capture_global_command_typing(ui);
         self.show_toolbar(ui);
         self.show_layers(ui);
         self.show_command_line(ui);
@@ -2795,6 +2942,7 @@ impl eframe::App for VibocerosApp {
             active: self.active_command.is_some(),
             osnap: self.osnap,
             smart_track: self.smart_track,
+            grid_snap: self.grid_snap,
             anchor: if self
                 .active_command
                 .is_some_and(InteractiveCommand::collects_curve_points)
@@ -2805,18 +2953,48 @@ impl eframe::App for VibocerosApp {
             },
             reference: self.active_command.and_then(InteractiveCommand::reference),
         };
-        let mut viewport_output = ViewportOutput::default();
+        let mut viewport_outputs: [ViewportOutput; 4] =
+            std::array::from_fn(|_| ViewportOutput::default());
+        let active_viewport = self.active_viewport;
+        let document = &self.document;
+        let curve_points = &self.curve_points;
+        let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
-            viewport_output = self
-                .viewport
-                .show(ui, &self.document, drafting, &self.curve_points);
+            ui.spacing_mut().item_spacing = egui::Vec2::splat(2.0);
+            let available = ui.available_size();
+            let cell_size = egui::Vec2::new(
+                ((available.x - 2.0) * 0.5).max(1.0),
+                ((available.y - 2.0) * 0.5).max(1.0),
+            );
+            for row in 0..2 {
+                ui.horizontal(|ui| {
+                    for column in 0..2 {
+                        let index = row * 2 + column;
+                        ui.allocate_ui_with_layout(
+                            cell_size,
+                            egui::Layout::top_down(egui::Align::Min),
+                            |ui| {
+                                viewport_outputs[index] = viewports[index].show(
+                                    ui,
+                                    document,
+                                    drafting,
+                                    curve_points,
+                                    index == active_viewport,
+                                );
+                            },
+                        );
+                    }
+                });
+            }
         });
-        if viewport_output.cancelled {
-            self.cancel_interactive_command(true);
-        } else if let Some(point) = viewport_output.picked_point {
-            self.accept_drafting_point(point);
-        } else if let Some(click) = viewport_output.selection_click {
-            self.apply_selection_click(click);
+        let mut handled_action = false;
+        for (index, output) in viewport_outputs.into_iter().enumerate() {
+            if output.activated {
+                self.active_viewport = index;
+            }
+            if !handled_action {
+                handled_action = self.handle_viewport_action(output);
+            }
         }
     }
 }
@@ -2873,9 +3051,17 @@ mod tests {
             commands: CommandRegistry::with_builtins(),
             command_input: String::new(),
             command_log: VecDeque::new(),
-            viewport: Viewport::default(),
+            viewports: [
+                Viewport::new(ViewKind::Top),
+                Viewport::new(ViewKind::Perspective),
+                Viewport::new(ViewKind::Front),
+                Viewport::new(ViewKind::Right),
+            ],
+            active_viewport: 0,
             osnap: true,
             smart_track: true,
+            grid_snap: true,
+            command_focus_requested: false,
             active_command: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
@@ -2884,6 +3070,26 @@ mod tests {
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    fn command_line_frame(
+        context: &egui::Context,
+        app: &mut VibocerosApp,
+        events: Vec<egui::Event>,
+    ) {
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::Vec2::new(800.0, 600.0),
+                    )),
+                    events,
+                    ..egui::RawInput::default()
+                },
+                |ui| app.show_command_line(ui),
+            )
+            .drop_without_applying_deltas();
     }
 
     fn rectangular_annulus_mesh(tolerance: Tolerance) -> TriangleMesh {
@@ -2907,6 +3113,153 @@ mod tests {
             tolerance,
         )
         .unwrap()
+    }
+
+    #[test]
+    fn default_layout_has_three_parallel_views_and_one_perspective_view() {
+        let app = test_app();
+        assert_eq!(
+            app.viewports.map(|viewport| viewport.kind),
+            [
+                ViewKind::Top,
+                ViewKind::Perspective,
+                ViewKind::Front,
+                ViewKind::Right,
+            ]
+        );
+    }
+
+    #[test]
+    fn command_completion_is_prefix_based_and_case_insensitive() {
+        let commands = CommandRegistry::with_builtins();
+        assert_eq!(
+            command_completions(&commands, "pOlY"),
+            ["Polygon", "Polyline"]
+        );
+        assert_eq!(
+            command_completions(&commands, "_eXtRuDeCrVt"),
+            ["ExtrudeCrvToPoint"]
+        );
+        assert!(command_completions(&commands, "Point ").is_empty());
+        assert!(command_completions(&commands, "").is_empty());
+    }
+
+    #[test]
+    fn tab_completes_the_first_visible_command_match() {
+        let context = egui::Context::default();
+        let mut app = test_app();
+        app.command_input = "po".to_owned();
+        app.command_focus_requested = true;
+        command_line_frame(&context, &mut app, Vec::new());
+        command_line_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::Key {
+                key: egui::Key::Tab,
+                physical_key: Some(egui::Key::Tab),
+                pressed: true,
+                repeat: false,
+                modifiers: egui::Modifiers::NONE,
+            }],
+        );
+        assert_eq!(app.command_input, "Point ");
+    }
+
+    #[test]
+    fn typing_outside_the_command_box_queues_focus_and_text() {
+        let mut app = test_app();
+        let context = egui::Context::default();
+        let mut input = egui::RawInput::default();
+        input.events.push(egui::Event::Text("Line".to_owned()));
+        context
+            .run_ui(input, |ui| app.capture_global_command_typing(ui))
+            .drop_without_applying_deltas();
+        assert_eq!(app.command_input, "Line");
+        assert!(app.command_focus_requested);
+        command_line_frame(&context, &mut app, Vec::new());
+        assert!(!app.command_focus_requested);
+        assert!(context.egui_wants_keyboard_input());
+    }
+
+    #[test]
+    fn focused_buttons_do_not_block_type_to_command() {
+        let context = egui::Context::default();
+        let mut app = test_app();
+        context
+            .run_ui(egui::RawInput::default(), |ui| {
+                ui.button("Toolbar button").request_focus();
+            })
+            .drop_without_applying_deltas();
+        let mut input = egui::RawInput::default();
+        input.events.push(egui::Event::Text("Circle".to_owned()));
+        context
+            .run_ui(input, |ui| {
+                app.capture_global_command_typing(ui);
+                let _ = ui.button("Toolbar button");
+            })
+            .drop_without_applying_deltas();
+        assert_eq!(app.command_input, "Circle");
+        assert!(app.command_focus_requested);
+    }
+
+    #[test]
+    fn type_to_command_does_not_steal_from_another_text_editor() {
+        let context = egui::Context::default();
+        let mut app = test_app();
+        let mut layer_name = String::new();
+        context
+            .run_ui(egui::RawInput::default(), |ui| {
+                ui.add(egui::TextEdit::singleline(&mut layer_name).id(egui::Id::new("layer-name")))
+                    .request_focus();
+            })
+            .drop_without_applying_deltas();
+        let mut input = egui::RawInput::default();
+        input
+            .events
+            .push(egui::Event::Text("Construction".to_owned()));
+        context
+            .run_ui(input, |ui| {
+                app.capture_global_command_typing(ui);
+                ui.add(egui::TextEdit::singleline(&mut layer_name).id(egui::Id::new("layer-name")));
+            })
+            .drop_without_applying_deltas();
+        assert_eq!(layer_name, "Construction");
+        assert!(app.command_input.is_empty());
+        assert!(!app.command_focus_requested);
+    }
+
+    #[test]
+    fn app_commands_and_interactive_commands_are_case_insensitive() {
+        let mut app = test_app();
+        app.command_input = "pOiNt 7,8,9".to_owned();
+        app.run_command();
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Point(created) if *created == point(7.0, 8.0, 9.0)
+        ));
+        assert!(app.try_start_interactive_command("lInE"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Line { start: None })
+        );
+    }
+
+    #[test]
+    fn viewport_enter_finishes_an_interactive_curve() {
+        let mut app = test_app();
+        assert!(app.try_start_interactive_command("Polyline"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+
+        assert!(app.handle_viewport_action(ViewportOutput {
+            enter_pressed: true,
+            ..ViewportOutput::default()
+        }));
+        assert_eq!(app.active_command, None);
+        assert!(matches!(
+            app.document.objects().next().unwrap().geometry(),
+            Geometry::Polyline(polyline) if polyline.segment_count() == 1
+        ));
     }
 
     #[test]

@@ -14,11 +14,12 @@ validated shared-topology B-reps with exact rational parameter-space trims,
 validated mixed triangle/quad polygon meshes, layers, groups, and bounded
 undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
-and use a balanced XY spatial index for top-view snapping and picking.
-The top viewport can pan and zoom in wireframe, shaded, or ghosted mode. Its
-layer sidebar creates, renames, recolors, shows, locks, activates, and safely
-deletes layers while reporting their object counts; combined edits remain one
-undo step. The command line currently accepts:
+and use a balanced XY spatial index for snapping and picking. The UI opens with
+Rhino's usual four-view layout: Top, Perspective, Front, and Right. Each
+viewport has independent pan, zoom, projection, and wireframe, shaded, or
+ghosted display settings. The layer sidebar creates, renames, recolors, shows,
+locks, activates, and safely deletes layers while reporting their object
+counts; combined edits remain one undo step. The command line currently accepts:
 
 ```text
 Point 1,2,0
@@ -552,11 +553,18 @@ the operation to hanging faces or raise the minimum incident-face count.
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers;
 SmartTrack captures horizontal and vertical alignment from the first picked
-point. Drag with the middle mouse button to pan while a drafting command is
-active. Outside a drafting command, click geometry to select its connected
-group, Shift-click to add, and Ctrl-click or Command-click to toggle. Click
-empty space or press Esc to clear the selection; press Delete to remove
-selected objects.
+point. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
+pans parallel views and rotates the Perspective view; Shift-right-drag pans the
+Perspective view, middle-drag pans any view, and the mouse wheel zooms. A plain
+right-click acts as Enter. Outside a drafting command, left-drag from left to
+right selects only fully enclosed objects, while right-to-left makes a crossing
+selection. Click geometry to replace the selection, Shift-click/drag to add,
+and Ctrl-click/drag or Command-click/drag to remove. Click empty space or press
+Esc to clear the selection; press Delete to remove selected objects.
+
+Commands are case-insensitive. Typing while another non-text UI element or a
+viewport is active moves the text to the command line automatically. Matching
+command names appear below the input; press Tab or click a match to complete it.
 
 ## Build and run
 
