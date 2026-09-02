@@ -45,6 +45,7 @@ eframe = { version = "0.36.1", default-features = false, features = [
     "wgpu",
     "x11",
 ] }
+nalgebra.workspace = true
 viboceros-command.workspace = true
 viboceros-document.workspace = true
 viboceros-drafting.workspace = true
