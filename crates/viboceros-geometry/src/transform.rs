@@ -36,6 +36,42 @@ impl AffineTransform3 {
         )
     }
 
+    /// Scales independently along the world coordinate axes while retaining
+    /// a fixed point. Zero factors are valid projections onto a plane or axis.
+    pub fn try_nonuniform_scale(
+        fixed_point: Point3,
+        factors: [Real; 3],
+    ) -> Result<Self, GeometryError> {
+        require_finite(factors, "non-uniform scale factor")?;
+        Self::try_with_fixed_point(
+            [
+                [factors[0], 0.0, 0.0],
+                [0.0, factors[1], 0.0],
+                [0.0, 0.0, factors[2]],
+            ],
+            fixed_point,
+        )
+    }
+
+    /// Scales only the component parallel to a unit direction while retaining
+    /// the perpendicular components and a fixed point.
+    pub fn try_directional_scale(
+        fixed_point: Point3,
+        direction: UnitVector3,
+        factor: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([factor], "directional scale factor")?;
+        let direction = direction.as_vector().to_array();
+        let delta = factor - 1.0;
+        let linear = std::array::from_fn(|row| {
+            std::array::from_fn(|column| {
+                let identity = if row == column { 1.0 } else { 0.0 };
+                delta.mul_add(direction[row] * direction[column], identity)
+            })
+        });
+        Self::try_with_fixed_point(linear, fixed_point)
+    }
+
     pub fn try_rotation(
         fixed_point: Point3,
         axis: UnitVector3,
@@ -363,6 +399,45 @@ mod tests {
             point(3.0, 6.0, 9.0)
         );
         assert!(AffineTransform3::try_uniform_scale(center, Real::NAN).is_err());
+    }
+
+    #[test]
+    fn nonuniform_and_directional_scales_retain_their_fixed_point() {
+        let center = point(1.0, 2.0, 3.0);
+        let nonuniform = AffineTransform3::try_nonuniform_scale(center, [-2.0, 0.5, 0.0]).unwrap();
+        assert_eq!(nonuniform.transform_point(center).unwrap(), center);
+        assert_eq!(
+            nonuniform.transform_point(point(2.0, 4.0, 6.0)).unwrap(),
+            point(-1.0, 3.0, 3.0)
+        );
+
+        let direction = UnitVector3::try_new(1.0, 1.0, 0.0, Tolerance::DEFAULT).unwrap();
+        let directional = AffineTransform3::try_directional_scale(center, direction, 3.0).unwrap();
+        assert_eq!(directional.transform_point(center).unwrap(), center);
+        assert!(
+            directional
+                .transform_point(point(2.0, 3.0, 4.0))
+                .unwrap()
+                .is_near(point(4.0, 5.0, 4.0), Tolerance::DEFAULT)
+        );
+        assert!(
+            directional
+                .transform_point(point(2.0, 1.0, 4.0))
+                .unwrap()
+                .is_near(point(2.0, 1.0, 4.0), Tolerance::DEFAULT)
+        );
+
+        let flattened = AffineTransform3::try_directional_scale(center, direction, 0.0).unwrap();
+        assert!(
+            flattened
+                .transform_point(point(2.0, 3.0, 4.0))
+                .unwrap()
+                .is_near(point(1.0, 2.0, 4.0), Tolerance::DEFAULT)
+        );
+        assert!(AffineTransform3::try_nonuniform_scale(center, [1.0, Real::NAN, 1.0]).is_err());
+        assert!(
+            AffineTransform3::try_directional_scale(center, direction, Real::INFINITY).is_err()
+        );
     }
 
     #[test]

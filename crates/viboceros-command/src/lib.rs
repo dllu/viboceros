@@ -285,6 +285,15 @@ impl CommandRegistry {
             .register(ScaleCommand)
             .expect("unique built-in command");
         registry
+            .register(ScaleOneDimensionalCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ScaleTwoDimensionalCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ScaleNonUniformCommand)
+            .expect("unique built-in command");
+        registry
             .register(RotateCommand)
             .expect("unique built-in command");
         registry
@@ -3198,7 +3207,7 @@ impl Command for OrientCommand {
             tolerance,
         )?;
         let (transformed, copied) =
-            apply_orient_transform(document, selected.as_slice(), transform, options.copy)?;
+            apply_transform_or_copy(document, selected.as_slice(), transform, options.copy)?;
         Ok(format!(
             "Oriented {transformed} object(s) with {} scaling, creating {copied} copy object(s)",
             options.scale.name()
@@ -3246,7 +3255,7 @@ impl Command for OrientThreePointCommand {
         let transform =
             AffineTransform3::try_frame_mapping(source_frame, target_frame, [scale_factor; 3])?;
         let (transformed, copied) =
-            apply_orient_transform(document, selected.as_slice(), transform, options.copy)?;
+            apply_transform_or_copy(document, selected.as_slice(), transform, options.copy)?;
         let scale_name = if options.scale { "3D" } else { "No" };
         Ok(format!(
             "Oriented {transformed} object(s) through three-point frames with {scale_name} scaling, creating {copied} copy object(s)"
@@ -3369,7 +3378,7 @@ fn orient_scale_factor(reference: Vector3, target: Vector3) -> Result<Real, Geom
     }
 }
 
-fn apply_orient_transform(
+fn apply_transform_or_copy(
     document: &mut Document,
     selected: &[ObjectId],
     transform: AffineTransform3,
@@ -3438,7 +3447,7 @@ impl Command for OrientOnSurfaceCommand {
                 target_frame,
                 [options.scale; 3],
             )?;
-            apply_orient_transform(document, sources.as_slice(), transform, options.copy)?
+            apply_transform_or_copy(document, sources.as_slice(), transform, options.copy)?
         } else {
             let morph = SurfacePointMorph::try_new(
                 source_frame,
@@ -4775,6 +4784,12 @@ fn post_translate(
     )
 }
 
+const SCALE_USAGE: &str = "Scale center factor | center reference target [Copy=Yes|No]";
+const SCALE_1D_USAGE: &str =
+    "Scale1D origin factor direction | origin reference target [Copy=Yes|No]";
+const SCALE_2D_USAGE: &str = "Scale2D center factor | center reference target [Copy=Yes|No]";
+const SCALE_NU_USAGE: &str = "ScaleNU origin x-factor y-factor z-factor [Copy=Yes|No]";
+
 struct ScaleCommand;
 
 impl Command for ScaleCommand {
@@ -4784,8 +4799,90 @@ impl Command for ScaleCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let selected = selected_ids(document)?;
-        let (center, consumed) = parse_point(arguments)?;
-        let remaining = &arguments[consumed..];
+        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_USAGE)?;
+        let (center, consumed) = parse_point(&positional)?;
+        let remaining = &positional[consumed..];
+        let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_nonzero_scale(remaining[0])?
+        } else {
+            let (reference, reference_consumed) = parse_point(remaining)?;
+            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+            require_consumed(remaining, reference_consumed + target_consumed, SCALE_USAGE)?;
+            scale_factor_from_reference(center, reference, target, document.tolerance())?
+        };
+        let transform = AffineTransform3::try_uniform_scale(center, factor)?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Scaled {transformed} object(s) uniformly by {factor:.6}, creating {copied} copy object(s)"
+        ))
+    }
+}
+
+struct ScaleOneDimensionalCommand;
+
+impl Command for ScaleOneDimensionalCommand {
+    fn name(&self) -> &'static str {
+        "Scale1D"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_1D_USAGE)?;
+        let (origin, consumed) = parse_point(&positional)?;
+        let remaining = &positional[consumed..];
+
+        let typed = remaining.first().and_then(|factor| {
+            if factor.contains(',') {
+                return None;
+            }
+            parse_point(&remaining[1..])
+                .ok()
+                .filter(|(_, point_consumed)| 1 + point_consumed == remaining.len())
+                .map(|(direction, _)| (*factor, direction))
+        });
+        let (direction_point, factor) = if let Some((factor, direction)) = typed {
+            (direction, parse_finite_real(factor)?)
+        } else {
+            let (reference, reference_consumed) = parse_point(remaining)?;
+            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
+            require_consumed(
+                remaining,
+                reference_consumed + target_consumed,
+                SCALE_1D_USAGE,
+            )?;
+            let factor = scale_factor_from_reference_allow_zero(
+                origin,
+                reference,
+                target,
+                document.tolerance(),
+            )?;
+            (reference, factor)
+        };
+        let direction = origin
+            .vector_to(direction_point)?
+            .normalized(document.tolerance())?;
+        let transform = AffineTransform3::try_directional_scale(origin, direction, factor)?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Scaled {transformed} object(s) in one direction by {factor:.6}, creating {copied} copy object(s)"
+        ))
+    }
+}
+
+struct ScaleTwoDimensionalCommand;
+
+impl Command for ScaleTwoDimensionalCommand {
+    fn name(&self) -> &'static str {
+        "Scale2D"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_2D_USAGE)?;
+        let (center, consumed) = parse_point(&positional)?;
+        let remaining = &positional[consumed..];
         let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
             parse_nonzero_scale(remaining[0])?
         } else {
@@ -4794,13 +4891,45 @@ impl Command for ScaleCommand {
             require_consumed(
                 remaining,
                 reference_consumed + target_consumed,
-                "Scale center factor | center reference target",
+                SCALE_2D_USAGE,
             )?;
-            scale_factor_from_reference(center, reference, target, document.tolerance())?
+            top_view_scale_factor_from_reference(center, reference, target, document.tolerance())?
         };
-        let transform = AffineTransform3::try_uniform_scale(center, factor)?;
-        let count = document.transform_objects(selected, transform)?;
-        Ok(format!("Scaled {count} object(s) by {factor:.6}"))
+        let transform = AffineTransform3::try_nonuniform_scale(center, [factor, factor, 1.0])?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Scaled {transformed} object(s) in two dimensions by {factor:.6}, creating {copied} copy object(s)"
+        ))
+    }
+}
+
+struct ScaleNonUniformCommand;
+
+impl Command for ScaleNonUniformCommand {
+    fn name(&self) -> &'static str {
+        "ScaleNU"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let (positional, copy) = parse_scale_copy_arguments(arguments, SCALE_NU_USAGE)?;
+        let (origin, consumed) = parse_point(&positional)?;
+        let [x_factor, y_factor, z_factor] = positional[consumed..] else {
+            return Err(CommandError::Usage(SCALE_NU_USAGE));
+        };
+        let factors = [
+            parse_nonzero_scale(x_factor)?,
+            parse_nonzero_scale(y_factor)?,
+            parse_nonzero_scale(z_factor)?,
+        ];
+        let transform = AffineTransform3::try_nonuniform_scale(origin, factors)?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
+        Ok(format!(
+            "Scaled {transformed} object(s) non-uniformly by {:.6},{:.6},{:.6}, creating {copied} copy object(s)",
+            factors[0], factors[1], factors[2]
+        ))
     }
 }
 
@@ -4971,11 +5100,51 @@ fn parse_nonzero_scale(value: &str) -> Result<Real, CommandError> {
     }
 }
 
+fn parse_scale_copy_arguments<'a>(
+    arguments: &[&'a str],
+    usage: &'static str,
+) -> Result<(Vec<&'a str>, bool), CommandError> {
+    let mut positional = Vec::with_capacity(arguments.len());
+    let mut copy = false;
+    let mut copy_seen = false;
+    for argument in arguments {
+        if let Some((name, value)) = argument.split_once('=') {
+            if !option_name_eq(name, "Copy") || copy_seen {
+                return Err(CommandError::Usage(usage));
+            }
+            copy = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+            copy_seen = true;
+        } else {
+            positional.push(*argument);
+        }
+    }
+    Ok((positional, copy))
+}
+
 fn scale_factor_from_reference(
     center: Point3,
     reference: Point3,
     target: Point3,
     tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    scale_factor_from_reference_impl(center, reference, target, tolerance, false)
+}
+
+fn scale_factor_from_reference_allow_zero(
+    center: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    scale_factor_from_reference_impl(center, reference, target, tolerance, true)
+}
+
+fn scale_factor_from_reference_impl(
+    center: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+    allow_zero: bool,
 ) -> Result<Real, CommandError> {
     let reference_distance = center.distance_to(reference)?;
     if reference_distance <= tolerance.absolute() {
@@ -4986,6 +5155,27 @@ fn scale_factor_from_reference(
     }
     let target_distance = center.distance_to(target)?;
     let factor = target_distance / reference_distance;
+    if factor.is_finite() && (factor > 0.0 || allow_zero && factor == 0.0) {
+        Ok(factor)
+    } else {
+        Err(CommandError::InvalidScaleFactor(format!("{factor}")))
+    }
+}
+
+fn top_view_scale_factor_from_reference(
+    center: Point3,
+    reference: Point3,
+    target: Point3,
+    tolerance: Tolerance,
+) -> Result<Real, CommandError> {
+    let reference_distance = top_view_vector(center, reference)?.length()?;
+    if reference_distance <= tolerance.absolute() {
+        return Err(GeometryError::Degenerate {
+            context: "scale reference",
+        }
+        .into());
+    }
+    let factor = top_view_vector(center, target)?.length()? / reference_distance;
     if factor.is_finite() && factor > 0.0 {
         Ok(factor)
     } else {
@@ -5819,7 +6009,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -10929,6 +11119,103 @@ mod tests {
         assert!(registry.execute(&mut document, "Mirror 0,0 0,0").is_err());
         assert_eq!(position(&document), Point3::try_new(2.0, 1.0, 0.0).unwrap());
         assert_eq!(document.undo_label(), history_label.as_deref());
+    }
+
+    #[test]
+    fn nonuniform_scale_commands_support_axes_references_flattening_and_copy() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Point 2,3,4").unwrap();
+        let original = document.objects().next().unwrap().id();
+        document
+            .select_object(original, SelectionMode::Replace)
+            .unwrap();
+        let position = |document: &Document, id: ObjectId| {
+            let Geometry::Point(point) = document.object(id).unwrap().geometry() else {
+                panic!("expected a point")
+            };
+            *point
+        };
+
+        registry
+            .execute(&mut document, "Scale1D 0,0,0 2 1,1,0")
+            .unwrap();
+        assert!(position(&document, original).is_near(
+            Point3::try_new(4.5, 5.5, 4.0).unwrap(),
+            document.tolerance()
+        ));
+        assert_eq!(document.undo_label(), Some("Scale1D"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Scale1D 0,0,0 1,0,0 3,0,0")
+            .unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(6.0, 3.0, 4.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Scale1D 0,0,0 0 1,0,0")
+            .unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(0.0, 3.0, 4.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry.execute(&mut document, "Scale2D 1,1,1 2").unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(3.0, 5.0, 4.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Scale2D 0,0,0 2,0,10 4,0,-20")
+            .unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(4.0, 6.0, 4.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "ScaleNU 1,1,1 2 -1 .5 Copy=Yes")
+            .unwrap();
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
+        let copy = document.objects().nth(1).unwrap().id();
+        assert_eq!(
+            position(&document, copy),
+            Point3::try_new(3.0, -1.0, 2.5).unwrap()
+        );
+        assert!(document.is_selected(original));
+        assert!(!document.is_selected(copy));
+        assert_eq!(document.undo_label(), Some("ScaleNU"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "Scale1D 0,0,0 2 0,0,0",
+            "Scale2D 0,0,0 0",
+            "ScaleNU 0,0,0 1 0 1",
+            "ScaleNU 0,0,0 1 2 3 Copy=Yes Copy=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(
+            position(&document, original),
+            Point3::try_new(2.0, 3.0, 4.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     struct MutateThenFailCommand;

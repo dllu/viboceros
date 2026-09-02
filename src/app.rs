@@ -12,6 +12,23 @@ use crate::viewport::{DisplayMode, DraftingInput, SelectionClick, Viewport, View
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InteractiveScaleKind {
+    Uniform,
+    OneDimensional,
+    TwoDimensional,
+}
+
+impl InteractiveScaleKind {
+    const fn name(self) -> &'static str {
+        match self {
+            Self::Uniform => "Scale",
+            Self::OneDimensional => "Scale1D",
+            Self::TwoDimensional => "Scale2D",
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum InteractiveCommand {
     Point,
@@ -67,6 +84,7 @@ enum InteractiveCommand {
         z_offset: f64,
     },
     Scale {
+        kind: InteractiveScaleKind,
         center: Option<Point3>,
         reference: Option<Point3>,
     },
@@ -98,7 +116,7 @@ impl InteractiveCommand {
             Self::ArrayLinear { .. } => "ArrayLinear",
             Self::Array { .. } => "Array",
             Self::ArrayPolar { .. } => "ArrayPolar",
-            Self::Scale { .. } => "Scale",
+            Self::Scale { kind, .. } => kind.name(),
             Self::Rotate { .. } => "Rotate",
             Self::Mirror { .. } => "Mirror",
         }
@@ -200,16 +218,49 @@ impl InteractiveCommand {
             Self::ArrayPolar { .. } => {
                 "ArrayPolar: pick the array center in the viewport (Esc to cancel)"
             }
-            Self::Scale { center: None, .. } => {
-                "Scale: pick the center point in the viewport (Esc to cancel)"
-            }
             Self::Scale {
+                kind, center: None, ..
+            } => match kind {
+                InteractiveScaleKind::Uniform => {
+                    "Scale: pick the center point in the viewport (Esc to cancel)"
+                }
+                InteractiveScaleKind::OneDimensional => {
+                    "Scale1D: pick the origin in the viewport (Esc to cancel)"
+                }
+                InteractiveScaleKind::TwoDimensional => {
+                    "Scale2D: pick the center point in the viewport (Esc to cancel)"
+                }
+            },
+            Self::Scale {
+                kind,
                 center: Some(_),
                 reference: None,
-            } => "Scale: pick the reference point in the viewport (Esc to cancel)",
+            } => match kind {
+                InteractiveScaleKind::Uniform => {
+                    "Scale: pick the reference point in the viewport (Esc to cancel)"
+                }
+                InteractiveScaleKind::OneDimensional => {
+                    "Scale1D: pick the reference point and direction (Esc to cancel)"
+                }
+                InteractiveScaleKind::TwoDimensional => {
+                    "Scale2D: pick the reference point in the viewport (Esc to cancel)"
+                }
+            },
             Self::Scale {
-                reference: Some(_), ..
-            } => "Scale: pick the target point in the viewport (Esc to cancel)",
+                kind,
+                reference: Some(_),
+                ..
+            } => match kind {
+                InteractiveScaleKind::Uniform => {
+                    "Scale: pick the target point in the viewport (Esc to cancel)"
+                }
+                InteractiveScaleKind::OneDimensional => {
+                    "Scale1D: pick the target point in the viewport (Esc to cancel)"
+                }
+                InteractiveScaleKind::TwoDimensional => {
+                    "Scale2D: pick the target point in the viewport (Esc to cancel)"
+                }
+            },
             Self::Rotate { center: None, .. } => {
                 "Rotate: pick the center point in the viewport (Esc to cancel)"
             }
@@ -590,6 +641,17 @@ impl VibocerosApp {
                 "move" | "m" => InteractiveCommand::Move { start: None },
                 "copy" => InteractiveCommand::Copy { start: None },
                 "scale" => InteractiveCommand::Scale {
+                    kind: InteractiveScaleKind::Uniform,
+                    center: None,
+                    reference: None,
+                },
+                "scale1d" => InteractiveCommand::Scale {
+                    kind: InteractiveScaleKind::OneDimensional,
+                    center: None,
+                    reference: None,
+                },
+                "scale2d" => InteractiveCommand::Scale {
+                    kind: InteractiveScaleKind::TwoDimensional,
                     center: None,
                     reference: None,
                 },
@@ -1009,8 +1071,11 @@ impl VibocerosApp {
                     if rotate { "Yes" } else { "No" }
                 ));
             }
-            InteractiveCommand::Scale { center: None, .. } => {
+            InteractiveCommand::Scale {
+                kind, center: None, ..
+            } => {
                 let command = InteractiveCommand::Scale {
+                    kind,
                     center: Some(point),
                     reference: None,
                 };
@@ -1019,6 +1084,7 @@ impl VibocerosApp {
                 self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::Scale {
+                kind,
                 center: Some(center),
                 reference: None,
             } => {
@@ -1027,6 +1093,7 @@ impl VibocerosApp {
                     return;
                 }
                 let command = InteractiveCommand::Scale {
+                    kind,
                     center: Some(center),
                     reference: Some(point),
                 };
@@ -1035,16 +1102,20 @@ impl VibocerosApp {
                 self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::Scale {
+                kind,
                 center: Some(center),
                 reference: Some(reference),
             } => {
-                if center.is_near(point, self.document.tolerance()) {
+                if kind != InteractiveScaleKind::OneDimensional
+                    && center.is_near(point, self.document.tolerance())
+                {
                     self.push_log("Error: scale target must differ from its center".to_owned());
                     return;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
-                    "Scale {} {} {}",
+                    "{} {} {} {}",
+                    kind.name(),
                     format_model_point(center),
                     format_model_point(reference),
                     format_model_point(point)
@@ -2346,6 +2417,8 @@ mod tests {
             "ArrayLinear 3",
             "ArrayPolar 4",
             "Scale",
+            "Scale1D",
+            "Scale2D",
             "Rotate",
             "Mirror",
         ] {
@@ -2376,6 +2449,7 @@ mod tests {
         assert_eq!(
             app.active_command,
             Some(InteractiveCommand::Scale {
+                kind: InteractiveScaleKind::Uniform,
                 center: Some(point(1.0, 1.0, 0.0)),
                 reference: None,
             })
@@ -2384,6 +2458,22 @@ mod tests {
         app.accept_drafting_point(point(3.0, 1.0, 0.0));
         assert_eq!(position(&app), point(3.0, 1.0, 0.0));
         assert_eq!(app.document.undo_label(), Some("Scale"));
+        app.document.undo().unwrap();
+
+        assert!(app.try_start_interactive_command("Scale1D"));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        app.accept_drafting_point(point(1.0, 0.0, 0.0));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        assert_eq!(position(&app), point(0.0, 1.0, 0.0));
+        assert_eq!(app.document.undo_label(), Some("Scale1D"));
+        app.document.undo().unwrap();
+
+        assert!(app.try_start_interactive_command("Scale2D"));
+        app.accept_drafting_point(point(1.0, 1.0, 0.0));
+        app.accept_drafting_point(point(2.0, 1.0, 0.0));
+        app.accept_drafting_point(point(3.0, 1.0, 0.0));
+        assert_eq!(position(&app), point(3.0, 1.0, 0.0));
+        assert_eq!(app.document.undo_label(), Some("Scale2D"));
         app.document.undo().unwrap();
 
         assert!(app.try_start_interactive_command("Rotate"));

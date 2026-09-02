@@ -72,6 +72,9 @@ ArraySrf 4 3 BasePoint=0,0,0 Up=0,0,1 Mode=Isocurve SurfaceName=Panel
 ArrayLinear 4 0,0,0 2,1,0
 ArrayPolar 6 0,0,0 360 Rotate=Yes ZOffset=0
 Scale 0,0 2
+Scale1D 0,0 2 1,0
+Scale2D 0,0 2
+ScaleNU 0,0,0 2 .5 1 Copy=Yes
 Rotate 0,0 45
 Mirror 0,-5 0,5
 Group Assembly
@@ -139,9 +142,11 @@ It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp
 `Close=` modes, and start/end tangent directions on open cubics. `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
-to pick a base and destination point, `Scale` or `Rotate` to pick
-center/reference/target points, `Mirror` to pick a two-point axis, or
-`ArrayLinear 4` to pick its two spacing references. `ArrayPolar 6` picks a
+to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
+`Rotate` to pick center/reference/target points, `Mirror` to pick a two-point
+axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
+independent world x/y/z factors; all scale variants accept `Copy=Yes`.
+`ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a
 rectangular array. A third count adds Z levels and requires `ZDistance=...`;
