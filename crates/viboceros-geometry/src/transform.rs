@@ -1,6 +1,6 @@
 use nalgebra::Matrix3;
 
-use crate::{Frame3, GeometryError, Point3, Real, UnitVector3, Vector3, require_finite};
+use crate::{Frame3, GeometryError, Plane, Point3, Real, UnitVector3, Vector3, require_finite};
 
 /// A finite affine map from three-dimensional model space to itself.
 ///
@@ -100,6 +100,12 @@ impl AffineTransform3 {
             })
         });
         Self::try_with_fixed_point(linear, fixed_point)
+    }
+
+    /// Orthogonally projects points onto a plane while retaining components
+    /// tangent to it. The result is intentionally singular.
+    pub fn try_planar_projection(plane: Plane) -> Result<Self, GeometryError> {
+        Self::try_directional_scale(plane.origin(), plane.normal(), 0.0)
     }
 
     pub fn try_rotation(
@@ -502,6 +508,23 @@ mod tests {
                 Tolerance::DEFAULT,
             )
             .is_err()
+        );
+    }
+
+    #[test]
+    fn planar_projection_retains_tangent_coordinates_and_plane_points() {
+        let origin = point(1.0, 2.0, 3.0);
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let projection =
+            AffineTransform3::try_planar_projection(Plane::new(origin, normal)).unwrap();
+
+        assert_eq!(
+            projection.transform_point(point(4.0, -5.0, 9.0)).unwrap(),
+            point(4.0, -5.0, 3.0)
+        );
+        assert_eq!(
+            projection.transform_point(point(-7.0, 8.0, 3.0)).unwrap(),
+            point(-7.0, 8.0, 3.0)
         );
     }
 

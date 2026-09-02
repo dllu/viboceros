@@ -79,6 +79,7 @@ Rotate 0,0 45
 Rotate3D 0,0,0 0,0,1 90 Copy=Yes
 Mirror 0,-5 0,5
 Shear 0,0,0 1,0,0 45 Copy=Yes
+ProjectToCPlane DeleteInput=Yes
 Group Assembly
 Group All Everything
 SetObjectName "Fastener Part" AppendCounter=Yes
@@ -153,6 +154,9 @@ independent world x/y/z factors; all scale variants accept `Copy=Yes`.
 `Shear` picks a fixed origin, reference direction, and target angle in the top
 view; its third argument can instead be a numeric angle, and it accepts
 `Copy=Yes`.
+`ProjectToCPlane` flattens onto the current construction plane (World XY in the
+current UI). It retains the inputs by default; use `DeleteInput=Yes` to project
+them in place.
 `ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a

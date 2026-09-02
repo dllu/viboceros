@@ -1429,6 +1429,7 @@ impl VibocerosApp {
         let mut rotate_clicked = false;
         let mut mirror_clicked = false;
         let mut shear_clicked = false;
+        let mut project_to_cplane_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
         let selectable_previous = self.document.selectable_previous_object_count();
@@ -1613,6 +1614,12 @@ impl VibocerosApp {
                     .add_enabled(selected > 0, egui::Button::new("Shear"))
                     .on_hover_text("Shear selected objects using three top-view points")
                     .clicked();
+                project_to_cplane_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Project CPlane"))
+                    .on_hover_text(
+                        "Create flattened copies of selected objects on the construction plane",
+                    )
+                    .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
@@ -1718,6 +1725,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("Mirror");
         } else if shear_clicked {
             self.try_start_interactive_command("Shear");
+        } else if project_to_cplane_clicked {
+            self.execute_command("ProjectToCPlane");
         }
     }
 

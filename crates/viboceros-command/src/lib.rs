@@ -11,9 +11,9 @@ use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Circle3, CircularArc3, ControlPointCurveClosure,
     CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample, Ellipse3, Frame3,
     GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS,
-    MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, join_polylines,
+    MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane, Point3,
+    PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh,
+    UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -304,6 +304,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ShearCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ProjectToConstructionPlaneCommand)
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -5088,6 +5091,47 @@ impl Command for ShearCommand {
     }
 }
 
+const PROJECT_TO_CPLANE_USAGE: &str = "ProjectToCPlane [DeleteInput=Yes|No]";
+
+struct ProjectToConstructionPlaneCommand;
+
+impl Command for ProjectToConstructionPlaneCommand {
+    fn name(&self) -> &'static str {
+        "ProjectToCPlane"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let selected = selected_ids(document)?;
+        let delete_input = parse_delete_input(arguments)?;
+        let origin = Point3::try_new(0.0, 0.0, 0.0)?;
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
+        let transform = AffineTransform3::try_planar_projection(Plane::new(origin, normal))?;
+        let (transformed, copied) =
+            apply_transform_or_copy(document, selected.as_slice(), transform, !delete_input)?;
+        Ok(format!(
+            "Projected {transformed} object(s) to the construction plane, creating {copied} copy object(s)"
+        ))
+    }
+}
+
+fn parse_delete_input(arguments: &[&str]) -> Result<bool, CommandError> {
+    let [argument] = arguments else {
+        return if arguments.is_empty() {
+            Ok(false)
+        } else {
+            Err(CommandError::Usage(PROJECT_TO_CPLANE_USAGE))
+        };
+    };
+    if let Some((name, value)) = argument.split_once('=') {
+        if !option_name_eq(name, "DeleteInput") {
+            return Err(CommandError::Usage(PROJECT_TO_CPLANE_USAGE));
+        }
+        parse_yes_no(value).ok_or(CommandError::Usage(PROJECT_TO_CPLANE_USAGE))
+    } else {
+        parse_yes_no(argument).ok_or(CommandError::Usage(PROJECT_TO_CPLANE_USAGE))
+    }
+}
+
 fn create_current_layer(
     document: &mut Document,
     name_arguments: &[&str],
@@ -6130,7 +6174,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Delete, Divide, Ellipse, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, SplitDisjointMesh, SrfPt, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -11416,6 +11460,97 @@ mod tests {
             position(&document, original),
             Point3::try_new(2.0, 3.0, 4.0).unwrap()
         );
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn project_to_cplane_matches_rhino_delete_input_groups_and_selection() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 1,2,3 4,5,6").unwrap();
+        registry.execute(&mut document, "Point -2,7,-4").unwrap();
+        let source_ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .add_group(
+                Some("Projection pair".to_owned()),
+                source_ids.iter().copied(),
+            )
+            .unwrap();
+        document
+            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+
+        registry.execute(&mut document, "ProjectToCPlane").unwrap();
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.groups().len(), 2);
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        let copies = document
+            .objects()
+            .filter(|object| !source_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(copies.len(), 2);
+        assert!(
+            copies
+                .iter()
+                .all(|object| !document.is_selected(object.id()))
+        );
+        let Geometry::Line(projected_line) = copies[0].geometry() else {
+            panic!("expected a projected line")
+        };
+        assert_eq!(
+            projected_line.start(),
+            Point3::try_new(1.0, 2.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            projected_line.end(),
+            Point3::try_new(4.0, 5.0, 0.0).unwrap()
+        );
+        let Geometry::Point(projected_point) = copies[1].geometry() else {
+            panic!("expected a projected point")
+        };
+        assert_eq!(*projected_point, Point3::try_new(-2.0, 7.0, 0.0).unwrap());
+        assert_eq!(document.undo_label(), Some("ProjectToCPlane"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "ProjectToCPlane DeleteInput=Yes")
+            .unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
+        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
+        let Geometry::Line(projected_line) = document.object(source_ids[0]).unwrap().geometry()
+        else {
+            panic!("expected the source line identity")
+        };
+        assert_eq!(projected_line.start().z(), 0.0);
+        assert_eq!(projected_line.end().z(), 0.0);
+        let Geometry::Point(projected_point) = document.object(source_ids[1]).unwrap().geometry()
+        else {
+            panic!("expected the source point identity")
+        };
+        assert_eq!(projected_point.z(), 0.0);
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "ProjectToCPlane _Yes")
+            .unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "ProjectToCPlane DeleteInput=Maybe",
+            "ProjectToCPlane Other=Yes",
+            "ProjectToCPlane Yes No",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+        }
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.groups().len(), 1);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 
