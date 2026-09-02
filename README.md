@@ -216,11 +216,12 @@ exact location into boundary polylines. Multi-edge borders are grouped until
 the document gains an exact polycurve primitive. Results use the current layer
 and become selected by default; `OutputLayer=Input` uses each source layer.
 `ExtractIsocurve` creates the exact U, V, or both rational isocurves nearest a
-model-space point on every selected untrimmed NURBS surface. The extracted
-curve preserves the varying direction's degree and complete knot vector even
-when the fixed parameter lies on a non-clamped span. Omit the point to pick a
-surface location in the viewport. Trim-aware B-rep extraction and `ExtractAll`
-remain pending.
+model-space point on every selected NURBS surface or B-rep. B-rep results come
+from the nearest trimmed face and are split exactly around outer boundaries and
+holes; rational p-curve intersections determine the retained parameter
+intervals without faceting the output. Extracted curves preserve the varying
+direction's degree and parameter values even at non-clamped spans. Omit the
+point to pick a surface location in the viewport. `ExtractAll` remains pending.
 `Cylinder` creates an exact 9-by-2 rational NURBS wall from a center, radius
 (or base-circle point), and signed height. `Axis=` accepts an arbitrary axis,
 while `BothSides=Yes` makes the height symmetric about the base center.

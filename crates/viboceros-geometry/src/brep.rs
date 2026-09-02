@@ -2,6 +2,7 @@ use spade::{
     ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
 };
 
+use crate::nurbs::find_span_in_knots;
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
     NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
@@ -12,6 +13,7 @@ use crate::{
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
 const MAX_EAR_CLIP_VERTICES: usize = 16_384;
 const MAX_CONSTRAINED_TRIM_VERTICES: usize = 131_072;
+const MAX_TRIM_ROOT_DEPTH: usize = 64;
 
 #[derive(Clone, Copy, Debug)]
 struct BoundarySnapPoint {
@@ -283,6 +285,55 @@ impl BrepFace {
     #[inline]
     pub fn loops(&self) -> &[BrepLoop] {
         &self.loops
+    }
+
+    /// Returns the exact underlying U-isocurve portions inside this face's
+    /// parameter-space trim region.
+    pub fn isocurve_u_segments(
+        &self,
+        v: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        let curve = self.surface.isocurve_u(v)?;
+        let intervals = trimmed_isocurve_intervals(self, 0, v, tolerance)?;
+        trim_isocurve_to_intervals(curve, intervals)
+    }
+
+    /// Returns the exact underlying V-isocurve portions inside this face's
+    /// parameter-space trim region.
+    pub fn isocurve_v_segments(
+        &self,
+        u: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        let curve = self.surface.isocurve_v(u)?;
+        let intervals = trimmed_isocurve_intervals(self, 1, u, tolerance)?;
+        trim_isocurve_to_intervals(curve, intervals)
+    }
+
+    /// Tests whether a natural surface parameter lies on or inside the face's
+    /// exact trim region.
+    pub fn contains_parameters(
+        &self,
+        u: Real,
+        v: Real,
+        tolerance: Tolerance,
+    ) -> Result<bool, GeometryError> {
+        let u_domain = self.surface.domain_u();
+        let v_domain = self.surface.domain_v();
+        require_finite([u, v], "B-rep face parameters")?;
+        if u < *u_domain.start()
+            || u > *u_domain.end()
+            || v < *v_domain.start()
+            || v > *v_domain.end()
+        {
+            return Ok(false);
+        }
+        let intervals = trimmed_isocurve_intervals(self, 0, v, tolerance)?;
+        let epsilon = trim_parameter_epsilon([*u_domain.start(), *u_domain.end()], tolerance);
+        Ok(intervals
+            .iter()
+            .any(|interval| parameter_interval_contains(*interval, u, epsilon)))
     }
 }
 
@@ -992,6 +1043,28 @@ impl Brep {
     #[inline]
     pub fn faces(&self) -> &[BrepFace] {
         &self.faces
+    }
+
+    /// Finds the selected model-space point's nearest underlying face
+    /// parameters, rejecting closest points that fall outside that face's trim
+    /// region. Ties retain face order.
+    pub fn closest_face_parameters(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Option<(usize, Real, Real)>, GeometryError> {
+        let mut best: Option<(Real, usize, Real, Real)> = None;
+        for (face_index, face) in self.faces.iter().enumerate() {
+            let (u, v) = face.surface.closest_parameters(target, tolerance)?;
+            if !face.contains_parameters(u, v, tolerance)? {
+                continue;
+            }
+            let distance = face.surface.evaluate(u, v)?.distance_to(target)?;
+            if best.is_none_or(|candidate| distance < candidate.0) {
+                best = Some((distance, face_index, u, v));
+            }
+        }
+        Ok(best.map(|(_, face, u, v)| (face, u, v)))
     }
 
     pub fn edge_use_count(&self, edge_index: usize) -> Option<usize> {
@@ -2118,6 +2191,567 @@ fn centered_surface(
     )
 }
 
+/// Homogeneous numerator of one p-curve coordinate minus a scan value.
+/// Refining this scalar spline to Bernstein spans lets sign variation isolate
+/// every transverse trim crossing without tessellating the trim.
+struct ScalarSpline {
+    degree: usize,
+    controls: Vec<Real>,
+    knots: Vec<Real>,
+}
+
+struct ScalarBezierSpan {
+    parameter: [Real; 2],
+    coefficients: Vec<Real>,
+}
+
+fn trim_isocurve_to_intervals(
+    curve: NurbsCurve,
+    intervals: Vec<[Real; 2]>,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let domain = curve.domain();
+    intervals
+        .into_iter()
+        .filter(|interval| interval[0] < interval[1])
+        .map(|interval| {
+            if interval[0] == *domain.start() && interval[1] == *domain.end() {
+                Ok(curve.clone())
+            } else {
+                curve.try_trimmed(interval[0]..=interval[1])
+            }
+        })
+        .filter_map(|result| match result {
+            Ok(curve)
+                if curve
+                    .control_points()
+                    .iter()
+                    .skip(1)
+                    .any(|control| control.point() != curve.control_points()[0].point()) =>
+            {
+                Some(Ok(curve))
+            }
+            Ok(_) => None,
+            Err(error) => Some(Err(error)),
+        })
+        .collect()
+}
+
+fn trimmed_isocurve_intervals(
+    face: &BrepFace,
+    varying_axis: usize,
+    fixed_value: Real,
+    tolerance: Tolerance,
+) -> Result<Vec<[Real; 2]>, GeometryError> {
+    debug_assert!(varying_axis < 2);
+    require_finite([fixed_value], "B-rep isocurve parameter")?;
+    let fixed_axis = 1 - varying_axis;
+    let varying_domain = if varying_axis == 0 {
+        face.surface.domain_u()
+    } else {
+        face.surface.domain_v()
+    };
+    let fixed_domain = if fixed_axis == 0 {
+        face.surface.domain_u()
+    } else {
+        face.surface.domain_v()
+    };
+    if fixed_value < *fixed_domain.start() || fixed_value > *fixed_domain.end() {
+        return Err(GeometryError::ParameterOutOfDomain {
+            parameter: fixed_value,
+            domain_start: *fixed_domain.start(),
+            domain_end: *fixed_domain.end(),
+        });
+    }
+
+    let mut epsilon =
+        trim_parameter_epsilon([*varying_domain.start(), *varying_domain.end()], tolerance);
+    let mut events = Vec::new();
+    let mut overlaps = Vec::new();
+    for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
+        epsilon = epsilon.max(trim.tolerance[varying_axis]);
+        collect_trim_scan_data(
+            &trim.curve,
+            fixed_axis,
+            varying_axis,
+            fixed_value,
+            &mut events,
+            &mut overlaps,
+        )?;
+    }
+
+    let domain = [*varying_domain.start(), *varying_domain.end()];
+    events.retain(|value| parameter_interval_contains(domain, *value, epsilon));
+    for value in &mut events {
+        *value = value.clamp(domain[0], domain[1]);
+    }
+    events.sort_by(Real::total_cmp);
+
+    let mut intervals = Vec::new();
+    let mut inside_start = None;
+    let mut index = 0;
+    while index < events.len() {
+        let mut after = index + 1;
+        while after < events.len() && events[after] - events[index] <= epsilon {
+            after += 1;
+        }
+        if (after - index) % 2 == 1 {
+            let crossing = events[index] * 0.5 + events[after - 1] * 0.5;
+            if let Some(start) = inside_start.take() {
+                if start < crossing {
+                    intervals.push([start, crossing]);
+                }
+            } else {
+                inside_start = Some(crossing);
+            }
+        }
+        index = after;
+    }
+    if let Some(start) = inside_start
+        && start < domain[1]
+    {
+        intervals.push([start, domain[1]]);
+    }
+
+    for mut overlap in overlaps {
+        overlap.sort_by(Real::total_cmp);
+        overlap[0] = overlap[0].clamp(domain[0], domain[1]);
+        overlap[1] = overlap[1].clamp(domain[0], domain[1]);
+        if overlap[0] < overlap[1] {
+            intervals.push(overlap);
+        }
+    }
+    merge_trim_intervals(intervals, epsilon)
+}
+
+fn trim_parameter_epsilon(domain: [Real; 2], tolerance: Tolerance) -> Real {
+    let scale = domain[0].abs().max(domain[1].abs()).max(1.0);
+    floating_parameter_epsilon(domain).max(tolerance.relative() * scale)
+}
+
+fn floating_parameter_epsilon(domain: [Real; 2]) -> Real {
+    256.0 * Real::EPSILON * domain[0].abs().max(domain[1].abs()).max(1.0)
+}
+
+fn parameter_interval_contains(interval: [Real; 2], value: Real, epsilon: Real) -> bool {
+    (value >= interval[0] || interval[0] - value <= epsilon)
+        && (value <= interval[1] || value - interval[1] <= epsilon)
+}
+
+fn merge_trim_intervals(
+    mut intervals: Vec<[Real; 2]>,
+    epsilon: Real,
+) -> Result<Vec<[Real; 2]>, GeometryError> {
+    intervals.sort_by(|left, right| {
+        left[0]
+            .total_cmp(&right[0])
+            .then_with(|| left[1].total_cmp(&right[1]))
+    });
+    let mut merged: Vec<[Real; 2]> = Vec::with_capacity(intervals.len());
+    for interval in intervals {
+        if let Some(previous) = merged.last_mut()
+            && interval[0] - previous[1] <= epsilon
+        {
+            previous[1] = previous[1].max(interval[1]);
+        } else {
+            merged.push(interval);
+        }
+    }
+    if merged.iter().any(|interval| {
+        !interval[0].is_finite() || !interval[1].is_finite() || interval[0] >= interval[1]
+    }) {
+        return Err(GeometryError::TrimIntersectionDidNotConverge);
+    }
+    Ok(merged)
+}
+
+fn collect_trim_scan_data(
+    curve: &NurbsCurve2,
+    fixed_axis: usize,
+    varying_axis: usize,
+    fixed_value: Real,
+    events: &mut Vec<Real>,
+    overlaps: &mut Vec<[Real; 2]>,
+) -> Result<(), GeometryError> {
+    let spans = scalar_bezier_spans(curve, fixed_axis, fixed_value)?;
+    let mut roots = Vec::new();
+    for span in spans {
+        if span
+            .coefficients
+            .iter()
+            .all(|coefficient| *coefficient == 0.0)
+        {
+            let start = curve.evaluate(span.parameter[0])?;
+            let end = curve.evaluate(span.parameter[1])?;
+            overlaps.push([
+                parameter_coordinate(start, varying_axis),
+                parameter_coordinate(end, varying_axis),
+            ]);
+        } else {
+            collect_bernstein_roots(
+                &span.coefficients,
+                span.parameter,
+                0,
+                true,
+                true,
+                &mut roots,
+            );
+        }
+    }
+
+    roots.sort_by(Real::total_cmp);
+    let curve_domain = curve.domain();
+    let root_epsilon = floating_parameter_epsilon([*curve_domain.start(), *curve_domain.end()]);
+    let mut unique_roots = Vec::with_capacity(roots.len());
+    for root in roots {
+        let root = if root - *curve_domain.start() <= root_epsilon {
+            *curve_domain.start()
+        } else if *curve_domain.end() - root <= root_epsilon {
+            *curve_domain.end()
+        } else {
+            root
+        };
+        if unique_roots
+            .last()
+            .is_none_or(|previous| root - *previous > root_epsilon)
+        {
+            unique_roots.push(root);
+        }
+    }
+
+    for (index, root) in unique_roots.iter().copied().enumerate() {
+        let before_bound = index
+            .checked_sub(1)
+            .map_or(*curve_domain.start(), |previous| unique_roots[previous]);
+        let after_bound = unique_roots
+            .get(index + 1)
+            .copied()
+            .unwrap_or(*curve_domain.end());
+        let before = (root > *curve_domain.start())
+            .then(|| coordinate_sign_between(curve, fixed_axis, fixed_value, before_bound, root))
+            .transpose()?
+            .flatten();
+        let after = (root < *curve_domain.end())
+            .then(|| coordinate_sign_between(curve, fixed_axis, fixed_value, root, after_bound))
+            .transpose()?
+            .flatten();
+        let root_coordinate = parameter_coordinate(curve.evaluate(root)?, fixed_axis);
+        let at_root = if root_coordinate < fixed_value {
+            Some(-1)
+        } else if root_coordinate > fixed_value {
+            Some(1)
+        } else {
+            None
+        };
+        let toggles = if root == *curve_domain.start() {
+            at_root.map_or(after == Some(1), |at_root| {
+                after.is_some_and(|after| after != at_root)
+            })
+        } else if root == *curve_domain.end() {
+            at_root.map_or(before == Some(1), |at_root| {
+                before.is_some_and(|before| before != at_root)
+            })
+        } else {
+            matches!((before, after), (Some(-1), Some(1)) | (Some(1), Some(-1)))
+        };
+        if toggles {
+            let point = curve.evaluate(root)?;
+            events.push(parameter_coordinate(point, varying_axis));
+        }
+    }
+    Ok(())
+}
+
+fn coordinate_sign_between(
+    curve: &NurbsCurve2,
+    fixed_axis: usize,
+    fixed_value: Real,
+    start: Real,
+    end: Real,
+) -> Result<Option<i8>, GeometryError> {
+    for fraction in [0.5, 0.25, 0.75, 0.125, 0.875] {
+        let parameter = start.mul_add(1.0 - fraction, end * fraction);
+        if parameter <= start || parameter >= end {
+            continue;
+        }
+        let coordinate = parameter_coordinate(curve.evaluate(parameter)?, fixed_axis);
+        if coordinate < fixed_value {
+            return Ok(Some(-1));
+        }
+        if coordinate > fixed_value {
+            return Ok(Some(1));
+        }
+    }
+    Ok(None)
+}
+
+fn parameter_coordinate(point: Point2, axis: usize) -> Real {
+    if axis == 0 { point.x() } else { point.y() }
+}
+
+fn scalar_bezier_spans(
+    curve: &NurbsCurve2,
+    fixed_axis: usize,
+    fixed_value: Real,
+) -> Result<Vec<ScalarBezierSpan>, GeometryError> {
+    let coordinate_scale = curve
+        .control_points()
+        .iter()
+        .map(|control| parameter_coordinate(control.point(), fixed_axis).abs())
+        .fold(fixed_value.abs(), Real::max)
+        .max(1.0);
+    let weight_scale = curve
+        .control_points()
+        .iter()
+        .map(|control| control.weight())
+        .fold(0.0, Real::max);
+    let controls = curve
+        .control_points()
+        .iter()
+        .map(|control| {
+            let coordinate = parameter_coordinate(control.point(), fixed_axis);
+            let difference = if coordinate == fixed_value {
+                0.0
+            } else {
+                coordinate / coordinate_scale - fixed_value / coordinate_scale
+            };
+            difference * (control.weight() / weight_scale)
+        })
+        .collect::<Vec<_>>();
+    require_finite(
+        controls.iter().copied(),
+        "B-rep trim intersection polynomial",
+    )?;
+    let mut spline = ScalarSpline {
+        degree: curve.degree(),
+        controls,
+        knots: curve.knots().to_vec(),
+    };
+    spline.clamp_to_domain()?;
+    spline.refine_internal_knots()?;
+
+    let mut spans = Vec::new();
+    for span in spline.degree..spline.controls.len() {
+        if spline.knots[span] < spline.knots[span + 1] {
+            spans.push(ScalarBezierSpan {
+                parameter: [spline.knots[span], spline.knots[span + 1]],
+                coefficients: spline.controls[span - spline.degree..=span].to_vec(),
+            });
+        }
+    }
+    Ok(spans)
+}
+
+impl ScalarSpline {
+    fn clamp_to_domain(&mut self) -> Result<(), GeometryError> {
+        self.clamp_start()?;
+        self.clamp_end()
+    }
+
+    fn clamp_start(&mut self) -> Result<(), GeometryError> {
+        let start = self.knots[self.degree];
+        if self.knots[..=self.degree].iter().all(|knot| *knot == start) {
+            return Ok(());
+        }
+        let span = find_span_in_knots(&self.knots, self.degree, self.controls.len(), start);
+        let (_, right) =
+            scalar_de_boor_sides(&self.controls, &self.knots, self.degree, span, start)?;
+        let mut controls = Vec::with_capacity(self.controls.len() - (span - self.degree));
+        controls.extend(right);
+        controls.extend_from_slice(&self.controls[span + 1..]);
+        let mut knots = Vec::with_capacity(controls.len() + self.degree + 1);
+        knots.resize(self.degree + 1, start);
+        knots.extend_from_slice(&self.knots[span + 1..]);
+        self.controls = controls;
+        self.knots = knots;
+        Ok(())
+    }
+
+    fn clamp_end(&mut self) -> Result<(), GeometryError> {
+        let end = self.knots[self.controls.len()];
+        if self.knots[self.knots.len() - self.degree - 1..]
+            .iter()
+            .all(|knot| *knot == end)
+        {
+            return Ok(());
+        }
+        let span = find_span_in_knots(&self.knots, self.degree, self.controls.len(), end);
+        let (left, _) = scalar_de_boor_sides(&self.controls, &self.knots, self.degree, span, end)?;
+        let first_active = span - self.degree;
+        let mut controls = Vec::with_capacity(span + 1);
+        controls.extend_from_slice(&self.controls[..first_active]);
+        controls.extend(left);
+        let mut knots = Vec::with_capacity(controls.len() + self.degree + 1);
+        knots.extend_from_slice(&self.knots[..=span]);
+        knots.resize(knots.len() + self.degree + 1, end);
+        self.controls = controls;
+        self.knots = knots;
+        Ok(())
+    }
+
+    fn refine_internal_knots(&mut self) -> Result<(), GeometryError> {
+        let domain_start = self.knots[self.degree];
+        let domain_end = self.knots[self.controls.len()];
+        let mut internal = Vec::new();
+        for knot in self.knots.iter().copied() {
+            if knot > domain_start
+                && knot < domain_end
+                && internal.last().is_none_or(|previous| *previous != knot)
+            {
+                internal.push(knot);
+            }
+        }
+        for knot in internal {
+            while self.knots.iter().filter(|value| **value == knot).count() < self.degree {
+                self.insert_once(knot)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn insert_once(&mut self, parameter: Real) -> Result<(), GeometryError> {
+        let span = self.knots.partition_point(|knot| *knot <= parameter) - 1;
+        let multiplicity = self.knots.iter().filter(|knot| **knot == parameter).count();
+        let first_unchanged = span - self.degree;
+        let first_shifted = span - multiplicity + 1;
+        let mut controls = Vec::with_capacity(self.controls.len() + 1);
+        for new_index in 0..=self.controls.len() {
+            let control = if new_index <= first_unchanged {
+                self.controls[new_index]
+            } else if new_index < first_shifted {
+                let alpha = crate::nurbs::interval_fraction(
+                    parameter,
+                    self.knots[new_index],
+                    self.knots[new_index + self.degree],
+                )?;
+                scalar_blend(
+                    self.controls[new_index - 1],
+                    self.controls[new_index],
+                    alpha,
+                )?
+            } else {
+                self.controls[new_index - 1]
+            };
+            controls.push(control);
+        }
+        self.knots.insert(span + 1, parameter);
+        self.controls = controls;
+        Ok(())
+    }
+}
+
+fn scalar_de_boor_sides(
+    controls: &[Real],
+    knots: &[Real],
+    degree: usize,
+    span: usize,
+    parameter: Real,
+) -> Result<(Vec<Real>, Vec<Real>), GeometryError> {
+    let mut work = controls[span - degree..=span].to_vec();
+    let mut left = Vec::with_capacity(degree + 1);
+    let mut right = Vec::with_capacity(degree + 1);
+    left.push(work[0]);
+    right.push(work[degree]);
+    for level in 1..=degree {
+        for local_index in (level..=degree).rev() {
+            let knot_index = span - degree + local_index;
+            let alpha = crate::nurbs::interval_fraction(
+                parameter,
+                knots[knot_index],
+                knots[knot_index + degree - level + 1],
+            )?;
+            work[local_index] = scalar_blend(work[local_index - 1], work[local_index], alpha)?;
+        }
+        left.push(work[level]);
+        right.push(work[degree]);
+    }
+    right.reverse();
+    Ok((left, right))
+}
+
+fn scalar_blend(left: Real, right: Real, alpha: Real) -> Result<Real, GeometryError> {
+    let value = left.mul_add(1.0 - alpha, right * alpha);
+    require_finite([value], "B-rep trim intersection polynomial")?;
+    Ok(value)
+}
+
+fn collect_bernstein_roots(
+    coefficients: &[Real],
+    parameter: [Real; 2],
+    depth: usize,
+    include_start: bool,
+    include_end: bool,
+    roots: &mut Vec<Real>,
+) {
+    if include_start && coefficients[0] == 0.0 {
+        roots.push(parameter[0]);
+    }
+    if include_end && coefficients[coefficients.len() - 1] == 0.0 {
+        roots.push(parameter[1]);
+    }
+    let sign_changes = bernstein_sign_changes(coefficients);
+    if sign_changes == 0 {
+        return;
+    }
+    let middle = parameter[0] * 0.5 + parameter[1] * 0.5;
+    if depth >= MAX_TRIM_ROOT_DEPTH || middle <= parameter[0] || middle >= parameter[1] {
+        roots.push(middle);
+        return;
+    }
+    let (left, right) = subdivide_bernstein_half(coefficients);
+    collect_bernstein_roots(
+        &left,
+        [parameter[0], middle],
+        depth + 1,
+        include_start,
+        true,
+        roots,
+    );
+    collect_bernstein_roots(
+        &right,
+        [middle, parameter[1]],
+        depth + 1,
+        false,
+        include_end,
+        roots,
+    );
+}
+
+fn bernstein_sign_changes(coefficients: &[Real]) -> usize {
+    let mut previous = 0_i8;
+    let mut changes = 0;
+    for coefficient in coefficients {
+        let sign = if *coefficient < 0.0 {
+            -1
+        } else if *coefficient > 0.0 {
+            1
+        } else {
+            continue;
+        };
+        if previous != 0 && sign != previous {
+            changes += 1;
+        }
+        previous = sign;
+    }
+    changes
+}
+
+fn subdivide_bernstein_half(coefficients: &[Real]) -> (Vec<Real>, Vec<Real>) {
+    let degree = coefficients.len() - 1;
+    let mut work = coefficients.to_vec();
+    let mut left = Vec::with_capacity(coefficients.len());
+    let mut right = vec![0.0; coefficients.len()];
+    left.push(work[0]);
+    right[degree] = work[degree];
+    for level in 1..=degree {
+        for index in 0..=degree - level {
+            work[index] = work[index] * 0.5 + work[index + 1] * 0.5;
+        }
+        left.push(work[0]);
+        right[degree - level] = work[degree - level];
+    }
+    (left, right)
+}
+
 #[derive(Clone, Copy)]
 struct PlanarSurfacePlane {
     point: Point3,
@@ -2990,7 +3624,7 @@ fn invalid<T>(context: &'static str) -> Result<T, GeometryError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Circle3, Polyline3, UnitVector3, Vector3};
+    use crate::{Circle3, ControlPointCurveClosure, Polyline3, UnitVector3, Vector3};
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -4224,5 +4858,163 @@ mod tests {
             assert_eq!(mesh.topology().boundary_edge_count(), 14 * samples_per_span);
             assert_eq!(mesh.topology().orientation_conflict_edge_count(), 0);
         }
+    }
+
+    #[test]
+    fn trimmed_face_isocurves_are_split_exactly_around_polygon_holes() {
+        let brep = planar_polygon_brep(&[
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, 10.0, 0.0),
+                point(0.0, 10.0, 0.0),
+            ],
+            vec![
+                point(4.0, 4.0, 0.0),
+                point(4.0, 6.0, 0.0),
+                point(6.0, 6.0, 0.0),
+                point(6.0, 4.0, 0.0),
+            ],
+        ]);
+        let face = &brep.faces()[0];
+
+        let horizontal = face.isocurve_u_segments(0.5, Tolerance::DEFAULT).unwrap();
+        assert_eq!(horizontal.len(), 2);
+        assert_eq!(horizontal[0].domain(), 0.0..=0.4);
+        assert_eq!(horizontal[1].domain(), 0.6..=1.0);
+        for (curve, expected) in horizontal.iter().zip([(0.0, 4.0), (6.0, 10.0)]) {
+            assert_eq!(
+                curve.evaluate(*curve.domain().start()).unwrap(),
+                point(expected.0, 5.0, 0.0)
+            );
+            assert_eq!(
+                curve.evaluate(*curve.domain().end()).unwrap(),
+                point(expected.1, 5.0, 0.0)
+            );
+        }
+
+        let vertical = face.isocurve_v_segments(0.5, Tolerance::DEFAULT).unwrap();
+        assert_eq!(vertical.len(), 2);
+        assert_eq!(vertical[0].domain(), 0.0..=0.4);
+        assert_eq!(vertical[1].domain(), 0.6..=1.0);
+        let boundary = face.isocurve_u_segments(0.0, Tolerance::DEFAULT).unwrap();
+        assert_eq!(boundary.len(), 1);
+        assert_eq!(boundary[0].domain(), 0.0..=1.0);
+
+        assert!(
+            face.contains_parameters(0.2, 0.5, Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert!(
+            face.contains_parameters(0.4, 0.5, Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert!(
+            !face
+                .contains_parameters(0.5, 0.5, Tolerance::DEFAULT)
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn trim_intersection_handles_rational_closed_circle_loops() {
+        let center = point(0.0, 0.0, 0.0);
+        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap();
+        let outer = Circle3::try_new(center, 5.0, normal, Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let inner = Circle3::try_new(center, 2.0, normal, Tolerance::DEFAULT)
+            .unwrap()
+            .to_nurbs()
+            .unwrap();
+        let brep = Brep::try_planar_face_with_holes(&outer, &[inner], Tolerance::DEFAULT).unwrap();
+        let face = &brep.faces()[0];
+        let (u, v) = face
+            .surface()
+            .closest_parameters(center, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert!(!face.contains_parameters(u, v, Tolerance::DEFAULT).unwrap());
+        let segments = face.isocurve_u_segments(v, Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            segments.len(),
+            2,
+            "center parameters ({u}, {v}), segment domains {:?}",
+            segments.iter().map(NurbsCurve::domain).collect::<Vec<_>>()
+        );
+        let radii = segments
+            .iter()
+            .flat_map(|curve| {
+                [
+                    curve.evaluate(*curve.domain().start()).unwrap(),
+                    curve.evaluate(*curve.domain().end()).unwrap(),
+                ]
+            })
+            .map(|point| point.x().hypot(point.y()))
+            .collect::<Vec<_>>();
+        assert!(Tolerance::DEFAULT.approx_eq(radii[0], 5.0));
+        assert!(Tolerance::DEFAULT.approx_eq(radii[1], 2.0));
+        assert!(Tolerance::DEFAULT.approx_eq(radii[2], 2.0));
+        assert!(Tolerance::DEFAULT.approx_eq(radii[3], 5.0));
+
+        assert_eq!(
+            brep.closest_face_parameters(center, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+        let target = point(3.0, 0.0, 0.0);
+        let closest = brep
+            .closest_face_parameters(target, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(closest.0, 0);
+        assert!(
+            face.contains_parameters(closest.1, closest.2, Tolerance::DEFAULT)
+                .unwrap()
+        );
+    }
+
+    #[test]
+    fn trim_intersection_clamps_periodic_parameter_curves() {
+        let outer = NurbsCurve::try_control_point_curve_with_closure(
+            2,
+            vec![
+                point(-5.0, 0.0, 0.0),
+                point(-3.0, -3.0, 0.0),
+                point(0.0, -5.0, 0.0),
+                point(3.0, -3.0, 0.0),
+                point(5.0, 0.0, 0.0),
+                point(3.0, 3.0, 0.0),
+                point(0.0, 5.0, 0.0),
+                point(-3.0, 3.0, 0.0),
+            ],
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        assert!(outer.is_periodic());
+        let brep = Brep::try_planar_face(&outer, Tolerance::DEFAULT).unwrap();
+        let trim_curve = brep.faces()[0].loops()[0].trims()[0].curve();
+        assert!(trim_curve.knots()[0] < *trim_curve.domain().start());
+
+        let face = &brep.faces()[0];
+        let center = point(0.0, 0.0, 0.0);
+        let (u, v) = face
+            .surface()
+            .closest_parameters(center, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(face.contains_parameters(u, v, Tolerance::DEFAULT).unwrap());
+        assert_eq!(
+            face.isocurve_u_segments(v, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            1
+        );
+        assert_eq!(
+            face.isocurve_v_segments(u, Tolerance::DEFAULT)
+                .unwrap()
+                .len(),
+            1
+        );
     }
 }

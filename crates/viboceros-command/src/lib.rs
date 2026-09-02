@@ -3249,38 +3249,57 @@ impl Command for ExtractIsocurveCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_extract_isocurve_arguments(arguments)?;
-        let mut surfaces = Vec::new();
+        let mut curves = Vec::new();
+        let mut source_count = 0;
         for object in document.selected_objects() {
-            let Geometry::NurbsSurface(surface) = object.geometry() else {
-                return Err(CommandError::UnsupportedExtractIsocurveGeometry);
-            };
-            surfaces.push(surface.clone());
+            source_count += 1;
+            match object.geometry() {
+                Geometry::NurbsSurface(surface) => {
+                    let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
+                    if matches!(
+                        options.direction,
+                        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+                    ) {
+                        let curve = surface.isocurve_u(v)?;
+                        if nurbs_curve_has_extent(&curve) {
+                            curves.push(curve);
+                        }
+                    }
+                    if matches!(
+                        options.direction,
+                        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+                    ) {
+                        let curve = surface.isocurve_v(u)?;
+                        if nurbs_curve_has_extent(&curve) {
+                            curves.push(curve);
+                        }
+                    }
+                }
+                Geometry::Brep(brep) => {
+                    let Some((face_index, u, v)) =
+                        brep.closest_face_parameters(options.point, document.tolerance())?
+                    else {
+                        continue;
+                    };
+                    let face = &brep.faces()[face_index];
+                    if matches!(
+                        options.direction,
+                        ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
+                    ) {
+                        curves.extend(face.isocurve_u_segments(v, document.tolerance())?);
+                    }
+                    if matches!(
+                        options.direction,
+                        ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
+                    ) {
+                        curves.extend(face.isocurve_v_segments(u, document.tolerance())?);
+                    }
+                }
+                _ => return Err(CommandError::UnsupportedExtractIsocurveGeometry),
+            }
         }
-        if surfaces.is_empty() {
+        if source_count == 0 {
             return Err(CommandError::NoObjectsSelected);
-        }
-
-        let mut curves = Vec::with_capacity(surfaces.len());
-        for surface in &surfaces {
-            let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
-            if matches!(
-                options.direction,
-                ExtractIsocurveDirection::U | ExtractIsocurveDirection::Both
-            ) {
-                let curve = surface.isocurve_u(v)?;
-                if nurbs_curve_has_extent(&curve) {
-                    curves.push(curve);
-                }
-            }
-            if matches!(
-                options.direction,
-                ExtractIsocurveDirection::V | ExtractIsocurveDirection::Both
-            ) {
-                let curve = surface.isocurve_v(u)?;
-                if nurbs_curve_has_extent(&curve) {
-                    curves.push(curve);
-                }
-            }
         }
         if curves.is_empty() {
             return Err(CommandError::NoExtractableIsocurves);
@@ -3295,7 +3314,7 @@ impl Command for ExtractIsocurveCommand {
         Ok(format!(
             "Extracted {curve_count} exact {} isocurve(s) from {} surface(s)",
             options.direction.label(),
-            surfaces.len()
+            source_count
         ))
     }
 }
@@ -8056,7 +8075,7 @@ pub enum CommandError {
     #[error("none of the selected objects has an open border")]
     NoDuplicateBorders,
 
-    #[error("ExtractIsocurve currently supports selected untrimmed NURBS surfaces only")]
+    #[error("ExtractIsocurve supports selected NURBS surfaces and B-reps only")]
     UnsupportedExtractIsocurveGeometry,
 
     #[error("the requested surface location has no non-degenerate isocurve")]
@@ -11556,6 +11575,89 @@ mod tests {
             assert_eq!(document.objects().len(), 3);
             assert_eq!(document.undo_label(), history.as_deref());
         }
+    }
+
+    #[test]
+    fn extract_isocurve_clips_exact_brep_faces_around_holes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let closed_polyline = |coordinates: &[(Real, Real)]| {
+            let mut points = coordinates
+                .iter()
+                .map(|(x, y)| Point3::try_new(*x, *y, 0.0).unwrap())
+                .collect::<Vec<_>>();
+            points.push(points[0]);
+            Polyline3::try_new(points, Tolerance::DEFAULT)
+                .unwrap()
+                .to_nurbs()
+                .unwrap()
+        };
+        let outer = closed_polyline(&[(0.0, 0.0), (10.0, 0.0), (10.0, 10.0), (0.0, 10.0)]);
+        let hole = closed_polyline(&[(4.0, 4.0), (4.0, 6.0), (6.0, 6.0), (6.0, 4.0)]);
+        let source = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(&mut document, "ExtractIsocurve 2,5,0 Direction=Both")
+            .unwrap();
+        assert_eq!(
+            message,
+            "Extracted 3 exact U/V isocurve(s) from 1 surface(s)"
+        );
+        assert!(!document.is_selected(source));
+        let outputs = document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 3);
+        let lengths = outputs
+            .iter()
+            .map(|object| {
+                assert!(document.is_selected(object.id()));
+                let Geometry::NurbsCurve(curve) = object.geometry() else {
+                    panic!("trim-aware isocurves must remain exact NURBS curves")
+                };
+                assert_eq!(curve.degree(), 1);
+                curve.length(document.tolerance()).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert!(Tolerance::DEFAULT.approx_eq(lengths[0], 4.0));
+        assert!(Tolerance::DEFAULT.approx_eq(lengths[1], 4.0));
+        assert!(Tolerance::DEFAULT.approx_eq(lengths[2], 10.0));
+        assert_eq!(document.undo_label(), Some("ExtractIsocurve"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "ExtractIsocurve 5,5,0 Direction=Both"),
+            Err(CommandError::NoExtractableIsocurves)
+        ));
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let mut solid_document = Document::default();
+        registry
+            .execute(&mut solid_document, "Cylinder 0,0,0 2 5 Solid=Yes")
+            .unwrap();
+        let solid = solid_document.objects().next().unwrap().id();
+        solid_document
+            .select_objects_direct([solid], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut solid_document, "ExtractIsocurve 2,0,2 Direction=Both")
+            .unwrap();
+        let solid_outputs = solid_document.objects().skip(1).collect::<Vec<_>>();
+        assert_eq!(solid_outputs.len(), 2);
+        assert!(solid_outputs.iter().all(|object| {
+            matches!(object.geometry(), Geometry::NurbsCurve(_))
+                && solid_document.is_selected(object.id())
+        }));
     }
 
     #[test]

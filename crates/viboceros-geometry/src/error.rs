@@ -59,6 +59,9 @@ pub enum GeometryError {
     #[error("a NURBS curve trim interval must be finite, increasing, and inside its domain")]
     InvalidCurveTrimInterval,
 
+    #[error("B-rep trim/isocurve intersection did not converge")]
+    TrimIntersectionDidNotConverge,
+
     #[error("invalid B-rep topology: {context}")]
     InvalidBrepTopology { context: &'static str },
 

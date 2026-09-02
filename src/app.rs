@@ -260,7 +260,7 @@ impl InteractiveCommand {
                 }
             },
             Self::ExtractIsocurve { .. } => {
-                "ExtractIsocurve: pick a location on the selected surface (Esc to cancel)"
+                "ExtractIsocurve: pick a location on the selected surface or B-rep face (Esc to cancel)"
             }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
