@@ -407,6 +407,121 @@ impl TriangleMesh {
         )))
     }
 
+    /// Replaces one exact-location topology edge with vertices at its center.
+    ///
+    /// Every raw vertex belonging to either topology endpoint moves to the
+    /// midpoint. Raw endpoint pairs used by the selected edge are merged, so
+    /// welded and partially welded uses stay joined while independent seam
+    /// components remain distinct. Collapsed triangle faces disappear;
+    /// collapsed quad sides become triangles. Surviving faces retain source
+    /// order and referenced vertices compact in source order, matching
+    /// RhinoCommon's `MeshTopologyEdgeList::CollapseEdge` behavior. `None`
+    /// means that the collapse removes every face.
+    pub fn collapse_topology_edge(
+        &self,
+        edge_index: usize,
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, GeometryError> {
+        let data = self.topology_data();
+        let edge_count = data.edges.len();
+        let Some((&(first_topology_vertex, second_topology_vertex), incidence)) =
+            data.edges.iter().nth(edge_index)
+        else {
+            return Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_index,
+                edge_count,
+            });
+        };
+        let first = data.topological_points[first_topology_vertex];
+        let second = data.topological_points[second_topology_vertex];
+        let midpoint = Point3::try_new(
+            first.x() * 0.5 + second.x() * 0.5,
+            first.y() * 0.5 + second.y() * 0.5,
+            first.z() * 0.5 + second.z() * 0.5,
+        )?;
+
+        let mut parents = (0..self.vertices.len()).collect::<Vec<_>>();
+        for edge_use in incidence.uses() {
+            union_indices_keep_earlier(
+                &mut parents,
+                edge_use.raw_vertices[0] as usize,
+                edge_use.raw_vertices[1] as usize,
+            );
+        }
+        let mut moved_vertices = self.vertices.clone();
+        for (raw_vertex, &topology_vertex) in data.topological_vertices.iter().enumerate() {
+            if topology_vertex == first_topology_vertex || topology_vertex == second_topology_vertex
+            {
+                moved_vertices[raw_vertex] = midpoint;
+            }
+        }
+
+        let mut faces = Vec::with_capacity(self.faces.len());
+        for face in self.faces.iter().copied() {
+            let remapped = face.remapped(|raw| {
+                u32::try_from(index_root(&mut parents, raw as usize))
+                    .expect("a mesh raw vertex index already fits in u32")
+            });
+            match remapped {
+                MeshFace::Triangle([a, b, c]) => {
+                    if a != b && b != c && c != a {
+                        faces.push(MeshFace::Triangle([a, b, c]));
+                    }
+                }
+                MeshFace::Quad(indices) => {
+                    let collapsed_sides = (0..4)
+                        .filter(|&side| indices[side] == indices[(side + 1) % 4])
+                        .collect::<Vec<_>>();
+                    if collapsed_sides.is_empty() {
+                        let unique = indices.into_iter().collect::<BTreeSet<_>>();
+                        if unique.len() == 4 {
+                            faces.push(MeshFace::Quad(indices));
+                        }
+                    } else if let [side] = collapsed_sides.as_slice() {
+                        let start = (side + 2) % 4;
+                        let triangle = [
+                            indices[start],
+                            indices[(start + 1) % 4],
+                            indices[(start + 2) % 4],
+                        ];
+                        if triangle[0] != triangle[1]
+                            && triangle[1] != triangle[2]
+                            && triangle[2] != triangle[0]
+                        {
+                            faces.push(MeshFace::Triangle(triangle));
+                        }
+                    }
+                }
+            }
+        }
+        if faces.is_empty() {
+            return Ok(None);
+        }
+
+        let mut used = vec![false; self.vertices.len()];
+        for face in &faces {
+            for &raw in face.indices() {
+                used[raw as usize] = true;
+            }
+        }
+        let retained_vertex_count = used.iter().filter(|&&retain| retain).count();
+        let mut raw_remap = vec![0_u32; self.vertices.len()];
+        let mut vertices = Vec::with_capacity(retained_vertex_count);
+        for (raw, (&point, retain)) in moved_vertices.iter().zip(used).enumerate() {
+            if !retain {
+                continue;
+            }
+            raw_remap[raw] =
+                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            vertices.push(point);
+        }
+        let faces = faces
+            .into_iter()
+            .map(|face| face.remapped(|raw| raw_remap[raw as usize]))
+            .collect();
+        Ok(Some(Self::try_new_faces(vertices, faces, tolerance)?))
+    }
+
     pub fn triangle_points(&self, index: usize) -> Option<[Point3; 3]> {
         let triangle = *self.triangles.get(index)?;
         Some([
@@ -3113,6 +3228,202 @@ mod tests {
                 edge: mesh.topology().edge_count(),
                 edge_count: mesh.topology().edge_count(),
             })
+        );
+    }
+
+    #[test]
+    fn collapses_mesh_edge_to_midpoint_in_rhino_source_order() {
+        let vertices = vec![
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(0.0, 0.0, 2.0),
+        ];
+        let mesh = TriangleMesh::try_new(
+            vertices,
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0));
+        let collapsed = mesh
+            .collapse_topology_edge(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            collapsed.vertices(),
+            &[
+                point(1.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 2.0),
+            ]
+        );
+        assert_eq!(collapsed.triangles(), &[[0, 1, 2], [1, 0, 2]]);
+    }
+
+    #[test]
+    fn collapse_mesh_edge_turns_adjacent_quads_into_rotated_triangles() {
+        let boundary = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&boundary, point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0));
+        let collapsed = boundary
+            .collapse_topology_edge(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            collapsed.vertices(),
+            &[
+                point(1.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ]
+        );
+        assert_eq!(collapsed.triangles(), &[[0, 1, 2]]);
+
+        let quad = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&quad, point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0));
+        let collapsed = quad
+            .collapse_topology_edge(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            collapsed.vertices(),
+            &[
+                point(0.0, 2.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+            ]
+        );
+        assert_eq!(collapsed.triangles(), &[[2, 0, 1]]);
+    }
+
+    #[test]
+    fn collapse_mesh_edge_preserves_independent_unwelded_components() {
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+                point(-2.0, 1.0, 0.0),
+                point(4.0, -1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [3, 4, 5], [0, 6, 2], [3, 5, 7]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(&mesh, point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0));
+        let collapsed = mesh
+            .collapse_topology_edge(edge, Tolerance::DEFAULT)
+            .unwrap()
+            .unwrap();
+        assert_eq!(
+            collapsed.vertices(),
+            &[
+                point(1.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+                point(-2.0, 1.0, 0.0),
+                point(4.0, -1.0, 0.0),
+            ]
+        );
+        assert_eq!(collapsed.triangles(), &[[0, 4, 1], [2, 3, 5]]);
+    }
+
+    #[test]
+    fn collapse_mesh_edge_reports_empty_invalid_and_degenerate_results() {
+        let square = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(0.0, 2.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 2, 3]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let diagonal =
+            topology_edge_index_between(&square, point(0.0, 0.0, 0.0), point(2.0, 2.0, 0.0));
+        assert_eq!(
+            square
+                .collapse_topology_edge(diagonal, Tolerance::DEFAULT)
+                .unwrap(),
+            None
+        );
+        let edge_count = square.topology().edge_count();
+        assert_eq!(
+            square.collapse_topology_edge(edge_count, Tolerance::DEFAULT),
+            Err(GeometryError::MeshTopologyEdgeIndexOutOfRange {
+                edge: edge_count,
+                edge_count,
+            })
+        );
+
+        let degenerate = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+                point(0.0, 1.0, 0.0),
+                point(2.0, -1.0, 0.0),
+            ],
+            vec![[0, 1, 2], [0, 3, 4]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge =
+            topology_edge_index_between(&degenerate, point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0));
+        assert_eq!(
+            degenerate.collapse_topology_edge(edge, Tolerance::DEFAULT),
+            Err(GeometryError::DegenerateTriangle { triangle: 0 })
+        );
+
+        let disconnected_quad = TriangleMesh::try_new_faces(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, -2.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(-2.0, 1.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(3.0, 1.0, 0.0),
+            ],
+            vec![MeshFace::Triangle([0, 1, 2]), MeshFace::Quad([3, 4, 5, 6])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let edge = topology_edge_index_between(
+            &disconnected_quad,
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+        );
+        assert_eq!(
+            disconnected_quad.collapse_topology_edge(edge, Tolerance::DEFAULT),
+            Err(GeometryError::DegenerateQuad { face: 0 })
         );
     }
 

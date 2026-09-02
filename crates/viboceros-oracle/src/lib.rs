@@ -321,6 +321,12 @@ pub enum Operation {
         faces: Vec<Vec<u32>>,
         edge_points: [[f64; 3]; 2],
     },
+    MeshCollapseEdge {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        faces: Vec<Vec<u32>>,
+        edge_points: [[f64; 3]; 2],
+    },
     NurbsSurfaceExtractPoints {
         id: String,
         degree_u: usize,
@@ -399,6 +405,7 @@ impl Operation {
             | Self::MeshDeleteFaces { id, .. }
             | Self::MeshTriangulate { id, .. }
             | Self::MeshSwapEdge { id, .. }
+            | Self::MeshCollapseEdge { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
         }
@@ -1381,6 +1388,42 @@ fn execute(
                 json!({
                     "accepted": accepted,
                     "mesh": polygon_mesh_value(swapped.as_ref().unwrap_or(&mesh)),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshCollapseEdge {
+            vertices,
+            faces,
+            edge_points,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new_faces(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                polygon_mesh_faces(faces)?,
+                tolerance,
+            )?;
+            let endpoints = [point(edge_points[0])?, point(edge_points[1])?];
+            let edge_index = mesh
+                .wireframe_lines(tolerance)?
+                .into_iter()
+                .position(|edge| {
+                    (edge.start() == endpoints[0] && edge.end() == endpoints[1])
+                        || (edge.start() == endpoints[1] && edge.end() == endpoints[0])
+                })
+                .ok_or(ProbeError::FixtureInvariant(
+                    "mesh collapse endpoints do not identify a topology edge",
+                ))?;
+            let (collapsed, elapsed) = measure(iterations, || {
+                black_box(&mesh).collapse_topology_edge(black_box(edge_index), tolerance)
+            })?;
+            (
+                json!({
+                    "accepted": true,
+                    "mesh": collapsed.as_ref().map(polygon_mesh_value),
                 }),
                 elapsed,
             )
@@ -5919,6 +5962,48 @@ mod tests {
                     "faces": [[0, 1, 2], [0, 3, 2]],
                     "vertices": vertices,
                 },
+            })
+        );
+    }
+
+    #[test]
+    fn collapses_mesh_edges_for_oracle_comparison() {
+        let vertices = vec![
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.0, 0.0, 2.0],
+        ];
+        let response = run_request(&request(vec![
+            Operation::MeshCollapseEdge {
+                id: "collapsed".to_owned(),
+                vertices: vertices.clone(),
+                faces: vec![vec![0, 2, 1], vec![0, 1, 3], vec![1, 2, 3], vec![2, 0, 3]],
+                edge_points: [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+            },
+            Operation::MeshCollapseEdge {
+                id: "empty".to_owned(),
+                vertices: vertices[..3].to_vec(),
+                faces: vec![vec![0, 1, 2]],
+                edge_points: [[0.0, 0.0, 0.0], [2.0, 0.0, 0.0]],
+            },
+        ]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "mesh": {
+                    "faces": [[0, 1, 2], [1, 0, 2]],
+                    "vertices": [[1.0, 0.0, 0.0], [0.0, 2.0, 0.0], [0.0, 0.0, 2.0]],
+                },
+            })
+        );
+        assert_eq!(
+            response.results[1].value,
+            json!({
+                "accepted": true,
+                "mesh": null,
             })
         );
     }

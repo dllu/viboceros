@@ -102,6 +102,7 @@ enum InteractiveCommand {
     },
     DeleteFaces,
     SwapMeshEdge,
+    CollapseMeshEdge,
     WeldEdge,
     WeldVertices,
     UnweldEdge {
@@ -198,6 +199,7 @@ impl InteractiveCommand {
             Self::ExtractMeshFaces { .. } => "ExtractMeshFaces",
             Self::DeleteFaces => "DeleteFaces",
             Self::SwapMeshEdge => "SwapMeshEdge",
+            Self::CollapseMeshEdge => "CollapseMeshEdge",
             Self::WeldEdge => "WeldEdge",
             Self::WeldVertices => "WeldVertices",
             Self::UnweldEdge { .. } => "UnweldEdge",
@@ -318,6 +320,9 @@ impl InteractiveCommand {
             }
             Self::SwapMeshEdge => {
                 "SwapMeshEdge: pick an interior edge shared by two selected-mesh triangles (Esc to cancel)"
+            }
+            Self::CollapseMeshEdge => {
+                "CollapseMeshEdge: pick a topology edge on a selected mesh (Esc to cancel)"
             }
             Self::WeldEdge => {
                 "WeldEdge: pick an unwelded topology edge on a selected mesh (Esc to cancel)"
@@ -497,6 +502,7 @@ impl InteractiveCommand {
             | Self::ExtractMeshFaces { .. }
             | Self::DeleteFaces
             | Self::SwapMeshEdge
+            | Self::CollapseMeshEdge
             | Self::WeldEdge
             | Self::WeldVertices
             | Self::UnweldEdge { .. }
@@ -962,6 +968,11 @@ impl VibocerosApp {
                 return false;
             }
             InteractiveCommand::SwapMeshEdge
+        } else if normalized == "collapsemeshedge" {
+            if !arguments.is_empty() {
+                return false;
+            }
+            InteractiveCommand::CollapseMeshEdge
         } else if matches!(normalized.as_str(), "weldedge" | "weldmeshedge") {
             if !arguments.is_empty() {
                 return false;
@@ -1327,6 +1338,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtractMeshFaces { .. }
                 | InteractiveCommand::DeleteFaces
                 | InteractiveCommand::SwapMeshEdge
+                | InteractiveCommand::CollapseMeshEdge
                 | InteractiveCommand::WeldEdge
                 | InteractiveCommand::WeldVertices
                 | InteractiveCommand::UnweldEdge { .. }
@@ -1767,6 +1779,10 @@ impl VibocerosApp {
             InteractiveCommand::SwapMeshEdge => {
                 self.active_command = None;
                 self.execute_command(&format!("SwapMeshEdge {}", format_model_point(point)));
+            }
+            InteractiveCommand::CollapseMeshEdge => {
+                self.active_command = None;
+                self.execute_command(&format!("CollapseMeshEdge {}", format_model_point(point)));
             }
             InteractiveCommand::WeldEdge => {
                 self.active_command = None;
@@ -2335,6 +2351,7 @@ impl VibocerosApp {
         let mut split_disjoint_mesh_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
+        let mut collapse_mesh_edge_clicked = false;
         let mut extract_mesh_edges_clicked = false;
         let mut extract_mesh_faces_clicked = false;
         let mut delete_faces_clicked = false;
@@ -2534,6 +2551,10 @@ impl VibocerosApp {
                 swap_mesh_edge_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Swap Mesh Edge"))
                     .on_hover_text("Pick the shared diagonal of two selected-mesh triangles")
+                    .clicked();
+                collapse_mesh_edge_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("Collapse Mesh Edge"))
+                    .on_hover_text("Pick a selected-mesh topology edge to collapse to its midpoint")
                     .clicked();
                 extract_mesh_edges_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Extract Mesh Edges"))
@@ -2818,6 +2839,8 @@ impl VibocerosApp {
             self.execute_command("TriangulateMesh");
         } else if swap_mesh_edge_clicked {
             self.try_start_interactive_command("SwapMeshEdge");
+        } else if collapse_mesh_edge_clicked {
+            self.try_start_interactive_command("CollapseMeshEdge");
         } else if extract_mesh_edges_clicked {
             self.execute_command("ExtractMeshEdges");
         } else if extract_mesh_faces_clicked {
@@ -4141,6 +4164,51 @@ mod tests {
     }
 
     #[test]
+    fn interactive_collapse_mesh_edge_uses_one_topology_edge_pick() {
+        let mut app = test_app();
+        let mesh = TriangleMesh::try_new(
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ],
+            vec![[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]],
+            app.document.tolerance(),
+        )
+        .unwrap();
+        let source = app.document.add_geometry(Geometry::Mesh(mesh)).unwrap();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("CollapseMeshEdge"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::CollapseMeshEdge)
+        );
+        assert!(app.command_log.back().unwrap().contains("topology edge"));
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.is_selected(source));
+        let Geometry::Mesh(collapsed) = app.document.object(source).unwrap().geometry() else {
+            panic!("expected edge-collapsed mesh")
+        };
+        assert_eq!(
+            collapsed.vertices(),
+            &[
+                point(2.0, 0.0, 0.0),
+                point(0.0, 4.0, 0.0),
+                point(0.0, 0.0, 4.0),
+            ]
+        );
+        assert_eq!(collapsed.triangles(), &[[0, 1, 2], [1, 0, 2]]);
+        assert_eq!(app.document.undo_label(), Some("CollapseMeshEdge"));
+        assert!(!app.try_start_interactive_command("CollapseMeshEdge Edge=0"));
+    }
+
+    #[test]
     fn interactive_weld_edge_uses_one_topology_edge_pick() {
         let mut app = test_app();
         let mesh = TriangleMesh::try_new(
@@ -4666,6 +4734,7 @@ mod tests {
             "ExtractMeshFaces",
             "DeleteFaces",
             "SwapMeshEdge",
+            "CollapseMeshEdge",
             "DupMeshEdge",
             "DupMeshHoleBoundary",
             "WeldEdge",

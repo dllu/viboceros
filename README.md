@@ -132,6 +132,7 @@ ExtractMeshFaces Faces=2,0 MakeCopy=No
 DeleteFaces Faces=2,0
 TriangulateMesh
 SwapMeshEdge Edge=1
+CollapseMeshEdge Edge=1
 ExtractIsocurve 2,1,0 Direction=Both
 ExtractIsocurve ExtractAll Direction=Both IgnoreTrims=No
 ExtractWireframe OutputLayer=Current GroupOutput=No
@@ -299,6 +300,14 @@ consistently oriented triangle faces with their opposite diagonal. Use
 pick one edge in the viewport. Vertex storage, face slots, object identity,
 attributes, groups, and selection are preserved. Swaps that would create a
 degenerate face are rejected to retain Viboceros's validated-mesh invariant.
+`CollapseMeshEdge` follows RhinoCommon's deterministic API behavior by moving
+both topology endpoints to their midpoint. Use `Edge=1` for the topology index,
+or omit it to pick one selected-mesh edge in the viewport. Collapsed triangles
+are removed, collapsed quad sides become triangles, independent unwelded seam
+components remain distinct, and surviving faces and vertices retain source
+order. Surviving objects keep identity, attributes, groups, and selection; an
+empty result deletes the object. A collapse that would leave a zero-area face
+is rejected atomically to preserve the validated-mesh invariant.
 `ExtractControlPolygon` fits degree-one polylines through the Euclidean controls
 of selected curves and creates mixed triangle/quad meshes through selected
 untrimmed NURBS surface control nets. Periodic control windows align to the

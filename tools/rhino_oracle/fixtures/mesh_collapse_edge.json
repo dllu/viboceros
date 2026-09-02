@@ -1,0 +1,104 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_collapse_edge",
+      "id": "tetrahedron-edge",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [0, 0, 2]],
+      "faces": [[0, 2, 1], [0, 1, 3], [1, 2, 3], [2, 0, 3]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "square-diagonal",
+      "edge_points": [[0, 0, 0], [2, 2, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [2, 2, 0], [0, 2, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "square-boundary",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [2, 2, 0], [0, 2, 0]],
+      "faces": [[0, 1, 2], [0, 2, 3]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "triangle-quad-edge",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [2, -2, 0], [0, -2, 0]],
+      "faces": [[0, 1, 2], [1, 0, 4, 3]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "quad-boundary-edge",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [2, 2, 0], [0, 2, 0]],
+      "faces": [[0, 1, 2, 3]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "unwelded-shared-edge",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [2, 0, 0], [0, 0, 0], [0, -2, 0]],
+      "faces": [[0, 1, 2], [3, 4, 5]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "partially-welded-edge",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [2, 0, 0], [0, -2, 0]],
+      "faces": [[0, 1, 2], [3, 0, 4]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "non-manifold-edge",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [0, -2, 0], [1, 0, 2]],
+      "faces": [[0, 1, 2], [1, 0, 3], [0, 1, 4]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "unused-vertices-and-disjoint-face",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[99, 99, 99], [0, 0, 0], [2, 0, 0], [0, 2, 0], [10, 0, 0], [12, 0, 0], [10, 2, 0], [88, 88, 88]],
+      "faces": [[1, 2, 3], [4, 5, 6]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "separate-endpoint-fans",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[99, 99, 99], [0, 0, 0], [0, 2, 0], [2, 0, 0], [0, 3, 0], [-2, 1, 0], [4, 1, 0], [2, 3, 0]],
+      "faces": [[1, 3, 2], [1, 4, 5], [3, 6, 7]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "unwelded-edge-with-surviving-fans",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [2, 0, 0], [0, 0, 0], [0, -2, 0], [-2, 1, 0], [4, -1, 0]],
+      "faces": [[0, 1, 2], [3, 4, 5], [0, 6, 2], [3, 5, 7]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "quad-edge-at-second-side",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 2, 0], [0, 0, 0], [2, 0, 0], [2, 2, 0]],
+      "faces": [[0, 1, 2, 3]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "disconnected-coincident-endpoint-fans",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, 2, 0], [0, 0, 0], [-2, 1, 0], [-1, 3, 0], [2, 0, 0], [3, 3, 0], [4, 1, 0]],
+      "faces": [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+    },
+    {
+      "op": "mesh_collapse_edge",
+      "id": "opposite-quad-vertices",
+      "edge_points": [[0, 0, 0], [2, 0, 0]],
+      "vertices": [[0, 0, 0], [2, 0, 0], [0, -2, 0], [-2, 1, 0], [3, 1, 0]],
+      "faces": [[0, 1, 2], [0, 3, 1, 4]]
+    }
+  ]
+}
