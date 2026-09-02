@@ -1150,7 +1150,7 @@ impl Command for SphereCommand {
 }
 
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
-const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=No]";
+const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -1351,27 +1351,33 @@ impl Command for ConeCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_axial_primitive_options(arguments, CONE_USAGE, false)?;
-        if options.solid {
-            return Err(CommandError::SolidPrimitiveUnsupported);
-        }
         let tolerance = document.tolerance();
         let (base_frame, radius) =
             axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let apex = options
-            .center
-            .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
-        let apex_frame = Frame3::try_from_directions(
-            apex,
-            base_frame.x_axis().as_vector(),
-            base_frame.y_axis().as_vector(),
-            tolerance,
-        )?;
-        let surface = NurbsSurface::try_cone(apex_frame, radius, -options.height)?;
-        let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
-        Ok(format!(
-            "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
-            options.height
-        ))
+        if options.solid {
+            let brep = Brep::try_cone(base_frame, radius, options.height, tolerance)?;
+            let id = document.add_geometry(Geometry::Brep(brep))?;
+            Ok(format!(
+                "Added closed B-rep cone {id} (radius {radius:.6}, height {:.6})",
+                options.height
+            ))
+        } else {
+            let apex = options
+                .center
+                .translated(base_frame.z_axis().as_vector().scaled(options.height)?)?;
+            let apex_frame = Frame3::try_from_directions(
+                apex,
+                base_frame.x_axis().as_vector(),
+                base_frame.y_axis().as_vector(),
+                tolerance,
+            )?;
+            let surface = NurbsSurface::try_cone(apex_frame, radius, -options.height)?;
+            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+            Ok(format!(
+                "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
+                options.height
+            ))
+        }
     }
 }
 
@@ -7177,9 +7183,6 @@ pub enum CommandError {
     #[error("solid curve extrusion is not yet constructed as a capped B-rep")]
     SolidCurveExtrusionUnsupported,
 
-    #[error("solid cylinder and cone output is not yet constructed as a capped B-rep")]
-    SolidPrimitiveUnsupported,
-
     #[error("the two Box base corners must lie on the same World XY plane")]
     BoxBaseCornersNotCoplanar,
 
@@ -7557,8 +7560,22 @@ mod tests {
             Point3::try_new(4.0, 2.0, 3.0).unwrap()
         );
 
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(&mut document, "Cone 1,2,3 2.5 -4 Solid=Yes")
+            .unwrap();
+        assert!(result.contains("closed B-rep cone"));
+        let Geometry::Brep(solid) = document.objects().next().unwrap().geometry() else {
+            panic!("Cone Solid=Yes must create a B-rep")
+        };
+        assert_eq!(solid.faces().len(), 2);
+        assert!(solid.is_solid());
+        let mesh = solid.tessellate(8, document.tolerance()).unwrap();
+        assert!(mesh.topology().is_solid());
+        let expected_volume = std::f64::consts::PI * 2.5 * 2.5 * 4.0 / 3.0;
+        assert!((mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume < 0.01);
+
         for invalid in [
-            "Cone 0,0,0 1 2 Solid=Yes",
             "Cone 0,0,0 1 0",
             "Cone 0,0,0 0 2",
             "Cone 0,0,0 0,0,2 3 Axis=0,0,1",

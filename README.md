@@ -34,7 +34,7 @@ Box 0,0,0 8,5,0 3
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
-Cone 0,0,0 5 10 Solid=No
+Cone 0,0,0 5 10 Solid=Yes
 Torus 0,0,0 5 1.5
 Layer New Construction
 Layer Hide Construction
@@ -196,7 +196,8 @@ while `BothSides=Yes` makes the height symmetric about the base center.
 a closed B-rep; `Solid=No` retains the single open wall surface.
 `Cone` uses the same center, numeric radius or base-point radius, signed height,
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
-surface with a weighted collapsed apex. `Solid=No` is currently required.
+wall with a weighted collapsed apex. `Solid=Yes` adds an exact polar-disk base
+and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
 `Torus` creates an exact closed 9-by-9 rational quadratic surface from a center,
 major radius (or point on the major circle), and minor radius. `Axis=` orients
 the torus; the major radius must exceed the positive minor radius. Its U and V

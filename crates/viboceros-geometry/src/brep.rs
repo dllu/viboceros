@@ -483,6 +483,75 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs an exact capped right circular cone from its base frame and
+    /// signed apex height. The wall apex and both periodic parameter seams use
+    /// singular/shared topology rather than duplicate boundary geometry.
+    pub fn try_cone(
+        base_frame: Frame3,
+        radius: Real,
+        height: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let apex_frame = frame_at_height(base_frame, height, tolerance)?;
+        let wall = NurbsSurface::try_cone(apex_frame, radius, -height)?;
+        let u_domain = wall.domain_u();
+        let base_parameter = -height;
+        let base_seam = wall.evaluate(*u_domain.start(), base_parameter)?;
+        let apex = apex_frame.origin();
+        let base = base_frame.origin();
+        let base_v_index = usize::from(height < 0.0);
+        let vertices = vec![
+            BrepVertex::try_new(base_seam, 0.0)?,
+            BrepVertex::try_new(apex, 0.0)?,
+            BrepVertex::try_new(base, 0.0)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 0], surface_u_control_curve(&wall, base_v_index)?, 0.0)?,
+            BrepEdge::try_new(
+                [0, 1],
+                LineSegment::try_new(base_seam, apex, tolerance)?.to_nurbs()?,
+                0.0,
+            )?,
+            BrepEdge::try_new(
+                [2, 0],
+                LineSegment::try_new(base, base_seam, tolerance)?.to_nurbs()?,
+                0.0,
+            )?,
+        ];
+
+        let wall_specs = if height > 0.0 {
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 1, false, BrepTrimType::Seam),
+                RectangularTrimSpec::singular(1),
+                RectangularTrimSpec::edge([1, 0], 1, true, BrepTrimType::Seam),
+            ]
+        } else {
+            [
+                RectangularTrimSpec::singular(1),
+                RectangularTrimSpec::edge([1, 0], 1, true, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([0, 0], 0, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 1, false, BrepTrimType::Seam),
+            ]
+        };
+        let wall_loop = rectangular_surface_loop(&wall, wall_specs)?;
+        let cap = NurbsSurface::try_disk(base_frame, radius)?;
+        let cap_loop = rectangular_surface_loop(
+            &cap,
+            [
+                RectangularTrimSpec::singular(2),
+                RectangularTrimSpec::edge([2, 0], 2, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([0, 0], 0, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 2], 2, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let faces = vec![
+            BrepFace::try_new(wall, false, vec![wall_loop])?,
+            BrepFace::try_new(cap, height < 0.0, vec![cap_loop])?,
+        ];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     #[inline]
     pub fn vertices(&self) -> &[BrepVertex] {
         &self.vertices
@@ -1378,6 +1447,69 @@ mod tests {
 
         assert!(Brep::try_cylinder(frame, 0.0, 0.0, 1.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cylinder(frame, 1.0, 2.0, 2.0, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn exact_capped_cone_handles_both_signed_apex_directions() {
+        let base = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            base,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        for height in [7.0, -7.0] {
+            let brep = Brep::try_cone(frame, 2.5, height, Tolerance::DEFAULT).unwrap();
+            assert_eq!(brep.vertices().len(), 3);
+            assert_eq!(brep.edges().len(), 3);
+            assert_eq!(brep.faces().len(), 2);
+            assert!(brep.is_manifold());
+            assert!(brep.is_closed());
+            assert!(brep.is_solid());
+            assert!((0..3).all(|edge| brep.edge_use_count(edge) == Some(2)));
+            assert!(!brep.faces()[0].is_reversed());
+            assert_eq!(brep.faces()[1].is_reversed(), height < 0.0);
+
+            let wall_trim_types = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| trim.trim_type())
+                .collect::<Vec<_>>();
+            assert_eq!(
+                wall_trim_types,
+                if height > 0.0 {
+                    vec![
+                        BrepTrimType::Mated,
+                        BrepTrimType::Seam,
+                        BrepTrimType::Singular,
+                        BrepTrimType::Seam,
+                    ]
+                } else {
+                    vec![
+                        BrepTrimType::Singular,
+                        BrepTrimType::Seam,
+                        BrepTrimType::Mated,
+                        BrepTrimType::Seam,
+                    ]
+                }
+            );
+
+            let mesh = brep.tessellate(8, Tolerance::DEFAULT).unwrap();
+            assert!(mesh.topology().is_solid());
+            let expected_volume = std::f64::consts::PI * 2.5 * 2.5 * height.abs() / 3.0;
+            let relative_error =
+                (mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume;
+            assert!(
+                relative_error < 0.01,
+                "height {height} relative volume error {relative_error}"
+            );
+        }
+
+        assert!(Brep::try_cone(frame, 0.0, 1.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_cone(frame, 1.0, 0.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_cone(frame, 1.0, Real::NAN, Tolerance::DEFAULT).is_err());
     }
 
     #[test]
