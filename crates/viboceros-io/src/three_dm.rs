@@ -6,9 +6,11 @@ use std::slice;
 
 use thiserror::Error;
 use viboceros_geometry::{
-    GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Tolerance,
+    Brep, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Tolerance,
     TriangleMesh, WeightedPoint3,
 };
+
+use crate::three_dm_brep::{self, BrepCodecError};
 
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
@@ -17,6 +19,7 @@ const OBJECT_NURBS_CURVE: c_int = 3;
 const OBJECT_TRIANGLE_MESH: c_int = 4;
 const OBJECT_NURBS_SURFACE: c_int = 5;
 const OBJECT_POINT_CLOUD: c_int = 6;
+const OBJECT_BREP: c_int = 7;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -47,6 +50,7 @@ pub enum ThreeDmGeometry {
     Line(LineSegment),
     NurbsCurve(NurbsCurve),
     NurbsSurface(NurbsSurface),
+    Brep(Brep),
     Mesh(TriangleMesh),
 }
 
@@ -207,7 +211,7 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
         .objects
         .iter()
         .map(ObjectPayload::from_object)
-        .collect::<Vec<_>>();
+        .collect::<Result<Vec<_>, _>>()?;
     let objects = model
         .objects
         .iter()
@@ -235,6 +239,8 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             knot_v_count: payload.knots_v.len(),
             indices: pointer_or_null(&payload.indices),
             index_count: payload.indices.len(),
+            brep_data: pointer_or_null(&payload.brep_data),
+            brep_data_count: payload.brep_data.len(),
             group_indices: pointer_or_null(&object.group_indices),
             group_index_count: object.group_indices.len(),
         })
@@ -366,6 +372,7 @@ fn decode_object(
     let mut knots_u = std::ptr::null();
     let mut knots_v = std::ptr::null();
     let mut indices = std::ptr::null();
+    let mut brep_data = std::ptr::null();
     let mut group_indices = std::ptr::null();
     // SAFETY: output pointers are valid, the model is live, and index is in range.
     let success = unsafe {
@@ -377,6 +384,7 @@ fn decode_object(
             &mut knots_u,
             &mut knots_v,
             &mut indices,
+            &mut brep_data,
             &mut group_indices,
         )
     };
@@ -387,6 +395,7 @@ fn decode_object(
     let knots_u = ffi_slice(handle, knots_u, info.knot_u_count)?;
     let knots_v = ffi_slice(handle, knots_v, info.knot_v_count)?;
     let indices = ffi_slice(handle, indices, info.index_count)?;
+    let brep_data = ffi_slice(handle, brep_data, info.brep_data_count)?;
     let group_indices = ffi_slice(handle, group_indices, info.group_index_count)?
         .iter()
         .map(|source_index| {
@@ -428,7 +437,8 @@ fn decode_object(
             if coordinates.len() == 3
                 && knots_u.is_empty()
                 && knots_v.is_empty()
-                && indices.is_empty() =>
+                && indices.is_empty()
+                && brep_data.is_empty() =>
         {
             ThreeDmGeometry::Point(point(coordinates)?)
         }
@@ -436,7 +446,8 @@ fn decode_object(
             if coordinates.len() == 6
                 && knots_u.is_empty()
                 && knots_v.is_empty()
-                && indices.is_empty() =>
+                && indices.is_empty()
+                && brep_data.is_empty() =>
         {
             ThreeDmGeometry::Line(LineSegment::try_new(
                 point(&coordinates[..3])?,
@@ -453,7 +464,8 @@ fn decode_object(
                 && coordinates.len() % 3 == 0
                 && knots_u.is_empty()
                 && knots_v.is_empty()
-                && indices.is_empty() =>
+                && indices.is_empty()
+                && brep_data.is_empty() =>
         {
             ThreeDmGeometry::PointCloud(PointCloud3::try_new(
                 coordinates
@@ -475,7 +487,8 @@ fn decode_object(
                         .saturating_add(info.degree_u as usize)
                         .saturating_add(1)
                 && knots_v.is_empty()
-                && indices.is_empty() =>
+                && indices.is_empty()
+                && brep_data.is_empty() =>
         {
             let control_points = coordinates
                 .chunks_exact(4)
@@ -509,7 +522,8 @@ fn decode_object(
                         .control_point_count_v
                         .saturating_add(info.degree_v as usize)
                         .saturating_add(1)
-                && indices.is_empty() =>
+                && indices.is_empty()
+                && brep_data.is_empty() =>
         {
             let control_points = coordinates
                 .chunks_exact(4)
@@ -531,7 +545,8 @@ fn decode_object(
                 && !indices.is_empty()
                 && indices.len() % 3 == 0
                 && knots_u.is_empty()
-                && knots_v.is_empty() =>
+                && knots_v.is_empty()
+                && brep_data.is_empty() =>
         {
             let vertices = coordinates
                 .chunks_exact(3)
@@ -542,6 +557,25 @@ fn decode_object(
                 .map(|face| [face[0], face[1], face[2]])
                 .collect();
             ThreeDmGeometry::Mesh(TriangleMesh::try_new(vertices, triangles, tolerance)?)
+        }
+        OBJECT_BREP
+            if info.degree_u == 0
+                && info.degree_v == 0
+                && info.control_point_count_u == 0
+                && info.control_point_count_v == 0
+                && coordinates.is_empty()
+                && knots_u.is_empty()
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && !brep_data.is_empty() =>
+        {
+            match three_dm_brep::decode(brep_data, tolerance) {
+                Ok(brep) => ThreeDmGeometry::Brep(brep),
+                Err(BrepCodecError::Geometry(error)) => return Err(error.into()),
+                Err(BrepCodecError::Malformed | BrepCodecError::SizeOverflow) => {
+                    return Err(ThreeDmError::MalformedBridge("invalid B-rep payload"));
+                }
+            }
         }
         _ => return Err(ThreeDmError::MalformedBridge("inconsistent object payload")),
     };
@@ -618,11 +652,12 @@ struct ObjectPayload {
     knots_u: Vec<c_double>,
     knots_v: Vec<c_double>,
     indices: Vec<u32>,
+    brep_data: Vec<u8>,
 }
 
 impl ObjectPayload {
-    fn from_object(object: &ThreeDmObject) -> Self {
-        match &object.geometry {
+    fn from_object(object: &ThreeDmObject) -> Result<Self, ThreeDmError> {
+        Ok(match &object.geometry {
             ThreeDmGeometry::Point(point) => Self {
                 object_type: OBJECT_POINT,
                 degree_u: 0,
@@ -633,6 +668,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
+                brep_data: Vec::new(),
             },
             ThreeDmGeometry::Line(line) => Self {
                 object_type: OBJECT_LINE,
@@ -649,6 +685,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
+                brep_data: Vec::new(),
             },
             ThreeDmGeometry::PointCloud(cloud) => Self {
                 object_type: OBJECT_POINT_CLOUD,
@@ -664,6 +701,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
+                brep_data: Vec::new(),
             },
             ThreeDmGeometry::NurbsCurve(curve) => Self {
                 object_type: OBJECT_NURBS_CURVE,
@@ -685,6 +723,7 @@ impl ObjectPayload {
                 knots_u: curve.knots().to_vec(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
+                brep_data: Vec::new(),
             },
             ThreeDmGeometry::NurbsSurface(surface) => Self {
                 object_type: OBJECT_NURBS_SURFACE,
@@ -706,6 +745,24 @@ impl ObjectPayload {
                 knots_u: surface.knots_u().to_vec(),
                 knots_v: surface.knots_v().to_vec(),
                 indices: Vec::new(),
+                brep_data: Vec::new(),
+            },
+            ThreeDmGeometry::Brep(brep) => Self {
+                object_type: OBJECT_BREP,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                brep_data: three_dm_brep::encode(brep).map_err(|error| match error {
+                    BrepCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                    BrepCodecError::Malformed | BrepCodecError::SizeOverflow => {
+                        ThreeDmError::InvalidModel("B-rep payload exceeds 64-bit limits".to_owned())
+                    }
+                })?,
             },
             ThreeDmGeometry::Mesh(mesh) => Self {
                 object_type: OBJECT_TRIANGLE_MESH,
@@ -721,8 +778,9 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: mesh.triangles().iter().flatten().copied().collect(),
+                brep_data: Vec::new(),
             },
-        }
+        })
     }
 }
 
@@ -822,6 +880,7 @@ mod ffi {
         pub knot_u_count: usize,
         pub knot_v_count: usize,
         pub index_count: usize,
+        pub brep_data_count: usize,
         pub group_index_count: usize,
     }
 
@@ -863,6 +922,8 @@ mod ffi {
         pub knot_v_count: usize,
         pub indices: *const u32,
         pub index_count: usize,
+        pub brep_data: *const u8,
+        pub brep_data_count: usize,
         pub group_indices: *const usize,
         pub group_index_count: usize,
     }
@@ -904,6 +965,7 @@ mod ffi {
             knots_u: *mut *const c_double,
             knots_v: *mut *const c_double,
             indices: *mut *const u32,
+            brep_data: *mut *const u8,
             group_indices: *mut *const i32,
         ) -> c_int;
         pub fn vibo_3dm_write(
@@ -926,6 +988,7 @@ mod tests {
     use std::time::{SystemTime, UNIX_EPOCH};
 
     use super::*;
+    use viboceros_geometry::{Frame3, Vector3};
 
     fn sample_model() -> ThreeDmModel {
         let point = Point3::try_new(1.0, 2.0, 3.0).unwrap();
@@ -981,6 +1044,20 @@ mod tests {
             Point3::try_new(-4.0, 2.0, 7.0).unwrap(),
         ])
         .unwrap();
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_brep = Brep::try_box(
+            frame,
+            [[-1.0, 2.0], [-2.0, 3.0], [-3.0, 4.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder_brep = Brep::try_cylinder(frame, 2.5, -3.0, 4.0, Tolerance::DEFAULT).unwrap();
+        let cone_brep = Brep::try_cone(frame, 1.75, 5.0, Tolerance::DEFAULT).unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -1033,6 +1110,9 @@ mod tests {
                 },
                 ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Mesh(mesh), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(box_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(cylinder_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(cone_brep), 0),
             ],
         )
     }
@@ -1050,8 +1130,113 @@ mod tests {
         assert_eq!(decoded.unsupported_object_count(), 0);
         assert_eq!(decoded.layers, original.layers);
         assert_eq!(decoded.groups, original.groups);
-        assert_eq!(decoded.objects, original.objects);
+        assert_eq!(decoded.objects.len(), original.objects.len());
+        for (decoded, original) in decoded.objects.iter().zip(&original.objects) {
+            assert_eq!(decoded.layer_index, original.layer_index);
+            assert_eq!(decoded.name, original.name);
+            assert_eq!(decoded.visible, original.visible);
+            assert_eq!(decoded.locked, original.locked);
+            assert_eq!(decoded.object_color, original.object_color);
+            assert_eq!(decoded.color_source, original.color_source);
+            assert_eq!(decoded.group_indices, original.group_indices);
+            match (&decoded.geometry, &original.geometry) {
+                (ThreeDmGeometry::Brep(decoded), ThreeDmGeometry::Brep(original)) => {
+                    assert_brep_near(decoded, original)
+                }
+                (decoded, original) => assert_eq!(decoded, original),
+            }
+        }
         fs::remove_file(path).unwrap();
+    }
+
+    fn assert_brep_near(actual: &Brep, expected: &Brep) {
+        const EPSILON: f64 = 2.0e-12;
+        assert_eq!(actual.vertices().len(), expected.vertices().len());
+        assert_eq!(actual.edges().len(), expected.edges().len());
+        assert_eq!(actual.faces().len(), expected.faces().len());
+        assert_eq!(actual.is_solid(), expected.is_solid());
+        for (actual, expected) in actual.vertices().iter().zip(expected.vertices()) {
+            assert!(actual.point().distance_to(expected.point()).unwrap() <= EPSILON);
+            assert_eq!(actual.tolerance(), expected.tolerance());
+        }
+        for (actual, expected) in actual.edges().iter().zip(expected.edges()) {
+            assert_eq!(actual.vertices(), expected.vertices());
+            assert_eq!(actual.tolerance(), expected.tolerance());
+            assert_curve_near(actual.curve(), expected.curve(), EPSILON);
+        }
+        for (actual, expected) in actual.faces().iter().zip(expected.faces()) {
+            assert_eq!(actual.is_reversed(), expected.is_reversed());
+            assert_surface_near(actual.surface(), expected.surface(), EPSILON);
+            assert_eq!(actual.loops().len(), expected.loops().len());
+            for (actual, expected) in actual.loops().iter().zip(expected.loops()) {
+                assert_eq!(actual.loop_type(), expected.loop_type());
+                assert_eq!(actual.trims().len(), expected.trims().len());
+                for (actual, expected) in actual.trims().iter().zip(expected.trims()) {
+                    assert_eq!(actual.vertices(), expected.vertices());
+                    assert_eq!(actual.edge(), expected.edge());
+                    assert_eq!(actual.is_reversed_3d(), expected.is_reversed_3d());
+                    assert_eq!(actual.trim_type(), expected.trim_type());
+                    assert_eq!(actual.iso(), expected.iso());
+                    assert_eq!(actual.tolerance(), expected.tolerance());
+                    assert_eq!(actual.curve().degree(), expected.curve().degree());
+                    assert_eq!(actual.curve().knots(), expected.curve().knots());
+                    assert_eq!(
+                        actual.curve().control_points().len(),
+                        expected.curve().control_points().len()
+                    );
+                    for (actual, expected) in actual
+                        .curve()
+                        .control_points()
+                        .iter()
+                        .zip(expected.curve().control_points())
+                    {
+                        assert!((actual.point().x() - expected.point().x()).abs() <= EPSILON);
+                        assert!((actual.point().y() - expected.point().y()).abs() <= EPSILON);
+                        assert_eq!(actual.weight(), expected.weight());
+                    }
+                }
+            }
+        }
+    }
+
+    fn assert_curve_near(actual: &NurbsCurve, expected: &NurbsCurve, epsilon: f64) {
+        assert_eq!(actual.degree(), expected.degree());
+        assert_eq!(actual.knots(), expected.knots());
+        assert_eq!(
+            actual.control_points().len(),
+            expected.control_points().len()
+        );
+        for (actual, expected) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(actual.point().distance_to(expected.point()).unwrap() <= epsilon);
+            assert_eq!(actual.weight(), expected.weight());
+        }
+    }
+
+    fn assert_surface_near(actual: &NurbsSurface, expected: &NurbsSurface, epsilon: f64) {
+        assert_eq!(actual.degree_u(), expected.degree_u());
+        assert_eq!(actual.degree_v(), expected.degree_v());
+        assert_eq!(
+            actual.control_point_count_u(),
+            expected.control_point_count_u()
+        );
+        assert_eq!(
+            actual.control_point_count_v(),
+            expected.control_point_count_v()
+        );
+        assert_eq!(actual.knots_u(), expected.knots_u());
+        assert_eq!(actual.knots_v(), expected.knots_v());
+        for (actual, expected) in actual
+            .control_points()
+            .iter()
+            .zip(expected.control_points())
+        {
+            assert!(actual.point().distance_to(expected.point()).unwrap() <= epsilon);
+            assert_eq!(actual.weight(), expected.weight());
+        }
     }
 
     #[test]
@@ -1166,6 +1351,30 @@ mod tests {
                 .iter()
                 .any(|object| matches!(object.geometry, ThreeDmGeometry::PointCloud(_)))
         );
+    }
+
+    #[test]
+    fn reads_official_opennurbs_brep_and_trimmed_surface_fixtures() {
+        let root =
+            Path::new(env!("CARGO_MANIFEST_DIR")).join("../../third_party/opennurbs/example_files");
+        for fixture in ["V7/v7_my_brep.3dm", "V7/v7_my_trimmed_surface.3dm"] {
+            let model = read_3dm_file(root.join(fixture), Tolerance::DEFAULT).unwrap();
+            let breps = model
+                .objects
+                .iter()
+                .filter_map(|object| match &object.geometry {
+                    ThreeDmGeometry::Brep(brep) => Some(brep),
+                    _ => None,
+                })
+                .collect::<Vec<_>>();
+            assert!(!breps.is_empty(), "{fixture} contained no supported B-rep");
+            assert!(
+                breps
+                    .iter()
+                    .all(|brep| brep.is_manifold() && !brep.faces().is_empty()),
+                "{fixture} produced invalid topology"
+            );
+        }
     }
 
     fn temporary_path(suffix: &str) -> std::path::PathBuf {

@@ -6800,7 +6800,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError>
         Geometry::Polyline(polyline) => ThreeDmGeometry::NurbsCurve(polyline.to_nurbs()?),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
-        Geometry::Brep(_) => return Err(CommandError::BrepThreeDmExportUnsupported),
+        Geometry::Brep(brep) => ThreeDmGeometry::Brep(brep.clone()),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
     })
 }
@@ -6813,6 +6813,7 @@ fn document_geometry_from_3dm(geometry: ThreeDmGeometry, tolerance: Tolerance) -
         ThreeDmGeometry::NurbsCurve(curve) => exported_polyline(&curve, tolerance)
             .map_or_else(|| Geometry::NurbsCurve(curve), Geometry::Polyline),
         ThreeDmGeometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface),
+        ThreeDmGeometry::Brep(brep) => Geometry::Brep(brep),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
     }
 }
@@ -7225,9 +7226,6 @@ pub enum CommandError {
         "the document contains no visible mesh, NURBS surface, or tessellatable B-rep to export"
     )]
     NoMeshToExport,
-
-    #[error("3dm export of B-reps is not yet supported")]
-    BrepThreeDmExportUnsupported,
 
     #[error(transparent)]
     Geometry(#[from] GeometryError),
@@ -9706,9 +9704,10 @@ mod tests {
                 .approx_eq(mesh.signed_volume().unwrap(), 96.0)
         );
         assert_eq!(document.undo_label(), Some("Box"));
+        let model = document_3dm_model(&document).unwrap();
         assert!(matches!(
-            document_3dm_model(&document),
-            Err(CommandError::BrepThreeDmExportUnsupported)
+            model.objects[0].geometry,
+            ThreeDmGeometry::Brep(_)
         ));
 
         registry.execute(&mut document, "Undo").unwrap();
@@ -14313,6 +14312,9 @@ mod tests {
                 PointCloud3::try_new(point_cloud_locations.clone()).unwrap(),
             ))
             .unwrap();
+        registry
+            .execute(&mut source, "Box 30,0,0 33,4,0 5")
+            .unwrap();
         let source_ids = source
             .objects()
             .map(|object| object.id())
@@ -14358,15 +14360,15 @@ mod tests {
         let export_message = registry
             .execute(&mut source, &format!("Export3dm {}", path.display()))
             .unwrap();
-        assert!(export_message.contains("9 objects in 4 groups"));
+        assert!(export_message.contains("10 objects in 4 groups"));
 
         let mut imported = Document::default();
         let message = registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert!(message.contains("9 objects in 4 groups"));
+        assert!(message.contains("10 objects in 4 groups"));
         assert!(message.contains("0 unsupported objects skipped"));
-        assert_eq!(imported.objects().len(), 9);
+        assert_eq!(imported.objects().len(), 10);
         let imported_ids = imported
             .objects()
             .map(|object| object.id())
@@ -14417,6 +14419,15 @@ mod tests {
                 .objects()
                 .any(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)))
         );
+        let imported_brep = imported
+            .objects()
+            .find_map(|object| match object.geometry() {
+                Geometry::Brep(brep) => Some(brep),
+                _ => None,
+            })
+            .unwrap();
+        assert!(imported_brep.is_solid());
+        assert_eq!(imported_brep.faces().len(), 6);
         assert_eq!(
             imported
                 .objects()
@@ -14459,7 +14470,7 @@ mod tests {
         registry
             .execute(&mut imported, &format!("Import3dm {}", path.display()))
             .unwrap();
-        assert_eq!(imported.objects().len(), 18);
+        assert_eq!(imported.objects().len(), 20);
         assert!(imported.group_by_name("Assembly (Imported 1)").is_some());
         assert!(imported.group_by_name("Inspection (Imported 1)").is_some());
         assert!(imported.group_by_name("Group01 (Imported 1)").is_some());
@@ -14469,7 +14480,7 @@ mod tests {
                 .is_some()
         );
         registry.execute(&mut imported, "Undo").unwrap();
-        assert_eq!(imported.objects().len(), 9);
+        assert_eq!(imported.objects().len(), 10);
         assert_eq!(imported.groups().len(), 4);
         registry.execute(&mut imported, "Undo").unwrap();
         assert_eq!(imported.objects().len(), 0);

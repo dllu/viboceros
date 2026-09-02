@@ -448,23 +448,27 @@ Timings cover repeated API calls after one warm-up and exclude process startup,
 fixture construction, and JSON I/O; Rhino timings include its public
 Python/RhinoCommon bridge.
 
-Both ASCII and binary STL are supported. Initial 3DM import/export uses McNeel's
+Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
-curves, untrimmed NURBS surfaces, triangle meshes, layer state, and object
-state, including the raw RGB display color and its layer/object/material/parent
-source. Named group definitions and ordered membership are preserved,
-including overlapping and empty groups. Circles, arcs,
-ellipses, and polylines are exported without approximation as rational NURBS
-curves; canonical degree-one curves return as editable polylines. Unsupported
-trimmed B-rep and solid objects are counted and reported during import. Initial
-STEP interchange uses the Apache-2.0 Monstertruck kernel to read solid/shell
-B-reps and assemblies, apply instance transforms, and robustly tessellate exact
-trimmed surfaces into validated display meshes. Parser, topology, and
-unsupported-representation losses are reported instead of being silent. STL and
-STEP export tessellate visible NURBS surfaces and full-domain B-rep faces; STEP
-writes the results as faceted shells with shared topology and planar faces.
-General B-rep faces with holes or non-rectangular trims are rejected until
-constrained trim clipping is implemented rather than being silently filled.
-3DM export currently reports an explicit error when the document contains a
-B-rep. Editable STEP B-rep import, trimmed 3DM B-rep/solid interchange, and
-production surface and solid modelling are not implemented yet.
+curves, untrimmed NURBS surfaces, triangle meshes, and editable rational NURBS
+B-reps. B-rep interchange retains shared vertices and edges, exact edge and
+parameter-space trim curves, face surfaces and orientation, outer and inner
+loops, boundary/mated/seam/singular trims, and modelling tolerances. Layer and
+object state are also preserved, including the raw RGB display color and its
+layer/object/material/parent source. Named group definitions and ordered
+membership survive round trips, including overlapping and empty groups.
+Circles, arcs, ellipses, and polylines are exported without approximation as
+rational NURBS curves; canonical degree-one curves return as editable
+polylines. Unsupported object types and specialized B-rep trim forms are
+counted and reported during import.
+
+Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
+solid/shell B-reps and assemblies, apply instance transforms, and robustly
+tessellate exact trimmed surfaces into validated display meshes. Parser,
+topology, and unsupported-representation losses are reported instead of being
+silent. STL and STEP export tessellate visible NURBS surfaces and full-domain
+B-rep faces; STEP writes the results as faceted shells with shared topology and
+planar faces. General B-rep faces with holes or non-rectangular trims are
+rejected until constrained trim clipping is implemented rather than being
+silently filled. Editable STEP B-rep interchange and production surface and
+solid modelling are not implemented yet.

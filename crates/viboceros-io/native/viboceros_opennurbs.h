@@ -15,6 +15,7 @@ enum ViboObjectType {
   VIBO_OBJECT_TRIANGLE_MESH = 4,
   VIBO_OBJECT_NURBS_SURFACE = 5,
   VIBO_OBJECT_POINT_CLOUD = 6,
+  VIBO_OBJECT_BREP = 7,
 };
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;
@@ -37,6 +38,7 @@ typedef struct ViboObjectInfo {
   size_t knot_u_count;
   size_t knot_v_count;
   size_t index_count;
+  size_t brep_data_count;
   size_t group_index_count;
 } ViboObjectInfo;
 
@@ -75,6 +77,8 @@ typedef struct ViboWriteObject {
   size_t knot_v_count;
   const uint32_t* indices;
   size_t index_count;
+  const uint8_t* brep_data;
+  size_t brep_data_count;
   const size_t* group_indices;
   size_t group_index_count;
 } ViboWriteObject;
@@ -99,6 +103,7 @@ int32_t vibo_3dm_object(const ViboThreeDmModel* model, size_t index,
                         ViboObjectInfo* info, const double** coordinates,
                         const double** knots_u, const double** knots_v,
                         const uint32_t** indices,
+                        const uint8_t** brep_data,
                         const int32_t** group_indices);
 
 int32_t vibo_3dm_write(const char* path, const ViboWriteLayer* layers,
