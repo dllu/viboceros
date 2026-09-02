@@ -1,6 +1,6 @@
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
-    NurbsSurface, Point2, Point3, Real, Tolerance, require_finite,
+    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, require_finite,
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
@@ -511,6 +511,53 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Tessellates faces whose sole outer loop is exactly the full rectangular
+    /// surface domain. Faces with holes or general trims are rejected until a
+    /// constrained parameter-space triangulator is available; they are never
+    /// silently filled as untrimmed surfaces.
+    pub fn tessellate(
+        &self,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        let mut vertices = Vec::new();
+        let mut triangles = Vec::new();
+        for (face_index, face) in self.faces.iter().enumerate() {
+            if !face_covers_full_surface_domain(face, tolerance)? {
+                return Err(GeometryError::UnsupportedBrepTrimTessellation { face: face_index });
+            }
+            let mesh = face.surface.tessellate(samples_per_span, tolerance)?;
+            let offset =
+                u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+            let combined_vertex_count = vertices
+                .len()
+                .checked_add(mesh.vertices().len())
+                .ok_or(GeometryError::TooManyMeshVertices)?;
+            if combined_vertex_count > u32::MAX as usize {
+                return Err(GeometryError::TooManyMeshVertices);
+            }
+            vertices.extend_from_slice(mesh.vertices());
+            for triangle in mesh.triangles() {
+                let mut triangle = [
+                    triangle[0]
+                        .checked_add(offset)
+                        .ok_or(GeometryError::TooManyMeshVertices)?,
+                    triangle[1]
+                        .checked_add(offset)
+                        .ok_or(GeometryError::TooManyMeshVertices)?,
+                    triangle[2]
+                        .checked_add(offset)
+                        .ok_or(GeometryError::TooManyMeshVertices)?,
+                ];
+                if face.reversed {
+                    triangle.swap(1, 2);
+                }
+                triangles.push(triangle);
+            }
+        }
+        TriangleMesh::try_new(vertices, triangles, tolerance)
+    }
+
     fn validate(&self, tolerance: Tolerance) -> Result<(), GeometryError> {
         for edge in &self.edges {
             if edge
@@ -698,6 +745,47 @@ fn validate_iso(
     }
 }
 
+fn face_covers_full_surface_domain(
+    face: &BrepFace,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    if face.loops.len() != 1 || face.loops[0].trims.len() != 4 {
+        return Ok(false);
+    }
+    let domain_u = face.surface.domain_u();
+    let domain_v = face.surface.domain_v();
+    let corners = [
+        Point2::try_new(*domain_u.start(), *domain_v.start())?,
+        Point2::try_new(*domain_u.end(), *domain_v.start())?,
+        Point2::try_new(*domain_u.end(), *domain_v.end())?,
+        Point2::try_new(*domain_u.start(), *domain_v.end())?,
+    ];
+    let mut seen = [false; 4];
+    for trim in &face.loops[0].trims {
+        let side = match trim.iso {
+            SurfaceIso::South => 0,
+            SurfaceIso::East => 1,
+            SurfaceIso::North => 2,
+            SurfaceIso::West => 3,
+            SurfaceIso::NotIso => return Ok(false),
+        };
+        if seen[side] {
+            return Ok(false);
+        }
+        seen[side] = true;
+        let allowed = [
+            tolerance.absolute().max(trim.tolerance[0]),
+            tolerance.absolute().max(trim.tolerance[1]),
+        ];
+        if !parameter_points_near(trim.curve.start_point()?, corners[side], allowed)
+            || !parameter_points_near(trim.curve.end_point()?, corners[(side + 1) % 4], allowed)
+        {
+            return Ok(false);
+        }
+    }
+    Ok(seen.into_iter().all(|side| side))
+}
+
 fn sampled_loop_signed_area(face_loop: &BrepLoop) -> Result<Real, GeometryError> {
     let mut points = Vec::new();
     for trim in &face_loop.trims {
@@ -809,6 +897,10 @@ mod tests {
         assert!((0..12).all(|edge| brep.edge_use_count(edge) == Some(2)));
         assert_eq!(brep.bounds().min(), point(-1.0, -2.0, 0.0));
         assert_eq!(brep.bounds().max(), point(2.0, 3.0, 4.0));
+        let mesh = brep.tessellate(1, Tolerance::DEFAULT).unwrap();
+        assert_eq!(mesh.triangles().len(), 12);
+        assert!(mesh.topology().is_solid());
+        assert!(Tolerance::DEFAULT.approx_eq(mesh.signed_volume().unwrap(), 60.0));
 
         let center = point(0.5, 0.5, 2.0);
         for face in brep.faces() {
@@ -988,5 +1080,102 @@ mod tests {
         let mut faces = valid.faces.clone();
         faces[0].loops[0].trims.reverse();
         assert!(Brep::try_new(valid.vertices, valid.edges, faces, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn a_trimmed_face_with_a_hole_is_valid_but_never_tessellated_as_untrimmed() {
+        let model_points = [
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+            point(3.0, 3.0, 0.0),
+            point(3.0, 7.0, 0.0),
+            point(7.0, 7.0, 0.0),
+            point(7.0, 3.0, 0.0),
+        ];
+        let vertices = model_points
+            .into_iter()
+            .map(|point| BrepVertex::try_new(point, 0.0).unwrap())
+            .collect::<Vec<_>>();
+        let paths = [[0, 1, 2, 3], [4, 5, 6, 7]];
+        let mut edges = Vec::new();
+        let mut loops = Vec::new();
+        for (loop_index, path) in paths.into_iter().enumerate() {
+            let mut trims = Vec::new();
+            for index in 0..4 {
+                let from = path[index];
+                let to = path[(index + 1) % 4];
+                let edge_index = edges.len();
+                edges.push(
+                    BrepEdge::try_new(
+                        [from, to],
+                        LineSegment::try_new(
+                            vertices[from].point(),
+                            vertices[to].point(),
+                            Tolerance::DEFAULT,
+                        )
+                        .unwrap()
+                        .to_nurbs()
+                        .unwrap(),
+                        0.0,
+                    )
+                    .unwrap(),
+                );
+                let from_point = vertices[from].point();
+                let to_point = vertices[to].point();
+                trims.push(
+                    BrepTrim::try_new(
+                        [from, to],
+                        Some(edge_index),
+                        false,
+                        NurbsCurve2::try_line(
+                            Point2::try_new(from_point.x() / 10.0, from_point.y() / 10.0).unwrap(),
+                            Point2::try_new(to_point.x() / 10.0, to_point.y() / 10.0).unwrap(),
+                        )
+                        .unwrap(),
+                        BrepTrimType::Boundary,
+                        if loop_index == 0 {
+                            [
+                                SurfaceIso::South,
+                                SurfaceIso::East,
+                                SurfaceIso::North,
+                                SurfaceIso::West,
+                            ][index]
+                        } else {
+                            SurfaceIso::NotIso
+                        },
+                        [0.0, 0.0],
+                    )
+                    .unwrap(),
+                );
+            }
+            loops.push(
+                BrepLoop::try_new(
+                    if loop_index == 0 {
+                        BrepLoopType::Outer
+                    } else {
+                        BrepLoopType::Inner
+                    },
+                    trims,
+                )
+                .unwrap(),
+            );
+        }
+        let surface = NurbsSurface::try_bilinear(model_points[..4].try_into().unwrap()).unwrap();
+        let brep = Brep::try_new(
+            vertices,
+            edges,
+            vec![BrepFace::try_new(surface, false, loops).unwrap()],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        assert!(brep.is_manifold());
+        assert!(!brep.is_closed());
+        assert!(matches!(
+            brep.tessellate(1, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedBrepTrimTessellation { face: 0 })
+        ));
     }
 }

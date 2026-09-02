@@ -30,6 +30,7 @@ Curve 0,0 2,3 5,3 8,0 Degree=3
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
+Box 0,0,0 8,5,0 3
 Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=No
@@ -55,6 +56,9 @@ SelShortCrv 1.0
 SelPt
 SelPtCloud
 SelSrf
+SelPolysrf
+SelOpenPolysrf
+SelClosedPolysrf
 SelMesh
 SelOpenMesh
 SelClosedMesh
@@ -181,10 +185,15 @@ arguments starts the two-pick viewport workflow.
 scaling that sphere along three orthogonal semi-axes. Supply three numeric
 radii in World XY, or center and three axis-radius points for an oriented
 ellipsoid; entering it without arguments starts the four-pick viewport workflow.
+`Box` follows Rhino's default two-opposite-base-corners and height workflow in
+World XY. The height may be a signed number or a point, and the result is one
+closed B-rep with eight shared vertices, twelve shared edges, six outward
+bilinear faces, and exact rational parameter-space trims.
 `Cylinder` creates the exact open 9-by-2 rational NURBS wall from a center,
 radius (or base-circle point), and signed height. `Axis=` accepts an arbitrary
 axis, while `BothSides=Yes` makes the height symmetric about the base center.
-The current surface document model accepts `Solid=No`; caps await B-rep support.
+The current Cylinder command accepts `Solid=No`; cap construction is not yet
+wired into the B-rep layer.
 `Cone` uses the same center, numeric radius or base-point radius, signed height,
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
 surface with a weighted collapsed apex. `Solid=No` is currently required.
@@ -198,8 +207,8 @@ an arbitrary direction; entering it without either starts the two-pick viewport
 workflow. `BothSides=Yes` sweeps equally in both directions and
 `DeleteInput=Yes` removes the profiles. Matching Rhino, outputs are unselected,
 ungrouped objects with fresh attributes on the current layer. The current
-surface-only implementation accepts `Solid=No`; capped solids await a
-polysurface/B-rep document representation.
+surface-only implementation accepts `Solid=No`; capped-solid construction is
+not yet wired into the B-rep layer.
 `ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
 curves to one apex. Its U direction runs from the profile to the apex while V
 preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
@@ -261,8 +270,11 @@ them; objects already hidden or locked and objects on hidden or locked layers
 are unchanged. Their `Unisolate` counterparts restore only modes introduced by
 the matching isolate command, with provenance preserved through undo and redo.
 Rhino-compatible curve, line, polyline, point, point-cloud, surface, and
-open/closed mesh filters add visible, unlocked objects of the requested type to
-the current selection. `SelPtCloud` is separate from `SelPt`, matching Rhino.
+polysurface, and open/closed mesh filters add visible, unlocked objects of the
+requested type to the current selection. `SelPtCloud` is separate from `SelPt`,
+matching Rhino. `SelSrf` excludes B-rep polysurfaces; `SelPolysrf` (alias
+`SelPolysurface`) and its open/closed variants classify them by shared-edge
+topology.
 `SelPlanarCrv` uses document tolerance. `SelLine` also recognizes
 exactly straight, single-span higher-degree NURBS curves, while excluding
 multi-span curves and polylines as Rhino does. `SelPolyline` includes native
@@ -448,7 +460,10 @@ STEP interchange uses the Apache-2.0 Monstertruck kernel to read solid/shell
 B-reps and assemblies, apply instance transforms, and robustly tessellate exact
 trimmed surfaces into validated display meshes. Parser, topology, and
 unsupported-representation losses are reported instead of being silent. STL and
-STEP export tessellate visible NURBS surfaces; STEP writes the results as faceted
-shells with shared topology and planar faces. Editable STEP B-reps, trimmed 3DM
-B-rep/solid interchange, and production surface and solid modelling are not
-implemented yet.
+STEP export tessellate visible NURBS surfaces and full-domain B-rep faces; STEP
+writes the results as faceted shells with shared topology and planar faces.
+General B-rep faces with holes or non-rectangular trims are rejected until
+constrained trim clipping is implemented rather than being silently filled.
+3DM export currently reports an explicit error when the document contains a
+B-rep. Editable STEP B-rep import, trimmed 3DM B-rep/solid interchange, and
+production surface and solid modelling are not implemented yet.

@@ -128,6 +128,12 @@ pub enum GeometryError {
     #[error("surface tessellation requires at least one sample per knot span")]
     InvalidTessellationResolution,
 
+    #[error("B-rep face {face} requires trimmed-face clipping before it can be tessellated")]
+    UnsupportedBrepTrimTessellation { face: usize },
+
+    #[error("non-affine B-rep morphing is not yet supported")]
+    UnsupportedBrepMorph,
+
     #[error("a revolution sweep must be finite, non-zero, and no greater than one turn")]
     InvalidRevolutionSweep,
 

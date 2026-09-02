@@ -8,7 +8,7 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, ControlPointCurveClosure,
+    AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, ControlPointCurveClosure,
     CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample, Ellipse3, Frame3,
     GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS,
     MAX_REGULAR_POLYGON_SIDES, MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane, Point3,
@@ -90,6 +90,9 @@ impl CommandRegistry {
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
+            .register(BoxCommand)
+            .expect("unique built-in command");
+        registry
             .register(SphereCommand)
             .expect("unique built-in command");
         registry
@@ -161,22 +164,53 @@ impl CommandRegistry {
                 include_originals: true,
             })
             .expect("unique built-in command");
-        for (name, filter) in [
-            ("SelCrv", GeometrySelectionFilter::Curve),
-            ("SelOpenCrv", GeometrySelectionFilter::OpenCurve),
-            ("SelClosedCrv", GeometrySelectionFilter::ClosedCurve),
-            ("SelPlanarCrv", GeometrySelectionFilter::PlanarCurve),
-            ("SelLine", GeometrySelectionFilter::Line),
-            ("SelPolyline", GeometrySelectionFilter::Polyline),
-            ("SelPt", GeometrySelectionFilter::Point),
-            ("SelPtCloud", GeometrySelectionFilter::PointCloud),
-            ("SelSrf", GeometrySelectionFilter::Surface),
-            ("SelMesh", GeometrySelectionFilter::Mesh),
-            ("SelOpenMesh", GeometrySelectionFilter::OpenMesh),
-            ("SelClosedMesh", GeometrySelectionFilter::ClosedMesh),
+        for (name, aliases, filter) in [
+            ("SelCrv", &[][..], GeometrySelectionFilter::Curve),
+            ("SelOpenCrv", &[][..], GeometrySelectionFilter::OpenCurve),
+            (
+                "SelClosedCrv",
+                &[][..],
+                GeometrySelectionFilter::ClosedCurve,
+            ),
+            (
+                "SelPlanarCrv",
+                &[][..],
+                GeometrySelectionFilter::PlanarCurve,
+            ),
+            ("SelLine", &[][..], GeometrySelectionFilter::Line),
+            ("SelPolyline", &[][..], GeometrySelectionFilter::Polyline),
+            ("SelPt", &[][..], GeometrySelectionFilter::Point),
+            ("SelPtCloud", &[][..], GeometrySelectionFilter::PointCloud),
+            ("SelSrf", &[][..], GeometrySelectionFilter::Surface),
+            (
+                "SelPolysrf",
+                &["SelPolysurface"][..],
+                GeometrySelectionFilter::Polysurface,
+            ),
+            (
+                "SelOpenPolysrf",
+                &[][..],
+                GeometrySelectionFilter::OpenPolysurface,
+            ),
+            (
+                "SelClosedPolysrf",
+                &[][..],
+                GeometrySelectionFilter::ClosedPolysurface,
+            ),
+            ("SelMesh", &[][..], GeometrySelectionFilter::Mesh),
+            ("SelOpenMesh", &[][..], GeometrySelectionFilter::OpenMesh),
+            (
+                "SelClosedMesh",
+                &[][..],
+                GeometrySelectionFilter::ClosedMesh,
+            ),
         ] {
             registry
-                .register(SelectGeometryCommand { name, filter })
+                .register(SelectGeometryCommand {
+                    name,
+                    aliases,
+                    filter,
+                })
                 .expect("unique built-in command");
         }
         registry
@@ -1033,6 +1067,55 @@ impl Command for SrfPtCommand {
     }
 }
 
+const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
+
+struct BoxCommand;
+
+impl Command for BoxCommand {
+    fn name(&self) -> &'static str {
+        "Box"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (base_corner, base_consumed) = parse_point(arguments)?;
+        let (opposite_corner, opposite_consumed) = parse_point(&arguments[base_consumed..])?;
+        let option_start = base_consumed + opposite_consumed;
+        let remaining = &arguments[option_start..];
+        let height = if remaining.len() == 1 && !remaining[0].contains(',') {
+            parse_finite_real(remaining[0])?
+        } else {
+            let (height_point, height_consumed) = parse_point(remaining)?;
+            require_consumed(remaining, height_consumed, BOX_USAGE)?;
+            base_corner.vector_to(height_point)?.z()
+        };
+        if !document
+            .tolerance()
+            .approx_eq(base_corner.z(), opposite_corner.z())
+        {
+            return Err(CommandError::BoxBaseCornersNotCoplanar);
+        }
+        let base_delta = base_corner.vector_to(opposite_corner)?;
+        let frame = Frame3::try_from_directions(
+            base_corner,
+            Vector3::try_new(1.0, 0.0, 0.0)?,
+            Vector3::try_new(0.0, 1.0, 0.0)?,
+            document.tolerance(),
+        )?;
+        let increasing_interval = |value: Real| [value.min(0.0), value.max(0.0)];
+        let brep = Brep::try_box(
+            frame,
+            [
+                increasing_interval(base_delta.x()),
+                increasing_interval(base_delta.y()),
+                increasing_interval(height),
+            ],
+            document.tolerance(),
+        )?;
+        let id = document.add_geometry(Geometry::Brep(brep))?;
+        Ok(format!("Added closed B-rep box {id}"))
+    }
+}
+
 struct SphereCommand;
 
 impl Command for SphereCommand {
@@ -1667,12 +1750,17 @@ fn parse_attribute_pattern(
 
 struct SelectGeometryCommand {
     name: &'static str,
+    aliases: &'static [&'static str],
     filter: GeometrySelectionFilter,
 }
 
 impl Command for SelectGeometryCommand {
     fn name(&self) -> &'static str {
         self.name
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        self.aliases
     }
 
     fn records_history(&self) -> bool {
@@ -1714,6 +1802,9 @@ enum GeometrySelectionFilter {
     Point,
     PointCloud,
     Surface,
+    Polysurface,
+    OpenPolysurface,
+    ClosedPolysurface,
     Mesh,
     OpenMesh,
     ClosedMesh,
@@ -1752,6 +1843,15 @@ impl GeometrySelectionFilter {
             Self::Point => matches!(geometry, Geometry::Point(_)),
             Self::PointCloud => matches!(geometry, Geometry::PointCloud(_)),
             Self::Surface => matches!(geometry, Geometry::NurbsSurface(_)),
+            Self::Polysurface => matches!(geometry, Geometry::Brep(_)),
+            Self::OpenPolysurface => match geometry {
+                Geometry::Brep(brep) => !brep.is_closed(),
+                _ => false,
+            },
+            Self::ClosedPolysurface => match geometry {
+                Geometry::Brep(brep) => brep.is_closed(),
+                _ => false,
+            },
             Self::Mesh => matches!(geometry, Geometry::Mesh(_)),
             Self::OpenMesh => match geometry {
                 Geometry::Mesh(mesh) => !mesh.topology().is_closed(),
@@ -6584,7 +6684,7 @@ impl Command for ExportThreeDmCommand {
     }
 }
 
-fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError> {
+fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, CommandError> {
     let layers = document
         .layers()
         .map(|layer| {
@@ -6647,7 +6747,7 @@ fn document_3dm_model(document: &Document) -> Result<ThreeDmModel, GeometryError
                     .unwrap_or_default(),
             })
         })
-        .collect::<Result<_, GeometryError>>()?;
+        .collect::<Result<_, CommandError>>()?;
     Ok(ThreeDmModel::new(layers, groups, objects))
 }
 
@@ -6679,7 +6779,7 @@ const fn three_dm_color_source_from_document(source: ObjectColorSource) -> Three
     }
 }
 
-fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError> {
+fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError> {
     Ok(match geometry {
         Geometry::Point(point) => ThreeDmGeometry::Point(*point),
         Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
@@ -6690,6 +6790,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, GeometryError
         Geometry::Polyline(polyline) => ThreeDmGeometry::NurbsCurve(polyline.to_nurbs()?),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
+        Geometry::Brep(_) => return Err(CommandError::BrepThreeDmExportUnsupported),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
     })
 }
@@ -6783,10 +6884,22 @@ fn combined_document_mesh(document: &Document) -> Result<TriangleMesh, CommandEr
                     surface.tessellate(SURFACE_EXPORT_SAMPLES_PER_SPAN, document.tolerance())?;
                 &tessellation
             }
+            Geometry::Brep(brep) => {
+                tessellation =
+                    brep.tessellate(SURFACE_EXPORT_SAMPLES_PER_SPAN, document.tolerance())?;
+                &tessellation
+            }
             _ => continue,
         };
         let offset =
             u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let combined_vertex_count = vertices
+            .len()
+            .checked_add(mesh.vertices().len())
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if combined_vertex_count > u32::MAX as usize {
+            return Err(GeometryError::TooManyMeshVertices.into());
+        }
         vertices.extend_from_slice(mesh.vertices());
         for triangle in mesh.triangles() {
             triangles.push([
@@ -7057,11 +7170,14 @@ pub enum CommandError {
     #[error("ExtrudeCrvToPoint currently supports Output=Surface only")]
     UnsupportedCurveToPointExtrusionOutput,
 
-    #[error("solid curve extrusion requires capped polysurface support")]
+    #[error("solid curve extrusion is not yet constructed as a capped B-rep")]
     SolidCurveExtrusionUnsupported,
 
-    #[error("solid primitives require capped polysurface support")]
+    #[error("solid cylinder and cone output is not yet constructed as a capped B-rep")]
     SolidPrimitiveUnsupported,
+
+    #[error("the two Box base corners must lie on the same World XY plane")]
+    BoxBaseCornersNotCoplanar,
 
     #[error("ExtrudeCrvAlongCrv currently supports Output=Surface only")]
     UnsupportedCurveAlongCurveOutput,
@@ -7098,8 +7214,13 @@ pub enum CommandError {
     #[error("'{0}' is not a valid non-zero revolution angle from -360 through 360 degrees")]
     InvalidRevolutionAngle(String),
 
-    #[error("the document contains no visible mesh or NURBS surface to export")]
+    #[error(
+        "the document contains no visible mesh, NURBS surface, or tessellatable B-rep to export"
+    )]
     NoMeshToExport,
+
+    #[error("3dm export of B-reps is not yet supported")]
+    BrepThreeDmExportUnsupported,
 
     #[error(transparent)]
     Geometry(#[from] GeometryError),
@@ -7154,7 +7275,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelPlanarCrv, SelPolyline, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, Box, ChangeLayer, Circle, Clear, CloseCrv, CombineIdenticalMeshVertices, Cone, ControlPointCurve, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, Divide, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractDuplicateMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SrfPt, ToNURBS, Torus, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Volume"
         );
     }
 
@@ -9520,6 +9641,109 @@ mod tests {
                 .is_err()
         );
         assert_eq!(document.objects().len(), 0);
+    }
+
+    #[test]
+    fn box_creates_an_exact_closed_brep_from_signed_height_or_height_point() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let message = registry
+            .execute(&mut document, "Box 1,2,3 5,8,3 -4")
+            .unwrap();
+        assert!(message.contains("closed B-rep box"));
+        let Geometry::Brep(brep) = document.objects().next().unwrap().geometry() else {
+            panic!("Box must create a B-rep")
+        };
+        assert_eq!(brep.vertices().len(), 8);
+        assert_eq!(brep.edges().len(), 12);
+        assert_eq!(brep.faces().len(), 6);
+        assert!(brep.is_solid());
+        assert_eq!(
+            brep.bounds().min(),
+            Point3::try_new(1.0, 2.0, -1.0).unwrap()
+        );
+        assert_eq!(brep.bounds().max(), Point3::try_new(5.0, 8.0, 3.0).unwrap());
+        let mesh = brep.tessellate(1, document.tolerance()).unwrap();
+        assert!(mesh.topology().is_solid());
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(mesh.signed_volume().unwrap(), 96.0)
+        );
+        assert_eq!(document.undo_label(), Some("Box"));
+        assert!(matches!(
+            document_3dm_model(&document),
+            Err(CommandError::BrepThreeDmExportUnsupported)
+        ));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Box 0,0,1 2,3,1 9,9,5")
+            .unwrap();
+        let Geometry::Brep(point_height) = document.objects().next().unwrap().geometry() else {
+            panic!("Box height-point form must create a B-rep")
+        };
+        assert_eq!(
+            point_height.bounds().max(),
+            Point3::try_new(2.0, 3.0, 5.0).unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        for invalid in [
+            "Box 0,0,0 2,3,1 4",
+            "Box 0,0,0 0,3,0 4",
+            "Box 0,0,0 2,3,0 0",
+            "Box 0,0,0 2,3,0 4 extra",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.objects().len(), 0);
+        }
+    }
+
+    #[test]
+    fn polysurface_selection_is_distinct_from_surface_selection() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "SrfPt 0,0 2,0 2,2 0,2")
+            .unwrap();
+        registry
+            .execute(&mut document, "Box 4,0,0 6,2,0 3")
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+
+        assert_eq!(
+            registry.execute(&mut document, "SelSrf").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert!(
+            document
+                .selected_objects()
+                .all(|object| matches!(object.geometry(), Geometry::NurbsSurface(_)))
+        );
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelPolysurface").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert!(
+            document
+                .selected_objects()
+                .all(|object| matches!(object.geometry(), Geometry::Brep(_)))
+        );
+        registry.execute(&mut document, "SelNone").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "SelOpenPolysrf").unwrap(),
+            "Selected 0 object(s)"
+        );
+        assert_eq!(
+            registry.execute(&mut document, "SelClosedPolysrf").unwrap(),
+            "Selected 1 object(s)"
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

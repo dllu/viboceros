@@ -319,6 +319,32 @@ pub fn nearest_object_snap(
                     );
                 }
             }
+            Geometry::Brep(brep) => {
+                for vertex in brep.vertices() {
+                    consider_candidate(
+                        &mut best,
+                        cursor,
+                        capture_radius,
+                        object.id(),
+                        ObjectSnapKind::End,
+                        vertex.point(),
+                    );
+                }
+                for edge in brep.edges() {
+                    if let Ok(parameter) = edge.curve().parameter_at(0.5)
+                        && let Ok(point) = edge.curve().evaluate(parameter)
+                    {
+                        consider_candidate(
+                            &mut best,
+                            cursor,
+                            capture_radius,
+                            object.id(),
+                            ObjectSnapKind::Mid,
+                            point,
+                        );
+                    }
+                }
+            }
             // Mesh vertex snapping needs a spatial index to remain responsive
             // on production STL meshes; do not introduce an O(vertices) query
             // into every pointer frame.
@@ -400,8 +426,8 @@ mod tests {
     use super::*;
     use viboceros_document::Geometry;
     use viboceros_geometry::{
-        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, PointCloud3,
-        Polyline3, Tolerance, UnitVector3,
+        Brep, Circle3, CircularArc3, Ellipse3, Frame3, LineSegment, NurbsCurve, NurbsSurface,
+        PointCloud3, Polyline3, Tolerance, UnitVector3, Vector3,
     };
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
@@ -532,6 +558,41 @@ mod tests {
             .unwrap();
         assert_eq!(center.kind(), ObjectSnapKind::Mid);
         assert_eq!(center.point(), point(4.0, 4.0, 1.0));
+    }
+
+    #[test]
+    fn brep_vertices_and_edge_midpoints_are_available_to_osnap() {
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame,
+                    [[0.0, 4.0], [0.0, 6.0], [0.0, 2.0]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+
+        let vertex = nearest_object_snap(&document, point(4.02, 6.01, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(vertex.object_id(), id);
+        assert_eq!(vertex.kind(), ObjectSnapKind::End);
+        assert_eq!(vertex.point(), point(4.0, 6.0, 0.0));
+
+        let midpoint = nearest_object_snap(&document, point(2.01, 0.02, 0.0), 0.1)
+            .unwrap()
+            .unwrap();
+        assert_eq!(midpoint.object_id(), id);
+        assert_eq!(midpoint.kind(), ObjectSnapKind::Mid);
+        assert_eq!(midpoint.point(), point(2.0, 0.0, 0.0));
     }
 
     #[test]

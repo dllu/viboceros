@@ -33,6 +33,9 @@ impl Geometry {
                     .zip(right.points())
                     .all(|(left, right)| points_equal_with_fixed_zero_policy(*left, *right)));
         }
+        if let (Self::Brep(left), Self::Brep(right)) = (self, other) {
+            return Ok(left == right);
+        }
         if let (Some(left), Some(right)) = (circle_components(self)?, circle_components(other)?) {
             let distance_tolerance =
                 GEOMETRY_EQUALITY_SQRT_EPSILON * left.1 + GEOMETRY_EQUALITY_SQRT_EPSILON * right.1;
@@ -72,6 +75,7 @@ impl Geometry {
             }
             Self::NurbsCurve(_) => DuplicateGeometryFamily::NurbsCurve,
             Self::NurbsSurface(_) => DuplicateGeometryFamily::NurbsSurface,
+            Self::Brep(_) => DuplicateGeometryFamily::Brep,
             Self::Mesh(_) => DuplicateGeometryFamily::Mesh,
         }
     }
@@ -140,6 +144,7 @@ impl Geometry {
                 knots_u: normalized_parameter_keys(surface.knots_u()),
                 knots_v: normalized_parameter_keys(surface.knots_v()),
             },
+            Self::Brep(_) => DuplicateGeometryKey::Brep,
             Self::Mesh(mesh) => DuplicateGeometryKey::Mesh {
                 vertices: mesh.vertices().iter().copied().map(point_key).collect(),
                 triangles: mesh.triangles().to_vec(),
@@ -172,6 +177,7 @@ pub(super) enum DuplicateGeometryFamily {
     Ellipse,
     NurbsCurve,
     NurbsSurface,
+    Brep,
     Mesh,
 }
 
@@ -204,6 +210,7 @@ enum DuplicateGeometryKey {
         knots_u: Vec<u64>,
         knots_v: Vec<u64>,
     },
+    Brep,
     Mesh {
         vertices: Vec<[u64; 3]>,
         triangles: Vec<[u32; 3]>,

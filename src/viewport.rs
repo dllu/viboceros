@@ -6,8 +6,8 @@ use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, orthogonal_track,
 };
 use viboceros_geometry::{
-    Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real, Tolerance,
-    TriangleMesh, UnitVector3,
+    Brep, Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real,
+    Tolerance, TriangleMesh, UnitVector3,
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
@@ -321,6 +321,10 @@ impl Viewport {
                     2,
                     self.nurbs_surface_pick_distance(pointer, rect, surface, document.tolerance()),
                 ),
+                Geometry::Brep(brep) => (
+                    2,
+                    self.brep_pick_distance(pointer, rect, brep, document.tolerance()),
+                ),
                 Geometry::Mesh(mesh) => (2, self.mesh_pick_distance(pointer, rect, mesh)),
             };
             if distance > PICK_CAPTURE_PIXELS {
@@ -449,6 +453,24 @@ impl Viewport {
             nearest = nearest.min(point_segment_distance(pointer, start, end));
         });
         nearest
+    }
+
+    fn brep_pick_distance(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        brep: &Brep,
+        tolerance: Tolerance,
+    ) -> f32 {
+        if self.display_mode != DisplayMode::Wireframe
+            && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
+        {
+            return self.mesh_pick_distance(pointer, rect, &mesh);
+        }
+        brep.edges()
+            .iter()
+            .map(|edge| self.nurbs_pick_distance(pointer, rect, edge.curve()))
+            .fold(f32::INFINITY, f32::min)
     }
 
     fn paint_grid(&self, painter: &egui::Painter, rect: Rect) {
@@ -600,6 +622,9 @@ impl Viewport {
                         document.tolerance(),
                     );
                 }
+                Geometry::Brep(brep) => {
+                    self.paint_brep(painter, rect, brep, color, width, document.tolerance());
+                }
                 Geometry::Mesh(mesh) => {
                     self.paint_mesh(painter, rect, mesh, color, width);
                 }
@@ -702,6 +727,50 @@ impl Viewport {
         self.for_each_surface_grid_segment(rect, surface, |start, end| {
             painter.line_segment([start, end], stroke);
         });
+    }
+
+    fn paint_brep(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        brep: &Brep,
+        color: Color32,
+        width: f32,
+        tolerance: Tolerance,
+    ) {
+        if self.display_mode != DisplayMode::Wireframe
+            && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
+        {
+            for triangle_index in 0..mesh.triangles().len() {
+                let Some(points) = mesh.triangle_points(triangle_index) else {
+                    continue;
+                };
+                let [Some(first), Some(second), Some(third)] =
+                    points.map(|point| self.project(point, rect))
+                else {
+                    continue;
+                };
+                let fill = match self.display_mode {
+                    DisplayMode::Wireframe => Color32::TRANSPARENT,
+                    DisplayMode::Shaded => mesh.face_normal(triangle_index).map_or_else(
+                        |_| blend_toward_white(color, 0.35),
+                        |normal| shaded_color(color, normal),
+                    ),
+                    DisplayMode::Ghosted => {
+                        Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35)
+                    }
+                };
+                painter.add(egui::Shape::convex_polygon(
+                    vec![first, second, third],
+                    fill,
+                    Stroke::NONE,
+                ));
+            }
+        }
+        let stroke = Stroke::new(width, color);
+        for edge in brep.edges() {
+            self.paint_nurbs_curve(painter, rect, edge.curve(), stroke);
+        }
     }
 
     fn for_each_surface_grid_segment(
@@ -1032,8 +1101,8 @@ mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
-        Circle3, CircularArc3, Ellipse3, LineSegment, NurbsCurve, NurbsSurface, PointCloud3,
-        Polyline3, Tolerance, TriangleMesh, UnitVector3,
+        Circle3, CircularArc3, Ellipse3, Frame3, LineSegment, NurbsCurve, NurbsSurface,
+        PointCloud3, Polyline3, Tolerance, TriangleMesh, UnitVector3, Vector3,
     };
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
@@ -1299,6 +1368,41 @@ mod tests {
             viewport.pick_object(off_isocurve, rect, &document),
             Some(surface_id)
         );
+    }
+
+    #[test]
+    fn shaded_breps_pick_faces_while_wireframe_uses_exact_edges() {
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let mut document = Document::default();
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let brep_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_box(
+                    frame,
+                    [[-2.0, 2.0], [-2.0, 2.0], [0.0, 3.0]],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let center = Viewport::default()
+            .project(point(0.0, 0.0, 0.0), rect)
+            .unwrap();
+
+        assert_eq!(
+            Viewport::default().pick_object(center, rect, &document),
+            None
+        );
+        let shaded = Viewport {
+            display_mode: DisplayMode::Shaded,
+            ..Viewport::default()
+        };
+        assert_eq!(shaded.pick_object(center, rect, &document), Some(brep_id));
     }
 
     #[test]

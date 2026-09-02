@@ -11,8 +11,9 @@ use std::fmt;
 use thiserror::Error;
 use uuid::Uuid;
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, Tolerance, TriangleMesh,
+    AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, Ellipse3, GeometryError,
+    LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, Tolerance,
+    TriangleMesh,
 };
 
 use duplicate::DuplicateGeometryFamily;
@@ -141,6 +142,7 @@ pub enum Geometry {
     Polyline(Polyline3),
     NurbsCurve(NurbsCurve),
     NurbsSurface(NurbsSurface),
+    Brep(Brep),
     Mesh(TriangleMesh),
 }
 
@@ -156,6 +158,7 @@ impl Geometry {
             Self::Polyline(polyline) => polyline.bounds(),
             Self::NurbsCurve(curve) => curve.control_point_bounds(),
             Self::NurbsSurface(surface) => surface.control_point_bounds(),
+            Self::Brep(brep) => brep.bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
         }
     }
@@ -180,6 +183,7 @@ impl Geometry {
             | Self::PointCloud(_)
             | Self::NurbsCurve(_)
             | Self::NurbsSurface(_)
+            | Self::Brep(_)
             | Self::Mesh(_) => None,
         })
     }
@@ -219,6 +223,7 @@ impl Geometry {
             Self::Polyline(polyline) => Self::Polyline(polyline.transformed(transform, tolerance)?),
             Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
+            Self::Brep(brep) => Self::Brep(brep.transformed(transform, tolerance)?),
             Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
         })
     }
@@ -247,6 +252,7 @@ impl Geometry {
             Self::Polyline(polyline) => Self::NurbsCurve(morph.morph_polyline(polyline)?),
             Self::NurbsCurve(curve) => Self::NurbsCurve(morph.morph_nurbs_curve(curve, tolerance)?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(morph.morph_nurbs_surface(surface)?),
+            Self::Brep(_) => return Err(GeometryError::UnsupportedBrepMorph),
             Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
         })
     }
@@ -271,6 +277,11 @@ impl Geometry {
             }
             Self::NurbsCurve(curve) => curve.extract_point_locations()?,
             Self::NurbsSurface(surface) => surface.extract_point_locations(),
+            Self::Brep(brep) => brep
+                .vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect(),
             Self::Mesh(mesh) => mesh.vertices().to_vec(),
         })
     }
@@ -2736,6 +2747,23 @@ mod tests {
             ]
         );
 
+        let frame = viboceros_geometry::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let brep = Brep::try_box(frame, [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]], tolerance).unwrap();
+        assert_eq!(
+            Geometry::Brep(brep.clone())
+                .extract_point_locations()
+                .unwrap(),
+            brep.vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>()
+        );
+
         let mesh = TriangleMesh::try_new(
             vec![
                 point(99.0, 99.0, 99.0),
@@ -2756,6 +2784,38 @@ mod tests {
                 point(0.0, 2.0, 0.0),
             ]
         );
+    }
+
+    #[test]
+    fn brep_geometry_equality_and_affine_transforms_retain_topology() {
+        let tolerance = Tolerance::DEFAULT;
+        let frame = viboceros_geometry::Frame3::try_from_normal(
+            point(0.0, 0.0, 0.0),
+            viboceros_geometry::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            tolerance,
+        )
+        .unwrap();
+        let brep = Brep::try_box(frame, [[0.0, 2.0], [0.0, 3.0], [0.0, 4.0]], tolerance).unwrap();
+        let geometry = Geometry::Brep(brep.clone());
+        assert!(
+            geometry
+                .geometrically_equals(&Geometry::Brep(brep))
+                .unwrap()
+        );
+
+        let transformed = geometry
+            .transformed(
+                AffineTransform3::try_nonuniform_scale(point(0.0, 0.0, 0.0), [-1.0, 2.0, 3.0])
+                    .unwrap(),
+                tolerance,
+            )
+            .unwrap();
+        let Geometry::Brep(transformed) = transformed else {
+            panic!("a B-rep affine transform must retain B-rep geometry")
+        };
+        assert!(transformed.is_solid());
+        assert_eq!(transformed.bounds().min(), point(-2.0, 0.0, 0.0));
+        assert_eq!(transformed.bounds().max(), point(0.0, 6.0, 12.0));
     }
 
     #[test]
