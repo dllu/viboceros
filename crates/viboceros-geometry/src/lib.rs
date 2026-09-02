@@ -5,6 +5,7 @@
 //! invalid values enter the model.
 
 mod bounds;
+mod brep;
 mod circular;
 mod curve;
 mod ellipse;
@@ -16,9 +17,11 @@ mod line;
 mod mesh;
 mod morph;
 mod nurbs;
+mod nurbs2;
 mod nurbs_surface;
 mod plane;
 mod point;
+mod point2;
 mod point_cloud;
 mod polyline;
 mod tolerance;
@@ -26,6 +29,10 @@ mod transform;
 mod vector;
 
 pub use bounds::BoundingBox3;
+pub use brep::{
+    Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
+    SurfaceIso,
+};
 pub use circular::{Circle3, CircularArc3};
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
 pub use ellipse::Ellipse3;
@@ -40,9 +47,11 @@ pub use mesh::{MeshFaceExtraction, MeshTopology, TriangleMesh};
 pub use morph::{PointMorph, SurfacePointMorph};
 pub use nurbs::{ControlPointCurveClosure, NurbsCurve, WeightedPoint3};
 pub use nurbs_surface::NurbsSurface;
+pub use nurbs2::{NurbsCurve2, WeightedPoint2};
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
 pub use point_cloud::PointCloud3;
+pub use point2::Point2;
 pub use polyline::{
     JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, PolylineClosure, join_polylines,
 };

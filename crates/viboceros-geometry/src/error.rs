@@ -50,6 +50,9 @@ pub enum GeometryError {
     #[error("invalid NURBS knot vector: {context}")]
     InvalidKnotVector { context: &'static str },
 
+    #[error("invalid B-rep topology: {context}")]
+    InvalidBrepTopology { context: &'static str },
+
     #[error("NURBS weight {index} must be finite and strictly positive")]
     InvalidWeight { index: usize },
 

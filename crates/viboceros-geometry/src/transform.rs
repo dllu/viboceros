@@ -285,6 +285,58 @@ impl AffineTransform3 {
         Vector3::try_from(self.linear_coordinates(vector)?)
     }
 
+    /// Returns whether the linear part reverses orientation. Singular maps do
+    /// not have a well-defined orientation and are rejected.
+    pub(crate) fn orientation_reversing(self) -> Result<bool, GeometryError> {
+        let rows = self.linear_rows();
+        let scale = rows
+            .iter()
+            .flatten()
+            .map(|value| value.abs())
+            .fold(0.0, Real::max);
+        if scale == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "affine transform linear part",
+            });
+        }
+        let matrix = Matrix3::from_fn(|row, column| rows[row][column] / scale);
+        let determinant = matrix.determinant();
+        if !determinant.is_finite() || determinant == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "affine transform linear part",
+            });
+        }
+        Ok(determinant < 0.0)
+    }
+
+    /// Conservative upper bound on the linear part's maximum singular value.
+    /// This is used to safely propagate model-space component tolerances.
+    pub(crate) fn maximum_linear_scale(self) -> Result<Real, GeometryError> {
+        let rows = self.linear_rows();
+        let scale = rows
+            .iter()
+            .flatten()
+            .map(|value| value.abs())
+            .fold(0.0, Real::max);
+        if scale == 0.0 {
+            return Ok(0.0);
+        }
+        let normalized = rows.map(|row| row.map(|value| value.abs() / scale));
+        let maximum_row_sum = normalized
+            .iter()
+            .map(|row| row.iter().sum::<Real>())
+            .fold(0.0, Real::max);
+        let maximum_column_sum = (0..3)
+            .map(|column| normalized.iter().map(|row| row[column]).sum::<Real>())
+            .fold(0.0, Real::max);
+        // ||A||_2 <= sqrt(||A||_1 ||A||_infinity). Scaling first keeps both
+        // induced norms finite, while this bound remains exact for identity
+        // and diagonal scale transforms.
+        let maximum = scale * (maximum_row_sum * maximum_column_sum).sqrt();
+        require_finite([maximum], "affine transform scale bound")?;
+        Ok(maximum)
+    }
+
     fn linear_coordinates(self, vector: Vector3) -> Result<[Real; 3], GeometryError> {
         let mut coordinates = [0.0; 3];
         for (row, coordinate) in coordinates.iter_mut().enumerate() {
@@ -689,5 +741,21 @@ mod tests {
                 .unwrap(),
             Vector3::try_new(-1.0, 2.0, 3.0).unwrap()
         );
+    }
+
+    #[test]
+    fn reports_orientation_and_a_stable_linear_scale_bound() {
+        let origin = point(0.0, 0.0, 0.0);
+        let identity = AffineTransform3::identity();
+        assert!(!identity.orientation_reversing().unwrap());
+        assert_eq!(identity.maximum_linear_scale().unwrap(), 1.0);
+
+        let nonuniform = AffineTransform3::try_nonuniform_scale(origin, [-2.0, 3.0, 4.0]).unwrap();
+        assert!(nonuniform.orientation_reversing().unwrap());
+        assert_eq!(nonuniform.maximum_linear_scale().unwrap(), 4.0);
+
+        let projection = AffineTransform3::try_nonuniform_scale(origin, [1.0, 1.0, 0.0]).unwrap();
+        assert!(projection.orientation_reversing().is_err());
+        assert_eq!(projection.maximum_linear_scale().unwrap(), 1.0);
     }
 }

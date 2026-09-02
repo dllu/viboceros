@@ -647,7 +647,7 @@ pub(crate) fn bspline_basis_values(
     Ok(values)
 }
 
-fn find_span_in_knots(
+pub(crate) fn find_span_in_knots(
     knots: &[Real],
     degree: usize,
     control_count: usize,
@@ -708,13 +708,13 @@ pub(crate) fn knot_vector_is_periodic(order: usize, control_count: usize, knots:
     })
 }
 
-pub(crate) fn de_boor(
+pub(crate) fn de_boor<const DIMENSION: usize>(
     knots: &[Real],
     degree: usize,
     span: usize,
     parameter: Real,
-    mut work: Vec<[Real; 4]>,
-) -> Result<[Real; 4], GeometryError> {
+    mut work: Vec<[Real; DIMENSION]>,
+) -> Result<[Real; DIMENSION], GeometryError> {
     debug_assert_eq!(work.len(), degree + 1);
     for level in 1..=degree {
         for local_index in (level..=degree).rev() {
@@ -924,11 +924,11 @@ fn validate_control_point_count(degree: usize, count: usize) -> Result<(), Geome
     Ok(())
 }
 
-fn blend_homogeneous(
-    left: [Real; 4],
-    right: [Real; 4],
+fn blend_homogeneous<const DIMENSION: usize>(
+    left: [Real; DIMENSION],
+    right: [Real; DIMENSION],
     alpha: Real,
-) -> Result<[Real; 4], GeometryError> {
+) -> Result<[Real; DIMENSION], GeometryError> {
     if !alpha.is_finite() || !(0.0..=1.0).contains(&alpha) {
         return Err(GeometryError::InvalidKnotVector {
             context: "de Boor blend factor is outside zero to one",
