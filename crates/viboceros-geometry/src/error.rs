@@ -225,6 +225,9 @@ pub enum GeometryError {
     #[error("mesh topology edge index {edge} is outside the edge count {edge_count}")]
     MeshTopologyEdgeIndexOutOfRange { edge: usize, edge_count: usize },
 
+    #[error("mesh topology vertex index {vertex} is outside the vertex count {vertex_count}")]
+    MeshTopologyVertexIndexOutOfRange { vertex: usize, vertex_count: usize },
+
     #[error("triangle {triangle} references missing vertex index {vertex}")]
     InvalidTriangleIndex { triangle: usize, vertex: u32 },
 

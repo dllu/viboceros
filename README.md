@@ -139,6 +139,7 @@ UnifyMeshNormals
 Weld 180
 Unweld 45 ModifyNormals=Yes
 UnweldEdge Edges=0,2 ModifyNormals=Yes
+UnweldVertex Vertices=0,2 ModifyNormals=Yes
 CombineIdenticalMeshVertices
 CullUnusedMeshVertices
 SplitDisjointMesh
@@ -534,6 +535,11 @@ It partitions closed and high-valence radial face fans, handles non-manifold
 edges, and preserves existing seams; naked or already-unwelded selections only
 trigger Rhino-compatible vertex compaction. `ModifyNormals=Yes|No` is accepted,
 but normals remain derived data.
+`UnweldVertex` gives every face incident to each selected topology vertex its
+own raw mesh vertex. Use `Vertices=0,2`, `Vertices=All`, or omit the selector
+for one viewport pick. Closed, high-valence, already-unwelded, and non-manifold
+fans follow Rhino's radial ordering, and unused raw vertices are compacted.
+`ModifyNormals=Yes|No` is accepted while normals remain derived data.
 `CombineIdenticalMeshVertices` turns exactly coincident raw vertices into shared
 indices without culling unused vertices, preserving object identity, metadata,
 face order, and winding.

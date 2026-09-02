@@ -258,6 +258,13 @@ pub enum Operation {
         edge_indices: Vec<usize>,
         modify_normals: bool,
     },
+    MeshUnweldVertex {
+        id: String,
+        vertices: Vec<[f64; 3]>,
+        triangles: Vec<[u32; 3]>,
+        vertex_indices: Vec<usize>,
+        modify_normals: bool,
+    },
     MeshCullUnusedVertices {
         id: String,
         vertices: Vec<[f64; 3]>,
@@ -346,6 +353,7 @@ impl Operation {
             | Self::MeshWeld { id, .. }
             | Self::MeshUnweld { id, .. }
             | Self::MeshUnweldEdge { id, .. }
+            | Self::MeshUnweldVertex { id, .. }
             | Self::MeshCullUnusedVertices { id, .. }
             | Self::MeshVolume { id, .. }
             | Self::MeshExtractNonManifold { id, .. }
@@ -1035,6 +1043,35 @@ fn execute(
             (
                 json!({
                     "accepted": !edge_indices.is_empty(),
+                    "added_vertices": added_vertices,
+                    "mesh": mesh_unweld_value(&unwelded),
+                }),
+                elapsed,
+            )
+        }
+        Operation::MeshUnweldVertex {
+            vertices,
+            triangles,
+            vertex_indices,
+            modify_normals: _,
+            ..
+        } => {
+            let mesh = TriangleMesh::try_new(
+                vertices
+                    .iter()
+                    .map(|coordinates| point(*coordinates))
+                    .collect::<Result<Vec<_>, _>>()?,
+                triangles.clone(),
+                tolerance,
+            )?;
+            let before = mesh.vertices().len() as i64;
+            let ((unwelded, _), elapsed) = measure(iterations, || {
+                black_box(&mesh).unwelded_topology_vertices(black_box(vertex_indices))
+            })?;
+            let added_vertices = unwelded.vertices().len() as i64 - before;
+            (
+                json!({
+                    "accepted": !vertex_indices.is_empty(),
                     "added_vertices": added_vertices,
                     "mesh": mesh_unweld_value(&unwelded),
                 }),
@@ -5139,6 +5176,44 @@ mod tests {
                         {"face_groups": [[0], [1]], "point": [0.0, 0.0, 0.0]},
                         {"face_groups": [[0]], "point": [0.0, 3.0, 0.0]},
                         {"face_groups": [[0], [1]], "point": [4.0, 0.0, 0.0]},
+                    ],
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn unwelds_selected_mesh_vertices_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshUnweldVertex {
+            id: "unwelded-vertex".to_owned(),
+            vertices: vec![
+                [0.0, 0.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [0.0, 3.0, 0.0],
+                [0.0, -3.0, 0.0],
+                [99.0, 99.0, 99.0],
+            ],
+            triangles: vec![[0, 1, 2], [1, 0, 3]],
+            vertex_indices: vec![0],
+            modify_normals: false,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value,
+            json!({
+                "accepted": true,
+                "added_vertices": 0,
+                "mesh": {
+                    "face_points": [
+                        [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [0.0, 3.0, 0.0]],
+                        [[4.0, 0.0, 0.0], [0.0, 0.0, 0.0], [0.0, -3.0, 0.0]],
+                    ],
+                    "vertex_count": 5,
+                    "vertex_face_groups": [
+                        {"face_groups": [[1]], "point": [0.0, -3.0, 0.0]},
+                        {"face_groups": [[0], [1]], "point": [0.0, 0.0, 0.0]},
+                        {"face_groups": [[0]], "point": [0.0, 3.0, 0.0]},
+                        {"face_groups": [[0, 1]], "point": [4.0, 0.0, 0.0]},
                     ],
                 },
             })

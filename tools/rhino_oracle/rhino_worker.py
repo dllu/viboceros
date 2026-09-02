@@ -268,6 +268,76 @@ def _mesh_unweld_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "mesh_unweld_vertex":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _triangle_mesh(operation["vertices"], operation["triangles"])
+        vertex_indices = operation["vertex_indices"]
+        if not isinstance(vertex_indices, list) or any(
+            isinstance(index, bool) or int(index) != index
+            for index in vertex_indices
+        ):
+            source.Dispose()
+            raise ValueError("mesh unweld vertex indices must be integers")
+        vertex_indices = [int(index) for index in vertex_indices]
+        modify_normals = operation["modify_normals"]
+        if not isinstance(modify_normals, bool):
+            source.Dispose()
+            raise ValueError("mesh unweld vertex modify_normals must be a boolean")
+        before = int(source.Vertices.Count)
+
+        if not vertex_indices:
+            try:
+                return ({
+                    "accepted": False,
+                    "added_vertices": 0,
+                    "mesh": _mesh_unweld_value(source),
+                }, 0)
+            finally:
+                source.Dispose()
+
+        source.Dispose()
+
+        def unweld_mesh_vertices():
+            command_source = _triangle_mesh(
+                operation["vertices"], operation["triangles"]
+            )
+            try:
+                object_id = document.Objects.AddMesh(command_source)
+            finally:
+                command_source.Dispose()
+            if object_id == System.Guid.Empty:
+                raise ValueError("could not add mesh unweld vertex oracle source")
+            document.Objects.UnselectAll()
+            mesh_object = document.Objects.FindId(object_id)
+            try:
+                for index in vertex_indices:
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.MeshTopologyVertex,
+                        index,
+                    )
+                    if mesh_object.SelectSubObject(component, True, True, False) == 0:
+                        raise ValueError("could not select mesh topology vertex")
+                command = "_-UnweldVertex _ModifyNormals=_%s _Enter" % (
+                    "Yes" if modify_normals else "No"
+                )
+                # RunScript reports false when nested inside the oracle's
+                # Python command, but the documented command completes its
+                # synchronous topology edit before returning.
+                Rhino.RhinoApp.RunScript(command, False)
+                mesh_object = document.Objects.FindId(object_id)
+                if mesh_object is None:
+                    raise ValueError("mesh unweld vertex command removed its source")
+                return {
+                    "accepted": True,
+                    "added_vertices": int(mesh_object.Geometry.Vertices.Count) - before,
+                    "mesh": _mesh_unweld_value(mesh_object.Geometry),
+                }
+            finally:
+                document.Objects.UnselectAll()
+                document.Objects.Delete(object_id, True)
+
+        return _measure(iterations, unweld_mesh_vertices)
+
     if kind == "document_surface_orient_cycle":
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())
