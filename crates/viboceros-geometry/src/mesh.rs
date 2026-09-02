@@ -22,6 +22,9 @@ pub const MAX_MESH_CYLINDER_FACES: usize = 1_000_000;
 /// Resource ceiling for one generated mesh-cone shell.
 pub const MAX_MESH_CONE_FACES: usize = 1_000_000;
 
+/// Resource ceiling for one generated UV mesh-sphere shell.
+pub const MAX_MESH_SPHERE_FACES: usize = 1_000_000;
+
 /// Polygon style used for a generated radial mesh-primitive cap.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MeshCapFaceStyle {
@@ -47,6 +50,13 @@ pub struct MeshConeOptions {
     pub around_count: usize,
     pub solid: bool,
     pub cap_style: MeshCapFaceStyle,
+}
+
+/// Topology controls for an exact UV mesh-sphere primitive.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MeshUvSphereOptions {
+    pub vertical_count: usize,
+    pub around_count: usize,
 }
 
 /// Exact location-welded edge topology for a polygon mesh.
@@ -868,6 +878,128 @@ impl TriangleMesh {
                 height_to_base,
                 options.cap_style,
             )?;
+        }
+        debug_assert_eq!(vertices.len(), vertex_count);
+        debug_assert_eq!(faces.len(), face_count);
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's ordered UV mesh sphere with shared pole vertices.
+    ///
+    /// Vertices run from the south pole through latitude-major rings to the
+    /// north pole, with no duplicated longitude seam. The first and last
+    /// latitude bands are triangle fans and all interior bands are quads,
+    /// matching `Mesh.CreateFromSphere`.
+    pub fn try_uv_sphere_grid(
+        frame: Frame3,
+        radius: Real,
+        options: MeshUvSphereOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([radius], "mesh-sphere radius")?;
+        if options.vertical_count < 2 || options.around_count < 3 {
+            return Err(GeometryError::InvalidMeshSphereFaceCount {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            });
+        }
+        if radius <= 0.0 {
+            return Err(GeometryError::InvalidMeshSphereRadius);
+        }
+
+        let face_count = options
+            .vertical_count
+            .checked_mul(options.around_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_SPHERE_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+        let vertex_count = options
+            .vertical_count
+            .checked_sub(1)
+            .and_then(|rings| rings.checked_mul(options.around_count))
+            .and_then(|rings| rings.checked_add(2))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if u32::try_from(vertex_count - 1).is_err() {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+
+        let longitude_step = std::f64::consts::TAU / options.around_count as Real;
+        let latitude_step = std::f64::consts::PI / options.vertical_count as Real;
+        require_finite([longitude_step, latitude_step], "mesh-sphere sampling")?;
+        let mut longitude_coordinates = Vec::new();
+        longitude_coordinates
+            .try_reserve_exact(options.around_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for around_index in 0..options.around_count {
+            let angle = (around_index as Real).mul_add(longitude_step, 0.0);
+            let (sine, cosine) = angle.sin_cos();
+            longitude_coordinates.push([cosine, sine]);
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        vertices.push(mesh_frame_point(frame, 0.0, 0.0, -radius)?);
+        for vertical_index in 1..options.vertical_count {
+            let latitude =
+                (vertical_index as Real).mul_add(latitude_step, -std::f64::consts::FRAC_PI_2);
+            let (latitude_sine, latitude_cosine) = latitude.sin_cos();
+            let ring_radius = radius * latitude_cosine;
+            let height = radius * latitude_sine;
+            for [longitude_cosine, longitude_sine] in &longitude_coordinates {
+                vertices.push(mesh_frame_point(
+                    frame,
+                    ring_radius * longitude_cosine,
+                    ring_radius * longitude_sine,
+                    height,
+                )?);
+            }
+        }
+        vertices.push(mesh_frame_point(frame, 0.0, 0.0, radius)?);
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for around_index in 0..options.around_count {
+            let next = (around_index + 1) % options.around_count;
+            faces.push(MeshFace::Triangle([
+                0,
+                u32::try_from(1 + next).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(1 + around_index).map_err(|_| GeometryError::TooManyMeshVertices)?,
+            ]));
+        }
+        for ring_index in 0..options.vertical_count - 2 {
+            let lower_offset = 1 + ring_index * options.around_count;
+            let upper_offset = lower_offset + options.around_count;
+            for around_index in 0..options.around_count {
+                let next = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(lower_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(lower_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        }
+        let north =
+            u32::try_from(vertex_count - 1).map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let last_ring_offset = 1 + (options.vertical_count - 2) * options.around_count;
+        for around_index in 0..options.around_count {
+            let next = (around_index + 1) % options.around_count;
+            faces.push(MeshFace::Triangle([
+                u32::try_from(last_ring_offset + around_index)
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                u32::try_from(last_ring_offset + next)
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                north,
+            ]));
         }
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
@@ -4912,6 +5044,109 @@ mod tests {
                 2.0,
                 -5.0,
                 options(MAX_MESH_CONE_FACES + 1, 3),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_uv_mesh_sphere_poles_rings_and_faces() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let minimal = TriangleMesh::try_uv_sphere_grid(
+            frame,
+            2.0,
+            MeshUvSphereOptions {
+                vertical_count: 2,
+                around_count: 4,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(minimal.vertices().len(), 6);
+        assert_eq!(minimal.face_count(), 8);
+        assert_eq!(minimal.vertices()[0], point(0.0, 0.0, -2.0));
+        assert_eq!(minimal.vertices()[1], point(2.0, 0.0, 0.0));
+        assert_eq!(minimal.vertices()[5], point(0.0, 0.0, 2.0));
+        assert_eq!(
+            minimal.faces(),
+            &[
+                MeshFace::Triangle([0, 2, 1]),
+                MeshFace::Triangle([0, 3, 2]),
+                MeshFace::Triangle([0, 4, 3]),
+                MeshFace::Triangle([0, 1, 4]),
+                MeshFace::Triangle([1, 2, 5]),
+                MeshFace::Triangle([2, 3, 5]),
+                MeshFace::Triangle([3, 4, 5]),
+                MeshFace::Triangle([4, 1, 5]),
+            ]
+        );
+        assert!(minimal.topology().is_solid());
+        assert!(minimal.signed_volume().unwrap() > 0.0);
+
+        let gridded = TriangleMesh::try_uv_sphere_grid(
+            frame,
+            3.0,
+            MeshUvSphereOptions {
+                vertical_count: 4,
+                around_count: 6,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(gridded.vertices().len(), 20);
+        assert_eq!(gridded.face_count(), 24);
+        assert_eq!(gridded.faces()[6], MeshFace::Quad([1, 2, 8, 7]));
+        assert_eq!(gridded.faces()[18], MeshFace::Triangle([13, 14, 19]));
+        assert_eq!(gridded.faces()[23], MeshFace::Triangle([18, 13, 19]));
+        assert!(gridded.topology().is_solid());
+    }
+
+    #[test]
+    fn uv_mesh_sphere_rejects_invalid_counts_radius_and_resource_overflow() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let options = |vertical_count, around_count| MeshUvSphereOptions {
+            vertical_count,
+            around_count,
+        };
+        assert_eq!(
+            TriangleMesh::try_uv_sphere_grid(frame, 2.0, options(1, 4), Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshSphereFaceCount {
+                vertical_count: 1,
+                around_count: 4,
+            })
+        );
+        assert!(matches!(
+            TriangleMesh::try_uv_sphere_grid(frame, 2.0, options(2, 2), Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshSphereFaceCount { .. })
+        ));
+        assert_eq!(
+            TriangleMesh::try_uv_sphere_grid(frame, 0.0, options(2, 4), Tolerance::DEFAULT,),
+            Err(GeometryError::InvalidMeshSphereRadius)
+        );
+        assert!(matches!(
+            TriangleMesh::try_uv_sphere_grid(frame, Real::NAN, options(2, 4), Tolerance::DEFAULT,),
+            Err(GeometryError::NonFinite {
+                context: "mesh-sphere radius"
+            })
+        ));
+        assert_eq!(
+            TriangleMesh::try_uv_sphere_grid(
+                frame,
+                2.0,
+                options(MAX_MESH_SPHERE_FACES + 1, 3),
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::TooManyMeshFaces)

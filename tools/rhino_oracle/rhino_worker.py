@@ -4858,6 +4858,32 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_cone)
 
+    if kind == "mesh_sphere":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "mesh-sphere radius")
+        sphere = Rhino.Geometry.Sphere(plane, radius)
+        around = int(operation["around"])
+        vertical = int(operation["vertical"])
+
+        def create_mesh_sphere():
+            mesh = Rhino.Geometry.Mesh.CreateFromSphere(
+                sphere,
+                around,
+                vertical,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh sphere")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_sphere)
+
     if kind == "nurbs_surface_mesh":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

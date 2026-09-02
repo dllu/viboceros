@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_sphere",
+      "id": "four-by-two",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "around": 4,
+      "vertical": 2
+    },
+    {
+      "op": "mesh_sphere",
+      "id": "five-by-three",
+      "origin": [1, 2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "around": 5,
+      "vertical": 3
+    },
+    {
+      "op": "mesh_sphere",
+      "id": "six-by-four",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 3,
+      "around": 6,
+      "vertical": 4
+    },
+    {
+      "op": "mesh_sphere",
+      "id": "ten-by-ten",
+      "origin": [-2, 5, 7],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 1.25,
+      "around": 10,
+      "vertical": 10
+    },
+    {
+      "op": "mesh_sphere",
+      "id": "oblique-offset",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radius": 1.5,
+      "around": 8,
+      "vertical": 6
+    }
+  ]
+}

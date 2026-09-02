@@ -12,10 +12,10 @@ use viboceros_geometry::{
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
     MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
-    MAX_MESH_PLANE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, MeshConeOptions,
-    MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction, NurbsCurve, NurbsSurface, Plane,
-    Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, join_polylines,
+    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -103,6 +103,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(MeshPlaneCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MeshSphereCommand)
             .expect("unique built-in command");
         registry
             .register(MeshBoxCommand)
@@ -2514,6 +2517,8 @@ impl Command for SphereCommand {
     }
 }
 
+pub const DEFAULT_MESH_SPHERE_FACE_COUNT: usize = 10;
+const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV] [VerticalFaces=integer-at-least-2] [AroundFaces=integer-at-least-3]";
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 pub const DEFAULT_MESH_CONE_FACE_COUNT: usize = 10;
 const MESH_CONE_USAGE: &str = "MeshCone base-center radius height | MeshCone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
@@ -2526,6 +2531,13 @@ const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center
 enum AxialPrimitiveRadius {
     Numeric(Real),
     Point(Point3),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct RadialRadiusPositionals {
+    center: Point3,
+    radius: AxialPrimitiveRadius,
+    option_start: usize,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -2569,6 +2581,48 @@ struct MeshConeCommandOptions {
     vertical_count: usize,
     around_count: usize,
     cap_style: MeshCapFaceStyle,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshSphereCommandOptions {
+    center: Point3,
+    radius: AxialPrimitiveRadius,
+    axis: Vector3,
+    vertical_count: usize,
+    around_count: usize,
+}
+
+fn parse_radial_radius_positionals(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<RadialRadiusPositionals, CommandError> {
+    let (center, center_consumed) = parse_point(arguments)?;
+    let remaining = &arguments[center_consumed..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let (radius, radius_consumed) = if positional_count == 1 && remaining[0].contains(',') {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 1);
+        (AxialPrimitiveRadius::Point(point), consumed)
+    } else if positional_count == 1 {
+        (
+            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
+            1,
+        )
+    } else if positional_count == 3 {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 3);
+        (AxialPrimitiveRadius::Point(point), consumed)
+    } else {
+        return Err(CommandError::Usage(usage));
+    };
+    Ok(RadialRadiusPositionals {
+        center,
+        radius,
+        option_start: center_consumed + radius_consumed,
+    })
 }
 
 fn parse_radial_primitive_positionals(
@@ -2684,6 +2738,62 @@ fn parse_mesh_cap_face_style(value: &str) -> Option<MeshCapFaceStyle> {
     } else {
         None
     }
+}
+
+fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
+    let positionals = parse_radial_radius_positionals(arguments, MESH_SPHERE_USAGE)?;
+    let mut options = MeshSphereCommandOptions {
+        center: positionals.center,
+        radius: positionals.radius,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+        around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+    };
+    let mut axis_seen = false;
+    let mut style_seen = false;
+    let mut vertical_seen = false;
+    let mut around_seen = false;
+    for argument in &arguments[positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(MESH_SPHERE_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            options.axis = parse_axis_option(value, MESH_SPHERE_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "Style") && !style_seen {
+            if !value.eq_ignore_ascii_case("UV") {
+                return Err(CommandError::UnsupportedMeshSphereStyle(value.to_owned()));
+            }
+            style_seen = true;
+        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
+            options.vertical_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 2)
+                .ok_or_else(|| {
+                    CommandError::InvalidMeshSphereVerticalFaceCount(value.to_owned())
+                })?;
+            vertical_seen = true;
+        } else if option_name_eq(name, "AroundFaces") && !around_seen {
+            options.around_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 3)
+                .ok_or_else(|| CommandError::InvalidMeshSphereAroundFaceCount(value.to_owned()))?;
+            around_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_SPHERE_USAGE));
+        }
+    }
+    if options
+        .vertical_count
+        .checked_mul(options.around_count)
+        .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
+    {
+        return Err(GeometryError::TooManyMeshFaces.into());
+    }
+    Ok(options)
 }
 
 fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions, CommandError> {
@@ -3002,6 +3112,35 @@ impl Command for MeshConeCommand {
             if options.solid { "closed" } else { "open" },
             options.around_count,
             options.vertical_count
+        ))
+    }
+}
+
+struct MeshSphereCommand;
+
+impl Command for MeshSphereCommand {
+    fn name(&self) -> &'static str {
+        "MeshSphere"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_mesh_sphere_options(arguments)?;
+        let tolerance = document.tolerance();
+        let (frame, radius) =
+            axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
+        let mesh = TriangleMesh::try_uv_sphere_grid(
+            frame,
+            radius,
+            MeshUvSphereOptions {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            },
+            tolerance,
+        )?;
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Added UV mesh sphere {id} ({} around × {} vertical faces)",
+            options.around_count, options.vertical_count
         ))
     }
 }
@@ -13176,6 +13315,15 @@ pub enum CommandError {
     #[error("'{0}' is not a valid mesh-cone around face count of at least 3")]
     InvalidMeshConeAroundFaceCount(String),
 
+    #[error("mesh-sphere style '{0}' is not supported yet; supported style: UV")]
+    UnsupportedMeshSphereStyle(String),
+
+    #[error("'{0}' is not a valid mesh-sphere vertical face count of at least 2")]
+    InvalidMeshSphereVerticalFaceCount(String),
+
+    #[error("'{0}' is not a valid mesh-sphere around face count of at least 3")]
+    InvalidMeshSphereAroundFaceCount(String),
+
     #[error("'{0}' is not a valid r,g,b color with components from 0 through 255")]
     InvalidColor(String),
 
@@ -13747,7 +13895,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshPlane, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshPlane, MeshSphere, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -14192,6 +14340,103 @@ mod tests {
             "MeshCone 0,0,0 2 5 Axis=0,0,0",
             "MeshCone 0,0,0 0,0,2 5 Axis=0,0,1",
             "MeshCone 0,0,0 2 5 VerticalFaces=1000001 AroundFaces=3 Solid=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0, "{command}");
+            assert_eq!(document.undo_label(), None, "{command}");
+        }
+    }
+
+    #[test]
+    fn mesh_sphere_matches_default_and_oriented_uv_rhino_topology() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let parsed = parse_mesh_sphere_options(&["0,0,0", "2"]).unwrap();
+        assert_eq!(parsed.vertical_count, 10);
+        assert_eq!(parsed.around_count, 10);
+
+        let message = registry
+            .execute(&mut document, "MeshSphere 0,0,0 2")
+            .unwrap();
+        assert!(message.ends_with("(10 around × 10 vertical faces)"));
+        assert_eq!(document.selected_object_count(), 0);
+        let Geometry::Mesh(default) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshSphere must create a polygon mesh")
+        };
+        assert_eq!(default.vertices().len(), 92);
+        assert_eq!(default.face_count(), 100);
+        assert_eq!(
+            default.vertices()[0],
+            Point3::try_new(0.0, 0.0, -2.0).unwrap()
+        );
+        assert_eq!(
+            default.vertices()[91],
+            Point3::try_new(0.0, 0.0, 2.0).unwrap()
+        );
+        assert_eq!(
+            default.faces()[0],
+            viboceros_geometry::MeshFace::Triangle([0, 2, 1])
+        );
+        assert_eq!(
+            default.faces()[10],
+            viboceros_geometry::MeshFace::Quad([1, 2, 12, 11])
+        );
+        assert_eq!(
+            default.faces()[90],
+            viboceros_geometry::MeshFace::Triangle([81, 82, 91])
+        );
+        assert!(default.topology().is_solid());
+        assert!(default.signed_volume().unwrap() > 0.0);
+        assert_eq!(document.undo_label(), Some("MeshSphere"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshSphere 1,2,3 9,5,3 Axis=1,0,0 Style=UV VerticalFaces=4 AroundFaces=6",
+            )
+            .unwrap();
+        let Geometry::Mesh(oriented) = document.objects().next().unwrap().geometry() else {
+            panic!("oriented MeshSphere must create a mesh")
+        };
+        assert_eq!(oriented.vertices().len(), 20);
+        assert_eq!(oriented.face_count(), 24);
+        assert_eq!(
+            oriented.vertices()[0],
+            Point3::try_new(-2.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            oriented.vertices()[19],
+            Point3::try_new(4.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            oriented.faces()[6],
+            viboceros_geometry::MeshFace::Quad([1, 2, 8, 7])
+        );
+        assert!(oriented.topology().is_solid());
+    }
+
+    #[test]
+    fn mesh_sphere_rejects_unsupported_styles_and_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "MeshSphere",
+            "MeshSphere 0,0,0 0",
+            "MeshSphere 0,0,0 -2",
+            "MeshSphere 0,0,0 2 VerticalFaces=1",
+            "MeshSphere 0,0,0 2 AroundFaces=2",
+            "MeshSphere 0,0,0 2 AroundFaces=nope",
+            "MeshSphere 0,0,0 2 AroundFaces=6 AroundFaces=8",
+            "MeshSphere 0,0,0 2 Style=Triangles",
+            "MeshSphere 0,0,0 2 Style=UV Style=UV",
+            "MeshSphere 0,0,0 2 Solid=Yes",
+            "MeshSphere 0,0,0 2 Axis=0,0,0",
+            "MeshSphere 0,0,0 0,0,2 Axis=0,0,1",
+            "MeshSphere 0,0,0 2 VerticalFaces=1000001 AroundFaces=3",
         ] {
             assert!(
                 registry.execute(&mut document, command).is_err(),

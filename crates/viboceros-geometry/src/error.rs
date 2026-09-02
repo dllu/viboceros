@@ -249,6 +249,17 @@ pub enum GeometryError {
     #[error("mesh-cone radius must be positive and its height nonzero")]
     InvalidMeshConeDimensions,
 
+    #[error(
+        "UV mesh-sphere face counts require at least two vertical faces and three around faces, got {vertical_count} by {around_count}"
+    )]
+    InvalidMeshSphereFaceCount {
+        vertical_count: usize,
+        around_count: usize,
+    },
+
+    #[error("mesh-sphere radius must be positive")]
+    InvalidMeshSphereRadius,
+
     #[error("a mesh face subset must contain at least one face")]
     EmptyMeshFaceSubset,
 
