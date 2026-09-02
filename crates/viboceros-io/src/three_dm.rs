@@ -988,7 +988,7 @@ mod tests {
     use std::time::{SystemTime, UNIX_EPOCH};
 
     use super::*;
-    use viboceros_geometry::{Frame3, Vector3};
+    use viboceros_geometry::{Frame3, Polyline3, Vector3};
 
     fn sample_model() -> ThreeDmModel {
         let point = Point3::try_new(1.0, 2.0, 3.0).unwrap();
@@ -1058,6 +1058,26 @@ mod tests {
         .unwrap();
         let cylinder_brep = Brep::try_cylinder(frame, 2.5, -3.0, 4.0, Tolerance::DEFAULT).unwrap();
         let cone_brep = Brep::try_cone(frame, 1.75, 5.0, Tolerance::DEFAULT).unwrap();
+        let extrusion_profile = Polyline3::try_new(
+            vec![
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let extrusion_brep = Brep::try_extruded_curve(
+            &extrusion_profile,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(1.0, 2.0, 5.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -1113,6 +1133,7 @@ mod tests {
                 ThreeDmObject::new(ThreeDmGeometry::Brep(box_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(cylinder_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(cone_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(extrusion_brep), 0),
             ],
         )
     }

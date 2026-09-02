@@ -137,6 +137,12 @@ pub enum GeometryError {
     #[error("B-rep face {face} requires trimmed-domain integration for mass properties")]
     UnsupportedBrepTrimMassProperties { face: usize },
 
+    #[error("a capped curve extrusion requires a closed, nondegenerate planar profile")]
+    InvalidCappedExtrusionProfile,
+
+    #[error("a capped curve extrusion path must leave the profile plane")]
+    CoplanarCappedExtrusion,
+
     #[error(
         "closed B-rep faces produced {boundary_edges} open and {orientation_conflicts} conflicting mesh edges"
     )]

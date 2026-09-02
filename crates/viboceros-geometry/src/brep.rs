@@ -1,7 +1,8 @@
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsCurve2,
-    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, Vector3, WeightedPoint3,
-    integration::integrate_adaptive, require_finite, vector::product_three,
+    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    WeightedPoint2, WeightedPoint3, integration::integrate_adaptive, require_finite,
+    vector::product_three,
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
@@ -553,6 +554,116 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs an exact capped straight extrusion of a closed planar curve.
+    ///
+    /// The source curve and its rational data are retained by both rim edges
+    /// and the ruled wall. Each cap is an affine plane trimmed by an exact 2D
+    /// projection of that same rational curve. The wall seam is shared twice,
+    /// so the result has no duplicated topological boundary geometry.
+    pub fn try_extruded_curve(
+        curve: &NurbsCurve,
+        start_offset: Vector3,
+        end_offset: Vector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !curve.is_closed()? || !curve.is_planar(tolerance)? {
+            return Err(GeometryError::InvalidCappedExtrusionProfile);
+        }
+
+        let wall = NurbsSurface::try_extruded_curve(curve, start_offset, end_offset)?;
+        let path = Vector3::try_new(
+            end_offset.x() - start_offset.x(),
+            end_offset.y() - start_offset.y(),
+            end_offset.z() - start_offset.z(),
+        )?;
+        let projection = project_planar_curve(curve, tolerance)?;
+        let normal_distance = path.dot(projection.frame.z_axis().as_vector())?;
+        if normal_distance.abs() <= tolerance.absolute() {
+            return Err(GeometryError::CoplanarCappedExtrusion);
+        }
+
+        let start_cap =
+            planar_cap_surface(projection.frame, start_offset, projection.coordinate_bounds)?;
+        let end_cap =
+            planar_cap_surface(projection.frame, end_offset, projection.coordinate_bounds)?;
+
+        let mut cap_curve = projection.curve;
+        let cap_loop = BrepLoop::try_new(
+            BrepLoopType::Outer,
+            vec![BrepTrim::try_new(
+                [0, 0],
+                Some(0),
+                false,
+                cap_curve.clone(),
+                BrepTrimType::Mated,
+                SurfaceIso::NotIso,
+                [0.0, 0.0],
+            )?],
+        )?;
+        let cap_curve_reversed = sampled_loop_signed_area(&cap_loop)? < 0.0;
+        if cap_curve_reversed {
+            cap_curve = cap_curve.reversed()?;
+        }
+
+        let u_domain = wall.domain_u();
+        let v_domain = wall.domain_v();
+        let start_seam = wall.evaluate(*u_domain.start(), *v_domain.start())?;
+        let end_seam = wall.evaluate(*u_domain.start(), *v_domain.end())?;
+        let start_profile = surface_u_control_curve(&wall, 0)?;
+        let end_profile = surface_u_control_curve(&wall, 1)?;
+        let closure_tolerance = extrusion_closure_tolerance(
+            [start_seam, end_seam],
+            [&start_profile, &end_profile],
+            [&start_cap, &end_cap],
+            &cap_curve,
+            cap_curve_reversed,
+            projection.maximum_residual,
+        )?;
+        let vertices = vec![
+            BrepVertex::try_new(start_seam, closure_tolerance)?,
+            BrepVertex::try_new(end_seam, closure_tolerance)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 0], start_profile, closure_tolerance)?,
+            BrepEdge::try_new([1, 1], end_profile, closure_tolerance)?,
+            BrepEdge::try_new(
+                [0, 1],
+                LineSegment::try_new(start_seam, end_seam, tolerance)?.to_nurbs()?,
+                0.0,
+            )?,
+        ];
+
+        let wall_loop = rectangular_surface_loop(
+            &wall,
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 2, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([1, 1], 1, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 0], 2, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let cap_trim_tolerance = [closure_tolerance, closure_tolerance];
+        let start_loop = single_trim_loop(
+            0,
+            0,
+            cap_curve.clone(),
+            cap_curve_reversed,
+            cap_trim_tolerance,
+        )?;
+        let end_loop = single_trim_loop(1, 1, cap_curve, cap_curve_reversed, cap_trim_tolerance)?;
+        let path_opposes_surface = normal_distance < 0.0;
+        let faces = vec![
+            BrepFace::try_new(
+                wall,
+                path_opposes_surface ^ cap_curve_reversed,
+                vec![wall_loop],
+            )?,
+            BrepFace::try_new(start_cap, !path_opposes_surface, vec![start_loop])?,
+            BrepFace::try_new(end_cap, path_opposes_surface, vec![end_loop])?,
+        ];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     #[inline]
     pub fn vertices(&self) -> &[BrepVertex] {
         &self.vertices
@@ -606,17 +717,18 @@ impl Brep {
     /// The divergence-theorem integral is evaluated independently over every
     /// nonempty knot-span rectangle. Subtracting the control-geometry bounds
     /// center before the scalar triple product makes the result insensitive to
-    /// large translations. General trimmed domains require a constrained
+    /// large translations. Planar trimmed faces use an oriented boundary-area
+    /// integral; nonplanar general trims still require a constrained
     /// parameter-space integrator and are rejected explicitly.
     pub fn signed_volume(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
         if !self.is_solid() {
             return Err(GeometryError::OpenBrepVolume);
         }
-        for (face_index, face) in self.faces.iter().enumerate() {
-            if !face_covers_full_surface_domain(face, tolerance)? {
-                return Err(GeometryError::UnsupportedBrepTrimMassProperties { face: face_index });
-            }
-        }
+        let full_domain_faces = self
+            .faces
+            .iter()
+            .map(|face| face_covers_full_surface_domain(face, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
 
         let bounds = self.bounds();
         let reference = bounds.center()?;
@@ -625,6 +737,25 @@ impl Brep {
             .faces
             .iter()
             .map(|face| centered_surface(&face.surface, reference))
+            .collect::<Result<Vec<_>, _>>()?;
+        let planar_faces = full_domain_faces
+            .iter()
+            .zip(&centered_surfaces)
+            .enumerate()
+            .map(|(face_index, (full_domain, surface))| {
+                if *full_domain {
+                    Ok(None)
+                } else {
+                    planar_surface_plane(surface, tolerance)?.map_or_else(
+                        || {
+                            Err(GeometryError::UnsupportedBrepTrimMassProperties {
+                                face: face_index,
+                            })
+                        },
+                        |plane| Ok(Some(plane)),
+                    )
+                }
+            })
             .collect::<Result<Vec<_>, _>>()?;
         let absolute_tolerance = match product_three(
             tolerance.absolute(),
@@ -639,37 +770,67 @@ impl Brep {
             Err(GeometryError::NonFinite { .. }) => Real::MAX,
             Err(error) => return Err(error),
         };
-        let patch_count = self
+        let area_tolerance = match product_three(
+            tolerance.absolute(),
+            scale.max(tolerance.absolute()),
+            1.0,
+            "B-rep area tolerance",
+        ) {
+            Ok(value) => value,
+            Err(GeometryError::NonFinite { .. }) => Real::MAX,
+            Err(error) => return Err(error),
+        };
+        let integration_piece_count = self
             .faces
             .iter()
-            .map(|face| {
-                face.surface
-                    .spans_u()
-                    .count()
-                    .checked_mul(face.surface.spans_v().count())
-                    .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+            .zip(&full_domain_faces)
+            .map(|(face, full_domain)| {
+                if *full_domain {
+                    face.surface
+                        .spans_u()
+                        .count()
+                        .checked_mul(face.surface.spans_v().count())
+                        .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+                } else {
+                    Ok(1)
+                }
             })
             .try_fold(0_usize, |total, count| {
                 total
                     .checked_add(count?)
                     .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
             })?;
-        let patch_tolerance = (absolute_tolerance / patch_count as Real).max(Real::MIN_POSITIVE);
+        let piece_tolerance =
+            (absolute_tolerance / integration_piece_count as Real).max(Real::MIN_POSITIVE);
+        let piece_area_tolerance =
+            (area_tolerance / integration_piece_count as Real).max(Real::MIN_POSITIVE);
         let mut sum = 0.0;
         let mut correction = 0.0;
-        for (face, surface) in self.faces.iter().zip(&centered_surfaces) {
-            for (u_start, u_end) in surface.spans_u() {
-                for (v_start, v_end) in surface.spans_v() {
-                    let contribution = integrate_volume_patch(
-                        surface,
-                        face.reversed,
-                        [u_start, u_end],
-                        [v_start, v_end],
-                        patch_tolerance,
-                        tolerance.relative(),
-                    )?;
-                    neumaier_add(&mut sum, &mut correction, contribution);
+        for (face_index, (face, surface)) in self.faces.iter().zip(&centered_surfaces).enumerate() {
+            if full_domain_faces[face_index] {
+                for (u_start, u_end) in surface.spans_u() {
+                    for (v_start, v_end) in surface.spans_v() {
+                        let contribution = integrate_volume_patch(
+                            surface,
+                            face.reversed,
+                            [u_start, u_end],
+                            [v_start, v_end],
+                            piece_tolerance,
+                            tolerance.relative(),
+                        )?;
+                        neumaier_add(&mut sum, &mut correction, contribution);
+                    }
                 }
+            } else {
+                let contribution = integrate_planar_trimmed_face_volume(
+                    face,
+                    surface,
+                    planar_faces[face_index]
+                        .expect("a non-full-domain volume face was verified planar"),
+                    piece_area_tolerance,
+                    tolerance.relative(),
+                )?;
+                neumaier_add(&mut sum, &mut correction, contribution);
             }
         }
         let volume = sum + correction;
@@ -1089,6 +1250,13 @@ struct RectangularTrimSpec {
     trim_type: BrepTrimType,
 }
 
+struct PlanarCurveProjection {
+    frame: Frame3,
+    coordinate_bounds: [[Real; 2]; 2],
+    curve: NurbsCurve2,
+    maximum_residual: Real,
+}
+
 impl RectangularTrimSpec {
     const fn edge(
         vertices: [usize; 2],
@@ -1153,6 +1321,161 @@ fn rectangular_surface_loop(
     BrepLoop::try_new(BrepLoopType::Outer, trims)
 }
 
+fn single_trim_loop(
+    vertex: usize,
+    edge: usize,
+    curve: NurbsCurve2,
+    reversed_3d: bool,
+    tolerance: [Real; 2],
+) -> Result<BrepLoop, GeometryError> {
+    BrepLoop::try_new(
+        BrepLoopType::Outer,
+        vec![BrepTrim::try_new(
+            [vertex, vertex],
+            Some(edge),
+            reversed_3d,
+            curve,
+            BrepTrimType::Mated,
+            SurfaceIso::NotIso,
+            tolerance,
+        )?],
+    )
+}
+
+fn project_planar_curve(
+    curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<PlanarCurveProjection, GeometryError> {
+    let controls = curve.control_points();
+    let origin = curve.evaluate(*curve.domain().start())?;
+    let stride = (controls.len() / 64).max(1);
+    let mut largest_cross = None;
+    let mut largest_area = 0.0;
+    for first_index in (1..controls.len()).step_by(stride) {
+        let first = origin.vector_to(controls[first_index].point())?;
+        for second_index in ((first_index + stride)..controls.len()).step_by(stride) {
+            let second = origin.vector_to(controls[second_index].point())?;
+            let cross = first.cross(second)?;
+            let area = cross.length()?;
+            if area > largest_area {
+                largest_area = area;
+                largest_cross = Some(cross);
+            }
+        }
+    }
+    let normal = largest_cross
+        .ok_or(GeometryError::InvalidCappedExtrusionProfile)?
+        .normalized_nonzero()?;
+    let frame = Frame3::try_from_normal(origin, normal.as_vector(), tolerance)?;
+    let mut coordinate_bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
+    let mut maximum_residual: Real = 0.0;
+    let mut projected = Vec::with_capacity(controls.len());
+    for control in controls {
+        let relative = origin.vector_to(control.point())?;
+        let x = relative.dot(frame.x_axis().as_vector())?;
+        let y = relative.dot(frame.y_axis().as_vector())?;
+        let residual = relative.dot(frame.z_axis().as_vector())?.abs();
+        if residual > tolerance.absolute() {
+            return Err(GeometryError::InvalidCappedExtrusionProfile);
+        }
+        coordinate_bounds[0][0] = coordinate_bounds[0][0].min(x);
+        coordinate_bounds[0][1] = coordinate_bounds[0][1].max(x);
+        coordinate_bounds[1][0] = coordinate_bounds[1][0].min(y);
+        coordinate_bounds[1][1] = coordinate_bounds[1][1].max(y);
+        maximum_residual = maximum_residual.max(residual);
+        projected.push(WeightedPoint2::try_new(
+            Point2::try_new(x, y)?,
+            control.weight(),
+        )?);
+    }
+    for bounds in coordinate_bounds {
+        let width = bounds[1] - bounds[0];
+        require_finite([width], "planar curve coordinate bounds")?;
+        if width <= tolerance.absolute() {
+            return Err(GeometryError::InvalidCappedExtrusionProfile);
+        }
+    }
+    Ok(PlanarCurveProjection {
+        frame,
+        coordinate_bounds,
+        curve: NurbsCurve2::try_new_rational(curve.degree(), projected, curve.knots().to_vec())?,
+        maximum_residual,
+    })
+}
+
+fn planar_cap_surface(
+    frame: Frame3,
+    offset: Vector3,
+    bounds: [[Real; 2]; 2],
+) -> Result<NurbsSurface, GeometryError> {
+    let origin = frame.origin().translated(offset)?;
+    let x_axis = frame.x_axis().as_vector();
+    let y_axis = frame.y_axis().as_vector();
+    let point = |x: Real, y: Real| {
+        origin
+            .translated(x_axis.scaled(x)?)?
+            .translated(y_axis.scaled(y)?)
+    };
+    let corners = [
+        point(bounds[0][0], bounds[1][0])?,
+        point(bounds[0][1], bounds[1][0])?,
+        point(bounds[0][0], bounds[1][1])?,
+        point(bounds[0][1], bounds[1][1])?,
+    ];
+    NurbsSurface::try_new(
+        1,
+        1,
+        2,
+        2,
+        corners.to_vec(),
+        vec![bounds[0][0], bounds[0][0], bounds[0][1], bounds[0][1]],
+        vec![bounds[1][0], bounds[1][0], bounds[1][1], bounds[1][1]],
+    )
+}
+
+fn extrusion_closure_tolerance(
+    seam_vertices: [Point3; 2],
+    profile_edges: [&NurbsCurve; 2],
+    cap_surfaces: [&NurbsSurface; 2],
+    cap_curve: &NurbsCurve2,
+    cap_curve_reversed: bool,
+    planar_residual: Real,
+) -> Result<Real, GeometryError> {
+    let cap_parameters = [cap_curve.start_point()?, cap_curve.end_point()?];
+    let mut maximum = planar_residual;
+    for index in 0..2 {
+        let domain = profile_edges[index].domain();
+        for parameter in [*domain.start(), *domain.end()] {
+            maximum = maximum.max(
+                profile_edges[index]
+                    .evaluate(parameter)?
+                    .distance_to(seam_vertices[index])?,
+            );
+        }
+        for parameter in cap_parameters {
+            maximum = maximum.max(
+                cap_surfaces[index]
+                    .evaluate(parameter.x(), parameter.y())?
+                    .distance_to(seam_vertices[index])?,
+            );
+        }
+        for (parameter_index, parameter_control) in cap_curve.control_points().iter().enumerate() {
+            let profile_index = if cap_curve_reversed {
+                profile_edges[index].control_points().len() - 1 - parameter_index
+            } else {
+                parameter_index
+            };
+            maximum = maximum.max(
+                cap_surfaces[index]
+                    .evaluate(parameter_control.point().x(), parameter_control.point().y())?
+                    .distance_to(profile_edges[index].control_points()[profile_index].point())?,
+            );
+        }
+    }
+    require_nonnegative_finite(maximum, "capped extrusion closure tolerance")?;
+    Ok(maximum)
+}
+
 fn frame_at_height(
     frame: Frame3,
     height: Real,
@@ -1213,6 +1536,126 @@ fn centered_surface(
         surface.knots_u().to_vec(),
         surface.knots_v().to_vec(),
     )
+}
+
+#[derive(Clone, Copy)]
+struct PlanarSurfacePlane {
+    point: Point3,
+    normal: UnitVector3,
+}
+
+fn planar_surface_plane(
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Option<PlanarSurfacePlane>, GeometryError> {
+    let mut samples = Vec::new();
+    let mut largest_cross = None;
+    let mut largest_area = 0.0;
+    for (u_start, u_end) in surface.spans_u() {
+        let u = u_start * 0.5 + u_end * 0.5;
+        for (v_start, v_end) in surface.spans_v() {
+            let v = v_start * 0.5 + v_end * 0.5;
+            let (point, derivative_u, derivative_v) = surface.evaluate_with_derivatives(u, v)?;
+            let cross = derivative_u.cross(derivative_v)?;
+            let area = cross.length()?;
+            if area > 0.0 {
+                samples.push(cross);
+                if area > largest_area {
+                    largest_area = area;
+                    largest_cross = Some((point, cross));
+                }
+            }
+        }
+    }
+    let Some((point, cross)) = largest_cross else {
+        return Ok(None);
+    };
+    let normal = cross.normalized_nonzero()?;
+    for sample in samples {
+        let length = sample.length()?;
+        if sample.dot(normal.as_vector())? <= tolerance.angular() * length {
+            return Ok(None);
+        }
+    }
+    for control in surface.control_points() {
+        let distance = point
+            .vector_to(control.point())?
+            .dot(normal.as_vector())?
+            .abs();
+        if distance > tolerance.absolute() {
+            return Ok(None);
+        }
+    }
+    Ok(Some(PlanarSurfacePlane { point, normal }))
+}
+
+fn integrate_planar_trimmed_face_volume(
+    face: &BrepFace,
+    surface: &NurbsSurface,
+    plane: PlanarSurfacePlane,
+    absolute_area_tolerance: Real,
+    relative_tolerance: Real,
+) -> Result<Real, GeometryError> {
+    let span_count = face
+        .loops
+        .iter()
+        .flat_map(|face_loop| &face_loop.trims)
+        .map(|trim| trim.curve.spans().count())
+        .try_fold(0_usize, |total, count| {
+            total
+                .checked_add(count)
+                .ok_or(GeometryError::NumericalIntegrationDidNotConverge)
+        })?;
+    if span_count == 0 {
+        return Err(GeometryError::NumericalIntegrationDidNotConverge);
+    }
+    let span_tolerance = (absolute_area_tolerance / span_count as Real).max(Real::MIN_POSITIVE);
+    let mut sum = 0.0;
+    let mut correction = 0.0;
+    for trim in face.loops.iter().flat_map(|face_loop| &face_loop.trims) {
+        for (start, end) in trim.curve.spans() {
+            let doubled_area = integrate_adaptive(
+                start,
+                end,
+                span_tolerance,
+                relative_tolerance,
+                |parameter| {
+                    let (surface_parameter, parameter_derivative) =
+                        trim.curve.evaluate_with_derivative(parameter)?;
+                    let (point, derivative_u, derivative_v) = surface
+                        .evaluate_with_derivatives(surface_parameter.x(), surface_parameter.y())?;
+                    let derivative = Vector3::try_new(
+                        derivative_u.x().mul_add(
+                            parameter_derivative[0],
+                            derivative_v.x() * parameter_derivative[1],
+                        ),
+                        derivative_u.y().mul_add(
+                            parameter_derivative[0],
+                            derivative_v.y() * parameter_derivative[1],
+                        ),
+                        derivative_u.z().mul_add(
+                            parameter_derivative[0],
+                            derivative_v.z() * parameter_derivative[1],
+                        ),
+                    )?;
+                    let position = Vector3::try_new(point.x(), point.y(), point.z())?;
+                    position.cross(derivative)?.dot(plane.normal.as_vector())
+                },
+            )?;
+            neumaier_add(&mut sum, &mut correction, doubled_area);
+        }
+    }
+    let doubled_area = sum + correction;
+    let plane_position = Vector3::try_new(plane.point.x(), plane.point.y(), plane.point.z())?;
+    let plane_distance = plane_position.dot(plane.normal.as_vector())?;
+    let magnitude = product_three(
+        plane_distance.abs(),
+        doubled_area.abs(),
+        1.0 / 6.0,
+        "planar B-rep face volume",
+    )?;
+    let orientation = if face.reversed { -1.0 } else { 1.0 };
+    Ok(orientation * plane_distance.signum() * doubled_area.signum() * magnitude)
 }
 
 fn integrate_volume_patch(
@@ -1469,7 +1912,7 @@ fn invalid<T>(context: &'static str) -> Result<T, GeometryError> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::Vector3;
+    use crate::{Polyline3, Vector3};
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -1678,6 +2121,74 @@ mod tests {
         assert!(Brep::try_cone(frame, 0.0, 1.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cone(frame, 1.0, 0.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cone(frame, 1.0, Real::NAN, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn capped_curve_extrusion_retains_exact_profile_and_planar_trim_volume() {
+        let origin = point(1.0e12, -2.0e12, 3.0e12);
+        let profile = Polyline3::try_new(
+            vec![
+                origin,
+                point(origin.x() + 2.0, origin.y(), origin.z()),
+                point(origin.x() + 2.0, origin.y() + 3.0, origin.z()),
+                point(origin.x(), origin.y() + 3.0, origin.z()),
+                origin,
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let zero = Vector3::try_new(0.0, 0.0, 0.0).unwrap();
+        let path = Vector3::try_new(1.0, 2.0, 5.0).unwrap();
+        let brep = Brep::try_extruded_curve(&profile, zero, path, Tolerance::DEFAULT).unwrap();
+
+        assert_eq!(brep.vertices().len(), 2);
+        assert_eq!(brep.edges().len(), 3);
+        assert_eq!(brep.faces().len(), 3);
+        assert!(brep.is_manifold());
+        assert!(brep.is_closed());
+        assert!(brep.is_solid());
+        assert_eq!(brep.faces()[0].loops()[0].trims().len(), 4);
+        assert_eq!(brep.faces()[1].loops()[0].trims().len(), 1);
+        assert_eq!(brep.faces()[2].loops()[0].trims().len(), 1);
+        assert_eq!(brep.edges()[0].curve().degree(), profile.degree());
+        assert_eq!(brep.edges()[0].curve().knots(), profile.knots());
+        assert!((brep.signed_volume(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1.0e-10);
+
+        let reversed = profile.reversed().unwrap();
+        let reversed_brep =
+            Brep::try_extruded_curve(&reversed, zero, path, Tolerance::DEFAULT).unwrap();
+        assert!(reversed_brep.is_solid());
+        assert!((reversed_brep.signed_volume(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1.0e-10);
+
+        let opposite = path.scaled(-1.0).unwrap();
+        let opposite_brep =
+            Brep::try_extruded_curve(&profile, zero, opposite, Tolerance::DEFAULT).unwrap();
+        assert!(opposite_brep.is_solid());
+        assert!((opposite_brep.signed_volume(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1.0e-10);
+
+        let open = LineSegment::try_new(
+            origin,
+            point(origin.x() + 2.0, origin.y(), origin.z()),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        assert_eq!(
+            Brep::try_extruded_curve(&open, zero, path, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidCappedExtrusionProfile)
+        );
+        assert_eq!(
+            Brep::try_extruded_curve(
+                &profile,
+                zero,
+                Vector3::try_new(5.0, 0.0, 0.0).unwrap(),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CoplanarCappedExtrusion)
+        );
     }
 
     #[test]

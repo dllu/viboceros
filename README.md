@@ -207,9 +207,10 @@ polyline, and NURBS curves. A numeric distance uses World Z; two points define
 an arbitrary direction; entering it without either starts the two-pick viewport
 workflow. `BothSides=Yes` sweeps equally in both directions and
 `DeleteInput=Yes` removes the profiles. Matching Rhino, outputs are unselected,
-ungrouped objects with fresh attributes on the current layer. The current
-surface-only implementation accepts `Solid=No`; capped-solid construction is
-not yet wired into the B-rep layer.
+ungrouped objects with fresh attributes on the current layer. `Solid=Yes`
+turns each closed planar profile into an exact closed B-rep with a ruled wall,
+two planar trimmed caps, shared rational rim curves, and one shared wall seam;
+open and nonplanar profiles remain exact NURBS surfaces.
 `ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
 curves to one apex. Its U direction runs from the profile to the apex while V
 preserves the source curve's degree, knots, and weights, matching Rhino's NURBS
@@ -245,7 +246,8 @@ meshes and exact B-rep solids; outward orientation is positive and reversed
 orientation is negative. Meshes use translation-stable tetrahedral
 accumulation. Full-domain NURBS B-rep faces are integrated directly over each
 knot-span rectangle with adaptive quadrature, without measuring a display
-tessellation. Generally trimmed faces are rejected until trimmed-domain mass
+tessellation. Planar trimmed caps use an exact-edge boundary-area integral;
+general nonplanar trims are rejected until constrained trimmed-domain mass
 properties are implemented. Measurement does not alter history.
 `Divide` creates equal arc-length points on selected curves by segment count or
 requested segment length; add `MarkEnds` to include open-curve endpoints.
