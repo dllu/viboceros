@@ -1430,6 +1430,7 @@ impl VibocerosApp {
         let mut mirror_clicked = false;
         let mut shear_clicked = false;
         let mut project_to_cplane_clicked = false;
+        let mut to_nurbs_clicked = false;
         let selected = self.document.selected_object_count();
         let selectable_last_changed = self.document.selectable_last_changed_object_count();
         let selectable_previous = self.document.selectable_previous_object_count();
@@ -1620,6 +1621,10 @@ impl VibocerosApp {
                         "Create flattened copies of selected objects on the construction plane",
                     )
                     .clicked();
+                to_nurbs_clicked = ui
+                    .add_enabled(selected > 0, egui::Button::new("To NURBS"))
+                    .on_hover_text("Create exact NURBS copies of supported selected curves")
+                    .clicked();
                 ui.label(format!("{selected} selected"));
                 ui.separator();
                 ui.label("Display:");
@@ -1727,6 +1732,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("Shear");
         } else if project_to_cplane_clicked {
             self.execute_command("ProjectToCPlane");
+        } else if to_nurbs_clicked {
+            self.execute_command("ToNURBS");
         }
     }
 

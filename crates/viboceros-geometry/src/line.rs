@@ -1,4 +1,4 @@
-use crate::{AffineTransform3, GeometryError, Point3, Real, Tolerance, UnitVector3};
+use crate::{AffineTransform3, GeometryError, NurbsCurve, Point3, Real, Tolerance, UnitVector3};
 
 /// A non-degenerate finite line segment.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -49,6 +49,16 @@ impl LineSegment {
     pub fn point_at(self, parameter: Real) -> Result<Point3, GeometryError> {
         let offset = self.start.vector_to(self.end)?.scaled(parameter)?;
         self.start.translated(offset)
+    }
+
+    /// Returns Rhino's exact degree-one, arc-length-parameterized NURBS form.
+    pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
+        let domain_end = self.length()?;
+        NurbsCurve::try_new(
+            1,
+            vec![self.start, self.end],
+            vec![0.0, 0.0, domain_end, domain_end],
+        )
     }
 
     #[inline]
@@ -110,6 +120,13 @@ mod tests {
             reversed.point_at(0.25).unwrap(),
             line.point_at(0.75).unwrap()
         );
+
+        let curve = line.to_nurbs().unwrap();
+        let length = line.length().unwrap();
+        assert_eq!(curve.degree(), 1);
+        assert_eq!(curve.domain(), 0.0..=length);
+        assert_eq!(curve.knots(), &[0.0, 0.0, length, length]);
+        assert_eq!(curve.evaluate(length * 0.5).unwrap(), point(3.0, 4.0, 5.0));
     }
 
     #[test]

@@ -80,6 +80,7 @@ Rotate3D 0,0,0 0,0,1 90 Copy=Yes
 Mirror 0,-5 0,5
 Shear 0,0,0 1,0,0 45 Copy=Yes
 ProjectToCPlane DeleteInput=Yes
+ToNURBS DeleteInputObjects=Yes
 Group Assembly
 Group All Everything
 SetObjectName "Fastener Part" AppendCounter=Yes
@@ -157,6 +158,11 @@ view; its third argument can instead be a numeric angle, and it accepts
 `ProjectToCPlane` flattens onto the current construction plane (World XY in the
 current UI). It retains the inputs by default; use `DeleteInput=Yes` to project
 them in place.
+`ToNURBS` exactly converts selected lines, circles, arcs, ellipses, and
+polylines. It retains inputs and creates unselected copies in the same groups
+by default; use `DeleteInputObjects=Yes` to preserve object identities and
+replace the inputs in place. Line, polyline, circle, arc, and ellipse parameter
+domains follow Rhino's chord-length, arc-length, and angular conventions.
 `ArrayPolar 6` picks a
 center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a

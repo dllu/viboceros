@@ -193,6 +193,44 @@ impl NurbsCurve {
         self.knots[self.degree]..=self.knots[self.control_points.len()]
     }
 
+    /// Affinely maps the full knot vector onto a new active parameter domain.
+    ///
+    /// Control points and weights are unchanged, so the geometric image and
+    /// normalized parameter direction are preserved. Knots outside the active
+    /// domain, as used by periodic curves, are extrapolated by the same map.
+    pub fn try_reparameterized(&self, domain: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        let target_start = *domain.start();
+        let target_end = *domain.end();
+        if !target_start.is_finite() || !target_end.is_finite() {
+            return Err(GeometryError::InvalidKnotVector {
+                context: "the reparameterized domain must be finite",
+            });
+        }
+        if target_start >= target_end {
+            return Err(GeometryError::InvalidKnotVector {
+                context: "the reparameterized domain must have positive length",
+            });
+        }
+
+        let source = self.domain();
+        let source_start = *source.start();
+        let source_end = *source.end();
+        let knots = self
+            .knots
+            .iter()
+            .map(|knot| {
+                if *knot == source_start {
+                    Ok(target_start)
+                } else if *knot == source_end {
+                    Ok(target_end)
+                } else {
+                    reparameterize_value(*knot, source_start, source_end, target_start, target_end)
+                }
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Self::try_new_rational(self.degree, self.control_points.clone(), knots)
+    }
+
     /// Returns every nonempty knot span in the active curve domain.
     pub fn spans(&self) -> impl Iterator<Item = (Real, Real)> + '_ {
         self.knots
@@ -479,6 +517,38 @@ fn control_polygon_length(control_points: &[Point3]) -> Result<Real, GeometryErr
     let length = sum + correction;
     require_finite([length], "control polygon length")?;
     Ok(length)
+}
+
+fn reparameterize_value(
+    value: Real,
+    source_start: Real,
+    source_end: Real,
+    target_start: Real,
+    target_end: Real,
+) -> Result<Real, GeometryError> {
+    let source_scale = value.abs().max(source_start.abs()).max(source_end.abs());
+    debug_assert!(source_scale > 0.0);
+    let scaled_source_start = source_start / source_scale;
+    let source_span = source_end / source_scale - scaled_source_start;
+    if !source_span.is_finite() || source_span <= 0.0 {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "the source domain cannot be stably reparameterized",
+        });
+    }
+    let normalized = (value / source_scale - scaled_source_start) / source_span;
+    if !normalized.is_finite() {
+        return Err(GeometryError::NonFinite {
+            context: "NURBS reparameterized knot",
+        });
+    }
+
+    let target_scale = target_start.abs().max(target_end.abs());
+    debug_assert!(target_scale > 0.0);
+    let scaled_target_start = target_start / target_scale;
+    let scaled_target_span = target_end / target_scale - scaled_target_start;
+    let mapped = normalized.mul_add(scaled_target_span, scaled_target_start) * target_scale;
+    require_finite([mapped], "NURBS reparameterized knot")?;
+    Ok(mapped)
 }
 
 fn clamped_control_point_curve(
@@ -1227,6 +1297,48 @@ mod tests {
             assert!(Tolerance::DEFAULT.approx_eq(actual.z(), -expected.z()));
         }
         assert_eq!(reversed.reversed().unwrap(), curve);
+    }
+
+    #[test]
+    fn reparameterization_preserves_shape_and_maps_the_full_knot_vector() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(-2.0, 1.0),
+                point(0.0, 3.0),
+                point(2.0, -1.0),
+                point(4.0, 2.0),
+                point(7.0, 0.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        let mapped = curve.try_reparameterized(10.0..=16.0).unwrap();
+        assert_eq!(mapped.domain(), 10.0..=16.0);
+        assert_eq!(
+            mapped.knots(),
+            &[6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0]
+        );
+        for sample in 0..=32 {
+            let normalized = sample as Real / 32.0;
+            assert_point_near(
+                curve
+                    .evaluate(curve.parameter_at(normalized).unwrap())
+                    .unwrap(),
+                mapped
+                    .evaluate(mapped.parameter_at(normalized).unwrap())
+                    .unwrap(),
+            );
+        }
+
+        for domain in [
+            1.0..=1.0,
+            2.0..=-1.0,
+            Real::NEG_INFINITY..=1.0,
+            0.0..=Real::NAN,
+        ] {
+            assert!(mapped.try_reparameterized(domain).is_err());
+        }
     }
 
     #[test]

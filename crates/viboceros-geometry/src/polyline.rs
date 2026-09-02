@@ -304,9 +304,27 @@ impl Polyline3 {
         Self::try_new(vertices, tolerance)
     }
 
-    /// Returns the exact degree-one NURBS representation.
+    /// Returns Rhino's exact degree-one, chord-length-parameterized NURBS form.
     pub fn to_nurbs(&self) -> Result<NurbsCurve, GeometryError> {
-        NurbsCurve::try_clamped_uniform(1, self.vertices.clone())
+        let mut knots = Vec::with_capacity(self.vertices.len() + 2);
+        knots.extend([0.0, 0.0]);
+        let mut sum = 0.0;
+        let mut correction = 0.0;
+        for segment in self.segments() {
+            let length = segment.length()?;
+            let next = sum + length;
+            if sum.abs() >= length.abs() {
+                correction += (sum - next) + length;
+            } else {
+                correction += (length - next) + sum;
+            }
+            sum = next;
+            let cumulative = sum + correction;
+            require_finite([cumulative], "polyline NURBS knots")?;
+            knots.push(cumulative);
+        }
+        knots.push(*knots.last().expect("a polyline has at least one segment"));
+        NurbsCurve::try_new(1, self.vertices.clone(), knots)
     }
 }
 
@@ -837,9 +855,11 @@ mod tests {
         let curve = polyline.to_nurbs().unwrap();
         assert_eq!(curve.degree(), 1);
         assert_eq!(curve.control_points().len(), 3);
+        assert_eq!(curve.domain(), 0.0..=17.0);
+        assert_eq!(curve.knots(), &[0.0, 0.0, 5.0, 17.0, 17.0]);
         assert_eq!(curve.evaluate(0.0).unwrap(), point(-2.0, 1.0, 3.0));
-        assert_eq!(curve.evaluate(0.5).unwrap(), point(1.0, 5.0, 3.0));
-        assert_eq!(curve.evaluate(1.0).unwrap(), point(1.0, 5.0, 15.0));
+        assert_eq!(curve.evaluate(5.0).unwrap(), point(1.0, 5.0, 3.0));
+        assert_eq!(curve.evaluate(17.0).unwrap(), point(1.0, 5.0, 15.0));
 
         let reversed = polyline.reversed();
         assert_eq!(

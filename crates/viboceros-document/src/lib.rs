@@ -5,6 +5,7 @@ mod history;
 mod object_layer;
 
 use std::collections::{BTreeMap, BTreeSet};
+use std::f64::consts::TAU;
 use std::fmt;
 
 use thiserror::Error;
@@ -157,6 +158,30 @@ impl Geometry {
             Self::NurbsSurface(surface) => surface.control_point_bounds(),
             Self::Mesh(mesh) => mesh.bounds(),
         }
+    }
+
+    /// Converts a supported non-NURBS curve to Rhino's exact NURBS form.
+    ///
+    /// The returned domains match Rhino 8: lines and polylines use chord
+    /// length, circles and arcs use arc length, and ellipses use radians.
+    /// Existing NURBS geometry and non-curve objects return `None`.
+    pub fn converted_to_nurbs_curve(&self) -> Result<Option<NurbsCurve>, GeometryError> {
+        Ok(match self {
+            Self::Line(line) => Some(line.to_nurbs()?),
+            Self::Circle(circle) => Some(
+                circle
+                    .to_nurbs()?
+                    .try_reparameterized(0.0..=circle.length()?)?,
+            ),
+            Self::Arc(arc) => Some(arc.to_nurbs()?.try_reparameterized(0.0..=arc.length()?)?),
+            Self::Ellipse(ellipse) => Some(ellipse.to_nurbs()?.try_reparameterized(0.0..=TAU)?),
+            Self::Polyline(polyline) => Some(polyline.to_nurbs()?),
+            Self::Point(_)
+            | Self::PointCloud(_)
+            | Self::NurbsCurve(_)
+            | Self::NurbsSurface(_)
+            | Self::Mesh(_) => None,
+        })
     }
 
     pub fn transformed(
@@ -1473,6 +1498,97 @@ impl Document {
             return Ok(Vec::new());
         }
         self.copy_staged_object_sets(&sources, 1, staged)
+    }
+
+    /// Atomically copies replacement geometry while preserving source
+    /// attributes and appending each copy to every group containing its source.
+    /// Source selection is retained and the new objects remain unselected.
+    pub fn copy_object_geometries_into_source_groups(
+        &mut self,
+        copies: impl IntoIterator<Item = (ObjectId, Geometry)>,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
+        let copies = copies.into_iter().collect::<BTreeMap<_, _>>();
+        if let Some(missing) = copies.keys().find(|id| self.object(**id).is_none()) {
+            return Err(DocumentError::ObjectNotFound(*missing));
+        }
+
+        let mut staged = Vec::with_capacity(copies.len());
+        for (index, object) in self.objects.iter().enumerate() {
+            let Some(geometry) = copies.get(&object.id) else {
+                continue;
+            };
+            if object.attributes.locked {
+                return Err(DocumentError::ObjectLocked(object.id));
+            }
+            let layer = self
+                .layer(object.attributes.layer_id)
+                .ok_or(DocumentError::LayerNotFound(object.attributes.layer_id))?;
+            if layer.locked {
+                return Err(DocumentError::LayerLocked(layer.id));
+            }
+            staged.push((index, geometry.clone()));
+        }
+        if staged.is_empty() {
+            return Ok(Vec::new());
+        }
+
+        self.objects
+            .try_reserve_exact(staged.len())
+            .map_err(|_| DocumentError::TooManyObjectCopies)?;
+        let owns_transaction = self.history.active.is_none();
+        if owns_transaction {
+            self.begin_transaction("Copy object geometries")?;
+        }
+
+        let mut copied = Vec::with_capacity(staged.len());
+        for (source_index, geometry) in staged {
+            let source = &self.objects[source_index];
+            let source_id = source.id;
+            let attributes = source.attributes.clone();
+            let copy_id = ObjectId::new();
+            let index = self.objects.len();
+            self.objects.push(Object {
+                id: copy_id,
+                geometry,
+                attributes,
+                isolation: ObjectIsolation::None,
+            });
+            self.record_edit(
+                "Copy object geometry",
+                Edit::ObjectInserted {
+                    index,
+                    id: copy_id,
+                    stored: None,
+                },
+            );
+            copied.push((source_id, copy_id));
+        }
+
+        for (source_id, copy_id) in &copied {
+            for group_index in 0..self.groups.len() {
+                let group_id = {
+                    let group = &mut self.groups[group_index];
+                    if !group.members.contains(source_id) {
+                        continue;
+                    }
+                    let inserted = group.members.insert(*copy_id);
+                    debug_assert!(inserted, "a fresh copy cannot already be in a group");
+                    group.id
+                };
+                self.record_edit(
+                    "Copy object group membership",
+                    Edit::GroupMemberInserted {
+                        group_id,
+                        object_id: *copy_id,
+                    },
+                );
+            }
+        }
+
+        if owns_transaction {
+            self.commit_transaction()?;
+        }
+        Ok(copied.into_iter().map(|(_, copy_id)| copy_id).collect())
     }
 
     /// Atomically morphs objects in place while retaining identities,
@@ -4028,6 +4144,80 @@ mod tests {
         document.redo().unwrap();
         assert!(copies.iter().all(|id| document.object(*id).is_some()));
         assert_eq!(document.groups().len(), 2);
+    }
+
+    #[test]
+    fn geometry_copies_join_source_groups_and_retain_source_selection() {
+        let mut document = Document::default();
+        let line = LineSegment::try_new(
+            Point3::try_new(-1.0, 0.0, 2.0).unwrap(),
+            Point3::try_new(5.0, 2.0, 4.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap();
+        let source = document
+            .add_geometry_with_attributes(
+                Geometry::Line(line),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_name("Rail"),
+            )
+            .unwrap();
+        let peer = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        let pair = document
+            .add_group(Some("Pair".to_owned()), [source, peer])
+            .unwrap();
+        let overlapping = document.add_group(None, [source]).unwrap();
+        document
+            .select_objects_direct([source], SelectionMode::Replace)
+            .unwrap();
+        let converted = Geometry::Line(line)
+            .converted_to_nurbs_curve()
+            .unwrap()
+            .map(Geometry::NurbsCurve)
+            .unwrap();
+
+        let missing = ObjectId::new();
+        assert_eq!(
+            document.copy_object_geometries_into_source_groups([
+                (source, converted.clone()),
+                (missing, converted.clone()),
+            ]),
+            Err(DocumentError::ObjectNotFound(missing))
+        );
+        assert_eq!(document.objects().len(), 2);
+
+        let copies = document
+            .copy_object_geometries_into_source_groups([(source, converted)])
+            .unwrap();
+        let [copy] = copies.as_slice() else {
+            panic!("expected one geometry copy")
+        };
+        assert_eq!(document.objects().len(), 3);
+        assert_eq!(document.groups().len(), 2);
+        assert_eq!(document.group(pair).unwrap().members().len(), 3);
+        assert_eq!(document.group(overlapping).unwrap().members().len(), 2);
+        assert!(document.is_selected(source));
+        assert!(!document.is_selected(*copy));
+        assert_eq!(
+            document.object(*copy).unwrap().attributes(),
+            document.object(source).unwrap().attributes()
+        );
+        assert!(matches!(
+            document.object(*copy).unwrap().geometry(),
+            Geometry::NurbsCurve(curve) if curve.domain() == (0.0..=line.length().unwrap())
+        ));
+        assert_eq!(document.undo_label(), Some("Copy object geometries"));
+
+        document.undo().unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.group(pair).unwrap().members().len(), 2);
+        assert_eq!(document.group(overlapping).unwrap().members().len(), 1);
+        assert!(document.is_selected(source));
+        document.redo().unwrap();
+        assert!(document.object(*copy).is_some());
+        assert_eq!(document.group(pair).unwrap().members().len(), 3);
+        assert_eq!(document.group(overlapping).unwrap().members().len(), 2);
     }
 
     #[test]
