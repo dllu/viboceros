@@ -703,15 +703,32 @@ struct ParameterSpan {
     variable_speed: bool,
 }
 
-struct ArcLengthSampler<'a> {
+pub(crate) struct ArcLengthSampler<'a> {
     curve: CurveRef<'a>,
     spans: Vec<ParameterSpan>,
+    lookup_tables: Vec<Vec<ArcLengthLookupNode>>,
     total_length: Real,
     tolerance: Tolerance,
 }
 
+#[derive(Clone, Copy, Debug)]
+struct ArcLengthLookupNode {
+    parameter: Real,
+    length: Real,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct ArcLengthKink {
+    pub(crate) distance: Real,
+    pub(crate) incoming_tangent: UnitVector3,
+    pub(crate) outgoing_tangent: UnitVector3,
+}
+
 impl<'a> ArcLengthSampler<'a> {
-    fn try_new(curve: CurveRef<'a>, tolerance: Tolerance) -> Result<Self, GeometryError> {
+    pub(crate) fn try_new(
+        curve: CurveRef<'a>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let raw_spans = raw_spans(curve, tolerance)?;
         let mut spans = Vec::with_capacity(raw_spans.len());
         let mut sum = 0.0;
@@ -745,17 +762,123 @@ impl<'a> ArcLengthSampler<'a> {
         }
         Ok(Self {
             curve,
+            lookup_tables: vec![Vec::new(); spans.len()],
             spans,
             total_length,
             tolerance,
         })
     }
 
+    pub(crate) fn total_length(&self) -> Real {
+        self.total_length
+    }
+
+    pub(crate) fn natural_break_distances(&self) -> impl Iterator<Item = Real> + '_ {
+        self.spans
+            .iter()
+            .take(self.spans.len().saturating_sub(1))
+            .map(|span| span.cumulative_end)
+    }
+
+    /// Precomputes exact-integration prefix brackets that make repeated
+    /// arc-length inversions substantially cheaper. Ordinary one-shot curve
+    /// queries avoid this setup cost; adaptive algorithms opt in explicitly.
+    pub(crate) fn prepare_repeated_sampling(
+        &mut self,
+        subdivisions_per_span: usize,
+    ) -> Result<(), GeometryError> {
+        debug_assert!(subdivisions_per_span > 0);
+        let mut tables = Vec::with_capacity(self.spans.len());
+        for span in &self.spans {
+            if !span.variable_speed {
+                tables.push(Vec::new());
+                continue;
+            }
+            let mut nodes = Vec::with_capacity(subdivisions_per_span + 1);
+            nodes.push(ArcLengthLookupNode {
+                parameter: span.start,
+                length: 0.0,
+            });
+            let mut sum = 0.0;
+            let mut correction = 0.0;
+            let absolute_tolerance = numerical_distance_tolerance(span.length, self.tolerance)
+                / subdivisions_per_span as Real;
+            let mut previous = span.start;
+            for division in 1..=subdivisions_per_span {
+                let parameter = if division == subdivisions_per_span {
+                    span.end
+                } else {
+                    stable_lerp(
+                        span.start,
+                        span.end,
+                        division as Real / subdivisions_per_span as Real,
+                    )
+                };
+                let length = integrate_adaptive(
+                    previous,
+                    parameter,
+                    absolute_tolerance.max(Real::MIN_POSITIVE),
+                    self.tolerance.relative(),
+                    |value| self.speed(value),
+                )?;
+                neumaier_add(&mut sum, &mut correction, length);
+                nodes.push(ArcLengthLookupNode {
+                    parameter,
+                    length: sum + correction,
+                });
+                previous = parameter;
+            }
+            let table_length = sum + correction;
+            if !table_length.is_finite() || table_length <= 0.0 {
+                return Err(GeometryError::NumericalIntegrationDidNotConverge);
+            }
+            tables.push(nodes);
+        }
+        self.lookup_tables = tables;
+        Ok(())
+    }
+
+    /// Returns arc-length locations and one-sided tangents where adjacent
+    /// natural spans meet at an angle larger than `angle_tolerance_radians`.
+    pub(crate) fn kinks(
+        &self,
+        angle_tolerance_radians: Real,
+    ) -> Result<Vec<ArcLengthKink>, GeometryError> {
+        require_finite([angle_tolerance_radians], "curve kink angle tolerance")?;
+        if !(0.0..=std::f64::consts::PI).contains(&angle_tolerance_radians) {
+            return Err(GeometryError::InvalidCurveFitAngleTolerance);
+        }
+
+        let minimum_dot = angle_tolerance_radians.cos();
+        let roundoff = 128.0 * Real::EPSILON;
+        let mut distances = Vec::new();
+        for spans in self.spans.windows(2) {
+            let left = spans[0];
+            let right = spans[1];
+            let left_parameter = left.end.next_down().max(left.start);
+            let right_parameter = right.start.next_up().min(right.end);
+            let left_tangent = self.curve.evaluate_with_tangent(left_parameter)?.tangent();
+            let right_tangent = self.curve.evaluate_with_tangent(right_parameter)?.tangent();
+            let dot = left_tangent
+                .as_vector()
+                .dot(right_tangent.as_vector())?
+                .clamp(-1.0, 1.0);
+            if dot < minimum_dot - roundoff {
+                distances.push(ArcLengthKink {
+                    distance: left.cumulative_end,
+                    incoming_tangent: left_tangent,
+                    outgoing_tangent: right_tangent,
+                });
+            }
+        }
+        Ok(distances)
+    }
+
     fn parameter_start(&self) -> Real {
         self.spans[0].start
     }
 
-    fn point_at_distance(&self, distance: Real) -> Result<Point3, GeometryError> {
+    pub(crate) fn point_at_distance(&self, distance: Real) -> Result<Point3, GeometryError> {
         self.point_at_distance_impl(distance, None)
     }
 
@@ -811,11 +934,11 @@ impl<'a> ArcLengthSampler<'a> {
             })
             .unwrap_or_else(|| numerical_distance_tolerance(span.length, self.tolerance));
         let parameter =
-            self.parameter_at_span_distance(span, local_distance, distance_tolerance)?;
+            self.parameter_at_span_distance(span_index, span, local_distance, distance_tolerance)?;
         self.evaluate(parameter)
     }
 
-    fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
+    pub(crate) fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {
         require_finite([distance], "curve arc-length distance")?;
         if distance < 0.0 || distance > self.total_length {
             return Err(GeometryError::ArcLengthOutOfDomain {
@@ -854,23 +977,60 @@ impl<'a> ArcLengthSampler<'a> {
 
         let distance_tolerance = numerical_distance_tolerance(span.length, self.tolerance);
         let parameter =
-            self.parameter_at_span_distance(span, local_distance, distance_tolerance)?;
+            self.parameter_at_span_distance(span_index, span, local_distance, distance_tolerance)?;
         self.curve.evaluate_with_tangent(parameter)
     }
 
     fn parameter_at_span_distance(
         &self,
+        span_index: usize,
         span: ParameterSpan,
         target: Real,
         distance_tolerance: Real,
     ) -> Result<Real, GeometryError> {
-        let mut lower = span.start;
-        let mut upper = span.end;
-        let mut parameter = stable_lerp(span.start, span.end, target / span.length);
+        let table = &self.lookup_tables[span_index];
+        let inversion_target = if table.is_empty() {
+            target
+        } else {
+            let table_length = table.last().expect("a lookup table has an end").length;
+            target * (table_length / span.length)
+        };
+        let (prefix_parameter, prefix_length, mut lower, mut upper, mut parameter) =
+            if table.is_empty() {
+                (
+                    span.start,
+                    0.0,
+                    span.start,
+                    span.end,
+                    stable_lerp(span.start, span.end, target / span.length),
+                )
+            } else {
+                let upper_index = table
+                    .partition_point(|node| node.length < inversion_target)
+                    .clamp(1, table.len() - 1);
+                let lower_node = table[upper_index - 1];
+                let upper_node = table[upper_index];
+                if inversion_target == lower_node.length {
+                    return Ok(lower_node.parameter);
+                }
+                if inversion_target == upper_node.length {
+                    return Ok(upper_node.parameter);
+                }
+                let fraction = (inversion_target - lower_node.length)
+                    / (upper_node.length - lower_node.length);
+                (
+                    lower_node.parameter,
+                    lower_node.length,
+                    lower_node.parameter,
+                    upper_node.parameter,
+                    stable_lerp(lower_node.parameter, upper_node.parameter, fraction),
+                )
+            };
 
         for _ in 0..80 {
-            let length = self.partial_span_length(span, parameter, distance_tolerance)?;
-            let residual = length - target;
+            let length = prefix_length
+                + self.partial_parameter_length(prefix_parameter, parameter, distance_tolerance)?;
+            let residual = length - inversion_target;
             if residual.abs() <= distance_tolerance {
                 return Ok(parameter);
             }
@@ -895,20 +1055,17 @@ impl<'a> ArcLengthSampler<'a> {
         Err(GeometryError::NumericalIntegrationDidNotConverge)
     }
 
-    fn partial_span_length(
+    fn partial_parameter_length(
         &self,
-        span: ParameterSpan,
+        start: Real,
         parameter: Real,
         absolute_tolerance: Real,
     ) -> Result<Real, GeometryError> {
-        if parameter <= span.start {
+        if parameter <= start {
             return Ok(0.0);
         }
-        if parameter >= span.end {
-            return Ok(span.length);
-        }
         integrate_adaptive(
-            span.start,
+            start,
             parameter,
             absolute_tolerance,
             self.tolerance.relative(),

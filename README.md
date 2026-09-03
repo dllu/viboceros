@@ -36,6 +36,7 @@ InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 CurveThroughPt CurveType=Interpolated Knots=Chord Closed=No
 CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
+FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -238,8 +239,16 @@ equal-length divisions with bounded, linear-memory interpolation.
 `OutputLayer=` accepts `CurrentLayer`, `StartCrv`, or `EndCrv`; `FlipStart=Yes`
 and `FlipEnd=Yes`
 reverse either temporary source direction. `MatchMethod=Refit` is recognized
-but reports an explicit unsupported error until tolerance-driven `FitCrv`
-matching is implemented.
+but reports an explicit unsupported error until paired curves can be fitted to
+one shared control structure.
+`FitCrv` adaptively approximates every selected line, analytic curve,
+polyline, or NURBS curve with a non-rational NURBS curve of degree 1 through
+11. Output parameters approximate source arc length; endpoints, endpoint
+tangents, and polyline/NURBS kinks above `AngleTolerance` (in degrees) are
+preserved. `Tolerance` defaults to the document absolute tolerance.
+`DeleteInput=Yes` and `OutputLayer=InputObject` are the Rhino-compatible
+defaults and replace each result in place; `DeleteInput=No` retains the source,
+while `OutputLayer=CurrentLayer` puts fresh results on the current layer.
 `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
@@ -901,6 +910,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_tween_short_samples.json \
+  --absolute-epsilon 2e-12 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_fit.json \
   --absolute-epsilon 2e-12 --relative-epsilon 1e-12
 ```
 

@@ -21,7 +21,7 @@ use viboceros_geometry::{
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
     SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points,
+    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
     try_tween_nurbs_curves,
 };
 use viboceros_io::{
@@ -519,6 +519,14 @@ pub enum Operation {
         #[serde(default)]
         sample_number: Option<usize>,
     },
+    CurveFitGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        degree: usize,
+        fit_tolerance: f64,
+        #[serde(default)]
+        angle_tolerance_radians: Option<f64>,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -778,6 +786,7 @@ impl Operation {
             | Self::Catenary { id, .. }
             | Self::CurveThroughGeometry { id, .. }
             | Self::CurveTweenGeometry { id, .. }
+            | Self::CurveFitGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2535,6 +2544,26 @@ fn execute(
                 }),
                 elapsed,
             )
+        }
+        Operation::CurveFitGeometry {
+            curve,
+            degree,
+            fit_tolerance,
+            angle_tolerance_radians,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let angle_tolerance = angle_tolerance_radians.unwrap_or(tolerance.angular());
+            let (curve, elapsed) = measure(iterations, || {
+                try_fit_curve(
+                    CurveRef::NurbsCurve(&source),
+                    black_box(*degree),
+                    black_box(*fit_tolerance),
+                    black_box(angle_tolerance),
+                    tolerance,
+                )
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
         }
         Operation::Paraboloid {
             origin,
@@ -7474,6 +7503,45 @@ mod tests {
         assert_eq!(
             curves[1]["control_points"][0]["point"],
             json!([0.0, 6.0, 2.0])
+        );
+    }
+
+    #[test]
+    fn captures_arc_length_curve_fit_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::CurveFitGeometry {
+            id: "fit-line".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: vec![
+                    ControlPoint {
+                        point: [0.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                    ControlPoint {
+                        point: [10.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                ],
+                knots: vec![0.0, 0.0, 10.0, 10.0],
+                domain: None,
+            },
+            degree: 3,
+            fit_tolerance: 0.001,
+            angle_tolerance_radians: Some(0.1),
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 3);
+        assert_eq!(curve["domain"], json!([0.0, 10.0]));
+        assert_eq!(
+            curve["knots"],
+            json!([0.0, 0.0, 0.0, 0.0, 10.0, 10.0, 10.0, 10.0])
+        );
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 4);
+        assert_eq!(
+            curve["control_points"][1]["point"],
+            json!([10.0 / 3.0, 0.0, 0.0])
         );
     }
 

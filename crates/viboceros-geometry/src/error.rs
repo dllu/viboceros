@@ -152,6 +152,27 @@ pub enum GeometryError {
     #[error("curve tween refit matching is not yet supported")]
     UnsupportedCurveTweenRefit,
 
+    #[error("curve fit degree must be from 1 through {maximum}, got {actual}")]
+    InvalidCurveFitDegree { actual: usize, maximum: usize },
+
+    #[error("curve fit tolerance must be finite and strictly positive")]
+    InvalidCurveFitTolerance,
+
+    #[error("curve fit angle tolerance must be finite and lie in [0, pi]")]
+    InvalidCurveFitAngleTolerance,
+
+    #[error("curve fit requires more than the maximum of {maximum} control points")]
+    TooManyCurveFitControlPoints { maximum: usize },
+
+    #[error(
+        "curve fit did not reach tolerance {tolerance} before the {maximum}-control-point limit; sampled deviation is {deviation}"
+    )]
+    CurveFitDidNotConverge {
+        tolerance: Real,
+        deviation: Real,
+        maximum: usize,
+    },
+
     #[error("curve-through degree must be from 1 through {maximum}, got {actual}")]
     InvalidCurveThroughDegree { actual: usize, maximum: usize },
 

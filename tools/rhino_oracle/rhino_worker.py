@@ -378,6 +378,27 @@ def _nurbs_curve_definition(curve):
         nurbs.Dispose()
 
 
+def _nurbs_curve_from_definition(definition):
+    degree = int(definition["degree"])
+    controls = definition["control_points"]
+    curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+    try:
+        _set_curve_controls(curve, controls)
+        _set_knots(curve.Knots, definition["knots"], "curve knot")
+        domain = definition.get("domain")
+        if domain is not None:
+            curve.Domain = Rhino.Geometry.Interval(
+                _finite(domain[0], "curve domain"),
+                _finite(domain[1], "curve domain"),
+            )
+        if not curve.IsValid:
+            raise ValueError("NURBS curve definition is invalid")
+        return curve
+    except Exception:
+        curve.Dispose()
+        raise
+
+
 def _nurbs_surface_definition(surface):
     nurbs = surface.ToNurbsSurface()
     if nurbs is None:
@@ -5492,63 +5513,70 @@ def _execute(operation, iterations, tolerance):
 
     if kind == "curve_tween_geometry":
         curves = []
-        for curve_name in ("start_curve", "end_curve"):
-            definition = operation[curve_name]
-            degree = int(definition["degree"])
-            controls = definition["control_points"]
-            curve = Rhino.Geometry.NurbsCurve(
-                3, True, degree + 1, len(controls)
-            )
-            _set_curve_controls(curve, controls)
-            _set_knots(curve.Knots, definition["knots"], "curve knot")
-            domain = definition.get("domain")
-            if domain is not None:
-                curve.Domain = Rhino.Geometry.Interval(
-                    _finite(domain[0], "curve domain"),
-                    _finite(domain[1], "curve domain"),
-                )
-            if not curve.IsValid:
-                raise ValueError("tween source NURBS curve is invalid")
-            curves.append(curve)
-
-        method = operation["method"]
-        num_curves = int(operation["number"])
-        num_samples = int(operation.get("sample_number", 100))
-
-        def create_tween_curves():
-            if method == "control_point":
-                result = Rhino.Geometry.Curve.CreateTweenCurves(
-                    curves[0], curves[1], num_curves, tolerance["absolute"]
-                )
-            elif method == "refit":
-                result = Rhino.Geometry.Curve.CreateTweenCurvesWithMatching(
-                    curves[0], curves[1], num_curves, tolerance["absolute"]
-                )
-            elif method == "sample_points":
-                result = Rhino.Geometry.Curve.CreateTweenCurvesWithSampling(
-                    curves[0],
-                    curves[1],
-                    num_curves,
-                    num_samples,
-                    tolerance["absolute"],
-                )
-            else:
-                raise ValueError("unknown curve tween method")
-            if result is None:
-                raise ValueError("Rhino curve tween returned no result")
-            try:
-                return {
-                    "curves": [_nurbs_curve_definition(curve) for curve in result]
-                }
-            finally:
-                for curve in result:
-                    curve.Dispose()
-
         try:
+            for curve_name in ("start_curve", "end_curve"):
+                curves.append(_nurbs_curve_from_definition(operation[curve_name]))
+
+            method = operation["method"]
+            num_curves = int(operation["number"])
+            num_samples = int(operation.get("sample_number", 100))
+
+            def create_tween_curves():
+                if method == "control_point":
+                    result = Rhino.Geometry.Curve.CreateTweenCurves(
+                        curves[0], curves[1], num_curves, tolerance["absolute"]
+                    )
+                elif method == "refit":
+                    result = Rhino.Geometry.Curve.CreateTweenCurvesWithMatching(
+                        curves[0], curves[1], num_curves, tolerance["absolute"]
+                    )
+                elif method == "sample_points":
+                    result = Rhino.Geometry.Curve.CreateTweenCurvesWithSampling(
+                        curves[0],
+                        curves[1],
+                        num_curves,
+                        num_samples,
+                        tolerance["absolute"],
+                    )
+                else:
+                    raise ValueError("unknown curve tween method")
+                if result is None:
+                    raise ValueError("Rhino curve tween returned no result")
+                try:
+                    return {
+                        "curves": [_nurbs_curve_definition(curve) for curve in result]
+                    }
+                finally:
+                    for curve in result:
+                        curve.Dispose()
+
             return _measure(iterations, create_tween_curves)
         finally:
             for curve in curves:
                 curve.Dispose()
+
+    if kind == "curve_fit_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        degree = int(operation["degree"])
+        fit_tolerance = _finite(operation["fit_tolerance"], "curve fit tolerance")
+        angle_tolerance = _finite(
+            operation.get("angle_tolerance_radians", tolerance["angular"]),
+            "curve fit angle tolerance",
+        )
+
+        def fit_curve():
+            result = curve.Fit(degree, fit_tolerance, angle_tolerance)
+            if result is None:
+                raise ValueError("Rhino curve fit returned no result")
+            try:
+                return _nurbs_curve_definition(result)
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, fit_curve)
+        finally:
+            curve.Dispose()
 
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc

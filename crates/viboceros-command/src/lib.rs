@@ -13,8 +13,8 @@ use viboceros_geometry::{
     CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction, CurveTweenMatchMethod,
     DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
     GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
-    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT,
-    MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
+    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE, MAX_CURVE_THROUGH_DEGREE,
+    MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
     MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
     MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
     MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
@@ -23,7 +23,8 @@ use viboceros_geometry::{
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
     SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
-    sort_and_cull_points, try_catenary, try_curve_through_points, try_tween_nurbs_curves,
+    sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
+    try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -105,6 +106,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(TweenCurvesCommand)
+            .expect("unique built-in command");
+        registry
+            .register(FitCurveCommand)
             .expect("unique built-in command");
         registry
             .register(SrfPtCommand)
@@ -1559,6 +1563,190 @@ fn parse_tween_curves_options(arguments: &[&str]) -> Result<TweenCurvesOptions, 
         output_layer,
         flip_start,
         flip_end,
+    })
+}
+
+const FIT_CURVE_USAGE: &str = "FitCrv [Degree=1..11] [Tolerance=value] [AngleTolerance=degrees] [DeleteInput=Yes|No] [OutputLayer=CurrentLayer|InputObject]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum FitCurveOutputLayer {
+    Current,
+    Input,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct FitCurveOptions {
+    degree: usize,
+    fit_tolerance: Option<Real>,
+    angle_tolerance_radians: Option<Real>,
+    delete_input: bool,
+    output_layer: FitCurveOutputLayer,
+}
+
+struct FitCurveCommand;
+
+impl Command for FitCurveCommand {
+    fn name(&self) -> &'static str {
+        "FitCrv"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["FitCurve"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_fit_curve_options(arguments)?;
+        let tolerance = document.tolerance();
+        let fit_tolerance = options.fit_tolerance.unwrap_or(tolerance.absolute());
+        let angle_tolerance = options
+            .angle_tolerance_radians
+            .unwrap_or(tolerance.angular());
+        let sources = document
+            .selected_objects()
+            .filter_map(|object| {
+                geometry_curve_ref(object.geometry()).map(|_| {
+                    (
+                        object.id(),
+                        object.geometry().clone(),
+                        object.attributes().layer_id(),
+                    )
+                })
+            })
+            .collect::<Vec<_>>();
+        if sources.is_empty() {
+            return Err(CommandError::NoFitCurves);
+        }
+
+        let fitted = sources
+            .iter()
+            .map(|(id, geometry, layer)| {
+                let source = geometry_curve_ref(geometry).expect("fit source is a curve");
+                try_fit_curve(
+                    source,
+                    options.degree,
+                    fit_tolerance,
+                    angle_tolerance,
+                    tolerance,
+                )
+                .map(|curve| (*id, *layer, curve))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let curve_count = fitted.len();
+
+        if options.delete_input && options.output_layer == FitCurveOutputLayer::Input {
+            document.replace_object_geometries(
+                fitted
+                    .into_iter()
+                    .map(|(id, _, curve)| (id, Geometry::NurbsCurve(curve))),
+            )?;
+        } else {
+            if options.delete_input {
+                for (id, _, _) in &fitted {
+                    document.delete_object(*id)?;
+                }
+            }
+            let current_layer = document.current_layer_id();
+            for (_, input_layer, curve) in fitted {
+                let layer = match options.output_layer {
+                    FitCurveOutputLayer::Current => current_layer,
+                    FitCurveOutputLayer::Input => input_layer,
+                };
+                document.add_geometry_with_attributes(
+                    Geometry::NurbsCurve(curve),
+                    ObjectAttributes::on_layer(layer),
+                )?;
+            }
+        }
+
+        Ok(format!(
+            "Fitted {curve_count} curve(s) as non-rational degree-{} NURBS within tolerance {fit_tolerance:.12}, {} the input(s) on the {} layer",
+            options.degree,
+            if options.delete_input {
+                "replacing"
+            } else {
+                "retaining"
+            },
+            match options.output_layer {
+                FitCurveOutputLayer::Current => "current",
+                FitCurveOutputLayer::Input => "input-object",
+            }
+        ))
+    }
+}
+
+fn parse_fit_curve_options(arguments: &[&str]) -> Result<FitCurveOptions, CommandError> {
+    let mut degree = 3;
+    let mut fit_tolerance = None;
+    let mut angle_tolerance_radians = None;
+    let mut delete_input = true;
+    let mut output_layer = FitCurveOutputLayer::Input;
+    let mut degree_seen = false;
+    let mut tolerance_seen = false;
+    let mut angle_seen = false;
+    let mut delete_seen = false;
+    let mut output_seen = false;
+
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(FIT_CURVE_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Degree") && !degree_seen {
+            degree = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            degree_seen = true;
+        } else if option_name_eq(name, "Tolerance") && !tolerance_seen {
+            let value = parse_finite_real(value)?;
+            if value <= 0.0 {
+                return Err(GeometryError::InvalidCurveFitTolerance.into());
+            }
+            fit_tolerance = Some(value);
+            tolerance_seen = true;
+        } else if (option_name_eq(name, "Angle") || option_name_eq(name, "AngleTolerance"))
+            && !angle_seen
+        {
+            let degrees = parse_finite_real(value)?;
+            if !(0.0..=180.0).contains(&degrees) {
+                return Err(GeometryError::InvalidCurveFitAngleTolerance.into());
+            }
+            angle_tolerance_radians = Some(degrees.to_radians());
+            angle_seen = true;
+        } else if option_name_eq(name, "DeleteInput") && !delete_seen {
+            delete_input = parse_yes_no(value).ok_or(CommandError::Usage(FIT_CURVE_USAGE))?;
+            delete_seen = true;
+        } else if option_name_eq(name, "OutputLayer") && !output_seen {
+            output_layer = if value.eq_ignore_ascii_case("Current")
+                || value.eq_ignore_ascii_case("CurrentLayer")
+            {
+                FitCurveOutputLayer::Current
+            } else if value.eq_ignore_ascii_case("Input")
+                || value.eq_ignore_ascii_case("InputObject")
+                || value.eq_ignore_ascii_case("InputObjects")
+            {
+                FitCurveOutputLayer::Input
+            } else {
+                return Err(CommandError::Usage(FIT_CURVE_USAGE));
+            };
+            output_seen = true;
+        } else {
+            return Err(CommandError::Usage(FIT_CURVE_USAGE));
+        }
+    }
+
+    if degree == 0 || degree > MAX_CURVE_FIT_DEGREE {
+        return Err(GeometryError::InvalidCurveFitDegree {
+            actual: degree,
+            maximum: MAX_CURVE_FIT_DEGREE,
+        }
+        .into());
+    }
+    Ok(FitCurveOptions {
+        degree,
+        fit_tolerance,
+        angle_tolerance_radians,
+        delete_input,
+        output_layer,
     })
 }
 
@@ -16471,6 +16659,9 @@ pub enum CommandError {
     #[error("TweenCurves requires exactly two selected curves, got {actual}")]
     TweenCurvesRequiresTwoCurves { actual: usize },
 
+    #[error("FitCrv requires at least one selected curve")]
+    NoFitCurves,
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -16958,7 +17149,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -26079,6 +26270,163 @@ mod tests {
         ));
         assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn fit_curve_adds_arc_length_parameterized_output_on_the_input_layer() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let input_layer = document
+            .add_layer("Fit source", ColorRgb::new(20, 40, 60))
+            .unwrap();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(input_layer).with_name("source"),
+            )
+            .unwrap();
+        document
+            .select_objects([source_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "FitCrv Degree=3 Tolerance=0.001 DeleteInput=No OutputLayer=InputObject",
+                )
+                .unwrap(),
+            "Fitted 1 curve(s) as non-rational degree-3 NURBS within tolerance 0.001000000000, retaining the input(s) on the input-object layer"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert!(matches!(
+            document.object(source_id).unwrap().geometry(),
+            Geometry::Line(_)
+        ));
+        assert!(document.is_selected(source_id));
+        let output = document.objects().last().unwrap();
+        assert_eq!(output.attributes().layer_id(), input_layer);
+        assert!(!document.is_selected(output.id()));
+        let Geometry::NurbsCurve(curve) = output.geometry() else {
+            panic!("FitCrv must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(curve.domain(), 0.0..=10.0);
+        assert!(!curve.is_rational());
+        assert_eq!(curve.control_points().len(), 4);
+        assert_eq!(document.undo_label(), Some("FitCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.is_selected(source_id));
+    }
+
+    #[test]
+    fn fit_curve_can_replace_a_kinked_input_without_losing_identity_or_attributes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let input_layer = document
+            .add_layer("Kinked", ColorRgb::new(70, 80, 90))
+            .unwrap();
+        let source = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 5.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            ],
+            document.tolerance(),
+        )
+        .unwrap();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::Polyline(source),
+                ObjectAttributes::on_layer(input_layer).with_name("square"),
+            )
+            .unwrap();
+        document
+            .select_objects([source_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "FitCurve Tolerance=0.01 AngleTolerance=5")
+            .unwrap();
+        assert_eq!(document.objects().len(), 1);
+        let output = document.object(source_id).unwrap();
+        assert_eq!(output.attributes().layer_id(), input_layer);
+        assert_eq!(output.attributes().name(), Some("square"));
+        assert!(document.is_selected(source_id));
+        let Geometry::NurbsCurve(curve) = output.geometry() else {
+            panic!("FitCrv replacement must be a NURBS curve")
+        };
+        assert_eq!(curve.control_points().len(), 13);
+        assert!(curve.is_closed().unwrap());
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert!(matches!(
+            document.object(source_id).unwrap().geometry(),
+            Geometry::Polyline(_)
+        ));
+    }
+
+    #[test]
+    fn fit_curve_rejects_invalid_options_and_missing_curve_selection_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([point_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "FitCrv"),
+            Err(CommandError::NoFitCurves)
+        ));
+
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects([line_id], SelectionMode::Replace)
+            .unwrap();
+        for command in [
+            "FitCrv Degree=0",
+            "FitCrv Degree=12",
+            "FitCrv Degree=nope",
+            "FitCrv Tolerance=0",
+            "FitCrv Tolerance=-1",
+            "FitCrv AngleTolerance=-1",
+            "FitCrv AngleTolerance=181",
+            "FitCrv DeleteInput=Maybe",
+            "FitCrv OutputLayer=Other",
+            "FitCrv Degree=3 Degree=4",
+            "FitCrv extra",
+        ] {
+            let object_count = document.objects().len();
+            let history = document.undo_label().map(str::to_owned);
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), object_count, "{command}");
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
     }
 
     #[test]

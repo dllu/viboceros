@@ -1,0 +1,38 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_fit_geometry",
+      "id": "line-degree-3",
+      "degree": 3,
+      "fit_tolerance": 0.001,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 10, 10]
+      }
+    },
+    {
+      "op": "curve_fit_geometry",
+      "id": "closed-square-preserve-kinks",
+      "degree": 3,
+      "fit_tolerance": 0.01,
+      "angle_tolerance_radians": 0.1,
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [5, 0, 0]},
+          {"point": [5, 5, 0]},
+          {"point": [0, 5, 0]},
+          {"point": [0, 0, 0]}
+        ],
+        "knots": [0, 0, 5, 10, 15, 20, 20]
+      }
+    }
+  ]
+}
