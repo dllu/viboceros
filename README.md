@@ -37,6 +37,7 @@ CurveThroughPt CurveType=Interpolated Knots=Chord Closed=No
 CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
+Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -238,8 +239,8 @@ the counts differ. `MatchMethod=SamplePoints` supports 2 through 9999
 equal-length divisions with bounded, linear-memory interpolation.
 `OutputLayer=` accepts `CurrentLayer`, `StartCrv`, or `EndCrv`; `FlipStart=Yes`
 and `FlipEnd=Yes`
-reverse either temporary source direction. `MatchMethod=Refit` is recognized
-adaptively rebuilds both sources as non-rational cubics on one bounded shared
+reverse either temporary source direction. `MatchMethod=Refit` adaptively
+rebuilds both sources as non-rational cubics on one bounded shared
 structure, retaining source-span boundaries and qualifying kinks while meeting
 the document tolerance before their corresponding controls are blended.
 `FitCrv` adaptively approximates every selected line, analytic curve,
@@ -250,6 +251,14 @@ preserved. `Tolerance` defaults to the document absolute tolerance.
 `DeleteInput=Yes` and `OutputLayer=InputObject` are the Rhino-compatible
 defaults and replace each result in place; `DeleteInput=No` retains the source,
 while `OutputLayer=CurrentLayer` puts fresh results on the current layer.
+`Rebuild` reconstructs selected curves as uniform, non-rational NURBS curves
+with a fixed `PointCount` (default 10) and `Degree` from 1 through 11 (default
+3). Open results are clamped and closed results use Rhino-compatible periodic
+structure; both interpolate equal-arc-length source stations. Positive point
+counts below the structural minimum are raised automatically, as in Rhino.
+`PreserveTangents=Yes` aligns eligible open-curve end handles. The
+`DeleteInput` and `OutputLayer` options follow `FitCrv`; surface rebuilding is
+not yet represented.
 `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`

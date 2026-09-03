@@ -5578,6 +5578,29 @@ def _execute(operation, iterations, tolerance):
         finally:
             curve.Dispose()
 
+    if kind == "curve_rebuild_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        degree = int(operation["degree"])
+        point_count = int(operation["point_count"])
+        preserve_tangents = bool(operation.get("preserve_tangents", False))
+
+        def rebuild_curve():
+            result = curve.Rebuild(point_count, degree, preserve_tangents)
+            if result is None:
+                raise ValueError("Rhino curve rebuild returned no result")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, rebuild_curve)
+        finally:
+            curve.Dispose()
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

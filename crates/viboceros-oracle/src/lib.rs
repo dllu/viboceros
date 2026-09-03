@@ -22,7 +22,7 @@ use viboceros_geometry::{
     NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
     SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
     join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
-    try_tween_nurbs_curves,
+    try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -527,6 +527,14 @@ pub enum Operation {
         #[serde(default)]
         angle_tolerance_radians: Option<f64>,
     },
+    CurveRebuildGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        degree: usize,
+        point_count: usize,
+        #[serde(default)]
+        preserve_tangents: bool,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -787,6 +795,7 @@ impl Operation {
             | Self::CurveThroughGeometry { id, .. }
             | Self::CurveTweenGeometry { id, .. }
             | Self::CurveFitGeometry { id, .. }
+            | Self::CurveRebuildGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2564,6 +2573,25 @@ fn execute(
                 )
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
+        }
+        Operation::CurveRebuildGeometry {
+            curve,
+            degree,
+            point_count,
+            preserve_tangents,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                try_rebuild_curve(
+                    CurveRef::NurbsCurve(&source),
+                    black_box(*point_count),
+                    black_box(*degree),
+                    black_box(*preserve_tangents),
+                    tolerance,
+                )
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
         Operation::Paraboloid {
             origin,
@@ -5696,6 +5724,20 @@ fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
     })
 }
 
+fn rebuilt_curve_definition_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {
+    Ok(json!({
+        "closed": curve.is_closed()?,
+        "control_points": curve.control_points().iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": curve.degree(),
+        "domain": [*curve.domain().start(), *curve.domain().end()],
+        "knots": curve.knots(),
+        "periodic": curve.is_periodic(),
+    }))
+}
+
 fn curve_through_definition_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {
     let knots = curve.knots();
     Ok(json!({
@@ -7543,6 +7585,43 @@ mod tests {
             curve["control_points"][1]["point"],
             json!([10.0 / 3.0, 0.0, 0.0])
         );
+    }
+
+    #[test]
+    fn captures_fixed_count_curve_rebuild_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::CurveRebuildGeometry {
+            id: "rebuild-line".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: vec![
+                    ControlPoint {
+                        point: [0.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                    ControlPoint {
+                        point: [10.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                ],
+                knots: vec![2.0, 2.0, 12.0, 12.0],
+                domain: None,
+            },
+            degree: 3,
+            point_count: 6,
+            preserve_tangents: false,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 3);
+        assert_eq!(curve["domain"], json!([0.0, 3.0]));
+        assert_eq!(curve["closed"], false);
+        assert_eq!(curve["periodic"], false);
+        assert_eq!(
+            curve["knots"],
+            json!([0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0])
+        );
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 6);
     }
 
     #[test]

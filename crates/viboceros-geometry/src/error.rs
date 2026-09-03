@@ -179,6 +179,19 @@ pub enum GeometryError {
         maximum: usize,
     },
 
+    #[error("curve rebuild degree must be from 1 through {maximum}, got {actual}")]
+    InvalidCurveRebuildDegree { actual: usize, maximum: usize },
+
+    #[error("curve rebuild point count must be from {minimum} through {maximum}, got {actual}")]
+    InvalidCurveRebuildPointCount {
+        actual: usize,
+        minimum: usize,
+        maximum: usize,
+    },
+
+    #[error("curve rebuild interpolation system could not be solved reliably")]
+    CurveRebuildSolveFailed,
+
     #[error("curve-through degree must be from 1 through {maximum}, got {actual}")]
     InvalidCurveThroughDegree { actual: usize, maximum: usize },
 
