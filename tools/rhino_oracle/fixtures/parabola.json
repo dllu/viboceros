@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "parabola",
+      "id": "full-world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height": 1,
+      "half": false
+    },
+    {
+      "op": "parabola",
+      "id": "half-offset",
+      "origin": [1, -2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 3,
+      "height": 2.25,
+      "half": true
+    },
+    {
+      "op": "parabola",
+      "id": "full-oblique",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radius": 4,
+      "height": 2,
+      "half": false
+    },
+    {
+      "op": "parabola",
+      "id": "half-steep",
+      "origin": [-5, 2, 9],
+      "x_axis": [0, 0, 1],
+      "y_axis": [1, 0, 0],
+      "radius": 2,
+      "height": 4,
+      "half": true
+    },
+    {
+      "op": "parabola",
+      "id": "full-shallow",
+      "origin": [3, 4, -2],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, -1, 0],
+      "radius": 5,
+      "height": 0.25,
+      "half": false
+    }
+  ]
+}

@@ -349,6 +349,30 @@ def _mesh_to_nurb_brep_value(brep):
     }
 
 
+def _nurbs_curve_definition(curve):
+    nurbs = curve.ToNurbsCurve()
+    if nurbs is None:
+        raise ValueError("could not convert curve to NURBS form")
+    try:
+        knots = [float(nurbs.Knots[0])]
+        knots.extend(float(nurbs.Knots[index]) for index in range(nurbs.Knots.Count))
+        knots.append(float(nurbs.Knots[nurbs.Knots.Count - 1]))
+        return {
+            "control_points": [
+                {
+                    "point": _xyz(nurbs.Points[index].Location),
+                    "weight": float(nurbs.Points[index].Weight),
+                }
+                for index in range(nurbs.Points.Count)
+            ],
+            "degree": int(nurbs.Degree),
+            "domain": [float(nurbs.Domain.T0), float(nurbs.Domain.T1)],
+            "knots": knots,
+        }
+    finally:
+        nurbs.Dispose()
+
+
 def _nurbs_surface_definition(surface):
     nurbs = surface.ToNurbsSurface()
     if nurbs is None:
@@ -5056,6 +5080,60 @@ def _execute(operation, iterations, tolerance):
                     document.Objects.Delete(obj.Id, True)
 
         return _measure(iterations, create_mesh_truncated_cone)
+
+    if kind == "parabola":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        radius = _finite(operation["radius"], "parabola radius")
+        height = _finite(operation["height"], "parabola height")
+        if not radius > 0.0 or not height > 0.0:
+            raise ValueError("parabola dimensions must be positive")
+        focal_distance = 0.25 * radius * (radius / height)
+        if math.isnan(focal_distance) or math.isinf(focal_distance):
+            raise ValueError("parabola focal distance must be finite")
+        half = bool(operation["half"])
+        command = (
+            "_-Parabola _Vertex _MarkFocus=_No _Half=_%s "
+            "0,0,0 0,0,%.17g %.17g,0,0"
+            % ("Yes" if half else "No", focal_distance, radius)
+        )
+
+        def create_parabola():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "parabola macro %r returned %r and created %d objects; "
+                        "history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Curve):
+                    curve = geometry.DuplicateCurve()
+                if curve is None:
+                    raise ValueError("parabola did not create curve geometry")
+                if not curve.Transform(transform):
+                    raise ValueError("could not orient parabola")
+                return _nurbs_curve_definition(curve)
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_parabola)
 
     if kind == "paraboloid":
         document = Rhino.RhinoDoc.ActiveDoc

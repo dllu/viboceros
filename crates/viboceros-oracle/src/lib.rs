@@ -424,6 +424,15 @@ pub enum Operation {
         height: f64,
         solid: bool,
     },
+    Parabola {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        height: f64,
+        half: bool,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -610,6 +619,7 @@ impl Operation {
             | Self::MeshCone { id, .. }
             | Self::MeshTruncatedCone { id, .. }
             | Self::TruncatedCone { id, .. }
+            | Self::Parabola { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -1994,6 +2004,31 @@ fn execute(
                 }
             })?;
             (value, elapsed)
+        }
+        Operation::Parabola {
+            origin,
+            x_axis,
+            y_axis,
+            radius,
+            height,
+            half,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (curve, elapsed) = measure(iterations, || {
+                NurbsCurve::try_parabola(
+                    frame,
+                    black_box(*radius),
+                    black_box(*height),
+                    black_box(*half),
+                )
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
         }
         Operation::Paraboloid {
             origin,
@@ -5100,6 +5135,18 @@ fn nurbs_surface_definition_value(surface: &NurbsSurface) -> Value {
     })
 }
 
+fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
+    json!({
+        "control_points": curve.control_points().iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": curve.degree(),
+        "domain": [*curve.domain().start(), *curve.domain().end()],
+        "knots": curve.knots(),
+    })
+}
+
 fn mesh_to_nurb_brep_value(brep: &Brep) -> Result<Value, GeometryError> {
     let faces = brep
         .faces()
@@ -6484,6 +6531,54 @@ mod tests {
                 .map(|trim| trim["type"].as_str().unwrap())
                 .collect::<Vec<_>>(),
             vec!["Mated", "Seam", "Mated", "Seam"]
+        );
+    }
+
+    #[test]
+    fn captures_exact_parabola_curve_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::Parabola {
+                id: "full-parabola".to_owned(),
+                origin: [0.0, 0.0, 0.0],
+                x_axis: [1.0, 0.0, 0.0],
+                y_axis: [0.0, 1.0, 0.0],
+                radius: 2.0,
+                height: 1.0,
+                half: false,
+            },
+            Operation::Parabola {
+                id: "half-parabola".to_owned(),
+                origin: [1.0, 2.0, 3.0],
+                x_axis: [0.0, 1.0, 0.0],
+                y_axis: [-1.0, 0.0, 0.0],
+                radius: 2.0,
+                height: 1.0,
+                half: true,
+            },
+        ]))
+        .unwrap();
+
+        let full = &response.results[0].value;
+        assert_eq!(full["degree"], 2);
+        assert_eq!(full["domain"], json!([0.0, 1.0]));
+        assert_eq!(full["knots"], json!([0.0, 0.0, 0.0, 1.0, 1.0, 1.0]));
+        assert_eq!(
+            full["control_points"],
+            json!([
+                {"point": [-2.0, 0.0, 1.0], "weight": 1.0},
+                {"point": [0.0, 0.0, -1.0], "weight": 1.0},
+                {"point": [2.0, 0.0, 1.0], "weight": 1.0},
+            ])
+        );
+
+        let half = &response.results[1].value;
+        assert_eq!(
+            half["control_points"],
+            json!([
+                {"point": [1.0, 2.0, 3.0], "weight": 1.0},
+                {"point": [1.0, 3.0, 3.0], "weight": 1.0},
+                {"point": [1.0, 4.0, 4.0], "weight": 1.0},
+            ])
         );
     }
 

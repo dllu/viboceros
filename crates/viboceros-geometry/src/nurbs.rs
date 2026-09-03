@@ -1,8 +1,8 @@
 use std::ops::RangeInclusive;
 
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, Point3, Polyline3, Real, Tolerance, Vector3,
-    integration::integrate_adaptive, require_finite,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Polyline3, Real, Tolerance,
+    Vector3, integration::integrate_adaptive, require_finite,
 };
 
 // OpenNURBS uses these fixed coordinate tolerances for Curve::IsClosed.
@@ -94,6 +94,43 @@ impl NurbsCurve {
             knots,
             rational,
         })
+    }
+
+    /// Constructs Rhino's exact quadratic parabola NURBS curve.
+    ///
+    /// The frame origin is the vertex, frame Z is the opening direction, and
+    /// frame X points toward the picked positive endpoint. The full form runs
+    /// from the mirrored negative endpoint to the positive endpoint; `half`
+    /// runs from the vertex to the positive endpoint. Both use Rhino's
+    /// normalized `[0, 1]` parameter domain.
+    pub fn try_parabola(
+        vertex_frame: Frame3,
+        radius: Real,
+        height: Real,
+        half: bool,
+    ) -> Result<Self, GeometryError> {
+        require_finite([radius, height], "parabola dimensions")?;
+        if radius <= 0.0 || height <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "parabola",
+            });
+        }
+        let vertex = vertex_frame.origin();
+        let point = |radial: Real, axial: Real| {
+            vertex
+                .translated(vertex_frame.x_axis().as_vector().scaled(radial)?)?
+                .translated(vertex_frame.z_axis().as_vector().scaled(axial)?)
+        };
+        let controls = if half {
+            vec![vertex, point(0.5 * radius, 0.0)?, point(radius, height)?]
+        } else {
+            vec![
+                point(-radius, height)?,
+                point(0.0, -height)?,
+                point(radius, height)?,
+            ]
+        };
+        Self::try_new(2, controls, vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
     }
 
     /// Constructs an open, clamped, uniformly spaced non-rational curve.
@@ -1467,6 +1504,71 @@ mod tests {
             curve.derivative_at(0.25).unwrap(),
             Vector3::try_new(2.0, 4.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn parabola_matches_rhino_full_and_half_quadratic_layouts() {
+        let frame = Frame3::try_from_directions(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let full = NurbsCurve::try_parabola(frame, 2.0, 1.0, false).unwrap();
+        assert_eq!(full.degree(), 2);
+        assert!(!full.is_rational());
+        assert_eq!(full.domain(), 0.0..=1.0);
+        assert_eq!(full.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+        assert_eq!(
+            full.control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                Point3::try_new(1.0, 0.0, 4.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 2.0).unwrap(),
+                Point3::try_new(1.0, 4.0, 4.0).unwrap(),
+            ]
+        );
+        assert_eq!(full.evaluate(0.5).unwrap(), frame.origin());
+
+        let half = NurbsCurve::try_parabola(frame, 2.0, 1.0, true).unwrap();
+        assert_eq!(
+            half.control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Point3::try_new(1.0, 3.0, 3.0).unwrap(),
+                Point3::try_new(1.0, 4.0, 4.0).unwrap(),
+            ]
+        );
+        for parameter in [0.0, 0.125, 0.5, 1.0] {
+            assert_point_near(
+                half.evaluate(parameter).unwrap(),
+                Point3::try_new(1.0, 2.0 + 2.0 * parameter, 3.0 + parameter * parameter).unwrap(),
+            );
+        }
+
+        assert!(matches!(
+            NurbsCurve::try_parabola(frame, 0.0, 1.0, false),
+            Err(GeometryError::Degenerate {
+                context: "parabola"
+            })
+        ));
+        assert!(matches!(
+            NurbsCurve::try_parabola(frame, 1.0, -1.0, true),
+            Err(GeometryError::Degenerate {
+                context: "parabola"
+            })
+        ));
+        assert!(matches!(
+            NurbsCurve::try_parabola(frame, f64::INFINITY, 1.0, false),
+            Err(GeometryError::NonFinite { .. })
+        ));
     }
 
     #[test]

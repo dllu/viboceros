@@ -58,6 +58,7 @@ Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
+Parabola Vertex 0,0,0 0,0,1 4,0,0 Half=No MarkFocus=Yes
 Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
@@ -477,6 +478,10 @@ a closed B-rep; `Solid=No` retains the single open wall surface.
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
 wall with a weighted collapsed apex. `Solid=Yes` adds an exact polar-disk base
 and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
+`Parabola` supports Rhino's default `Focus focus direction-point end-point` and
+`Vertex vertex focus end-point` constructions. It creates the exact normalized
+quadratic NURBS curve, projects the picked end point perpendicular to the focus
+axis in vertex mode, and supports `Half=Yes` and `MarkFocus=Yes`.
 `Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
 `Vertex vertex focus end-point` constructions; `Focus` is the default. The
 vertex form projects the end point perpendicular to the focus axis and derives
