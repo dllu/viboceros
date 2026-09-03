@@ -81,6 +81,9 @@ pub enum GeometryError {
     #[error("a NURBS surface extension interval must be finite, increasing, and extend its domain")]
     InvalidSurfaceExtensionInterval,
 
+    #[error("surface extension length must be finite and strictly positive")]
+    InvalidSurfaceExtensionLength,
+
     #[error("a surface must be open in {direction} before it can be extended in that direction")]
     SurfaceExtensionDirectionMustBeOpen { direction: &'static str },
 

@@ -189,6 +189,7 @@ SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
 ExtendSrf Direction=U Domain=-1,2 Type=Smooth Merge=Yes
+ExtendSrf Edge=East Distance=3 Type=Smooth Merge=Yes
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -794,12 +795,15 @@ explicitly; other extension styles, boundary objects, and separate extension
 segments remain future work. Analytic curves and polylines are promoted to
 exact NURBS form, while identity, attributes, groups, selection, and undo are
 preserved.
-`ExtendSrf Direction=U|V Domain=start,end` performs the matching exact analytic
-extension on one selected untrimmed NURBS surface. `Type=Smooth` and
-`Merge=Yes` are the currently supported Rhino options. Rational tensor
-structure, the other parameter direction, identity, attributes, groups,
-selection, and undo are preserved; edge-picked surface-distance extension,
-linear output, shrinking, and separate patches remain future work.
+`ExtendSrf Edge=West|South|East|North Distance=value` performs Rhino's smooth
+physical-distance extension on one selected untrimmed NURBS surface. Its exact
+parameter scaling includes Rhino's homogeneous-control-curve RMS convention,
+including rational weights and non-clamped ends. `Direction=U|V
+Domain=start,end` exposes the corresponding analytic-domain operation.
+`Type=Smooth` and `Merge=Yes` are the currently supported options. Tensor
+structure, identity, attributes, groups, selection, and undo are preserved;
+viewport edge picking, linear output, shrinking, and separate patches remain
+future work.
 `SubCrv start_point end_point` replaces one selected curve with the exact
 directed portion between the closest curve locations; omit both points for two
 viewport picks, or use `Parameter=start,end` for exact parameters. Reversing
@@ -1119,6 +1123,12 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/reparameterize_automatic.json \
   --relative-epsilon 1e-8
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_extend.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_extend_length.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_subcurve.json

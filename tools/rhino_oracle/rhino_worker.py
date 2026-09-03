@@ -6145,6 +6145,62 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "surface_extend_length_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        edge_name = str(operation["edge"]).lower()
+        edges = {
+            "west": Rhino.Geometry.IsoStatus.West,
+            "south": Rhino.Geometry.IsoStatus.South,
+            "east": Rhino.Geometry.IsoStatus.East,
+            "north": Rhino.Geometry.IsoStatus.North,
+        }
+        if edge_name not in edges:
+            raise ValueError("surface extension edge must be west, south, east, or north")
+        length = _finite(operation["length"], "surface extension length")
+        smooth = bool(operation.get("smooth", True))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface length-extension source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface length-extension source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def extend_surface_by_length():
+            result = source.Extend(edges[edge_name], length, smooth)
+            if result is None:
+                raise ValueError("Rhino surface length extension failed")
+            try:
+                nurbs = result.ToNurbsSurface()
+                if nurbs is None:
+                    raise ValueError("surface length extension returned no NURBS surface")
+                try:
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extend_surface_by_length)
+        finally:
+            source.Dispose()
+
     if kind == "surface_direction_edit_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

@@ -19,10 +19,10 @@ use viboceros_geometry::{
     CurveThroughConstruction, CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment,
     MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
-    SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    WeightedPoint3, join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points,
-    try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceExtensionEdge,
+    SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, WeightedPoint3, join_polylines, sort_and_cull_points, try_catenary,
+    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -723,6 +723,20 @@ pub enum Operation {
         direction: SurfaceKnotAxis,
         domain: [f64; 2],
     },
+    SurfaceExtendLengthGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        edge: SurfaceExtensionBoundary,
+        length: f64,
+        #[serde(default = "default_true")]
+        smooth: bool,
+    },
     SurfaceInsertKnotGeometry {
         id: String,
         degree_u: usize,
@@ -994,6 +1008,26 @@ pub enum SurfaceKnotAxis {
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
+pub enum SurfaceExtensionBoundary {
+    West,
+    South,
+    East,
+    North,
+}
+
+impl SurfaceExtensionBoundary {
+    const fn geometry(self) -> SurfaceExtensionEdge {
+        match self {
+            Self::West => SurfaceExtensionEdge::West,
+            Self::South => SurfaceExtensionEdge::South,
+            Self::East => SurfaceExtensionEdge::East,
+            Self::North => SurfaceExtensionEdge::North,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum SurfaceDirectionEdit {
     UReverse,
     VReverse,
@@ -1129,6 +1163,7 @@ impl Operation {
             | Self::SurfaceChangeSeamGeometry { id, .. }
             | Self::SurfaceReparameterizeGeometry { id, .. }
             | Self::SurfaceExtendGeometry { id, .. }
+            | Self::SurfaceExtendLengthGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
             | Self::SurfaceRemoveControlPointGeometry { id, .. }
@@ -3341,6 +3376,38 @@ fn execute(
                 SurfaceKnotAxis::V => {
                     source.try_extended_v(black_box(domain[0])..=black_box(domain[1]))
                 }
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceExtendLengthGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            edge,
+            length,
+            smooth,
+            ..
+        } => {
+            if !smooth {
+                return Err(ProbeError::FixtureInvariant(
+                    "only smooth surface length extension is implemented",
+                ));
+            }
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_extended_by_length(edge.geometry(), black_box(*length))
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8821,6 +8888,38 @@ mod tests {
             surface["control_points"][1]["point"],
             json!([6.0, 0.0, 2.0])
         );
+    }
+
+    #[test]
+    fn captures_natural_surface_length_extension_geometry() {
+        let response = run_request(&request(vec![Operation::SurfaceExtendLengthGeometry {
+            id: "extend-trapezoid-east".to_owned(),
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                [0.0, 10.0, 0.0],
+                [20.0, 10.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            edge: SurfaceExtensionBoundary::East,
+            length: 3.0,
+            smooth: true,
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        let expected_end = 1.0 + 3.0 / 250.0_f64.sqrt();
+        assert!((surface["domain_u"][1].as_f64().unwrap() - expected_end).abs() < 1.0e-14);
+        assert_eq!(surface["domain_v"], json!([0.0, 1.0]));
+        assert_eq!(surface["control_count"], json!([2, 2]));
     }
 
     #[test]

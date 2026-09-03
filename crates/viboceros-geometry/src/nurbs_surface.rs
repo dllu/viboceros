@@ -37,6 +37,15 @@ pub enum SurfaceKnotDirection {
     Both,
 }
 
+/// Natural edge selected by a physical-length surface extension.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SurfaceExtensionEdge {
+    West,
+    South,
+    East,
+    North,
+}
+
 impl SurfaceKnotDirection {
     const fn includes_u(self) -> bool {
         matches!(self, Self::U | Self::Both)
@@ -2144,6 +2153,72 @@ impl NurbsSurface {
         self.map_v_control_curves(|curve| curve.try_extended_control_curve_to(interval.clone()))
     }
 
+    /// Naturally extends one edge by Rhino's physical-length convention.
+    ///
+    /// Rhino converts model length to a parameter delta with the root mean
+    /// square of the selected-end homogeneous speeds of every control curve
+    /// normal to the edge. The resulting shared parameter interval is then
+    /// extended analytically, preserving the original tensor surface on its
+    /// domain.
+    pub fn try_extended_by_length(
+        &self,
+        edge: SurfaceExtensionEdge,
+        length: Real,
+    ) -> Result<Self, GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidSurfaceExtensionLength);
+        }
+
+        match edge {
+            SurfaceExtensionEdge::West | SurfaceExtensionEdge::East => {
+                if self.is_closed_u()? {
+                    return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen {
+                        direction: "U",
+                    });
+                }
+                let domain = self.domain_u();
+                let at_start = edge == SurfaceExtensionEdge::West;
+                let endpoint = if at_start {
+                    *domain.start()
+                } else {
+                    *domain.end()
+                };
+                let parameter_delta =
+                    length / self.control_curve_boundary_rms_speed(true, endpoint)?;
+                require_finite([parameter_delta], "surface extension parameter delta")?;
+                let interval = if at_start {
+                    endpoint - parameter_delta..=*domain.end()
+                } else {
+                    *domain.start()..=endpoint + parameter_delta
+                };
+                self.try_extended_u(interval)
+            }
+            SurfaceExtensionEdge::South | SurfaceExtensionEdge::North => {
+                if self.is_closed_v()? {
+                    return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen {
+                        direction: "V",
+                    });
+                }
+                let domain = self.domain_v();
+                let at_start = edge == SurfaceExtensionEdge::South;
+                let endpoint = if at_start {
+                    *domain.start()
+                } else {
+                    *domain.end()
+                };
+                let parameter_delta =
+                    length / self.control_curve_boundary_rms_speed(false, endpoint)?;
+                require_finite([parameter_delta], "surface extension parameter delta")?;
+                let interval = if at_start {
+                    endpoint - parameter_delta..=*domain.end()
+                } else {
+                    *domain.start()..=endpoint + parameter_delta
+                };
+                self.try_extended_v(interval)
+            }
+        }
+    }
+
     /// Returns whether the natural U direction closes without a border.
     pub fn is_closed_u(&self) -> Result<bool, GeometryError> {
         if self.is_periodic_u() {
@@ -3251,6 +3326,62 @@ impl NurbsSurface {
         )
     }
 
+    fn control_curve_boundary_rms_speed(
+        &self,
+        in_u: bool,
+        endpoint: Real,
+    ) -> Result<Real, GeometryError> {
+        let mut speeds = Vec::with_capacity(if in_u {
+            self.control_point_count_v
+        } else {
+            self.control_point_count_u
+        });
+        if in_u {
+            for row in self.control_points.chunks_exact(self.control_point_count_u) {
+                speeds.push(homogeneous_curve_derivative_length(
+                    self.degree_u,
+                    row,
+                    &self.knots_u,
+                    endpoint,
+                )?);
+            }
+        } else {
+            for u in 0..self.control_point_count_u {
+                let column = (0..self.control_point_count_v)
+                    .map(|v| self.control_points[self.control_index(u, v)])
+                    .collect::<Vec<_>>();
+                speeds.push(homogeneous_curve_derivative_length(
+                    self.degree_v,
+                    &column,
+                    &self.knots_v,
+                    endpoint,
+                )?);
+            }
+        }
+
+        let largest = speeds.iter().copied().fold(0.0_f64, Real::max);
+        if largest == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "surface extension edge speed",
+            });
+        }
+        let scaled_square_sum = speeds
+            .into_iter()
+            .map(|speed| {
+                let scaled = speed / largest;
+                scaled * scaled
+            })
+            .sum::<Real>();
+        let count = if in_u {
+            self.control_point_count_v
+        } else {
+            self.control_point_count_u
+        };
+        let rms = largest * (scaled_square_sum / count as Real).sqrt();
+        require_finite([rms], "surface extension edge speed")?;
+        Ok(rms)
+    }
+
     fn map_v_control_curves(
         &self,
         mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, GeometryError>,
@@ -4007,6 +4138,57 @@ fn project_derivative(
         (-point[coordinate]).mul_add(weight_derivative, derivative[coordinate]) / weight
     });
     Vector3::try_from(projected)
+}
+
+fn homogeneous_curve_derivative_length(
+    degree: usize,
+    controls: &[WeightedPoint3],
+    knots: &[Real],
+    parameter: Real,
+) -> Result<Real, GeometryError> {
+    let span = checked_span(degree, controls.len(), knots, parameter)?;
+    let first_control = span - degree;
+    let mut active = Vec::with_capacity(degree + 1);
+    for control in &controls[first_control..=span] {
+        let point = control.point();
+        let weight = control.weight();
+        let homogeneous = [
+            point.x() * weight,
+            point.y() * weight,
+            point.z() * weight,
+            weight,
+        ];
+        require_finite(homogeneous, "homogeneous surface control curve")?;
+        active.push(homogeneous);
+    }
+
+    let mut derivative_controls = Vec::with_capacity(degree);
+    for local_index in 0..degree {
+        let control_index = first_control + local_index;
+        let mut derivative = [0.0; 4];
+        for coordinate in 0..4 {
+            derivative[coordinate] = stable_divided_difference(
+                active[local_index + 1][coordinate],
+                active[local_index][coordinate],
+                degree,
+                knots[control_index + 1],
+                knots[control_index + degree + 1],
+            )?;
+        }
+        derivative_controls.push(derivative);
+    }
+    let derivative = de_boor(
+        &knots[1..knots.len() - 1],
+        degree - 1,
+        span - 1,
+        parameter,
+        derivative_controls,
+    )?;
+    let length = derivative
+        .into_iter()
+        .fold(0.0_f64, |length, coordinate| length.hypot(coordinate));
+    require_finite([length], "homogeneous surface control-curve derivative")?;
+    Ok(length)
 }
 
 fn checked_span(
@@ -7618,6 +7800,146 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn natural_surface_length_extension_uses_boundary_control_curve_rms_speed() {
+        let surface = NurbsSurface::try_new(
+            1,
+            2,
+            2,
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 5.0, 0.0),
+                point(100.0, 5.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(10.0, 10.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = surface
+            .try_extended_by_length(SurfaceExtensionEdge::East, 2.0)
+            .unwrap();
+        let expected_end = 1.0 + 2.0 / 3400.0_f64.sqrt();
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain_u().end(), expected_end));
+        assert_eq!(extended.domain_v(), surface.domain_v());
+        for u in [0.0, 0.25, 0.75, 1.0] {
+            for v in [0.0, 0.2, 0.5, 0.9, 1.0] {
+                assert_point_near(
+                    extended.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn natural_surface_length_extension_respects_edge_and_parameter_scale() {
+        let surface = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(2.0, 10.0, 0.0),
+                point(20.0, 10.0, 0.0),
+            ],
+            vec![2.0, 2.0, 2.0, 5.0, 5.0, 5.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+
+        let west = surface
+            .try_extended_by_length(SurfaceExtensionEdge::West, 2.0)
+            .unwrap();
+        let west_speed = (10.0_f64 / 9.0).sqrt();
+        assert!(Tolerance::DEFAULT.approx_eq(*west.domain_u().start(), 2.0 - 2.0 / west_speed));
+        let east = surface
+            .try_extended_by_length(SurfaceExtensionEdge::East, 2.0)
+            .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(*east.domain_u().end(), 5.0 + 2.0 / 90.0_f64.sqrt()));
+    }
+
+    #[test]
+    fn natural_surface_length_extension_measures_homogeneous_weight_derivatives() {
+        let controls = [
+            ([0.0, 0.0, 0.0], 0.5),
+            ([2.0, -0.4, 0.0], 0.7),
+            ([4.0, -0.8, 0.0], 0.9),
+            ([6.0, -1.2, 0.0], 1.1),
+            ([0.25, 1.5, 0.0], 0.9),
+            ([2.25, 1.1, 0.3], 1.1),
+            ([4.25, 0.7, 0.6], 1.3),
+            ([6.25, 0.3, 0.9], 1.5),
+        ]
+        .into_iter()
+        .map(|(coordinates, weight)| {
+            WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+        })
+        .collect();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            4,
+            2,
+            controls,
+            vec![0.0, 0.0, 0.0, 0.7, 2.0, 2.0, 2.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = surface
+            .try_extended_by_length(SurfaceExtensionEdge::East, 1.25)
+            .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain_u().end(), 2.230_739_147_208_702));
+    }
+
+    #[test]
+    fn natural_surface_length_extension_rejects_invalid_and_degenerate_requests() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(0.0, 2.0, 1.0),
+            point(2.0, 2.0, 1.0),
+        ])
+        .unwrap();
+        for length in [0.0, -1.0, Real::NAN, Real::INFINITY] {
+            assert_eq!(
+                surface.try_extended_by_length(SurfaceExtensionEdge::East, length),
+                Err(GeometryError::InvalidSurfaceExtensionLength)
+            );
+        }
+
+        let collapsed_u = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(2.0, 2.0, 0.0),
+                point(2.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(
+            collapsed_u.try_extended_by_length(SurfaceExtensionEdge::East, 1.0),
+            Err(GeometryError::Degenerate {
+                context: "surface extension edge speed"
+            })
+        );
     }
 
     #[test]
