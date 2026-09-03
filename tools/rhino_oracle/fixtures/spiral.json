@@ -41,6 +41,16 @@
       "height": 4,
       "turns": 1.25,
       "radii": [0, -3]
+    },
+    {
+      "op": "spiral",
+      "id": "flat-world-z",
+      "origin": [2, -3, 5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "height": 0,
+      "turns": 2,
+      "radii": [1, 4]
     }
   ]
 }

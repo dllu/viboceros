@@ -502,9 +502,10 @@ modes. Each branch is one exact normalized rational quadratic span;
 `ShowAsymptotes=Yes` is accepted as a preview-only option.
 `Helix` creates a non-rational uniform cubic along an explicit axis. Numeric or
 picked radii, arbitrary axis directions, fractional `Turns=`, `Mode=Pitch`,
-and `ReverseTwist=Yes` are supported. `Spiral` extends the same straight-axis
-workflow with independent numeric or picked start and end radii; `Flat` and
-`AroundCurve` are not implemented yet. The linear-time tridiagonal constructor
+and `ReverseTwist=Yes` are supported. `Spiral` extends the same workflow with
+independent numeric or picked start and end radii. `Flat` creates a planar
+spiral with an optional `Axis=` normal; `AroundCurve` is not implemented yet.
+The linear-time tridiagonal constructor
 uses Rhino's 24-span density for long forward constant-radius helices and 36
 spans otherwise, interpolates every analytic sample, and has a one-million-
 control resource ceiling. Its C2 endpoint rule differs from Rhino's legacy C1

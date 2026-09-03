@@ -2550,7 +2550,7 @@ const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-poi
 const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point | Conic Apex start apex end rho-or-through-point | Conic start Apex apex end rho-or-through-point";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
-const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
+const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
@@ -2737,9 +2737,14 @@ struct HelixCommandOptions {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+enum SpiralAxis {
+    Segment { start: Point3, end: Point3 },
+    Flat { center: Point3, normal: Vector3 },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct SpiralCommandOptions {
-    axis_start: Point3,
-    axis_end: Point3,
+    axis: SpiralAxis,
     radii: [AxialPrimitiveRadius; 2],
     advance: SpiralAdvance,
     reverse_twist: bool,
@@ -3577,6 +3582,46 @@ fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, Comman
 }
 
 fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, CommandError> {
+    if arguments.first().is_some_and(|argument| {
+        argument
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("Flat")
+    }) {
+        let (center, center_consumed) = parse_point(&arguments[1..])?;
+        let radius_start = 1 + center_consumed;
+        let remaining = &arguments[radius_start..];
+        let positional_count = remaining
+            .iter()
+            .take_while(|argument| !argument.contains('='))
+            .count();
+        let radii = parse_spiral_radii(&remaining[..positional_count], SPIRAL_USAGE)?;
+        let mut normal = Vector3::try_new(0.0, 0.0, 1.0)?;
+        let mut axis_seen = false;
+        let mut advance_arguments = Vec::new();
+        for argument in &remaining[positional_count..] {
+            if let Some((name, value)) = argument.split_once('=')
+                && option_name_eq(name, "Axis")
+                && !axis_seen
+            {
+                normal = parse_axis_option(value.trim_start_matches('_'), SPIRAL_USAGE)?;
+                axis_seen = true;
+            } else {
+                advance_arguments.push(*argument);
+            }
+        }
+        let (advance, reverse_twist) =
+            parse_spiral_advance_options(&advance_arguments, SPIRAL_USAGE)?;
+        if !matches!(advance, SpiralAdvance::Turns(_)) {
+            return Err(CommandError::Usage(SPIRAL_USAGE));
+        }
+        return Ok(SpiralCommandOptions {
+            axis: SpiralAxis::Flat { center, normal },
+            radii,
+            advance,
+            reverse_twist,
+        });
+    }
+
     let (axis_start, start_consumed) = parse_point(arguments)?;
     let (axis_end, end_consumed) = parse_point(&arguments[start_consumed..])?;
     let radius_start = start_consumed + end_consumed;
@@ -3589,8 +3634,10 @@ fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, Comm
     let (advance, reverse_twist) =
         parse_spiral_advance_options(&remaining[positional_count..], SPIRAL_USAGE)?;
     Ok(SpiralCommandOptions {
-        axis_start,
-        axis_end,
+        axis: SpiralAxis::Segment {
+            start: axis_start,
+            end: axis_end,
+        },
         radii,
         advance,
         reverse_twist,
@@ -5207,11 +5254,17 @@ impl Command for SpiralCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_spiral_options(arguments)?;
         let tolerance = document.tolerance();
-        let axis = options.axis_start.vector_to(options.axis_end)?;
-        let height = axis.length()?;
+        let (axis_start, axis_end, axis, height) = match options.axis {
+            SpiralAxis::Segment { start, end } => {
+                let axis = start.vector_to(end)?;
+                let height = axis.length()?;
+                (start, end, axis, height)
+            }
+            SpiralAxis::Flat { center, normal } => (center, center, normal, 0.0),
+        };
         let (frame, start_radius) =
-            axial_primitive_frame(options.axis_start, options.radii[0], axis, tolerance)?;
-        let end_radius = axial_primitive_radius_value(options.axis_end, options.radii[1], frame)?;
+            axial_primitive_frame(axis_start, options.radii[0], axis, tolerance)?;
+        let end_radius = axial_primitive_radius_value(axis_end, options.radii[1], frame)?;
         if start_radius < 0.0 || end_radius < 0.0 {
             return Err(GeometryError::InvalidSpiralDimensions.into());
         }
@@ -18002,6 +18055,46 @@ mod tests {
         assert_eq!(space_point.control_points().len(), 75);
         registry.execute(&mut document, "Undo").unwrap();
 
+        registry
+            .execute(
+                &mut document,
+                "Spiral Flat 0,0,0 1,0,0 0,4,0 Turns=1 ReverseTwist=Yes",
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(flat) = document.objects().next().unwrap().geometry() else {
+            panic!("Flat must create a planar NURBS spiral")
+        };
+        assert_eq!(flat.control_points().len(), 39);
+        assert_eq!(flat.domain(), 0.0..=1.0);
+        assert!(
+            flat.control_points()
+                .iter()
+                .all(|control| { control.point().z().abs() < 2.0e-12 })
+        );
+        assert!(
+            flat.evaluate(0.5)
+                .unwrap()
+                .distance_to(Point3::try_new(-2.5, 0.0, 0.0).unwrap())
+                .unwrap()
+                < 2.0e-12
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Spiral Flat 1,2,3 2 5 Turns=1 Axis=0,1,0")
+            .unwrap();
+        let Geometry::NurbsCurve(oriented_flat) = document.objects().next().unwrap().geometry()
+        else {
+            panic!("Flat Axis must orient the spiral plane")
+        };
+        assert!(
+            oriented_flat
+                .control_points()
+                .iter()
+                .all(|control| (control.point().y() - 2.0).abs() < 2.0e-12)
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
         for invalid in [
             "Spiral",
             "Spiral 0,0,0 0,0,0 1 2 Turns=3",
@@ -18017,6 +18110,11 @@ mod tests {
             "Spiral 0,0,0 0,0,6 1 2 ReverseTwist=Maybe",
             "Spiral 0,0,0 0,0,6 1 2 Flat=Yes",
             "Spiral 0,0,0 0,0,6 1 2 AroundCurve=1",
+            "Spiral Flat",
+            "Spiral Flat 0,0,0 1 2 Pitch=1",
+            "Spiral Flat 0,0,0 1 2 Mode=Pitch Pitch=1",
+            "Spiral Flat 0,0,0 1 2 Axis=0,0,0",
+            "Spiral Flat 0,0,0 1 2 Axis=0,0,1 Axis=0,1,0",
         ] {
             assert!(
                 registry.execute(&mut document, invalid).is_err(),
