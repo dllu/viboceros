@@ -239,8 +239,9 @@ equal-length divisions with bounded, linear-memory interpolation.
 `OutputLayer=` accepts `CurrentLayer`, `StartCrv`, or `EndCrv`; `FlipStart=Yes`
 and `FlipEnd=Yes`
 reverse either temporary source direction. `MatchMethod=Refit` is recognized
-but reports an explicit unsupported error until paired curves can be fitted to
-one shared control structure.
+adaptively rebuilds both sources as non-rational cubics on one bounded shared
+structure, retaining source-span boundaries and qualifying kinks while meeting
+the document tolerance before their corresponding controls are blended.
 `FitCrv` adaptively approximates every selected line, analytic curve,
 polyline, or NURBS curve with a non-rational NURBS curve of degree 1 through
 11. Output parameters approximate source arc length; endpoints, endpoint

@@ -111,6 +111,27 @@
         ],
         "knots": [0, 0, 0, 0, 1, 1, 1, 1]
       }
+    },
+    {
+      "op": "curve_tween_geometry",
+      "id": "refitted-lines-different-degree-domain",
+      "method": "refit",
+      "number": 1,
+      "start_curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 10, 10]
+      },
+      "end_curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 6, 0]}, {"point": [3.333333333333333, 6, 0]},
+          {"point": [6.666666666666667, 6, 0]}, {"point": [10, 6, 0]}
+        ],
+        "knots": [2, 2, 2, 2, 12, 12, 12, 12]
+      }
     }
   ]
 }

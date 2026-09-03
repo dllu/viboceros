@@ -149,8 +149,14 @@ pub enum GeometryError {
     #[error("curve tween would create more than {maximum} output control points")]
     TooManyCurveTweenControlPoints { maximum: usize },
 
-    #[error("curve tween refit matching is not yet supported")]
-    UnsupportedCurveTweenRefit,
+    #[error(
+        "curve tween refit did not reach tolerance {tolerance} before the {maximum}-control-point limit; sampled deviation is {deviation}"
+    )]
+    CurveTweenRefitDidNotConverge {
+        tolerance: Real,
+        deviation: Real,
+        maximum: usize,
+    },
 
     #[error("curve fit degree must be from 1 through {maximum}, got {actual}")]
     InvalidCurveFitDegree { actual: usize, maximum: usize },

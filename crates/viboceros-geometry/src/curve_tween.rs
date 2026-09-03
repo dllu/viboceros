@@ -1,6 +1,7 @@
 use crate::{
     CurveInterpolationOptions, CurveKnotSpacing, CurveRef, GeometryError, InterpolatedCurveClosure,
-    NurbsCurve, Point3, Real, Tolerance, WeightedPoint3, require_finite,
+    NurbsCurve, Point3, Real, Tolerance, UnitVector3, Vector3, WeightedPoint3,
+    curve::ArcLengthSampler, require_finite,
 };
 
 /// Resource ceiling for the number of curves created by one tween operation.
@@ -8,6 +9,10 @@ pub const MAX_CURVE_TWEEN_COUNT: usize = 1_000_000;
 
 /// Allocation guard across every output curve's control points.
 pub const MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS: usize = 1_000_000;
+
+/// Per-source ceiling for adaptive refit matching. The aggregate output is
+/// also bounded by [`MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS`].
+pub const MAX_CURVE_TWEEN_REFIT_CONTROL_POINTS: usize = 16_384;
 
 /// Smallest sampling division count accepted by Rhino's `TweenCurves` command.
 pub const MIN_CURVE_TWEEN_SAMPLE_NUMBER: usize = 2;
@@ -21,8 +26,7 @@ pub enum CurveTweenMatchMethod {
     /// Connect corresponding Euclidean control locations and weights. Extra
     /// locations connect to the final location of the shorter curve.
     ControlPoint,
-    /// Refit both sources to a shared non-rational structure. This method is
-    /// recognized but currently reports an explicit unsupported error.
+    /// Refit both sources to a shared non-rational cubic structure.
     Refit,
     /// Divide each source into this many equal-length segments, interpolate
     /// each sampled source, then tween the resulting control structures.
@@ -44,7 +48,7 @@ pub fn try_tween_nurbs_curves(
     validate_tween_count(number)?;
     match method {
         CurveTweenMatchMethod::ControlPoint => tween_control_points(start, end, number),
-        CurveTweenMatchMethod::Refit => Err(GeometryError::UnsupportedCurveTweenRefit),
+        CurveTweenMatchMethod::Refit => tween_refitted(start, end, number, tolerance),
         CurveTweenMatchMethod::SamplePoints { sample_number } => {
             validate_sample_number(sample_number)?;
             let maximum_points = MAX_CURVE_TWEEN_SAMPLE_NUMBER + 1;
@@ -63,6 +67,271 @@ pub fn try_tween_nurbs_curves(
             tween_control_points(&sampled_start, &sampled_end, number)
         }
     }
+}
+
+const REFIT_DEGREE: usize = 3;
+const REFIT_ERROR_SAMPLES_PER_SPAN: usize = 16;
+
+#[derive(Clone, Copy, Debug)]
+struct NormalizedKink {
+    parameter: Real,
+    incoming_tangent: UnitVector3,
+    outgoing_tangent: UnitVector3,
+}
+
+struct RefitSource<'a> {
+    sampler: ArcLengthSampler<'a>,
+    kinks: Vec<NormalizedKink>,
+}
+
+#[derive(Clone, Copy)]
+enum SampleSide {
+    Incoming,
+    Outgoing,
+}
+
+#[derive(Clone, Copy)]
+struct RefitSample {
+    point: Point3,
+    derivative: Vector3,
+}
+
+impl<'a> RefitSource<'a> {
+    fn try_new(curve: &'a NurbsCurve, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        let mut sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(curve), tolerance)?;
+        sampler.prepare_repeated_sampling(32)?;
+        let length = sampler.total_length();
+        let kinks = sampler
+            .kinks(tolerance.angular())?
+            .into_iter()
+            .map(|kink| NormalizedKink {
+                parameter: kink.distance / length,
+                incoming_tangent: kink.incoming_tangent,
+                outgoing_tangent: kink.outgoing_tangent,
+            })
+            .collect();
+        Ok(Self { sampler, kinks })
+    }
+
+    fn natural_break_parameters(&self) -> impl Iterator<Item = Real> + '_ {
+        let length = self.sampler.total_length();
+        self.sampler
+            .natural_break_distances()
+            .map(move |distance| distance / length)
+    }
+
+    fn point_at(&self, parameter: Real) -> Result<Point3, GeometryError> {
+        self.sampler
+            .point_at_distance(normalized_distance(parameter, self.sampler.total_length()))
+    }
+
+    fn sample_at(&self, parameter: Real, side: SampleSide) -> Result<RefitSample, GeometryError> {
+        let distance = normalized_distance(parameter, self.sampler.total_length());
+        let point = self.sampler.point_at_distance(distance)?;
+        let tangent = if let Some(kink) = self.kinks.iter().find(|kink| kink.parameter == parameter)
+        {
+            match side {
+                SampleSide::Incoming => kink.incoming_tangent,
+                SampleSide::Outgoing => kink.outgoing_tangent,
+            }
+        } else {
+            self.sampler.sample_at_distance(distance)?.tangent()
+        };
+        Ok(RefitSample {
+            point,
+            derivative: tangent.as_vector().scaled(self.sampler.total_length())?,
+        })
+    }
+}
+
+fn normalized_distance(parameter: Real, length: Real) -> Real {
+    if parameter == 1.0 {
+        length
+    } else {
+        parameter * length
+    }
+}
+
+fn tween_refitted(
+    start: &NurbsCurve,
+    end: &NurbsCurve,
+    number: usize,
+    tolerance: Tolerance,
+) -> Result<Vec<NurbsCurve>, GeometryError> {
+    let start = RefitSource::try_new(start, tolerance)?;
+    let end = RefitSource::try_new(end, tolerance)?;
+    let per_curve_limit =
+        MAX_CURVE_TWEEN_REFIT_CONTROL_POINTS.min(MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS / number);
+    if per_curve_limit < REFIT_DEGREE + 1 {
+        return Err(GeometryError::TooManyCurveTweenControlPoints {
+            maximum: MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS,
+        });
+    }
+
+    let mut breaks = start
+        .natural_break_parameters()
+        .chain(end.natural_break_parameters())
+        .filter(|parameter| *parameter > 0.0 && *parameter < 1.0)
+        .collect::<Vec<_>>();
+    breaks.sort_by(Real::total_cmp);
+    breaks.dedup();
+
+    loop {
+        let control_count = refit_control_count(breaks.len())?;
+        if control_count > per_curve_limit {
+            return Err(GeometryError::TooManyCurveTweenControlPoints {
+                maximum: MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS,
+            });
+        }
+        let errors = refit_span_errors(&start, &end, &breaks)?;
+        let maximum_deviation = errors
+            .iter()
+            .map(|error| error.deviation)
+            .fold(0.0_f64, Real::max);
+        if maximum_deviation <= tolerance.absolute() {
+            let start = build_refit_curve(&start, &breaks)?;
+            let end = build_refit_curve(&end, &breaks)?;
+            return tween_control_points(&start, &end, number);
+        }
+
+        let available_breaks = (per_curve_limit - control_count) / REFIT_DEGREE;
+        if available_breaks == 0 {
+            return Err(GeometryError::CurveTweenRefitDidNotConverge {
+                tolerance: tolerance.absolute(),
+                deviation: maximum_deviation,
+                maximum: per_curve_limit,
+            });
+        }
+        let mut refinements = errors
+            .into_iter()
+            .filter(|error| error.deviation > tolerance.absolute())
+            .collect::<Vec<_>>();
+        refinements.sort_by(|left, right| right.deviation.total_cmp(&left.deviation));
+        refinements.truncate(available_breaks);
+        refinements.sort_by(|left, right| left.parameter.total_cmp(&right.parameter));
+        let previous_len = breaks.len();
+        for refinement in refinements {
+            match breaks.binary_search_by(|parameter| parameter.total_cmp(&refinement.parameter)) {
+                Ok(_) => {}
+                Err(index) => breaks.insert(index, refinement.parameter),
+            }
+        }
+        if breaks.len() == previous_len {
+            return Err(GeometryError::CurveTweenRefitDidNotConverge {
+                tolerance: tolerance.absolute(),
+                deviation: maximum_deviation,
+                maximum: per_curve_limit,
+            });
+        }
+    }
+}
+
+fn refit_control_count(internal_break_count: usize) -> Result<usize, GeometryError> {
+    internal_break_count
+        .checked_mul(REFIT_DEGREE)
+        .and_then(|count| count.checked_add(REFIT_DEGREE + 1))
+        .ok_or(GeometryError::TooManyCurveTweenControlPoints {
+            maximum: MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS,
+        })
+}
+
+fn refit_boundaries(breaks: &[Real]) -> Vec<Real> {
+    let mut boundaries = Vec::with_capacity(breaks.len() + 2);
+    boundaries.push(0.0);
+    boundaries.extend_from_slice(breaks);
+    boundaries.push(1.0);
+    boundaries
+}
+
+fn refit_segment_controls(
+    source: &RefitSource<'_>,
+    start_parameter: Real,
+    end_parameter: Real,
+) -> Result<[Point3; 4], GeometryError> {
+    let start = source.sample_at(start_parameter, SampleSide::Outgoing)?;
+    let end = source.sample_at(end_parameter, SampleSide::Incoming)?;
+    let handle_scale = (end_parameter - start_parameter) / REFIT_DEGREE as Real;
+    Ok([
+        start.point,
+        start
+            .point
+            .translated(start.derivative.scaled(handle_scale)?)?,
+        end.point
+            .translated(end.derivative.scaled(-handle_scale)?)?,
+        end.point,
+    ])
+}
+
+#[derive(Clone, Copy, Debug)]
+struct RefitSpanError {
+    deviation: Real,
+    parameter: Real,
+}
+
+fn refit_span_errors(
+    start: &RefitSource<'_>,
+    end: &RefitSource<'_>,
+    breaks: &[Real],
+) -> Result<Vec<RefitSpanError>, GeometryError> {
+    refit_boundaries(breaks)
+        .windows(2)
+        .map(|interval| {
+            let start_controls = refit_segment_controls(start, interval[0], interval[1])?;
+            let end_controls = refit_segment_controls(end, interval[0], interval[1])?;
+            let mut largest = RefitSpanError {
+                deviation: 0.0,
+                parameter: 0.5 * interval[0] + 0.5 * interval[1],
+            };
+            for sample_index in 1..REFIT_ERROR_SAMPLES_PER_SPAN {
+                let fraction = sample_index as Real / REFIT_ERROR_SAMPLES_PER_SPAN as Real;
+                let parameter = interval[0].mul_add(1.0 - fraction, interval[1] * fraction);
+                for (source, controls) in [(start, &start_controls), (end, &end_controls)] {
+                    let exact = source.point_at(parameter)?;
+                    let fitted = cubic_bezier_point(controls, fraction)?;
+                    let deviation = exact.distance_to(fitted)?;
+                    if deviation > largest.deviation {
+                        largest = RefitSpanError {
+                            deviation,
+                            parameter,
+                        };
+                    }
+                }
+            }
+            Ok(largest)
+        })
+        .collect()
+}
+
+fn cubic_bezier_point(controls: &[Point3; 4], parameter: Real) -> Result<Point3, GeometryError> {
+    let first = blend_points(controls[0], controls[1], parameter)?;
+    let second = blend_points(controls[1], controls[2], parameter)?;
+    let third = blend_points(controls[2], controls[3], parameter)?;
+    let first = blend_points(first, second, parameter)?;
+    let second = blend_points(second, third, parameter)?;
+    blend_points(first, second, parameter)
+}
+
+fn build_refit_curve(
+    source: &RefitSource<'_>,
+    breaks: &[Real],
+) -> Result<NurbsCurve, GeometryError> {
+    let boundaries = refit_boundaries(breaks);
+    let control_count = refit_control_count(breaks.len())?;
+    let mut controls = Vec::with_capacity(control_count);
+    for (span_index, interval) in boundaries.windows(2).enumerate() {
+        controls.extend(
+            refit_segment_controls(source, interval[0], interval[1])?
+                .into_iter()
+                .skip(usize::from(span_index > 0)),
+        );
+    }
+    let mut knots = Vec::with_capacity(control_count + REFIT_DEGREE + 1);
+    knots.extend([0.0; REFIT_DEGREE + 1]);
+    for &parameter in breaks {
+        knots.extend([parameter; REFIT_DEGREE]);
+    }
+    knots.extend([1.0; REFIT_DEGREE + 1]);
+    NurbsCurve::try_new(REFIT_DEGREE, controls, knots)
 }
 
 fn validate_tween_count(number: usize) -> Result<(), GeometryError> {
@@ -195,6 +464,12 @@ mod tests {
             (actual - expected).abs() <= epsilon * actual.abs().max(expected.abs()).max(1.0),
             "expected {expected:.17e}, got {actual:.17e}"
         );
+    }
+
+    fn assert_point_near(actual: Point3, expected: [Real; 3], epsilon: Real) {
+        for (actual, expected) in actual.to_array().into_iter().zip(expected) {
+            assert_near(actual, expected, epsilon);
+        }
     }
 
     #[test]
@@ -440,39 +715,107 @@ mod tests {
     }
 
     #[test]
-    fn refit_is_rejected_instead_of_silently_using_another_algorithm() {
+    fn refitted_lines_match_rhino_cubic_normalized_structure() {
+        let start = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(10.0, 0.0, 0.0)],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let end = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 6.0, 0.0),
+                point(10.0 / 3.0, 6.0, 0.0),
+                point(20.0 / 3.0, 6.0, 0.0),
+                point(10.0, 6.0, 0.0),
+            ],
+            vec![2.0, 2.0, 2.0, 2.0, 12.0, 12.0, 12.0, 12.0],
+        )
+        .unwrap();
+        let curve = &try_tween_nurbs_curves(
+            &start,
+            &end,
+            1,
+            CurveTweenMatchMethod::Refit,
+            Tolerance::DEFAULT,
+        )
+        .unwrap()[0];
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(curve.domain(), 0.0..=1.0);
+        assert_eq!(curve.control_points().len(), 4);
+        assert!(!curve.is_rational());
+        for (control, x) in curve
+            .control_points()
+            .iter()
+            .zip([0.0, 10.0 / 3.0, 20.0 / 3.0, 10.0])
+        {
+            assert_point_near(control.point(), [x, 3.0, 0.0], 3.0e-15);
+        }
+    }
+
+    #[test]
+    fn refitted_nonlinear_sources_share_a_bounded_accurate_structure() {
         let start = NurbsCurve::try_new(
             3,
             vec![
                 point(0.0, 0.0, 0.0),
-                point(1.0, 2.0, 0.0),
-                point(3.0, -1.0, 0.0),
-                point(5.0, 0.0, 0.0),
+                point(2.0, 4.0, 0.0),
+                point(7.0, -2.0, 0.0),
+                point(10.0, 0.0, 0.0),
             ],
-            vec![0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 5.0, 5.0],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
         )
         .unwrap();
-        let compatible = NurbsCurve::try_new(
+        let end = NurbsCurve::try_new(
             3,
             vec![
-                point(0.0, 6.0, 0.0),
-                point(1.0, 8.0, 0.0),
-                point(3.0, 5.0, 0.0),
-                point(5.0, 6.0, 0.0),
+                point(0.0, 6.0, 1.0),
+                point(1.0, 9.0, 0.0),
+                point(3.0, 4.0, 2.0),
+                point(6.0, 10.0, -1.0),
+                point(8.0, 5.0, 1.0),
+                point(10.0, 6.0, 0.0),
             ],
-            vec![10.0, 10.0, 10.0, 10.0, 30.0, 30.0, 30.0, 30.0],
+            vec![5.0, 5.0, 5.0, 5.0, 6.0, 8.0, 10.0, 10.0, 10.0, 10.0],
         )
         .unwrap();
+        let tolerance = Tolerance::try_new(1.0e-4, 1.0e-12, 1.0e-10).unwrap();
+        let curves =
+            try_tween_nurbs_curves(&start, &end, 2, CurveTweenMatchMethod::Refit, tolerance)
+                .unwrap();
+        assert_eq!(curves.len(), 2);
+        assert_eq!(curves[0].degree(), 3);
+        assert_eq!(curves[0].knots(), curves[1].knots());
         assert_eq!(
-            try_tween_nurbs_curves(
-                &start,
-                &compatible,
-                1,
-                CurveTweenMatchMethod::Refit,
-                Tolerance::DEFAULT,
-            ),
-            Err(GeometryError::UnsupportedCurveTweenRefit)
+            curves[0].control_points().len(),
+            curves[1].control_points().len()
         );
+        assert!(curves.iter().all(|curve| !curve.is_rational()));
+
+        let start_sampler =
+            ArcLengthSampler::try_new(CurveRef::NurbsCurve(&start), tolerance).unwrap();
+        let end_sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(&end), tolerance).unwrap();
+        for (curve, tween_fraction) in curves.iter().zip([1.0 / 3.0, 2.0 / 3.0]) {
+            for sample in 0..=1024 {
+                let parameter = sample as Real / 1024.0;
+                let first = start_sampler
+                    .point_at_distance(parameter * start_sampler.total_length())
+                    .unwrap();
+                let last = end_sampler
+                    .point_at_distance(parameter * end_sampler.total_length())
+                    .unwrap();
+                let expected = blend_points(first, last, tween_fraction).unwrap();
+                assert!(
+                    curve
+                        .evaluate(parameter)
+                        .unwrap()
+                        .distance_to(expected)
+                        .unwrap()
+                        <= 1.05e-4
+                );
+            }
+        }
     }
 
     #[test]

@@ -26169,7 +26169,7 @@ mod tests {
     }
 
     #[test]
-    fn tween_curves_rejects_invalid_inputs_and_unimplemented_refits_atomically() {
+    fn tween_curves_rejects_invalid_inputs_and_refits_different_structures() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let line = |y| {
@@ -26242,34 +26242,39 @@ mod tests {
         assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.undo_label(), history.as_deref());
 
-        let incompatible = NurbsCurve::try_new(
+        let different_structure = NurbsCurve::try_new(
             3,
             vec![
                 Point3::try_new(0.0, 8.0, 0.0).unwrap(),
-                Point3::try_new(1.0, 10.0, 0.0).unwrap(),
-                Point3::try_new(3.0, 7.0, 0.0).unwrap(),
-                Point3::try_new(4.0, 10.0, 0.0).unwrap(),
+                Point3::try_new(5.0 / 3.0, 8.0, 0.0).unwrap(),
+                Point3::try_new(10.0 / 3.0, 8.0, 0.0).unwrap(),
                 Point3::try_new(5.0, 8.0, 0.0).unwrap(),
             ],
-            vec![0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
         )
         .unwrap();
-        let incompatible_id = document
-            .add_geometry(Geometry::NurbsCurve(incompatible))
+        let different_structure_id = document
+            .add_geometry(Geometry::NurbsCurve(different_structure))
             .unwrap();
         document
-            .select_objects([ids[0], incompatible_id], SelectionMode::Replace)
+            .select_objects([ids[0], different_structure_id], SelectionMode::Replace)
             .unwrap();
         let object_count = document.objects().len();
-        let history = document.undo_label().map(str::to_owned);
-        assert!(matches!(
-            registry.execute(&mut document, "TweenCurves MatchMethod=Refit"),
-            Err(CommandError::Geometry(
-                GeometryError::UnsupportedCurveTweenRefit
-            ))
-        ));
+        assert_eq!(
+            registry
+                .execute(&mut document, "TweenCurves MatchMethod=Refit")
+                .unwrap(),
+            "Created 1 tween curve(s) using refit matching on the current layer"
+        );
+        assert_eq!(document.objects().len(), object_count + 1);
+        let Geometry::NurbsCurve(curve) = document.objects().last().unwrap().geometry() else {
+            panic!("refit matching must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert!(!curve.is_rational());
+        assert_eq!(document.undo_label(), Some("TweenCurves"));
+        registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), object_count);
-        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]
