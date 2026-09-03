@@ -410,6 +410,9 @@ impl CommandRegistry {
             .register(SurfaceSeamCommand)
             .expect("unique built-in command");
         registry
+            .register(ReparameterizeCommand)
+            .expect("unique built-in command");
+        registry
             .register(DirectionCommand)
             .expect("unique built-in command");
         registry
@@ -11296,6 +11299,127 @@ fn parse_surface_seam_options(arguments: &[&str]) -> Result<SurfaceSeamOptions, 
     })
 }
 
+const REPARAMETERIZE_USAGE: &str = "Reparameterize Automatic | Reparameterize start end | Reparameterize u_start u_end v_start v_end";
+
+#[derive(Clone, Debug, PartialEq)]
+enum ReparameterizeOptions {
+    Automatic,
+    Explicit(Vec<Real>),
+}
+
+enum ReparameterizeTarget {
+    Curve(NurbsCurve),
+    Surface(NurbsSurface),
+}
+
+struct ReparameterizeCommand;
+
+impl Command for ReparameterizeCommand {
+    fn name(&self) -> &'static str {
+        "Reparameterize"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_reparameterize_options(arguments)?;
+        let mut candidates = document
+            .selected_objects()
+            .filter_map(|object| {
+                let target = match object.geometry() {
+                    Geometry::NurbsSurface(surface) => {
+                        Ok(Some(ReparameterizeTarget::Surface(surface.clone())))
+                    }
+                    geometry => geometry
+                        .nurbs_curve_representation()
+                        .map(|curve| curve.map(ReparameterizeTarget::Curve)),
+                };
+                target
+                    .transpose()
+                    .map(|target| target.map(|target| (object.id(), target)))
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if candidates.len() != 1 {
+            return Err(CommandError::ReparameterizeRequiresOneObject {
+                actual: candidates.len(),
+            });
+        }
+        let (id, target) = candidates
+            .pop()
+            .expect("one reparameterization target was required");
+
+        let (geometry, description) = match (target, options) {
+            (ReparameterizeTarget::Curve(curve), ReparameterizeOptions::Automatic) => {
+                let domain_end = curve.length(document.tolerance())?;
+                let curve = curve.try_reparameterized(0.0..=domain_end)?;
+                (
+                    Geometry::NurbsCurve(curve),
+                    format!("curve domain to 0..{domain_end}"),
+                )
+            }
+            (ReparameterizeTarget::Curve(curve), ReparameterizeOptions::Explicit(values))
+                if values.len() == 2 =>
+            {
+                let [start, end] = [values[0], values[1]];
+                let curve = curve.try_reparameterized(start..=end)?;
+                (
+                    Geometry::NurbsCurve(curve),
+                    format!("curve domain to {start}..{end}"),
+                )
+            }
+            (ReparameterizeTarget::Surface(surface), ReparameterizeOptions::Automatic) => {
+                let [width, height] = surface.estimated_size()?;
+                let surface = surface.try_reparameterized(0.0..=width, 0.0..=height)?;
+                (
+                    Geometry::NurbsSurface(surface),
+                    format!("surface domains to U 0..{width}, V 0..{height}"),
+                )
+            }
+            (ReparameterizeTarget::Surface(surface), ReparameterizeOptions::Explicit(values))
+                if values.len() == 4 =>
+            {
+                let [u_start, u_end, v_start, v_end] = [values[0], values[1], values[2], values[3]];
+                let surface = surface.try_reparameterized(u_start..=u_end, v_start..=v_end)?;
+                (
+                    Geometry::NurbsSurface(surface),
+                    format!("surface domains to U {u_start}..{u_end}, V {v_start}..{v_end}"),
+                )
+            }
+            _ => return Err(CommandError::Usage(REPARAMETERIZE_USAGE)),
+        };
+        document.replace_object_geometries([(id, geometry)])?;
+        Ok(format!("Reparameterized the selected {description}"))
+    }
+}
+
+fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOptions, CommandError> {
+    if let [argument] = arguments {
+        let automatic = argument.trim_start_matches(['_', '-']);
+        if automatic.eq_ignore_ascii_case("Automatic") {
+            return Ok(ReparameterizeOptions::Automatic);
+        }
+    }
+    if arguments.iter().any(|argument| {
+        argument
+            .trim_start_matches(['_', '-'])
+            .eq_ignore_ascii_case("Automatic")
+    }) {
+        return Err(CommandError::Usage(REPARAMETERIZE_USAGE));
+    }
+
+    let raw_values = arguments
+        .iter()
+        .flat_map(|argument| argument.split(','))
+        .collect::<Vec<_>>();
+    if !matches!(raw_values.len(), 2 | 4) || raw_values.iter().any(|value| value.is_empty()) {
+        return Err(CommandError::Usage(REPARAMETERIZE_USAGE));
+    }
+    Ok(ReparameterizeOptions::Explicit(
+        raw_values
+            .into_iter()
+            .map(parse_finite_real)
+            .collect::<Result<_, _>>()?,
+    ))
+}
+
 const DIRECTION_USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
 
@@ -18318,6 +18442,11 @@ pub enum CommandError {
     SurfaceSeamBothDirectionsRequireUv,
 
     #[error(
+        "Reparameterize requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
+    )]
+    ReparameterizeRequiresOneObject { actual: usize },
+
+    #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
     InsertKnotRequiresOneObject { actual: usize },
@@ -18901,7 +19030,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -22913,6 +23042,232 @@ mod tests {
             registry.execute(&mut document, "SrfSeam 10,0,0"),
             Err(CommandError::SurfaceSeamRequiresOneSurface { actual: 3 })
         ));
+    }
+
+    #[test]
+    fn reparameterizes_a_curve_without_losing_document_state() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Domains")
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "ControlPointCurve 3 0,0,0 2,-1,1 5,2,0 7,4,2",
+            )
+            .unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry
+            .execute(&mut document, "SetObjectName ReparameterizedCurve")
+            .unwrap();
+        registry.execute(&mut document, "Group Domains").unwrap();
+        let before = document.object(id).unwrap().clone();
+        let Geometry::NurbsCurve(source) = before.geometry() else {
+            panic!("ControlPointCurve must create a NURBS curve")
+        };
+        let expected = source.try_reparameterized(-4.0..=6.0).unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Reparameterize -4,6")
+                .unwrap(),
+            "Reparameterized the selected curve domain to -4..6"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected.clone()));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("Domains")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("Reparameterize"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(id).unwrap(), &before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(expected)
+        );
+    }
+
+    #[test]
+    fn reparameterize_automatic_uses_curve_length_and_surface_control_polygon_size() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0,0 3,4,0").unwrap();
+        let line_id = document.objects().next().unwrap().id();
+        document
+            .select_object(line_id, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "Reparameterize _Automatic")
+                .unwrap(),
+            "Reparameterized the selected curve domain to 0..5"
+        );
+        let Geometry::NurbsCurve(line) = document.object(line_id).unwrap().geometry() else {
+            panic!("a reparameterized line must use NURBS geometry")
+        };
+        assert_eq!(line.domain(), 0.0..=5.0);
+
+        document.clear_selection();
+        registry
+            .execute(&mut document, "SrfPt 0,0,0 3,4,0 3,4,12 0,0,12")
+            .unwrap();
+        let surface_id = document.objects().last().unwrap().id();
+        document
+            .select_object(surface_id, SelectionMode::Replace)
+            .unwrap();
+        let Geometry::NurbsSurface(source) = document.object(surface_id).unwrap().geometry() else {
+            panic!("SrfPt must create a NURBS surface")
+        };
+        let [width, height] = source.estimated_size().unwrap();
+        let expected = source
+            .try_reparameterized(0.0..=width, 0.0..=height)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "Reparameterize Automatic")
+                .unwrap(),
+            format!("Reparameterized the selected surface domains to U 0..{width}, V 0..{height}")
+        );
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(expected)
+        );
+    }
+
+    #[test]
+    fn reparameterizes_both_surface_domains_explicitly() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Sphere 0,0,0 5").unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let Geometry::NurbsSurface(source) = document.object(id).unwrap().geometry() else {
+            panic!("Sphere must create a NURBS surface")
+        };
+        let source = source.clone();
+        let expected = source.try_reparameterized(-2.0..=8.0, 10.0..=13.0).unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Reparameterize -2 8 10 13")
+                .unwrap(),
+            "Reparameterized the selected surface domains to U -2..8, V 10..13"
+        );
+        let Geometry::NurbsSurface(mapped) = document.object(id).unwrap().geometry() else {
+            panic!("Reparameterize must retain NURBS surface geometry")
+        };
+        assert_eq!(mapped, &expected);
+        for u_index in 0..=8 {
+            for v_index in 0..=8 {
+                let normalized_u = u_index as Real / 8.0;
+                let normalized_v = v_index as Real / 8.0;
+                assert!(
+                    mapped
+                        .evaluate(
+                            mapped.parameter_at_u(normalized_u).unwrap(),
+                            mapped.parameter_at_v(normalized_v).unwrap(),
+                        )
+                        .unwrap()
+                        .is_near(
+                            source
+                                .evaluate(
+                                    source.parameter_at_u(normalized_u).unwrap(),
+                                    source.parameter_at_v(normalized_v).unwrap(),
+                                )
+                                .unwrap(),
+                            document.tolerance(),
+                        )
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn reparameterize_rejects_invalid_or_ambiguous_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Reparameterize",
+            "Reparameterize Automatic extra",
+            "Reparameterize 0 1 2",
+            "Reparameterize 0,,1",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(REPARAMETERIZE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "Reparameterize 0 1"),
+            Err(CommandError::ReparameterizeRequiresOneObject { actual: 0 })
+        ));
+
+        registry.execute(&mut document, "Line 0,0 2,0").unwrap();
+        let line_id = document.objects().next().unwrap().id();
+        registry
+            .execute(&mut document, "SrfPt 0,0 2,0 2,2 0,2")
+            .unwrap();
+        let surface_id = document
+            .objects()
+            .find(|object| object.id() != line_id)
+            .unwrap()
+            .id();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Reparameterize Automatic"),
+            Err(CommandError::ReparameterizeRequiresOneObject { actual: 2 })
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document
+            .select_object(line_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Reparameterize 0 1 2 3"),
+            Err(CommandError::Usage(REPARAMETERIZE_USAGE))
+        ));
+        assert!(matches!(
+            registry.execute(&mut document, "Reparameterize 2 1"),
+            Err(CommandError::Geometry(
+                GeometryError::InvalidKnotVector { .. }
+            ))
+        ));
+        assert_eq!(
+            document.object(line_id).unwrap(),
+            before.iter().find(|object| object.id() == line_id).unwrap()
+        );
+
+        document
+            .select_object(surface_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Reparameterize 0 1"),
+            Err(CommandError::Usage(REPARAMETERIZE_USAGE))
+        ));
+        assert_eq!(
+            document.object(surface_id).unwrap(),
+            before
+                .iter()
+                .find(|object| object.id() == surface_id)
+                .unwrap()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

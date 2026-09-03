@@ -557,6 +557,11 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         parameter: f64,
     },
+    CurveReparameterizeGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        domain: Option<[f64; 2]>,
+    },
     CurveInsertControlPointGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -666,6 +671,18 @@ pub enum Operation {
         knots_v: Vec<f64>,
         direction: SurfaceUniformDirection,
         parameter: [f64; 2],
+    },
+    SurfaceReparameterizeGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        domain_u: Option<[f64; 2]>,
+        domain_v: Option<[f64; 2]>,
     },
     SurfaceInsertKnotGeometry {
         id: String,
@@ -1035,6 +1052,7 @@ impl Operation {
             | Self::CurveChangeDegreeGeometry { id, .. }
             | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveChangeSeamGeometry { id, .. }
+            | Self::CurveReparameterizeGeometry { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
@@ -1047,6 +1065,7 @@ impl Operation {
             | Self::SurfaceInsertControlPointGeometry { id, .. }
             | Self::SurfaceDirectionEditGeometry { id, .. }
             | Self::SurfaceChangeSeamGeometry { id, .. }
+            | Self::SurfaceReparameterizeGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
             | Self::SurfaceRemoveControlPointGeometry { id, .. }
@@ -2881,6 +2900,17 @@ fn execute(
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveReparameterizeGeometry { curve, domain, .. } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let domain = match domain {
+                Some(domain) => *domain,
+                None => [0.0, source.length(tolerance)?],
+            };
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_reparameterized(black_box(domain[0])..=black_box(domain[1]))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveInsertControlPointGeometry {
             curve,
             parameter,
@@ -3112,6 +3142,47 @@ fn execute(
                     direction.geometry(),
                     black_box(parameter[0]),
                     black_box(parameter[1]),
+                )
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceReparameterizeGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            domain_u,
+            domain_v,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (domain_u, domain_v) = match (domain_u, domain_v) {
+                (Some(domain_u), Some(domain_v)) => (*domain_u, *domain_v),
+                (None, None) => {
+                    let [width, height] = source.estimated_size()?;
+                    ([0.0, width], [0.0, height])
+                }
+                _ => {
+                    return Err(ProbeError::FixtureInvariant(
+                        "surface reparameterization requires both domains or neither",
+                    ));
+                }
+            };
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_reparameterized(
+                    black_box(domain_u[0])..=black_box(domain_u[1]),
+                    black_box(domain_v[0])..=black_box(domain_v[1]),
                 )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
@@ -8509,6 +8580,52 @@ mod tests {
         assert_eq!(curve["periodic"], true);
         assert_eq!(curve["control_points"].as_array().unwrap().len(), 8);
         assert_eq!(curve["knots"].as_array().unwrap().len(), 12);
+    }
+
+    #[test]
+    fn captures_explicit_and_automatic_reparameterization() {
+        let curve = NurbsCurveDefinition {
+            degree: 1,
+            control_points: [[0.0, 0.0, 0.0], [3.0, 4.0, 0.0]]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![2.0, 2.0, 9.0, 9.0],
+            domain: None,
+        };
+        let surface_controls = [
+            ([0.0, 0.0, 0.0], 0.25),
+            ([3.0, 4.0, 0.0], 2.0),
+            ([0.0, 0.0, 12.0], 3.0),
+            ([3.0, 4.0, 12.0], 0.5),
+        ]
+        .into_iter()
+        .map(|(point, weight)| ControlPoint { point, weight })
+        .collect();
+        let response = run_request(&request(vec![
+            Operation::CurveReparameterizeGeometry {
+                id: "explicit-curve-domain".to_owned(),
+                curve,
+                domain: Some([-4.0, 6.0]),
+            },
+            Operation::SurfaceReparameterizeGeometry {
+                id: "automatic-surface-domain".to_owned(),
+                degree_u: 1,
+                degree_v: 1,
+                control_point_count_u: 2,
+                control_point_count_v: 2,
+                control_points: surface_controls,
+                knots_u: vec![7.0, 7.0, 11.0, 11.0],
+                knots_v: vec![-3.0, -3.0, 5.0, 5.0],
+                domain_u: None,
+                domain_v: None,
+            },
+        ]))
+        .unwrap();
+
+        assert_eq!(response.results[0].value["domain"], json!([-4.0, 6.0]));
+        assert_eq!(response.results[1].value["domain_u"], json!([0.0, 5.0]));
+        assert_eq!(response.results[1].value["domain_v"], json!([0.0, 12.0]));
     }
 
     #[test]

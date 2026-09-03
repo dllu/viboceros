@@ -5758,6 +5758,45 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_reparameterize_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        try:
+            domain = operation.get("domain")
+            if domain is None:
+                domain = [0.0, float(source.GetLength())]
+            if len(domain) != 2:
+                raise ValueError("curve reparameterization requires a two-value domain")
+            target = Rhino.Geometry.Interval(
+                _finite(domain[0], "curve domain start"),
+                _finite(domain[1], "curve domain end"),
+            )
+            if not target.IsIncreasing:
+                raise ValueError("curve reparameterization domain must be increasing")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def reparameterize_curve():
+            duplicate = source.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for reparameterization")
+            try:
+                duplicate.Domain = target
+                actual = duplicate.Domain
+                if actual.T0 != target.T0 or actual.T1 != target.T1:
+                    raise ValueError("Rhino curve reparameterization failed")
+                definition = _nurbs_curve_definition(duplicate)
+                definition["closed"] = bool(duplicate.IsClosed)
+                definition["periodic"] = bool(duplicate.IsPeriodic)
+                return definition
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, reparameterize_curve)
+        finally:
+            source.Dispose()
+
     if kind == "surface_change_seam_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
@@ -5821,6 +5860,76 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, change_surface_seam)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_reparameterize_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface reparameterization source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface reparameterization source is invalid")
+            domain_u = operation.get("domain_u")
+            domain_v = operation.get("domain_v")
+            if domain_u is None and domain_v is None:
+                sized, width, height = source.GetSurfaceSize()
+                if not sized:
+                    raise ValueError("Rhino could not estimate the NURBS surface size")
+                domain_u = [0.0, float(width)]
+                domain_v = [0.0, float(height)]
+            elif domain_u is None or domain_v is None:
+                raise ValueError(
+                    "surface reparameterization requires both domains or neither"
+                )
+            if len(domain_u) != 2 or len(domain_v) != 2:
+                raise ValueError("surface reparameterization requires U and V domains")
+            targets = [
+                Rhino.Geometry.Interval(
+                    _finite(domain_u[0], "surface U domain start"),
+                    _finite(domain_u[1], "surface U domain end"),
+                ),
+                Rhino.Geometry.Interval(
+                    _finite(domain_v[0], "surface V domain start"),
+                    _finite(domain_v[1], "surface V domain end"),
+                ),
+            ]
+            if not all(target.IsIncreasing for target in targets):
+                raise ValueError("surface reparameterization domains must be increasing")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def reparameterize_surface():
+            duplicate = source.Duplicate()
+            if duplicate is None or not isinstance(
+                duplicate, Rhino.Geometry.NurbsSurface
+            ):
+                raise ValueError("Rhino could not duplicate surface for reparameterization")
+            try:
+                for axis, target in enumerate(targets):
+                    if not duplicate.SetDomain(axis, target):
+                        raise ValueError("Rhino surface reparameterization failed")
+                definition = _nurbs_surface_definition(duplicate)
+                definition["periodic_u"] = bool(duplicate.IsPeriodic(0))
+                definition["periodic_v"] = bool(duplicate.IsPeriodic(1))
+                return definition
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, reparameterize_surface)
         finally:
             source.Dispose()
 

@@ -185,6 +185,8 @@ CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
+Reparameterize -4 6
+Reparameterize Automatic
 Dir SwapUV
 Dir Mode=FlipU
 Flip
@@ -773,6 +775,13 @@ flattening the stored homogeneous control net, so rational and periodic tensor
 structure, parameter-span lengths, surface orientation, identity, attributes,
 groups, selection, and undo are preserved. A projectively coincident boundary
 whose stored homogeneous seam controls do not close is rejected as Rhino does.
+`Reparameterize start end` changes one selected curve's domain, while four
+values set the U and V domains of one selected untrimmed NURBS surface. Commas
+between values are also accepted. `Reparameterize Automatic` uses curve length
+or OpenNURBS' longest-control-polygon surface size. Analytic curves are changed
+to exact NURBS form so the new domain can be retained; geometry, orientation,
+periodicity, object identity, attributes, groups, selection, and undo are
+preserved.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input
@@ -1066,6 +1075,13 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_change_seam.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/reparameterize.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/reparameterize_automatic.json \
+  --relative-epsilon 1e-8
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

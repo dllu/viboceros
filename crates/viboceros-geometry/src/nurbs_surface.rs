@@ -2,9 +2,10 @@ use std::ops::RangeInclusive;
 
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
-    clamped_uniform_knots, control_polygon_range, curve_coordinates_coincident,
-    curve_points_coincident, de_boor, knot_vector_is_periodic, project_homogeneous,
-    stable_divided_difference, stable_knot_mean, uniform_knots_like, validate_direction,
+    clamped_uniform_knots, control_polygon_length, control_polygon_range,
+    curve_coordinates_coincident, curve_points_coincident, de_boor, knot_vector_is_periodic,
+    project_homogeneous, stable_divided_difference, stable_knot_mean, uniform_knots_like,
+    validate_direction,
 };
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
@@ -2394,6 +2395,43 @@ impl NurbsSurface {
         self.knots_v[self.degree_v]..=self.knots_v[self.control_point_count_v]
     }
 
+    /// Affinely maps both stored OpenNURBS knot vectors onto new active
+    /// parameter domains and reconstructs their artificial outer endpoints.
+    ///
+    /// The control net and weights are unchanged, so the surface locus,
+    /// orientation, normalized parameter directions, and periodic topology are
+    /// preserved exactly.
+    pub fn try_reparameterized(
+        &self,
+        domain_u: RangeInclusive<Real>,
+        domain_v: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        self.map_u_control_curves(|curve| curve.try_reparameterized(domain_u.clone()))?
+            .map_v_control_curves(|curve| curve.try_reparameterized(domain_v.clone()))
+    }
+
+    /// Estimates the flattened surface width and height from the longest U
+    /// and V control polygons, matching `ON_NurbsSurface::GetSurfaceSize`.
+    pub fn estimated_size(&self) -> Result<[Real; 2], GeometryError> {
+        let mut width: Real = 0.0;
+        for row in self.control_points.chunks_exact(self.control_point_count_u) {
+            let points = row
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>();
+            width = width.max(control_polygon_length(&points)?);
+        }
+
+        let mut height: Real = 0.0;
+        for u in 0..self.control_point_count_u {
+            let points = (0..self.control_point_count_v)
+                .map(|v| self.control_points[self.control_index(u, v)].point())
+                .collect::<Vec<_>>();
+            height = height.max(control_polygon_length(&points)?);
+        }
+        Ok([width, height])
+    }
+
     pub fn spans_u(&self) -> impl Iterator<Item = (Real, Real)> + '_ {
         nonempty_spans(&self.knots_u, self.degree_u, self.control_point_count_u)
     }
@@ -4199,6 +4237,97 @@ mod tests {
         assert_eq!(derivative_v, Vector3::try_new(0.0, 2.0, 2.0).unwrap());
         let normal = surface.normal_at(0.5, 0.5, Tolerance::DEFAULT).unwrap();
         assert!(normal.y() < 0.0 && normal.z() > 0.0);
+    }
+
+    #[test]
+    fn surface_reparameterization_maps_full_periodic_knot_vectors_and_preserves_shape() {
+        let row = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(1.0, 2.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+        ];
+        let controls = (0..3)
+            .flat_map(|v| {
+                row.into_iter().map(move |point| {
+                    point
+                        .translated(Vector3::try_new(0.0, 0.0, 3.0 * v as Real).unwrap())
+                        .unwrap()
+                })
+            })
+            .collect();
+        let surface = NurbsSurface::try_new(
+            2,
+            1,
+            5,
+            3,
+            controls,
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            vec![2.0, 2.0, 7.0, 11.0, 11.0],
+        )
+        .unwrap();
+
+        let mapped = surface
+            .try_reparameterized(10.0..=16.0, -5.0..=4.0)
+            .unwrap();
+        assert_eq!(mapped.domain_u(), 10.0..=16.0);
+        assert_eq!(mapped.domain_v(), -5.0..=4.0);
+        assert_eq!(
+            mapped.knots_u(),
+            &[8.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 18.0]
+        );
+        for (actual, expected) in mapped.knots_v().iter().zip([-5.0, -5.0, 0.0, 4.0, 4.0]) {
+            assert!((actual - expected).abs() < 1.0e-14);
+        }
+        assert_eq!(mapped.control_points(), surface.control_points());
+        assert!(mapped.is_periodic_u());
+        for u_index in 0..=12 {
+            let mapped_u = 10.0 + 0.5 * u_index as Real;
+            let source_u = 0.5 * (mapped_u - 10.0);
+            for v_index in 0..=9 {
+                let mapped_v = -5.0 + v_index as Real;
+                let source_v = mapped_v + 7.0;
+                assert_point_near(
+                    mapped.evaluate(mapped_u, mapped_v).unwrap(),
+                    surface.evaluate(source_u, source_v).unwrap(),
+                );
+            }
+        }
+
+        for (domain_u, domain_v) in [
+            (0.0..=0.0, 0.0..=1.0),
+            (2.0..=1.0, 0.0..=1.0),
+            (0.0..=1.0, Real::NAN..=1.0),
+        ] {
+            assert!(surface.try_reparameterized(domain_u, domain_v).is_err());
+        }
+    }
+
+    #[test]
+    fn surface_size_uses_longest_euclidean_control_polygons() {
+        let controls = [
+            ([0.0, 0.0, 0.0], 0.25),
+            ([3.0, 4.0, 0.0], 2.0),
+            ([0.0, 0.0, 12.0], 3.0),
+            ([3.0, 4.0, 12.0], 0.5),
+        ]
+        .into_iter()
+        .map(|(coordinates, weight)| {
+            WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+        })
+        .collect();
+        let surface = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            controls,
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(surface.estimated_size().unwrap(), [5.0, 12.0]);
     }
 
     #[test]

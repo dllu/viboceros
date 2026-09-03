@@ -1,0 +1,119 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_reparameterize_geometry",
+      "id": "rational-nonclamped-curve",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 0.5},
+          {"point": [2, -1, 1], "weight": 1.3},
+          {"point": [5, 1, -2], "weight": 0.8},
+          {"point": [7, 4, 2], "weight": 1.7},
+          {"point": [4, 7, 0], "weight": 0.9},
+          {"point": [1, 5, 3], "weight": 1.1}
+        ],
+        "knots": [-4, -3, -2, -1, 0, 2, 5, 8, 9, 10]
+      },
+      "domain": [-25, 35]
+    },
+    {
+      "op": "curve_reparameterize_geometry",
+      "id": "periodic-cubic-curve",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "domain": [100, 180]
+    },
+    {
+      "op": "curve_reparameterize_geometry",
+      "id": "degree-one-small-domain",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [3, 4, 0]},
+          {"point": [8, 4, 2]}, {"point": [11, 0, 2]}
+        ],
+        "knots": [2, 2, 4, 9, 12, 12]
+      },
+      "domain": [-0.0003, 0.0007]
+    },
+    {
+      "op": "curve_reparameterize_geometry",
+      "id": "automatic-polyline-length",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [3, 4, 0]},
+          {"point": [3, 4, 12]}
+        ],
+        "knots": [2, 2, 8, 15, 15]
+      }
+    },
+    {
+      "op": "surface_reparameterize_geometry",
+      "id": "rational-nonclamped-surface",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 4,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 0.6}, {"point": [2, -0.4, 0.5], "weight": 0.8},
+        {"point": [4, -0.8, 1], "weight": 1}, {"point": [6, -1.2, 1.5], "weight": 1.2},
+        {"point": [0.3, 3, 0], "weight": 1}, {"point": [2.3, 2.6, 1], "weight": 1.2},
+        {"point": [4.3, 2.2, 2], "weight": 1.4}, {"point": [6.3, 1.8, 3], "weight": 1.6},
+        {"point": [0.6, 6, 0], "weight": 1.4}, {"point": [2.6, 5.6, 1.5], "weight": 1.6},
+        {"point": [4.6, 5.2, 3], "weight": 1.8}, {"point": [6.6, 4.8, 4.5], "weight": 2}
+      ],
+      "knots_u": [-2, -2, -1, 1, 4, 5, 5],
+      "knots_v": [11, 11, 13, 17, 17],
+      "domain_u": [-20, 10],
+      "domain_v": [2, 5]
+    },
+    {
+      "op": "surface_reparameterize_geometry",
+      "id": "periodic-both-directions-surface",
+      "degree_u": 2,
+      "degree_v": 2,
+      "control_point_count_u": 5,
+      "control_point_count_v": 5,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [4, 0, 0]}, {"point": [2, 3, 0]}, {"point": [0, 0, 0]}, {"point": [4, 0, 0]},
+        {"point": [0, 1, 2]}, {"point": [4, 1, 2]}, {"point": [2, 4, 2]}, {"point": [0, 1, 2]}, {"point": [4, 1, 2]},
+        {"point": [0, -1, 2]}, {"point": [4, -1, 2]}, {"point": [2, 2, 2]}, {"point": [0, -1, 2]}, {"point": [4, -1, 2]},
+        {"point": [0, 0, 0]}, {"point": [4, 0, 0]}, {"point": [2, 3, 0]}, {"point": [0, 0, 0]}, {"point": [4, 0, 0]},
+        {"point": [0, 1, 2]}, {"point": [4, 1, 2]}, {"point": [2, 4, 2]}, {"point": [0, 1, 2]}, {"point": [4, 1, 2]}
+      ],
+      "knots_u": [-2, -1, 0, 1, 2, 3, 4, 5],
+      "knots_v": [-2, -1, 0, 1, 2, 3, 4, 5],
+      "domain_u": [100, 100.75],
+      "domain_v": [-200, 400]
+    },
+    {
+      "op": "surface_reparameterize_geometry",
+      "id": "automatic-control-polygon-size",
+      "degree_u": 1,
+      "degree_v": 1,
+      "control_point_count_u": 2,
+      "control_point_count_v": 2,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 0.25},
+        {"point": [3, 4, 0], "weight": 2},
+        {"point": [0, 0, 12], "weight": 3},
+        {"point": [3, 4, 12], "weight": 0.5}
+      ],
+      "knots_u": [7, 7, 11, 11],
+      "knots_v": [-3, -3, 5, 5]
+    }
+  ]
+}

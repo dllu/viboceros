@@ -638,8 +638,9 @@ impl NurbsCurve {
     /// Affinely maps the full knot vector onto a new active parameter domain.
     ///
     /// Control points and weights are unchanged, so the geometric image and
-    /// normalized parameter direction are preserved. Knots outside the active
-    /// domain, as used by periodic curves, are extrapolated by the same map.
+    /// normalized parameter direction are preserved. The stored OpenNURBS
+    /// short knot vector is mapped in full; the two artificial full-vector
+    /// endpoints are then reconstructed from its first and last values.
     pub fn try_reparameterized(&self, domain: RangeInclusive<Real>) -> Result<Self, GeometryError> {
         let target_start = *domain.start();
         let target_end = *domain.end();
@@ -670,7 +671,10 @@ impl NurbsCurve {
                 }
             })
             .collect::<Result<Vec<_>, _>>()?;
-        Self::try_new_rational(self.degree, self.control_points.clone(), knots)
+        Ok(
+            Self::try_new_rational(self.degree, self.control_points.clone(), knots)?
+                .with_opennurbs_outer_knots(),
+        )
     }
 
     /// Replaces the knot vector with Rhino-compatible unit spacing while
@@ -4458,7 +4462,7 @@ mod tests {
         assert_eq!(mapped.domain(), 10.0..=16.0);
         assert_eq!(
             mapped.knots(),
-            &[6.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 20.0]
+            &[8.0, 8.0, 10.0, 12.0, 14.0, 16.0, 18.0, 18.0]
         );
         for sample in 0..=32 {
             let normalized = sample as Real / 32.0;
