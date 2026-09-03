@@ -15,9 +15,9 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, CurveKnotSpacing, CurveRef, CurveThroughConstruction,
-    CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
+    CatenaryOutput, Circle3, CircularArc3, CurveExtensionSide, CurveKnotSpacing, CurveRef,
+    CurveThroughConstruction, CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment,
+    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
     SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
@@ -567,6 +567,12 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         domain: [f64; 2],
     },
+    CurveExtendLengthGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        side: CurveExtensionEnd,
+        length: f64,
+    },
     CurveSubcurveGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -943,6 +949,24 @@ pub enum CurveTweenMethod {
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
+pub enum CurveExtensionEnd {
+    Start,
+    End,
+    Both,
+}
+
+impl CurveExtensionEnd {
+    const fn geometry(self) -> CurveExtensionSide {
+        match self {
+            Self::Start => CurveExtensionSide::Start,
+            Self::End => CurveExtensionSide::End,
+            Self::Both => CurveExtensionSide::Both,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
 pub enum SurfaceUniformDirection {
     U,
     V,
@@ -1075,6 +1099,7 @@ impl Operation {
             | Self::CurveChangeSeamGeometry { id, .. }
             | Self::CurveReparameterizeGeometry { id, .. }
             | Self::CurveExtendGeometry { id, .. }
+            | Self::CurveExtendLengthGeometry { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
@@ -2940,6 +2965,22 @@ fn execute(
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure(iterations, || {
                 source.try_extended_to(black_box(domain[0])..=black_box(domain[1]))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::CurveExtendLengthGeometry {
+            curve,
+            side,
+            length,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_extended_by_length(
+                    black_box(side.geometry()),
+                    black_box(*length),
+                    tolerance,
+                )
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -8749,6 +8790,30 @@ mod tests {
         assert_eq!(curve["knots"], json!([-0.5, -0.5, 2.0, 2.0]));
         assert_eq!(curve["control_points"][0]["point"], json!([-5.0, 0.0, 0.0]));
         assert_eq!(curve["control_points"][1]["point"], json!([20.0, 0.0, 0.0]));
+    }
+
+    #[test]
+    fn captures_natural_curve_extension_by_length() {
+        let response = run_request(&request(vec![Operation::CurveExtendLengthGeometry {
+            id: "extend-line-length".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: [[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 1.0, 1.0],
+                domain: None,
+            },
+            side: CurveExtensionEnd::Start,
+            length: 3.0,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["domain"], json!([-0.3, 1.0]));
+        assert_eq!(curve["control_points"][0]["point"], json!([-3.0, 0.0, 0.0]));
+        assert_eq!(curve["control_points"][1]["point"], json!([10.0, 0.0, 0.0]));
     }
 
     #[test]

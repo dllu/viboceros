@@ -187,6 +187,7 @@ CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
+Extend Length=5 Side=End Type=Natural Join=Merge
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -783,6 +784,14 @@ between values are also accepted. `Reparameterize Automatic` uses curve length
 or OpenNURBS' longest-control-polygon surface size. Analytic curves are changed
 to exact NURBS form so the new domain can be retained; geometry, orientation,
 periodicity, object identity, attributes, groups, selection, and undo are
+preserved.
+`Extend Length=value Side=Start|End|Both` applies Rhino-compatible natural
+NURBS extrapolation to one selected open curve; `Both` adds the full requested
+arc length independently at each end. `Extend Domain=start,end` exposes the
+exact analytic-domain operation. `Type=Natural` and `Join=Merge` are accepted
+explicitly; other extension styles, boundary objects, and separate extension
+segments remain future work. Analytic curves and polylines are promoted to
+exact NURBS form, while identity, attributes, groups, selection, and undo are
 preserved.
 `SubCrv start_point end_point` replaces one selected curve with the exact
 directed portion between the closest curve locations; omit both points for two

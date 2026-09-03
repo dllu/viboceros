@@ -895,6 +895,23 @@ impl<'a> ArcLengthSampler<'a> {
         distance: Real,
         fractional_tolerance: Option<Real>,
     ) -> Result<Point3, GeometryError> {
+        let parameter = self.parameter_at_distance_impl(distance, fractional_tolerance)?;
+        if distance == self.total_length {
+            self.curve.end_point()
+        } else {
+            self.evaluate(parameter)
+        }
+    }
+
+    pub(crate) fn parameter_at_distance(&self, distance: Real) -> Result<Real, GeometryError> {
+        self.parameter_at_distance_impl(distance, None)
+    }
+
+    fn parameter_at_distance_impl(
+        &self,
+        distance: Real,
+        fractional_tolerance: Option<Real>,
+    ) -> Result<Real, GeometryError> {
         require_finite([distance], "curve arc-length distance")?;
         if distance < 0.0 || distance > self.total_length {
             return Err(GeometryError::ArcLengthOutOfDomain {
@@ -903,10 +920,10 @@ impl<'a> ArcLengthSampler<'a> {
             });
         }
         if distance == 0.0 {
-            return self.evaluate(self.parameter_start());
+            return Ok(self.parameter_start());
         }
         if distance == self.total_length {
-            return self.curve.end_point();
+            return Ok(self.spans.last().expect("a sampler has spans").end);
         }
 
         let span_index = self
@@ -916,14 +933,14 @@ impl<'a> ArcLengthSampler<'a> {
         let span = self.spans[span_index];
         let local_distance = (distance - span.cumulative_start).clamp(0.0, span.length);
         if local_distance == 0.0 {
-            return self.evaluate(span.start);
+            return Ok(span.start);
         }
         if local_distance == span.length {
-            return self.evaluate(span.end);
+            return Ok(span.end);
         }
         if !span.variable_speed {
             let fraction = local_distance / span.length;
-            return self.evaluate(stable_lerp(span.start, span.end, fraction));
+            return Ok(stable_lerp(span.start, span.end, fraction));
         }
 
         let distance_tolerance = fractional_tolerance
@@ -933,9 +950,7 @@ impl<'a> ArcLengthSampler<'a> {
                     .max(Real::MIN_POSITIVE)
             })
             .unwrap_or_else(|| numerical_distance_tolerance(span.length, self.tolerance));
-        let parameter =
-            self.parameter_at_span_distance(span_index, span, local_distance, distance_tolerance)?;
-        self.evaluate(parameter)
+        self.parameter_at_span_distance(span_index, span, local_distance, distance_tolerance)
     }
 
     pub(crate) fn sample_at_distance(&self, distance: Real) -> Result<CurveSample, GeometryError> {

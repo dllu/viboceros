@@ -6,6 +6,7 @@ use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Polyline3, Real, Tolerance,
     Vector3, integration::integrate_adaptive, require_finite,
 };
+use crate::{CurveRef, curve::ArcLengthSampler};
 
 // OpenNURBS uses these fixed coordinate tolerances for Curve::IsClosed.
 pub(crate) const CURVE_COINCIDENCE_ABSOLUTE: Real = 2.328_306_436_538_696_3e-10;
@@ -21,6 +22,14 @@ pub enum ControlPointCurveClosure {
     Smooth,
     /// Repeats only the first control to form a non-periodic kinked seam.
     Sharp,
+}
+
+/// Endpoint selection for a natural curve extension by arc length.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CurveExtensionSide {
+    Start,
+    End,
+    Both,
 }
 
 /// A Euclidean control point paired with a finite, nonzero rational weight.
@@ -2291,6 +2300,118 @@ impl NurbsCurve {
             result = Self::try_new_rational(result.degree, all_controls, knots)?;
         }
         Ok(result)
+    }
+
+    /// Naturally extends the selected end or ends by the requested arc
+    /// length. `Both` applies the full length independently at each end.
+    pub fn try_extended_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let domain = self.domain();
+        let start = match side {
+            CurveExtensionSide::Start | CurveExtensionSide::Both => {
+                self.extension_parameter_by_length(true, length, tolerance)?
+            }
+            CurveExtensionSide::End => *domain.start(),
+        };
+        let end = match side {
+            CurveExtensionSide::End | CurveExtensionSide::Both => {
+                self.extension_parameter_by_length(false, length, tolerance)?
+            }
+            CurveExtensionSide::Start => *domain.end(),
+        };
+        self.try_extended_to(start..=end)
+    }
+
+    fn extension_parameter_by_length(
+        &self,
+        at_start: bool,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Real, GeometryError> {
+        let domain = self.domain();
+        let endpoint = if at_start {
+            *domain.start()
+        } else {
+            *domain.end()
+        };
+        let adjacent_span = if at_start {
+            self.spans()
+                .next()
+                .expect("a validated NURBS curve has an active span")
+                .1
+                - endpoint
+        } else {
+            endpoint
+                - self
+                    .spans()
+                    .last()
+                    .expect("a validated NURBS curve has an active span")
+                    .0
+        };
+        debug_assert!(adjacent_span.is_finite() && adjacent_span > 0.0);
+        let endpoint_speed = self.derivative_at(endpoint)?.length()?;
+        let estimated_step = if endpoint_speed > 0.0 {
+            length / endpoint_speed
+        } else {
+            adjacent_span
+        };
+        let minimum_step = adjacent_span * 1.0e-6;
+        let mut step = if estimated_step.is_finite() && estimated_step > 0.0 {
+            estimated_step.max(minimum_step)
+        } else {
+            adjacent_span
+        };
+
+        for _ in 0..128 {
+            let parameter = if at_start {
+                endpoint - step
+            } else {
+                endpoint + step
+            };
+            if !parameter.is_finite() || parameter == endpoint {
+                return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+            }
+            let extension = self.extension_segment(at_start, parameter)?;
+            let sampler = ArcLengthSampler::try_new(CurveRef::NurbsCurve(&extension), tolerance)?;
+            let extension_length = sampler.total_length();
+            if extension_length >= length {
+                let distance = if at_start {
+                    extension_length - length
+                } else {
+                    length
+                };
+                return sampler.parameter_at_distance(distance);
+            }
+            step *= 2.0;
+            if !step.is_finite() {
+                return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+            }
+        }
+        Err(GeometryError::CurveExtensionLengthDidNotConverge)
+    }
+
+    fn extension_segment(&self, at_start: bool, parameter: Real) -> Result<Self, GeometryError> {
+        let domain = self.domain();
+        let start = *domain.start();
+        let end = *domain.end();
+        if at_start {
+            self.try_extended_to(parameter..=end)?
+                .try_trimmed(parameter..=start)
+        } else {
+            self.try_extended_to(start..=parameter)?
+                .try_trimmed(end..=parameter)
+        }
     }
 
     /// Extracts the directed subcurve from `start` to `end`.
@@ -6450,6 +6571,68 @@ mod tests {
     }
 
     #[test]
+    fn natural_extension_by_length_matches_rhino_smooth_extension_parameters() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 1.0).unwrap(),
+                Point3::try_new(3.0, 1.0, -1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+
+        let start = curve
+            .try_extended_by_length(CurveExtensionSide::Start, 1.75, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(*start.domain().start(), -0.294_749_475_954_422_64));
+        assert_eq!(*start.domain().end(), 1.0);
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                start
+                    .try_trimmed(*start.domain().start()..=0.0)
+                    .unwrap()
+                    .length(Tolerance::DEFAULT)
+                    .unwrap(),
+                1.75
+            )
+        );
+
+        let both = curve
+            .try_extended_by_length(CurveExtensionSide::Both, 1.5, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(*both.domain().start(), -0.258_483_515_102_362_95));
+        assert!(Tolerance::DEFAULT.approx_eq(*both.domain().end(), 1.219_618_451_394_380_4));
+    }
+
+    #[test]
+    fn rational_natural_extension_by_length_reaches_the_requested_distance() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), 0.6).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = curve
+            .try_extended_by_length(CurveExtensionSide::End, 0.75, Tolerance::DEFAULT)
+            .unwrap();
+        assert!(
+            (*extended.domain().end() - 2.087_387_394_770_060_7).abs() < 5.0e-9,
+            "actual domain {:?}",
+            extended.domain()
+        );
+        let extension = extended
+            .try_trimmed(1.0..=*extended.domain().end())
+            .unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(extension.length(Tolerance::DEFAULT).unwrap(), 0.75));
+    }
+
+    #[test]
     fn natural_extension_ignores_interior_bound_and_rejects_invalid_inputs() {
         let curve = NurbsCurve::try_new(
             1,
@@ -6483,6 +6666,16 @@ mod tests {
             closed.try_extended_to(-1.0..=5.0),
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
+        assert_eq!(
+            closed.try_extended_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        for length in [0.0, -1.0, Real::NAN] {
+            assert_eq!(
+                curve.try_extended_by_length(CurveExtensionSide::End, length, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+        }
     }
 
     #[test]

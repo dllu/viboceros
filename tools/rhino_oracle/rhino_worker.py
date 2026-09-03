@@ -5828,6 +5828,45 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_extend_length_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        length = _finite(operation["length"], "curve extension length")
+        if not length > 0.0:
+            source.Dispose()
+            raise ValueError("curve extension length must be positive")
+        side_name = str(operation["side"]).lower()
+        sides = {
+            "start": Rhino.Geometry.CurveEnd.Start,
+            "end": Rhino.Geometry.CurveEnd.End,
+            "both": Rhino.Geometry.CurveEnd.Both,
+        }
+        style_name = str(operation.get("style", "smooth")).lower()
+        styles = {
+            "line": Rhino.Geometry.CurveExtensionStyle.Line,
+            "arc": Rhino.Geometry.CurveExtensionStyle.Arc,
+            "smooth": Rhino.Geometry.CurveExtensionStyle.Smooth,
+        }
+        if side_name not in sides or style_name not in styles:
+            source.Dispose()
+            raise ValueError("invalid curve extension side or style")
+
+        def extend_curve_by_length():
+            result = source.Extend(sides[side_name], length, styles[style_name])
+            if result is None:
+                raise ValueError("Rhino curve length extension failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extend_curve_by_length)
+        finally:
+            source.Dispose()
+
     if kind == "curve_subcurve_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])
         start = _finite(operation["start"], "subcurve start parameter")

@@ -72,6 +72,12 @@ pub enum GeometryError {
     #[error("a curve must be open before it can be extended")]
     CurveExtensionMustBeOpen,
 
+    #[error("curve extension length must be finite and strictly positive")]
+    InvalidCurveExtensionLength,
+
+    #[error("the requested natural curve extension length could not be reached")]
+    CurveExtensionLengthDidNotConverge,
+
     #[error("a curve must be closed before its seam can be changed")]
     CurveSeamMustBeClosed,
 

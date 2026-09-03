@@ -9,23 +9,23 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveInterpolationOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction, CurveTweenMatchMethod,
-    DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
-    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
-    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE,
-    MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER,
-    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
-    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
-    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
-    MIN_POLYLINE_CATENARY_POINT_COUNT, MIN_SMOOTH_CATENARY_POINT_COUNT,
-    MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
-    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
-    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceKnotDirection,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
-    sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
-    try_tween_nurbs_curves,
+    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveExtensionSide,
+    CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction,
+    CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN,
+    Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
+    MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE,
+    MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT,
+    MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
+    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
+    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
+    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
+    SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
+    try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -411,6 +411,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(ReparameterizeCommand)
+            .expect("unique built-in command");
+        registry
+            .register(ExtendCurveCommand)
             .expect("unique built-in command");
         registry
             .register(SubcurveCommand)
@@ -11426,6 +11429,113 @@ fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOpti
     ))
 }
 
+const EXTEND_CURVE_USAGE: &str = "Extend Length=value [Side=Start|End|Both] [Type=Natural] [Join=Merge] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum ExtendCurveTarget {
+    Length {
+        length: Real,
+        side: CurveExtensionSide,
+    },
+    Domain([Real; 2]),
+}
+
+struct ExtendCurveCommand;
+
+impl Command for ExtendCurveCommand {
+    fn name(&self) -> &'static str {
+        "Extend"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let target = parse_extend_curve_target(arguments)?;
+        let mut candidates = document
+            .selected_objects()
+            .filter_map(|object| {
+                object
+                    .geometry()
+                    .nurbs_curve_representation()
+                    .transpose()
+                    .map(|curve| curve.map(|curve| (object.id(), curve)))
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if candidates.len() != 1 {
+            return Err(CommandError::ExtendRequiresOneCurve {
+                actual: candidates.len(),
+            });
+        }
+        let (id, curve) = candidates
+            .pop()
+            .expect("one curve extension source was required");
+        let (curve, description) = match target {
+            ExtendCurveTarget::Length { length, side } => (
+                curve.try_extended_by_length(side, length, document.tolerance())?,
+                format!("{side:?} by length {length}"),
+            ),
+            ExtendCurveTarget::Domain([start, end]) => (
+                curve.try_extended_to(start..=end)?,
+                format!("to include domain {start}..{end}"),
+            ),
+        };
+        document.replace_object_geometries([(id, Geometry::NurbsCurve(curve))])?;
+        Ok(format!(
+            "Naturally extended the selected curve {description}, merging the extension"
+        ))
+    }
+}
+
+fn parse_extend_curve_target(arguments: &[&str]) -> Result<ExtendCurveTarget, CommandError> {
+    if arguments.is_empty() {
+        return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
+    }
+    let (name, value, consumed) = orient_option(arguments, 0, EXTEND_CURVE_USAGE)?;
+    let mut target = if option_name_eq(name, "Length") {
+        ExtendCurveTarget::Length {
+            length: parse_finite_real(value)?,
+            side: CurveExtensionSide::End,
+        }
+    } else if option_name_eq(name, "Domain") {
+        let values = value.split(',').collect::<Vec<_>>();
+        if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
+            return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
+        }
+        ExtendCurveTarget::Domain([parse_finite_real(values[0])?, parse_finite_real(values[1])?])
+    } else {
+        return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
+    };
+
+    let mut side_seen = false;
+    let mut type_seen = false;
+    let mut join_seen = false;
+    let mut index = consumed;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, EXTEND_CURVE_USAGE)?;
+        if option_name_eq(name, "Side") && !side_seen {
+            let ExtendCurveTarget::Length { side, .. } = &mut target else {
+                return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
+            };
+            *side = if option_name_eq(value, "Start") {
+                CurveExtensionSide::Start
+            } else if option_name_eq(value, "End") {
+                CurveExtensionSide::End
+            } else if option_name_eq(value, "Both") {
+                CurveExtensionSide::Both
+            } else {
+                return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
+            };
+            side_seen = true;
+        } else if option_name_eq(name, "Type") && !type_seen && option_name_eq(value, "Natural") {
+            type_seen = true;
+        } else if option_name_eq(name, "Join") && !join_seen && option_name_eq(value, "Merge") {
+            join_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(target)
+}
+
 const SUBCURVE_USAGE: &str =
     "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No]";
 
@@ -18684,6 +18794,9 @@ pub enum CommandError {
     #[error("SubCrv requires exactly one selected curve, got {actual}")]
     SubcurveRequiresOneCurve { actual: usize },
 
+    #[error("Extend requires exactly one selected curve, got {actual}")]
+    ExtendRequiresOneCurve { actual: usize },
+
     #[error("Split currently requires exactly one selected curve, got {actual}")]
     SplitRequiresOneCurve { actual: usize },
 
@@ -19271,7 +19384,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -23509,6 +23622,166 @@ mod tests {
                 .unwrap()
         );
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn extend_by_length_preserves_curve_identity_attributes_groups_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Extensions")
+            .unwrap();
+        registry
+            .execute(&mut document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry
+            .execute(&mut document, "SetObjectName Natural")
+            .unwrap();
+        registry.execute(&mut document, "Group Extended").unwrap();
+        let before = document.object(id).unwrap().clone();
+        let expected = before
+            .geometry()
+            .nurbs_curve_representation()
+            .unwrap()
+            .unwrap()
+            .try_extended_by_length(CurveExtensionSide::Both, 2.0, document.tolerance())
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Extend Length=2 Side=Both Type=Natural Join=Merge"
+                )
+                .unwrap(),
+            "Naturally extended the selected curve Both by length 2, merging the extension"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected.clone()));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("Extended")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("Extend"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(id).unwrap(), &before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(expected)
+        );
+    }
+
+    #[test]
+    fn extend_accepts_an_exact_domain_and_defaults_length_to_the_end() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Extend Domain=-5,15")
+                .unwrap(),
+            "Naturally extended the selected curve to include domain -5..15, merging the extension"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(id).unwrap().geometry() else {
+            panic!("Extend must create exact NURBS geometry")
+        };
+        assert_eq!(curve.domain(), -5.0..=15.0);
+        assert!(curve.evaluate(-5.0).unwrap().is_near(
+            Point3::try_new(-5.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(curve.evaluate(15.0).unwrap().is_near(
+            Point3::try_new(15.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+
+        assert_eq!(
+            registry.execute(&mut document, "Extend Length=5").unwrap(),
+            "Naturally extended the selected curve End by length 5, merging the extension"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(id).unwrap().geometry() else {
+            panic!("Extend must retain exact NURBS geometry")
+        };
+        assert_eq!(*curve.domain().start(), -5.0);
+        assert!(document.tolerance().approx_eq(*curve.domain().end(), 20.0));
+        assert!(curve.evaluate(*curve.domain().end()).unwrap().is_near(
+            Point3::try_new(20.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+    }
+
+    #[test]
+    fn extend_rejects_invalid_requests_selection_and_closed_curves_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Extend",
+            "Extend Length",
+            "Extend Domain=0",
+            "Extend Domain=0,1 Side=End",
+            "Extend Length=1 Side=Middle",
+            "Extend Length=1 Side=End Side=Start",
+            "Extend Length=1 Type=Smooth",
+            "Extend Length=1 Join=Yes",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(EXTEND_CURVE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "Extend Length=1"),
+            Err(CommandError::ExtendRequiresOneCurve { actual: 0 })
+        ));
+
+        registry.execute(&mut document, "Circle 0,0 2").unwrap();
+        let circle = document.objects().next().unwrap().id();
+        document
+            .select_object(circle, SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(circle).unwrap().clone();
+        assert!(matches!(
+            registry.execute(&mut document, "Extend Length=1"),
+            Err(CommandError::Geometry(
+                GeometryError::CurveExtensionMustBeOpen
+            ))
+        ));
+        assert_eq!(document.object(circle).unwrap(), &before);
+
+        document.clear_selection();
+        registry.execute(&mut document, "Line 0,0 1,0").unwrap();
+        registry.execute(&mut document, "Line 0,1 1,1").unwrap();
+        registry.execute(&mut document, "SelLine").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Extend Length=1"),
+            Err(CommandError::ExtendRequiresOneCurve { actual: 2 })
+        ));
+        let line = document
+            .objects()
+            .find(|object| matches!(object.geometry(), Geometry::Line(_)))
+            .unwrap()
+            .id();
+        document
+            .select_object(line, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Extend Length=0"),
+            Err(CommandError::Geometry(
+                GeometryError::InvalidCurveExtensionLength
+            ))
+        ));
     }
 
     #[test]
