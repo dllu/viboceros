@@ -1,0 +1,175 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "periodic-cubic-between-knots",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 3.25
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "periodic-cubic-at-knot",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 4
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "closed-clamped-cubic-nonuniform",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, -1, 0]},
+          {"point": [5, 0, 1]}, {"point": [4, 4, -1]},
+          {"point": [1, 5, 0]}, {"point": [0, 0, 0]}
+        ],
+        "knots": [10, 10, 10, 10, 12, 17, 22, 22, 22, 22]
+      },
+      "parameter": 15.3
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "closed-rational-quadratic",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-1, 0, 0], "weight": 0.75},
+          {"point": [2, -2, 0], "weight": 1.5},
+          {"point": [4, 2, 1], "weight": 0.6},
+          {"point": [0, 4, 0], "weight": 1.8},
+          {"point": [-1, 0, 0], "weight": 0.75}
+        ],
+        "knots": [0, 0, 0, 2, 5, 8, 8, 8]
+      },
+      "parameter": 4
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "closed-rational-unequal-seam-weights",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 0.5},
+          {"point": [3, -1, 0], "weight": 1.3},
+          {"point": [5, 3, 0], "weight": 0.8},
+          {"point": [0, 4, 0], "weight": 1.7},
+          {"point": [0, 0, 0], "weight": 2.0}
+        ],
+        "knots": [4, 4, 4, 5, 9, 12, 12, 12]
+      },
+      "parameter": 7
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "closed-degree-one-between-knots",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [4, 0, 0]},
+          {"point": [4, 3, 0]}, {"point": [0, 3, 0]},
+          {"point": [0, 0, 0]}
+        ],
+        "knots": [0, 0, 2, 5, 8, 10, 10]
+      },
+      "parameter": 3
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "periodic-at-domain-start",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 2
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "periodic-at-domain-end",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 6
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "periodic-rational-at-multiple-knot",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 0.5},
+          {"point": [3, -1, 0], "weight": 1.2},
+          {"point": [5, 3, 1], "weight": 0.8},
+          {"point": [1, 5, -1], "weight": 1.5},
+          {"point": [-2, 2, 0], "weight": 0.7},
+          {"point": [0, 0, 0], "weight": 0.5},
+          {"point": [3, -1, 0], "weight": 1.2},
+          {"point": [5, 3, 1], "weight": 0.8}
+        ],
+        "knots": [-2, -2, -1, 0, 1, 1, 2, 3, 4, 5, 5, 5]
+      },
+      "parameter": 1
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "closed-clamped-at-domain-end",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, -1, 0]},
+          {"point": [5, 0, 1]}, {"point": [4, 4, -1]},
+          {"point": [1, 5, 0]}, {"point": [0, 0, 0]}
+        ],
+        "knots": [10, 10, 10, 10, 12, 17, 22, 22, 22, 22]
+      },
+      "parameter": 22
+    },
+    {
+      "op": "curve_change_seam_geometry",
+      "id": "periodic-reparameterized-domain",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8],
+        "domain": [100, 180]
+      },
+      "parameter": 133
+    }
+  ]
+}

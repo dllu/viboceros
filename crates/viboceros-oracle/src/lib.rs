@@ -552,6 +552,11 @@ pub enum Operation {
         #[serde(default = "default_true")]
         smooth: bool,
     },
+    CurveChangeSeamGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        parameter: f64,
+    },
     CurveInsertControlPointGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1017,6 +1022,7 @@ impl Operation {
             | Self::CurveMakeUniformGeometry { id, .. }
             | Self::CurveChangeDegreeGeometry { id, .. }
             | Self::CurveMakePeriodicGeometry { id, .. }
+            | Self::CurveChangeSeamGeometry { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
@@ -2851,6 +2857,15 @@ fn execute(
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) =
                 measure(iterations, || source.try_make_periodic(black_box(*smooth)))?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::CurveChangeSeamGeometry {
+            curve, parameter, ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_change_closed_seam(black_box(*parameter))
+            })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
         Operation::CurveInsertControlPointGeometry {
@@ -8417,6 +8432,40 @@ mod tests {
         assert_eq!(surface["control_count"], json!([7, 2]));
         assert_eq!(surface["periodic_u"], true);
         assert_eq!(surface["periodic_v"], false);
+    }
+
+    #[test]
+    fn captures_closed_curve_seam_relocation() {
+        let response = run_request(&request(vec![Operation::CurveChangeSeamGeometry {
+            id: "periodic-seam-between-knots".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 3,
+                control_points: [
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [2.0, 2.0, 0.0],
+                    [0.0, 2.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [2.0, 2.0, 0.0],
+                ]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+                knots: vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+                domain: None,
+            },
+            parameter: 3.25,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 3);
+        assert_eq!(curve["domain"], json!([3.25, 7.25]));
+        assert_eq!(curve["closed"], true);
+        assert_eq!(curve["periodic"], true);
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 8);
+        assert_eq!(curve["knots"].as_array().unwrap().len(), 12);
     }
 
     #[test]

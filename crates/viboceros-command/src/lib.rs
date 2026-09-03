@@ -404,6 +404,9 @@ impl CommandRegistry {
             .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
+            .register(CurveSeamCommand)
+            .expect("unique built-in command");
+        registry
             .register(DirectionCommand)
             .expect("unique built-in command");
         registry
@@ -11095,6 +11098,81 @@ fn parse_yes_no(value: &str) -> Option<bool> {
     }
 }
 
+const CURVE_SEAM_USAGE: &str = "CrvSeam point | CrvSeam Parameter=value";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum CurveSeamLocation {
+    Point(Point3),
+    Parameter(Real),
+}
+
+struct CurveSeamCommand;
+
+impl Command for CurveSeamCommand {
+    fn name(&self) -> &'static str {
+        "CrvSeam"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let location = parse_curve_seam_location(arguments)?;
+        let mut candidates = Vec::new();
+        for object in document.selected_objects() {
+            let Some(curve_ref) = geometry_curve_ref(object.geometry()) else {
+                continue;
+            };
+            if !curve_ref.is_closed()? {
+                continue;
+            }
+            let curve = object
+                .geometry()
+                .nurbs_curve_representation()?
+                .expect("a supported curve has an exact NURBS representation");
+            candidates.push((object.id(), curve));
+        }
+        if candidates.len() != 1 {
+            return Err(CommandError::CurveSeamRequiresOneClosedCurve {
+                actual: candidates.len(),
+            });
+        }
+
+        let (id, curve) = candidates
+            .pop()
+            .expect("one closed curve candidate was required");
+        let parameter = match location {
+            CurveSeamLocation::Point(point) => {
+                curve.closest_parameter(point, document.tolerance())?
+            }
+            CurveSeamLocation::Parameter(parameter) => parameter,
+        };
+        let relocated = curve.try_change_closed_seam(parameter)?;
+        document.replace_object_geometries([(id, Geometry::NurbsCurve(relocated))])?;
+        Ok(format!(
+            "Set the selected closed curve seam at parameter {parameter}"
+        ))
+    }
+}
+
+fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, CommandError> {
+    let Some(first) = arguments.first() else {
+        return Err(CommandError::Usage(CURVE_SEAM_USAGE));
+    };
+    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
+    if option_name_eq(first_name, "Parameter") {
+        let (name, value, consumed) = orient_option(arguments, 0, CURVE_SEAM_USAGE)?;
+        if !option_name_eq(name, "Parameter") || consumed != arguments.len() {
+            return Err(CommandError::Usage(CURVE_SEAM_USAGE));
+        }
+        return Ok(CurveSeamLocation::Parameter(parse_finite_real(value)?));
+    }
+
+    let (point, consumed) = parse_point(arguments).map_err(|error| match error {
+        CommandError::Usage(_) => CommandError::Usage(CURVE_SEAM_USAGE),
+        error => error,
+    })?;
+    require_consumed(arguments, consumed, CURVE_SEAM_USAGE)?;
+    Ok(CurveSeamLocation::Point(point))
+}
+
 const DIRECTION_USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
 
@@ -18104,6 +18182,9 @@ pub enum CommandError {
     )]
     InsertControlPointRequiresOneObject { actual: usize },
 
+    #[error("CrvSeam requires exactly one selected closed curve, got {actual}")]
+    CurveSeamRequiresOneClosedCurve { actual: usize },
+
     #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
@@ -18688,7 +18769,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -22375,6 +22456,183 @@ mod tests {
                 .execute(&mut document, "CloseCrv Tolerance=-1")
                 .is_err()
         );
+    }
+
+    #[test]
+    fn changes_rational_curve_seam_without_losing_identity_attributes_groups_or_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New SeamTests")
+            .unwrap();
+        let source = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([0.0, 0.0, 0.0], 0.5),
+                ([3.0, -1.0, 0.0], 1.3),
+                ([5.0, 3.0, 0.0], 0.8),
+                ([0.0, 4.0, 0.0], 1.7),
+                ([0.0, 0.0, 0.0], 2.0),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![4.0, 4.0, 4.0, 5.0, 9.0, 12.0, 12.0, 12.0],
+        )
+        .unwrap();
+        let expected = source.try_change_closed_seam(7.0).unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Weighted closed loop");
+        let id = document
+            .add_geometry_with_attributes(Geometry::NurbsCurve(source.clone()), attributes.clone())
+            .unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry.execute(&mut document, "Group SeamSet").unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "CrvSeam Parameter=7")
+                .unwrap(),
+            "Set the selected closed curve seam at parameter 7"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.attributes(), &attributes);
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected.clone()));
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("SeamSet")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("CrvSeam"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(expected)
+        );
+    }
+
+    #[test]
+    fn changes_polyline_and_analytic_curve_seams_from_model_points() {
+        let registry = CommandRegistry::with_builtins();
+        let mut polyline_document = Document::default();
+        registry
+            .execute(&mut polyline_document, "Polyline 0,0 4,0 4,3 0,3 0,0")
+            .unwrap();
+        let polyline_id = polyline_document.objects().next().unwrap().id();
+        registry.execute(&mut polyline_document, "SelAll").unwrap();
+        registry
+            .execute(&mut polyline_document, "CrvSeam 4,1")
+            .unwrap();
+        let Geometry::NurbsCurve(polyline) =
+            polyline_document.object(polyline_id).unwrap().geometry()
+        else {
+            panic!("expected an exact degree-one NURBS polyline")
+        };
+        assert_eq!(polyline.degree(), 1);
+        assert!(
+            polyline
+                .evaluate(*polyline.domain().start())
+                .unwrap()
+                .is_near(
+                    Point3::try_new(4.0, 1.0, 0.0).unwrap(),
+                    polyline_document.tolerance(),
+                )
+        );
+        assert!(polyline.is_closed().unwrap());
+
+        let mut circle_document = Document::default();
+        registry
+            .execute(&mut circle_document, "Circle 0,0 5")
+            .unwrap();
+        let circle_id = circle_document.objects().next().unwrap().id();
+        registry.execute(&mut circle_document, "SelAll").unwrap();
+        registry
+            .execute(&mut circle_document, "CrvSeam 0,5")
+            .unwrap();
+        let Geometry::NurbsCurve(circle) = circle_document.object(circle_id).unwrap().geometry()
+        else {
+            panic!("expected an exact rational circle NURBS")
+        };
+        assert!(circle.is_rational());
+        assert!(circle.evaluate(*circle.domain().start()).unwrap().is_near(
+            Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+            circle_document.tolerance(),
+        ));
+        assert!(circle.is_closed().unwrap());
+    }
+
+    #[test]
+    fn curve_seam_rejects_invalid_or_ambiguous_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut empty = Document::default();
+        for command in [
+            "CrvSeam",
+            "CrvSeam Parameter",
+            "CrvSeam Parameter=1 extra",
+            "CrvSeam 1,2,3 extra",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut empty, command),
+                Err(CommandError::Usage(CURVE_SEAM_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut empty, "CrvSeam 0,0"),
+            Err(CommandError::CurveSeamRequiresOneClosedCurve { actual: 0 })
+        ));
+
+        registry.execute(&mut empty, "Line 0,0 3,0").unwrap();
+        registry.execute(&mut empty, "SelAll").unwrap();
+        assert!(matches!(
+            registry.execute(&mut empty, "CrvSeam 1,0"),
+            Err(CommandError::CurveSeamRequiresOneClosedCurve { actual: 0 })
+        ));
+
+        let mut multiple = Document::default();
+        registry.execute(&mut multiple, "Circle 0,0 2").unwrap();
+        registry
+            .execute(&mut multiple, "Polyline 5,0 8,0 8,3 5,0")
+            .unwrap();
+        registry.execute(&mut multiple, "SelAll").unwrap();
+        let before = multiple.objects().cloned().collect::<Vec<_>>();
+        let history = multiple.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut multiple, "CrvSeam 1,1"),
+            Err(CommandError::CurveSeamRequiresOneClosedCurve { actual: 2 })
+        ));
+        assert_eq!(
+            multiple.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(multiple.undo_label(), history.as_deref());
+
+        multiple.clear_selection();
+        let circle_id = multiple.objects().next().unwrap().id();
+        multiple
+            .select_object(circle_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut multiple, "CrvSeam Parameter=99"),
+            Err(CommandError::Geometry(
+                GeometryError::ParameterOutOfDomain { .. }
+            ))
+        ));
+        assert_eq!(
+            multiple.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(multiple.undo_label(), history.as_deref());
     }
 
     #[test]

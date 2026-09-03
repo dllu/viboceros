@@ -223,6 +223,7 @@ enum InteractiveCommand {
         direction: InteractiveControlPointDirection,
         midpoint: bool,
     },
+    CrvSeam,
     Move {
         start: Option<Point3>,
     },
@@ -322,6 +323,7 @@ impl InteractiveCommand {
             Self::DupMeshHoleBoundary => "DupMeshHoleBoundary",
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
             Self::InsertControlPoint { .. } => "InsertControlPoint",
+            Self::CrvSeam => "CrvSeam",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
@@ -560,6 +562,9 @@ impl InteractiveCommand {
             Self::InsertControlPoint { .. } => {
                 "InsertControlPoint: pick a location on the selected curve or surface (Esc to cancel)"
             }
+            Self::CrvSeam => {
+                "CrvSeam: pick a new seam location on the selected closed curve (Esc to cancel)"
+            }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -739,6 +744,7 @@ impl InteractiveCommand {
             | Self::DupMeshHoleBoundary
             | Self::ExtractIsocurve { .. }
             | Self::InsertControlPoint { .. }
+            | Self::CrvSeam
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -2227,6 +2233,7 @@ impl VibocerosApp {
                 "interpcrv" | "interpcurve" => InteractiveCommand::InterpCrv,
                 "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
                 "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
+                "crvseam" => InteractiveCommand::CrvSeam,
                 "move" | "m" => InteractiveCommand::Move { start: None },
                 "copy" => InteractiveCommand::Copy { start: None },
                 "scale" => InteractiveCommand::Scale {
@@ -2291,6 +2298,7 @@ impl VibocerosApp {
                 | InteractiveCommand::DupMeshHoleBoundary
                 | InteractiveCommand::ExtractIsocurve { .. }
                 | InteractiveCommand::InsertControlPoint { .. }
+                | InteractiveCommand::CrvSeam
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -3490,6 +3498,10 @@ impl VibocerosApp {
                     direction.option_value(),
                     if midpoint { "Yes" } else { "No" },
                 ));
+            }
+            InteractiveCommand::CrvSeam => {
+                self.active_command = None;
+                self.execute_command(&format!("CrvSeam {}", format_model_point(point)));
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -6915,6 +6927,48 @@ mod tests {
             .select_objects([], viboceros_document::SelectionMode::Replace)
             .unwrap();
         assert!(app.try_start_interactive_command("InsertControlPoint"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_curve_seam_uses_one_location_pick_on_the_selected_closed_curve() {
+        let mut app = test_app();
+        app.execute_command("Circle 0,0 5");
+        let source = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("CrvSeam"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::CrvSeam));
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("selected closed curve")
+        );
+        app.accept_drafting_point(point(0.0, 5.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        let Geometry::NurbsCurve(relocated) = app.document.object(source).unwrap().geometry()
+        else {
+            panic!("expected an exact rational NURBS circle")
+        };
+        assert!(relocated.is_rational());
+        assert!(relocated.is_closed().unwrap());
+        assert!(
+            relocated
+                .evaluate(*relocated.domain().start())
+                .unwrap()
+                .is_near(point(0.0, 5.0, 0.0), app.document.tolerance(),)
+        );
+        assert!(app.document.is_selected(source));
+        assert_eq!(app.document.undo_label(), Some("CrvSeam"));
+        assert!(!app.try_start_interactive_command("CrvSeam Parameter=1"));
+
+        app.document.clear_selection();
+        assert!(app.try_start_interactive_command("CrvSeam"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
     }

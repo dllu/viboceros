@@ -183,6 +183,7 @@ ConvertToSingleSpans Direction=Both DeleteInput=No
 ConvertToBeziers DeleteInput=No
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
+CrvSeam 4,1,0
 Dir SwapUV
 Dir Mode=FlipU
 Flip
@@ -753,6 +754,15 @@ nearby ends are made identical, while wider gaps gain a straight segment unless
 `CloseWideGapsWithLine=No` is set. Lines that cannot form a valid three-segment
 loop remain unchanged. Open arcs and NURBS curves will be enabled once the
 document has an exact polycurve representation.
+`CrvSeam point` relocates exactly one selected closed curve's start/end seam to
+the closest curve location; omit the point to pick that location in a viewport,
+or use `CrvSeam Parameter=value` for an exact parameter. Supported analytic
+curves, closed polylines, and NURBS curves are converted to their exact NURBS
+representation as needed. Shape and parameter-span length are preserved, and
+the output domain starts at the chosen parameter. Smooth periodic seams remain
+periodic and gain a control point when required, while an existing
+multiple-knot seam becomes Rhino's equivalent clamped form. Rational geometry,
+object identity, attributes, groups, selection, and undo are preserved.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input
@@ -1040,6 +1050,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/insert_control_point.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_change_seam.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

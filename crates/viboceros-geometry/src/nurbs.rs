@@ -1396,6 +1396,201 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, control_points, knots)
     }
 
+    /// Relocates a closed curve's seam to `parameter` without changing its
+    /// locus or traversal direction.
+    ///
+    /// The result starts at `parameter` and retains the source domain length.
+    /// A smooth periodic seam remains periodic and a seam between existing
+    /// knots adds one control, as Rhino does. Rhino clamps a periodic curve
+    /// when the new seam is already a multiple knot. Non-periodic curves are
+    /// split exactly and cyclically appended, retaining rational weights.
+    pub fn try_change_closed_seam(&self, parameter: Real) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        if !self.is_closed()? {
+            return Err(GeometryError::CurveSeamMustBeClosed);
+        }
+
+        let domain = self.domain();
+        let start = *domain.start();
+        let end = *domain.end();
+        if parameter == start {
+            return Ok(self.clone());
+        }
+        if parameter == end {
+            return self.translate_parameterization_by_period(start, end, 1);
+        }
+        if self.is_periodic() && self.knot_multiplicity_unchecked(parameter) <= 1 {
+            self.change_periodic_seam(parameter, start, end)
+        } else {
+            self.change_non_periodic_seam(parameter, start, end)
+        }
+    }
+
+    fn translate_parameterization_by_period(
+        &self,
+        domain_start: Real,
+        domain_end: Real,
+        periods: isize,
+    ) -> Result<Self, GeometryError> {
+        let knots = self
+            .knots
+            .iter()
+            .map(|knot| translate_curve_parameter(*knot, domain_start, domain_end, periods))
+            .collect::<Result<Vec<_>, _>>()?;
+        Self::try_new_rational(self.degree, self.control_points.clone(), knots)
+    }
+
+    fn change_periodic_seam(
+        &self,
+        parameter: Real,
+        domain_start: Real,
+        domain_end: Real,
+    ) -> Result<Self, GeometryError> {
+        debug_assert!(self.is_periodic());
+        let refined = self.try_insert_knot(parameter, 1)?;
+        let degree = refined.degree;
+        let control_count = refined.control_points.len();
+        let unique_count = control_count - degree;
+        let active_knots = &refined.knots[degree..=control_count];
+        let seam_offset = active_knots.partition_point(|knot| *knot < parameter);
+        if active_knots.get(seam_offset) != Some(&parameter) || seam_offset >= unique_count {
+            return Err(GeometryError::InvalidKnotVector {
+                context: "the periodic seam knot could not be located",
+            });
+        }
+
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidKnotVector {
+                context: "the seam-relocated control count exceeds addressable memory",
+            }
+        })?;
+        for offset in 0..unique_count {
+            controls.push(refined.control_points[(seam_offset + offset) % unique_count]);
+        }
+        for offset in 0..degree {
+            controls.push(controls[offset]);
+        }
+
+        // OpenNURBS stores the periodic short knot vector. Place the requested
+        // seam at short index `degree - 1`, extend the cyclic knot sequence on
+        // both sides, then restore our duplicated artificial outer knots.
+        let short_count = control_count
+            .checked_add(degree)
+            .and_then(|count| count.checked_sub(1))
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "the seam-relocated knot count overflowed usize",
+            })?;
+        let seam_offset =
+            isize::try_from(seam_offset).map_err(|_| GeometryError::InvalidKnotVector {
+                context: "the periodic seam offset exceeds addressable memory",
+            })?;
+        let unique_count_signed =
+            isize::try_from(unique_count).map_err(|_| GeometryError::InvalidKnotVector {
+                context: "the periodic seam period exceeds addressable memory",
+            })?;
+        let lead = isize::try_from(degree - 1).map_err(|_| GeometryError::InvalidKnotVector {
+            context: "the periodic seam degree exceeds addressable memory",
+        })?;
+        let mut short_knots = Vec::new();
+        short_knots.try_reserve_exact(short_count).map_err(|_| {
+            GeometryError::InvalidKnotVector {
+                context: "the seam-relocated knot count exceeds addressable memory",
+            }
+        })?;
+        let base_knots = &refined.knots[degree..control_count];
+        for short_index in 0..short_count {
+            let short_index =
+                isize::try_from(short_index).map_err(|_| GeometryError::InvalidKnotVector {
+                    context: "the periodic seam knot index exceeds addressable memory",
+                })?;
+            let cyclic_index = seam_offset
+                .checked_add(short_index)
+                .and_then(|index| index.checked_sub(lead))
+                .ok_or(GeometryError::InvalidKnotVector {
+                    context: "the periodic seam knot index overflowed addressable memory",
+                })?;
+            let cycle = cyclic_index.div_euclid(unique_count_signed);
+            let base_index = cyclic_index.rem_euclid(unique_count_signed) as usize;
+            let knot =
+                translate_curve_parameter(base_knots[base_index], domain_start, domain_end, cycle)?;
+            short_knots.push(knot);
+        }
+        short_knots[degree - 1] = parameter;
+        let active_end = degree - 1 + unique_count;
+        short_knots[active_end] =
+            translate_curve_parameter(parameter, domain_start, domain_end, 1)?;
+
+        let mut knots = Vec::new();
+        let knot_count = short_count
+            .checked_add(2)
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "the seam-relocated knot count overflowed usize",
+            })?;
+        knots
+            .try_reserve_exact(knot_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "the seam-relocated knot count exceeds addressable memory",
+            })?;
+        knots.push(short_knots[0]);
+        knots.extend_from_slice(&short_knots);
+        knots.push(short_knots[short_knots.len() - 1]);
+        Self::try_new_rational(degree, controls, knots)
+    }
+
+    fn change_non_periodic_seam(
+        &self,
+        parameter: Real,
+        old_start: Real,
+        old_end: Real,
+    ) -> Result<Self, GeometryError> {
+        let (left, right) = self.try_split(parameter)?;
+        let shifted_left = left.translate_parameterization_by_period(old_start, old_end, 1)?;
+        let scale = right.control_points[right.control_points.len() - 1].weight
+            / shifted_left.control_points[0].weight;
+        require_finite([scale], "closed curve seam weight scale")?;
+
+        let output_control_count = right
+            .control_points
+            .len()
+            .checked_add(shifted_left.control_points.len())
+            .and_then(|count| count.checked_sub(1))
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "the seam-relocated control count overflowed usize",
+            })?;
+        let mut controls = Vec::new();
+        controls
+            .try_reserve_exact(output_control_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "the seam-relocated control count exceeds addressable memory",
+            })?;
+        controls.extend_from_slice(&right.control_points);
+        for control in shifted_left.control_points.iter().skip(1) {
+            controls.push(WeightedPoint3::try_new(
+                control.point,
+                control.weight * scale,
+            )?);
+        }
+
+        let output_knot_count = output_control_count
+            .checked_add(self.degree)
+            .and_then(|count| count.checked_add(1))
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "the seam-relocated knot count overflowed usize",
+            })?;
+        let mut knots = Vec::new();
+        knots.try_reserve_exact(output_knot_count).map_err(|_| {
+            GeometryError::InvalidKnotVector {
+                context: "the seam-relocated knot count exceeds addressable memory",
+            }
+        })?;
+        knots.extend_from_slice(&right.knots[..right.knots.len() - 1]);
+        knots.extend_from_slice(&shifted_left.knots[self.degree + 1..]);
+        debug_assert_eq!(controls.len(), output_control_count);
+        debug_assert_eq!(knots.len(), output_knot_count);
+        Self::try_new_rational(self.degree, controls, knots)
+    }
+
     /// Returns the exact full-knot-vector multiplicity of `parameter`.
     ///
     /// Knot equality is intentionally exact. Near knots remain distinct so a
@@ -2110,6 +2305,13 @@ impl NurbsCurve {
             let right = control_count - offset;
             knots[left - 1] = (knots[right - 1] - knots[right]) + knots[left];
         }
+        // These artificial full-vector endpoints are omitted by OpenNURBS.
+        // Normalize them before validation so roundoff in a reparameterized
+        // periodic curve cannot put the first endpoint microscopically after
+        // its reconstructed neighbor (or the last before its neighbor).
+        knots[0] = knots[1];
+        let last = knots.len() - 1;
+        knots[last] = knots[last - 1];
         Self::try_new_rational(degree, controls, knots)
     }
 
@@ -2353,6 +2555,41 @@ fn reparameterize_value(
     let mapped = normalized.mul_add(scaled_target_span, scaled_target_start) * target_scale;
     require_finite([mapped], "NURBS reparameterized knot")?;
     Ok(mapped)
+}
+
+fn translate_curve_parameter(
+    value: Real,
+    domain_start: Real,
+    domain_end: Real,
+    periods: isize,
+) -> Result<Real, GeometryError> {
+    if periods == 0 {
+        return Ok(value);
+    }
+    if periods == 1 && value == domain_start {
+        return Ok(domain_end);
+    }
+    if periods == -1 && value == domain_end {
+        return Ok(domain_start);
+    }
+
+    let periods = periods as Real;
+    let direct_period = domain_end - domain_start;
+    let direct = periods.mul_add(direct_period, value);
+    if direct.is_finite() && direct_period.is_finite() {
+        return Ok(direct);
+    }
+
+    let scale = value.abs().max(domain_start.abs()).max(domain_end.abs());
+    if !scale.is_finite() || scale == 0.0 {
+        return Err(GeometryError::NonFinite {
+            context: "closed curve seam parameter translation",
+        });
+    }
+    let normalized_period = domain_end / scale - domain_start / scale;
+    let translated = periods.mul_add(normalized_period, value / scale) * scale;
+    require_finite([translated], "closed curve seam parameter translation")?;
+    Ok(translated)
 }
 
 fn clamped_control_point_curve(
@@ -3980,6 +4217,192 @@ mod tests {
             assert!(Tolerance::DEFAULT.approx_eq(actual.z(), -expected.z()));
         }
         assert_eq!(reversed.reversed().unwrap(), curve);
+    }
+
+    #[test]
+    fn closed_curve_seam_relocation_rotates_periodic_structure_exactly() {
+        let unique = [
+            point(0.0, 0.0),
+            point(2.0, 0.0),
+            point(2.0, 2.0),
+            point(0.0, 2.0),
+        ];
+        let curve = NurbsCurve::try_new(
+            3,
+            unique.iter().chain(&unique[..3]).copied().collect(),
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+        )
+        .unwrap();
+        assert!(curve.is_periodic());
+
+        let relocated = curve.try_change_closed_seam(3.25).unwrap();
+        assert!(relocated.is_periodic());
+        assert_eq!(relocated.domain(), 3.25..=7.25);
+        assert_eq!(relocated.control_points().len(), 8);
+        assert_eq!(
+            relocated.knots(),
+            &[2.0, 2.0, 3.0, 3.25, 4.0, 5.0, 6.0, 7.0, 7.25, 8.0, 9.0, 9.0]
+        );
+        let expected_controls = [
+            point(2.0, 1.5),
+            point(7.0 / 6.0, 2.0),
+            point(0.0, 11.0 / 6.0),
+            unique[0],
+            unique[1],
+            point(2.0, 1.5),
+            point(7.0 / 6.0, 2.0),
+            point(0.0, 11.0 / 6.0),
+        ];
+        for (actual, expected) in relocated.control_points().iter().zip(expected_controls) {
+            assert_point_near(actual.point(), expected);
+        }
+        for sample in 0..=40 {
+            let parameter = 3.25 + sample as Real / 40.0 * 4.0;
+            let source_parameter = if parameter <= 6.0 {
+                parameter
+            } else {
+                parameter - 4.0
+            };
+            assert_point_near(
+                relocated.evaluate(parameter).unwrap(),
+                curve.evaluate(source_parameter).unwrap(),
+            );
+        }
+
+        assert_eq!(curve.try_change_closed_seam(2.0).unwrap(), curve);
+        let shifted = curve.try_change_closed_seam(6.0).unwrap();
+        assert_eq!(shifted.domain(), 6.0..=10.0);
+        assert_eq!(
+            shifted.knots(),
+            &[4.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 12.0]
+        );
+        assert_eq!(shifted.control_points(), curve.control_points());
+
+        let reparameterized = curve.try_reparameterized(100.0..=180.0).unwrap();
+        let relocated = reparameterized.try_change_closed_seam(133.0).unwrap();
+        assert!(relocated.is_periodic());
+        assert_eq!(relocated.domain(), 133.0..=213.0);
+        assert_eq!(relocated.control_points().len(), 8);
+    }
+
+    #[test]
+    fn closed_curve_seam_relocation_preserves_rational_segments_and_rhino_knot_rules() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([0.0, 0.0, 0.0], 0.5),
+                ([3.0, -1.0, 0.0], 1.3),
+                ([5.0, 3.0, 0.0], 0.8),
+                ([0.0, 4.0, 0.0], 1.7),
+                ([0.0, 0.0, 0.0], 2.0),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![4.0, 4.0, 4.0, 5.0, 9.0, 12.0, 12.0, 12.0],
+        )
+        .unwrap();
+        assert!(curve.is_closed().unwrap());
+        let relocated = curve.try_change_closed_seam(7.0).unwrap();
+        assert!(!relocated.is_periodic());
+        assert_eq!(relocated.domain(), 7.0..=15.0);
+        assert_eq!(
+            relocated.knots(),
+            &[7.0, 7.0, 7.0, 9.0, 12.0, 12.0, 13.0, 15.0, 15.0, 15.0]
+        );
+        let expected_weights = [
+            1.028_571_428_571_428_5,
+            1.057_142_857_142_857_2,
+            1.7,
+            2.0,
+            5.2,
+            4.0,
+            4.114_285_714_285_714,
+        ];
+        for (control, expected) in relocated.control_points().iter().zip(expected_weights) {
+            assert!(Tolerance::DEFAULT.approx_eq(control.weight(), expected));
+        }
+        for sample in 0..=40 {
+            let parameter = 7.0 + sample as Real / 40.0 * 8.0;
+            let source_parameter = if parameter <= 12.0 {
+                parameter
+            } else {
+                parameter - 8.0
+            };
+            assert_point_near(
+                relocated.evaluate(parameter).unwrap(),
+                curve.evaluate(source_parameter).unwrap(),
+            );
+        }
+
+        let periodic = NurbsCurve::try_new_rational(
+            3,
+            [
+                ([0.0, 0.0, 0.0], 0.5),
+                ([3.0, -1.0, 0.0], 1.2),
+                ([5.0, 3.0, 1.0], 0.8),
+                ([1.0, 5.0, -1.0], 1.5),
+                ([-2.0, 2.0, 0.0], 0.7),
+                ([0.0, 0.0, 0.0], 0.5),
+                ([3.0, -1.0, 0.0], 1.2),
+                ([5.0, 3.0, 1.0], 0.8),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![
+                -2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0,
+            ],
+        )
+        .unwrap();
+        assert!(periodic.is_periodic());
+        let clamped = periodic.try_change_closed_seam(1.0).unwrap();
+        assert!(!clamped.is_periodic());
+        assert_eq!(clamped.domain(), 1.0..=5.0);
+        assert_eq!(
+            clamped.knots(),
+            &[
+                1.0, 1.0, 1.0, 1.0, 2.0, 3.0, 4.0, 4.0, 4.0, 5.0, 5.0, 5.0, 5.0
+            ]
+        );
+        assert_eq!(clamped.control_points().len(), 9);
+    }
+
+    #[test]
+    fn closed_curve_seam_relocation_rejects_open_or_out_of_domain_curves() {
+        let open = NurbsCurve::try_new(
+            2,
+            vec![point(0.0, 0.0), point(2.0, 3.0), point(5.0, 0.0)],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(
+            open.try_change_closed_seam(0.5),
+            Err(GeometryError::CurveSeamMustBeClosed)
+        );
+        let closed = NurbsCurve::try_control_point_curve_with_closure(
+            1,
+            vec![
+                point(0.0, 0.0),
+                point(4.0, 0.0),
+                point(4.0, 3.0),
+                point(0.0, 3.0),
+            ],
+            ControlPointCurveClosure::Sharp,
+        )
+        .unwrap();
+        assert!(matches!(
+            closed.try_change_closed_seam(f64::NAN),
+            Err(GeometryError::NonFinite { .. })
+        ));
+        assert!(matches!(
+            closed.try_change_closed_seam(*closed.domain().end() + 1.0),
+            Err(GeometryError::ParameterOutOfDomain { .. })
+        ));
     }
 
     #[test]

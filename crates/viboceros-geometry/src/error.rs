@@ -66,6 +66,9 @@ pub enum GeometryError {
     #[error("a NURBS curve trim interval must be finite, increasing, and inside its domain")]
     InvalidCurveTrimInterval,
 
+    #[error("a curve must be closed before its seam can be changed")]
+    CurveSeamMustBeClosed,
+
     #[error("periodic NURBS conversion requires degree two or higher")]
     PeriodicNurbsDegreeTooLow,
 

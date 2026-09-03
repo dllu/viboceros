@@ -5729,6 +5729,35 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_change_seam_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "closed curve seam parameter")
+
+        def change_curve_seam():
+            duplicate = source.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for seam relocation")
+            try:
+                if not duplicate.ChangeClosedCurveSeam(parameter):
+                    raise ValueError("Rhino closed curve seam relocation failed")
+                nurbs = duplicate.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino seam relocation returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, change_curve_seam)
+        finally:
+            source.Dispose()
+
     if kind == "surface_direction_edit_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
