@@ -66,6 +66,12 @@ pub enum GeometryError {
     #[error("a NURBS curve trim interval must be finite, increasing, and inside its domain")]
     InvalidCurveTrimInterval,
 
+    #[error("a NURBS curve extension interval must be finite, increasing, and extend its domain")]
+    InvalidCurveExtensionInterval,
+
+    #[error("a curve must be open before it can be extended")]
+    CurveExtensionMustBeOpen,
+
     #[error("a curve must be closed before its seam can be changed")]
     CurveSeamMustBeClosed,
 

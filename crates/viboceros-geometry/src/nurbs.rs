@@ -2238,6 +2238,61 @@ impl NurbsCurve {
         }
     }
 
+    /// Extends an open curve to either or both requested parameter bounds.
+    ///
+    /// Each extended end is first clamped at its current endpoint and then
+    /// extrapolated with the endpoint NURBS span. Bounds that fall inside the
+    /// current domain are ignored, matching OpenNURBS' natural extension
+    /// behavior. At least one bound must extend the current domain.
+    pub fn try_extended_to(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        let requested_start = *interval.start();
+        let requested_end = *interval.end();
+        if !requested_start.is_finite()
+            || !requested_end.is_finite()
+            || requested_start >= requested_end
+        {
+            return Err(GeometryError::InvalidCurveExtensionInterval);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let domain = self.domain();
+        let original_start = *domain.start();
+        let original_end = *domain.end();
+        let extend_start = requested_start < original_start;
+        let extend_end = requested_end > original_end;
+        if !extend_start && !extend_end {
+            return Err(GeometryError::InvalidCurveExtensionInterval);
+        }
+
+        let mut result = self.clone();
+        if extend_start {
+            result = result.clamped_at_start(original_start)?;
+            let (_, controls) =
+                result.de_boor_side_controls_unbounded(result.degree, requested_start)?;
+            let mut all_controls = result.control_points;
+            all_controls[..=result.degree].copy_from_slice(&controls);
+            let mut knots = result.knots;
+            knots[..=result.degree].fill(requested_start);
+            result = Self::try_new_rational(result.degree, all_controls, knots)?;
+        }
+        if extend_end {
+            result = result.clamped_at_end(original_end)?;
+            let final_span = result.control_points.len() - 1;
+            let (controls, _) =
+                result.de_boor_side_controls_unbounded(final_span, requested_end)?;
+            let first_control = result.control_points.len() - result.degree - 1;
+            let mut all_controls = result.control_points;
+            all_controls[first_control..].copy_from_slice(&controls);
+            let mut knots = result.knots;
+            let first_knot = knots.len() - result.degree - 1;
+            knots[first_knot..].fill(requested_end);
+            result = Self::try_new_rational(result.degree, all_controls, knots)?;
+        }
+        Ok(result)
+    }
+
     /// Extracts the directed subcurve from `start` to `end`.
     ///
     /// Increasing parameters retain the natural curve direction. Decreasing
@@ -2570,6 +2625,37 @@ impl NurbsCurve {
                 )?;
                 work[local_index] =
                     blend_weighted_control_points(work[local_index - 1], work[local_index], alpha)?;
+            }
+            left.push(work[level]);
+            right.push(work[self.degree]);
+        }
+        right.reverse();
+        Ok((left, right))
+    }
+
+    fn de_boor_side_controls_unbounded(
+        &self,
+        span: usize,
+        parameter: Real,
+    ) -> Result<(Vec<WeightedPoint3>, Vec<WeightedPoint3>), GeometryError> {
+        let mut work = self.control_points[span - self.degree..=span].to_vec();
+        let mut left = Vec::with_capacity(self.degree + 1);
+        let mut right = Vec::with_capacity(self.degree + 1);
+        left.push(work[0]);
+        right.push(work[self.degree]);
+        for level in 1..=self.degree {
+            for local_index in (level..=self.degree).rev() {
+                let knot_index = span - self.degree + local_index;
+                let alpha = interval_fraction_unbounded(
+                    parameter,
+                    self.knots[knot_index],
+                    self.knots[knot_index + self.degree - level + 1],
+                )?;
+                work[local_index] = blend_weighted_control_points_unbounded(
+                    work[local_index - 1],
+                    work[local_index],
+                    alpha,
+                )?;
             }
             left.push(work[level]);
             right.push(work[self.degree]);
@@ -3307,6 +3393,17 @@ pub(crate) fn interval_fraction(
     interval_start: Real,
     interval_end: Real,
 ) -> Result<Real, GeometryError> {
+    let alpha = interval_fraction_unbounded(value, interval_start, interval_end)?;
+    // The validated span brackets `value`; a value just outside this range can
+    // only be floating-point roundoff in the ratio calculation.
+    Ok(alpha.clamp(0.0, 1.0))
+}
+
+fn interval_fraction_unbounded(
+    value: Real,
+    interval_start: Real,
+    interval_end: Real,
+) -> Result<Real, GeometryError> {
     let denominator = interval_end - interval_start;
     let alpha = if denominator.is_finite() && denominator > 0.0 {
         (value - interval_start) / denominator
@@ -3325,9 +3422,7 @@ pub(crate) fn interval_fraction(
             context: "de Boor blend factor",
         });
     }
-    // The validated span brackets `value`; a value just outside this range can
-    // only be floating-point roundoff in the ratio calculation.
-    Ok(alpha.clamp(0.0, 1.0))
+    Ok(alpha)
 }
 
 fn validate_structure(
@@ -3508,15 +3603,29 @@ fn blend_weighted_control_points(
     right: WeightedPoint3,
     alpha: Real,
 ) -> Result<WeightedPoint3, GeometryError> {
+    if !alpha.is_finite() || !(0.0..=1.0).contains(&alpha) {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "knot-insertion blend factor is outside zero to one",
+        });
+    }
+
+    blend_weighted_control_points_unbounded(left, right, alpha)
+}
+
+fn blend_weighted_control_points_unbounded(
+    left: WeightedPoint3,
+    right: WeightedPoint3,
+    alpha: Real,
+) -> Result<WeightedPoint3, GeometryError> {
     if alpha == 0.0 {
         return Ok(left);
     }
     if alpha == 1.0 {
         return Ok(right);
     }
-    if !alpha.is_finite() || !(0.0..=1.0).contains(&alpha) {
-        return Err(GeometryError::InvalidKnotVector {
-            context: "knot-insertion blend factor is outside zero to one",
+    if !alpha.is_finite() {
+        return Err(GeometryError::NonFinite {
+            context: "NURBS projective blend factor",
         });
     }
 
@@ -6284,6 +6393,96 @@ mod tests {
             curve.evaluate(0.0).unwrap(),
         );
         assert_eq!(curve.try_trimmed(curve.domain()).unwrap(), curve);
+    }
+
+    #[test]
+    fn natural_extension_extrapolates_the_endpoint_nurbs_spans_exactly() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![point(0.0, 0.0), point(1.0, 2.0), point(3.0, 1.0)],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = curve.try_extended_to(-1.0..=2.0).unwrap();
+
+        assert_eq!(extended.domain(), -1.0..=2.0);
+        assert_eq!(extended.knots(), &[-1.0, -1.0, -1.0, 2.0, 2.0, 2.0]);
+        for parameter in [-1.0, -0.5, 0.0, 0.3, 1.0, 1.5, 2.0] {
+            assert_point_near(
+                extended.evaluate(parameter).unwrap(),
+                point(
+                    parameter.mul_add(parameter, 2.0 * parameter),
+                    (-3.0 * parameter).mul_add(parameter, 4.0 * parameter),
+                ),
+            );
+        }
+    }
+
+    #[test]
+    fn natural_extension_clamps_nonclamped_rational_ends_and_preserves_the_source() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(-2.0, 1.0), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 4.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(5.0, -2.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(8.0, 3.0), 1.25).unwrap(),
+            ],
+            vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0],
+        )
+        .unwrap();
+        let extended = curve.try_extended_to(-0.25..=2.25).unwrap();
+
+        assert_eq!(extended.domain(), -0.25..=2.25);
+        assert!(extended.knots()[..3].iter().all(|knot| *knot == -0.25));
+        assert!(
+            extended.knots()[extended.knots().len() - 3..]
+                .iter()
+                .all(|knot| *knot == 2.25)
+        );
+        for sample in 0..=32 {
+            let parameter = 2.0 * sample as Real / 32.0;
+            assert_point_near(
+                extended.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
+    }
+
+    #[test]
+    fn natural_extension_ignores_interior_bound_and_rejects_invalid_inputs() {
+        let curve = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(10.0, 0.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = curve.try_extended_to(0.25..=2.0).unwrap();
+        assert_eq!(extended.domain(), 0.0..=2.0);
+        assert_eq!(extended.evaluate(2.0).unwrap(), point(20.0, 0.0));
+
+        for interval in [0.0..=1.0, 0.75..=0.25, Real::NAN..=2.0] {
+            assert_eq!(
+                curve.try_extended_to(interval),
+                Err(GeometryError::InvalidCurveExtensionInterval)
+            );
+        }
+
+        let closed = NurbsCurve::try_control_point_curve_with_closure(
+            1,
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(2.0, 2.0),
+                point(0.0, 2.0),
+            ],
+            ControlPointCurveClosure::Sharp,
+        )
+        .unwrap();
+        assert_eq!(
+            closed.try_extended_to(-1.0..=5.0),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
     }
 
     #[test]

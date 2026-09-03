@@ -5797,6 +5797,37 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_extend_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        values = operation["domain"]
+        if len(values) != 2:
+            source.Dispose()
+            raise ValueError("curve extension domain requires two parameters")
+        target = Rhino.Geometry.Interval(
+            _finite(values[0], "curve extension domain start"),
+            _finite(values[1], "curve extension domain end"),
+        )
+        if not target.IsIncreasing:
+            source.Dispose()
+            raise ValueError("curve extension domain must be increasing")
+
+        def extend_curve():
+            result = source.Extend(target)
+            if result is None:
+                raise ValueError("Rhino natural curve extension failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extend_curve)
+        finally:
+            source.Dispose()
+
     if kind == "curve_subcurve_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])
         start = _finite(operation["start"], "subcurve start parameter")

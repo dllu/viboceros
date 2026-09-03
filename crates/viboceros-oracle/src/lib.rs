@@ -562,6 +562,11 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         domain: Option<[f64; 2]>,
     },
+    CurveExtendGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        domain: [f64; 2],
+    },
     CurveSubcurveGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1069,6 +1074,7 @@ impl Operation {
             | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveChangeSeamGeometry { id, .. }
             | Self::CurveReparameterizeGeometry { id, .. }
+            | Self::CurveExtendGeometry { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
@@ -2927,6 +2933,13 @@ fn execute(
             };
             let (curve, elapsed) = measure(iterations, || {
                 source.try_reparameterized(black_box(domain[0])..=black_box(domain[1]))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::CurveExtendGeometry { curve, domain, .. } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_extended_to(black_box(domain[0])..=black_box(domain[1]))
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -8712,6 +8725,30 @@ mod tests {
         assert_eq!(curve["periodic"], false);
         assert_eq!(curve["control_points"][0]["point"], json!([8.0, 0.0, 0.0]));
         assert_eq!(curve["control_points"][1]["point"], json!([2.0, 0.0, 0.0]));
+    }
+
+    #[test]
+    fn captures_natural_curve_extension_geometry() {
+        let response = run_request(&request(vec![Operation::CurveExtendGeometry {
+            id: "extend-line".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: [[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 1.0, 1.0],
+                domain: None,
+            },
+            domain: [-0.5, 2.0],
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["domain"], json!([-0.5, 2.0]));
+        assert_eq!(curve["knots"], json!([-0.5, -0.5, 2.0, 2.0]));
+        assert_eq!(curve["control_points"][0]["point"], json!([-5.0, 0.0, 0.0]));
+        assert_eq!(curve["control_points"][1]["point"], json!([20.0, 0.0, 0.0]));
     }
 
     #[test]
