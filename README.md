@@ -59,6 +59,8 @@ Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
+Pyramid 5 0,0,0 5 10 Solid=Yes
+TruncatedPyramid 5 0,0,0 5 10 2.5 Solid=Yes
 Tube 0,0,0 3 1 10
 Torus 0,0,0 5 1.5
 Layer New Construction
@@ -478,6 +480,10 @@ and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
 linear V domain is the physical slant length, matching Rhino; negative heights
 reverse the construction direction while preserving the base seam. `Solid=Yes`
 adds outward planar caps with Rhino-compatible shared rim and seam topology.
+`Pyramid` and `TruncatedPyramid` create regular polygonal joined B-reps with
+Rhino-compatible vertex, edge, face, trim, and planar-surface parameterization.
+They accept a side count, numeric or picked base radius, signed height,
+arbitrary `Axis=`, and optional exact planar caps through `Solid=Yes`.
 `Tube` creates a closed exact B-rep with concentric rational cylinder walls and
 annular planar caps. The two radii may be entered in either order;
 `WallThickness=` expands outward from the first radius, and `BothSides=Yes`

@@ -1,0 +1,99 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "pyramid",
+      "id": "open-square",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "side_count": 4,
+      "radius": 3,
+      "height": 5,
+      "solid": false
+    },
+    {
+      "op": "truncated_pyramid",
+      "id": "solid-square-frustum",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "side_count": 4,
+      "base_radius": 3,
+      "top_radius": 1,
+      "height": 5,
+      "solid": true
+    },
+    {
+      "op": "pyramid",
+      "id": "solid-negative-pentagon",
+      "origin": [1, -2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "side_count": 5,
+      "radius": 2,
+      "height": -4,
+      "solid": true
+    },
+    {
+      "op": "pyramid",
+      "id": "solid-oblique-hexagon",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "side_count": 6,
+      "radius": 1.5,
+      "height": 4.5,
+      "solid": true
+    },
+    {
+      "op": "truncated_pyramid",
+      "id": "open-oblique-pentagon",
+      "origin": [-2, 4, -5],
+      "x_axis": [0, 0, 1],
+      "y_axis": [1, 0, 0],
+      "side_count": 5,
+      "base_radius": 2.5,
+      "top_radius": 0.75,
+      "height": 6,
+      "solid": false
+    },
+    {
+      "op": "truncated_pyramid",
+      "id": "solid-negative-pentagon-frustum",
+      "origin": [2, 3, 5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "side_count": 5,
+      "base_radius": 2,
+      "top_radius": 0.75,
+      "height": -4,
+      "solid": true
+    },
+    {
+      "op": "truncated_pyramid",
+      "id": "solid-triangular-prism",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "side_count": 3,
+      "base_radius": 2,
+      "top_radius": 2,
+      "height": 4,
+      "solid": true
+    },
+    {
+      "op": "truncated_pyramid",
+      "id": "solid-expanding-square",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "side_count": 4,
+      "base_radius": 1,
+      "top_radius": 3,
+      "height": 5,
+      "solid": true
+    }
+  ]
+}

@@ -161,6 +161,12 @@ impl CommandRegistry {
             .register(TruncatedConeCommand)
             .expect("unique built-in command");
         registry
+            .register(PyramidCommand)
+            .expect("unique built-in command");
+        registry
+            .register(TruncatedPyramidCommand)
+            .expect("unique built-in command");
+        registry
             .register(TubeCommand)
             .expect("unique built-in command");
         registry
@@ -2518,6 +2524,8 @@ pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
+const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
+const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
 const TUBE_USAGE: &str = "Tube center first-radius second-radius height | Tube center point-on-first-wall second-radius height | Tube center first-radius height WallThickness=positive-distance [Axis=x,y,z] [BothSides=Yes|No]";
 const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
@@ -2576,6 +2584,27 @@ struct TruncatedConeCommandOptions {
     base_radius: AxialPrimitiveRadius,
     height: Real,
     end_radius: Real,
+    axis: Vector3,
+    solid: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct PyramidCommandOptions {
+    side_count: usize,
+    center: Point3,
+    base_radius: AxialPrimitiveRadius,
+    height: Real,
+    axis: Vector3,
+    solid: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct TruncatedPyramidCommandOptions {
+    side_count: usize,
+    center: Point3,
+    base_radius: AxialPrimitiveRadius,
+    height: Real,
+    top_radius: Real,
     axis: Vector3,
     solid: bool,
 }
@@ -2944,6 +2973,91 @@ fn parse_truncated_cone_options(
         base_radius: positionals.base_radius,
         height: positionals.height,
         end_radius: positionals.end_radius,
+        axis,
+        solid,
+    })
+}
+
+fn parse_pyramid_side_count(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<usize, CommandError> {
+    let text = arguments.first().ok_or(CommandError::Usage(usage))?;
+    let side_count = text
+        .parse::<usize>()
+        .map_err(|_| CommandError::InvalidInteger((*text).to_owned()))?;
+    if !(3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) {
+        return Err(GeometryError::InvalidRegularPolygonSides {
+            actual: side_count,
+            maximum: MAX_REGULAR_POLYGON_SIDES,
+        }
+        .into());
+    }
+    Ok(side_count)
+}
+
+fn parse_pyramid_options(arguments: &[&str]) -> Result<PyramidCommandOptions, CommandError> {
+    let side_count = parse_pyramid_side_count(arguments, PYRAMID_USAGE)?;
+    let positionals = parse_radial_primitive_positionals(&arguments[1..], PYRAMID_USAGE)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut solid = false;
+    let mut axis_seen = false;
+    let mut solid_seen = false;
+    for argument in &arguments[1 + positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(PYRAMID_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            axis = parse_axis_option(value, PYRAMID_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            solid = parse_yes_no(value).ok_or(CommandError::Usage(PYRAMID_USAGE))?;
+            solid_seen = true;
+        } else {
+            return Err(CommandError::Usage(PYRAMID_USAGE));
+        }
+    }
+    Ok(PyramidCommandOptions {
+        side_count,
+        center: positionals.center,
+        base_radius: positionals.radius,
+        height: positionals.value,
+        axis,
+        solid,
+    })
+}
+
+fn parse_truncated_pyramid_options(
+    arguments: &[&str],
+) -> Result<TruncatedPyramidCommandOptions, CommandError> {
+    let side_count = parse_pyramid_side_count(arguments, TRUNCATED_PYRAMID_USAGE)?;
+    let positionals = parse_truncated_cone_positionals(&arguments[1..], TRUNCATED_PYRAMID_USAGE)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut solid = false;
+    let mut axis_seen = false;
+    let mut solid_seen = false;
+    for argument in &arguments[1 + positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(TRUNCATED_PYRAMID_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            axis = parse_axis_option(value, TRUNCATED_PYRAMID_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            solid = parse_yes_no(value).ok_or(CommandError::Usage(TRUNCATED_PYRAMID_USAGE))?;
+            solid_seen = true;
+        } else {
+            return Err(CommandError::Usage(TRUNCATED_PYRAMID_USAGE));
+        }
+    }
+    Ok(TruncatedPyramidCommandOptions {
+        side_count,
+        center: positionals.center,
+        base_radius: positionals.base_radius,
+        height: positionals.height,
+        top_radius: positionals.end_radius,
         axis,
         solid,
     })
@@ -3981,6 +4095,67 @@ impl Command for TruncatedConeCommand {
                 options.end_radius, options.height
             ))
         }
+    }
+}
+
+struct PyramidCommand;
+
+impl Command for PyramidCommand {
+    fn name(&self) -> &'static str {
+        "Pyramid"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_pyramid_options(arguments)?;
+        let tolerance = document.tolerance();
+        let (frame, radius) =
+            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
+        let pyramid = Brep::try_pyramid(
+            frame,
+            options.side_count,
+            radius,
+            options.height,
+            options.solid,
+            tolerance,
+        )?;
+        let id = document.add_geometry(Geometry::Brep(pyramid))?;
+        Ok(format!(
+            "Added {}-sided {} B-rep pyramid {id} (radius {radius:.6}, height {:.6})",
+            options.side_count,
+            if options.solid { "closed" } else { "open" },
+            options.height
+        ))
+    }
+}
+
+struct TruncatedPyramidCommand;
+
+impl Command for TruncatedPyramidCommand {
+    fn name(&self) -> &'static str {
+        "TruncatedPyramid"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_truncated_pyramid_options(arguments)?;
+        let tolerance = document.tolerance();
+        let (frame, base_radius) =
+            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
+        let pyramid = Brep::try_truncated_pyramid(
+            frame,
+            options.side_count,
+            [base_radius, options.top_radius],
+            options.height,
+            options.solid,
+            tolerance,
+        )?;
+        let id = document.add_geometry(Geometry::Brep(pyramid))?;
+        Ok(format!(
+            "Added {}-sided {} B-rep truncated pyramid {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
+            options.side_count,
+            if options.solid { "closed" } else { "open" },
+            options.top_radius,
+            options.height
+        ))
     }
 }
 
@@ -14782,7 +14957,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -15890,6 +16065,112 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("TruncatedCone"));
+    }
+
+    #[test]
+    fn pyramid_commands_create_exact_open_and_capped_polygonal_breps() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let result = registry
+            .execute(&mut document, "Pyramid 4 0,0,0 3 5")
+            .unwrap();
+        assert!(result.contains("4-sided open B-rep pyramid"));
+        let open_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(open_id));
+        let Geometry::Brep(open) = document.object(open_id).unwrap().geometry() else {
+            panic!("Pyramid must create a joined B-rep")
+        };
+        assert_eq!(open.vertices().len(), 5);
+        assert_eq!(open.edges().len(), 8);
+        assert_eq!(open.faces().len(), 4);
+        assert!(!open.is_closed());
+        assert_eq!(
+            open.vertices()[0].point(),
+            Point3::try_new(3.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            open.vertices()[2].point(),
+            Point3::try_new(0.0, 0.0, 5.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Pyramid"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Pyramid 5 1,2,3 4,2,3 -4 Axis=0,1,0 Solid=Yes",
+            )
+            .unwrap();
+        let Geometry::Brep(negative) = document.objects().next().unwrap().geometry() else {
+            panic!("Pyramid must support a picked radius and arbitrary axis")
+        };
+        assert_eq!(negative.faces().len(), 6);
+        assert!(negative.is_solid());
+        assert_eq!(
+            negative.vertices()[0].point(),
+            Point3::try_new(4.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            negative.vertices()[2].point(),
+            Point3::try_new(1.0, -2.0, 3.0).unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(&mut document, "TruncatedPyramid 4 0,0,0 3 5 1 Solid=Yes")
+            .unwrap();
+        assert!(result.contains("4-sided closed B-rep truncated pyramid"));
+        let Geometry::Brep(truncated) = document.objects().next().unwrap().geometry() else {
+            panic!("TruncatedPyramid must create a B-rep")
+        };
+        assert_eq!(truncated.vertices().len(), 8);
+        assert_eq!(truncated.edges().len(), 12);
+        assert_eq!(truncated.faces().len(), 6);
+        assert!(truncated.is_solid());
+        assert_eq!(
+            truncated.vertices()[0].point(),
+            Point3::try_new(1.0, 0.0, 5.0).unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "TruncatedPyramid 3 1,2,3 4,2,3 -4 2 Axis=0,1,0 Solid=No",
+            )
+            .unwrap();
+        let Geometry::Brep(open_truncated) = document.objects().next().unwrap().geometry() else {
+            panic!("TruncatedPyramid must support signed arbitrary axes")
+        };
+        assert_eq!(open_truncated.faces().len(), 3);
+        assert!(!open_truncated.is_closed());
+        assert_eq!(
+            open_truncated.vertices()[0].point(),
+            Point3::try_new(3.0, -2.0, 3.0).unwrap()
+        );
+
+        for invalid in [
+            "Pyramid",
+            "Pyramid 2 0,0,0 3 5",
+            "Pyramid 4 0,0,0 0 5",
+            "Pyramid 4 0,0,0 3 0",
+            "Pyramid 4 0,0,0 3 5 Axis=0,0,0",
+            "Pyramid 4 0,0,0 3 5 Solid=Yes Solid=No",
+            "TruncatedPyramid",
+            "TruncatedPyramid 2 0,0,0 3 5 1",
+            "TruncatedPyramid 4 0,0,0 3 5 0",
+            "TruncatedPyramid 4 0,0,0 3 0 1",
+            "TruncatedPyramid 4 0,0,0 3 5 -1",
+            "TruncatedPyramid 4 0,0,0 0,0,2 5 1 Axis=0,0,1",
+            "TruncatedPyramid 4 0,0,0 3 5 1 BothSides=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("TruncatedPyramid"));
     }
 
     #[test]

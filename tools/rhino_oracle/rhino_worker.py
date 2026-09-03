@@ -5057,6 +5057,96 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_truncated_cone)
 
+    if kind == "pyramid" or kind == "truncated_pyramid":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        command_name = "Pyramid" if kind == "pyramid" else "TruncatedPyramid"
+        side_count = int(operation["side_count"])
+        base_radius = _finite(
+            operation["radius"] if kind == "pyramid" else operation["base_radius"],
+            "pyramid base radius",
+        )
+        height = _finite(operation["height"], "pyramid height")
+        solid = bool(operation["solid"])
+        if kind == "pyramid":
+            command = (
+                "_-%s _NumSides=%d _DirectionConstraint=_Vertical _Solid=_%s "
+                "0,0,0 %.17g,0,0 0,0,%.17g"
+                % (
+                    command_name,
+                    side_count,
+                    "Yes" if solid else "No",
+                    base_radius,
+                    height,
+                )
+            )
+        else:
+            top_radius = _finite(operation["top_radius"], "pyramid top radius")
+            command = (
+                "_-%s _NumSides=%d _DirectionConstraint=_Vertical _Solid=_%s "
+                "0,0,0 %.17g,0,0 0,0,%.17g %.17g"
+                % (
+                    command_name,
+                    side_count,
+                    "Yes" if solid else "No",
+                    base_radius,
+                    height,
+                    top_radius,
+                )
+            )
+
+        def create_pyramid():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "pyramid macro %r returned %r and created %d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError("pyramid did not create B-rep-compatible geometry")
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient pyramid")
+                expected_faces = side_count
+                if solid:
+                    expected_faces += 2 if kind == "truncated_pyramid" else 1
+                if brep.Faces.Count != expected_faces:
+                    raise ValueError(
+                        "pyramid macro %r created %d faces, expected %d"
+                        % (command, brep.Faces.Count, expected_faces)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep),
+                    "surfaces": [
+                        _nurbs_surface_definition(face.UnderlyingSurface())
+                        for face in brep.Faces
+                    ],
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_pyramid)
+
     if kind == "truncated_cone":
         document = Rhino.RhinoDoc.ActiveDoc
         plane = Rhino.Geometry.Plane(

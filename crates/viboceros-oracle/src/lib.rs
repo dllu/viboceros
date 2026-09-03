@@ -424,6 +424,27 @@ pub enum Operation {
         height: f64,
         solid: bool,
     },
+    Pyramid {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        side_count: usize,
+        radius: f64,
+        height: f64,
+        solid: bool,
+    },
+    TruncatedPyramid {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        side_count: usize,
+        base_radius: f64,
+        top_radius: f64,
+        height: f64,
+        solid: bool,
+    },
     Tube {
         id: String,
         origin: [f64; 3],
@@ -580,6 +601,8 @@ impl Operation {
             | Self::MeshCone { id, .. }
             | Self::MeshTruncatedCone { id, .. }
             | Self::TruncatedCone { id, .. }
+            | Self::Pyramid { id, .. }
+            | Self::TruncatedPyramid { id, .. }
             | Self::Tube { id, .. }
             | Self::MeshSphere { id, .. }
             | Self::MeshEllipsoid { id, .. }
@@ -1961,6 +1984,79 @@ fn execute(
                 }
             })?;
             (value, elapsed)
+        }
+        Operation::Pyramid {
+            origin,
+            x_axis,
+            y_axis,
+            side_count,
+            radius,
+            height,
+            solid,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (brep, elapsed) = measure(iterations, || {
+                Brep::try_pyramid(
+                    frame,
+                    black_box(*side_count),
+                    black_box(*radius),
+                    black_box(*height),
+                    black_box(*solid),
+                    tolerance,
+                )
+            })?;
+            (
+                json!({
+                    "brep": mesh_to_nurb_brep_value(&brep)?,
+                    "surfaces": brep.faces().iter().map(|face| {
+                        nurbs_surface_definition_value(face.surface())
+                    }).collect::<Vec<_>>(),
+                }),
+                elapsed,
+            )
+        }
+        Operation::TruncatedPyramid {
+            origin,
+            x_axis,
+            y_axis,
+            side_count,
+            base_radius,
+            top_radius,
+            height,
+            solid,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (brep, elapsed) = measure(iterations, || {
+                Brep::try_truncated_pyramid(
+                    frame,
+                    black_box(*side_count),
+                    black_box([*base_radius, *top_radius]),
+                    black_box(*height),
+                    black_box(*solid),
+                    tolerance,
+                )
+            })?;
+            (
+                json!({
+                    "brep": mesh_to_nurb_brep_value(&brep)?,
+                    "surfaces": brep.faces().iter().map(|face| {
+                        nurbs_surface_definition_value(face.surface())
+                    }).collect::<Vec<_>>(),
+                }),
+                elapsed,
+            )
         }
         Operation::Tube {
             origin,
@@ -6345,6 +6441,71 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec!["Mated", "Seam", "Mated", "Seam"]
         );
+    }
+
+    #[test]
+    fn captures_exact_pyramid_surfaces_and_topology_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::Pyramid {
+                id: "pyramid".to_owned(),
+                origin: [0.0, 0.0, 0.0],
+                x_axis: [1.0, 0.0, 0.0],
+                y_axis: [0.0, 1.0, 0.0],
+                side_count: 4,
+                radius: 3.0,
+                height: 5.0,
+                solid: false,
+            },
+            Operation::TruncatedPyramid {
+                id: "truncated-pyramid".to_owned(),
+                origin: [0.0, 0.0, 0.0],
+                x_axis: [1.0, 0.0, 0.0],
+                y_axis: [0.0, 1.0, 0.0],
+                side_count: 4,
+                base_radius: 3.0,
+                top_radius: 1.0,
+                height: 5.0,
+                solid: true,
+            },
+        ]))
+        .unwrap();
+
+        let pyramid = &response.results[0].value;
+        assert_eq!(pyramid["brep"]["vertex_count"], 5);
+        assert_eq!(pyramid["brep"]["edge_count"], 8);
+        assert_eq!(pyramid["brep"]["faces"].as_array().unwrap().len(), 4);
+        assert_eq!(pyramid["brep"]["is_solid"], false);
+        assert_eq!(pyramid["surfaces"].as_array().unwrap().len(), 4);
+        assert_eq!(pyramid["surfaces"][0]["control_count"], json!([2, 2]));
+        assert_eq!(
+            pyramid["surfaces"][0]["domain_u"],
+            json!([-18.0_f64.sqrt() / 2.0, 18.0_f64.sqrt() / 2.0])
+        );
+        assert_eq!(
+            pyramid["brep"]["faces"][0]["loops"][0]["trims"][0]["type"],
+            "Boundary"
+        );
+
+        let truncated = &response.results[1].value;
+        assert_eq!(truncated["brep"]["vertex_count"], 8);
+        assert_eq!(truncated["brep"]["edge_count"], 12);
+        assert_eq!(truncated["brep"]["faces"].as_array().unwrap().len(), 6);
+        assert_eq!(truncated["brep"]["is_solid"], true);
+        assert_eq!(truncated["surfaces"].as_array().unwrap().len(), 6);
+        assert_eq!(
+            truncated["surfaces"][0]["domain_u"],
+            json!([0.0, 29.0_f64.sqrt()])
+        );
+        assert_eq!(
+            truncated["surfaces"][0]["domain_v"],
+            json!([-18.0_f64.sqrt(), 0.0])
+        );
+        assert_eq!(
+            truncated["brep"]["edges"][3]["domain"],
+            json!([-0.0, 18.0_f64.sqrt()])
+        );
+        assert_eq!(truncated["brep"]["faces"][4]["reversed"], true);
+        assert_eq!(truncated["brep"]["faces"][5]["reversed"], false);
     }
 
     #[test]

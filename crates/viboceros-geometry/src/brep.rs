@@ -6,9 +6,9 @@ use spade::{
 
 use crate::nurbs::{CURVE_COINCIDENCE_ABSOLUTE, find_span_in_knots};
 use crate::{
-    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, MeshFace, NurbsCurve,
-    NurbsCurve2, NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    WeightedPoint2, WeightedPoint3, integration::integrate_adaptive,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, MAX_REGULAR_POLYGON_SIDES,
+    MeshFace, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh,
+    UnitVector3, Vector3, WeightedPoint2, WeightedPoint3, integration::integrate_adaptive,
     nurbs_surface::integrate_area_patch, require_finite, vector::product_three,
 };
 
@@ -667,6 +667,319 @@ impl Brep {
                 surface,
                 false,
                 vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
+            )?);
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
+    /// Constructs a regular pyramid as one joined B-rep.
+    ///
+    /// The base starts on the frame's positive X axis and proceeds
+    /// counterclockwise around its Z axis. A negative height places the apex
+    /// opposite frame Z while retaining that base ordering. The triangular
+    /// walls use Rhino's centroid-based planar parameterization rather than a
+    /// collapsed tensor-product edge.
+    pub fn try_pyramid(
+        frame: Frame3,
+        side_count: usize,
+        radius: Real,
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        validate_pyramid_dimensions(side_count, [radius], height, "pyramid")?;
+        let base = regular_polygon_ring(frame, side_count, radius, 0.0)?;
+        let apex = frame_point(frame, 0.0, 0.0, height)?;
+
+        // Rhino creates the first wall before the remaining ring topology, so
+        // its apex is vertex 2 rather than the final vertex.
+        let mut vertices = Vec::with_capacity(side_count + 1);
+        vertices.push(BrepVertex::try_new(base[0], 0.0)?);
+        vertices.push(BrepVertex::try_new(base[1], 0.0)?);
+        vertices.push(BrepVertex::try_new(apex, 0.0)?);
+        for &point in &base[2..] {
+            vertices.push(BrepVertex::try_new(point, 0.0)?);
+        }
+        let apex_vertex = 2;
+        let base_vertex = |index: usize| if index < 2 { index } else { index + 1 };
+
+        let mut edges = Vec::with_capacity(2 * side_count);
+        let mut base_edges = vec![usize::MAX; side_count];
+        let mut side_edges = vec![usize::MAX; side_count];
+        base_edges[0] = push_line_edge(
+            &mut edges,
+            &vertices,
+            [base_vertex(0), base_vertex(1)],
+            [0.0, base[0].distance_to(base[1])?],
+        )?;
+        side_edges[1] = push_line_edge(
+            &mut edges,
+            &vertices,
+            [base_vertex(1), apex_vertex],
+            [0.0, base[1].distance_to(apex)?],
+        )?;
+        side_edges[0] = push_line_edge(
+            &mut edges,
+            &vertices,
+            [apex_vertex, base_vertex(0)],
+            [0.0, apex.distance_to(base[0])?],
+        )?;
+        for index in 1..side_count {
+            let next = (index + 1) % side_count;
+            base_edges[index] = push_line_edge(
+                &mut edges,
+                &vertices,
+                [base_vertex(index), base_vertex(next)],
+                [0.0, base[index].distance_to(base[next])?],
+            )?;
+            if next != 0 {
+                side_edges[next] = push_line_edge(
+                    &mut edges,
+                    &vertices,
+                    [base_vertex(next), apex_vertex],
+                    [0.0, base[next].distance_to(apex)?],
+                )?;
+            }
+        }
+
+        let base_trim_type = if solid {
+            BrepTrimType::Mated
+        } else {
+            BrepTrimType::Boundary
+        };
+        let mut faces = Vec::with_capacity(side_count + usize::from(solid));
+        for index in 0..side_count {
+            let next = (index + 1) % side_count;
+            let edge_vector = base[index].vector_to(base[next])?;
+            let half_edge = edge_vector.scaled(0.5)?;
+            let side_length = edge_vector.length()?;
+            let midpoint = base[index].translated(half_edge)?;
+            let face_height = midpoint.distance_to(apex)?;
+            let u = [-0.5 * side_length, 0.5 * side_length];
+            let v = [-face_height / 3.0, 2.0 * face_height / 3.0];
+            let surface = NurbsSurface::try_new(
+                1,
+                1,
+                2,
+                2,
+                vec![
+                    base[index],
+                    base[next],
+                    apex.translated(half_edge.scaled(-1.0)?)?,
+                    apex.translated(half_edge)?,
+                ],
+                vec![u[0], u[0], u[1], u[1]],
+                vec![v[0], v[0], v[1], v[1]],
+            )?;
+            let parameters = [
+                Point2::try_new(u[0], v[0])?,
+                Point2::try_new(u[1], v[0])?,
+                Point2::try_new(0.0, v[1])?,
+            ];
+            let loop_record = BrepLoop::try_new(
+                BrepLoopType::Outer,
+                vec![
+                    BrepTrim::try_new(
+                        [base_vertex(index), base_vertex(next)],
+                        Some(base_edges[index]),
+                        false,
+                        NurbsCurve2::try_line(parameters[0], parameters[1])?,
+                        base_trim_type,
+                        SurfaceIso::South,
+                        [0.0, 0.0],
+                    )?,
+                    BrepTrim::try_new(
+                        [base_vertex(next), apex_vertex],
+                        Some(side_edges[next]),
+                        next == 0,
+                        NurbsCurve2::try_line(parameters[1], parameters[2])?,
+                        BrepTrimType::Mated,
+                        SurfaceIso::NotIso,
+                        [0.0, 0.0],
+                    )?,
+                    BrepTrim::try_new(
+                        [apex_vertex, base_vertex(index)],
+                        Some(side_edges[index]),
+                        index != 0,
+                        NurbsCurve2::try_line(parameters[2], parameters[0])?,
+                        BrepTrimType::Mated,
+                        SurfaceIso::NotIso,
+                        [0.0, 0.0],
+                    )?,
+                ],
+            )?;
+            faces.push(BrepFace::try_new(surface, height < 0.0, vec![loop_record])?);
+        }
+        if solid {
+            let indices = (0..side_count).map(base_vertex).collect::<Vec<_>>();
+            faces.push(polygon_cap_face(
+                frame,
+                &base,
+                &indices,
+                &base_edges,
+                false,
+                height > 0.0,
+                tolerance,
+            )?);
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
+    /// Constructs a regular truncated pyramid as one joined B-rep.
+    ///
+    /// Corresponding base and top corners share the same angular phase. Open
+    /// results retain joined wall faces and expose both polygon rims as naked
+    /// boundaries; solid results add exact trimmed planar caps.
+    pub fn try_truncated_pyramid(
+        frame: Frame3,
+        side_count: usize,
+        radii: [Real; 2],
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        validate_pyramid_dimensions(side_count, radii, height, "truncated pyramid")?;
+        let base = regular_polygon_ring(frame, side_count, radii[0], 0.0)?;
+        let top = regular_polygon_ring(frame, side_count, radii[1], height)?;
+
+        // Rhino's lofted topology begins at the first top corner, crosses to
+        // the first base corner, then alternates base/top corners around the
+        // remaining ring.
+        let mut vertices = Vec::with_capacity(2 * side_count);
+        vertices.push(BrepVertex::try_new(top[0], 0.0)?);
+        vertices.push(BrepVertex::try_new(base[0], 0.0)?);
+        for index in 1..side_count {
+            vertices.push(BrepVertex::try_new(base[index], 0.0)?);
+            vertices.push(BrepVertex::try_new(top[index], 0.0)?);
+        }
+        let top_vertex = |index: usize| if index == 0 { 0 } else { 2 * index + 1 };
+        let base_vertex = |index: usize| if index == 0 { 1 } else { 2 * index };
+        let slant_length = top[0].distance_to(base[0])?;
+        let base_side_length = base[0].distance_to(base[1])?;
+        let top_side_length = top[0].distance_to(top[1])?;
+        let equal_radii = radii[0] == radii[1];
+        let wall_v = if equal_radii {
+            [0.0, base_side_length]
+        } else if radii[0] > radii[1] {
+            [-base_side_length, 0.0]
+        } else {
+            [0.0, top_side_length]
+        };
+        // The loft keeps one common V parameterization on both polygon
+        // boundaries. Consequently the shorter rim edge intentionally has a
+        // non-arc-length curve domain when the two radii differ.
+        let base_edge_domain = wall_v;
+        let top_edge_domain = [-wall_v[1], -wall_v[0]];
+
+        let mut edges = Vec::with_capacity(3 * side_count);
+        let mut slant_edges = vec![usize::MAX; side_count];
+        let mut base_edges = vec![usize::MAX; side_count];
+        let mut top_edges = vec![usize::MAX; side_count];
+        slant_edges[0] = push_line_edge(
+            &mut edges,
+            &vertices,
+            [top_vertex(0), base_vertex(0)],
+            [0.0, slant_length],
+        )?;
+        for index in 0..side_count {
+            let next = (index + 1) % side_count;
+            base_edges[index] = push_line_edge(
+                &mut edges,
+                &vertices,
+                [base_vertex(index), base_vertex(next)],
+                base_edge_domain,
+            )?;
+            if next != 0 {
+                slant_edges[next] = push_line_edge(
+                    &mut edges,
+                    &vertices,
+                    [base_vertex(next), top_vertex(next)],
+                    [-slant_length, 0.0],
+                )?;
+                top_edges[index] = push_line_edge(
+                    &mut edges,
+                    &vertices,
+                    [top_vertex(next), top_vertex(index)],
+                    top_edge_domain,
+                )?;
+            } else {
+                top_edges[index] = push_line_edge(
+                    &mut edges,
+                    &vertices,
+                    [top_vertex(0), top_vertex(index)],
+                    top_edge_domain,
+                )?;
+            }
+        }
+
+        let rim_trim_type = if solid {
+            BrepTrimType::Mated
+        } else {
+            BrepTrimType::Boundary
+        };
+        let mut faces = Vec::with_capacity(side_count + 2 * usize::from(solid));
+        for index in 0..side_count {
+            let next = (index + 1) % side_count;
+            let surface = NurbsSurface::try_new(
+                1,
+                1,
+                2,
+                2,
+                vec![top[index], base[index], top[next], base[next]],
+                vec![0.0, 0.0, slant_length, slant_length],
+                vec![wall_v[0], wall_v[0], wall_v[1], wall_v[1]],
+            )?;
+            let loop_record = rectangular_surface_loop(
+                &surface,
+                [
+                    RectangularTrimSpec::edge(
+                        [top_vertex(index), base_vertex(index)],
+                        slant_edges[index],
+                        index != 0,
+                        BrepTrimType::Mated,
+                    ),
+                    RectangularTrimSpec::edge(
+                        [base_vertex(index), base_vertex(next)],
+                        base_edges[index],
+                        false,
+                        rim_trim_type,
+                    ),
+                    RectangularTrimSpec::edge(
+                        [base_vertex(next), top_vertex(next)],
+                        slant_edges[next],
+                        next == 0,
+                        BrepTrimType::Mated,
+                    ),
+                    RectangularTrimSpec::edge(
+                        [top_vertex(next), top_vertex(index)],
+                        top_edges[index],
+                        false,
+                        rim_trim_type,
+                    ),
+                ],
+            )?;
+            faces.push(BrepFace::try_new(surface, height < 0.0, vec![loop_record])?);
+        }
+        if solid {
+            let base_indices = (0..side_count).map(base_vertex).collect::<Vec<_>>();
+            let top_indices = (0..side_count).map(top_vertex).collect::<Vec<_>>();
+            faces.push(polygon_cap_face(
+                fitted_polygon_cap_frame(&base, frame.z_axis(), tolerance)?,
+                &base,
+                &base_indices,
+                &base_edges,
+                false,
+                height > 0.0,
+                tolerance,
+            )?);
+            faces.push(polygon_cap_face(
+                fitted_polygon_cap_frame(&top, frame.z_axis(), tolerance)?,
+                &top,
+                &top_indices,
+                &top_edges,
+                true,
+                height < 0.0,
+                tolerance,
             )?);
         }
         Self::try_new(vertices, edges, faces, tolerance)
@@ -2639,6 +2952,159 @@ fn canonical_brep_coordinate_bits(coordinate: Real) -> u64 {
         0
     } else {
         coordinate.to_bits()
+    }
+}
+
+fn validate_pyramid_dimensions<const N: usize>(
+    side_count: usize,
+    radii: [Real; N],
+    height: Real,
+    context: &'static str,
+) -> Result<(), GeometryError> {
+    require_finite(radii.into_iter().chain(std::iter::once(height)), context)?;
+    if !(3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) {
+        return Err(GeometryError::InvalidRegularPolygonSides {
+            actual: side_count,
+            maximum: MAX_REGULAR_POLYGON_SIDES,
+        });
+    }
+    if radii.into_iter().any(|radius| radius <= 0.0) || height == 0.0 {
+        return Err(GeometryError::Degenerate { context });
+    }
+    Ok(())
+}
+
+fn regular_polygon_ring(
+    frame: Frame3,
+    side_count: usize,
+    radius: Real,
+    height: Real,
+) -> Result<Vec<Point3>, GeometryError> {
+    let mut points = Vec::with_capacity(side_count);
+    for index in 0..side_count {
+        let angle = std::f64::consts::TAU * index as Real / side_count as Real;
+        points.push(frame_point(frame, radius, angle, height)?);
+    }
+    Ok(points)
+}
+
+fn frame_point(
+    frame: Frame3,
+    radius: Real,
+    angle: Real,
+    height: Real,
+) -> Result<Point3, GeometryError> {
+    frame
+        .origin()
+        .translated(frame.x_axis().as_vector().scaled(radius * angle.cos())?)?
+        .translated(frame.y_axis().as_vector().scaled(radius * angle.sin())?)?
+        .translated(frame.z_axis().as_vector().scaled(height)?)
+}
+
+fn push_line_edge(
+    edges: &mut Vec<BrepEdge>,
+    vertices: &[BrepVertex],
+    indices: [usize; 2],
+    domain: [Real; 2],
+) -> Result<usize, GeometryError> {
+    let curve = NurbsCurve::try_new(
+        1,
+        vec![vertices[indices[0]].point, vertices[indices[1]].point],
+        vec![domain[0], domain[0], domain[1], domain[1]],
+    )?;
+    let index = edges.len();
+    edges.push(BrepEdge::try_new(indices, curve, 0.0)?);
+    Ok(index)
+}
+
+fn fitted_polygon_cap_frame(
+    points: &[Point3],
+    normal: UnitVector3,
+    tolerance: Tolerance,
+) -> Result<Frame3, GeometryError> {
+    debug_assert!(points.len() >= 3);
+    let origin = Point3::try_new(
+        (points[0].x() + points[1].x() + points[2].x()) / 3.0,
+        (points[0].y() + points[1].y() + points[2].y()) / 3.0,
+        (points[0].z() + points[1].z() + points[2].z()) / 3.0,
+    )?;
+    Frame3::try_from_x_and_normal(
+        origin,
+        points[0].vector_to(points[1])?,
+        normal.as_vector(),
+        tolerance,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn polygon_cap_face(
+    frame: Frame3,
+    points: &[Point3],
+    vertices: &[usize],
+    edges: &[usize],
+    edges_reversed: bool,
+    face_reversed: bool,
+    tolerance: Tolerance,
+) -> Result<BrepFace, GeometryError> {
+    debug_assert_eq!(points.len(), vertices.len());
+    debug_assert_eq!(points.len(), edges.len());
+    let mut parameters = Vec::with_capacity(points.len());
+    let mut bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
+    for &point in points {
+        let relative = frame.origin().vector_to(point)?;
+        let parameter = Point2::try_new(
+            relative.dot(frame.x_axis().as_vector())?,
+            relative.dot(frame.y_axis().as_vector())?,
+        )?;
+        bounds[0][0] = bounds[0][0].min(parameter.x());
+        bounds[0][1] = bounds[0][1].max(parameter.x());
+        bounds[1][0] = bounds[1][0].min(parameter.y());
+        bounds[1][1] = bounds[1][1].max(parameter.y());
+        parameters.push(parameter);
+    }
+    let surface = planar_cap_surface(frame, Vector3::try_new(0.0, 0.0, 0.0)?, bounds)?;
+    let mut trims = Vec::with_capacity(points.len());
+    for index in 0..points.len() {
+        let next = (index + 1) % points.len();
+        trims.push(BrepTrim::try_new(
+            [vertices[index], vertices[next]],
+            Some(edges[index]),
+            edges_reversed,
+            NurbsCurve2::try_line(parameters[index], parameters[next])?,
+            BrepTrimType::Mated,
+            cap_trim_iso(parameters[index], parameters[next], bounds, tolerance),
+            [0.0, 0.0],
+        )?);
+    }
+    BrepFace::try_new(
+        surface,
+        face_reversed,
+        vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
+    )
+}
+
+fn cap_trim_iso(
+    start: Point2,
+    end: Point2,
+    bounds: [[Real; 2]; 2],
+    tolerance: Tolerance,
+) -> SurfaceIso {
+    if tolerance.approx_eq(start.y(), bounds[1][0]) && tolerance.approx_eq(end.y(), bounds[1][0]) {
+        SurfaceIso::South
+    } else if tolerance.approx_eq(start.x(), bounds[0][1])
+        && tolerance.approx_eq(end.x(), bounds[0][1])
+    {
+        SurfaceIso::East
+    } else if tolerance.approx_eq(start.y(), bounds[1][1])
+        && tolerance.approx_eq(end.y(), bounds[1][1])
+    {
+        SurfaceIso::North
+    } else if tolerance.approx_eq(start.x(), bounds[0][0])
+        && tolerance.approx_eq(end.x(), bounds[0][0])
+    {
+        SurfaceIso::West
+    } else {
+        SurfaceIso::NotIso
     }
 }
 
@@ -5706,6 +6172,148 @@ mod tests {
         assert!(Brep::try_tube(frame, [0.0, 1.0], 5.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_tube(frame, [1.0, 3.0], 0.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_tube(frame, [1.0, Real::INFINITY], 5.0, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn regular_pyramids_match_rhino_wall_topology_and_signed_orientation() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let solid = Brep::try_pyramid(frame, 4, 3.0, 5.0, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(solid.vertices().len(), 5);
+        assert_eq!(solid.edges().len(), 8);
+        assert_eq!(solid.faces().len(), 5);
+        assert!(solid.is_manifold());
+        assert!(solid.is_closed());
+        assert!(solid.is_solid());
+        assert!((0..8).all(|edge| solid.edge_use_count(edge) == Some(2)));
+        assert_eq!(solid.vertices()[0].point(), point(3.0, 0.0, 0.0));
+        assert_eq!(solid.vertices()[2].point(), point(0.0, 0.0, 5.0));
+        let wall = &solid.faces()[0];
+        let half_side = 18.0_f64.sqrt() * 0.5;
+        let face_height = 29.5_f64.sqrt();
+        assert!(Tolerance::DEFAULT.approx_eq(*wall.surface().domain_u().start(), -half_side));
+        assert!(Tolerance::DEFAULT.approx_eq(*wall.surface().domain_u().end(), half_side));
+        assert!(
+            Tolerance::DEFAULT.approx_eq(*wall.surface().domain_v().start(), -face_height / 3.0)
+        );
+        assert!(
+            Tolerance::DEFAULT.approx_eq(*wall.surface().domain_v().end(), 2.0 * face_height / 3.0)
+        );
+        assert_eq!(wall.loops()[0].trims()[0].iso(), SurfaceIso::South);
+        assert!(!wall.is_reversed());
+        assert!(solid.faces()[4].is_reversed());
+        assert!((solid.signed_volume(Tolerance::DEFAULT).unwrap() - 30.0).abs() < 1.0e-10);
+        assert!(
+            solid
+                .tessellate(1, Tolerance::DEFAULT)
+                .unwrap()
+                .topology()
+                .is_solid()
+        );
+
+        let open = Brep::try_pyramid(frame, 5, 2.0, 4.0, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(open.faces().len(), 5);
+        assert!(!open.is_closed());
+        assert!(!open.is_solid());
+        assert!(
+            open.faces()
+                .iter()
+                .all(|face| { face.loops()[0].trims()[0].trim_type() == BrepTrimType::Boundary })
+        );
+
+        let negative = Brep::try_pyramid(frame, 5, 2.0, -4.0, true, Tolerance::DEFAULT).unwrap();
+        assert!(negative.faces()[..5].iter().all(BrepFace::is_reversed));
+        assert!(!negative.faces()[5].is_reversed());
+        assert!(negative.signed_volume(Tolerance::DEFAULT).unwrap() > 0.0);
+
+        for (sides, radius, height) in [
+            (2, 1.0, 1.0),
+            (MAX_REGULAR_POLYGON_SIDES + 1, 1.0, 1.0),
+            (4, 0.0, 1.0),
+            (4, 1.0, 0.0),
+            (4, Real::INFINITY, 1.0),
+        ] {
+            assert!(
+                Brep::try_pyramid(frame, sides, radius, height, true, Tolerance::DEFAULT).is_err()
+            );
+        }
+    }
+
+    #[test]
+    fn regular_truncated_pyramids_match_rhino_lofted_ring_topology() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let solid =
+            Brep::try_truncated_pyramid(frame, 4, [3.0, 1.0], 5.0, true, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(solid.vertices().len(), 8);
+        assert_eq!(solid.edges().len(), 12);
+        assert_eq!(solid.faces().len(), 6);
+        assert!(solid.is_manifold());
+        assert!(solid.is_closed());
+        assert!(solid.is_solid());
+        assert_eq!(solid.vertices()[0].point(), point(1.0, 0.0, 5.0));
+        assert_eq!(solid.vertices()[1].point(), point(3.0, 0.0, 0.0));
+        assert_eq!(solid.edges()[0].vertices(), [0, 1]);
+        assert_eq!(solid.edges()[1].vertices(), [1, 2]);
+        assert_eq!(solid.edges()[2].vertices(), [2, 3]);
+        assert_eq!(solid.faces()[0].surface().domain_u(), 0.0..=29.0_f64.sqrt());
+        assert_eq!(
+            solid.faces()[0].surface().domain_v(),
+            -18.0_f64.sqrt()..=0.0
+        );
+        assert!(solid.faces()[4].is_reversed());
+        assert!(!solid.faces()[5].is_reversed());
+        assert!((solid.signed_volume(Tolerance::DEFAULT).unwrap() - 130.0 / 3.0).abs() < 1.0e-9);
+        assert!(
+            solid
+                .tessellate(1, Tolerance::DEFAULT)
+                .unwrap()
+                .topology()
+                .is_solid()
+        );
+
+        let open =
+            Brep::try_truncated_pyramid(frame, 4, [3.0, 1.0], 5.0, false, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(open.faces().len(), 4);
+        assert!(!open.is_closed());
+        assert!(!open.is_solid());
+        assert!(open.faces().iter().all(|face| {
+            let trims = face.loops()[0].trims();
+            trims[1].trim_type() == BrepTrimType::Boundary
+                && trims[3].trim_type() == BrepTrimType::Boundary
+        }));
+
+        let prism =
+            Brep::try_truncated_pyramid(frame, 3, [2.0, 2.0], 4.0, true, Tolerance::DEFAULT)
+                .unwrap();
+        assert_eq!(prism.faces()[0].surface().domain_u(), 0.0..=4.0);
+        assert_eq!(prism.faces()[0].surface().domain_v(), 0.0..=12.0_f64.sqrt());
+        assert!(prism.is_solid());
+
+        let negative =
+            Brep::try_truncated_pyramid(frame, 5, [2.0, 0.75], -4.0, true, Tolerance::DEFAULT)
+                .unwrap();
+        assert!(negative.faces()[..5].iter().all(BrepFace::is_reversed));
+        assert!(!negative.faces()[5].is_reversed());
+        assert!(negative.faces()[6].is_reversed());
+        assert!(negative.signed_volume(Tolerance::DEFAULT).unwrap() > 0.0);
+
+        assert!(
+            Brep::try_truncated_pyramid(frame, 4, [2.0, 0.0], 4.0, true, Tolerance::DEFAULT,)
+                .is_err()
+        );
     }
 
     #[test]
