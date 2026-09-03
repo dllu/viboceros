@@ -12,11 +12,12 @@ use viboceros_geometry::{
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
     MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
-    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
-    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, join_polylines,
+    MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3,
+    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -107,6 +108,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(MeshSphereCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MeshEllipsoidCommand)
             .expect("unique built-in command");
         registry
             .register(MeshTorusCommand)
@@ -717,47 +721,13 @@ impl Command for EllipsoidCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (center, center_consumed) = parse_point(arguments)?;
-        let remaining = &arguments[center_consumed..];
-        let (frame, radii) =
-            if remaining.len() == 3 && remaining.iter().all(|argument| !argument.contains(',')) {
-                let radii = [
-                    parse_finite_real(remaining[0])?,
-                    parse_finite_real(remaining[1])?,
-                    parse_finite_real(remaining[2])?,
-                ];
-                let frame = Frame3::try_from_normal(
-                    center,
-                    Vector3::try_new(0.0, 0.0, 1.0)?,
-                    document.tolerance(),
-                )?;
-                (frame, radii)
-            } else {
-                let (first_axis, first_consumed) = parse_point(remaining)?;
-                let (second_axis, second_consumed) = parse_point(&remaining[first_consumed..])?;
-                let (third_axis, third_consumed) =
-                    parse_point(&remaining[first_consumed + second_consumed..])?;
-                require_consumed(
-                    remaining,
-                    first_consumed + second_consumed + third_consumed,
-                    ELLIPSOID_USAGE,
-                )?;
-                let frame =
-                    Frame3::try_from_points(center, first_axis, second_axis, document.tolerance())?;
-                (
-                    frame,
-                    [
-                        center.distance_to(first_axis)?,
-                        center.distance_to(second_axis)?,
-                        center.distance_to(third_axis)?,
-                    ],
-                )
-            };
-        let surface = NurbsSurface::try_ellipsoid(frame, radii)?;
+        let positionals = parse_ellipsoid_positionals(arguments, document.tolerance())?;
+        require_consumed(arguments, positionals.option_start, ELLIPSOID_USAGE)?;
+        let surface = NurbsSurface::try_ellipsoid(positionals.frame, positionals.radii)?;
         let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
         Ok(format!(
             "Added NURBS ellipsoid {id} (radii {:.6} × {:.6} × {:.6})",
-            radii[0], radii[1], radii[2]
+            positionals.radii[0], positionals.radii[1], positionals.radii[2]
         ))
     }
 }
@@ -2526,6 +2496,8 @@ pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 3;
 pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
 pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
 const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV|Quads|Triangles] [VerticalFaces=integer-at-least-2 AroundFaces=integer-at-least-3 | Subdivisions=non-negative-integer]";
+pub const DEFAULT_MESH_ELLIPSOID_FACE_COUNT: usize = 10;
+const MESH_ELLIPSOID_USAGE: &str = "MeshEllipsoid center radius-x radius-y radius-z | MeshEllipsoid center first-axis-point second-axis-point third-axis-radius-point [VerticalFaces=integer-at-least-2] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
 const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
@@ -2598,6 +2570,22 @@ struct MeshSphereCommandOptions {
     radius: AxialPrimitiveRadius,
     axis: Vector3,
     topology: MeshSphereCommandTopology,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct EllipsoidPositionals {
+    frame: Frame3,
+    radii: [Real; 3],
+    option_start: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshEllipsoidCommandOptions {
+    frame: Frame3,
+    radii: [Real; 3],
+    vertical_count: usize,
+    around_count: usize,
+    cap_style: MeshCapFaceStyle,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -2770,6 +2758,119 @@ fn parse_mesh_cap_face_style(value: &str) -> Option<MeshCapFaceStyle> {
     } else {
         None
     }
+}
+
+fn parse_ellipsoid_positionals(
+    arguments: &[&str],
+    tolerance: Tolerance,
+) -> Result<EllipsoidPositionals, CommandError> {
+    let (center, center_consumed) = parse_point(arguments)?;
+    let remaining = &arguments[center_consumed..];
+    if remaining.len() >= 3
+        && remaining[..3]
+            .iter()
+            .all(|argument| !argument.contains(','))
+        && remaining
+            .get(3)
+            .is_none_or(|argument| argument.contains('='))
+    {
+        let radii = [
+            parse_finite_real(remaining[0])?,
+            parse_finite_real(remaining[1])?,
+            parse_finite_real(remaining[2])?,
+        ];
+        let frame = Frame3::try_from_normal(center, Vector3::try_new(0.0, 0.0, 1.0)?, tolerance)?;
+        return Ok(EllipsoidPositionals {
+            frame,
+            radii,
+            option_start: center_consumed + 3,
+        });
+    }
+
+    let (first_axis, first_consumed) = parse_point(remaining)?;
+    let (second_axis, second_consumed) = parse_point(&remaining[first_consumed..])?;
+    let (third_axis, third_consumed) = parse_point(&remaining[first_consumed + second_consumed..])?;
+    let option_start = center_consumed + first_consumed + second_consumed + third_consumed;
+    let frame = Frame3::try_from_points(center, first_axis, second_axis, tolerance)?;
+    // Rhino constrains the latter two construction picks to the frame's Y
+    // and Z axes. Absolute typed coordinates are projected onto those lines;
+    // their full center distances are not the corresponding radii.
+    let second_radius = center
+        .vector_to(second_axis)?
+        .dot(frame.y_axis().as_vector())?
+        .abs();
+    let third_radius = center
+        .vector_to(third_axis)?
+        .dot(frame.z_axis().as_vector())?
+        .abs();
+    Ok(EllipsoidPositionals {
+        frame,
+        radii: [center.distance_to(first_axis)?, second_radius, third_radius],
+        option_start,
+    })
+}
+
+fn parse_mesh_ellipsoid_options(
+    arguments: &[&str],
+    tolerance: Tolerance,
+) -> Result<MeshEllipsoidCommandOptions, CommandError> {
+    let positionals = parse_ellipsoid_positionals(arguments, tolerance)?;
+    let mut options = MeshEllipsoidCommandOptions {
+        frame: positionals.frame,
+        radii: positionals.radii,
+        vertical_count: DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
+        around_count: DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
+        cap_style: MeshCapFaceStyle::Triangles,
+    };
+    let mut vertical_seen = false;
+    let mut around_seen = false;
+    let mut cap_style_seen = false;
+    for argument in &arguments[positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(MESH_ELLIPSOID_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "VerticalFaces") && !vertical_seen {
+            options.vertical_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 2)
+                .ok_or_else(|| {
+                    CommandError::InvalidMeshEllipsoidVerticalFaceCount(value.to_owned())
+                })?;
+            vertical_seen = true;
+        } else if option_name_eq(name, "AroundFaces") && !around_seen {
+            options.around_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 3)
+                .ok_or_else(|| {
+                    CommandError::InvalidMeshEllipsoidAroundFaceCount(value.to_owned())
+                })?;
+            around_seen = true;
+        } else if option_name_eq(name, "CapFaceStyle") && !cap_style_seen {
+            options.cap_style = parse_mesh_cap_face_style(value)
+                .ok_or(CommandError::Usage(MESH_ELLIPSOID_USAGE))?;
+            cap_style_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_ELLIPSOID_USAGE));
+        }
+    }
+
+    let face_count = if options.cap_style == MeshCapFaceStyle::Quadrilaterals
+        && options.around_count.is_multiple_of(2)
+    {
+        options
+            .vertical_count
+            .checked_sub(1)
+            .and_then(|bands| bands.checked_mul(options.around_count))
+    } else {
+        options.vertical_count.checked_mul(options.around_count)
+    };
+    if face_count.is_none_or(|count| count > MAX_MESH_ELLIPSOID_FACES) {
+        return Err(GeometryError::TooManyMeshFaces.into());
+    }
+    Ok(options)
 }
 
 fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
@@ -3332,6 +3433,34 @@ impl Command for MeshSphereCommand {
         };
         let id = document.add_geometry(Geometry::Mesh(mesh))?;
         Ok(format!("Added {style} mesh sphere {id} {details}"))
+    }
+}
+
+struct MeshEllipsoidCommand;
+
+impl Command for MeshEllipsoidCommand {
+    fn name(&self) -> &'static str {
+        "MeshEllipsoid"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let tolerance = document.tolerance();
+        let options = parse_mesh_ellipsoid_options(arguments, tolerance)?;
+        let mesh = TriangleMesh::try_ellipsoid_grid(
+            options.frame,
+            options.radii,
+            MeshEllipsoidOptions {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+                cap_style: options.cap_style,
+            },
+            tolerance,
+        )?;
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Added mesh ellipsoid {id} ({} around × {} vertical faces)",
+            options.around_count, options.vertical_count
+        ))
     }
 }
 
@@ -13548,6 +13677,12 @@ pub enum CommandError {
     #[error("'{0}' is not a valid mesh-sphere around face count of at least 3")]
     InvalidMeshSphereAroundFaceCount(String),
 
+    #[error("'{0}' is not a valid mesh-ellipsoid vertical face count of at least 2")]
+    InvalidMeshEllipsoidVerticalFaceCount(String),
+
+    #[error("'{0}' is not a valid mesh-ellipsoid around face count of at least 3")]
+    InvalidMeshEllipsoidAroundFaceCount(String),
+
     #[error("'{value}' is not a valid mesh-sphere subdivision count from 0 through {maximum}")]
     InvalidMeshSphereSubdivisionCount { value: String, maximum: usize },
 
@@ -14128,7 +14263,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -14254,7 +14389,7 @@ mod tests {
 
         registry.execute(&mut document, "Undo").unwrap();
         registry
-            .execute(&mut document, "Ellipsoid 1,2,3 1,4,3 -2,2,3 1,2,7")
+            .execute(&mut document, "Ellipsoid 1,2,3 1,4,3 -2,3,3 3,4,7")
             .unwrap();
         let Geometry::NurbsSurface(oriented) = document.objects().next().unwrap().geometry() else {
             panic!("Ellipsoid must support oriented axis points")
@@ -14278,6 +14413,7 @@ mod tests {
             "Ellipsoid 0,0,0 1 2 inf",
             "Ellipsoid 0,0,0 1,0,0 2,0,0 0,0,3",
             "Ellipsoid 0,0,0 1,0,0 0,2,0 0,0,0",
+            "Ellipsoid 0,0,0 1,0,0 0,2,0 1,1,0",
             "Ellipsoid 0,0,0 1 2",
             "Ellipsoid 0,0,0 1 2 3 4",
         ] {
@@ -14734,6 +14870,126 @@ mod tests {
             "MeshSphere 0,0,0 2 Axis=0,0,0",
             "MeshSphere 0,0,0 0,0,2 Axis=0,0,1",
             "MeshSphere 0,0,0 2 VerticalFaces=1000001 AroundFaces=3",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0, "{command}");
+            assert_eq!(document.undo_label(), None, "{command}");
+        }
+    }
+
+    #[test]
+    fn mesh_ellipsoid_matches_rhino_parameterization_caps_and_orientation() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let parsed =
+            parse_mesh_ellipsoid_options(&["1,2,3", "4", "3", "2"], document.tolerance()).unwrap();
+        assert_eq!(parsed.radii, [4.0, 3.0, 2.0]);
+        assert_eq!(parsed.vertical_count, 10);
+        assert_eq!(parsed.around_count, 10);
+        assert_eq!(parsed.cap_style, MeshCapFaceStyle::Triangles);
+
+        let message = registry
+            .execute(&mut document, "MeshEllipsoid 1,2,3 4 3 2")
+            .unwrap();
+        assert!(message.ends_with("(10 around × 10 vertical faces)"));
+        assert_eq!(document.selected_object_count(), 0);
+        let Geometry::Mesh(default) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshEllipsoid must create a polygon mesh")
+        };
+        assert_eq!(default.vertices().len(), 92);
+        assert_eq!(default.face_count(), 100);
+        assert_eq!(
+            default.vertices()[0],
+            Point3::try_new(-3.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            default.vertices()[91],
+            Point3::try_new(5.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            default.faces()[0],
+            viboceros_geometry::MeshFace::Triangle([0, 2, 1])
+        );
+        assert_eq!(
+            default.faces()[10],
+            viboceros_geometry::MeshFace::Quad([1, 2, 12, 11])
+        );
+        assert!(default.topology().is_solid());
+        assert!(default.signed_volume().unwrap() > 0.0);
+        assert_eq!(document.undo_label(), Some("MeshEllipsoid"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshEllipsoid 1,2,3 1,6,3 1,4,6 3,4,5 VerticalFaces=4 AroundFaces=6 CapFaceStyle=Quad",
+            )
+            .unwrap();
+        let Geometry::Mesh(oriented) = document.objects().next().unwrap().geometry() else {
+            panic!("oriented MeshEllipsoid must create a mesh")
+        };
+        assert_eq!(oriented.vertices().len(), 20);
+        assert_eq!(oriented.face_count(), 18);
+        assert_eq!(
+            oriented.vertices()[0],
+            Point3::try_new(1.0, -2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            oriented.vertices()[19],
+            Point3::try_new(1.0, 6.0, 3.0).unwrap()
+        );
+        assert!((oriented.vertices()[2].x() - 2.233_562_514_616_302_5).abs() < 1.0e-14);
+        assert!((oriented.vertices()[2].y() + 0.828_427_124_746_190_3).abs() < 1.0e-14);
+        assert!((oriented.vertices()[2].z() - 4.037_414_057_018_887).abs() < 1.0e-14);
+        assert_eq!(
+            oriented.faces()[0],
+            viboceros_geometry::MeshFace::Quad([0, 3, 2, 1])
+        );
+        assert_eq!(
+            oriented.faces()[15],
+            viboceros_geometry::MeshFace::Quad([13, 14, 15, 19])
+        );
+        assert!(oriented.topology().is_solid());
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshEllipsoid 0,0,0 4 3 2 VerticalFaces=3 AroundFaces=5 CapFaceStyle=Quad",
+            )
+            .unwrap();
+        let Geometry::Mesh(odd) = document.objects().next().unwrap().geometry() else {
+            panic!("odd MeshEllipsoid must create a mesh")
+        };
+        assert_eq!(odd.face_count(), 15);
+        assert!(matches!(
+            odd.faces()[0],
+            viboceros_geometry::MeshFace::Triangle(_)
+        ));
+    }
+
+    #[test]
+    fn mesh_ellipsoid_rejects_invalid_options_and_dimensions_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "MeshEllipsoid",
+            "MeshEllipsoid 0,0,0 0 2 3",
+            "MeshEllipsoid 0,0,0 1 -2 3",
+            "MeshEllipsoid 0,0,0 1 2 inf",
+            "MeshEllipsoid 0,0,0 1,0,0 2,0,0 0,0,3",
+            "MeshEllipsoid 0,0,0 1,0,0 0,2,0 0,0,0",
+            "MeshEllipsoid 0,0,0 1,0,0 0,2,0 1,1,0",
+            "MeshEllipsoid 0,0,0 1 2 3 VerticalFaces=1",
+            "MeshEllipsoid 0,0,0 1 2 3 AroundFaces=2",
+            "MeshEllipsoid 0,0,0 1 2 3 AroundFaces=nope",
+            "MeshEllipsoid 0,0,0 1 2 3 AroundFaces=6 AroundFaces=8",
+            "MeshEllipsoid 0,0,0 1 2 3 CapFaceStyle=Pentagon",
+            "MeshEllipsoid 0,0,0 1 2 3 Solid=Yes",
+            "MeshEllipsoid 0,0,0 1 2 3 VerticalFaces=1000001 AroundFaces=3",
         ] {
             assert!(
                 registry.execute(&mut document, command).is_err(),

@@ -6,8 +6,8 @@ use spade::{
 
 use crate::vector::product_three;
 use crate::{
-    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, Point3, Polyline3, Real,
-    Tolerance, UnitVector3, require_finite,
+    AffineTransform3, BoundingBox3, Frame3, GeometryError, LineSegment, NurbsSurface, Point3,
+    Polyline3, Real, Tolerance, UnitVector3, require_finite,
 };
 
 /// Resource ceiling for one generated mesh-plane grid.
@@ -24,6 +24,9 @@ pub const MAX_MESH_CONE_FACES: usize = 1_000_000;
 
 /// Resource ceiling for one generated UV mesh-sphere shell.
 pub const MAX_MESH_SPHERE_FACES: usize = 1_000_000;
+
+/// Resource ceiling for one generated mesh-ellipsoid shell.
+pub const MAX_MESH_ELLIPSOID_FACES: usize = 1_000_000;
 
 /// RhinoCommon's maximum subdivision count for a quad mesh sphere.
 pub const MAX_MESH_QUAD_SPHERE_SUBDIVISIONS: usize = 8;
@@ -66,6 +69,14 @@ pub struct MeshConeOptions {
 pub struct MeshUvSphereOptions {
     pub vertical_count: usize,
     pub around_count: usize,
+}
+
+/// Topology controls for an exact polygonal ellipsoid primitive.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MeshEllipsoidOptions {
+    pub vertical_count: usize,
+    pub around_count: usize,
+    pub cap_style: MeshCapFaceStyle,
 }
 
 /// Refinement control for an evenly distributed mesh-sphere primitive.
@@ -1022,6 +1033,167 @@ impl TriangleMesh {
                     .map_err(|_| GeometryError::TooManyMeshVertices)?,
                 north,
             ]));
+        }
+        debug_assert_eq!(vertices.len(), vertex_count);
+        debug_assert_eq!(faces.len(), face_count);
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's ordered mesh ellipsoid from its three semi-axes.
+    ///
+    /// The supplied frame's X axis is the first construction axis and joins
+    /// the two poles. Rings begin on positive frame Y and advance toward
+    /// positive frame Z. Samples are uniform in the exact rational NURBS
+    /// ellipsoid's parameter domains, rather than uniform in geometric angle.
+    /// Even around counts may pair the pole fans into Rhino's degenerate quad
+    /// caps; odd counts always use triangles.
+    pub fn try_ellipsoid_grid(
+        frame: Frame3,
+        radii: [Real; 3],
+        options: MeshEllipsoidOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite(radii, "mesh-ellipsoid radii")?;
+        if options.vertical_count < 2 || options.around_count < 3 {
+            return Err(GeometryError::InvalidMeshEllipsoidFaceCount {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            });
+        }
+        if radii.into_iter().any(|radius| radius <= 0.0) {
+            return Err(GeometryError::InvalidMeshEllipsoidRadii);
+        }
+
+        let triangular_caps = options.cap_style == MeshCapFaceStyle::Triangles
+            || !options.around_count.is_multiple_of(2);
+        let cap_face_count = if triangular_caps {
+            options
+                .around_count
+                .checked_mul(2)
+                .ok_or(GeometryError::TooManyMeshFaces)?
+        } else {
+            options.around_count
+        };
+        let interior_face_count = options
+            .vertical_count
+            .checked_sub(2)
+            .and_then(|bands| bands.checked_mul(options.around_count))
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        let face_count = interior_face_count
+            .checked_add(cap_face_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_ELLIPSOID_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+        let vertex_count = options
+            .vertical_count
+            .checked_sub(1)
+            .and_then(|rings| rings.checked_mul(options.around_count))
+            .and_then(|rings| rings.checked_add(2))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if u32::try_from(vertex_count - 1).is_err() {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+
+        // A standard NURBS sphere is polar on frame Z and begins its U seam
+        // on frame X. Cyclically permuting the ellipsoid frame therefore puts
+        // the requested first axis at the poles without changing handedness.
+        let surface_frame = Frame3::try_from_directions(
+            frame.origin(),
+            frame.y_axis().as_vector(),
+            frame.z_axis().as_vector(),
+            tolerance,
+        )?;
+        let surface = NurbsSurface::try_ellipsoid(surface_frame, [radii[1], radii[2], radii[0]])?;
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        vertices
+            .push(surface.evaluate(surface.parameter_at_u(0.0)?, surface.parameter_at_v(0.0)?)?);
+        for vertical_index in 1..options.vertical_count {
+            let v =
+                surface.parameter_at_v(vertical_index as Real / options.vertical_count as Real)?;
+            for around_index in 0..options.around_count {
+                let u =
+                    surface.parameter_at_u(around_index as Real / options.around_count as Real)?;
+                vertices.push(surface.evaluate(u, v)?);
+            }
+        }
+        vertices
+            .push(surface.evaluate(surface.parameter_at_u(0.0)?, surface.parameter_at_v(1.0)?)?);
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        if triangular_caps {
+            for around_index in 0..options.around_count {
+                let next = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Triangle([
+                    0,
+                    u32::try_from(1 + next).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(1 + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        } else {
+            for face_index in 0..options.around_count / 2 {
+                let first = 2 * face_index;
+                faces.push(MeshFace::Quad([
+                    0,
+                    u32::try_from(1 + (first + 2) % options.around_count)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(1 + first + 1).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(1 + first).map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        }
+        for ring_index in 0..options.vertical_count - 2 {
+            let lower_offset = 1 + ring_index * options.around_count;
+            let upper_offset = lower_offset + options.around_count;
+            for around_index in 0..options.around_count {
+                let next = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(lower_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(lower_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(upper_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
+        }
+        let north =
+            u32::try_from(vertex_count - 1).map_err(|_| GeometryError::TooManyMeshVertices)?;
+        let last_ring_offset = 1 + (options.vertical_count - 2) * options.around_count;
+        if triangular_caps {
+            for around_index in 0..options.around_count {
+                let next = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Triangle([
+                    u32::try_from(last_ring_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(last_ring_offset + next)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    north,
+                ]));
+            }
+        } else {
+            for face_index in 0..options.around_count / 2 {
+                let first = 2 * face_index;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(last_ring_offset + first)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(last_ring_offset + first + 1)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(last_ring_offset + (first + 2) % options.around_count)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    north,
+                ]));
+            }
         }
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
@@ -5683,6 +5855,138 @@ mod tests {
                 frame,
                 2.0,
                 options(MAX_MESH_SPHERE_FACES + 1, 3),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_rational_mesh_ellipsoid_and_pole_caps() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let options = |cap_style| MeshEllipsoidOptions {
+            vertical_count: 4,
+            around_count: 6,
+            cap_style,
+        };
+        let triangles = TriangleMesh::try_ellipsoid_grid(
+            frame,
+            [4.0, 3.0, 2.0],
+            options(MeshCapFaceStyle::Triangles),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(triangles.vertices().len(), 20);
+        assert_eq!(triangles.face_count(), 24);
+        assert_eq!(triangles.vertices()[0], point(-4.0, 0.0, 0.0));
+        assert_eq!(triangles.vertices()[19], point(4.0, 0.0, 0.0));
+        assert!((triangles.vertices()[2].x() + 2.828_427_124_746_190_3).abs() < 1.0e-14);
+        assert!((triangles.vertices()[2].y() - 1.037_414_057_018_886_8).abs() < 1.0e-14);
+        assert!((triangles.vertices()[2].z() - 1.233_562_514_616_302_5).abs() < 1.0e-14);
+        assert_eq!(triangles.faces()[0], MeshFace::Triangle([0, 2, 1]));
+        assert_eq!(triangles.faces()[6], MeshFace::Quad([1, 2, 8, 7]));
+        assert_eq!(triangles.faces()[18], MeshFace::Triangle([13, 14, 19]));
+        assert!(triangles.topology().is_solid());
+        assert!(triangles.signed_volume().unwrap() > 0.0);
+
+        let quads = TriangleMesh::try_ellipsoid_grid(
+            frame,
+            [4.0, 3.0, 2.0],
+            options(MeshCapFaceStyle::Quadrilaterals),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(quads.vertices(), triangles.vertices());
+        assert_eq!(quads.face_count(), 18);
+        assert_eq!(quads.faces()[0], MeshFace::Quad([0, 3, 2, 1]));
+        assert_eq!(quads.faces()[2], MeshFace::Quad([0, 1, 6, 5]));
+        assert_eq!(quads.faces()[15], MeshFace::Quad([13, 14, 15, 19]));
+        assert_eq!(quads.faces()[17], MeshFace::Quad([17, 18, 13, 19]));
+        assert!(quads.topology().is_solid());
+        assert!(quads.signed_volume().unwrap() > 0.0);
+
+        let odd = TriangleMesh::try_ellipsoid_grid(
+            frame,
+            [4.0, 3.0, 2.0],
+            MeshEllipsoidOptions {
+                vertical_count: 3,
+                around_count: 5,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(odd.face_count(), 15);
+        assert!(matches!(odd.faces()[0], MeshFace::Triangle(_)));
+        assert!(matches!(odd.faces()[14], MeshFace::Triangle(_)));
+    }
+
+    #[test]
+    fn mesh_ellipsoid_rejects_invalid_counts_radii_and_resource_overflow() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let options = |vertical_count, around_count| MeshEllipsoidOptions {
+            vertical_count,
+            around_count,
+            cap_style: MeshCapFaceStyle::Triangles,
+        };
+        assert_eq!(
+            TriangleMesh::try_ellipsoid_grid(
+                frame,
+                [1.0, 2.0, 3.0],
+                options(1, 4),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshEllipsoidFaceCount {
+                vertical_count: 1,
+                around_count: 4,
+            })
+        );
+        assert!(matches!(
+            TriangleMesh::try_ellipsoid_grid(
+                frame,
+                [1.0, 2.0, 3.0],
+                options(2, 2),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshEllipsoidFaceCount { .. })
+        ));
+        assert_eq!(
+            TriangleMesh::try_ellipsoid_grid(
+                frame,
+                [1.0, 0.0, 3.0],
+                options(2, 4),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshEllipsoidRadii)
+        );
+        assert!(matches!(
+            TriangleMesh::try_ellipsoid_grid(
+                frame,
+                [1.0, Real::NAN, 3.0],
+                options(2, 4),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::NonFinite {
+                context: "mesh-ellipsoid radii"
+            })
+        ));
+        assert_eq!(
+            TriangleMesh::try_ellipsoid_grid(
+                frame,
+                [1.0, 2.0, 3.0],
+                options(MAX_MESH_ELLIPSOID_FACES + 1, 3),
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::TooManyMeshFaces)

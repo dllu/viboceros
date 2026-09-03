@@ -3,16 +3,17 @@ use std::collections::{BTreeSet, VecDeque};
 use eframe::egui::{self, RichText};
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
-    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_FACE_COUNT, DEFAULT_MESH_SPHERE_SUBDIVISIONS,
-    DEFAULT_MESH_TORUS_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE, MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
-    MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
+    DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
+    DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
+    DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
+    MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
-    MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
+    MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
+    MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
+    Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -133,6 +134,12 @@ enum InteractiveCommand {
     MeshSphere {
         center: Option<Point3>,
         topology: InteractiveMeshSphereTopology,
+    },
+    MeshEllipsoid {
+        points: [Option<Point3>; 3],
+        vertical_count: usize,
+        around_count: usize,
+        cap_style: MeshCapFaceStyle,
     },
     MeshTorus {
         center: Option<Point3>,
@@ -262,6 +269,7 @@ impl InteractiveCommand {
             Self::MeshCone { .. } => "MeshCone",
             Self::MeshCylinder { .. } => "MeshCylinder",
             Self::MeshSphere { .. } => "MeshSphere",
+            Self::MeshEllipsoid { .. } => "MeshEllipsoid",
             Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
@@ -406,6 +414,18 @@ impl InteractiveCommand {
             Self::MeshSphere {
                 center: Some(_), ..
             } => "MeshSphere: pick an equator radius in the viewport (Esc to cancel)",
+            Self::MeshEllipsoid { points, .. } => match points {
+                [None, _, _] => "MeshEllipsoid: pick the center in the viewport (Esc to cancel)",
+                [Some(_), None, _] => {
+                    "MeshEllipsoid: pick the end of the first axis in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), None] => {
+                    "MeshEllipsoid: pick the second-axis radius in the viewport (Esc to cancel)"
+                }
+                [Some(_), Some(_), Some(_)] => {
+                    "MeshEllipsoid: pick the third-axis radius in the viewport (Esc to cancel)"
+                }
+            },
             Self::MeshTorus { center: None, .. } => {
                 "MeshTorus: pick the center in the viewport (Esc to cancel)"
             }
@@ -639,6 +659,10 @@ impl InteractiveCommand {
             | Self::MeshCone { center: None, .. }
             | Self::MeshCylinder { center: None, .. }
             | Self::MeshSphere { center: None, .. }
+            | Self::MeshEllipsoid {
+                points: [None, _, _],
+                ..
+            }
             | Self::MeshTorus { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
@@ -709,6 +733,10 @@ impl InteractiveCommand {
             | Self::Polygon { center, .. }
             | Self::Ellipsoid {
                 points: [center, _, _],
+            }
+            | Self::MeshEllipsoid {
+                points: [center, _, _],
+                ..
             } => center,
             Self::Arc {
                 points: [_, Some(point)],
@@ -753,6 +781,11 @@ impl InteractiveCommand {
             } => reference,
             Self::Ellipse { first_axis, .. } => first_axis,
             Self::Ellipsoid { points } => match points {
+                [_, _, Some(second_axis)] => Some(second_axis),
+                [_, Some(first_axis), None] => Some(first_axis),
+                _ => None,
+            },
+            Self::MeshEllipsoid { points, .. } => match points {
                 [_, _, Some(second_axis)] => Some(second_axis),
                 [_, Some(first_axis), None] => Some(first_axis),
                 _ => None,
@@ -855,7 +888,77 @@ impl VibocerosApp {
         };
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
-        let command = if normalized == "meshsphere" {
+        let command = if normalized == "meshellipsoid" {
+            let mut vertical_count = DEFAULT_MESH_ELLIPSOID_FACE_COUNT;
+            let mut around_count = DEFAULT_MESH_ELLIPSOID_FACE_COUNT;
+            let mut cap_style = MeshCapFaceStyle::Triangles;
+            let mut seen = [false; 3];
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count < 2 {
+                        return false;
+                    }
+                    vertical_count = count;
+                    0
+                } else if name.eq_ignore_ascii_case("AroundFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count < 3 {
+                        return false;
+                    }
+                    around_count = count;
+                    1
+                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
+                    cap_style = if value.eq_ignore_ascii_case("Tri")
+                        || value.eq_ignore_ascii_case("Triangle")
+                        || value.eq_ignore_ascii_case("Triangles")
+                    {
+                        MeshCapFaceStyle::Triangles
+                    } else if value.eq_ignore_ascii_case("Quad")
+                        || value.eq_ignore_ascii_case("Quadrilateral")
+                        || value.eq_ignore_ascii_case("Quadrilaterals")
+                    {
+                        MeshCapFaceStyle::Quadrilaterals
+                    } else {
+                        return false;
+                    };
+                    2
+                } else {
+                    return false;
+                };
+                if seen[option_index] {
+                    return false;
+                }
+                seen[option_index] = true;
+            }
+            let face_count = if cap_style == MeshCapFaceStyle::Quadrilaterals
+                && around_count.is_multiple_of(2)
+            {
+                vertical_count
+                    .checked_sub(1)
+                    .and_then(|bands| bands.checked_mul(around_count))
+            } else {
+                vertical_count.checked_mul(around_count)
+            };
+            if face_count.is_none_or(|count| count > MAX_MESH_ELLIPSOID_FACES) {
+                return false;
+            }
+            InteractiveCommand::MeshEllipsoid {
+                points: [None; 3],
+                vertical_count,
+                around_count,
+                cap_style,
+            }
+        } else if normalized == "meshsphere" {
             let mut topology = InteractiveMeshSphereTopology::Uv {
                 vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
                 around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
@@ -2129,7 +2232,13 @@ impl VibocerosApp {
                         self.active_command = None;
                         return;
                     };
-                    if center.is_near(point, self.document.tolerance()) {
+                    if !ellipsoid_third_radius_exceeds_tolerance(
+                        center,
+                        first_axis,
+                        second_axis,
+                        point,
+                        self.document.tolerance(),
+                    ) {
                         self.push_log(
                             "Error: ellipsoid third-axis radius must be positive".to_owned(),
                         );
@@ -2142,6 +2251,96 @@ impl VibocerosApp {
                         format_model_point(first_axis),
                         format_model_point(second_axis),
                         format_model_point(point)
+                    ));
+                }
+            }
+            InteractiveCommand::MeshEllipsoid {
+                mut points,
+                vertical_count,
+                around_count,
+                cap_style,
+            } => {
+                let point_count = points.iter().flatten().count();
+                if point_count == 1 {
+                    let Some(center) = points[0] else {
+                        self.push_log(
+                            "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
+                        );
+                        self.active_command = None;
+                        return;
+                    };
+                    if center.is_near(point, self.document.tolerance()) {
+                        self.push_log(
+                            "Error: mesh-ellipsoid axis point must differ from its center"
+                                .to_owned(),
+                        );
+                        return;
+                    }
+                } else if point_count == 2 {
+                    let [Some(center), Some(first_axis), _] = points else {
+                        self.push_log(
+                            "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
+                        );
+                        self.active_command = None;
+                        return;
+                    };
+                    if let Err(error) = Frame3::try_from_points(
+                        center,
+                        first_axis,
+                        point,
+                        self.document.tolerance(),
+                    ) {
+                        self.push_log(format!("Error: {error}"));
+                        return;
+                    }
+                }
+
+                if point_count < points.len() {
+                    points[point_count] = Some(point);
+                    let command = InteractiveCommand::MeshEllipsoid {
+                        points,
+                        vertical_count,
+                        around_count,
+                        cap_style,
+                    };
+                    self.active_command = Some(command);
+                    let label = ["Center", "First axis", "Second axis"][point_count];
+                    self.push_log(format!("{label}: {}", format_model_point(point)));
+                    self.push_log(command.prompt().to_owned());
+                } else {
+                    let [Some(center), Some(first_axis), Some(second_axis)] = points else {
+                        self.push_log(
+                            "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
+                        );
+                        self.active_command = None;
+                        return;
+                    };
+                    if !ellipsoid_third_radius_exceeds_tolerance(
+                        center,
+                        first_axis,
+                        second_axis,
+                        point,
+                        self.document.tolerance(),
+                    ) {
+                        self.push_log(
+                            "Error: mesh-ellipsoid third-axis radius must be positive".to_owned(),
+                        );
+                        return;
+                    }
+                    self.active_command = None;
+                    let cap_style = match cap_style {
+                        MeshCapFaceStyle::Triangles => "Tri",
+                        MeshCapFaceStyle::Quadrilaterals => "Quad",
+                    };
+                    self.execute_command(&format!(
+                        "MeshEllipsoid {} {} {} {} VerticalFaces={} AroundFaces={} CapFaceStyle={}",
+                        format_model_point(center),
+                        format_model_point(first_axis),
+                        format_model_point(second_axis),
+                        format_model_point(point),
+                        vertical_count,
+                        around_count,
+                        cap_style
                     ));
                 }
             }
@@ -3457,6 +3656,7 @@ impl VibocerosApp {
         let mut mesh_cylinder_clicked = false;
         let mut mesh_plane_clicked = false;
         let mut mesh_sphere_clicked = false;
+        let mut mesh_ellipsoid_clicked = false;
         let mut mesh_torus_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
@@ -3683,6 +3883,10 @@ impl VibocerosApp {
                 mesh_sphere_clicked = ui
                     .button("Mesh Sphere")
                     .on_hover_text("Draw a UV, quad, or triangular polygon mesh sphere")
+                    .clicked();
+                mesh_ellipsoid_clicked = ui
+                    .button("Mesh Ellipsoid")
+                    .on_hover_text("Draw a polygon mesh ellipsoid from four viewport points")
                     .clicked();
                 mesh_torus_clicked = ui
                     .button("Mesh Torus")
@@ -4005,6 +4209,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("MeshPlane");
         } else if mesh_sphere_clicked {
             self.try_start_interactive_command("MeshSphere");
+        } else if mesh_ellipsoid_clicked {
+            self.try_start_interactive_command("MeshEllipsoid");
         } else if mesh_torus_clicked {
             self.try_start_interactive_command("MeshTorus");
         } else if triangulate_mesh_clicked {
@@ -4460,6 +4666,22 @@ fn same_top_point(left: Point3, right: Point3, tolerance: Tolerance) -> bool {
     (left.x() - right.x()).hypot(left.y() - right.y()) <= tolerance.absolute()
 }
 
+fn ellipsoid_third_radius_exceeds_tolerance(
+    center: Point3,
+    first_axis: Point3,
+    second_axis: Point3,
+    third_axis: Point3,
+    tolerance: Tolerance,
+) -> bool {
+    Frame3::try_from_points(center, first_axis, second_axis, tolerance)
+        .and_then(|frame| {
+            center
+                .vector_to(third_axis)?
+                .dot(frame.z_axis().as_vector())
+        })
+        .is_ok_and(|radius| radius.abs() > tolerance.absolute())
+}
+
 fn point_is_near_axis(
     axis_start: Point3,
     axis_end: Point3,
@@ -4875,6 +5097,9 @@ mod tests {
         app.accept_drafting_point(center);
         assert_eq!(app.active_command, Some(command));
         assert_eq!(app.document.objects().len(), 0);
+        app.accept_drafting_point(point(3.0, 4.0, 3.0));
+        assert_eq!(app.active_command, Some(command));
+        assert_eq!(app.document.objects().len(), 0);
 
         app.accept_drafting_point(point(1.0, 2.0, 7.0));
         assert_eq!(app.active_command, None);
@@ -4894,6 +5119,70 @@ mod tests {
             point(1.0, 2.0, 7.0)
         );
         assert_eq!(app.document.undo_label(), Some("Ellipsoid"));
+    }
+
+    #[test]
+    fn interactive_mesh_ellipsoid_retains_topology_and_validates_each_axis() {
+        let mut app = test_app();
+        assert!(!app.try_start_interactive_command("MeshEllipsoid VerticalFaces=1"));
+        assert!(!app.try_start_interactive_command("MeshEllipsoid AroundFaces=2"));
+        assert!(
+            !app.try_start_interactive_command("MeshEllipsoid VerticalFaces=1000001 AroundFaces=3")
+        );
+        assert!(app.try_start_interactive_command(
+            "MeshEllipsoid VerticalFaces=4 AroundFaces=6 CapFaceStyle=Quadrilaterals"
+        ));
+        let center = point(1.0, 2.0, 3.0);
+        let first_axis = point(5.0, 2.0, 3.0);
+        let second_axis = point(1.0, 5.0, 3.0);
+
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(center);
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshEllipsoid {
+                points: [Some(center), None, None],
+                vertical_count: 4,
+                around_count: 6,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(first_axis);
+        let awaiting_second = app.active_command.unwrap();
+        assert_eq!(awaiting_second.anchor(), Some(center));
+        assert_eq!(awaiting_second.reference(), Some(first_axis));
+        app.accept_drafting_point(point(3.0, 2.0, 3.0));
+        assert_eq!(app.active_command, Some(awaiting_second));
+        assert!(app.command_log.back().unwrap().contains("coordinate frame"));
+
+        app.accept_drafting_point(second_axis);
+        let awaiting_third = app.active_command.unwrap();
+        assert_eq!(awaiting_third.anchor(), Some(center));
+        assert_eq!(awaiting_third.reference(), Some(second_axis));
+        app.accept_drafting_point(center);
+        assert_eq!(app.active_command, Some(awaiting_third));
+        assert_eq!(app.document.objects().len(), 0);
+        app.accept_drafting_point(point(3.0, 4.0, 3.0));
+        assert_eq!(app.active_command, Some(awaiting_third));
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(1.0, 2.0, 5.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created mesh ellipsoid")
+        };
+        assert_eq!(mesh.vertices().len(), 20);
+        assert_eq!(mesh.face_count(), 18);
+        assert_eq!(mesh.vertices()[0], point(-3.0, 2.0, 3.0));
+        assert_eq!(mesh.vertices()[19], point(5.0, 2.0, 3.0));
+        assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 3, 2, 1]));
+        assert_eq!(mesh.faces()[15], MeshFace::Quad([13, 14, 15, 19]));
+        assert!(mesh.topology().is_solid());
+        assert!(mesh.signed_volume().unwrap() > 0.0);
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("MeshEllipsoid"));
     }
 
     #[test]

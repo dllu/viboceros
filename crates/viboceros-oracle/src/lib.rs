@@ -16,9 +16,10 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, Circle3, CircularArc3, CurveRef, Ellipse3,
     Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions, MeshUvSphereOptions, NurbsCurve,
-    NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso, SurfacePointMorph,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_polylines,
+    MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions,
+    MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
+    SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -409,6 +410,16 @@ pub enum Operation {
         around: usize,
         vertical: usize,
     },
+    MeshEllipsoid {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radii: [f64; 3],
+        around: usize,
+        vertical: usize,
+        quad_caps: bool,
+    },
     MeshQuadSphere {
         id: String,
         origin: [f64; 3],
@@ -536,6 +547,7 @@ impl Operation {
             | Self::MeshCylinder { id, .. }
             | Self::MeshCone { id, .. }
             | Self::MeshSphere { id, .. }
+            | Self::MeshEllipsoid { id, .. }
             | Self::MeshQuadSphere { id, .. }
             | Self::MeshIcoSphere { id, .. }
             | Self::MeshTorus { id, .. }
@@ -1856,6 +1868,41 @@ fn execute(
                 TriangleMesh::try_uv_sphere_grid(
                     frame,
                     black_box(*radius),
+                    black_box(options),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::MeshEllipsoid {
+            origin,
+            x_axis,
+            y_axis,
+            radii,
+            around,
+            vertical,
+            quad_caps,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let options = MeshEllipsoidOptions {
+                vertical_count: *vertical,
+                around_count: *around,
+                cap_style: if *quad_caps {
+                    MeshCapFaceStyle::Quadrilaterals
+                } else {
+                    MeshCapFaceStyle::Triangles
+                },
+            };
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_ellipsoid_grid(
+                    frame,
+                    black_box(*radii),
                     black_box(options),
                     tolerance,
                 )
@@ -6095,6 +6142,48 @@ mod tests {
         assert_eq!(vertices.len(), 6);
         assert_eq!(vertices[0], json!([0.0, 0.0, -2.0]));
         assert_eq!(vertices[5], json!([0.0, 0.0, 2.0]));
+    }
+
+    #[test]
+    fn creates_ordered_mesh_ellipsoid_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshEllipsoid {
+            id: "ellipsoid".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            radii: [4.0, 3.0, 2.0],
+            around: 6,
+            vertical: 4,
+            quad_caps: true,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value["faces"],
+            json!([
+                [0, 3, 2, 1],
+                [0, 5, 4, 3],
+                [0, 1, 6, 5],
+                [1, 2, 8, 7],
+                [2, 3, 9, 8],
+                [3, 4, 10, 9],
+                [4, 5, 11, 10],
+                [5, 6, 12, 11],
+                [6, 1, 7, 12],
+                [7, 8, 14, 13],
+                [8, 9, 15, 14],
+                [9, 10, 16, 15],
+                [10, 11, 17, 16],
+                [11, 12, 18, 17],
+                [12, 7, 13, 18],
+                [13, 14, 15, 19],
+                [15, 16, 17, 19],
+                [17, 18, 13, 19],
+            ])
+        );
+        let vertices = response.results[0].value["vertices"].as_array().unwrap();
+        assert_eq!(vertices.len(), 20);
+        assert_eq!(vertices[0], json!([-4.0, 0.0, 0.0]));
+        assert_eq!(vertices[19], json!([4.0, 0.0, 0.0]));
     }
 
     #[test]

@@ -43,6 +43,7 @@ MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshSphere 0,0,0 3 Style=UV VerticalFaces=12 AroundFaces=24
 MeshSphere 0,0,0 3 Style=Quads Subdivisions=3
 MeshSphere 0,0,0 3 Style=Triangles Subdivisions=3
+MeshEllipsoid 0,0,0 5 3 2 VerticalFaces=12 AroundFaces=24 CapFaceStyle=Quad
 MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
@@ -273,6 +274,14 @@ use `Subdivisions=3` by default and preserve Rhino's welded indexing. The
 command limits subdivisions to 6 quads or 5 triangles, `Axis=x,y,z` orients
 typed commands, and the two-pick toolbar workflow uses World Z. One sphere is
 bounded to one million faces.
+`MeshEllipsoid` creates a closed mesh from three positive semi-axis radii or
+from a center and three axis-radius points. `VerticalFaces` divides the first
+axis from pole to pole, `AroundFaces` divides each rationally parameterized
+ring, and both default to 10. `CapFaceStyle=Tri|Quad` selects triangle fans or
+Rhino's paired quad pole faces; odd around counts fall back to triangles.
+Vertices and faces preserve Rhino's NURBS-parameter sampling and welded index
+order. The four-pick toolbar workflow retains these options, and one ellipsoid
+is bounded to one million faces.
 `MeshTorus` creates a closed quadrilateral ring torus from a center, numeric or
 picked major radius, and a positive minor radius smaller than the major radius.
 `VerticalFaces` divides the tube circle, `AroundFaces` divides the major circle,

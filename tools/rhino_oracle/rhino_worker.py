@@ -4884,6 +4884,66 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_sphere)
 
+    if kind == "mesh_ellipsoid":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radii = [
+            _finite(value, "mesh-ellipsoid radius")
+            for value in operation["radii"]
+        ]
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        quad_caps = bool(operation["quad_caps"])
+
+        def point_text(point):
+            return "%.17g,%.17g,%.17g" % (point.X, point.Y, point.Z)
+
+        center = plane.Origin
+        first_axis = center + radii[0] * plane.XAxis
+        second_axis = center + radii[1] * plane.YAxis
+        third_axis = center + radii[2] * plane.ZAxis
+        command = (
+            "_-MeshEllipsoid _VerticalFaces=%d _AroundFaces=4 "
+            "_CapFaceStyle=_%s _AroundFaces=%d %s %s %s %s"
+            % (
+                vertical,
+                "Quad" if quad_caps else "Tri",
+                around,
+                point_text(center),
+                point_text(first_axis),
+                point_text(second_axis),
+                point_text(third_axis),
+            )
+        )
+
+        def create_mesh_ellipsoid():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            try:
+                meshes = [
+                    obj.Geometry
+                    for obj in created
+                    if isinstance(obj.Geometry, Rhino.Geometry.Mesh)
+                ]
+                if len(meshes) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MeshEllipsoid macro %r returned %r and created %d meshes; history tail: %s"
+                        % (command, succeeded, len(meshes), history[-2000:])
+                    )
+                return _polygon_mesh_value(meshes[0])
+            finally:
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_mesh_ellipsoid)
+
     if kind == "mesh_quad_sphere" or kind == "mesh_ico_sphere":
         plane = Rhino.Geometry.Plane(
             _point(operation["origin"]),

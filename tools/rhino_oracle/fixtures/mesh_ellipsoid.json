@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_ellipsoid",
+      "id": "triangle-six-by-four",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radii": [4, 3, 2],
+      "around": 6,
+      "vertical": 4,
+      "quad_caps": false
+    },
+    {
+      "op": "mesh_ellipsoid",
+      "id": "quad-six-by-four",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radii": [4, 3, 2],
+      "around": 6,
+      "vertical": 4,
+      "quad_caps": true
+    },
+    {
+      "op": "mesh_ellipsoid",
+      "id": "quad-four-by-two",
+      "origin": [1, 2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radii": [2, 3, 4],
+      "around": 4,
+      "vertical": 2,
+      "quad_caps": true
+    },
+    {
+      "op": "mesh_ellipsoid",
+      "id": "odd-quad-fallback",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radii": [4, 3, 2],
+      "around": 5,
+      "vertical": 3,
+      "quad_caps": true
+    },
+    {
+      "op": "mesh_ellipsoid",
+      "id": "oblique-offset",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radii": [1.5, 2.5, 4.5],
+      "around": 8,
+      "vertical": 5,
+      "quad_caps": true
+    }
+  ]
+}
