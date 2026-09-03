@@ -3,7 +3,8 @@ use std::ops::RangeInclusive;
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
     clamped_uniform_knots, control_polygon_range, curve_points_coincident, de_boor,
-    knot_vector_is_periodic, project_homogeneous, stable_divided_difference, validate_direction,
+    knot_vector_is_periodic, project_homogeneous, stable_divided_difference, uniform_knots_like,
+    validate_direction,
 };
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
@@ -25,6 +26,24 @@ pub struct NurbsSurface {
     knots_u: Vec<Real>,
     knots_v: Vec<Real>,
     rational: bool,
+}
+
+/// Parametric direction changed by [`NurbsSurface::try_make_uniform`].
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum SurfaceKnotDirection {
+    U,
+    V,
+    Both,
+}
+
+impl SurfaceKnotDirection {
+    const fn includes_u(self) -> bool {
+        matches!(self, Self::U | Self::Both)
+    }
+
+    const fn includes_v(self) -> bool {
+        matches!(self, Self::V | Self::Both)
+    }
 }
 
 impl NurbsSurface {
@@ -1138,6 +1157,34 @@ impl NurbsSurface {
     #[inline]
     pub const fn is_rational(&self) -> bool {
         self.rational
+    }
+
+    /// Replaces the selected knot direction(s) with Rhino-compatible unit
+    /// spacing without changing the degree, control net, or rational weights.
+    ///
+    /// Each direction retains its start and end clamping independently, and
+    /// periodic control-net topology remains periodic. The surface shape and
+    /// active parameter domains can change.
+    pub fn try_make_uniform(&self, direction: SurfaceKnotDirection) -> Result<Self, GeometryError> {
+        let knots_u = if direction.includes_u() {
+            uniform_knots_like(self.degree_u, self.control_point_count_u, &self.knots_u)?
+        } else {
+            self.knots_u.clone()
+        };
+        let knots_v = if direction.includes_v() {
+            uniform_knots_like(self.degree_v, self.control_point_count_v, &self.knots_v)?
+        } else {
+            self.knots_v.clone()
+        };
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            self.control_point_count_v,
+            self.control_points.clone(),
+            knots_u,
+            knots_v,
+        )
     }
 
     /// Returns whether the U knot vector and repeated end controls form an
@@ -4797,6 +4844,93 @@ mod tests {
         assert_eq!(surface.knots_v(), &[0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
         assert_eq!(surface.evaluate(0.0, 0.0).unwrap(), controls[0]);
         assert_eq!(surface.evaluate(1.0, 1.0).unwrap(), controls[11]);
+    }
+
+    #[test]
+    fn make_uniform_changes_only_requested_surface_knot_directions() {
+        let controls = (0..5)
+            .flat_map(|v| {
+                (0..4).map(move |u| {
+                    WeightedPoint3::try_new(
+                        point(u as Real, v as Real, (u * v) as Real * 0.1),
+                        0.5 + (u + 2 * v) as Real * 0.1,
+                    )
+                    .unwrap()
+                })
+            })
+            .collect::<Vec<_>>();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            3,
+            4,
+            5,
+            controls.clone(),
+            vec![0.0, 0.0, 0.0, 0.25, 1.0, 1.0, 1.0],
+            vec![10.0, 10.0, 10.0, 10.0, 13.0, 20.0, 20.0, 20.0, 20.0],
+        )
+        .unwrap();
+
+        let uniform_u = surface.try_make_uniform(SurfaceKnotDirection::U).unwrap();
+        assert_eq!(uniform_u.knots_u(), &[0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0]);
+        assert_eq!(uniform_u.knots_v(), surface.knots_v());
+        assert_eq!(uniform_u.control_points(), controls);
+
+        let uniform_v = surface.try_make_uniform(SurfaceKnotDirection::V).unwrap();
+        assert_eq!(uniform_v.knots_u(), surface.knots_u());
+        assert_eq!(
+            uniform_v.knots_v(),
+            &[0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0]
+        );
+
+        let both = surface
+            .try_make_uniform(SurfaceKnotDirection::Both)
+            .unwrap();
+        assert_eq!(both.knots_u(), uniform_u.knots_u());
+        assert_eq!(both.knots_v(), uniform_v.knots_v());
+        assert_eq!(both.domain_u(), 0.0..=2.0);
+        assert_eq!(both.domain_v(), 0.0..=2.0);
+        assert!(both.is_rational());
+    }
+
+    #[test]
+    fn make_uniform_retains_periodic_surface_direction() {
+        let row = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+        ];
+        let mut controls = row.to_vec();
+        controls.extend(row.into_iter().map(|point| {
+            point
+                .translated(Vector3::try_new(0.0, 0.0, 3.0).unwrap())
+                .unwrap()
+        }));
+        let surface = NurbsSurface::try_new(
+            3,
+            1,
+            7,
+            2,
+            controls,
+            vec![0.0, 0.0, 1.0, 3.0, 6.0, 10.0, 11.0, 13.0, 16.0, 20.0, 20.0],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        assert!(surface.is_periodic_u());
+
+        let uniform = surface.try_make_uniform(SurfaceKnotDirection::U).unwrap();
+
+        assert_eq!(
+            uniform.knots_u(),
+            &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0]
+        );
+        assert_eq!(uniform.knots_v(), &[0.0, 0.0, 5.0, 5.0]);
+        assert_eq!(uniform.domain_u(), 2.0..=6.0);
+        assert!(uniform.is_periodic_u());
+        assert!(!uniform.is_periodic_v());
     }
 
     #[test]

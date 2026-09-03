@@ -22,9 +22,10 @@ use viboceros_geometry::{
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
     MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
     MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
-    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, join_polylines, sort_and_cull_points, try_catenary,
-    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceKnotDirection,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
+    try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -1934,6 +1935,8 @@ fn parse_rebuild_curve_options(arguments: &[&str]) -> Result<RebuildCurveOptions
     })
 }
 
+const MAKE_UNIFORM_USAGE: &str = "MakeUniform [Direction=U|V|Both]";
+
 struct MakeUniformCommand;
 
 impl Command for MakeUniformCommand {
@@ -1942,23 +1945,65 @@ impl Command for MakeUniformCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "MakeUniform")?;
+        let direction = parse_make_uniform_direction(arguments)?;
         let mut replacements = Vec::new();
+        let mut curve_count = 0;
+        let mut surface_count = 0;
         for object in document.selected_objects() {
-            let Some(curve) = object.geometry().nurbs_curve_representation()? else {
-                continue;
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface) => {
+                    surface_count += 1;
+                    Geometry::NurbsSurface(surface.try_make_uniform(direction)?)
+                }
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    curve_count += 1;
+                    Geometry::NurbsCurve(curve.try_make_uniform()?)
+                }
             };
-            replacements.push((object.id(), Geometry::NurbsCurve(curve.try_make_uniform()?)));
+            replacements.push((object.id(), geometry));
         }
         if replacements.is_empty() {
-            return Err(CommandError::NoMakeUniformCurves);
+            return Err(CommandError::NoMakeUniformObjects);
         }
 
-        let curve_count = document.replace_object_geometries(replacements)?;
+        let object_count = document.replace_object_geometries(replacements)?;
         Ok(format!(
-            "Made {curve_count} curve knot vector(s) uniform without changing control points"
+            "Made {object_count} object(s) uniform without changing control points ({curve_count} curve(s), {surface_count} NURBS surface(s), surface direction {})",
+            match direction {
+                SurfaceKnotDirection::U => "U",
+                SurfaceKnotDirection::V => "V",
+                SurfaceKnotDirection::Both => "U/V",
+            }
         ))
     }
+}
+
+fn parse_make_uniform_direction(arguments: &[&str]) -> Result<SurfaceKnotDirection, CommandError> {
+    let mut direction = SurfaceKnotDirection::Both;
+    let mut direction_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, MAKE_UNIFORM_USAGE)?;
+        if !option_name_eq(name, "Direction") || direction_seen {
+            return Err(CommandError::Usage(MAKE_UNIFORM_USAGE));
+        }
+        let value = value.trim_start_matches(['_', '-']);
+        direction = if value.eq_ignore_ascii_case("U") {
+            SurfaceKnotDirection::U
+        } else if value.eq_ignore_ascii_case("V") {
+            SurfaceKnotDirection::V
+        } else if value.eq_ignore_ascii_case("Both") {
+            SurfaceKnotDirection::Both
+        } else {
+            return Err(CommandError::Usage(MAKE_UNIFORM_USAGE));
+        };
+        direction_seen = true;
+        index += consumed;
+    }
+    Ok(direction)
 }
 
 struct SrfPtCommand;
@@ -16876,8 +16921,8 @@ pub enum CommandError {
     #[error("Rebuild requires at least one selected curve")]
     NoRebuildCurves,
 
-    #[error("MakeUniform requires at least one selected curve")]
-    NoMakeUniformCurves,
+    #[error("MakeUniform requires at least one selected curve or untrimmed NURBS surface")]
+    NoMakeUniformObjects,
 
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
@@ -26853,7 +26898,7 @@ mod tests {
 
         assert_eq!(
             registry.execute(&mut document, "MakeUniform").unwrap(),
-            "Made 1 curve knot vector(s) uniform without changing control points"
+            "Made 1 object(s) uniform without changing control points (1 curve(s), 0 NURBS surface(s), surface direction U/V)"
         );
         assert_eq!(document.objects().len(), 2);
         let object = document.object(source_id).unwrap();
@@ -26887,7 +26932,7 @@ mod tests {
             .unwrap();
         assert!(matches!(
             registry.execute(&mut document, "MakeUniform"),
-            Err(CommandError::NoMakeUniformCurves)
+            Err(CommandError::NoMakeUniformObjects)
         ));
 
         let line_id = document
@@ -26907,7 +26952,7 @@ mod tests {
         let history = document.undo_label().map(str::to_owned);
         assert!(matches!(
             registry.execute(&mut document, "MakeUniform extra"),
-            Err(CommandError::Usage("MakeUniform"))
+            Err(CommandError::Usage(MAKE_UNIFORM_USAGE))
         ));
         assert_eq!(document.object(line_id).unwrap().geometry(), &before);
         assert_eq!(document.undo_label(), history.as_deref());
@@ -26917,6 +26962,82 @@ mod tests {
             panic!("MakeUniform must convert analytic curves to NURBS")
         };
         assert_eq!(curve.knots(), &[0.0, 0.0, 1.0, 1.0]);
+    }
+
+    #[test]
+    fn make_uniform_changes_requested_surface_direction_in_place() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Uniform surface", ColorRgb::new(45, 90, 135))
+            .unwrap();
+        let source = rational_multi_span_surface();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(source.clone()),
+                ObjectAttributes::on_layer(layer).with_name("weighted surface"),
+            )
+            .unwrap();
+        document
+            .select_objects([source_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "MakeUniform Direction _U")
+                .unwrap(),
+            "Made 1 object(s) uniform without changing control points (0 curve(s), 1 NURBS surface(s), surface direction U)"
+        );
+        let object = document.object(source_id).unwrap();
+        assert_eq!(object.attributes().layer_id(), layer);
+        assert_eq!(object.attributes().name(), Some("weighted surface"));
+        assert!(document.is_selected(source_id));
+        let Geometry::NurbsSurface(surface) = object.geometry() else {
+            panic!("MakeUniform must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.control_points(), source.control_points());
+        assert_eq!(surface.knots_u(), &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]);
+        assert_eq!(surface.knots_v(), source.knots_v());
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source)
+        );
+    }
+
+    #[test]
+    fn make_uniform_rejects_invalid_surface_directions_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(rational_multi_span_surface()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(surface_id).unwrap().geometry().clone();
+        let history = document.undo_label().map(str::to_owned);
+
+        for command in [
+            "MakeUniform Direction=Other",
+            "MakeUniform Direction=U Direction=V",
+            "MakeUniform Other=Both",
+        ] {
+            assert!(
+                matches!(
+                    registry.execute(&mut document, command),
+                    Err(CommandError::Usage(MAKE_UNIFORM_USAGE))
+                ),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(surface_id).unwrap().geometry(),
+                &before,
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
     }
 
     #[test]

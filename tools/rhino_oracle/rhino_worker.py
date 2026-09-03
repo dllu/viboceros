@@ -5629,6 +5629,46 @@ def _execute(operation, iterations, tolerance):
         finally:
             curve.Dispose()
 
+    if kind == "surface_make_uniform_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction_name = str(operation.get("direction", "both")).lower()
+        directions = {"u": 0, "v": 1, "both": 2}
+        if direction_name not in directions:
+            raise ValueError("surface uniform direction must be u, v, or both")
+        direction = directions[direction_name]
+
+        def make_uniform_surface():
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, True, degree_u + 1, degree_v + 1, count_u, count_v
+            )
+            if surface is None:
+                raise ValueError("could not allocate NURBS surface")
+            try:
+                _set_surface_controls(
+                    surface, operation["control_points"], count_u, count_v
+                )
+                _set_knots(
+                    surface.KnotsU, operation["knots_u"], "surface U knot"
+                )
+                _set_knots(
+                    surface.KnotsV, operation["knots_v"], "surface V knot"
+                )
+                if not surface.IsValid:
+                    raise ValueError("NURBS surface is invalid")
+                if not surface.MakeUniform(direction):
+                    raise ValueError("Rhino surface uniformization failed")
+                definition = _nurbs_surface_definition(surface)
+                definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                return definition
+            finally:
+                surface.Dispose()
+
+        return _measure(iterations, make_uniform_surface)
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

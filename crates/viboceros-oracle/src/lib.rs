@@ -20,9 +20,9 @@ use viboceros_geometry::{
     MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
-    try_rebuild_curve, try_tween_nurbs_curves,
+    SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    WeightedPoint3, join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points,
+    try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -539,6 +539,17 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
     },
+    SurfaceMakeUniformGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceUniformDirection,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -714,6 +725,24 @@ pub enum CurveTweenMethod {
     SamplePoints,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum SurfaceUniformDirection {
+    U,
+    V,
+    Both,
+}
+
+impl SurfaceUniformDirection {
+    const fn geometry(self) -> SurfaceKnotDirection {
+        match self {
+            Self::U => SurfaceKnotDirection::U,
+            Self::V => SurfaceKnotDirection::V,
+            Self::Both => SurfaceKnotDirection::Both,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct NurbsCurveDefinition {
     pub degree: usize,
@@ -801,6 +830,7 @@ impl Operation {
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
+            | Self::SurfaceMakeUniformGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2602,6 +2632,31 @@ fn execute(
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure(iterations, || source.try_make_uniform())?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::SurfaceMakeUniformGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_make_uniform(black_box(direction.geometry()))
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
         }
         Operation::Paraboloid {
             origin,
@@ -5722,6 +5777,16 @@ fn nurbs_surface_definition_value(surface: &NurbsSurface) -> Value {
     })
 }
 
+fn uniform_surface_definition_value(surface: &NurbsSurface) -> Value {
+    let mut value = nurbs_surface_definition_value(surface);
+    let object = value
+        .as_object_mut()
+        .expect("NURBS surface definition is a JSON object");
+    object.insert("periodic_u".to_owned(), json!(surface.is_periodic_u()));
+    object.insert("periodic_v".to_owned(), json!(surface.is_periodic_v()));
+    value
+}
+
 fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
     json!({
         "control_points": curve.control_points().iter().map(|control| json!({
@@ -7680,6 +7745,44 @@ mod tests {
                 {"point": [4.0, 0.0, 0.0], "weight": 1.0},
             ])
         );
+    }
+
+    #[test]
+    fn captures_rhino_compatible_surface_uniformization() {
+        let control_points = (0..3)
+            .flat_map(|v| {
+                (0..4).map(move |u| ControlPoint {
+                    point: [u as f64, v as f64, (u * v) as f64 * 0.1],
+                    weight: 0.75 + (u + v) as f64 * 0.1,
+                })
+            })
+            .collect();
+        let response = run_request(&request(vec![Operation::SurfaceMakeUniformGeometry {
+            id: "uniform-surface-v".to_owned(),
+            degree_u: 2,
+            degree_v: 1,
+            control_point_count_u: 4,
+            control_point_count_v: 3,
+            control_points,
+            knots_u: vec![0.0, 0.0, 0.0, 0.25, 1.0, 1.0, 1.0],
+            knots_v: vec![10.0, 10.0, 13.0, 20.0, 20.0],
+            direction: SurfaceUniformDirection::V,
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        assert_eq!(surface["degree"], json!([2, 1]));
+        assert_eq!(surface["control_count"], json!([4, 3]));
+        assert_eq!(surface["control_points"].as_array().unwrap().len(), 12);
+        assert_eq!(
+            surface["knots_u"],
+            json!([0.0, 0.0, 0.0, 0.25, 1.0, 1.0, 1.0])
+        );
+        assert_eq!(surface["knots_v"], json!([0.0, 0.0, 1.0, 2.0, 2.0]));
+        assert_eq!(surface["domain_u"], json!([0.0, 1.0]));
+        assert_eq!(surface["domain_v"], json!([0.0, 2.0]));
+        assert_eq!(surface["periodic_u"], false);
+        assert_eq!(surface["periodic_v"], false);
     }
 
     #[test]
