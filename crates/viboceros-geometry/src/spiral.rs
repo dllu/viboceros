@@ -17,8 +17,8 @@ impl NurbsCurve {
     /// advances along the frame Z axis. Positive turns rotate from frame X
     /// toward frame Y; negative turns reverse that twist. The knot domain is
     /// `[0, abs(turns)]`. As in Rhino's straight-axis spiral constructor,
-    /// positive spirals below one turn use 36 spans per turn and positive
-    /// spirals of at least one turn use 24. Rhino's negative-turn path retains
+    /// varying-radius spirals use 36 spans per turn. Constant-radius positive
+    /// helices of at least one turn use 24; shorter or reverse helices retain
     /// the 36-span density. Fractional span counts are rounded upward.
     ///
     /// Every span-boundary sample lies on the analytic spiral. Analytic end
@@ -36,10 +36,10 @@ impl NurbsCurve {
         }
 
         let turn_count = turns.abs();
-        let spans_per_turn = if turns < 1.0 {
-            SHORT_SPIRAL_SPANS_PER_TURN
-        } else {
+        let spans_per_turn = if radii[0] == radii[1] && turns >= 1.0 {
             LONG_SPIRAL_SPANS_PER_TURN
+        } else {
+            SHORT_SPIRAL_SPANS_PER_TURN
         };
         let requested_spans = spans_per_turn * turn_count;
         let maximum_spans = MAX_SPIRAL_CONTROL_POINTS - CUBIC_DEGREE;
@@ -265,6 +265,10 @@ mod tests {
         let short = NurbsCurve::try_helix(world_frame(), 1.0, 0.3, 0.1).unwrap();
         assert_eq!(short.control_points().len(), 7);
         assert_eq!(short.knots().len(), 11);
+
+        let expanding = NurbsCurve::try_spiral(world_frame(), 6.0, 2.0, [1.0, 4.0]).unwrap();
+        assert_eq!(expanding.control_points().len(), 75);
+        assert_eq!(expanding.knots().len(), 79);
     }
 
     #[test]

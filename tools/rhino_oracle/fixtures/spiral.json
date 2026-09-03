@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "spiral",
+      "id": "expanding-world-z",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "height": 6,
+      "turns": 2,
+      "radii": [1, 4]
+    },
+    {
+      "op": "spiral",
+      "id": "contracting-quarter-turn",
+      "origin": [1, -2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "height": 0.75,
+      "turns": 0.25,
+      "radii": [4, 0.5]
+    },
+    {
+      "op": "spiral",
+      "id": "fractional-reverse-oblique",
+      "origin": [1, 2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 0, -1],
+      "height": 10,
+      "turns": -2.5,
+      "radii": [3, 5]
+    },
+    {
+      "op": "spiral",
+      "id": "zero-to-negative-radius",
+      "origin": [-4, 7, 2],
+      "x_axis": [1, 1, 0],
+      "y_axis": [-1, 1, 2],
+      "height": 4,
+      "turns": 1.25,
+      "radii": [0, -3]
+    }
+  ]
+}

@@ -5238,6 +5238,43 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_helix)
 
+    if kind == "spiral":
+        origin = _point(operation["origin"])
+        plane = Rhino.Geometry.Plane(
+            origin,
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        height = _finite(operation["height"], "spiral height")
+        turns = _finite(operation["turns"], "spiral turns")
+        radii = [
+            _finite(value, "spiral radius") for value in operation["radii"]
+        ]
+        if turns == 0.0 or (radii[0] == 0.0 and radii[1] == 0.0):
+            raise ValueError("spiral requires turns and at least one nonzero radius")
+        radius_point = origin + plane.XAxis
+        pitch = height / abs(turns)
+
+        def create_spiral():
+            curve = Rhino.Geometry.NurbsCurve.CreateSpiral(
+                origin,
+                plane.ZAxis,
+                radius_point,
+                pitch,
+                turns,
+                radii[0],
+                radii[1],
+            )
+            if curve is None:
+                raise ValueError("Rhino could not create spiral")
+            try:
+                curve.Domain = Rhino.Geometry.Interval(0.0, abs(turns))
+                return _nurbs_curve_definition(curve)
+            finally:
+                curve.Dispose()
+
+        return _measure(iterations, create_spiral)
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

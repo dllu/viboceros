@@ -176,6 +176,9 @@ impl CommandRegistry {
             .register(HelixCommand)
             .expect("unique built-in command");
         registry
+            .register(SpiralCommand)
+            .expect("unique built-in command");
+        registry
             .register(TruncatedConeCommand)
             .expect("unique built-in command");
         registry
@@ -2547,6 +2550,7 @@ const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-poi
 const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point | Conic Apex start apex end rho-or-through-point | Conic start Apex apex end rho-or-through-point";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
+const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
@@ -2718,7 +2722,7 @@ struct HyperbolaDefinition {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum HelixAdvance {
+enum SpiralAdvance {
     Turns(Real),
     Pitch(Real),
 }
@@ -2728,7 +2732,16 @@ struct HelixCommandOptions {
     axis_start: Point3,
     axis_end: Point3,
     radius: AxialPrimitiveRadius,
-    advance: HelixAdvance,
+    advance: SpiralAdvance,
+    reverse_twist: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct SpiralCommandOptions {
+    axis_start: Point3,
+    axis_end: Point3,
+    radii: [AxialPrimitiveRadius; 2],
+    advance: SpiralAdvance,
     reverse_twist: bool,
 }
 
@@ -3420,32 +3433,10 @@ fn parse_hyperbola_options(arguments: &[&str]) -> Result<HyperbolaCommandOptions
     })
 }
 
-fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, CommandError> {
-    let (axis_start, start_consumed) = parse_point(arguments)?;
-    let (axis_end, end_consumed) = parse_point(&arguments[start_consumed..])?;
-    let radius_start = start_consumed + end_consumed;
-    let remaining = &arguments[radius_start..];
-    let positional_count = remaining
-        .iter()
-        .take_while(|argument| !argument.contains('='))
-        .count();
-    let (radius, radius_consumed) = if positional_count == 1 && remaining[0].contains(',') {
-        let (point, consumed) = parse_point(remaining)?;
-        debug_assert_eq!(consumed, 1);
-        (AxialPrimitiveRadius::Point(point), consumed)
-    } else if positional_count == 1 {
-        (
-            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
-            1,
-        )
-    } else if positional_count == 3 {
-        let (point, consumed) = parse_point(remaining)?;
-        debug_assert_eq!(consumed, 3);
-        (AxialPrimitiveRadius::Point(point), consumed)
-    } else {
-        return Err(CommandError::Usage(HELIX_USAGE));
-    };
-
+fn parse_spiral_advance_options(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<(SpiralAdvance, bool), CommandError> {
     #[derive(Clone, Copy, Eq, PartialEq)]
     enum Mode {
         Turns,
@@ -3457,9 +3448,9 @@ fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, Comman
     let mut pitch = None;
     let mut reverse_twist = false;
     let mut reverse_seen = false;
-    for argument in &arguments[radius_start + radius_consumed..] {
+    for argument in arguments {
         let Some((name, value)) = argument.split_once('=') else {
-            return Err(CommandError::Usage(HELIX_USAGE));
+            return Err(CommandError::Usage(usage));
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Mode") && mode.is_none() {
@@ -3468,44 +3459,139 @@ fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, Comman
             } else if value.eq_ignore_ascii_case("Pitch") {
                 Some(Mode::Pitch)
             } else {
-                return Err(CommandError::Usage(HELIX_USAGE));
+                return Err(CommandError::Usage(usage));
             };
         } else if option_name_eq(name, "Turns") && turns.is_none() {
             let value = parse_finite_real(value)?;
             if value <= 0.0 {
-                return Err(CommandError::Usage(HELIX_USAGE));
+                return Err(CommandError::Usage(usage));
             }
             turns = Some(value);
         } else if option_name_eq(name, "Pitch") && pitch.is_none() {
             let value = parse_finite_real(value)?;
             if value <= 0.0 {
-                return Err(CommandError::Usage(HELIX_USAGE));
+                return Err(CommandError::Usage(usage));
             }
             pitch = Some(value);
         } else if option_name_eq(name, "ReverseTwist") && !reverse_seen {
-            reverse_twist = parse_yes_no(value).ok_or(CommandError::Usage(HELIX_USAGE))?;
+            reverse_twist = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
             reverse_seen = true;
         } else {
-            return Err(CommandError::Usage(HELIX_USAGE));
+            return Err(CommandError::Usage(usage));
         }
     }
 
     if turns.is_some() && pitch.is_some() {
-        return Err(CommandError::Usage(HELIX_USAGE));
+        return Err(CommandError::Usage(usage));
     }
     let advance = match mode {
-        Some(Mode::Turns) if pitch.is_none() => HelixAdvance::Turns(turns.unwrap_or(3.0)),
+        Some(Mode::Turns) if pitch.is_none() => SpiralAdvance::Turns(turns.unwrap_or(3.0)),
         Some(Mode::Pitch) if turns.is_none() => {
-            HelixAdvance::Pitch(pitch.ok_or(CommandError::Usage(HELIX_USAGE))?)
+            SpiralAdvance::Pitch(pitch.ok_or(CommandError::Usage(usage))?)
         }
-        None if pitch.is_some() => HelixAdvance::Pitch(pitch.unwrap()),
-        None => HelixAdvance::Turns(turns.unwrap_or(3.0)),
+        None => pitch.map_or_else(
+            || SpiralAdvance::Turns(turns.unwrap_or(3.0)),
+            SpiralAdvance::Pitch,
+        ),
+        _ => return Err(CommandError::Usage(usage)),
+    };
+    Ok((advance, reverse_twist))
+}
+
+fn parse_inline_axial_radius(argument: &str) -> Result<AxialPrimitiveRadius, CommandError> {
+    if argument.contains(',') {
+        let (point, consumed) = parse_point(&[argument])?;
+        debug_assert_eq!(consumed, 1);
+        Ok(AxialPrimitiveRadius::Point(point))
+    } else {
+        Ok(AxialPrimitiveRadius::Numeric(parse_finite_real(argument)?))
+    }
+}
+
+fn parse_spiral_radii(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<[AxialPrimitiveRadius; 2], CommandError> {
+    match arguments {
+        [first, second] => Ok([
+            parse_inline_axial_radius(first)?,
+            parse_inline_axial_radius(second)?,
+        ]),
+        [first, x, y, z] if first.contains(',') => {
+            let (second, consumed) = parse_point(&[*x, *y, *z])?;
+            debug_assert_eq!(consumed, 3);
+            Ok([
+                parse_inline_axial_radius(first)?,
+                AxialPrimitiveRadius::Point(second),
+            ])
+        }
+        [x, y, z, second] => {
+            let (first, consumed) = parse_point(&[*x, *y, *z])?;
+            debug_assert_eq!(consumed, 3);
+            Ok([
+                AxialPrimitiveRadius::Point(first),
+                parse_inline_axial_radius(second)?,
+            ])
+        }
+        [x0, y0, z0, x1, y1, z1] => {
+            let (first, first_consumed) = parse_point(&[*x0, *y0, *z0])?;
+            let (second, second_consumed) = parse_point(&[*x1, *y1, *z1])?;
+            debug_assert_eq!(first_consumed, 3);
+            debug_assert_eq!(second_consumed, 3);
+            Ok([
+                AxialPrimitiveRadius::Point(first),
+                AxialPrimitiveRadius::Point(second),
+            ])
+        }
+        _ => Err(CommandError::Usage(usage)),
+    }
+}
+
+fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, CommandError> {
+    let (axis_start, start_consumed) = parse_point(arguments)?;
+    let (axis_end, end_consumed) = parse_point(&arguments[start_consumed..])?;
+    let radius_start = start_consumed + end_consumed;
+    let remaining = &arguments[radius_start..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let radius = match &remaining[..positional_count] {
+        [radius] => parse_inline_axial_radius(radius)?,
+        [x, y, z] => {
+            let (point, consumed) = parse_point(&[*x, *y, *z])?;
+            debug_assert_eq!(consumed, 3);
+            AxialPrimitiveRadius::Point(point)
+        }
         _ => return Err(CommandError::Usage(HELIX_USAGE)),
     };
+    let (advance, reverse_twist) =
+        parse_spiral_advance_options(&remaining[positional_count..], HELIX_USAGE)?;
     Ok(HelixCommandOptions {
         axis_start,
         axis_end,
         radius,
+        advance,
+        reverse_twist,
+    })
+}
+
+fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, CommandError> {
+    let (axis_start, start_consumed) = parse_point(arguments)?;
+    let (axis_end, end_consumed) = parse_point(&arguments[start_consumed..])?;
+    let radius_start = start_consumed + end_consumed;
+    let remaining = &arguments[radius_start..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let radii = parse_spiral_radii(&remaining[..positional_count], SPIRAL_USAGE)?;
+    let (advance, reverse_twist) =
+        parse_spiral_advance_options(&remaining[positional_count..], SPIRAL_USAGE)?;
+    Ok(SpiralCommandOptions {
+        axis_start,
+        axis_end,
+        radii,
         advance,
         reverse_twist,
     })
@@ -5090,8 +5176,8 @@ impl Command for HelixCommand {
         let (frame, radius) =
             axial_primitive_frame(options.axis_start, options.radius, axis, tolerance)?;
         let turn_count = match options.advance {
-            HelixAdvance::Turns(turn_count) => turn_count,
-            HelixAdvance::Pitch(pitch) => height / pitch,
+            SpiralAdvance::Turns(turn_count) => turn_count,
+            SpiralAdvance::Pitch(pitch) => height / pitch,
         };
         let signed_turn_count = if options.reverse_twist {
             -turn_count
@@ -5102,6 +5188,47 @@ impl Command for HelixCommand {
         let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
         Ok(format!(
             "Added NURBS helix {id} (radius {radius:.6}, height {height:.6}, turns {turn_count:.6}{})",
+            if options.reverse_twist {
+                ", reverse twist"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
+struct SpiralCommand;
+
+impl Command for SpiralCommand {
+    fn name(&self) -> &'static str {
+        "Spiral"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_spiral_options(arguments)?;
+        let tolerance = document.tolerance();
+        let axis = options.axis_start.vector_to(options.axis_end)?;
+        let height = axis.length()?;
+        let (frame, start_radius) =
+            axial_primitive_frame(options.axis_start, options.radii[0], axis, tolerance)?;
+        let end_radius = axial_primitive_radius_value(options.axis_end, options.radii[1], frame)?;
+        if start_radius < 0.0 || end_radius < 0.0 {
+            return Err(GeometryError::InvalidSpiralDimensions.into());
+        }
+        let turn_count = match options.advance {
+            SpiralAdvance::Turns(turn_count) => turn_count,
+            SpiralAdvance::Pitch(pitch) => height / pitch,
+        };
+        let signed_turn_count = if options.reverse_twist {
+            -turn_count
+        } else {
+            turn_count
+        };
+        let curve =
+            NurbsCurve::try_spiral(frame, height, signed_turn_count, [start_radius, end_radius])?;
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added NURBS spiral {id} (radii {start_radius:.6} to {end_radius:.6}, height {height:.6}, turns {turn_count:.6}{})",
             if options.reverse_twist {
                 ", reverse twist"
             } else {
@@ -16012,7 +16139,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -17788,6 +17915,108 @@ mod tests {
             "Helix 0,0,0 0,0,10 2 Mode=Pitch",
             "Helix 0,0,0 0,0,10 2 ReverseTwist=Maybe",
             "Helix 0,0,0 0,0,10 2 ReverseTwist=Yes ReverseTwist=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.undo_label(), None);
+    }
+
+    #[test]
+    fn spiral_supports_independent_numeric_and_picked_radii_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+
+        let result = registry
+            .execute(&mut document, "Spiral 0,0,0 0,0,6 1 4 Turns=2")
+            .unwrap();
+        assert!(result.contains("Added NURBS spiral"));
+        assert!(result.contains("radii 1.000000 to 4.000000"));
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("Spiral must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert!(!curve.is_rational());
+        assert_eq!(curve.control_points().len(), 75);
+        assert_eq!(curve.domain(), 0.0..=2.0);
+        assert!(
+            curve
+                .evaluate(1.0)
+                .unwrap()
+                .distance_to(Point3::try_new(2.5, 0.0, 3.0).unwrap())
+                .unwrap()
+                < 2.0e-12
+        );
+        assert_eq!(document.undo_label(), Some("Spiral"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(
+                &mut document,
+                "Spiral 1,2,3 1,12,3 4,2,3 1,12,-2 Pitch=4 ReverseTwist=Yes",
+            )
+            .unwrap();
+        assert!(result.contains("radii 3.000000 to 5.000000"));
+        assert!(result.contains("turns 2.500000, reverse twist"));
+        let Geometry::NurbsCurve(reverse) = document.objects().next().unwrap().geometry() else {
+            panic!("picked radii and inferred pitch mode must create a NURBS curve")
+        };
+        assert_eq!(reverse.control_points().len(), 93);
+        assert!(
+            reverse
+                .evaluate(2.5)
+                .unwrap()
+                .distance_to(Point3::try_new(-4.0, 12.0, 3.0).unwrap())
+                .unwrap()
+                < 2.0e-12
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Spiral 0 0 0 0 0 3 0 2 Mode=Turns")
+            .unwrap();
+        let Geometry::NurbsCurve(zero_start) = document.objects().next().unwrap().geometry() else {
+            panic!("a numeric zero start radius must be supported")
+        };
+        assert_eq!(zero_start.control_points().len(), 111);
+        assert!(
+            zero_start
+                .evaluate(3.0)
+                .unwrap()
+                .distance_to(Point3::try_new(2.0, 0.0, 3.0).unwrap())
+                .unwrap()
+                < 2.0e-12
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Spiral 0,0,0 0,0,6 1 0 0 4 Turns=2")
+            .unwrap();
+        let Geometry::NurbsCurve(space_point) = document.objects().next().unwrap().geometry()
+        else {
+            panic!("a space-separated first radius point must be accepted")
+        };
+        assert_eq!(space_point.control_points().len(), 75);
+        registry.execute(&mut document, "Undo").unwrap();
+
+        for invalid in [
+            "Spiral",
+            "Spiral 0,0,0 0,0,0 1 2 Turns=3",
+            "Spiral 0,0,0 0,0,6 0 0 Turns=3",
+            "Spiral 0,0,0 0,0,6 -1 2 Turns=3",
+            "Spiral 0,0,0 0,0,6 1 -2 Turns=3",
+            "Spiral 0,0,0 0,0,6 1 2 Turns=0",
+            "Spiral 0,0,0 0,0,6 1 2 Pitch=0",
+            "Spiral 0,0,0 0,0,6 1 2 Turns=3 Pitch=2",
+            "Spiral 0,0,0 0,0,6 1 2 Mode=Turns Pitch=2",
+            "Spiral 0,0,0 0,0,6 1 2 Mode=Pitch Turns=3",
+            "Spiral 0,0,0 0,0,6 1 2 Mode=Pitch",
+            "Spiral 0,0,0 0,0,6 1 2 ReverseTwist=Maybe",
+            "Spiral 0,0,0 0,0,6 1 2 Flat=Yes",
+            "Spiral 0,0,0 0,0,6 1 2 AroundCurve=1",
         ] {
             assert!(
                 registry.execute(&mut document, invalid).is_err(),

@@ -470,6 +470,15 @@ pub enum Operation {
         height: f64,
         turns: f64,
     },
+    Spiral {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        height: f64,
+        turns: f64,
+        radii: [f64; 2],
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -676,6 +685,7 @@ impl Operation {
             | Self::ParabolaThreePoint { id, .. }
             | Self::Hyperbola { id, .. }
             | Self::Helix { id, .. }
+            | Self::Spiral { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2223,6 +2233,31 @@ fn execute(
                     black_box(*radius),
                     black_box(*height),
                     black_box(*turns),
+                )
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
+        }
+        Operation::Spiral {
+            origin,
+            x_axis,
+            y_axis,
+            height,
+            turns,
+            radii,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (curve, elapsed) = measure(iterations, || {
+                NurbsCurve::try_spiral(
+                    frame,
+                    black_box(*height),
+                    black_box(*turns),
+                    black_box(*radii),
                 )
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
@@ -6921,6 +6956,33 @@ mod tests {
             json!([-3.75, -3.0, 0.0])
         );
         assert_eq!(both[1], single[0]);
+    }
+
+    #[test]
+    fn captures_variable_radius_spiral_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::Spiral {
+            id: "spiral".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            height: 6.0,
+            turns: 2.0,
+            radii: [1.0, 4.0],
+        }]))
+        .unwrap();
+
+        let spiral = &response.results[0].value;
+        assert_eq!(spiral["degree"], 3);
+        assert_eq!(spiral["domain"], json!([0.0, 2.0]));
+        assert_eq!(spiral["control_points"].as_array().unwrap().len(), 75);
+        assert_eq!(spiral["knots"].as_array().unwrap().len(), 79);
+        assert_eq!(
+            spiral["control_points"][0],
+            json!({"point": [1.0, 0.0, 0.0], "weight": 1.0})
+        );
+        assert_eq!(spiral["control_points"][74]["point"][0], json!(4.0));
+        assert_eq!(spiral["control_points"][74]["point"][2], json!(6.0));
+        assert_eq!(spiral["knots"][4], json!(1.0 / 36.0));
     }
 
     #[test]

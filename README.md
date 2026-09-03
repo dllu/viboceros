@@ -63,6 +63,7 @@ Parabola Vertex 0,0,0 0,0,1 4,0,0 Half=No MarkFocus=Yes
 Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,1.25 MarkFocus=Yes
 Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes MarkFoci=Yes
 Helix 0,0,0 0,0,10 2 Turns=3 ReverseTwist=No
+Spiral 0,0,0 0,0,6 1 4 Turns=2 ReverseTwist=No
 Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
@@ -501,11 +502,14 @@ modes. Each branch is one exact normalized rational quadratic span;
 `ShowAsymptotes=Yes` is accepted as a preview-only option.
 `Helix` creates a non-rational uniform cubic along an explicit axis. Numeric or
 picked radii, arbitrary axis directions, fractional `Turns=`, `Mode=Pitch`,
-and `ReverseTwist=Yes` are supported. The linear-time tridiagonal constructor
-uses Rhino's 24/36-span density policy, interpolates every analytic spiral
-sample, and has a one-million-control resource ceiling. Its C2 endpoint rule
-differs from Rhino's legacy C1 endpoint perturbation by less than `2e-5` in the
-permanent `helix.json` NURBS-control oracle fixture.
+and `ReverseTwist=Yes` are supported. `Spiral` extends the same straight-axis
+workflow with independent numeric or picked start and end radii; `Flat` and
+`AroundCurve` are not implemented yet. The linear-time tridiagonal constructor
+uses Rhino's 24-span density for long forward constant-radius helices and 36
+spans otherwise, interpolates every analytic sample, and has a one-million-
+control resource ceiling. Its C2 endpoint rule differs from Rhino's legacy C1
+endpoint perturbation by less than `3e-5` in the permanent `helix.json` and
+`spiral.json` NURBS-control oracle fixtures.
 `Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
 `Vertex vertex focus end-point` constructions; `Focus` is the default. The
 vertex form projects the end point perpendicular to the focus axis and derives
@@ -830,6 +834,10 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/helix.json \
   --absolute-epsilon 2e-5 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/spiral.json \
+  --absolute-epsilon 3e-5 --relative-epsilon 1e-12
 ```
 
 The same workflow is importable for instrumentation and tests:
