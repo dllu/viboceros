@@ -2224,6 +2224,88 @@ impl NurbsSurface {
         }
     }
 
+    /// Moves one natural edge inward by a model-space path length and restores
+    /// the original parameter domain, matching Rhino's negative-distance
+    /// `ExtendSrf` behavior.
+    ///
+    /// `edge_parameter` locates the path along the selected edge: V for west
+    /// or east and U for south or north. When omitted, Rhino's preselected-edge
+    /// convention uses the middle of the edge domain.
+    pub fn try_shrunk_by_length(
+        &self,
+        edge: SurfaceExtensionEdge,
+        length: Real,
+        edge_parameter: Option<Real>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidSurfaceExtensionLength);
+        }
+        let (direction, constant_domain, direction_is_closed) = match edge {
+            SurfaceExtensionEdge::West | SurfaceExtensionEdge::East => {
+                (SurfaceIsoDirection::U, self.domain_v(), self.is_closed_u()?)
+            }
+            SurfaceExtensionEdge::South | SurfaceExtensionEdge::North => {
+                (SurfaceIsoDirection::V, self.domain_u(), self.is_closed_v()?)
+            }
+        };
+        if direction_is_closed {
+            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen {
+                direction: match direction {
+                    SurfaceIsoDirection::U => "U",
+                    SurfaceIsoDirection::V => "V",
+                },
+            });
+        }
+        let constant_parameter = match edge_parameter {
+            Some(parameter) => parameter,
+            None => stable_knot_mean(&[*constant_domain.start(), *constant_domain.end()])?,
+        };
+        let sampler =
+            SurfaceIsoArcLengthSampler::try_new(self, direction, constant_parameter, tolerance)?;
+        if length >= sampler.total_length {
+            return Err(GeometryError::SurfaceShrinkLengthExceedsPath {
+                length,
+                available: sampler.total_length,
+            });
+        }
+
+        match edge {
+            SurfaceExtensionEdge::West => {
+                let retained_start = sampler.parameter_at_distance(length)?;
+                let original_domain = self.domain_u();
+                self.try_trimmed_u(retained_start..=*original_domain.end())?
+                    .map_u_control_curves(|curve| {
+                        curve.try_reparameterized(original_domain.clone())
+                    })
+            }
+            SurfaceExtensionEdge::East => {
+                let retained_end = sampler.parameter_at_distance(sampler.total_length - length)?;
+                let original_domain = self.domain_u();
+                self.try_trimmed_u(*original_domain.start()..=retained_end)?
+                    .map_u_control_curves(|curve| {
+                        curve.try_reparameterized(original_domain.clone())
+                    })
+            }
+            SurfaceExtensionEdge::South => {
+                let retained_start = sampler.parameter_at_distance(length)?;
+                let original_domain = self.domain_v();
+                self.try_trimmed_v(retained_start..=*original_domain.end())?
+                    .map_v_control_curves(|curve| {
+                        curve.try_reparameterized(original_domain.clone())
+                    })
+            }
+            SurfaceExtensionEdge::North => {
+                let retained_end = sampler.parameter_at_distance(sampler.total_length - length)?;
+                let original_domain = self.domain_v();
+                self.try_trimmed_v(*original_domain.start()..=retained_end)?
+                    .map_v_control_curves(|curve| {
+                        curve.try_reparameterized(original_domain.clone())
+                    })
+            }
+        }
+    }
+
     /// Returns whether the natural U direction closes without a border.
     pub fn is_closed_u(&self) -> Result<bool, GeometryError> {
         if self.is_periodic_u() {
@@ -7995,6 +8077,84 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn surface_length_shrink_uses_the_edge_path_and_restores_the_domain() {
+        let surface = NurbsSurface::try_new(
+            1,
+            1,
+            2,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(20.0, 10.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+
+        let east = surface
+            .try_shrunk_by_length(SurfaceExtensionEdge::East, 2.0, None, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(east.domain_u(), 0.0..=1.0);
+        assert_eq!(east.domain_v(), 0.0..=1.0);
+        assert_point_near(
+            east.control_points()[1].point(),
+            point(26.0 / 3.0, 0.0, 0.0),
+        );
+        assert_point_near(
+            east.control_points()[3].point(),
+            point(52.0 / 3.0, 10.0, 0.0),
+        );
+
+        let east_at_south = surface
+            .try_shrunk_by_length(
+                SurfaceExtensionEdge::East,
+                2.0,
+                Some(0.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_point_near(
+            east_at_south.control_points()[1].point(),
+            point(8.0, 0.0, 0.0),
+        );
+        assert_point_near(
+            east_at_south.control_points()[3].point(),
+            point(16.0, 10.0, 0.0),
+        );
+
+        let north = surface
+            .try_shrunk_by_length(SurfaceExtensionEdge::North, 2.0, None, Tolerance::DEFAULT)
+            .unwrap();
+        let retained_v = 1.0 - 2.0 / 125.0_f64.sqrt();
+        assert_point_near(
+            north.control_points()[2].point(),
+            point(0.0, 10.0 * retained_v, 0.0),
+        );
+        assert_point_near(
+            north.control_points()[3].point(),
+            point(10.0 + 10.0 * retained_v, 10.0 * retained_v, 0.0),
+        );
+    }
+
+    #[test]
+    fn surface_length_shrink_rejects_an_unavailable_path() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+        ])
+        .unwrap();
+        assert!(matches!(
+            surface.try_shrunk_by_length(SurfaceExtensionEdge::East, 2.0, None, Tolerance::DEFAULT),
+            Err(GeometryError::SurfaceShrinkLengthExceedsPath { .. })
+        ));
     }
 
     #[test]

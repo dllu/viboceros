@@ -6179,6 +6179,67 @@ def _execute(operation, iterations, tolerance):
             raise
 
         def extend_surface_by_length():
+            if length < 0.0:
+                document = Rhino.RhinoDoc.ActiveDoc
+                object_id = System.Guid.Empty
+                nurbs = None
+                try:
+                    document.Objects.UnselectAll()
+                    object_id = document.Objects.AddSurface(source)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add surface shrink source")
+                    surface_object = document.Objects.FindId(object_id)
+                    brep = surface_object.Geometry
+                    edge_index = None
+                    if (
+                        isinstance(brep, Rhino.Geometry.Brep)
+                        and brep.Faces.Count == 1
+                    ):
+                        for trim in brep.Faces[0].OuterLoop.Trims:
+                            if (
+                                trim.IsoStatus == edges[edge_name]
+                                and trim.Edge is not None
+                            ):
+                                edge_index = int(trim.Edge.EdgeIndex)
+                                break
+                    if edge_index is None:
+                        raise ValueError("could not locate natural surface shrink edge")
+                    component = Rhino.Geometry.ComponentIndex(
+                        Rhino.Geometry.ComponentIndexType.BrepEdge,
+                        edge_index,
+                    )
+                    if surface_object.SelectSubObject(
+                        component, True, True, False
+                    ) == 0:
+                        raise ValueError("could not select surface shrink edge")
+                    command = "_-ExtendSrf _Type=_%s _Merge=_Yes %.17g _Enter" % (
+                        "Smooth" if smooth else "Line",
+                        length,
+                    )
+                    Rhino.RhinoApp.RunScript(command, False)
+                    result_object = document.Objects.FindId(object_id)
+                    if result_object is None:
+                        raise ValueError("surface shrink removed its source")
+                    geometry = result_object.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Brep):
+                        if geometry.Faces.Count != 1:
+                            raise ValueError("surface shrink returned a polysurface")
+                        nurbs = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                    else:
+                        nurbs = geometry.ToNurbsSurface()
+                    if nurbs is None:
+                        raise ValueError("surface shrink returned no NURBS surface")
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    if nurbs is not None:
+                        nurbs.Dispose()
+                    document.Objects.UnselectAll()
+                    if document.Objects.FindId(object_id) is not None:
+                        document.Objects.Delete(object_id, True)
+
             result = source.Extend(edges[edge_name], length, smooth)
             if result is None:
                 raise ValueError("Rhino surface length extension failed")

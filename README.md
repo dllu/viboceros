@@ -191,6 +191,8 @@ Extend Length=5 Side=End Type=Natural Join=Merge
 ExtendSrf Direction=U Domain=-1,2 Type=Smooth Merge=Yes
 ExtendSrf Edge=East Distance=3 Type=Smooth Merge=Yes
 ExtendSrf Edge=West Distance=2 Type=Line Merge=Yes
+ExtendSrf Edge=East Distance=-2 At=0.5
+ExtendSrf Edge=East Distance=2 Type=Smooth Merge=No
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -796,16 +798,19 @@ explicitly; other extension styles, boundary objects, and separate extension
 segments remain future work. Analytic curves and polylines are promoted to
 exact NURBS form, while identity, attributes, groups, selection, and undo are
 preserved.
-`ExtendSrf Edge=West|South|East|North Distance=value` performs Rhino's smooth
-physical-distance extension on one selected untrimmed NURBS surface. Its exact
-parameter scaling includes Rhino's homogeneous-control-curve RMS convention,
-including rational weights and non-clamped ends. `Direction=U|V
-Domain=start,end` exposes the corresponding analytic-domain operation.
-`Type=Smooth` analytically extrapolates the edge span, while `Type=Line` joins
-an exact degree-matched straight tangent span; `Merge=Yes` is currently
-required. Tensor structure, identity, attributes, groups, selection, and undo
-are preserved; viewport edge picking, shrinking, and separate patches remain
-future work.
+`ExtendSrf Edge=West|South|East|North Distance=value` performs Rhino's
+physical-distance operation on one selected untrimmed NURBS surface. Positive
+distances use Rhino's homogeneous-control-curve RMS scaling, including
+rational weights and non-clamped ends. Negative distances trim inward by true
+arc length along an on-surface isocurve, use the selected edge's parameter
+midpoint by default, and restore the original surface domain; `At=value`
+chooses the edge parameter explicitly. `Direction=U|V Domain=start,end`
+exposes the corresponding analytic-domain extension. `Type=Smooth`
+analytically extrapolates the edge span, while `Type=Line` joins an exact
+degree-matched straight tangent span. `Merge=No` retains the source and creates
+the extension as a separate patch with matching attributes and group
+membership. Tensor structure, identity, attributes, groups, selection, and
+undo are preserved; viewport edge picking remains future work.
 `SubCrv start_point end_point` replaces one selected curve with the exact
 directed portion between the closest curve locations; omit both points for two
 viewport picks, or use `Parameter=start,end` for exact parameters. Reversing
@@ -1134,6 +1139,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_extend_line.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_shrink.json \
+  --absolute-epsilon 3e-8 --relative-epsilon 1e-10
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_subcurve.json

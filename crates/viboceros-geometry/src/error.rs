@@ -84,6 +84,11 @@ pub enum GeometryError {
     #[error("surface extension length must be finite and strictly positive")]
     InvalidSurfaceExtensionLength,
 
+    #[error(
+        "surface shrink length {length} must be smaller than the available path length {available}"
+    )]
+    SurfaceShrinkLengthExceedsPath { length: Real, available: Real },
+
     #[error("a surface must be open in {direction} before it can be extended in that direction")]
     SurfaceExtensionDirectionMustBeOpen { direction: &'static str },
 

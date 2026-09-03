@@ -3402,7 +3402,14 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure(iterations, || {
-                if *smooth {
+                if *length < 0.0 {
+                    source.try_shrunk_by_length(
+                        edge.geometry(),
+                        black_box(-*length),
+                        None,
+                        tolerance,
+                    )
+                } else if *smooth {
                     source.try_extended_by_length(edge.geometry(), black_box(*length))
                 } else {
                     source.try_extended_linearly_by_length(edge.geometry(), black_box(*length))
@@ -8919,6 +8926,40 @@ mod tests {
         assert!((surface["domain_u"][1].as_f64().unwrap() - expected_end).abs() < 1.0e-14);
         assert_eq!(surface["domain_v"], json!([0.0, 1.0]));
         assert_eq!(surface["control_count"], json!([2, 2]));
+    }
+
+    #[test]
+    fn captures_surface_length_shrink_geometry() {
+        let response = run_request(&request(vec![Operation::SurfaceExtendLengthGeometry {
+            id: "shrink-trapezoid-east".to_owned(),
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                [0.0, 10.0, 0.0],
+                [20.0, 10.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            edge: SurfaceExtensionBoundary::East,
+            length: -2.0,
+            smooth: false,
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        assert_eq!(surface["domain_u"], json!([0.0, 1.0]));
+        assert_eq!(surface["domain_v"], json!([0.0, 1.0]));
+        let south_east = surface["control_points"][1]["point"][0].as_f64().unwrap();
+        let north_east = surface["control_points"][3]["point"][0].as_f64().unwrap();
+        assert!((south_east - 26.0 / 3.0).abs() < 1.0e-14);
+        assert!((north_east - 52.0 / 3.0).abs() < 1.0e-14);
     }
 
     #[test]
