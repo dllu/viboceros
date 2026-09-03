@@ -5729,6 +5729,59 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "surface_direction_edit_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        edit = str(operation["edit"]).lower()
+        if edit not in ("u_reverse", "v_reverse", "swap_uv"):
+            raise ValueError("surface direction edit must be u_reverse, v_reverse, or swap_uv")
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface direction source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface direction source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def edit_surface_direction():
+            if edit == "u_reverse":
+                result = source.Reverse(0)
+            elif edit == "v_reverse":
+                result = source.Reverse(1)
+            else:
+                result = source.Transpose()
+            if result is None:
+                raise ValueError("Rhino surface direction edit failed")
+            try:
+                nurbs = result.ToNurbsSurface()
+                if nurbs is None:
+                    raise ValueError("surface direction edit returned no NURBS surface")
+                try:
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, edit_surface_direction)
+        finally:
+            source.Dispose()
+
     if kind == "curve_insert_control_point_geometry":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])

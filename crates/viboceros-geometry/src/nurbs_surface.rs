@@ -1210,6 +1210,82 @@ impl NurbsSurface {
         self.rational
     }
 
+    /// Reverses the U parameterization without changing the surface locus.
+    ///
+    /// Controls reverse within every fixed-V row and the full U knot vector
+    /// is reversed and negated. A U domain `[a, b]` therefore becomes
+    /// `[-b, -a]`, matching OpenNURBS and Rhino.
+    pub fn try_reversed_u(&self) -> Result<Self, GeometryError> {
+        let controls = self
+            .control_points
+            .chunks_exact(self.control_point_count_u)
+            .flat_map(|row| row.iter().rev().copied())
+            .collect();
+        let knots_u = self.knots_u.iter().rev().map(|knot| -*knot).collect();
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            self.control_point_count_v,
+            controls,
+            knots_u,
+            self.knots_v.clone(),
+        )
+    }
+
+    /// Reverses the V parameterization without changing the surface locus.
+    ///
+    /// Fixed-V control rows reverse as a whole and the full V knot vector is
+    /// reversed and negated. A V domain `[a, b]` therefore becomes
+    /// `[-b, -a]`, matching OpenNURBS and Rhino.
+    pub fn try_reversed_v(&self) -> Result<Self, GeometryError> {
+        let controls = self
+            .control_points
+            .chunks_exact(self.control_point_count_u)
+            .rev()
+            .flatten()
+            .copied()
+            .collect();
+        let knots_v = self.knots_v.iter().rev().map(|knot| -*knot).collect();
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            self.control_point_count_v,
+            controls,
+            self.knots_u.clone(),
+            knots_v,
+        )
+    }
+
+    /// Exchanges U and V parameterization without changing the surface locus.
+    ///
+    /// Degrees, control counts, knots, and periodic directions exchange, and
+    /// the row-major control net is transposed. Since the partial derivatives
+    /// exchange order, the natural surface normal reverses.
+    pub fn try_swapped_uv(&self) -> Result<Self, GeometryError> {
+        let mut controls = Vec::new();
+        controls
+            .try_reserve_exact(self.control_points.len())
+            .map_err(|_| GeometryError::InvalidControlNet {
+                context: "transposed surface control net exceeds addressable memory",
+            })?;
+        for u in 0..self.control_point_count_u {
+            for v in 0..self.control_point_count_v {
+                controls.push(self.control_points[self.control_index(u, v)]);
+            }
+        }
+        Self::try_new_rational(
+            self.degree_v,
+            self.degree_u,
+            self.control_point_count_v,
+            self.control_point_count_u,
+            controls,
+            self.knots_v.clone(),
+            self.knots_u.clone(),
+        )
+    }
+
     /// Replaces the selected knot direction(s) with Rhino-compatible unit
     /// spacing without changing the degree, control net, or rational weights.
     ///
@@ -4021,6 +4097,81 @@ mod tests {
         assert_eq!(derivative_v, Vector3::try_new(0.0, 2.0, 2.0).unwrap());
         let normal = surface.normal_at(0.5, 0.5, Tolerance::DEFAULT).unwrap();
         assert!(normal.y() < 0.0 && normal.z() > 0.0);
+    }
+
+    #[test]
+    fn direction_edits_reverse_and_transpose_rational_surface_parameterization() {
+        let controls = (0..3)
+            .flat_map(|v| {
+                (0..4).map(move |u| {
+                    WeightedPoint3::try_new(
+                        point(
+                            u as Real * 2.0 + v as Real * 0.3,
+                            v as Real * 3.0 - u as Real * 0.4,
+                            (u * (v + 1)) as Real * 0.5,
+                        ),
+                        0.6 + (u + 2 * v) as Real * 0.2,
+                    )
+                    .unwrap()
+                })
+            })
+            .collect();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            4,
+            3,
+            controls,
+            vec![-3.0, -2.0, -1.0, 1.0, 4.0, 5.0, 6.0],
+            vec![10.0, 11.0, 13.0, 17.0, 18.0],
+        )
+        .unwrap();
+
+        let reversed_u = surface.try_reversed_u().unwrap();
+        assert_eq!(reversed_u.domain_u(), -4.0..=1.0);
+        assert_eq!(reversed_u.domain_v(), surface.domain_v());
+        assert_eq!(reversed_u.try_reversed_u().unwrap(), surface);
+        let reversed_v = surface.try_reversed_v().unwrap();
+        assert_eq!(reversed_v.domain_u(), surface.domain_u());
+        assert_eq!(reversed_v.domain_v(), -17.0..=-11.0);
+        assert_eq!(reversed_v.try_reversed_v().unwrap(), surface);
+
+        let swapped = surface.try_swapped_uv().unwrap();
+        assert_eq!((swapped.degree_u(), swapped.degree_v()), (1, 2));
+        assert_eq!(
+            (
+                swapped.control_point_count_u(),
+                swapped.control_point_count_v()
+            ),
+            (3, 4)
+        );
+        assert_eq!(swapped.knots_u(), surface.knots_v());
+        assert_eq!(swapped.knots_v(), surface.knots_u());
+        assert_eq!(swapped.try_swapped_uv().unwrap(), surface);
+
+        for (u, v) in [(-1.0, 11.0), (0.25, 14.0), (4.0, 17.0)] {
+            let expected = surface.evaluate(u, v).unwrap();
+            assert_point_near(reversed_u.evaluate(-u, v).unwrap(), expected);
+            assert_point_near(reversed_v.evaluate(u, -v).unwrap(), expected);
+            assert_point_near(swapped.evaluate(v, u).unwrap(), expected);
+        }
+        let (_, derivative_u, derivative_v) =
+            surface.evaluate_with_derivatives(0.25, 14.0).unwrap();
+        let (_, swapped_u, swapped_v) = swapped.evaluate_with_derivatives(14.0, 0.25).unwrap();
+        for (actual, expected) in swapped_u
+            .to_array()
+            .into_iter()
+            .zip(derivative_v.to_array())
+        {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
+        for (actual, expected) in swapped_v
+            .to_array()
+            .into_iter()
+            .zip(derivative_u.to_array())
+        {
+            assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
+        }
     }
 
     #[test]

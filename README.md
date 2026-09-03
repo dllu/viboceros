@@ -183,6 +183,8 @@ ConvertToSingleSpans Direction=Both DeleteInput=No
 ConvertToBeziers DeleteInput=No
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
+Dir SwapUV
+Dir Mode=FlipU
 Flip
 UnifyMeshNormals
 Weld 180
@@ -874,7 +876,13 @@ orientation by orbiting the combined selection-bounds center, while `ZOffset`
 adds a cumulative height per item.
 `UnifyMeshNormals` repairs inconsistent face winding across exact
 location-welded manifold edges, including STL-style triangle soup, and rejects
-non-orientable constraints atomically. `Flip` (aliases `Reverse` and `Rev`)
+non-orientable constraints atomically. `Dir UReverse|VReverse|SwapUV` reverses
+either parameter direction or transposes selected untrimmed NURBS surfaces
+exactly; `Mode=FlipU|FlipV|SwapUV` is also accepted. Rational weights,
+non-clamped domains, periodic directions, identities, attributes, groups,
+selection, and undo are preserved. `Dir Flip` reverses the same selected curve
+and mesh types as `Flip`; standalone surface-normal orientation is not yet a
+separate property in the native surface model. `Flip` (aliases `Reverse` and `Rev`)
 reverses selected curve directions or every face in selected meshes without
 changing object identities, attributes, groups, or closed-curve seams.
 `Weld` merges exactly coincident endpoints only where mesh faces share a whole
@@ -1032,6 +1040,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/insert_control_point.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_direction_edit.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/remove_knot.json \

@@ -404,6 +404,9 @@ impl CommandRegistry {
             .register(CloseCrvCommand)
             .expect("unique built-in command");
         registry
+            .register(DirectionCommand)
+            .expect("unique built-in command");
+        registry
             .register(FlipCommand)
             .expect("unique built-in command");
         registry
@@ -11092,6 +11095,128 @@ fn parse_yes_no(value: &str) -> Option<bool> {
     }
 }
 
+const DIRECTION_USAGE: &str =
+    "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum DirectionEdit {
+    Flip,
+    ReverseU,
+    ReverseV,
+    SwapUv,
+}
+
+impl DirectionEdit {
+    const fn label(self) -> &'static str {
+        match self {
+            Self::Flip => "Flip",
+            Self::ReverseU => "UReverse",
+            Self::ReverseV => "VReverse",
+            Self::SwapUv => "SwapUV",
+        }
+    }
+}
+
+struct DirectionCommand;
+
+impl Command for DirectionCommand {
+    fn name(&self) -> &'static str {
+        "Dir"
+    }
+
+    fn aliases(&self) -> &'static [&'static str] {
+        &["Direction"]
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let edit = parse_direction_edit(arguments)?;
+        let selected = document
+            .selected_objects()
+            .map(|object| (object.id(), object.geometry().clone()))
+            .collect::<Vec<_>>();
+        if selected.is_empty() {
+            return Err(CommandError::NoObjectsSelected);
+        }
+
+        let mut replacements = Vec::new();
+        for (id, geometry) in selected {
+            let geometry = match (edit, geometry) {
+                (DirectionEdit::ReverseU, Geometry::NurbsSurface(surface)) => {
+                    Geometry::NurbsSurface(surface.try_reversed_u()?)
+                }
+                (DirectionEdit::ReverseV, Geometry::NurbsSurface(surface)) => {
+                    Geometry::NurbsSurface(surface.try_reversed_v()?)
+                }
+                (DirectionEdit::SwapUv, Geometry::NurbsSurface(surface)) => {
+                    Geometry::NurbsSurface(surface.try_swapped_uv()?)
+                }
+                (DirectionEdit::Flip, geometry) => {
+                    flipped_geometry(geometry, document.tolerance())?
+                        .ok_or(CommandError::UnsupportedDirectionEditGeometry)?
+                }
+                _ => return Err(CommandError::UnsupportedDirectionEditGeometry),
+            };
+            replacements.push((id, geometry));
+        }
+        let count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Edited {count} object direction(s) with {}",
+            edit.label()
+        ))
+    }
+}
+
+fn parse_direction_edit(arguments: &[&str]) -> Result<DirectionEdit, CommandError> {
+    let value = match arguments {
+        [] => return Err(CommandError::Usage(DIRECTION_USAGE)),
+        [value] if !value.contains('=') => *value,
+        _ => {
+            let (name, value, consumed) = orient_option(arguments, 0, DIRECTION_USAGE)?;
+            if !option_name_eq(name, "Mode") || consumed != arguments.len() {
+                return Err(CommandError::Usage(DIRECTION_USAGE));
+            }
+            value
+        }
+    }
+    .trim_start_matches(['_', '-']);
+    if value.eq_ignore_ascii_case("Flip")
+        || value.eq_ignore_ascii_case("FlipAll")
+        || value.eq_ignore_ascii_case("FlipNormal")
+    {
+        Ok(DirectionEdit::Flip)
+    } else if value.eq_ignore_ascii_case("UReverse")
+        || value.eq_ignore_ascii_case("ReverseU")
+        || value.eq_ignore_ascii_case("FlipU")
+    {
+        Ok(DirectionEdit::ReverseU)
+    } else if value.eq_ignore_ascii_case("VReverse")
+        || value.eq_ignore_ascii_case("ReverseV")
+        || value.eq_ignore_ascii_case("FlipV")
+    {
+        Ok(DirectionEdit::ReverseV)
+    } else if value.eq_ignore_ascii_case("SwapUV") {
+        Ok(DirectionEdit::SwapUv)
+    } else {
+        Err(CommandError::Usage(DIRECTION_USAGE))
+    }
+}
+
+fn flipped_geometry(
+    geometry: Geometry,
+    tolerance: Tolerance,
+) -> Result<Option<Geometry>, GeometryError> {
+    Ok(match geometry {
+        Geometry::Line(line) => Some(Geometry::Line(line.reversed())),
+        Geometry::Circle(circle) => Some(Geometry::Circle(circle.reversed())),
+        Geometry::Arc(arc) => Some(Geometry::Arc(arc.reversed(tolerance)?)),
+        Geometry::Ellipse(ellipse) => Some(Geometry::Ellipse(ellipse.reversed())),
+        Geometry::Polyline(polyline) => Some(Geometry::Polyline(polyline.reversed())),
+        Geometry::NurbsCurve(curve) => Some(Geometry::NurbsCurve(curve.reversed()?)),
+        Geometry::Mesh(mesh) => Some(Geometry::Mesh(mesh.reversed())),
+        _ => None,
+    })
+}
+
 struct FlipCommand;
 
 impl Command for FlipCommand {
@@ -11115,16 +11240,8 @@ impl Command for FlipCommand {
         let replacements = selected
             .into_iter()
             .map(|(id, geometry)| {
-                let reversed = match geometry {
-                    Geometry::Line(line) => Geometry::Line(line.reversed()),
-                    Geometry::Circle(circle) => Geometry::Circle(circle.reversed()),
-                    Geometry::Arc(arc) => Geometry::Arc(arc.reversed(document.tolerance())?),
-                    Geometry::Ellipse(ellipse) => Geometry::Ellipse(ellipse.reversed()),
-                    Geometry::Polyline(polyline) => Geometry::Polyline(polyline.reversed()),
-                    Geometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve.reversed()?),
-                    Geometry::Mesh(mesh) => Geometry::Mesh(mesh.reversed()),
-                    _ => return Err(CommandError::UnsupportedFlipGeometry),
-                };
+                let reversed = flipped_geometry(geometry, document.tolerance())?
+                    .ok_or(CommandError::UnsupportedFlipGeometry)?;
                 Ok((id, reversed))
             })
             .collect::<Result<Vec<_>, CommandError>>()?;
@@ -18141,6 +18258,9 @@ pub enum CommandError {
     #[error("the requested division creates no point objects")]
     NoCurveDivisionPoints,
 
+    #[error("the requested Dir mode is unsupported for one or more selected object types")]
+    UnsupportedDirectionEditGeometry,
+
     #[error(
         "Flip supports selected lines, analytic curves, polylines, NURBS curves, and meshes only"
     )]
@@ -18568,7 +18688,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -22341,6 +22461,216 @@ mod tests {
             document.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn edits_surface_directions_exactly_without_changing_identity_attributes_or_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New DirectionTests")
+            .unwrap();
+        let source = rational_multi_span_surface();
+        let expected_swapped = source.try_swapped_uv().unwrap();
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Asymmetric rational surface");
+        let id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(source.clone()),
+                attributes.clone(),
+            )
+            .unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry
+            .execute(&mut document, "Group DirectionSet")
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "_Direction _SwapUV")
+                .unwrap(),
+            "Edited 1 object direction(s) with SwapUV"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.attributes(), &attributes);
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("DirectionSet")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        let Geometry::NurbsSurface(swapped) = object.geometry() else {
+            panic!("expected a direction-edited NURBS surface")
+        };
+        assert_eq!(swapped, &expected_swapped);
+        assert_eq!(
+            (swapped.degree_u(), swapped.degree_v()),
+            (source.degree_v(), source.degree_u())
+        );
+        assert_eq!(
+            (
+                swapped.control_point_count_u(),
+                swapped.control_point_count_v()
+            ),
+            (
+                source.control_point_count_v(),
+                source.control_point_count_u()
+            )
+        );
+        assert_eq!(swapped.knots_u(), source.knots_v());
+        assert_eq!(swapped.knots_v(), source.knots_u());
+        assert_eq!(document.undo_label(), Some("Dir"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source.clone())
+        );
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsSurface(expected_swapped)
+        );
+    }
+
+    #[test]
+    fn edits_multiple_surface_axes_and_exchanges_periodicity() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let rational = rational_multi_span_surface();
+        let periodic = periodic_cubic_u_surface();
+        let rational_id = document
+            .add_geometry(Geometry::NurbsSurface(rational.clone()))
+            .unwrap();
+        let periodic_id = document
+            .add_geometry(Geometry::NurbsSurface(periodic.clone()))
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Dir Mode _FlipU").unwrap(),
+            "Edited 2 object direction(s) with UReverse"
+        );
+        assert_eq!(
+            document.object(rational_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(rational.try_reversed_u().unwrap())
+        );
+        let Geometry::NurbsSurface(reversed_periodic) =
+            document.object(periodic_id).unwrap().geometry()
+        else {
+            panic!("expected reversed periodic surface")
+        };
+        assert_eq!(reversed_periodic, &periodic.try_reversed_u().unwrap());
+        assert!(reversed_periodic.is_periodic_u());
+        assert!(!reversed_periodic.is_periodic_v());
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Dir Mode=FlipV").unwrap(),
+            "Edited 2 object direction(s) with VReverse"
+        );
+        assert_eq!(
+            document.object(rational_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(rational.try_reversed_v().unwrap())
+        );
+        assert_eq!(
+            document.object(periodic_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(periodic.try_reversed_v().unwrap())
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document.clear_selection();
+        document
+            .select_object(periodic_id, SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "Dir SwapUV").unwrap();
+        let Geometry::NurbsSurface(swapped_periodic) =
+            document.object(periodic_id).unwrap().geometry()
+        else {
+            panic!("expected transposed periodic surface")
+        };
+        assert_eq!(swapped_periodic, &periodic.try_swapped_uv().unwrap());
+        assert!(!swapped_periodic.is_periodic_u());
+        assert!(swapped_periodic.is_periodic_v());
+    }
+
+    #[test]
+    fn direction_flip_reuses_curve_reversal_and_rejects_invalid_edits_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut curve_document = Document::default();
+        registry
+            .execute(&mut curve_document, "Line 1,2,3 7,5,4")
+            .unwrap();
+        let line_id = curve_document.objects().next().unwrap().id();
+        let Geometry::Line(source_line) = curve_document.object(line_id).unwrap().geometry() else {
+            panic!("expected source line")
+        };
+        let source_line = *source_line;
+        registry.execute(&mut curve_document, "SelAll").unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut curve_document, "Dir Mode=FlipNormal")
+                .unwrap(),
+            "Edited 1 object direction(s) with Flip"
+        );
+        assert_eq!(
+            curve_document.object(line_id).unwrap().geometry(),
+            &Geometry::Line(source_line.reversed())
+        );
+
+        let mut empty = Document::default();
+        for command in [
+            "Dir",
+            "Dir Unknown",
+            "Dir Flip extra",
+            "Dir Mode",
+            "Dir Mode=Flip Mode=Flip",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut empty, command),
+                Err(CommandError::Usage(DIRECTION_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut empty, "Dir Flip"),
+            Err(CommandError::NoObjectsSelected)
+        ));
+
+        let mut mixed = Document::default();
+        let surface = rational_multi_span_surface();
+        let surface_id = mixed
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let curve_id = mixed.add_geometry(Geometry::Line(source_line)).unwrap();
+        registry.execute(&mut mixed, "SelAll").unwrap();
+        let before = mixed.objects().cloned().collect::<Vec<_>>();
+        let history = mixed.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut mixed, "Dir UReverse"),
+            Err(CommandError::UnsupportedDirectionEditGeometry)
+        ));
+        assert_eq!(
+            mixed.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(mixed.undo_label(), history.as_deref());
+
+        mixed.clear_selection();
+        mixed
+            .select_object(surface_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut mixed, "Dir Flip"),
+            Err(CommandError::UnsupportedDirectionEditGeometry)
+        ));
+        assert_eq!(
+            mixed.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(surface)
+        );
+        assert!(mixed.object(curve_id).is_some());
+        assert_eq!(mixed.undo_label(), history.as_deref());
     }
 
     #[test]

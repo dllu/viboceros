@@ -639,6 +639,17 @@ pub enum Operation {
         #[serde(default)]
         midpoint: bool,
     },
+    SurfaceDirectionEditGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        edit: SurfaceDirectionEdit,
+    },
     SurfaceInsertKnotGeometry {
         id: String,
         degree_u: usize,
@@ -890,6 +901,14 @@ pub enum SurfaceKnotAxis {
     V,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum SurfaceDirectionEdit {
+    UReverse,
+    VReverse,
+    SwapUv,
+}
+
 impl SurfaceUniformDirection {
     const fn geometry(self) -> SurfaceKnotDirection {
         match self {
@@ -1008,6 +1027,7 @@ impl Operation {
             | Self::SurfaceChangeDegreeGeometry { id, .. }
             | Self::SurfaceMakePeriodicGeometry { id, .. }
             | Self::SurfaceInsertControlPointGeometry { id, .. }
+            | Self::SurfaceDirectionEditGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
             | Self::SurfaceRemoveControlPointGeometry { id, .. }
@@ -3008,6 +3028,33 @@ fn execute(
                     black_box(parameter[1]),
                     black_box(*midpoint),
                 )
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceDirectionEditGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            edit,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || match edit {
+                SurfaceDirectionEdit::UReverse => source.try_reversed_u(),
+                SurfaceDirectionEdit::VReverse => source.try_reversed_v(),
+                SurfaceDirectionEdit::SwapUv => source.try_swapped_uv(),
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8408,6 +8455,80 @@ mod tests {
         assert_eq!(surface["domain_v"], json!([0.0, 2.0]));
         assert_eq!(surface["periodic_u"], false);
         assert_eq!(surface["periodic_v"], false);
+    }
+
+    #[test]
+    fn captures_exact_surface_direction_edits() {
+        let control_points = (0..3)
+            .flat_map(|v| {
+                (0..4).map(move |u| ControlPoint {
+                    point: [
+                        u as f64 * 2.0 + v as f64 * 0.3,
+                        v as f64 * 3.0 - u as f64 * 0.4,
+                        (u * (v + 1)) as f64 * 0.5,
+                    ],
+                    weight: 0.6 + (u + 2 * v) as f64 * 0.2,
+                })
+            })
+            .collect::<Vec<_>>();
+        let operation = |id: &str, edit| Operation::SurfaceDirectionEditGeometry {
+            id: id.to_owned(),
+            degree_u: 2,
+            degree_v: 1,
+            control_point_count_u: 4,
+            control_point_count_v: 3,
+            control_points: control_points.clone(),
+            knots_u: vec![-2.0, -2.0, -1.0, 1.0, 4.0, 5.0, 5.0],
+            knots_v: vec![11.0, 11.0, 13.0, 17.0, 17.0],
+            edit,
+        };
+        let response = run_request(&request(vec![
+            operation("surface-u-reverse", SurfaceDirectionEdit::UReverse),
+            operation("surface-v-reverse", SurfaceDirectionEdit::VReverse),
+            operation("surface-swap-uv", SurfaceDirectionEdit::SwapUv),
+        ]))
+        .unwrap();
+
+        let reversed_u = &response.results[0].value;
+        assert_eq!(reversed_u["degree"], json!([2, 1]));
+        assert_eq!(reversed_u["control_count"], json!([4, 3]));
+        assert_eq!(
+            reversed_u["knots_u"],
+            json!([-5.0, -5.0, -4.0, -1.0, 1.0, 2.0, 2.0])
+        );
+        assert_eq!(reversed_u["domain_u"], json!([-4.0, 1.0]));
+        assert_eq!(
+            reversed_u["control_points"][0],
+            json!({"point": [6.0, -1.2000000000000002, 1.5], "weight": 1.2000000000000002})
+        );
+
+        let reversed_v = &response.results[1].value;
+        assert_eq!(
+            reversed_v["knots_v"],
+            json!([-17.0, -17.0, -13.0, -11.0, -11.0])
+        );
+        assert_eq!(reversed_v["domain_v"], json!([-17.0, -11.0]));
+        assert_eq!(
+            reversed_v["control_points"][0],
+            json!({"point": [0.6, 6.0, 0.0], "weight": 1.4})
+        );
+
+        let swapped = &response.results[2].value;
+        assert_eq!(swapped["degree"], json!([1, 2]));
+        assert_eq!(swapped["control_count"], json!([3, 4]));
+        assert_eq!(swapped["knots_u"], json!([11.0, 11.0, 13.0, 17.0, 17.0]));
+        assert_eq!(
+            swapped["knots_v"],
+            json!([-2.0, -2.0, -1.0, 1.0, 4.0, 5.0, 5.0])
+        );
+        assert_eq!(swapped["domain_u"], json!([11.0, 17.0]));
+        assert_eq!(swapped["domain_v"], json!([-1.0, 4.0]));
+        assert_eq!(swapped["periodic_u"], false);
+        assert_eq!(swapped["periodic_v"], false);
+        assert_eq!(
+            swapped["control_points"][1],
+            json!({"point": [0.3, 3.0, 0.0], "weight": 1.0})
+        );
     }
 
     #[test]

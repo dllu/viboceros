@@ -1,0 +1,80 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_direction_edit_geometry",
+      "id": "rational-nonclamped-u-reverse",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 4,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 0.6}, {"point": [2, -0.4, 0.5], "weight": 0.8},
+        {"point": [4, -0.8, 1], "weight": 1}, {"point": [6, -1.2, 1.5], "weight": 1.2},
+        {"point": [0.3, 3, 0], "weight": 1}, {"point": [2.3, 2.6, 1], "weight": 1.2},
+        {"point": [4.3, 2.2, 2], "weight": 1.4}, {"point": [6.3, 1.8, 3], "weight": 1.6},
+        {"point": [0.6, 6, 0], "weight": 1.4}, {"point": [2.6, 5.6, 1.5], "weight": 1.6},
+        {"point": [4.6, 5.2, 3], "weight": 1.8}, {"point": [6.6, 4.8, 4.5], "weight": 2}
+      ],
+      "knots_u": [-2, -2, -1, 1, 4, 5, 5],
+      "knots_v": [11, 11, 13, 17, 17],
+      "edit": "u_reverse"
+    },
+    {
+      "op": "surface_direction_edit_geometry",
+      "id": "rational-nonclamped-v-reverse",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 4,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 0.6}, {"point": [2, -0.4, 0.5], "weight": 0.8},
+        {"point": [4, -0.8, 1], "weight": 1}, {"point": [6, -1.2, 1.5], "weight": 1.2},
+        {"point": [0.3, 3, 0], "weight": 1}, {"point": [2.3, 2.6, 1], "weight": 1.2},
+        {"point": [4.3, 2.2, 2], "weight": 1.4}, {"point": [6.3, 1.8, 3], "weight": 1.6},
+        {"point": [0.6, 6, 0], "weight": 1.4}, {"point": [2.6, 5.6, 1.5], "weight": 1.6},
+        {"point": [4.6, 5.2, 3], "weight": 1.8}, {"point": [6.6, 4.8, 4.5], "weight": 2}
+      ],
+      "knots_u": [-2, -2, -1, 1, 4, 5, 5],
+      "knots_v": [11, 11, 13, 17, 17],
+      "edit": "v_reverse"
+    },
+    {
+      "op": "surface_direction_edit_geometry",
+      "id": "rational-nonclamped-swap-uv",
+      "degree_u": 2,
+      "degree_v": 1,
+      "control_point_count_u": 4,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0], "weight": 0.6}, {"point": [2, -0.4, 0.5], "weight": 0.8},
+        {"point": [4, -0.8, 1], "weight": 1}, {"point": [6, -1.2, 1.5], "weight": 1.2},
+        {"point": [0.3, 3, 0], "weight": 1}, {"point": [2.3, 2.6, 1], "weight": 1.2},
+        {"point": [4.3, 2.2, 2], "weight": 1.4}, {"point": [6.3, 1.8, 3], "weight": 1.6},
+        {"point": [0.6, 6, 0], "weight": 1.4}, {"point": [2.6, 5.6, 1.5], "weight": 1.6},
+        {"point": [4.6, 5.2, 3], "weight": 1.8}, {"point": [6.6, 4.8, 4.5], "weight": 2}
+      ],
+      "knots_u": [-2, -2, -1, 1, 4, 5, 5],
+      "knots_v": [11, 11, 13, 17, 17],
+      "edit": "swap_uv"
+    },
+    {
+      "op": "surface_direction_edit_geometry",
+      "id": "periodic-u-swap-uv",
+      "degree_u": 3,
+      "degree_v": 1,
+      "control_point_count_u": 7,
+      "control_point_count_v": 2,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 0]}, {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+        {"point": [0, 0, 0]}, {"point": [2, 0, 0]}, {"point": [2, 2, 0]},
+        {"point": [0, 0, 3]}, {"point": [2, 0, 3]}, {"point": [2, 2, 3]}, {"point": [0, 2, 3]},
+        {"point": [0, 0, 3]}, {"point": [2, 0, 3]}, {"point": [2, 2, 3]}
+      ],
+      "knots_u": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8],
+      "knots_v": [0, 0, 3, 3],
+      "edit": "swap_uv"
+    }
+  ]
+}
