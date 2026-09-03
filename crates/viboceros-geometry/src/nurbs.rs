@@ -2264,6 +2264,83 @@ impl NurbsCurve {
         self.try_extended_to_impl(interval, false)
     }
 
+    pub(crate) fn try_extended_linearly_control_curve_to(
+        &self,
+        interval: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        let requested_start = *interval.start();
+        let requested_end = *interval.end();
+        if !requested_start.is_finite()
+            || !requested_end.is_finite()
+            || requested_start >= requested_end
+        {
+            return Err(GeometryError::InvalidCurveExtensionInterval);
+        }
+
+        let domain = self.domain();
+        let original_start = *domain.start();
+        let original_end = *domain.end();
+        let extend_start = requested_start < original_start;
+        let extend_end = requested_end > original_end;
+        if !extend_start && !extend_end {
+            return Err(GeometryError::InvalidCurveExtensionInterval);
+        }
+
+        let mut result = self.clone();
+        if extend_start {
+            result = result.clamped_at_start(original_start)?;
+            let adjacent_span = result
+                .spans()
+                .next()
+                .expect("a validated NURBS curve has an active span")
+                .1
+                - original_start;
+            let parameter_delta = original_start - requested_start;
+            let first = result.control_points[0];
+            let next = result.control_points[1];
+            let mut controls = Vec::with_capacity(result.control_points.len() + result.degree);
+            for index in 0..result.degree {
+                let factor = (result.degree - index) as Real * parameter_delta / adjacent_span;
+                controls.push(blend_weighted_control_points_unbounded(
+                    first, next, -factor,
+                )?);
+            }
+            controls.extend_from_slice(&result.control_points);
+            let mut knots = Vec::with_capacity(controls.len() + result.degree + 1);
+            knots.resize(result.degree + 1, requested_start);
+            knots.extend_from_slice(&result.knots[1..]);
+            result = Self::try_new_rational(result.degree, controls, knots)?;
+        }
+        if extend_end {
+            result = result.clamped_at_end(original_end)?;
+            let adjacent_span = original_end
+                - result
+                    .spans()
+                    .last()
+                    .expect("a validated NURBS curve has an active span")
+                    .0;
+            let parameter_delta = requested_end - original_end;
+            let last = result.control_points.len() - 1;
+            let previous = result.control_points[last - 1];
+            let endpoint = result.control_points[last];
+            let mut controls = result.control_points;
+            controls.reserve_exact(result.degree);
+            for index in 1..=result.degree {
+                let factor = index as Real * parameter_delta / adjacent_span;
+                controls.push(blend_weighted_control_points_unbounded(
+                    previous,
+                    endpoint,
+                    1.0 + factor,
+                )?);
+            }
+            let mut knots = result.knots;
+            knots.pop();
+            knots.resize(knots.len() + result.degree + 1, requested_end);
+            result = Self::try_new_rational(result.degree, controls, knots)?;
+        }
+        Ok(result)
+    }
+
     fn try_extended_to_impl(
         &self,
         interval: RangeInclusive<Real>,

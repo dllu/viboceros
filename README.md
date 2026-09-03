@@ -190,6 +190,7 @@ Split 4,0,0 7,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
 ExtendSrf Direction=U Domain=-1,2 Type=Smooth Merge=Yes
 ExtendSrf Edge=East Distance=3 Type=Smooth Merge=Yes
+ExtendSrf Edge=West Distance=2 Type=Line Merge=Yes
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -800,9 +801,10 @@ physical-distance extension on one selected untrimmed NURBS surface. Its exact
 parameter scaling includes Rhino's homogeneous-control-curve RMS convention,
 including rational weights and non-clamped ends. `Direction=U|V
 Domain=start,end` exposes the corresponding analytic-domain operation.
-`Type=Smooth` and `Merge=Yes` are the currently supported options. Tensor
-structure, identity, attributes, groups, selection, and undo are preserved;
-viewport edge picking, linear output, shrinking, and separate patches remain
+`Type=Smooth` analytically extrapolates the edge span, while `Type=Line` joins
+an exact degree-matched straight tangent span; `Merge=Yes` is currently
+required. Tensor structure, identity, attributes, groups, selection, and undo
+are preserved; viewport edge picking, shrinking, and separate patches remain
 future work.
 `SubCrv start_point end_point` replaces one selected curve with the exact
 directed portion between the closest curve locations; omit both points for two
@@ -1129,6 +1131,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_extend_length.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_extend_line.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_subcurve.json

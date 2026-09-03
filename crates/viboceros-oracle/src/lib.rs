@@ -3392,11 +3392,6 @@ fn execute(
             smooth,
             ..
         } => {
-            if !smooth {
-                return Err(ProbeError::FixtureInvariant(
-                    "only smooth surface length extension is implemented",
-                ));
-            }
             let source = NurbsSurface::try_new_rational(
                 *degree_u,
                 *degree_v,
@@ -3407,7 +3402,11 @@ fn execute(
                 knots_v.clone(),
             )?;
             let (surface, elapsed) = measure(iterations, || {
-                source.try_extended_by_length(edge.geometry(), black_box(*length))
+                if *smooth {
+                    source.try_extended_by_length(edge.geometry(), black_box(*length))
+                } else {
+                    source.try_extended_linearly_by_length(edge.geometry(), black_box(*length))
+                }
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8920,6 +8919,41 @@ mod tests {
         assert!((surface["domain_u"][1].as_f64().unwrap() - expected_end).abs() < 1.0e-14);
         assert_eq!(surface["domain_v"], json!([0.0, 1.0]));
         assert_eq!(surface["control_count"], json!([2, 2]));
+    }
+
+    #[test]
+    fn captures_linear_surface_length_extension_geometry() {
+        let response = run_request(&request(vec![Operation::SurfaceExtendLengthGeometry {
+            id: "extend-quadratic-east-line".to_owned(),
+            degree_u: 2,
+            degree_v: 1,
+            control_point_count_u: 3,
+            control_point_count_v: 2,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [4.0, 2.0, 1.0],
+                [10.0, 0.0, 0.0],
+                [0.0, 8.0, 0.0],
+                [8.0, 13.0, 3.0],
+                [18.0, 8.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            edge: SurfaceExtensionBoundary::East,
+            length: 2.5,
+            smooth: false,
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        let expected_end = 1.0 + 2.5 / 350.0_f64.sqrt();
+        assert!((surface["domain_u"][1].as_f64().unwrap() - expected_end).abs() < 1.0e-14);
+        assert_eq!(surface["control_count"], json!([5, 2]));
+        assert_eq!(surface["knots_u"][3], json!(1.0));
+        assert_eq!(surface["knots_u"][4], json!(1.0));
     }
 
     #[test]

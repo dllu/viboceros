@@ -11539,12 +11539,18 @@ fn parse_extend_curve_target(arguments: &[&str]) -> Result<ExtendCurveTarget, Co
     Ok(target)
 }
 
-const EXTEND_SURFACE_USAGE: &str = "ExtendSrf Edge=West|South|East|North Distance=value [Type=Smooth] [Merge=Yes] | ExtendSrf Direction=U|V Domain=start,end [Type=Smooth] [Merge=Yes]";
+const EXTEND_SURFACE_USAGE: &str = "ExtendSrf Edge=West|South|East|North Distance=value [Type=Smooth|Line] [Merge=Yes] | ExtendSrf Direction=U|V Domain=start,end [Type=Smooth|Line] [Merge=Yes]";
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum SurfaceExtensionDirection {
     U,
     V,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SurfaceExtensionStyle {
+    Smooth,
+    Line,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -11567,7 +11573,7 @@ impl Command for ExtendSurfaceCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let target = parse_extend_surface_options(arguments)?;
+        let (target, style) = parse_extend_surface_options(arguments)?;
         let mut candidates = document
             .selected_objects()
             .filter_map(|object| match object.geometry() {
@@ -11583,34 +11589,61 @@ impl Command for ExtendSurfaceCommand {
         let (id, surface) = candidates
             .pop()
             .expect("one surface extension source was required");
-        let (surface, description) = match target {
-            ExtendSurfaceTarget::Distance { edge, distance } => (
+        let (surface, description) = match (target, style) {
+            (ExtendSurfaceTarget::Distance { edge, distance }, SurfaceExtensionStyle::Smooth) => (
                 surface.try_extended_by_length(edge, distance)?,
                 format!("at its {edge:?} edge by distance {distance}"),
             ),
-            ExtendSurfaceTarget::Domain {
-                direction,
-                interval: [start, end],
-            } => (
+            (ExtendSurfaceTarget::Distance { edge, distance }, SurfaceExtensionStyle::Line) => (
+                surface.try_extended_linearly_by_length(edge, distance)?,
+                format!("at its {edge:?} edge by distance {distance}"),
+            ),
+            (
+                ExtendSurfaceTarget::Domain {
+                    direction,
+                    interval: [start, end],
+                },
+                SurfaceExtensionStyle::Smooth,
+            ) => (
                 match direction {
                     SurfaceExtensionDirection::U => surface.try_extended_u(start..=end)?,
                     SurfaceExtensionDirection::V => surface.try_extended_v(start..=end)?,
                 },
                 format!("in {direction:?} to include domain {start}..{end}"),
             ),
+            (
+                ExtendSurfaceTarget::Domain {
+                    direction,
+                    interval: [start, end],
+                },
+                SurfaceExtensionStyle::Line,
+            ) => (
+                match direction {
+                    SurfaceExtensionDirection::U => surface.try_extended_linearly_u(start..=end)?,
+                    SurfaceExtensionDirection::V => surface.try_extended_linearly_v(start..=end)?,
+                },
+                format!("in {direction:?} to include domain {start}..{end}"),
+            ),
         };
         document.replace_object_geometries([(id, Geometry::NurbsSurface(surface))])?;
+        let adverb = match style {
+            SurfaceExtensionStyle::Smooth => "Smoothly",
+            SurfaceExtensionStyle::Line => "Linearly",
+        };
         Ok(format!(
-            "Smoothly extended the selected surface {description}, merging the extension"
+            "{adverb} extended the selected surface {description}, merging the extension"
         ))
     }
 }
 
-fn parse_extend_surface_options(arguments: &[&str]) -> Result<ExtendSurfaceTarget, CommandError> {
+fn parse_extend_surface_options(
+    arguments: &[&str],
+) -> Result<(ExtendSurfaceTarget, SurfaceExtensionStyle), CommandError> {
     let mut direction = None;
     let mut domain = None;
     let mut edge = None;
     let mut distance = None;
+    let mut style = SurfaceExtensionStyle::Smooth;
     let mut type_seen = false;
     let mut merge_seen = false;
     let mut index = 0;
@@ -11644,7 +11677,14 @@ fn parse_extend_surface_options(arguments: &[&str]) -> Result<ExtendSurfaceTarge
             });
         } else if option_name_eq(name, "Distance") && distance.is_none() {
             distance = Some(parse_finite_real(value)?);
-        } else if option_name_eq(name, "Type") && !type_seen && option_name_eq(value, "Smooth") {
+        } else if option_name_eq(name, "Type") && !type_seen {
+            style = if option_name_eq(value, "Smooth") {
+                SurfaceExtensionStyle::Smooth
+            } else if option_name_eq(value, "Line") {
+                SurfaceExtensionStyle::Line
+            } else {
+                return Err(CommandError::Usage(EXTEND_SURFACE_USAGE));
+            };
             type_seen = true;
         } else if option_name_eq(name, "Merge") && !merge_seen && parse_yes_no(value) == Some(true)
         {
@@ -11654,7 +11694,7 @@ fn parse_extend_surface_options(arguments: &[&str]) -> Result<ExtendSurfaceTarge
         }
         index += consumed;
     }
-    match (direction, domain, edge, distance) {
+    let target = match (direction, domain, edge, distance) {
         (Some(direction), Some(interval), None, None) => Ok(ExtendSurfaceTarget::Domain {
             direction,
             interval,
@@ -11663,7 +11703,8 @@ fn parse_extend_surface_options(arguments: &[&str]) -> Result<ExtendSurfaceTarge
             Ok(ExtendSurfaceTarget::Distance { edge, distance })
         }
         _ => Err(CommandError::Usage(EXTEND_SURFACE_USAGE)),
-    }
+    }?;
+    Ok((target, style))
 }
 
 const SUBCURVE_USAGE: &str =
@@ -23987,6 +24028,9 @@ mod tests {
         let expected = source
             .try_extended_by_length(SurfaceExtensionEdge::East, 3.0)
             .unwrap();
+        let expected_line = source
+            .try_extended_linearly_by_length(SurfaceExtensionEdge::East, 3.0)
+            .unwrap();
 
         assert_eq!(
             registry
@@ -24002,6 +24046,21 @@ mod tests {
             &Geometry::NurbsSurface(expected)
         );
         assert_eq!(document.undo_label(), Some("ExtendSrf"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtendSrf Edge=East Distance=3 Type=Line Merge=Yes"
+                )
+                .unwrap(),
+            "Linearly extended the selected surface at its East edge by distance 3, merging the extension"
+        );
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsSurface(expected_line)
+        );
     }
 
     #[test]
@@ -24014,7 +24073,7 @@ mod tests {
             "ExtendSrf Domain=0,2",
             "ExtendSrf Direction=Both Domain=0,2",
             "ExtendSrf Direction=U Domain=0",
-            "ExtendSrf Direction=U Domain=0,2 Type=Line",
+            "ExtendSrf Direction=U Domain=0,2 Type=Natural",
             "ExtendSrf Direction=U Domain=0,2 Merge=No",
             "ExtendSrf Direction=U Direction=V Domain=0,2",
             "ExtendSrf Edge=East",

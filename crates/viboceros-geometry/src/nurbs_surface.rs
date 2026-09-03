@@ -2153,6 +2153,36 @@ impl NurbsSurface {
         self.map_v_control_curves(|curve| curve.try_extended_control_curve_to(interval.clone()))
     }
 
+    /// Extends the U direction with a straight, tangent continuation joined at
+    /// the existing boundary.
+    pub fn try_extended_linearly_u(
+        &self,
+        interval: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        if self.is_closed_u()? {
+            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "U" });
+        }
+        validate_surface_extension_interval(&interval, self.domain_u())?;
+        self.map_u_control_curves(|curve| {
+            curve.try_extended_linearly_control_curve_to(interval.clone())
+        })
+    }
+
+    /// Extends the V direction with a straight, tangent continuation joined at
+    /// the existing boundary.
+    pub fn try_extended_linearly_v(
+        &self,
+        interval: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        if self.is_closed_v()? {
+            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "V" });
+        }
+        validate_surface_extension_interval(&interval, self.domain_v())?;
+        self.map_v_control_curves(|curve| {
+            curve.try_extended_linearly_control_curve_to(interval.clone())
+        })
+    }
+
     /// Naturally extends one edge by Rhino's physical-length convention.
     ///
     /// Rhino converts model length to a parameter delta with the root mean
@@ -2165,56 +2195,31 @@ impl NurbsSurface {
         edge: SurfaceExtensionEdge,
         length: Real,
     ) -> Result<Self, GeometryError> {
-        if !length.is_finite() || length <= 0.0 {
-            return Err(GeometryError::InvalidSurfaceExtensionLength);
-        }
-
+        let interval = self.extension_interval_by_length(edge, length)?;
         match edge {
             SurfaceExtensionEdge::West | SurfaceExtensionEdge::East => {
-                if self.is_closed_u()? {
-                    return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen {
-                        direction: "U",
-                    });
-                }
-                let domain = self.domain_u();
-                let at_start = edge == SurfaceExtensionEdge::West;
-                let endpoint = if at_start {
-                    *domain.start()
-                } else {
-                    *domain.end()
-                };
-                let parameter_delta =
-                    length / self.control_curve_boundary_rms_speed(true, endpoint)?;
-                require_finite([parameter_delta], "surface extension parameter delta")?;
-                let interval = if at_start {
-                    endpoint - parameter_delta..=*domain.end()
-                } else {
-                    *domain.start()..=endpoint + parameter_delta
-                };
                 self.try_extended_u(interval)
             }
             SurfaceExtensionEdge::South | SurfaceExtensionEdge::North => {
-                if self.is_closed_v()? {
-                    return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen {
-                        direction: "V",
-                    });
-                }
-                let domain = self.domain_v();
-                let at_start = edge == SurfaceExtensionEdge::South;
-                let endpoint = if at_start {
-                    *domain.start()
-                } else {
-                    *domain.end()
-                };
-                let parameter_delta =
-                    length / self.control_curve_boundary_rms_speed(false, endpoint)?;
-                require_finite([parameter_delta], "surface extension parameter delta")?;
-                let interval = if at_start {
-                    endpoint - parameter_delta..=*domain.end()
-                } else {
-                    *domain.start()..=endpoint + parameter_delta
-                };
                 self.try_extended_v(interval)
+            }
+        }
+    }
+
+    /// Extends one edge in a straight line using Rhino's physical-length
+    /// parameter convention.
+    pub fn try_extended_linearly_by_length(
+        &self,
+        edge: SurfaceExtensionEdge,
+        length: Real,
+    ) -> Result<Self, GeometryError> {
+        let interval = self.extension_interval_by_length(edge, length)?;
+        match edge {
+            SurfaceExtensionEdge::West | SurfaceExtensionEdge::East => {
+                self.try_extended_linearly_u(interval)
+            }
+            SurfaceExtensionEdge::South | SurfaceExtensionEdge::North => {
+                self.try_extended_linearly_v(interval)
             }
         }
     }
@@ -3324,6 +3329,40 @@ impl NurbsSurface {
             knots_u,
             self.knots_v.clone(),
         )
+    }
+
+    fn extension_interval_by_length(
+        &self,
+        edge: SurfaceExtensionEdge,
+        length: Real,
+    ) -> Result<RangeInclusive<Real>, GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidSurfaceExtensionLength);
+        }
+        let (domain, in_u, at_start, direction_is_closed) = match edge {
+            SurfaceExtensionEdge::West => (self.domain_u(), true, true, self.is_closed_u()?),
+            SurfaceExtensionEdge::East => (self.domain_u(), true, false, self.is_closed_u()?),
+            SurfaceExtensionEdge::South => (self.domain_v(), false, true, self.is_closed_v()?),
+            SurfaceExtensionEdge::North => (self.domain_v(), false, false, self.is_closed_v()?),
+        };
+        if direction_is_closed {
+            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen {
+                direction: if in_u { "U" } else { "V" },
+            });
+        }
+
+        let endpoint = if at_start {
+            *domain.start()
+        } else {
+            *domain.end()
+        };
+        let parameter_delta = length / self.control_curve_boundary_rms_speed(in_u, endpoint)?;
+        require_finite([parameter_delta], "surface extension parameter delta")?;
+        Ok(if at_start {
+            endpoint - parameter_delta..=*domain.end()
+        } else {
+            *domain.start()..=endpoint + parameter_delta
+        })
     }
 
     fn control_curve_boundary_rms_speed(
@@ -7899,6 +7938,63 @@ mod tests {
             .try_extended_by_length(SurfaceExtensionEdge::East, 1.25)
             .unwrap();
         assert!(Tolerance::DEFAULT.approx_eq(*extended.domain_u().end(), 2.230_739_147_208_702));
+    }
+
+    #[test]
+    fn linear_surface_length_extension_appends_a_tangent_bezier_span() {
+        let surface = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 2.0, 1.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 8.0, 0.0),
+                point(8.0, 13.0, 3.0),
+                point(18.0, 8.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = surface
+            .try_extended_linearly_by_length(SurfaceExtensionEdge::East, 2.5)
+            .unwrap();
+        let delta = 2.5 / 350.0_f64.sqrt();
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain_u().end(), 1.0 + delta));
+        assert_eq!(extended.control_point_count_u(), 5);
+        assert_eq!(extended.control_point_count_v(), 2);
+        assert_eq!(
+            extended.knots_u(),
+            &[
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                1.0,
+                1.0 + delta,
+                1.0 + delta,
+                1.0 + delta,
+            ]
+        );
+        assert_point_near(
+            extended.control_points()[3].point(),
+            point(10.0 + 6.0 * delta, -2.0 * delta, -delta),
+        );
+        assert_point_near(
+            extended.control_points()[4].point(),
+            point(10.0 + 12.0 * delta, -4.0 * delta, -2.0 * delta),
+        );
+        for u in [0.0, 0.25, 0.75, 1.0] {
+            for v in [0.0, 0.4, 1.0] {
+                assert_point_near(
+                    extended.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
     }
 
     #[test]
