@@ -5123,6 +5123,67 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_truncated_cone)
 
+    if kind == "tube":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        inner_radius = _finite(operation["inner_radius"], "tube inner radius")
+        outer_radius = _finite(operation["outer_radius"], "tube outer radius")
+        height = _finite(operation["height"], "tube height")
+        command = (
+            "_-Tube _DirectionConstraint=_Vertical 0,0,0 %.17g %.17g "
+            "_BothSides=_No %.17g"
+            % (outer_radius, inner_radius, height)
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+
+        def create_tube():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Tube macro %r returned %r and created %d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-2000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError("tube did not create B-rep-compatible geometry")
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient tube")
+                if brep.Faces.Count != 4:
+                    raise ValueError(
+                        "Tube macro %r created %d faces, expected 4"
+                        % (command, brep.Faces.Count)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep),
+                    "surfaces": [
+                        _nurbs_surface_definition(face.UnderlyingSurface())
+                        for face in brep.Faces
+                    ],
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_tube)
+
     if kind == "mesh_quad_sphere" or kind == "mesh_ico_sphere":
         plane = Rhino.Geometry.Plane(
             _point(operation["origin"]),

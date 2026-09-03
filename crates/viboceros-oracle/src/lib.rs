@@ -424,6 +424,15 @@ pub enum Operation {
         height: f64,
         solid: bool,
     },
+    Tube {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        inner_radius: f64,
+        outer_radius: f64,
+        height: f64,
+    },
     MeshSphere {
         id: String,
         origin: [f64; 3],
@@ -571,6 +580,7 @@ impl Operation {
             | Self::MeshCone { id, .. }
             | Self::MeshTruncatedCone { id, .. }
             | Self::TruncatedCone { id, .. }
+            | Self::Tube { id, .. }
             | Self::MeshSphere { id, .. }
             | Self::MeshEllipsoid { id, .. }
             | Self::MeshQuadSphere { id, .. }
@@ -1951,6 +1961,39 @@ fn execute(
                 }
             })?;
             (value, elapsed)
+        }
+        Operation::Tube {
+            origin,
+            x_axis,
+            y_axis,
+            inner_radius,
+            outer_radius,
+            height,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (brep, elapsed) = measure(iterations, || {
+                Brep::try_tube(
+                    frame,
+                    black_box([*inner_radius, *outer_radius]),
+                    black_box(*height),
+                    tolerance,
+                )
+            })?;
+            (
+                json!({
+                    "brep": mesh_to_nurb_brep_value(&brep)?,
+                    "surfaces": brep.faces().iter()
+                        .map(|face| nurbs_surface_definition_value(face.surface()))
+                        .collect::<Vec<_>>(),
+                }),
+                elapsed,
+            )
         }
         Operation::MeshSphere {
             origin,
@@ -6302,6 +6345,39 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec!["Mated", "Seam", "Mated", "Seam"]
         );
+    }
+
+    #[test]
+    fn captures_exact_tube_surfaces_and_topology_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::Tube {
+            id: "tube".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            inner_radius: 1.0,
+            outer_radius: 3.0,
+            height: 5.0,
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        assert_eq!(value["brep"]["vertex_count"], 4);
+        assert_eq!(value["brep"]["edge_count"], 6);
+        assert_eq!(value["brep"]["faces"].as_array().unwrap().len(), 4);
+        assert_eq!(value["brep"]["is_solid"], true);
+        assert_eq!(value["surfaces"].as_array().unwrap().len(), 4);
+        assert_eq!(value["surfaces"][0]["control_count"], json!([9, 2]));
+        assert_eq!(value["surfaces"][1]["control_count"], json!([9, 2]));
+        assert_eq!(value["surfaces"][2]["control_count"], json!([2, 2]));
+        assert_eq!(
+            value["surfaces"][0]["domain_u"],
+            json!([0.0, 6.0 * std::f64::consts::PI])
+        );
+        assert_eq!(
+            value["surfaces"][1]["domain_u"],
+            json!([6.0 * std::f64::consts::PI, 8.0 * std::f64::consts::PI])
+        );
+        assert_eq!(value["brep"]["faces"][2]["reversed"], true);
+        assert_eq!(value["brep"]["faces"][3]["reversed"], false);
     }
 
     #[test]

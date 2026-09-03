@@ -1,0 +1,36 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "tube",
+      "id": "world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "inner_radius": 1,
+      "outer_radius": 3,
+      "height": 5
+    },
+    {
+      "op": "tube",
+      "id": "thick-offset",
+      "origin": [-2, 4, -5],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "inner_radius": 3,
+      "outer_radius": 4,
+      "height": 10
+    },
+    {
+      "op": "tube",
+      "id": "oblique",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "inner_radius": 1.5,
+      "outer_radius": 2.75,
+      "height": 4.5
+    }
+  ]
+}

@@ -869,6 +869,136 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs Rhino's exact closed tube extrusion as a four-face B-rep.
+    ///
+    /// The frame origin is the first cap center and frame Z points toward the
+    /// second cap. Radii may be supplied in either order. The outer and inner
+    /// circular wall domains occupy consecutive arc-length intervals, matching
+    /// the joined-profile parameterization produced by Rhino's `Tube` command.
+    pub fn try_tube(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            radii.into_iter().chain(std::iter::once(height)),
+            "tube dimensions",
+        )?;
+        if radii.into_iter().any(|radius| radius <= 0.0) || radii[0] == radii[1] || height <= 0.0 {
+            return Err(GeometryError::Degenerate { context: "tube" });
+        }
+        let inner_radius = radii[0].min(radii[1]);
+        let outer_radius = radii[0].max(radii[1]);
+        let outer_domain_end = std::f64::consts::TAU * outer_radius;
+        let inner_domain_end = std::f64::consts::TAU.mul_add(inner_radius, outer_domain_end);
+        let cap_extent = 1.25 * outer_radius;
+        require_finite(
+            [outer_domain_end, inner_domain_end, cap_extent],
+            "tube parameter domains",
+        )?;
+
+        let outer_wall =
+            tube_wall_surface(frame, outer_radius, height, [0.0, outer_domain_end], false)?;
+        let inner_wall = tube_wall_surface(
+            frame,
+            inner_radius,
+            height,
+            [outer_domain_end, inner_domain_end],
+            true,
+        )?;
+        let end_frame = frame_at_height(frame, height, tolerance)?;
+        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
+        let cap_bounds = [[-cap_extent, cap_extent], [-cap_extent, cap_extent]];
+        let start_cap = planar_cap_surface(frame, zero, cap_bounds)?;
+        let end_cap = planar_cap_surface(end_frame, zero, cap_bounds)?;
+
+        let outer_u = outer_wall.domain_u();
+        let inner_u = inner_wall.domain_u();
+        let v = outer_wall.domain_v();
+        let vertices = vec![
+            BrepVertex::try_new(outer_wall.evaluate(*outer_u.start(), *v.start())?, 0.0)?,
+            BrepVertex::try_new(outer_wall.evaluate(*outer_u.start(), *v.end())?, 0.0)?,
+            BrepVertex::try_new(inner_wall.evaluate(*inner_u.start(), *v.start())?, 0.0)?,
+            BrepVertex::try_new(inner_wall.evaluate(*inner_u.start(), *v.end())?, 0.0)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 0], surface_u_control_curve(&outer_wall, 0)?, 0.0)?,
+            BrepEdge::try_new([0, 1], surface_v_control_curve(&outer_wall, 0)?, 0.0)?,
+            BrepEdge::try_new([1, 1], surface_u_control_curve(&outer_wall, 1)?, 0.0)?,
+            BrepEdge::try_new([2, 2], surface_u_control_curve(&inner_wall, 0)?, 0.0)?,
+            BrepEdge::try_new([2, 3], surface_v_control_curve(&inner_wall, 0)?, 0.0)?,
+            BrepEdge::try_new([3, 3], surface_u_control_curve(&inner_wall, 1)?, 0.0)?,
+        ];
+        let outer_wall_loop = rectangular_surface_loop(
+            &outer_wall,
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 1, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([1, 1], 2, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 0], 1, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let inner_wall_loop = rectangular_surface_loop(
+            &inner_wall,
+            [
+                RectangularTrimSpec::edge([2, 2], 3, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([2, 3], 4, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([3, 3], 5, true, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([3, 2], 4, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let outer_cap_curve = circular_parameter_curve(outer_radius)?;
+        let inner_cap_curve = circular_parameter_curve(inner_radius)?.reversed()?;
+        let start_cap_loops = vec![
+            single_edge_loop(
+                0,
+                0,
+                BrepLoopType::Outer,
+                outer_cap_curve.clone(),
+                false,
+                BrepTrimType::Mated,
+                [0.0, 0.0],
+            )?,
+            single_edge_loop(
+                2,
+                3,
+                BrepLoopType::Inner,
+                inner_cap_curve.clone(),
+                false,
+                BrepTrimType::Mated,
+                [0.0, 0.0],
+            )?,
+        ];
+        let end_cap_loops = vec![
+            single_edge_loop(
+                1,
+                2,
+                BrepLoopType::Outer,
+                outer_cap_curve,
+                false,
+                BrepTrimType::Mated,
+                [0.0, 0.0],
+            )?,
+            single_edge_loop(
+                3,
+                5,
+                BrepLoopType::Inner,
+                inner_cap_curve,
+                false,
+                BrepTrimType::Mated,
+                [0.0, 0.0],
+            )?,
+        ];
+        let faces = vec![
+            BrepFace::try_new(outer_wall, false, vec![outer_wall_loop])?,
+            BrepFace::try_new(inner_wall, false, vec![inner_wall_loop])?,
+            BrepFace::try_new(start_cap, true, start_cap_loops)?,
+            BrepFace::try_new(end_cap, false, end_cap_loops)?,
+        ];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     /// Constructs Rhino's exact capped right circular truncated cone.
     ///
     /// The supplied frame origin is the base center and frame Z points toward
@@ -2703,6 +2833,57 @@ fn single_edge_loop(
             SurfaceIso::NotIso,
             tolerance,
         )?],
+    )
+}
+
+fn tube_wall_surface(
+    frame: Frame3,
+    radius: Real,
+    height: Real,
+    domain_u: [Real; 2],
+    clockwise: bool,
+) -> Result<NurbsSurface, GeometryError> {
+    require_finite(domain_u, "tube wall parameter domain")?;
+    if domain_u[0] >= domain_u[1] {
+        return Err(GeometryError::Degenerate {
+            context: "tube wall parameter domain",
+        });
+    }
+    let source = NurbsSurface::try_cylinder(frame, radius, 0.0, height)?;
+    let count_u = source.control_point_count_u();
+    let count_v = source.control_point_count_v();
+    let mut controls = Vec::with_capacity(source.control_points().len());
+    for row in source.control_points().chunks_exact(count_u) {
+        if clockwise {
+            controls.extend(row.iter().rev().copied());
+        } else {
+            controls.extend_from_slice(row);
+        }
+    }
+    let tau = std::f64::consts::TAU;
+    let knots_u = source
+        .knots_u()
+        .iter()
+        .map(|knot| {
+            let mapped = if *knot == 0.0 {
+                domain_u[0]
+            } else if *knot == tau {
+                domain_u[1]
+            } else {
+                radius.mul_add(*knot, domain_u[0])
+            };
+            require_finite([mapped], "tube wall knot")?;
+            Ok(mapped)
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    NurbsSurface::try_new_rational(
+        source.degree_u(),
+        source.degree_v(),
+        count_u,
+        count_v,
+        controls,
+        knots_u,
+        source.knots_v().to_vec(),
     )
 }
 
@@ -5439,6 +5620,92 @@ mod tests {
 
         assert!(Brep::try_cylinder(frame, 0.0, 0.0, 1.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cylinder(frame, 1.0, 2.0, 2.0, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn exact_tube_matches_rhino_extrusion_topology_and_parameter_domains() {
+        let base = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            base,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let tube = Brep::try_tube(frame, [1.0, 3.0], 5.0, Tolerance::DEFAULT).unwrap();
+        let outer_end = 6.0 * std::f64::consts::PI;
+        let inner_end = 8.0 * std::f64::consts::PI;
+
+        assert_eq!(tube.vertices().len(), 4);
+        assert_eq!(tube.edges().len(), 6);
+        assert_eq!(tube.faces().len(), 4);
+        assert!(tube.is_manifold());
+        assert!(tube.is_closed());
+        assert!(tube.is_solid());
+        assert!((0..6).all(|edge| tube.edge_use_count(edge) == Some(2)));
+        assert_eq!(tube.vertices()[0].point(), point(1.0, 5.0, 3.0));
+        assert_eq!(tube.vertices()[1].point(), point(1.0, 5.0, 8.0));
+        assert_eq!(tube.vertices()[2].point(), point(1.0, 3.0, 3.0));
+        assert_eq!(tube.vertices()[3].point(), point(1.0, 3.0, 8.0));
+        assert_eq!(tube.faces()[0].surface().domain_u(), 0.0..=outer_end);
+        assert_eq!(tube.faces()[1].surface().domain_u(), outer_end..=inner_end);
+        assert_eq!(tube.faces()[0].surface().domain_v(), 0.0..=5.0);
+        assert_eq!(tube.faces()[1].surface().domain_v(), 0.0..=5.0);
+        assert_eq!(
+            tube.faces()[0]
+                .surface()
+                .control_point(1, 0)
+                .unwrap()
+                .point(),
+            point(-2.0, 5.0, 3.0)
+        );
+        assert_eq!(
+            tube.faces()[1]
+                .surface()
+                .control_point(1, 0)
+                .unwrap()
+                .point(),
+            point(2.0, 3.0, 3.0)
+        );
+        assert!(!tube.faces()[0].is_reversed());
+        assert!(!tube.faces()[1].is_reversed());
+        assert!(tube.faces()[2].is_reversed());
+        assert!(!tube.faces()[3].is_reversed());
+        assert_eq!(
+            tube.faces()[2]
+                .loops()
+                .iter()
+                .map(BrepLoop::loop_type)
+                .collect::<Vec<_>>(),
+            vec![BrepLoopType::Outer, BrepLoopType::Inner]
+        );
+        assert_eq!(
+            tube.faces()[3]
+                .loops()
+                .iter()
+                .map(BrepLoop::loop_type)
+                .collect::<Vec<_>>(),
+            vec![BrepLoopType::Outer, BrepLoopType::Inner]
+        );
+
+        let mesh = tube.tessellate(12, Tolerance::DEFAULT).unwrap();
+        assert!(mesh.topology().is_solid());
+        let expected_volume = std::f64::consts::PI * (3.0_f64.powi(2) - 1.0) * 5.0;
+        let relative_error =
+            (mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume;
+        assert!(
+            relative_error < 0.01,
+            "relative volume error {relative_error}"
+        );
+
+        assert_eq!(
+            tube,
+            Brep::try_tube(frame, [3.0, 1.0], 5.0, Tolerance::DEFAULT).unwrap()
+        );
+        assert!(Brep::try_tube(frame, [1.0, 1.0], 5.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_tube(frame, [0.0, 1.0], 5.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_tube(frame, [1.0, 3.0], 0.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_tube(frame, [1.0, Real::INFINITY], 5.0, Tolerance::DEFAULT).is_err());
     }
 
     #[test]

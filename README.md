@@ -59,6 +59,7 @@ Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
+Tube 0,0,0 3 1 10
 Torus 0,0,0 5 1.5
 Layer New Construction
 Layer Hide Construction
@@ -477,6 +478,10 @@ and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
 linear V domain is the physical slant length, matching Rhino; negative heights
 reverse the construction direction while preserving the base seam. `Solid=Yes`
 adds outward planar caps with Rhino-compatible shared rim and seam topology.
+`Tube` creates a closed exact B-rep with concentric rational cylinder walls and
+annular planar caps. The two radii may be entered in either order;
+`WallThickness=` expands outward from the first radius, and `BothSides=Yes`
+centers the full doubled height on the starting point.
 `Torus` creates an exact closed 9-by-9 rational quadratic surface from a center,
 major radius (or point on the major circle), and minor radius. `Axis=` orients
 the torus; the major radius must exceed the positive minor radius. Its U and V

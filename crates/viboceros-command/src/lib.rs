@@ -161,6 +161,9 @@ impl CommandRegistry {
             .register(TruncatedConeCommand)
             .expect("unique built-in command");
         registry
+            .register(TubeCommand)
+            .expect("unique built-in command");
+        registry
             .register(TorusCommand)
             .expect("unique built-in command");
         registry
@@ -2515,6 +2518,7 @@ pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
+const TUBE_USAGE: &str = "Tube center first-radius second-radius height | Tube center point-on-first-wall second-radius height | Tube center first-radius height WallThickness=positive-distance [Axis=x,y,z] [BothSides=Yes|No]";
 const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -2548,6 +2552,15 @@ struct TruncatedConePositionals {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+struct TubePositionals {
+    center: Point3,
+    first_radius: AxialPrimitiveRadius,
+    second_radius: Option<AxialPrimitiveRadius>,
+    height: Real,
+    option_start: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct AxialPrimitiveOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
@@ -2565,6 +2578,17 @@ struct TruncatedConeCommandOptions {
     end_radius: Real,
     axis: Vector3,
     solid: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct TubeCommandOptions {
+    center: Point3,
+    first_radius: AxialPrimitiveRadius,
+    second_radius: Option<AxialPrimitiveRadius>,
+    wall_thickness: Option<Real>,
+    height: Real,
+    axis: Vector3,
+    both_sides: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -2790,6 +2814,59 @@ fn parse_truncated_cone_positionals(
     })
 }
 
+fn parse_tube_positionals(arguments: &[&str]) -> Result<TubePositionals, CommandError> {
+    let (center, center_consumed) = parse_point(arguments)?;
+    let remaining = &arguments[center_consumed..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    if positional_count == 0 {
+        return Err(CommandError::Usage(TUBE_USAGE));
+    }
+
+    let (first_radius, first_consumed) =
+        if remaining[0].contains(',') || matches!(positional_count, 4 | 5 | 7) {
+            let (point, consumed) = parse_point(remaining)?;
+            (AxialPrimitiveRadius::Point(point), consumed)
+        } else {
+            (
+                AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
+                1,
+            )
+        };
+    let tail = &remaining[first_consumed..positional_count];
+    let (second_radius, height) = match tail {
+        [height] => (None, parse_finite_real(height)?),
+        [second, height] => {
+            let second_radius = if second.contains(',') {
+                let (point, consumed) = parse_point(&[*second])?;
+                debug_assert_eq!(consumed, 1);
+                AxialPrimitiveRadius::Point(point)
+            } else {
+                AxialPrimitiveRadius::Numeric(parse_finite_real(second)?)
+            };
+            (Some(second_radius), parse_finite_real(height)?)
+        }
+        [x, y, z, height] => {
+            let (point, consumed) = parse_point(&[*x, *y, *z])?;
+            debug_assert_eq!(consumed, 3);
+            (
+                Some(AxialPrimitiveRadius::Point(point)),
+                parse_finite_real(height)?,
+            )
+        }
+        _ => return Err(CommandError::Usage(TUBE_USAGE)),
+    };
+    Ok(TubePositionals {
+        center,
+        first_radius,
+        second_radius,
+        height,
+        option_start: center_consumed + positional_count,
+    })
+}
+
 fn parse_axis_option(value: &str, usage: &'static str) -> Result<Vector3, CommandError> {
     let (point, consumed) = parse_point(&[value])?;
     if consumed != 1 {
@@ -2869,6 +2946,51 @@ fn parse_truncated_cone_options(
         end_radius: positionals.end_radius,
         axis,
         solid,
+    })
+}
+
+fn parse_tube_options(arguments: &[&str]) -> Result<TubeCommandOptions, CommandError> {
+    let positionals = parse_tube_positionals(arguments)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut both_sides = false;
+    let mut wall_thickness = None;
+    let mut axis_seen = false;
+    let mut both_sides_seen = false;
+    let mut wall_thickness_seen = false;
+    for argument in &arguments[positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(TUBE_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            axis = parse_axis_option(value, TUBE_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "BothSides") && !both_sides_seen {
+            both_sides = parse_yes_no(value).ok_or(CommandError::Usage(TUBE_USAGE))?;
+            both_sides_seen = true;
+        } else if option_name_eq(name, "WallThickness") && !wall_thickness_seen {
+            wall_thickness = Some(
+                parse_finite_real(value)
+                    .ok()
+                    .filter(|thickness| *thickness > 0.0)
+                    .ok_or(CommandError::Usage(TUBE_USAGE))?,
+            );
+            wall_thickness_seen = true;
+        } else {
+            return Err(CommandError::Usage(TUBE_USAGE));
+        }
+    }
+    if positionals.second_radius.is_some() == wall_thickness.is_some() {
+        return Err(CommandError::Usage(TUBE_USAGE));
+    }
+    Ok(TubeCommandOptions {
+        center: positionals.center,
+        first_radius: positionals.first_radius,
+        second_radius: positionals.second_radius,
+        wall_thickness,
+        height: positionals.height,
+        axis,
+        both_sides,
     })
 }
 
@@ -3455,6 +3577,28 @@ fn axial_primitive_frame(
     }
 }
 
+fn axial_primitive_radius_value(
+    center: Point3,
+    radius: AxialPrimitiveRadius,
+    frame: Frame3,
+) -> Result<Real, CommandError> {
+    match radius {
+        AxialPrimitiveRadius::Numeric(radius) => Ok(radius),
+        AxialPrimitiveRadius::Point(point) => {
+            let radial = center.vector_to(point)?;
+            let axial_distance = radial.dot(frame.z_axis().as_vector())?;
+            let axial = frame.z_axis().as_vector().scaled(axial_distance)?;
+            Vector3::try_new(
+                radial.x() - axial.x(),
+                radial.y() - axial.y(),
+                radial.z() - axial.z(),
+            )?
+            .length()
+            .map_err(Into::into)
+        }
+    }
+}
+
 struct CylinderCommand;
 
 impl Command for CylinderCommand {
@@ -3837,6 +3981,72 @@ impl Command for TruncatedConeCommand {
                 options.end_radius, options.height
             ))
         }
+    }
+}
+
+struct TubeCommand;
+
+impl Command for TubeCommand {
+    fn name(&self) -> &'static str {
+        "Tube"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_tube_options(arguments)?;
+        let tolerance = document.tolerance();
+        let (base_frame, first_radius) = axial_primitive_frame(
+            options.center,
+            options.first_radius,
+            options.axis,
+            tolerance,
+        )?;
+        let second_radius = if let Some(radius) = options.second_radius {
+            axial_primitive_radius_value(options.center, radius, base_frame)?
+        } else {
+            first_radius + options.wall_thickness.expect("validated thickness form")
+        };
+        let (frame, height) = if options.both_sides {
+            let magnitude = options.height.abs();
+            let start = options
+                .center
+                .translated(base_frame.z_axis().as_vector().scaled(-magnitude)?)?;
+            (
+                Frame3::try_from_x_and_normal(
+                    start,
+                    base_frame.x_axis().as_vector(),
+                    base_frame.z_axis().as_vector(),
+                    tolerance,
+                )?,
+                2.0 * magnitude,
+            )
+        } else {
+            let direction = base_frame
+                .z_axis()
+                .as_vector()
+                .scaled(if options.height > 0.0 { 1.0 } else { -1.0 })?;
+            (
+                Frame3::try_from_x_and_normal(
+                    options.center,
+                    base_frame.x_axis().as_vector(),
+                    direction,
+                    tolerance,
+                )?,
+                options.height.abs(),
+            )
+        };
+        let tube = Brep::try_tube(frame, [first_radius, second_radius], height, tolerance)?;
+        let inner_radius = first_radius.min(second_radius);
+        let outer_radius = first_radius.max(second_radius);
+        let id = document.add_geometry(Geometry::Brep(tube))?;
+        Ok(format!(
+            "Added closed B-rep tube {id} (inner radius {inner_radius:.6}, outer radius {outer_radius:.6}, height {:.6}{})",
+            options.height,
+            if options.both_sides {
+                ", both sides"
+            } else {
+                ""
+            }
+        ))
     }
 }
 
@@ -14572,7 +14782,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -15680,6 +15890,98 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("TruncatedCone"));
+    }
+
+    #[test]
+    fn tube_creates_exact_concentric_walls_and_annular_caps() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let result = registry.execute(&mut document, "Tube 0,0,0 3 1 5").unwrap();
+        assert!(result.contains("closed B-rep tube"));
+        let tube_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(tube_id));
+        let Geometry::Brep(tube) = document.object(tube_id).unwrap().geometry() else {
+            panic!("Tube must create a B-rep")
+        };
+        assert_eq!(tube.faces().len(), 4);
+        assert_eq!(tube.edges().len(), 6);
+        assert!(tube.is_solid());
+        assert_eq!(
+            tube.vertices()[0].point(),
+            Point3::try_new(3.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            tube.vertices()[2].point(),
+            Point3::try_new(1.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Tube"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(&mut document, "Tube 1,2,3 4,7,3 1 -4 Axis=0,1,0")
+            .unwrap();
+        let Geometry::Brep(negative) = document.objects().next().unwrap().geometry() else {
+            panic!("Tube must support a picked radius and signed arbitrary axis")
+        };
+        assert_eq!(
+            negative.vertices()[0].point(),
+            Point3::try_new(4.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            negative.vertices()[1].point(),
+            Point3::try_new(4.0, -2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            negative.vertices()[2].point(),
+            Point3::try_new(2.0, 2.0, 3.0).unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "Tube 0,0,0 3 5 WallThickness=1 BothSides=Yes",
+            )
+            .unwrap();
+        let Geometry::Brep(both_sides) = document.objects().next().unwrap().geometry() else {
+            panic!("Tube WallThickness and BothSides must create a B-rep")
+        };
+        assert_eq!(
+            both_sides.vertices()[0].point(),
+            Point3::try_new(4.0, 0.0, -5.0).unwrap()
+        );
+        assert_eq!(
+            both_sides.vertices()[1].point(),
+            Point3::try_new(4.0, 0.0, 5.0).unwrap()
+        );
+        assert_eq!(
+            both_sides.vertices()[2].point(),
+            Point3::try_new(3.0, 0.0, -5.0).unwrap()
+        );
+        let mesh = both_sides.tessellate(12, document.tolerance()).unwrap();
+        let expected_volume = std::f64::consts::PI * (4.0_f64.powi(2) - 3.0_f64.powi(2)) * 10.0;
+        assert!((mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume < 0.01);
+
+        for invalid in [
+            "Tube",
+            "Tube 0,0,0 3 5",
+            "Tube 0,0,0 0 1 5",
+            "Tube 0,0,0 3 3 5",
+            "Tube 0,0,0 3 1 0",
+            "Tube 0,0,0 3 1 5 WallThickness=1",
+            "Tube 0,0,0 3 5 WallThickness=0",
+            "Tube 0,0,0 3 5 WallThickness=-1",
+            "Tube 0,0,0 3 1 5 BothSides=Maybe",
+            "Tube 0,0,0 3 1 5 Axis=0,0,0",
+            "Tube 0,0,0 0,0,2 1 5 Axis=0,0,1",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("Tube"));
     }
 
     #[test]
