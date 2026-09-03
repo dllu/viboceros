@@ -7,7 +7,7 @@ file-format crates, with an egui interface rendered by wgpu.
 The current foundation supports finite 3D points, vectors, line segments,
 analytic circles, circular arcs, and ellipses, validated open and closed
 polylines, planes, bounding boxes, rational NURBS curves with analytic first
-derivatives and exact knot refinement, splitting, and interval trimming,
+and second derivatives and exact knot refinement, splitting, and interval trimming,
 rational NURBS surfaces with analytic partial derivatives and exact tensor
 splitting and rectangular domain trimming,
 validated shared-topology B-reps with exact rational parameter-space trims,
@@ -65,6 +65,7 @@ Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes MarkFoci=Yes
 Helix 0,0,0 0,0,10 2 Turns=3 ReverseTwist=No
 Spiral 0,0,0 0,0,6 1 4 Turns=2 ReverseTwist=No
 Spiral AroundCurve 1,0,0 2 PathName=Rail Turns=3 PointsPerTurn=12
+Catenary 0,0,0 10,0,0 0,0,-1 4 Mode=Parameter PointCount=20
 Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
@@ -519,6 +520,16 @@ endpoint perturbation by less than `3e-5` in the permanent `helix.json` and
 rail stations and rotation-minimizing frame transport; their complete cubic
 control layout agrees with Rhino within `2e-7` across straight, planar curved,
 and spatial curved rails in `swept_spiral.json`.
+`Catenary` constructs the physical hanging-chain curve from a through point,
+analytic length, catenary parameter, or apex height. The third point fixes the
+gravity direction from the start point. `Output=Smooth` creates Rhino's
+chord-parameterized cubic approximation with exact analytic endpoint tangents;
+`Output=Polyline` samples uniform horizontal stations. Both use 20 points by
+default, accept `PointCount=`, and can add the exact analytic apex with
+`MarkApex=Yes`. Overflow-safe hyperbolic evaluation and bounded root solvers
+cover asymmetric and arbitrarily oriented endpoint frames. All nine permanent
+smooth/polyline oracle cases agree with Rhino within `2e-8` (the observed
+maximum difference is below `2e-10`).
 `Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
 `Vertex vertex focus end-point` constructions; `Focus` is the default. The
 vertex form projects the end point perpendicular to the focus axis and derives
@@ -851,6 +862,10 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/swept_spiral.json \
   --absolute-epsilon 2e-7 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/catenary.json \
+  --absolute-epsilon 2e-8 --relative-epsilon 1e-12
 ```
 
 The same workflow is importable for instrumentation and tests:

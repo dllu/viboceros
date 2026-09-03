@@ -6,6 +6,7 @@
 
 mod bounds;
 mod brep;
+mod catenary;
 mod circular;
 mod curve;
 mod ellipse;
@@ -33,6 +34,11 @@ pub use bounds::BoundingBox3;
 pub use brep::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
     SurfaceIso,
+};
+pub use catenary::{
+    CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,
+    DEFAULT_CATENARY_POINT_COUNT, MAX_CATENARY_POINT_COUNT, MIN_POLYLINE_CATENARY_POINT_COUNT,
+    MIN_SMOOTH_CATENARY_POINT_COUNT, try_catenary,
 };
 pub use circular::{Circle3, CircularArc3};
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};

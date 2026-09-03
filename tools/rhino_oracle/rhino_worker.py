@@ -5320,6 +5320,89 @@ def _execute(operation, iterations, tolerance):
         finally:
             rail.Dispose()
 
+    if kind == "catenary":
+        document = Rhino.RhinoDoc.ActiveDoc
+        start = _point(operation["start"])
+        end = _point(operation["end"])
+        axis_direction = _vector(operation["axis_direction"])
+        construction = operation["construction"]
+        mode = construction["mode"]
+        smooth = bool(operation["smooth"])
+        point_count = int(operation["point_count"])
+
+        axis_direction.Unitize()
+        axis_point = Rhino.Geometry.Point3d(
+            start.X + axis_direction.X,
+            start.Y + axis_direction.Y,
+            start.Z + axis_direction.Z,
+        )
+        if mode in ("through_point", "apex"):
+            mode_value = _command_point(construction["point"])
+        else:
+            mode_value = "%.17g" % _finite(
+                construction["value"], "catenary mode value"
+            )
+        mode_name = {
+            "through_point": "ThroughPoint",
+            "length": "Length",
+            "parameter": "Parameter",
+            "apex": "Apex",
+        }.get(mode)
+        if mode_name is None:
+            raise ValueError("unknown catenary construction mode")
+        command = (
+            "_-Catenary %s %s %s _Output=_%s _PointCount=%d "
+            "_MarkApex=_No _Mode=_%s %s"
+            % (
+                _command_point(_xyz(start)),
+                _command_point(_xyz(end)),
+                _command_point(_xyz(axis_point)),
+                "Smooth" if smooth else "Polyline",
+                point_count,
+                mode_name,
+                mode_value,
+            )
+        )
+
+        def create_catenary():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                curves = [
+                    obj.Geometry
+                    for obj in created
+                    if isinstance(obj.Geometry, Rhino.Geometry.Curve)
+                ]
+                if len(curves) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "catenary macro %r returned %r and created %d curves; "
+                        "history tail: %s"
+                        % (command, succeeded, len(curves), history[-3000:])
+                    )
+                curve = curves[0].DuplicateCurve()
+                curve_type = curve.GetType().Name
+                definition = _nurbs_curve_definition(curve)
+                if curve_type == "PolylineCurve":
+                    return {
+                        "curve_type": curve_type,
+                        "points": [
+                            control["point"]
+                            for control in definition["control_points"]
+                        ],
+                    }
+                return {"curve": definition, "curve_type": curve_type}
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_catenary)
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

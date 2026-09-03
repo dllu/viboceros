@@ -147,6 +147,30 @@ pub enum GeometryError {
     #[error("a swept spiral requires at least 5 interpolation points per turn, got {actual}")]
     InvalidSweptSpiralPointsPerTurn { actual: usize },
 
+    #[error(
+        "catenary point count must be from {minimum} through {maximum} for this output, got {actual}"
+    )]
+    InvalidCatenaryPointCount {
+        actual: usize,
+        minimum: usize,
+        maximum: usize,
+    },
+
+    #[error("a catenary parameter must be finite and strictly positive")]
+    InvalidCatenaryParameter,
+
+    #[error("a catenary length must be finite and longer than its endpoint chord")]
+    InvalidCatenaryLength,
+
+    #[error("the requested catenary apex is not beyond both endpoints along the axis")]
+    InvalidCatenaryApex,
+
+    #[error("the catenary through-point must lie strictly beyond the interior endpoint chord")]
+    InvalidCatenaryThroughPoint,
+
+    #[error("the catenary constraint solver did not converge to a finite curve")]
+    CatenarySolveDidNotConverge,
+
     #[error("arc-length distance {distance} is outside [0, {length}]")]
     ArcLengthOutOfDomain { distance: f64, length: f64 },
 

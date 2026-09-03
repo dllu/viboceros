@@ -1,0 +1,96 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "catenary",
+      "id": "parameter-horizontal-smooth",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, 0.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "parameter", "value": 4.0},
+      "smooth": true,
+      "point_count": 8
+    },
+    {
+      "op": "catenary",
+      "id": "parameter-horizontal-polyline",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, 0.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "parameter", "value": 4.0},
+      "smooth": false,
+      "point_count": 8
+    },
+    {
+      "op": "catenary",
+      "id": "parameter-oblique-smooth",
+      "start": [1.0, 2.0, 3.0],
+      "end": [8.0, 4.0, -1.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "parameter", "value": 3.0},
+      "smooth": true,
+      "point_count": 9
+    },
+    {
+      "op": "catenary",
+      "id": "length-horizontal-smooth",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, 0.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "length", "value": 14.0},
+      "smooth": true,
+      "point_count": 8
+    },
+    {
+      "op": "catenary",
+      "id": "length-oblique-polyline",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, -2.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "length", "value": 13.0},
+      "smooth": false,
+      "point_count": 7
+    },
+    {
+      "op": "catenary",
+      "id": "apex-horizontal-smooth",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, 0.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "apex", "point": [2.0, 5.0, -2.0]},
+      "smooth": true,
+      "point_count": 8
+    },
+    {
+      "op": "catenary",
+      "id": "apex-oblique-polyline",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, -2.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "apex", "point": [7.0, 4.0, -4.0]},
+      "smooth": false,
+      "point_count": 7
+    },
+    {
+      "op": "catenary",
+      "id": "through-horizontal-smooth",
+      "start": [0.0, 0.0, 0.0],
+      "end": [10.0, 0.0, 0.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "through_point", "point": [3.0, 0.0, -2.0]},
+      "smooth": true,
+      "point_count": 8
+    },
+    {
+      "op": "catenary",
+      "id": "through-oblique-polyline",
+      "start": [1.0, 2.0, 3.0],
+      "end": [8.0, 4.0, -1.0],
+      "axis_direction": [0.0, 0.0, -1.0],
+      "construction": {"mode": "through_point", "point": [4.0, 2.857142857142857, -0.5]},
+      "smooth": false,
+      "point_count": 9
+    }
+  ]
+}

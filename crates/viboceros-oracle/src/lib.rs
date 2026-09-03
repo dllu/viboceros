@@ -14,12 +14,13 @@ use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
-    AffineTransform3, Brep, BrepLoopType, BrepTrimType, Circle3, CircularArc3, CurveRef, Ellipse3,
-    Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions,
-    MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, WeightedPoint3, join_polylines,
+    AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
+    CatenaryOutput, Circle3, CircularArc3, CurveRef, Ellipse3, Frame3, GeometryError, LineSegment,
+    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    join_polylines, try_catenary,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -489,6 +490,15 @@ pub enum Operation {
         radii: [f64; 2],
         points_per_turn: usize,
     },
+    Catenary {
+        id: String,
+        start: [f64; 3],
+        end: [f64; 3],
+        axis_direction: [f64; 3],
+        construction: CatenaryDefinition,
+        smooth: bool,
+        point_count: usize,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -625,6 +635,15 @@ pub enum ConicDefinition {
     ThroughPoint { point: [f64; 3] },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[serde(tag = "mode", rename_all = "snake_case")]
+pub enum CatenaryDefinition {
+    ThroughPoint { point: [f64; 3] },
+    Length { value: f64 },
+    Parameter { value: f64 },
+    Apex { point: [f64; 3] },
+}
+
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
@@ -697,6 +716,7 @@ impl Operation {
             | Self::Helix { id, .. }
             | Self::Spiral { id, .. }
             | Self::SweptSpiral { id, .. }
+            | Self::Catenary { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2300,6 +2320,53 @@ fn execute(
                 )
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
+        }
+        Operation::Catenary {
+            start,
+            end,
+            axis_direction,
+            construction,
+            smooth,
+            point_count,
+            ..
+        } => {
+            let construction = match construction {
+                CatenaryDefinition::ThroughPoint { point: through } => {
+                    CatenaryConstruction::ThroughPoint(point(*through)?)
+                }
+                CatenaryDefinition::Length { value } => CatenaryConstruction::Length(*value),
+                CatenaryDefinition::Parameter { value } => CatenaryConstruction::Parameter(*value),
+                CatenaryDefinition::Apex { point: apex } => {
+                    CatenaryConstruction::Apex(point(*apex)?)
+                }
+            };
+            let output = if *smooth {
+                CatenaryOutput::Smooth
+            } else {
+                CatenaryOutput::Polyline
+            };
+            let (solution, elapsed) = measure(iterations, || {
+                try_catenary(
+                    point(*start)?,
+                    point(*end)?,
+                    Vector3::try_from(*axis_direction)?,
+                    black_box(construction),
+                    black_box(output),
+                    black_box(*point_count),
+                    tolerance,
+                )
+            })?;
+            let value = match solution.curve() {
+                CatenaryCurve::Smooth(curve) => json!({
+                    "curve": nurbs_curve_definition_value(curve),
+                    "curve_type": "NurbsCurve",
+                }),
+                CatenaryCurve::Polyline(polyline) => json!({
+                    "curve_type": "PolylineCurve",
+                    "points": polyline.vertices().iter().map(|point| point.to_array()).collect::<Vec<_>>(),
+                }),
+            };
+            (value, elapsed)
         }
         Operation::Paraboloid {
             origin,
@@ -7056,6 +7123,48 @@ mod tests {
             spiral["control_points"][0],
             json!({"point": [1.0, 0.0, 0.0], "weight": 1.0})
         );
+    }
+
+    #[test]
+    fn captures_smooth_and_polyline_catenaries_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::Catenary {
+                id: "smooth".to_owned(),
+                start: [0.0, 0.0, 0.0],
+                end: [10.0, 0.0, 0.0],
+                axis_direction: [0.0, 0.0, -1.0],
+                construction: CatenaryDefinition::Parameter { value: 4.0 },
+                smooth: true,
+                point_count: 8,
+            },
+            Operation::Catenary {
+                id: "polyline".to_owned(),
+                start: [0.0, 0.0, 0.0],
+                end: [10.0, 0.0, -2.0],
+                axis_direction: [0.0, 0.0, -1.0],
+                construction: CatenaryDefinition::Length { value: 13.0 },
+                smooth: false,
+                point_count: 7,
+            },
+        ]))
+        .unwrap();
+
+        let smooth = &response.results[0].value;
+        assert_eq!(smooth["curve_type"], "NurbsCurve");
+        assert_eq!(smooth["curve"]["degree"], 3);
+        assert_eq!(
+            smooth["curve"]["control_points"].as_array().unwrap().len(),
+            8
+        );
+        assert_eq!(
+            smooth["curve"]["control_points"][0],
+            json!({"point": [0.0, 0.0, 0.0], "weight": 1.0})
+        );
+
+        let polyline = &response.results[1].value;
+        assert_eq!(polyline["curve_type"], "PolylineCurve");
+        assert_eq!(polyline["points"].as_array().unwrap().len(), 7);
+        assert_eq!(polyline["points"][6], json!([10.0, 0.0, -2.0]));
     }
 
     #[test]

@@ -8,17 +8,19 @@ use viboceros_document::{
     ObjectColorSource, ObjectId, SelectionMode, suggested_layer_color,
 };
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, CircularArc3,
-    ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
+    AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
+    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveInterpolationOptions,
+    CurveKnotSpacing, CurveRef, CurveSample, DEFAULT_CATENARY_POINT_COUNT,
     DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError,
-    InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES,
-    MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
-    MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
-    MAX_REGULAR_POLYGON_SIDES, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions,
-    MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
+    InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
+    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
+    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_POLYLINE_CATENARY_POINT_COUNT,
+    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines, try_catenary,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -178,6 +180,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(SpiralCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CatenaryCommand)
             .expect("unique built-in command");
         registry
             .register(TruncatedConeCommand)
@@ -2552,6 +2557,7 @@ const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point |
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
+const CATENARY_USAGE: &str = "Catenary start end axis-direction-point constraint [Mode=ThroughPoint|Length|Parameter|Apex] [Output=Smooth|Polyline] [PointCount=integer] [MarkApex=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
@@ -2759,6 +2765,25 @@ struct SpiralCommandOptions {
     radii: [AxialPrimitiveRadius; 2],
     advance: SpiralAdvance,
     reverse_twist: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct CatenaryCommandOptions {
+    start: Point3,
+    end: Point3,
+    axis_direction: Vector3,
+    construction: CatenaryConstruction,
+    output: CatenaryOutput,
+    point_count: usize,
+    mark_apex: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum CatenaryMode {
+    ThroughPoint,
+    Length,
+    Parameter,
+    Apex,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -3704,6 +3729,109 @@ fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, Comm
         radii,
         advance,
         reverse_twist,
+    })
+}
+
+fn parse_catenary_options(arguments: &[&str]) -> Result<CatenaryCommandOptions, CommandError> {
+    let positional_count = arguments
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let mut mode = CatenaryMode::ThroughPoint;
+    let mut output = CatenaryOutput::Smooth;
+    let mut point_count = DEFAULT_CATENARY_POINT_COUNT;
+    let mut mark_apex = false;
+    let mut mode_seen = false;
+    let mut output_seen = false;
+    let mut point_count_seen = false;
+    let mut mark_apex_seen = false;
+    for argument in &arguments[positional_count..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(CATENARY_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Mode") && !mode_seen {
+            mode = if value.eq_ignore_ascii_case("ThroughPoint") {
+                CatenaryMode::ThroughPoint
+            } else if value.eq_ignore_ascii_case("Length") {
+                CatenaryMode::Length
+            } else if value.eq_ignore_ascii_case("Parameter") {
+                CatenaryMode::Parameter
+            } else if value.eq_ignore_ascii_case("Apex") {
+                CatenaryMode::Apex
+            } else {
+                return Err(CommandError::Usage(CATENARY_USAGE));
+            };
+            mode_seen = true;
+        } else if option_name_eq(name, "Output") && !output_seen {
+            output = if value.eq_ignore_ascii_case("Smooth") {
+                CatenaryOutput::Smooth
+            } else if value.eq_ignore_ascii_case("Polyline") {
+                CatenaryOutput::Polyline
+            } else {
+                return Err(CommandError::Usage(CATENARY_USAGE));
+            };
+            output_seen = true;
+        } else if option_name_eq(name, "PointCount") && !point_count_seen {
+            point_count = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            point_count_seen = true;
+        } else if option_name_eq(name, "MarkApex") && !mark_apex_seen {
+            mark_apex = parse_yes_no(value).ok_or(CommandError::Usage(CATENARY_USAGE))?;
+            mark_apex_seen = true;
+        } else {
+            return Err(CommandError::Usage(CATENARY_USAGE));
+        }
+    }
+    let minimum = match output {
+        CatenaryOutput::Smooth => MIN_SMOOTH_CATENARY_POINT_COUNT,
+        CatenaryOutput::Polyline => MIN_POLYLINE_CATENARY_POINT_COUNT,
+    };
+    if !(minimum..=MAX_CATENARY_POINT_COUNT).contains(&point_count) {
+        return Err(GeometryError::InvalidCatenaryPointCount {
+            actual: point_count,
+            minimum,
+            maximum: MAX_CATENARY_POINT_COUNT,
+        }
+        .into());
+    }
+
+    let positionals = &arguments[..positional_count];
+    let (start, start_consumed) = parse_point(positionals)?;
+    let (end, end_consumed) = parse_point(&positionals[start_consumed..])?;
+    let axis_start = start_consumed + end_consumed;
+    let (axis_point, axis_consumed) = parse_point(&positionals[axis_start..])?;
+    let constraint_start = axis_start + axis_consumed;
+    let constraint_arguments = &positionals[constraint_start..];
+    let construction = match mode {
+        CatenaryMode::ThroughPoint => {
+            let (point, consumed) = parse_point(constraint_arguments)?;
+            require_consumed(constraint_arguments, consumed, CATENARY_USAGE)?;
+            CatenaryConstruction::ThroughPoint(point)
+        }
+        CatenaryMode::Apex => {
+            let (point, consumed) = parse_point(constraint_arguments)?;
+            require_consumed(constraint_arguments, consumed, CATENARY_USAGE)?;
+            CatenaryConstruction::Apex(point)
+        }
+        CatenaryMode::Length => match constraint_arguments {
+            [value] => CatenaryConstruction::Length(parse_finite_real(value)?),
+            _ => return Err(CommandError::Usage(CATENARY_USAGE)),
+        },
+        CatenaryMode::Parameter => match constraint_arguments {
+            [value] => CatenaryConstruction::Parameter(parse_finite_real(value)?),
+            _ => return Err(CommandError::Usage(CATENARY_USAGE)),
+        },
+    };
+    Ok(CatenaryCommandOptions {
+        start,
+        end,
+        axis_direction: start.vector_to(axis_point)?,
+        construction,
+        output,
+        point_count,
+        mark_apex,
     })
 }
 
@@ -5401,6 +5529,50 @@ impl Command for SpiralCommand {
             } else {
                 ""
             }
+        ))
+    }
+}
+
+struct CatenaryCommand;
+
+impl Command for CatenaryCommand {
+    fn name(&self) -> &'static str {
+        "Catenary"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_catenary_options(arguments)?;
+        let solution = try_catenary(
+            options.start,
+            options.end,
+            options.axis_direction,
+            options.construction,
+            options.output,
+            options.point_count,
+            document.tolerance(),
+        )?;
+        let apex = solution.apex();
+        let parameter = solution.parameter();
+        let length = solution.length();
+        let apex_id = if options.mark_apex {
+            Some(document.add_geometry(Geometry::Point(apex))?)
+        } else {
+            None
+        };
+        let (curve_id, representation) = match solution.into_curve() {
+            CatenaryCurve::Smooth(curve) => (
+                document.add_geometry(Geometry::NurbsCurve(curve))?,
+                "smooth NURBS",
+            ),
+            CatenaryCurve::Polyline(polyline) => (
+                document.add_geometry(Geometry::Polyline(polyline))?,
+                "polyline",
+            ),
+        };
+        Ok(format!(
+            "Added {representation} catenary {curve_id} (parameter {parameter:.6}, length {length:.6}, {} points){}",
+            options.point_count,
+            apex_id.map_or_else(String::new, |id| format!(" and apex point {id}"))
         ))
     }
 }
@@ -16374,7 +16546,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -18396,6 +18568,104 @@ mod tests {
             );
         }
         assert_eq!(document.objects().len(), 1);
+    }
+
+    #[test]
+    fn catenary_supports_all_constraint_and_output_modes_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+
+        let message = registry
+            .execute(
+                &mut document,
+                "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 PointCount=8",
+            )
+            .unwrap();
+        assert!(message.contains("smooth NURBS catenary"));
+        assert!(message.contains("8 points"));
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("the default through-point mode must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(curve.control_points().len(), 8);
+        assert!(
+            curve
+                .evaluate(*curve.domain().end())
+                .unwrap()
+                .distance_to(Point3::try_new(10.0, 0.0, 0.0).unwrap())
+                .unwrap()
+                < 1.0e-12
+        );
+        assert_eq!(document.undo_label(), Some("Catenary"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let message = registry
+            .execute(
+                &mut document,
+                "Catenary 0,0,0 10,0,-2 0,0,-1 13 Mode=Length Output=Polyline PointCount=7 MarkApex=Yes",
+            )
+            .unwrap();
+        assert!(message.contains("polyline catenary"));
+        assert!(message.contains("length 13.000000"));
+        assert!(message.contains("apex point"));
+        let mut objects = document.objects();
+        let Geometry::Point(apex) = objects.next().unwrap().geometry() else {
+            panic!("MarkApex=Yes must add the analytic apex first")
+        };
+        assert!(apex.z() < -4.6);
+        let Geometry::Polyline(polyline) = objects.next().unwrap().geometry() else {
+            panic!("Output=Polyline must add a polyline")
+        };
+        assert_eq!(polyline.vertices().len(), 7);
+        assert!(
+            polyline.vertices()[3]
+                .distance_to(Point3::try_new(5.0, 0.0, -4.618_680_100_732_663).unwrap())
+                .unwrap()
+                < 2.0e-12
+        );
+        drop(objects);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 0);
+
+        let parameter = registry
+            .execute(
+                &mut document,
+                "Catenary 1 2 3 8 4 -1 1 2 2 3 Mode=Parameter PointCount=9",
+            )
+            .unwrap();
+        assert!(parameter.contains("parameter 3.000000"));
+        registry.execute(&mut document, "Undo").unwrap();
+        let apex = registry
+            .execute(
+                &mut document,
+                "Catenary 0,0,0 10,0,-2 0,0,-1 7,4,-4 Mode=Apex Output=Polyline PointCount=7",
+            )
+            .unwrap();
+        assert!(apex.contains("polyline catenary"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        for invalid in [
+            "Catenary",
+            "Catenary 0,0,0 10,0,0 0,0,0 3,0,-2",
+            "Catenary 0,0,0 0,0,-10 0,0,-1 4 Mode=Parameter",
+            "Catenary 0,0,0 10,0,0 0,0,-1 0 Mode=Parameter",
+            "Catenary 0,0,0 10,0,0 0,0,-1 10 Mode=Length",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,1",
+            "Catenary 0,0,0 10,0,0 0,0,-1 5,0,1 Mode=Apex",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 PointCount=3",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 Output=Polyline PointCount=1",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 Mode=Unknown",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 Output=Mesh",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 MarkApex=Maybe",
+            "Catenary 0,0,0 10,0,0 0,0,-1 3,0,-2 Mode=ThroughPoint Mode=Apex",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.undo_label(), None);
     }
 
     #[test]
