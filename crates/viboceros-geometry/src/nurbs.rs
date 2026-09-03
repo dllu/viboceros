@@ -2102,6 +2102,56 @@ impl NurbsCurve {
         self.try_split_with_periodic_topology(parameter, self.is_periodic())
     }
 
+    /// Splits at one or more distinct parameters strictly inside the active
+    /// domain. Open-curve pieces follow the source domain; closed-curve pieces
+    /// run cyclically between sorted parameters, crossing the original seam
+    /// for the final piece.
+    pub fn try_split_at_parameters(&self, parameters: &[Real]) -> Result<Vec<Self>, GeometryError> {
+        if parameters.is_empty() {
+            return Err(GeometryError::InvalidCurveSplitParameter);
+        }
+        let mut parameters = parameters.to_vec();
+        parameters.sort_by(Real::total_cmp);
+        let domain = self.domain();
+        if parameters.iter().any(|parameter| {
+            !parameter.is_finite() || *parameter <= *domain.start() || *parameter >= *domain.end()
+        }) || parameters.windows(2).any(|pair| pair[0] == pair[1])
+        {
+            return Err(GeometryError::InvalidCurveSplitParameter);
+        }
+
+        if self.is_closed()? {
+            if let [parameter] = parameters.as_slice() {
+                return Ok(vec![
+                    self.try_closed_subcurve_across_seam(*parameter, *parameter)?,
+                ]);
+            }
+            let mut pieces = Vec::with_capacity(parameters.len());
+            for pair in parameters.windows(2) {
+                pieces.push(self.try_subcurve(pair[0], pair[1])?);
+            }
+            pieces.push(
+                self.try_subcurve(
+                    *parameters
+                        .last()
+                        .expect("closed curve split parameters are nonempty"),
+                    parameters[0],
+                )?,
+            );
+            return Ok(pieces);
+        }
+
+        let mut pieces = Vec::with_capacity(parameters.len() + 1);
+        let mut remainder = self.clone();
+        for parameter in parameters {
+            let (left, right) = remainder.try_split(parameter)?;
+            pieces.push(left);
+            remainder = right;
+        }
+        pieces.push(remainder);
+        Ok(pieces)
+    }
+
     fn try_split_with_periodic_topology(
         &self,
         parameter: Real,
@@ -2217,6 +2267,17 @@ impl NurbsCurve {
             return self.try_trimmed(start..=domain_end);
         }
 
+        self.try_closed_subcurve_across_seam(start, end)
+    }
+
+    fn try_closed_subcurve_across_seam(
+        &self,
+        start: Real,
+        end: Real,
+    ) -> Result<Self, GeometryError> {
+        let domain = self.domain();
+        let domain_start = *domain.start();
+        let domain_end = *domain.end();
         let left = self.try_trimmed(start..=domain_end)?;
         let wrapped_end = translate_curve_parameter(end, domain_start, domain_end, 1)?;
         let right = self
@@ -6304,6 +6365,73 @@ mod tests {
                 Err(GeometryError::InvalidCurveTrimInterval)
             );
         }
+    }
+
+    #[test]
+    fn splitting_at_multiple_parameters_sorts_and_preserves_exact_pieces() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(-2.0, 1.0), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 4.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(5.0, -2.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(8.0, 3.0), 1.25).unwrap(),
+            ],
+            vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0],
+        )
+        .unwrap();
+        let pieces = curve.try_split_at_parameters(&[1.6, 0.25, 0.8]).unwrap();
+        assert_eq!(pieces.len(), 4);
+        assert_eq!(pieces[0].domain(), 0.0..=0.25);
+        assert_eq!(pieces[1].domain(), 0.25..=0.8);
+        assert_eq!(pieces[2].domain(), 0.8..=1.6);
+        assert_eq!(pieces[3].domain(), 1.6..=2.0);
+        for piece in &pieces {
+            for sample in 0..=8 {
+                let parameter = piece.parameter_at(sample as Real / 8.0).unwrap();
+                assert_point_near(
+                    piece.evaluate(parameter).unwrap(),
+                    curve.evaluate(parameter).unwrap(),
+                );
+            }
+        }
+        for parameters in [&[][..], &[0.5, 0.5], &[0.0, 0.5], &[Real::NAN]] {
+            assert_eq!(
+                curve.try_split_at_parameters(parameters),
+                Err(GeometryError::InvalidCurveSplitParameter)
+            );
+        }
+
+        let closed = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(-3.0, 0.0),
+                point(-1.0, 3.0),
+                point(2.0, 4.0),
+                point(5.0, 1.0),
+                point(4.0, -3.0),
+                point(0.0, -4.0),
+            ],
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let parameters = [
+            closed.parameter_at(0.8).unwrap(),
+            closed.parameter_at(0.2).unwrap(),
+            closed.parameter_at(0.55).unwrap(),
+        ];
+        let pieces = closed.try_split_at_parameters(&parameters).unwrap();
+        assert_eq!(pieces.len(), 3);
+        let mut sorted = parameters;
+        sorted.sort_by(Real::total_cmp);
+        let period = *closed.domain().end() - *closed.domain().start();
+        assert_eq!(pieces[0].domain(), sorted[0]..=sorted[1]);
+        assert_eq!(pieces[1].domain(), sorted[1]..=sorted[2]);
+        assert_eq!(pieces[2].domain(), sorted[2]..=sorted[0] + period);
+        let relocated = closed.try_split_at_parameters(&[sorted[1]]).unwrap();
+        assert_eq!(relocated.len(), 1);
+        assert_eq!(relocated[0].domain(), sorted[1]..=sorted[1] + period);
+        assert!(!relocated[0].is_periodic());
     }
 
     #[test]

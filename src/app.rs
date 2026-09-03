@@ -586,7 +586,7 @@ impl InteractiveCommand {
                 "SubCrv: pick the directed subcurve end on the selected curve (Esc to cancel)"
             }
             Self::SplitCurve => {
-                "Split: pick one split location on the selected curve (Esc to cancel)"
+                "Split: pick curve split locations; press Enter to finish (Esc to cancel)"
             }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
@@ -892,7 +892,10 @@ impl InteractiveCommand {
     }
 
     const fn collects_curve_points(self) -> bool {
-        matches!(self, Self::Polyline | Self::Curve { .. } | Self::InterpCrv)
+        matches!(
+            self,
+            Self::Polyline | Self::Curve { .. } | Self::InterpCrv | Self::SplitCurve
+        )
     }
 }
 
@@ -3607,8 +3610,13 @@ impl VibocerosApp {
                 ));
             }
             InteractiveCommand::SplitCurve => {
-                self.active_command = None;
-                self.execute_command(&format!("Split {}", format_model_point(point)));
+                self.curve_points.push(point);
+                self.push_log(format!(
+                    "Split location {}: {}",
+                    self.curve_points.len(),
+                    format_model_point(point)
+                ));
+                self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -4000,6 +4008,7 @@ impl VibocerosApp {
             return;
         };
         let minimum_point_count = match command {
+            InteractiveCommand::SplitCurve => 1,
             InteractiveCommand::Curve {
                 closure: ControlPointCurveClosure::Smooth | ControlPointCurveClosure::Sharp,
                 ..
@@ -7205,7 +7214,7 @@ mod tests {
     }
 
     #[test]
-    fn interactive_split_uses_one_curve_location_pick() {
+    fn interactive_split_collects_curve_locations_until_enter() {
         let mut app = test_app();
         app.execute_command("Line 0,0 10,0");
         let source_id = app.document.objects().next().unwrap().id();
@@ -7215,26 +7224,33 @@ mod tests {
 
         assert!(app.try_start_interactive_command("Split"));
         assert_eq!(app.active_command, Some(InteractiveCommand::SplitCurve));
-        assert!(app.command_log.back().unwrap().contains("split location"));
+        assert!(app.command_log.back().unwrap().contains("split locations"));
         app.accept_drafting_point(point(4.0, 0.0, 0.0));
+        app.accept_drafting_point(point(7.0, 0.0, 0.0));
+        assert_eq!(app.active_command, Some(InteractiveCommand::SplitCurve));
+        assert_eq!(
+            app.curve_points,
+            vec![point(4.0, 0.0, 0.0), point(7.0, 0.0, 0.0)]
+        );
+        app.finish_interactive_curve();
 
         assert_eq!(app.active_command, None);
-        assert_eq!(app.document.objects().count(), 2);
-        assert_eq!(app.document.selected_object_count(), 2);
+        assert!(app.curve_points.is_empty());
+        assert_eq!(app.document.objects().count(), 3);
+        assert_eq!(app.document.selected_object_count(), 3);
         for object in app.document.objects() {
             let Geometry::NurbsCurve(curve) = object.geometry() else {
                 panic!("interactive Split must create exact NURBS pieces")
             };
-            let split = point(4.0, 0.0, 0.0);
+            let first_split = point(4.0, 0.0, 0.0);
+            let second_split = point(7.0, 0.0, 0.0);
+            let start = curve.evaluate(*curve.domain().start()).unwrap();
+            let end = curve.evaluate(*curve.domain().end()).unwrap();
             assert!(
-                curve
-                    .evaluate(*curve.domain().start())
-                    .unwrap()
-                    .is_near(split, app.document.tolerance())
-                    || curve
-                        .evaluate(*curve.domain().end())
-                        .unwrap()
-                        .is_near(split, app.document.tolerance())
+                start.is_near(first_split, app.document.tolerance())
+                    || start.is_near(second_split, app.document.tolerance())
+                    || end.is_near(first_split, app.document.tolerance())
+                    || end.is_near(second_split, app.document.tolerance())
             );
         }
         assert_eq!(app.document.undo_label(), Some("Split"));

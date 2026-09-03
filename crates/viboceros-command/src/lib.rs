@@ -11541,12 +11541,12 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
     Ok(SubcurveOptions { location, copy })
 }
 
-const SPLIT_CURVE_USAGE: &str = "Split point | Split Parameter=value";
+const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...]";
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 enum CurveSplitLocation {
-    Parameter(Real),
-    Point(Point3),
+    Parameters(Vec<Real>),
+    Points(Vec<Point3>),
 }
 
 struct SplitCurveCommand;
@@ -11576,23 +11576,46 @@ impl Command for SplitCurveCommand {
         let (id, curve) = candidates
             .pop()
             .expect("one curve split source was required");
-        let parameter = match location {
-            CurveSplitLocation::Parameter(parameter) => parameter,
-            CurveSplitLocation::Point(point) => {
-                curve.closest_parameter(point, document.tolerance())?
-            }
+        let parameters = match location {
+            CurveSplitLocation::Parameters(parameters) => parameters,
+            CurveSplitLocation::Points(points) => points
+                .into_iter()
+                .map(|point| curve.closest_parameter(point, document.tolerance()))
+                .collect::<Result<Vec<_>, _>>()?,
         };
-        let (left, right) = curve.try_split(parameter)?;
-        document.replace_object_geometries([(id, Geometry::NurbsCurve(left))])?;
-        let right_ids = document
-            .copy_object_geometries_into_source_groups([(id, Geometry::NurbsCurve(right))])?;
-        let right_id = right_ids
-            .into_iter()
-            .next()
-            .expect("one split result copy was required");
-        document.select_objects_direct([id, right_id], SelectionMode::Replace)?;
+        if parameters.len() >= MAX_SPAN_OUTPUT_OBJECTS {
+            return Err(too_many_span_outputs("Split"));
+        }
+        let pieces = curve.try_split_at_parameters(&parameters)?;
+        let piece_count = pieces.len();
+        let source = document
+            .object(id)
+            .expect("selected split source belongs to the document");
+        let attributes = source.attributes().clone();
+        let group_ids = document
+            .groups()
+            .filter(|group| group.members().any(|member| member == id))
+            .map(|group| group.id())
+            .collect::<Vec<_>>();
+        let mut pieces = pieces.into_iter();
+        let first = pieces.next().expect("a split produces at least one piece");
+        document.replace_object_geometries([(id, Geometry::NurbsCurve(first))])?;
+        let mut output_ids = Vec::with_capacity(piece_count);
+        output_ids.push(id);
+        let mut added_ids = Vec::with_capacity(piece_count.saturating_sub(1));
+        for piece in pieces {
+            let piece_id = document
+                .add_geometry_with_attributes(Geometry::NurbsCurve(piece), attributes.clone())?;
+            output_ids.push(piece_id);
+            added_ids.push(piece_id);
+        }
+        for group_id in group_ids {
+            document.add_group_members(group_id, added_ids.iter().copied())?;
+        }
+        document.select_objects_direct(output_ids, SelectionMode::Replace)?;
         Ok(format!(
-            "Split the selected curve into 2 exact NURBS pieces at parameter {parameter}"
+            "Split the selected curve at {} location(s) into {piece_count} exact NURBS piece(s)",
+            parameters.len()
         ))
     }
 }
@@ -11607,15 +11630,29 @@ fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, 
         if !option_name_eq(name, "Parameter") || consumed != arguments.len() {
             return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
         }
-        return Ok(CurveSplitLocation::Parameter(parse_finite_real(value)?));
+        let values = value.split(',').collect::<Vec<_>>();
+        if values.is_empty() || values.iter().any(|value| value.is_empty()) {
+            return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+        }
+        return Ok(CurveSplitLocation::Parameters(
+            values
+                .into_iter()
+                .map(parse_finite_real)
+                .collect::<Result<_, _>>()?,
+        ));
     }
 
-    let (point, consumed) = parse_point(arguments).map_err(|error| match error {
-        CommandError::Usage(_) => CommandError::Usage(SPLIT_CURVE_USAGE),
-        error => error,
-    })?;
-    require_consumed(arguments, consumed, SPLIT_CURVE_USAGE)?;
-    Ok(CurveSplitLocation::Point(point))
+    let mut points = Vec::new();
+    let mut index = 0;
+    while index < arguments.len() {
+        let (point, consumed) = parse_point(&arguments[index..]).map_err(|error| match error {
+            CommandError::Usage(_) => CommandError::Usage(SPLIT_CURVE_USAGE),
+            error => error,
+        })?;
+        points.push(point);
+        index += consumed;
+    }
+    Ok(CurveSplitLocation::Points(points))
 }
 
 const DIRECTION_USAGE: &str =
@@ -23691,7 +23728,7 @@ mod tests {
             registry
                 .execute(&mut document, &format!("Split Parameter={parameter}"))
                 .unwrap(),
-            format!("Split the selected curve into 2 exact NURBS pieces at parameter {parameter}")
+            "Split the selected curve at 1 location(s) into 2 exact NURBS piece(s)"
         );
         assert_eq!(document.objects().count(), 2);
         let left = document.object(source_id).unwrap();
@@ -23733,22 +23770,69 @@ mod tests {
             .select_object(source_id, SelectionMode::Replace)
             .unwrap();
 
-        registry.execute(&mut document, "Split 0,5,0").unwrap();
+        registry
+            .execute(&mut document, "Split 0,5,0 -5,0,0")
+            .unwrap();
         assert_eq!(document.objects().count(), 2);
         for object in document.objects() {
             let Geometry::NurbsCurve(curve) = object.geometry() else {
                 panic!("Split must convert analytic curves to exact NURBS pieces")
             };
+            let start = curve.evaluate(*curve.domain().start()).unwrap();
+            let end = curve.evaluate(*curve.domain().end()).unwrap();
+            let top = Point3::try_new(0.0, 5.0, 0.0).unwrap();
+            let left = Point3::try_new(-5.0, 0.0, 0.0).unwrap();
             assert!(
-                curve.evaluate(*curve.domain().end()).unwrap().is_near(
-                    Point3::try_new(0.0, 5.0, 0.0).unwrap(),
-                    document.tolerance()
-                ) || curve.evaluate(*curve.domain().start()).unwrap().is_near(
-                    Point3::try_new(0.0, 5.0, 0.0).unwrap(),
-                    document.tolerance()
-                )
+                (start.is_near(top, document.tolerance())
+                    && end.is_near(left, document.tolerance()))
+                    || (start.is_near(left, document.tolerance())
+                        && end.is_near(top, document.tolerance()))
             );
         }
+
+        let mut single = Document::default();
+        registry.execute(&mut single, "Circle 0,0 5").unwrap();
+        let id = single.objects().next().unwrap().id();
+        single.select_object(id, SelectionMode::Replace).unwrap();
+        assert_eq!(
+            registry.execute(&mut single, "Split Parameter=1").unwrap(),
+            "Split the selected curve at 1 location(s) into 1 exact NURBS piece(s)"
+        );
+        assert_eq!(single.objects().count(), 1);
+        assert!(single.object(id).is_some());
+        let Geometry::NurbsCurve(curve) = single.object(id).unwrap().geometry() else {
+            panic!("a singly split closed curve must use exact NURBS geometry")
+        };
+        assert!(curve.is_closed().unwrap());
+        assert!(!curve.is_periodic());
+        assert_eq!(*curve.domain().start(), 1.0);
+    }
+
+    #[test]
+    fn split_curve_accepts_multiple_unsorted_parameters() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split Parameter=8,2,5")
+                .unwrap(),
+            "Split the selected curve at 3 location(s) into 4 exact NURBS piece(s)"
+        );
+        let domains = document
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                _ => panic!("Split must create exact NURBS pieces"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(domains, vec![0.0..=2.0, 2.0..=5.0, 5.0..=8.0, 8.0..=10.0]);
+        assert_eq!(document.selected_object_count(), 4);
     }
 
     #[test]
@@ -23758,6 +23842,7 @@ mod tests {
         for command in [
             "Split",
             "Split Parameter",
+            "Split Parameter=0.2,,0.8",
             "Split Parameter=0.5 extra",
             "Split 1,2,3 extra",
         ] {

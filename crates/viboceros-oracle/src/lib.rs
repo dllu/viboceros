@@ -573,6 +573,11 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         parameter: f64,
     },
+    CurveMultiSplitGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        parameters: Vec<f64>,
+    },
     CurveInsertControlPointGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1066,6 +1071,7 @@ impl Operation {
             | Self::CurveReparameterizeGeometry { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
+            | Self::CurveMultiSplitGeometry { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
@@ -2944,6 +2950,23 @@ fn execute(
                     rebuilt_curve_definition_value(&left)?,
                     rebuilt_curve_definition_value(&right)?,
                 ]),
+                elapsed,
+            )
+        }
+        Operation::CurveMultiSplitGeometry {
+            curve, parameters, ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (pieces, elapsed) = measure(iterations, || {
+                source.try_split_at_parameters(black_box(parameters))
+            })?;
+            (
+                Value::Array(
+                    pieces
+                        .iter()
+                        .map(rebuilt_curve_definition_value)
+                        .collect::<Result<_, _>>()?,
+                ),
                 elapsed,
             )
         }
@@ -8720,6 +8743,31 @@ mod tests {
             pieces[1]["control_points"][0]["point"],
             json!([3.0, 0.0, 0.0])
         );
+    }
+
+    #[test]
+    fn captures_multiple_curve_split_geometry() {
+        let response = run_request(&request(vec![Operation::CurveMultiSplitGeometry {
+            id: "split-line-many".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: [[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 1.0, 1.0],
+                domain: None,
+            },
+            parameters: vec![0.8, 0.2, 0.5],
+        }]))
+        .unwrap();
+
+        let pieces = response.results[0].value.as_array().unwrap();
+        assert_eq!(pieces.len(), 4);
+        assert_eq!(pieces[0]["domain"], json!([0.0, 0.2]));
+        assert_eq!(pieces[1]["domain"], json!([0.2, 0.5]));
+        assert_eq!(pieces[2]["domain"], json!([0.5, 0.8]));
+        assert_eq!(pieces[3]["domain"], json!([0.8, 1.0]));
     }
 
     #[test]

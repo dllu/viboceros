@@ -33,6 +33,21 @@
       "parameter": 0.8
     },
     {
+      "op": "curve_multi_split_geometry",
+      "id": "open-rational-multiple",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-2, 1, 0], "weight": 0.75},
+          {"point": [0, 4, 1], "weight": 2},
+          {"point": [5, -2, -1], "weight": 0.5},
+          {"point": [8, 3, 2], "weight": 1.25}
+        ],
+        "knots": [-2, -1, 0, 0.8, 2, 3, 4]
+      },
+      "parameters": [1.6, 0.25, 0.8]
+    },
+    {
       "op": "curve_split_geometry",
       "id": "periodic-cubic",
       "curve": {
@@ -46,6 +61,36 @@
         "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
       },
       "parameter": 3.25
+    },
+    {
+      "op": "curve_multi_split_geometry",
+      "id": "periodic-cubic-multiple",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameters": [5.2, 2.5, 4.1]
+    },
+    {
+      "op": "curve_multi_split_geometry",
+      "id": "periodic-cubic-single-point-collection",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameters": [3.25]
     },
     {
       "op": "curve_split_geometry",
