@@ -60,6 +60,7 @@ Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
 Parabola Vertex 0,0,0 0,0,1 4,0,0 Half=No MarkFocus=Yes
 Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,1.25 MarkFocus=Yes
+Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes MarkFoci=Yes
 Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
@@ -487,6 +488,10 @@ axis in vertex mode, and supports `Half=Yes` and `MarkFocus=Yes`.
 focus, through-point, or vertex. It matches Rhino's `ThroughPoint` default,
 all three `PickOrder` forms, the additional through-point opening-direction
 pick, and `MarkFocus=Yes`.
+`Hyperbola` supports Rhino's center, coefficient, two-focus, and vertex input
+modes. Each branch is one exact normalized rational quadratic span;
+`BothBranches=Yes` and `MarkFoci=Yes` preserve Rhino's object ordering.
+`ShowAsymptotes=Yes` is accepted as a preview-only option.
 `Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
 `Vertex vertex focus end-point` constructions; `Focus` is the default. The
 vertex form projects the end point perpendicular to the focus axis and derives

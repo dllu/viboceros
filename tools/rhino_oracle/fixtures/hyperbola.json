@@ -1,0 +1,61 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "hyperbola",
+      "id": "single-world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "semi_transverse_axis": 3,
+      "semi_conjugate_axis": 4,
+      "axial_extent": 3.75,
+      "both_branches": false
+    },
+    {
+      "op": "hyperbola",
+      "id": "both-world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "semi_transverse_axis": 3,
+      "semi_conjugate_axis": 4,
+      "axial_extent": 5,
+      "both_branches": true
+    },
+    {
+      "op": "hyperbola",
+      "id": "single-oblique",
+      "origin": [1, 2, 3],
+      "x_axis": [3, 4, 0],
+      "y_axis": [-4, 3, 0],
+      "semi_transverse_axis": 3,
+      "semi_conjugate_axis": 4,
+      "axial_extent": 3.75,
+      "both_branches": false
+    },
+    {
+      "op": "hyperbola",
+      "id": "both-shallow",
+      "origin": [-5, 7, 11],
+      "x_axis": [0, 0, 1],
+      "y_axis": [1, 0, 0],
+      "semi_transverse_axis": 5,
+      "semi_conjugate_axis": 0.25,
+      "axial_extent": 8,
+      "both_branches": true
+    },
+    {
+      "op": "hyperbola",
+      "id": "single-steep",
+      "origin": [13, -17, 19],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, -1],
+      "semi_transverse_axis": 0.5,
+      "semi_conjugate_axis": 10,
+      "axial_extent": 2,
+      "both_branches": false
+    }
+  ]
+}

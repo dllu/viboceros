@@ -379,6 +379,68 @@ impl NurbsCurve {
         vertex.translated(axis.scaled(focal_distance)?)
     }
 
+    /// Constructs one exact branch segment of a centered hyperbola.
+    ///
+    /// The frame X axis points toward the branch, the frame Y axis points
+    /// toward the positive endpoint, and `axial_extent` is that endpoint's
+    /// positive X coordinate. The semi-axis coefficients satisfy
+    /// `x^2 / a^2 - y^2 / b^2 = 1`. Rhino represents this symmetric segment
+    /// as one rational quadratic span on the normalized `[0, 1]` domain.
+    pub fn try_hyperbola(
+        center_frame: Frame3,
+        semi_transverse_axis: Real,
+        semi_conjugate_axis: Real,
+        axial_extent: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            [semi_transverse_axis, semi_conjugate_axis, axial_extent],
+            "hyperbola dimensions",
+        )?;
+        if semi_transverse_axis <= 0.0
+            || semi_conjugate_axis <= 0.0
+            || axial_extent <= semi_transverse_axis
+        {
+            return Err(GeometryError::Degenerate {
+                context: "hyperbola",
+            });
+        }
+
+        let middle_weight = axial_extent / semi_transverse_axis;
+        if !middle_weight.is_finite() || middle_weight <= 1.0 {
+            return Err(GeometryError::Degenerate {
+                context: "hyperbola",
+            });
+        }
+        let hyperbolic_sine = (middle_weight - 1.0).sqrt() * (middle_weight + 1.0).sqrt();
+        let radial_extent = semi_conjugate_axis * hyperbolic_sine;
+        let middle_axial = semi_transverse_axis / middle_weight;
+        require_finite(
+            [middle_weight, radial_extent, middle_axial],
+            "hyperbola controls",
+        )?;
+        if radial_extent <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "hyperbola",
+            });
+        }
+
+        let point = |axial: Real, radial: Real| {
+            center_frame
+                .origin()
+                .translated(center_frame.x_axis().as_vector().scaled(axial)?)?
+                .translated(center_frame.y_axis().as_vector().scaled(radial)?)
+        };
+        Self::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(axial_extent, -radial_extent)?, 1.0)?,
+                WeightedPoint3::try_new(point(middle_axial, 0.0)?, middle_weight)?,
+                WeightedPoint3::try_new(point(axial_extent, radial_extent)?, 1.0)?,
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+    }
+
     /// Constructs an open, clamped, uniformly spaced non-rational curve.
     pub fn try_clamped_uniform(
         degree: usize,
@@ -2057,6 +2119,77 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn hyperbola_matches_rhino_rational_quadratic_layout() {
+        let frame = Frame3::try_from_directions(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_hyperbola(frame, 3.0, 4.0, 3.75).unwrap();
+        assert_eq!(curve.degree(), 2);
+        assert!(curve.is_rational());
+        assert_eq!(curve.domain(), 0.0..=1.0);
+        assert_eq!(curve.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+        assert_eq!(
+            curve.control_points(),
+            &[
+                WeightedPoint3::try_new(Point3::try_new(3.75, -3.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(2.4, 0.0, 0.0).unwrap(), 1.25).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(3.75, 3.0, 0.0).unwrap(), 1.0).unwrap(),
+            ]
+        );
+        assert_point_near(
+            curve.evaluate(0.5).unwrap(),
+            Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+        );
+
+        for parameter in [0.0, 0.125, 0.5, 0.875, 1.0] {
+            let point = curve.evaluate(parameter).unwrap();
+            let equation = point.x() * point.x() / 9.0 - point.y() * point.y() / 16.0;
+            assert!((equation - 1.0).abs() < 1.0e-12);
+        }
+    }
+
+    #[test]
+    fn hyperbola_supports_arbitrary_frames_and_rejects_bad_dimensions() {
+        let frame = Frame3::try_from_directions(
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Vector3::try_new(3.0, 4.0, 0.0).unwrap(),
+            Vector3::try_new(-4.0, 3.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_hyperbola(frame, 3.0, 4.0, 3.75).unwrap();
+        assert_point_near(
+            curve.control_points()[0].point(),
+            Point3::try_new(5.65, 3.2, 3.0).unwrap(),
+        );
+        assert_point_near(
+            curve.control_points()[1].point(),
+            Point3::try_new(2.44, 3.92, 3.0).unwrap(),
+        );
+        assert_point_near(
+            curve.control_points()[2].point(),
+            Point3::try_new(0.85, 6.8, 3.0).unwrap(),
+        );
+
+        for dimensions in [
+            [0.0, 4.0, 5.0],
+            [3.0, 0.0, 5.0],
+            [3.0, 4.0, 3.0],
+            [3.0, 4.0, 2.0],
+            [3.0, 4.0, Real::INFINITY],
+        ] {
+            assert!(
+                NurbsCurve::try_hyperbola(frame, dimensions[0], dimensions[1], dimensions[2])
+                    .is_err()
+            );
+        }
     }
 
     #[test]

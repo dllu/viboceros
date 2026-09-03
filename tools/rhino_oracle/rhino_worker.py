@@ -5203,6 +5203,93 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_parabola_three_point)
 
+    if kind == "hyperbola":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        semi_transverse_axis = _finite(
+            operation["semi_transverse_axis"], "hyperbola A coefficient"
+        )
+        semi_conjugate_axis = _finite(
+            operation["semi_conjugate_axis"], "hyperbola B coefficient"
+        )
+        axial_extent = _finite(
+            operation["axial_extent"], "hyperbola axial extent"
+        )
+        if (
+            not semi_transverse_axis > 0.0
+            or not semi_conjugate_axis > 0.0
+            or not axial_extent > semi_transverse_axis
+        ):
+            raise ValueError("hyperbola dimensions are degenerate")
+        both_branches = bool(operation["both_branches"])
+        command = (
+            "_-Hyperbola _FromCoefficient 0,0,0 1,0,0 "
+            "_A=%.17g _B=%.17g _BothBranches=_%s _MarkFoci=_No "
+            "_ShowAsymptotes=_No %.17g,-1,0"
+            % (
+                semi_transverse_axis,
+                semi_conjugate_axis,
+                "Yes" if both_branches else "No",
+                axial_extent,
+            )
+        )
+
+        def create_hyperbola():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curves = []
+            try:
+                expected_count = 2 if both_branches else 1
+                if len(created) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "hyperbola macro %r returned %r and created %d objects; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(created),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                for rhino_object in created:
+                    geometry = rhino_object.Geometry
+                    curve = None
+                    if isinstance(geometry, Rhino.Geometry.Curve):
+                        curve = geometry.DuplicateCurve()
+                    if curve is None:
+                        raise ValueError("hyperbola did not create curve geometry")
+                    if not curve.Reverse():
+                        curve.Dispose()
+                        raise ValueError("could not normalize hyperbola direction")
+                    curve.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+                    if not curve.Transform(transform):
+                        curve.Dispose()
+                        raise ValueError("could not orient hyperbola")
+                    curves.append(curve)
+                return {
+                    "curves": [
+                        _nurbs_curve_definition(curve) for curve in curves
+                    ]
+                }
+            finally:
+                for curve in curves:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_hyperbola)
+
     if kind == "paraboloid":
         document = Rhino.RhinoDoc.ActiveDoc
         plane = Rhino.Geometry.Plane(

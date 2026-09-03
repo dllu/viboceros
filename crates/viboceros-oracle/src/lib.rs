@@ -442,6 +442,16 @@ pub enum Operation {
         #[serde(default)]
         opening_direction: Option<[f64; 3]>,
     },
+    Hyperbola {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        semi_transverse_axis: f64,
+        semi_conjugate_axis: f64,
+        axial_extent: f64,
+        both_branches: bool,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -638,6 +648,7 @@ impl Operation {
             | Self::TruncatedCone { id, .. }
             | Self::Parabola { id, .. }
             | Self::ParabolaThreePoint { id, .. }
+            | Self::Hyperbola { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2087,6 +2098,53 @@ fn execute(
                 ),
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
+        }
+        Operation::Hyperbola {
+            origin,
+            x_axis,
+            y_axis,
+            semi_transverse_axis,
+            semi_conjugate_axis,
+            axial_extent,
+            both_branches,
+            ..
+        } => {
+            let positive_frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let negative_frame = Frame3::try_from_directions(
+                positive_frame.origin(),
+                positive_frame.x_axis().opposite().as_vector(),
+                positive_frame.y_axis().as_vector(),
+                tolerance,
+            )?;
+            let (curves, elapsed) = measure(iterations, || {
+                let mut curves = Vec::with_capacity(if *both_branches { 2 } else { 1 });
+                if *both_branches {
+                    curves.push(NurbsCurve::try_hyperbola(
+                        negative_frame,
+                        black_box(*semi_transverse_axis),
+                        black_box(*semi_conjugate_axis),
+                        black_box(*axial_extent),
+                    )?);
+                }
+                curves.push(NurbsCurve::try_hyperbola(
+                    positive_frame,
+                    black_box(*semi_transverse_axis),
+                    black_box(*semi_conjugate_axis),
+                    black_box(*axial_extent),
+                )?);
+                Ok(curves)
+            })?;
+            (
+                json!({
+                    "curves": curves.iter().map(nurbs_curve_definition_value).collect::<Vec<_>>(),
+                }),
+                elapsed,
+            )
         }
         Operation::Paraboloid {
             origin,
@@ -6692,6 +6750,53 @@ mod tests {
                 assert!((coordinate.as_f64().unwrap() - expected).abs() < 1.0e-12);
             }
         }
+    }
+
+    #[test]
+    fn captures_exact_hyperbola_branches_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::Hyperbola {
+                id: "single".to_owned(),
+                origin: [0.0, 0.0, 0.0],
+                x_axis: [1.0, 0.0, 0.0],
+                y_axis: [0.0, 1.0, 0.0],
+                semi_transverse_axis: 3.0,
+                semi_conjugate_axis: 4.0,
+                axial_extent: 3.75,
+                both_branches: false,
+            },
+            Operation::Hyperbola {
+                id: "both".to_owned(),
+                origin: [0.0, 0.0, 0.0],
+                x_axis: [1.0, 0.0, 0.0],
+                y_axis: [0.0, 1.0, 0.0],
+                semi_transverse_axis: 3.0,
+                semi_conjugate_axis: 4.0,
+                axial_extent: 3.75,
+                both_branches: true,
+            },
+        ]))
+        .unwrap();
+
+        let single = response.results[0].value["curves"].as_array().unwrap();
+        assert_eq!(single.len(), 1);
+        assert_eq!(single[0]["degree"], 2);
+        assert_eq!(single[0]["domain"], json!([0.0, 1.0]));
+        assert_eq!(
+            single[0]["control_points"],
+            json!([
+                {"point": [3.75, -3.0, 0.0], "weight": 1.0},
+                {"point": [2.4, 0.0, 0.0], "weight": 1.25},
+                {"point": [3.75, 3.0, 0.0], "weight": 1.0},
+            ])
+        );
+        let both = response.results[1].value["curves"].as_array().unwrap();
+        assert_eq!(both.len(), 2);
+        assert_eq!(
+            both[0]["control_points"][0]["point"],
+            json!([-3.75, -3.0, 0.0])
+        );
+        assert_eq!(both[1], single[0]);
     }
 
     #[test]
