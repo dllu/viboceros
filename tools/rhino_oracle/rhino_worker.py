@@ -349,6 +349,42 @@ def _mesh_to_nurb_brep_value(brep):
     }
 
 
+def _nurbs_surface_definition(surface):
+    nurbs = surface.ToNurbsSurface()
+    if nurbs is None:
+        raise ValueError("could not convert surface to NURBS form")
+    try:
+        count_u = int(nurbs.Points.CountU)
+        count_v = int(nurbs.Points.CountV)
+        controls = []
+        for v_index in range(count_v):
+            for u_index in range(count_u):
+                control = nurbs.Points.GetControlPoint(u_index, v_index)
+                controls.append(
+                    {
+                        "point": _xyz(control.Location),
+                        "weight": float(control.Weight),
+                    }
+                )
+        knots_u = [float(nurbs.KnotsU[0])]
+        knots_u.extend(float(nurbs.KnotsU[index]) for index in range(nurbs.KnotsU.Count))
+        knots_u.append(float(nurbs.KnotsU[nurbs.KnotsU.Count - 1]))
+        knots_v = [float(nurbs.KnotsV[0])]
+        knots_v.extend(float(nurbs.KnotsV[index]) for index in range(nurbs.KnotsV.Count))
+        knots_v.append(float(nurbs.KnotsV[nurbs.KnotsV.Count - 1]))
+        return {
+            "control_count": [count_u, count_v],
+            "control_points": controls,
+            "degree": [int(nurbs.Degree(0)), int(nurbs.Degree(1))],
+            "domain_u": [float(nurbs.Domain(0).T0), float(nurbs.Domain(0).T1)],
+            "domain_v": [float(nurbs.Domain(1).T0), float(nurbs.Domain(1).T1)],
+            "knots_u": knots_u,
+            "knots_v": knots_v,
+        }
+    finally:
+        nurbs.Dispose()
+
+
 def _mesh_fill_hole_value(mesh, source_vertex_count, source_face_count):
     patch_triangles = []
     for index in range(source_face_count, mesh.Faces.Count):
@@ -5020,6 +5056,72 @@ def _execute(operation, iterations, tolerance):
                     document.Objects.Delete(obj.Id, True)
 
         return _measure(iterations, create_mesh_truncated_cone)
+
+    if kind == "truncated_cone":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        base_radius = _finite(
+            operation["base_radius"], "truncated-cone base radius"
+        )
+        end_radius = _finite(
+            operation["end_radius"], "truncated-cone end radius"
+        )
+        height = _finite(operation["height"], "truncated-cone height")
+        solid = bool(operation["solid"])
+        command = (
+            "_-TruncatedCone _DirectionConstraint=_Vertical _Solid=_%s "
+            "0,0,0 %.17g %.17g %.17g"
+            % ("Yes" if solid else "No", base_radius, height, end_radius)
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+
+        def create_truncated_cone():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "TruncatedCone macro %r returned %r and created %d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-2000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError("truncated cone did not create B-rep-compatible geometry")
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient truncated cone")
+                expected_faces = 3 if solid else 1
+                if brep.Faces.Count != expected_faces:
+                    raise ValueError(
+                        "TruncatedCone macro %r created %d faces, expected %d"
+                        % (command, brep.Faces.Count, expected_faces)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep) if solid else None,
+                    "wall": _nurbs_surface_definition(
+                        brep.Faces[0].UnderlyingSurface()
+                    ),
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_truncated_cone)
 
     if kind == "mesh_quad_sphere" or kind == "mesh_ico_sphere":
         plane = Rhino.Geometry.Plane(

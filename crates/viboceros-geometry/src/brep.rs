@@ -869,6 +869,90 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs Rhino's exact capped right circular truncated cone.
+    ///
+    /// The supplied frame origin is the base center and frame Z points toward
+    /// the end circle. The wall uses slant-length V parameters; outward-facing
+    /// affine cap surfaces share the two circular rims, while one generatrix
+    /// edge represents both uses of the periodic wall seam.
+    pub fn try_truncated_cone(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_truncated_cone(frame, radii, height)?;
+        let end_frame = frame_at_height(frame, height, tolerance)?;
+        let base_cap_frame = Frame3::try_from_directions(
+            frame.origin(),
+            frame.x_axis().as_vector(),
+            frame.y_axis().as_vector().scaled(-1.0)?,
+            tolerance,
+        )?;
+        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
+        let base_cap = planar_cap_surface(
+            base_cap_frame,
+            zero,
+            [[-radii[0], radii[0]], [-radii[0], radii[0]]],
+        )?;
+        let end_cap = planar_cap_surface(
+            end_frame,
+            zero,
+            [[-radii[1], radii[1]], [-radii[1], radii[1]]],
+        )?;
+
+        let domain_u = wall.domain_u();
+        let domain_v = wall.domain_v();
+        let base_seam = wall.evaluate(*domain_u.start(), *domain_v.start())?;
+        let end_seam = wall.evaluate(*domain_u.start(), *domain_v.end())?;
+        let base_rim = surface_u_control_curve(&wall, 0)?;
+        let end_rim = surface_u_control_curve(&wall, 1)?.reversed()?;
+        let seam = surface_v_control_curve(&wall, 0)?;
+        let vertices = vec![
+            BrepVertex::try_new(base_seam, 0.0)?,
+            BrepVertex::try_new(end_seam, 0.0)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 0], base_rim, 0.0)?,
+            BrepEdge::try_new([0, 1], seam, 0.0)?,
+            BrepEdge::try_new([1, 1], end_rim, 0.0)?,
+        ];
+
+        let wall_loop = rectangular_surface_loop(
+            &wall,
+            [
+                RectangularTrimSpec::edge([0, 0], 0, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([0, 1], 1, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge([1, 1], 2, false, BrepTrimType::Mated),
+                RectangularTrimSpec::edge([1, 0], 1, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let base_loop = single_edge_loop(
+            0,
+            0,
+            BrepLoopType::Outer,
+            circular_parameter_curve(radii[0])?,
+            true,
+            BrepTrimType::Mated,
+            [0.0, 0.0],
+        )?;
+        let end_loop = single_edge_loop(
+            1,
+            2,
+            BrepLoopType::Outer,
+            circular_parameter_curve(radii[1])?,
+            true,
+            BrepTrimType::Mated,
+            [0.0, 0.0],
+        )?;
+        let faces = vec![
+            BrepFace::try_new(wall, false, vec![wall_loop])?,
+            BrepFace::try_new(base_cap, false, vec![base_loop])?,
+            BrepFace::try_new(end_cap, false, vec![end_loop])?,
+        ];
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     /// Constructs an exact capped right circular cone from its base frame and
     /// signed apex height. The wall apex and both periodic parameter seams use
     /// singular/shared topology rather than duplicate boundary geometry.
@@ -2619,6 +2703,66 @@ fn single_edge_loop(
             SurfaceIso::NotIso,
             tolerance,
         )?],
+    )
+}
+
+fn circular_parameter_curve(radius: Real) -> Result<NurbsCurve2, GeometryError> {
+    require_finite([radius], "circular trim radius")?;
+    if radius <= 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "circular trim",
+        });
+    }
+    let coordinates = [
+        [1.0, 0.0],
+        [1.0, 1.0],
+        [0.0, 1.0],
+        [-1.0, 1.0],
+        [-1.0, 0.0],
+        [-1.0, -1.0],
+        [0.0, -1.0],
+        [1.0, -1.0],
+        [1.0, 0.0],
+    ];
+    let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+    let weights = [
+        1.0,
+        diagonal_weight,
+        1.0,
+        diagonal_weight,
+        1.0,
+        diagonal_weight,
+        1.0,
+        diagonal_weight,
+        1.0,
+    ];
+    let controls = coordinates
+        .into_iter()
+        .zip(weights)
+        .map(|([x, y], weight)| {
+            WeightedPoint2::try_new(Point2::try_new(radius * x, radius * y)?, weight)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let half_pi = std::f64::consts::FRAC_PI_2;
+    let pi = std::f64::consts::PI;
+    let tau = std::f64::consts::TAU;
+    NurbsCurve2::try_new_rational(
+        2,
+        controls,
+        vec![
+            0.0,
+            0.0,
+            0.0,
+            half_pi,
+            half_pi,
+            pi,
+            pi,
+            3.0 * half_pi,
+            3.0 * half_pi,
+            tau,
+            tau,
+            tau,
+        ],
     )
 }
 
@@ -5295,6 +5439,71 @@ mod tests {
 
         assert!(Brep::try_cylinder(frame, 0.0, 0.0, 1.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cylinder(frame, 1.0, 2.0, 2.0, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn exact_capped_truncated_cone_matches_rhino_shared_rim_topology() {
+        let base = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            base,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let brep = Brep::try_truncated_cone(frame, [2.5, 1.5], 7.0, Tolerance::DEFAULT).unwrap();
+
+        assert_eq!(brep.vertices().len(), 2);
+        assert_eq!(brep.edges().len(), 3);
+        assert_eq!(brep.faces().len(), 3);
+        assert!(brep.is_manifold());
+        assert!(brep.is_closed());
+        assert!(brep.is_solid());
+        assert!((0..3).all(|edge| brep.edge_use_count(edge) == Some(2)));
+        assert_eq!(brep.vertices()[0].point(), point(1.0, 4.5, 3.0));
+        assert_eq!(brep.vertices()[1].point(), point(1.0, 3.5, 10.0));
+        assert_eq!(brep.edges()[1].curve().domain(), 0.0..=50.0_f64.sqrt());
+        assert_eq!(
+            brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(BrepTrim::trim_type)
+                .collect::<Vec<_>>(),
+            vec![
+                BrepTrimType::Mated,
+                BrepTrimType::Seam,
+                BrepTrimType::Mated,
+                BrepTrimType::Seam,
+            ]
+        );
+        assert!(
+            brep.faces()[1..]
+                .iter()
+                .all(|face| face.loops()[0].trims().len() == 1)
+        );
+        assert!(brep.faces()[1..].iter().all(|face| {
+            let trim = &face.loops()[0].trims()[0];
+            trim.trim_type() == BrepTrimType::Mated && trim.is_reversed_3d()
+        }));
+        assert!(brep.faces().iter().all(|face| !face.is_reversed()));
+
+        let mesh = brep.tessellate(12, Tolerance::DEFAULT).unwrap();
+        assert!(mesh.topology().is_solid());
+        let expected_volume =
+            std::f64::consts::PI * 7.0 * (2.5_f64.powi(2) + 2.5 * 1.5 + 1.5_f64.powi(2)) / 3.0;
+        let relative_error =
+            (mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume;
+        assert!(
+            relative_error < 0.01,
+            "relative volume error {relative_error}"
+        );
+
+        let cylinder =
+            Brep::try_truncated_cone(frame, [2.0, 2.0], 4.0, Tolerance::DEFAULT).unwrap();
+        assert!(cylinder.is_solid());
+        assert_eq!(cylinder.vertices().len(), 2);
+        assert!(Brep::try_truncated_cone(frame, [0.0, 1.0], 4.0, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_truncated_cone(frame, [2.0, 1.0], 0.0, Tolerance::DEFAULT).is_err());
     }
 
     #[test]

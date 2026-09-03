@@ -1,0 +1,50 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "truncated_cone",
+      "id": "open-world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "base_radius": 3,
+      "end_radius": 1,
+      "height": 5,
+      "solid": false
+    },
+    {
+      "op": "truncated_cone",
+      "id": "solid-offset",
+      "origin": [1, 2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "base_radius": 3,
+      "end_radius": 1,
+      "height": 5,
+      "solid": true
+    },
+    {
+      "op": "truncated_cone",
+      "id": "solid-equal-radii",
+      "origin": [-2, 4, 1],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "base_radius": 2,
+      "end_radius": 2,
+      "height": 4,
+      "solid": true
+    },
+    {
+      "op": "truncated_cone",
+      "id": "solid-oblique",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "base_radius": 1.5,
+      "end_radius": 2.5,
+      "height": 4.5,
+      "solid": true
+    }
+  ]
+}

@@ -58,6 +58,7 @@ Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
+TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Torus 0,0,0 5 1.5
 Layer New Construction
 Layer Hide Construction
@@ -472,6 +473,10 @@ a closed B-rep; `Solid=No` retains the single open wall surface.
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
 wall with a weighted collapsed apex. `Solid=Yes` adds an exact polar-disk base
 and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
+`TruncatedCone` creates an exact rational frustum from base and end radii. Its
+linear V domain is the physical slant length, matching Rhino; negative heights
+reverse the construction direction while preserving the base seam. `Solid=Yes`
+adds outward planar caps with Rhino-compatible shared rim and seam topology.
 `Torus` creates an exact closed 9-by-9 rational quadratic surface from a center,
 major radius (or point on the major circle), and minor radius. `Axis=` orients
 the torus; the major radius must exceed the positive minor radius. Its U and V

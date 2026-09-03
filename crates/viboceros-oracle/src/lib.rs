@@ -414,6 +414,16 @@ pub enum Operation {
         solid: bool,
         quad_caps: bool,
     },
+    TruncatedCone {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        base_radius: f64,
+        end_radius: f64,
+        height: f64,
+        solid: bool,
+    },
     MeshSphere {
         id: String,
         origin: [f64; 3],
@@ -560,6 +570,7 @@ impl Operation {
             | Self::MeshCylinder { id, .. }
             | Self::MeshCone { id, .. }
             | Self::MeshTruncatedCone { id, .. }
+            | Self::TruncatedCone { id, .. }
             | Self::MeshSphere { id, .. }
             | Self::MeshEllipsoid { id, .. }
             | Self::MeshQuadSphere { id, .. }
@@ -1898,6 +1909,48 @@ fn execute(
                 )
             })?;
             (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::TruncatedCone {
+            origin,
+            x_axis,
+            y_axis,
+            base_radius,
+            end_radius,
+            height,
+            solid,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (value, elapsed) = measure(iterations, || {
+                if *solid {
+                    let brep = Brep::try_truncated_cone(
+                        frame,
+                        black_box([*base_radius, *end_radius]),
+                        black_box(*height),
+                        tolerance,
+                    )?;
+                    Ok(json!({
+                        "brep": mesh_to_nurb_brep_value(&brep)?,
+                        "wall": nurbs_surface_definition_value(brep.faces()[0].surface()),
+                    }))
+                } else {
+                    let wall = NurbsSurface::try_truncated_cone(
+                        frame,
+                        black_box([*base_radius, *end_radius]),
+                        black_box(*height),
+                    )?;
+                    Ok(json!({
+                        "brep": Value::Null,
+                        "wall": nurbs_surface_definition_value(&wall),
+                    }))
+                }
+            })?;
+            (value, elapsed)
         }
         Operation::MeshSphere {
             origin,
@@ -4846,6 +4899,24 @@ fn canonical_polygon_mesh_face_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
+fn nurbs_surface_definition_value(surface: &NurbsSurface) -> Value {
+    json!({
+        "control_count": [
+            surface.control_point_count_u(),
+            surface.control_point_count_v(),
+        ],
+        "control_points": surface.control_points().iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": [surface.degree_u(), surface.degree_v()],
+        "domain_u": [*surface.domain_u().start(), *surface.domain_u().end()],
+        "domain_v": [*surface.domain_v().start(), *surface.domain_v().end()],
+        "knots_u": surface.knots_u(),
+        "knots_v": surface.knots_v(),
+    })
+}
+
 fn mesh_to_nurb_brep_value(brep: &Brep) -> Result<Value, GeometryError> {
     let faces = brep
         .faces()
@@ -6191,6 +6262,46 @@ mod tests {
         assert_eq!(vertices.len(), 8);
         assert_eq!(vertices[0], json!([3.0, 0.0, 0.0]));
         assert_eq!(vertices[4], json!([1.0, 0.0, 5.0]));
+    }
+
+    #[test]
+    fn captures_exact_truncated_cone_surface_and_brep_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::TruncatedCone {
+            id: "truncated-cone".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            base_radius: 3.0,
+            end_radius: 1.0,
+            height: 5.0,
+            solid: true,
+        }]))
+        .unwrap();
+        let value = &response.results[0].value;
+        assert_eq!(value["wall"]["degree"], json!([2, 1]));
+        assert_eq!(value["wall"]["control_count"], json!([9, 2]));
+        assert_eq!(value["wall"]["domain_v"], json!([0.0, 29.0_f64.sqrt()]));
+        assert_eq!(
+            value["wall"]["control_points"][0]["point"],
+            json!([3.0, 0.0, 0.0])
+        );
+        assert_eq!(
+            value["wall"]["control_points"][9]["point"],
+            json!([1.0, 0.0, 5.0])
+        );
+        assert_eq!(value["brep"]["vertex_count"], 2);
+        assert_eq!(value["brep"]["edge_count"], 3);
+        assert_eq!(value["brep"]["faces"].as_array().unwrap().len(), 3);
+        assert_eq!(value["brep"]["is_solid"], true);
+        assert_eq!(
+            value["brep"]["faces"][0]["loops"][0]["trims"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|trim| trim["type"].as_str().unwrap())
+                .collect::<Vec<_>>(),
+            vec!["Mated", "Seam", "Mated", "Seam"]
+        );
     }
 
     #[test]

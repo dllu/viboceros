@@ -158,6 +158,9 @@ impl CommandRegistry {
             .register(ConeCommand)
             .expect("unique built-in command");
         registry
+            .register(TruncatedConeCommand)
+            .expect("unique built-in command");
+        registry
             .register(TorusCommand)
             .expect("unique built-in command");
         registry
@@ -2511,6 +2514,7 @@ const MESH_TRUNCATED_CONE_USAGE: &str = "MeshTruncatedCone base-center base-radi
 pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
+const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const TORUS_USAGE: &str = "Torus center major-radius minor-radius | Torus center point-on-major-circle minor-radius [Axis=x,y,z]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -2535,12 +2539,31 @@ struct RadialPrimitivePositionals {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
+struct TruncatedConePositionals {
+    center: Point3,
+    base_radius: AxialPrimitiveRadius,
+    height: Real,
+    end_radius: Real,
+    option_start: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
 struct AxialPrimitiveOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
     height: Real,
     axis: Vector3,
     both_sides: bool,
+    solid: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct TruncatedConeCommandOptions {
+    center: Point3,
+    base_radius: AxialPrimitiveRadius,
+    height: Real,
+    end_radius: Real,
+    axis: Vector3,
     solid: bool,
 }
 
@@ -2713,6 +2736,60 @@ fn parse_radial_primitive_positionals(
     })
 }
 
+fn parse_truncated_cone_positionals(
+    arguments: &[&str],
+    usage: &'static str,
+) -> Result<TruncatedConePositionals, CommandError> {
+    let (center, center_consumed) = parse_point(arguments)?;
+    let remaining = &arguments[center_consumed..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let (base_radius, height, end_radius, option_offset) = if remaining
+        .first()
+        .is_some_and(|argument| argument.contains(','))
+    {
+        if positional_count != 3 {
+            return Err(CommandError::Usage(usage));
+        }
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 1);
+        (
+            AxialPrimitiveRadius::Point(point),
+            parse_finite_real(remaining[1])?,
+            parse_finite_real(remaining[2])?,
+            3,
+        )
+    } else if positional_count == 3 {
+        (
+            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
+            parse_finite_real(remaining[1])?,
+            parse_finite_real(remaining[2])?,
+            3,
+        )
+    } else if positional_count == 5 {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 3);
+        (
+            AxialPrimitiveRadius::Point(point),
+            parse_finite_real(remaining[3])?,
+            parse_finite_real(remaining[4])?,
+            5,
+        )
+    } else {
+        return Err(CommandError::Usage(usage));
+    };
+
+    Ok(TruncatedConePositionals {
+        center,
+        base_radius,
+        height,
+        end_radius,
+        option_start: center_consumed + option_offset,
+    })
+}
+
 fn parse_axis_option(value: &str, usage: &'static str) -> Result<Vector3, CommandError> {
     let (point, consumed) = parse_point(&[value])?;
     if consumed != 1 {
@@ -2758,6 +2835,39 @@ fn parse_axial_primitive_options(
         height: positionals.value,
         axis,
         both_sides,
+        solid,
+    })
+}
+
+fn parse_truncated_cone_options(
+    arguments: &[&str],
+) -> Result<TruncatedConeCommandOptions, CommandError> {
+    let positionals = parse_truncated_cone_positionals(arguments, TRUNCATED_CONE_USAGE)?;
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut solid = false;
+    let mut axis_seen = false;
+    let mut solid_seen = false;
+    for argument in &arguments[positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(TRUNCATED_CONE_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            axis = parse_axis_option(value, TRUNCATED_CONE_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            solid = parse_yes_no(value).ok_or(CommandError::Usage(TRUNCATED_CONE_USAGE))?;
+            solid_seen = true;
+        } else {
+            return Err(CommandError::Usage(TRUNCATED_CONE_USAGE));
+        }
+    }
+    Ok(TruncatedConeCommandOptions {
+        center: positionals.center,
+        base_radius: positionals.base_radius,
+        height: positionals.height,
+        end_radius: positionals.end_radius,
+        axis,
         solid,
     })
 }
@@ -3148,52 +3258,13 @@ fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions,
 fn parse_mesh_truncated_cone_options(
     arguments: &[&str],
 ) -> Result<MeshTruncatedConeCommandOptions, CommandError> {
-    let (center, center_consumed) = parse_point(arguments)?;
-    let remaining = &arguments[center_consumed..];
-    let positional_count = remaining
-        .iter()
-        .take_while(|argument| !argument.contains('='))
-        .count();
-    let (base_radius, height, end_radius, option_offset) = if remaining
-        .first()
-        .is_some_and(|argument| argument.contains(','))
-    {
-        if positional_count != 3 {
-            return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
-        }
-        let (point, consumed) = parse_point(remaining)?;
-        debug_assert_eq!(consumed, 1);
-        (
-            AxialPrimitiveRadius::Point(point),
-            parse_finite_real(remaining[1])?,
-            parse_finite_real(remaining[2])?,
-            3,
-        )
-    } else if positional_count == 3 {
-        (
-            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
-            parse_finite_real(remaining[1])?,
-            parse_finite_real(remaining[2])?,
-            3,
-        )
-    } else if positional_count == 5 {
-        let (point, consumed) = parse_point(remaining)?;
-        debug_assert_eq!(consumed, 3);
-        (
-            AxialPrimitiveRadius::Point(point),
-            parse_finite_real(remaining[3])?,
-            parse_finite_real(remaining[4])?,
-            5,
-        )
-    } else {
-        return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
-    };
+    let positionals = parse_truncated_cone_positionals(arguments, MESH_TRUNCATED_CONE_USAGE)?;
 
     let mut options = MeshTruncatedConeCommandOptions {
-        center,
-        base_radius,
-        height,
-        end_radius,
+        center: positionals.center,
+        base_radius: positionals.base_radius,
+        height: positionals.height,
+        end_radius: positionals.end_radius,
         axis: Vector3::try_new(0.0, 0.0, 1.0)?,
         solid: true,
         vertical_count: DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT,
@@ -3205,7 +3276,7 @@ fn parse_mesh_truncated_cone_options(
     let mut vertical_seen = false;
     let mut around_seen = false;
     let mut cap_style_seen = false;
-    for argument in &arguments[center_consumed + option_offset..] {
+    for argument in &arguments[positionals.option_start..] {
         let Some((name, value)) = argument.split_once('=') else {
             return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
         };
@@ -3722,6 +3793,48 @@ impl Command for ConeCommand {
             Ok(format!(
                 "Added open NURBS cone {id} (radius {radius:.6}, height {:.6})",
                 options.height
+            ))
+        }
+    }
+}
+
+struct TruncatedConeCommand;
+
+impl Command for TruncatedConeCommand {
+    fn name(&self) -> &'static str {
+        "TruncatedCone"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_truncated_cone_options(arguments)?;
+        let tolerance = document.tolerance();
+        let (base_frame, base_radius) =
+            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
+        let direction = base_frame
+            .z_axis()
+            .as_vector()
+            .scaled(if options.height > 0.0 { 1.0 } else { -1.0 })?;
+        let frame = Frame3::try_from_x_and_normal(
+            options.center,
+            base_frame.x_axis().as_vector(),
+            direction,
+            tolerance,
+        )?;
+        let radii = [base_radius, options.end_radius];
+        let height = options.height.abs();
+        if options.solid {
+            let brep = Brep::try_truncated_cone(frame, radii, height, tolerance)?;
+            let id = document.add_geometry(Geometry::Brep(brep))?;
+            Ok(format!(
+                "Added closed B-rep truncated cone {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
+                options.end_radius, options.height
+            ))
+        } else {
+            let surface = NurbsSurface::try_truncated_cone(frame, radii, height)?;
+            let id = document.add_geometry(Geometry::NurbsSurface(surface))?;
+            Ok(format!(
+                "Added open NURBS truncated cone {id} (radii {base_radius:.6} to {:.6}, height {:.6})",
+                options.end_radius, options.height
             ))
         }
     }
@@ -14459,7 +14572,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -15481,6 +15594,92 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("Cone"));
+    }
+
+    #[test]
+    fn truncated_cone_creates_exact_open_and_solid_frustums() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "TruncatedCone 0,0,0 3 4 1")
+            .unwrap();
+        let open_id = document.objects().next().unwrap().id();
+        assert!(!document.is_selected(open_id));
+        let Geometry::NurbsSurface(surface) = document.object(open_id).unwrap().geometry() else {
+            panic!("TruncatedCone must create a NURBS surface by default")
+        };
+        let slant = 20.0_f64.sqrt();
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), 0.0..=slant);
+        assert_eq!(
+            surface.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(3.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            surface.evaluate(0.0, slant).unwrap(),
+            Point3::try_new(1.0, 0.0, 4.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("TruncatedCone"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "TruncatedCone 1,2,3 4,7,3 -4 2 Axis=0,1,0 Solid=No",
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(negative) = document.objects().next().unwrap().geometry() else {
+            panic!("TruncatedCone must support a picked base radius and arbitrary axis")
+        };
+        let negative_slant = 17.0_f64.sqrt();
+        assert_eq!(negative.domain_v(), 0.0..=negative_slant);
+        assert_eq!(
+            negative.evaluate(0.0, 0.0).unwrap(),
+            Point3::try_new(4.0, 2.0, 3.0).unwrap()
+        );
+        assert_eq!(
+            negative.evaluate(0.0, negative_slant).unwrap(),
+            Point3::try_new(3.0, -2.0, 3.0).unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(&mut document, "TruncatedCone 1,2,3 2.5 -4 1.5 Solid=Yes")
+            .unwrap();
+        assert!(result.contains("closed B-rep truncated cone"));
+        let Geometry::Brep(solid) = document.objects().next().unwrap().geometry() else {
+            panic!("TruncatedCone Solid=Yes must create a B-rep")
+        };
+        assert_eq!(solid.faces().len(), 3);
+        assert!(solid.is_solid());
+        let mesh = solid.tessellate(12, document.tolerance()).unwrap();
+        assert!(mesh.topology().is_solid());
+        let expected_volume =
+            std::f64::consts::PI * 4.0 * (2.5_f64.powi(2) + 2.5 * 1.5 + 1.5_f64.powi(2)) / 3.0;
+        assert!((mesh.signed_volume().unwrap() - expected_volume).abs() / expected_volume < 0.01);
+
+        for invalid in [
+            "TruncatedCone",
+            "TruncatedCone 0,0,0 0 4 1",
+            "TruncatedCone 0,0,0 3 0 1",
+            "TruncatedCone 0,0,0 3 4 0",
+            "TruncatedCone 0,0,0 3 4 -1",
+            "TruncatedCone 0,0,0 3 4 1 Axis=0,0,0",
+            "TruncatedCone 0,0,0 0,0,2 4 1 Axis=0,0,1",
+            "TruncatedCone 0,0,0 3 4 1 BothSides=Yes",
+            "TruncatedCone 0,0,0 3 4 1 Solid=Yes Solid=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), Some("TruncatedCone"));
     }
 
     #[test]

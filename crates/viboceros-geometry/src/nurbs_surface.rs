@@ -558,6 +558,97 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs the exact open NURBS wall of a right circular truncated cone.
+    ///
+    /// The frame origin is the base center and frame Z points toward the end
+    /// circle. U is the four-span rational quadratic circle on `[0, 2π]` and
+    /// V is linear over the generatrix's physical slant length, matching the
+    /// NURBS form created by Rhino's `TruncatedCone` command.
+    pub fn try_truncated_cone(
+        frame: Frame3,
+        radii: [Real; 2],
+        height: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            radii.into_iter().chain(std::iter::once(height)),
+            "truncated-cone dimensions",
+        )?;
+        if radii.into_iter().any(|radius| radius <= 0.0) || height <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "truncated cone",
+            });
+        }
+        let slant_length = height.hypot(radii[1] - radii[0]);
+        require_finite([slant_length], "truncated-cone slant length")?;
+
+        let circle_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let origin = frame.origin().to_array();
+        let x_axis = frame.x_axis().as_vector().to_array();
+        let y_axis = frame.y_axis().as_vector().to_array();
+        let z_axis = frame.z_axis().as_vector().to_array();
+        let mut controls = Vec::with_capacity(18);
+        for (radius, ring_height) in [(radii[0], 0.0), (radii[1], height)] {
+            for ([x, y], weight) in circle_coordinates.into_iter().zip(circle_weights) {
+                let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                    let radial_coordinate = x.mul_add(x_axis[coordinate], y * y_axis[coordinate]);
+                    radius.mul_add(
+                        radial_coordinate,
+                        ring_height.mul_add(z_axis[coordinate], origin[coordinate]),
+                    )
+                }))?;
+                controls.push(WeightedPoint3::try_new(point, weight)?);
+            }
+        }
+
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let tau = std::f64::consts::TAU;
+        Self::try_new_rational(
+            2,
+            1,
+            9,
+            2,
+            controls,
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                3.0 * half_pi,
+                3.0 * half_pi,
+                tau,
+                tau,
+                tau,
+            ],
+            vec![0.0, 0.0, slant_length, slant_length],
+        )
+    }
+
     /// Constructs the exact open NURBS wall of a right circular cone.
     ///
     /// This follows `ON_Cone::GetNurbForm`: the frame origin is the apex,
@@ -3662,6 +3753,59 @@ mod tests {
         assert!(NurbsSurface::try_cylinder(frame, 0.0, 0.0, 1.0).is_err());
         assert!(NurbsSurface::try_cylinder(frame, 1.0, 2.0, 2.0).is_err());
         assert!(NurbsSurface::try_cylinder(frame, 1.0, 0.0, Real::NAN).is_err());
+    }
+
+    #[test]
+    fn exact_truncated_cone_uses_rhino_slant_length_parameterization() {
+        let center = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            center,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_truncated_cone(frame, [3.0, 1.0], 4.0).unwrap();
+        let slant_length = 20.0_f64.sqrt();
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 1);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), 0.0..=slant_length);
+        assert_eq!(surface.knots_v(), &[0.0, 0.0, slant_length, slant_length]);
+        assert_eq!(
+            surface.control_point(0, 0).unwrap().point(),
+            point(1.0, 5.0, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().point(),
+            point(-2.0, 5.0, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            point(1.0, 3.0, 7.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 0).unwrap().weight(),
+            std::f64::consts::FRAC_1_SQRT_2
+        );
+        assert_eq!(
+            surface.evaluate(0.0, 0.5 * slant_length).unwrap(),
+            point(1.0, 4.0, 5.0)
+        );
+        let (_, _, derivative_v) = surface
+            .evaluate_with_derivatives(0.0, 0.5 * slant_length)
+            .unwrap();
+        assert!(derivative_v.x().abs() < 1.0e-15);
+        assert!((derivative_v.y() + 2.0 / slant_length).abs() < 1.0e-15);
+        assert!((derivative_v.z() - 4.0 / slant_length).abs() < 1.0e-15);
+
+        for (radii, height) in [([0.0, 1.0], 4.0), ([3.0, -1.0], 4.0), ([3.0, 1.0], 0.0)] {
+            assert!(NurbsSurface::try_truncated_cone(frame, radii, height).is_err());
+        }
+        assert!(NurbsSurface::try_truncated_cone(frame, [3.0, Real::INFINITY], 4.0).is_err());
     }
 
     #[test]
