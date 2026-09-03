@@ -25,6 +25,9 @@ pub const MAX_MESH_CONE_FACES: usize = 1_000_000;
 /// Resource ceiling for one generated UV mesh-sphere shell.
 pub const MAX_MESH_SPHERE_FACES: usize = 1_000_000;
 
+/// Resource ceiling for one generated mesh-torus shell.
+pub const MAX_MESH_TORUS_FACES: usize = 1_000_000;
+
 /// Polygon style used for a generated radial mesh-primitive cap.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MeshCapFaceStyle {
@@ -55,6 +58,13 @@ pub struct MeshConeOptions {
 /// Topology controls for an exact UV mesh-sphere primitive.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct MeshUvSphereOptions {
+    pub vertical_count: usize,
+    pub around_count: usize,
+}
+
+/// Topology controls for an exact polygonal torus primitive.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MeshTorusOptions {
     pub vertical_count: usize,
     pub around_count: usize,
 }
@@ -1000,6 +1010,101 @@ impl TriangleMesh {
                     .map_err(|_| GeometryError::TooManyMeshVertices)?,
                 north,
             ]));
+        }
+        debug_assert_eq!(vertices.len(), vertex_count);
+        debug_assert_eq!(faces.len(), face_count);
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's ordered polygonal ring torus.
+    ///
+    /// Vertices are stored in minor-circle-major rows with no duplicated seam
+    /// in either periodic direction. Every cell is a seam-wrapped quad,
+    /// matching `Mesh.CreateFromTorus`.
+    pub fn try_torus_grid(
+        frame: Frame3,
+        major_radius: Real,
+        minor_radius: Real,
+        options: MeshTorusOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([major_radius, minor_radius], "mesh-torus radii")?;
+        if options.vertical_count < 3 || options.around_count < 3 {
+            return Err(GeometryError::InvalidMeshTorusFaceCount {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            });
+        }
+        if minor_radius <= 0.0 || major_radius <= minor_radius {
+            return Err(GeometryError::InvalidMeshTorusRadii);
+        }
+
+        let face_count = options
+            .vertical_count
+            .checked_mul(options.around_count)
+            .ok_or(GeometryError::TooManyMeshFaces)?;
+        if face_count > MAX_MESH_TORUS_FACES {
+            return Err(GeometryError::TooManyMeshFaces);
+        }
+        let vertex_count = face_count;
+        if u32::try_from(vertex_count - 1).is_err() {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+
+        let major_angle_step = std::f64::consts::TAU / options.around_count as Real;
+        let minor_angle_step = std::f64::consts::TAU / options.vertical_count as Real;
+        require_finite([major_angle_step, minor_angle_step], "mesh-torus sampling")?;
+
+        let mut major_coordinates = Vec::new();
+        major_coordinates
+            .try_reserve_exact(options.around_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for around_index in 0..options.around_count {
+            let angle = (around_index as Real).mul_add(major_angle_step, 0.0);
+            let (sine, cosine) = angle.sin_cos();
+            major_coordinates.push([cosine, sine]);
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(vertex_count)
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for vertical_index in 0..options.vertical_count {
+            let minor_angle = (vertical_index as Real).mul_add(minor_angle_step, 0.0);
+            let (minor_sine, minor_cosine) = minor_angle.sin_cos();
+            let radial = minor_radius.mul_add(minor_cosine, major_radius);
+            let height = minor_radius * minor_sine;
+            for [major_cosine, major_sine] in &major_coordinates {
+                vertices.push(mesh_frame_point(
+                    frame,
+                    radial * major_cosine,
+                    radial * major_sine,
+                    height,
+                )?);
+            }
+        }
+
+        let mut faces = Vec::new();
+        faces
+            .try_reserve_exact(face_count)
+            .map_err(|_| GeometryError::TooManyMeshFaces)?;
+        for vertical_index in 0..options.vertical_count {
+            let next_vertical = (vertical_index + 1) % options.vertical_count;
+            let current_offset = vertical_index * options.around_count;
+            let next_offset = next_vertical * options.around_count;
+            for around_index in 0..options.around_count {
+                let next_around = (around_index + 1) % options.around_count;
+                faces.push(MeshFace::Quad([
+                    u32::try_from(current_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(current_offset + next_around)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(next_offset + next_around)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                    u32::try_from(next_offset + around_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                ]));
+            }
         }
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
@@ -5147,6 +5252,130 @@ mod tests {
                 frame,
                 2.0,
                 options(MAX_MESH_SPHERE_FACES + 1, 3),
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::TooManyMeshFaces)
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_mesh_torus_rows_and_wrapped_quads() {
+        let world = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let minimal = TriangleMesh::try_torus_grid(
+            world,
+            4.0,
+            1.0,
+            MeshTorusOptions {
+                vertical_count: 3,
+                around_count: 3,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(minimal.vertices().len(), 9);
+        assert_eq!(minimal.face_count(), 9);
+        assert_eq!(minimal.vertices()[0], point(5.0, 0.0, 0.0));
+        assert!((minimal.vertices()[3].x() - 3.5).abs() < 1.0e-12);
+        assert!((minimal.vertices()[3].z() - 0.5 * 3.0_f64.sqrt()).abs() < 1.0e-12);
+        assert_eq!(
+            minimal.faces(),
+            &[
+                MeshFace::Quad([0, 1, 4, 3]),
+                MeshFace::Quad([1, 2, 5, 4]),
+                MeshFace::Quad([2, 0, 3, 5]),
+                MeshFace::Quad([3, 4, 7, 6]),
+                MeshFace::Quad([4, 5, 8, 7]),
+                MeshFace::Quad([5, 3, 6, 8]),
+                MeshFace::Quad([6, 7, 1, 0]),
+                MeshFace::Quad([7, 8, 2, 1]),
+                MeshFace::Quad([8, 6, 0, 2]),
+            ]
+        );
+        assert!(minimal.topology().is_solid());
+        assert!(minimal.signed_volume().unwrap() > 0.0);
+
+        let oblique = Frame3::try_from_directions(
+            point(1.0, 2.0, 3.0),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let oriented = TriangleMesh::try_torus_grid(
+            oblique,
+            4.0,
+            1.0,
+            MeshTorusOptions {
+                vertical_count: 4,
+                around_count: 4,
+            },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(oriented.vertices().len(), 16);
+        assert_eq!(oriented.face_count(), 16);
+        assert_eq!(oriented.vertices()[0], point(1.0, 7.0, 3.0));
+        assert!((oriented.vertices()[4].x() - 2.0).abs() < 1.0e-12);
+        assert!((oriented.vertices()[4].y() - 6.0).abs() < 1.0e-12);
+        assert!((oriented.vertices()[4].z() - 3.0).abs() < 1.0e-12);
+        assert_eq!(oriented.faces()[15], MeshFace::Quad([15, 12, 0, 3]));
+        assert!(oriented.topology().is_solid());
+    }
+
+    #[test]
+    fn mesh_torus_rejects_invalid_counts_radii_and_resource_overflow() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let options = |vertical_count, around_count| MeshTorusOptions {
+            vertical_count,
+            around_count,
+        };
+        assert_eq!(
+            TriangleMesh::try_torus_grid(frame, 4.0, 1.0, options(2, 3), Tolerance::DEFAULT),
+            Err(GeometryError::InvalidMeshTorusFaceCount {
+                vertical_count: 2,
+                around_count: 3,
+            })
+        );
+        assert!(matches!(
+            TriangleMesh::try_torus_grid(frame, 4.0, 1.0, options(3, 2), Tolerance::DEFAULT),
+            Err(GeometryError::InvalidMeshTorusFaceCount { .. })
+        ));
+        for (major_radius, minor_radius) in [(4.0, 0.0), (4.0, 4.0), (1.0, 2.0)] {
+            assert_eq!(
+                TriangleMesh::try_torus_grid(
+                    frame,
+                    major_radius,
+                    minor_radius,
+                    options(3, 3),
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidMeshTorusRadii)
+            );
+        }
+        assert!(matches!(
+            TriangleMesh::try_torus_grid(frame, Real::NAN, 1.0, options(3, 3), Tolerance::DEFAULT,),
+            Err(GeometryError::NonFinite {
+                context: "mesh-torus radii"
+            })
+        ));
+        assert_eq!(
+            TriangleMesh::try_torus_grid(
+                frame,
+                4.0,
+                1.0,
+                options(MAX_MESH_TORUS_FACES + 1, 3),
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::TooManyMeshFaces)

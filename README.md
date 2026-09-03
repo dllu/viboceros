@@ -41,6 +41,7 @@ MeshCone 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshCylinder 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshSphere 0,0,0 3 Style=UV VerticalFaces=12 AroundFaces=24
+MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
 BoundingBox CoordinateSystem=World Cumulative=Yes Output=Solids
@@ -267,6 +268,13 @@ shared pole vertices close the latitude-major quad grid with triangle fans,
 and `Axis=x,y,z` orients typed commands. The toolbar workflow uses World Z and
 one sphere is bounded to one million faces. `Style=UV` is currently supported;
 the evenly distributed `Quads` and `Triangles` styles remain to be implemented.
+`MeshTorus` creates a closed quadrilateral ring torus from a center, numeric or
+picked major radius, and a positive minor radius smaller than the major radius.
+`VerticalFaces` divides the tube circle, `AroundFaces` divides the major circle,
+and both default to 10. Vertices and seam-wrapped faces retain Rhino's periodic
+row-major ordering. `Axis=x,y,z` orients typed commands; the three-pick toolbar
+workflow uses World Z and measures the tube radius from the major-radius point.
+One torus is bounded to one million faces and invalid radii fail atomically.
 `MeshToNURB` duplicates every selected mesh polygon as an exact degree-one
 NURBS face. Quads remain potentially warped bilinear surfaces; triangles are
 trimmed planar parallelograms by default, or untrimmed patches with a collapsed

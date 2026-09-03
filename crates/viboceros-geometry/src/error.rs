@@ -260,6 +260,17 @@ pub enum GeometryError {
     #[error("mesh-sphere radius must be positive")]
     InvalidMeshSphereRadius,
 
+    #[error(
+        "mesh-torus face counts require at least three vertical and three around faces, got {vertical_count} by {around_count}"
+    )]
+    InvalidMeshTorusFaceCount {
+        vertical_count: usize,
+        around_count: usize,
+    },
+
+    #[error("mesh-torus minor radius must be positive and smaller than its major radius")]
+    InvalidMeshTorusRadii,
+
     #[error("a mesh face subset must contain at least one face")]
     EmptyMeshFaceSubset,
 

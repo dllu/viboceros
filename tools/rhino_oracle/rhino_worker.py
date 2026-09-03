@@ -4884,6 +4884,37 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_sphere)
 
+    if kind == "mesh_torus":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        major_radius = _finite(
+            operation["major_radius"], "mesh-torus major radius"
+        )
+        minor_radius = _finite(
+            operation["minor_radius"], "mesh-torus minor radius"
+        )
+        torus = Rhino.Geometry.Torus(plane, major_radius, minor_radius)
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+
+        def create_mesh_torus():
+            mesh = Rhino.Geometry.Mesh.CreateFromTorus(
+                torus,
+                vertical,
+                around,
+            )
+            if mesh is None:
+                raise ValueError("could not create mesh torus")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_mesh_torus)
+
     if kind == "nurbs_surface_mesh":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

@@ -4,13 +4,13 @@ use eframe::egui::{self, RichText};
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
     DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
+    DEFAULT_MESH_SPHERE_FACE_COUNT, DEFAULT_MESH_TORUS_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
     MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
+    MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -116,6 +116,12 @@ enum InteractiveCommand {
     },
     MeshSphere {
         center: Option<Point3>,
+        vertical_count: usize,
+        around_count: usize,
+    },
+    MeshTorus {
+        center: Option<Point3>,
+        major_point: Option<Point3>,
         vertical_count: usize,
         around_count: usize,
     },
@@ -241,6 +247,7 @@ impl InteractiveCommand {
             Self::MeshCone { .. } => "MeshCone",
             Self::MeshCylinder { .. } => "MeshCylinder",
             Self::MeshSphere { .. } => "MeshSphere",
+            Self::MeshTorus { .. } => "MeshTorus",
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
@@ -384,6 +391,18 @@ impl InteractiveCommand {
             Self::MeshSphere {
                 center: Some(_), ..
             } => "MeshSphere: pick an equator radius in the viewport (Esc to cancel)",
+            Self::MeshTorus { center: None, .. } => {
+                "MeshTorus: pick the center in the viewport (Esc to cancel)"
+            }
+            Self::MeshTorus {
+                center: Some(_),
+                major_point: None,
+                ..
+            } => "MeshTorus: pick the major-circle radius in the viewport (Esc to cancel)",
+            Self::MeshTorus {
+                major_point: Some(_),
+                ..
+            } => "MeshTorus: pick the tube radius in the viewport (Esc to cancel)",
             Self::Polygon { center: None, .. } => {
                 "Polygon: pick the center in the viewport (Esc to cancel)"
             }
@@ -605,6 +624,7 @@ impl InteractiveCommand {
             | Self::MeshCone { center: None, .. }
             | Self::MeshCylinder { center: None, .. }
             | Self::MeshSphere { center: None, .. }
+            | Self::MeshTorus { center: None, .. }
             | Self::Polygon { center: None, .. }
             | Self::SrfPt {
                 corners: [None, _, _],
@@ -660,6 +680,15 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::MeshTorus {
+                center: Some(center),
+                major_point: None,
+                ..
+            } => Some(center),
+            Self::MeshTorus {
+                major_point: Some(major_point),
+                ..
+            } => Some(major_point),
             Self::SplitMeshEdge { edge_point } => edge_point,
             Self::Ellipse { center, .. }
             | Self::Polygon { center, .. }
@@ -857,6 +886,54 @@ impl VibocerosApp {
             }
             InteractiveCommand::MeshSphere {
                 center: None,
+                vertical_count,
+                around_count,
+            }
+        } else if normalized == "meshtorus" {
+            let mut vertical_count = DEFAULT_MESH_TORUS_FACE_COUNT;
+            let mut around_count = DEFAULT_MESH_TORUS_FACE_COUNT;
+            let mut seen = [false; 2];
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count < 3 {
+                        return false;
+                    }
+                    vertical_count = count;
+                    0
+                } else if name.eq_ignore_ascii_case("AroundFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count < 3 {
+                        return false;
+                    }
+                    around_count = count;
+                    1
+                } else {
+                    return false;
+                };
+                if seen[option_index] {
+                    return false;
+                }
+                seen[option_index] = true;
+            }
+            if vertical_count
+                .checked_mul(around_count)
+                .is_none_or(|faces| faces > MAX_MESH_TORUS_FACES)
+            {
+                return false;
+            }
+            InteractiveCommand::MeshTorus {
+                center: None,
+                major_point: None,
                 vertical_count,
                 around_count,
             }
@@ -2483,6 +2560,93 @@ impl VibocerosApp {
                     around_count
                 ));
             }
+            InteractiveCommand::MeshTorus {
+                center: None,
+                major_point: None,
+                vertical_count,
+                around_count,
+            } => {
+                let command = InteractiveCommand::MeshTorus {
+                    center: Some(point),
+                    major_point: None,
+                    vertical_count,
+                    around_count,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshTorus {
+                center: Some(center),
+                major_point: None,
+                vertical_count,
+                around_count,
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log(
+                        "Error: mesh-torus major radius must exceed model tolerance".to_owned(),
+                    );
+                    return;
+                }
+                let Ok(major_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
+                    self.push_log("Error: mesh-torus major-radius point is not finite".to_owned());
+                    return;
+                };
+                let command = InteractiveCommand::MeshTorus {
+                    center: Some(center),
+                    major_point: Some(major_point),
+                    vertical_count,
+                    around_count,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!(
+                    "Major-radius point: {}",
+                    format_model_point(major_point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshTorus {
+                center: Some(center),
+                major_point: Some(major_point),
+                vertical_count,
+                around_count,
+            } => {
+                let Ok(major_radius) = center.distance_to(major_point) else {
+                    self.push_log("Error: mesh-torus major radius is not finite".to_owned());
+                    return;
+                };
+                let Ok(minor_radius) = major_point.distance_to(point) else {
+                    self.push_log("Error: mesh-torus tube radius is not finite".to_owned());
+                    return;
+                };
+                if minor_radius <= self.document.tolerance().absolute() {
+                    self.push_log(
+                        "Error: mesh-torus tube radius must exceed model tolerance".to_owned(),
+                    );
+                    return;
+                }
+                if minor_radius >= major_radius {
+                    self.push_log(
+                        "Error: mesh-torus tube radius must be smaller than its major radius"
+                            .to_owned(),
+                    );
+                    return;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "MeshTorus {} {} {} VerticalFaces={} AroundFaces={}",
+                    format_model_point(center),
+                    format_model_point(major_point),
+                    minor_radius,
+                    vertical_count,
+                    around_count
+                ));
+            }
+            InteractiveCommand::MeshTorus {
+                center: None,
+                major_point: Some(_),
+                ..
+            } => unreachable!("mesh-torus major radius requires a center"),
             InteractiveCommand::Polygon {
                 side_count,
                 center: None,
@@ -3205,6 +3369,7 @@ impl VibocerosApp {
         let mut mesh_cylinder_clicked = false;
         let mut mesh_plane_clicked = false;
         let mut mesh_sphere_clicked = false;
+        let mut mesh_torus_clicked = false;
         let mut triangulate_mesh_clicked = false;
         let mut swap_mesh_edge_clicked = false;
         let mut collapse_mesh_edge_clicked = false;
@@ -3430,6 +3595,10 @@ impl VibocerosApp {
                 mesh_sphere_clicked = ui
                     .button("Mesh Sphere")
                     .on_hover_text("Draw a UV polygon mesh sphere")
+                    .clicked();
+                mesh_torus_clicked = ui
+                    .button("Mesh Torus")
+                    .on_hover_text("Draw a closed quadrilateral mesh torus")
                     .clicked();
                 triangulate_mesh_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Triangulate Mesh"))
@@ -3748,6 +3917,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("MeshPlane");
         } else if mesh_sphere_clicked {
             self.try_start_interactive_command("MeshSphere");
+        } else if mesh_torus_clicked {
+            self.try_start_interactive_command("MeshTorus");
         } else if triangulate_mesh_clicked {
             self.execute_command("TriangulateMesh");
         } else if swap_mesh_edge_clicked {
@@ -4782,6 +4953,64 @@ mod tests {
         assert!(mesh.signed_volume().unwrap() > 0.0);
         assert_eq!(app.document.selected_object_count(), 0);
         assert_eq!(app.document.undo_label(), Some("MeshSphere"));
+    }
+
+    #[test]
+    fn interactive_mesh_torus_retains_counts_and_validates_three_picks() {
+        let mut app = test_app();
+        assert!(!app.try_start_interactive_command("MeshTorus VerticalFaces=2"));
+        assert!(
+            !app.try_start_interactive_command("MeshTorus VerticalFaces=1000001 AroundFaces=3")
+        );
+        assert!(app.try_start_interactive_command("MeshTorus VerticalFaces=4 AroundFaces=6"));
+        let center = point(1.0, 2.0, 1.0);
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(point(1.0, 2.0, 9.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshTorus {
+                center: Some(center),
+                major_point: None,
+                vertical_count: 4,
+                around_count: 6,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        let major_point = point(5.0, 2.0, 1.0);
+        app.accept_drafting_point(point(5.0, 2.0, 9.0));
+        let awaiting_minor = InteractiveCommand::MeshTorus {
+            center: Some(center),
+            major_point: Some(major_point),
+            vertical_count: 4,
+            around_count: 6,
+        };
+        assert_eq!(app.active_command, Some(awaiting_minor));
+        assert_eq!(awaiting_minor.anchor(), Some(major_point));
+
+        app.accept_drafting_point(major_point);
+        assert_eq!(app.active_command, Some(awaiting_minor));
+        app.accept_drafting_point(center);
+        assert_eq!(app.active_command, Some(awaiting_minor));
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(5.0, 3.0, 1.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created mesh torus")
+        };
+        assert_eq!(mesh.vertices().len(), 24);
+        assert_eq!(mesh.face_count(), 24);
+        assert_eq!(mesh.vertices()[0], point(6.0, 2.0, 1.0));
+        assert!((mesh.vertices()[6].x() - 5.0).abs() < 1.0e-12);
+        assert!((mesh.vertices()[6].y() - 2.0).abs() < 1.0e-12);
+        assert!((mesh.vertices()[6].z() - 2.0).abs() < 1.0e-12);
+        assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 1, 7, 6]));
+        assert_eq!(mesh.faces()[18], MeshFace::Quad([18, 19, 1, 0]));
+        assert!(mesh.topology().is_solid());
+        assert!(mesh.signed_volume().unwrap() > 0.0);
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("MeshTorus"));
     }
 
     #[test]

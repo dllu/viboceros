@@ -16,9 +16,9 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, Circle3, CircularArc3, CurveRef, Ellipse3,
     Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshFace, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph,
-    Polyline3, SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    WeightedPoint3, join_polylines,
+    MeshFace, MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -409,6 +409,16 @@ pub enum Operation {
         around: usize,
         vertical: usize,
     },
+    MeshTorus {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        major_radius: f64,
+        minor_radius: f64,
+        vertical: usize,
+        around: usize,
+    },
     NurbsSurfaceMesh {
         id: String,
         degree_u: usize,
@@ -510,6 +520,7 @@ impl Operation {
             | Self::MeshCylinder { id, .. }
             | Self::MeshCone { id, .. }
             | Self::MeshSphere { id, .. }
+            | Self::MeshTorus { id, .. }
             | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
             | Self::NurbsSurfaceEvaluate { id, .. } => id,
@@ -1827,6 +1838,37 @@ fn execute(
                 TriangleMesh::try_uv_sphere_grid(
                     frame,
                     black_box(*radius),
+                    black_box(options),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::MeshTorus {
+            origin,
+            x_axis,
+            y_axis,
+            major_radius,
+            minor_radius,
+            vertical,
+            around,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let options = MeshTorusOptions {
+                vertical_count: *vertical,
+                around_count: *around,
+            };
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_torus_grid(
+                    frame,
+                    black_box(*major_radius),
+                    black_box(*minor_radius),
                     black_box(options),
                     tolerance,
                 )
@@ -5981,6 +6023,38 @@ mod tests {
         assert_eq!(vertices.len(), 6);
         assert_eq!(vertices[0], json!([0.0, 0.0, -2.0]));
         assert_eq!(vertices[5], json!([0.0, 0.0, 2.0]));
+    }
+
+    #[test]
+    fn creates_ordered_mesh_torus_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshTorus {
+            id: "torus".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            major_radius: 4.0,
+            minor_radius: 1.0,
+            vertical: 3,
+            around: 3,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value["faces"],
+            json!([
+                [0, 1, 4, 3],
+                [1, 2, 5, 4],
+                [2, 0, 3, 5],
+                [3, 4, 7, 6],
+                [4, 5, 8, 7],
+                [5, 3, 6, 8],
+                [6, 7, 1, 0],
+                [7, 8, 2, 1],
+                [8, 6, 0, 2],
+            ])
+        );
+        let vertices = response.results[0].value["vertices"].as_array().unwrap();
+        assert_eq!(vertices.len(), 9);
+        assert_eq!(vertices[0], json!([5.0, 0.0, 0.0]));
     }
 
     #[test]

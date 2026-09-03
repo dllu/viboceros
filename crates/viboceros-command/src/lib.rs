@@ -12,10 +12,11 @@ use viboceros_geometry::{
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
     MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
-    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES,
+    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction,
+    MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3,
+    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -106,6 +107,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(MeshSphereCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MeshTorusCommand)
             .expect("unique built-in command");
         registry
             .register(MeshBoxCommand)
@@ -2519,6 +2523,8 @@ impl Command for SphereCommand {
 
 pub const DEFAULT_MESH_SPHERE_FACE_COUNT: usize = 10;
 const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV] [VerticalFaces=integer-at-least-2] [AroundFaces=integer-at-least-3]";
+pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
+const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 pub const DEFAULT_MESH_CONE_FACE_COUNT: usize = 10;
 const MESH_CONE_USAGE: &str = "MeshCone base-center radius height | MeshCone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
@@ -2587,6 +2593,16 @@ struct MeshConeCommandOptions {
 struct MeshSphereCommandOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
+    axis: Vector3,
+    vertical_count: usize,
+    around_count: usize,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshTorusCommandOptions {
+    center: Point3,
+    major_radius: AxialPrimitiveRadius,
+    minor_radius: Real,
     axis: Vector3,
     vertical_count: usize,
     around_count: usize,
@@ -2790,6 +2806,55 @@ fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOpti
         .vertical_count
         .checked_mul(options.around_count)
         .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
+    {
+        return Err(GeometryError::TooManyMeshFaces.into());
+    }
+    Ok(options)
+}
+
+fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOptions, CommandError> {
+    let positionals = parse_radial_primitive_positionals(arguments, MESH_TORUS_USAGE)?;
+    let mut options = MeshTorusCommandOptions {
+        center: positionals.center,
+        major_radius: positionals.radius,
+        minor_radius: positionals.value,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        vertical_count: DEFAULT_MESH_TORUS_FACE_COUNT,
+        around_count: DEFAULT_MESH_TORUS_FACE_COUNT,
+    };
+    let mut axis_seen = false;
+    let mut vertical_seen = false;
+    let mut around_seen = false;
+    for argument in &arguments[positionals.option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(MESH_TORUS_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            options.axis = parse_axis_option(value, MESH_TORUS_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
+            options.vertical_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 3)
+                .ok_or_else(|| CommandError::InvalidMeshTorusVerticalFaceCount(value.to_owned()))?;
+            vertical_seen = true;
+        } else if option_name_eq(name, "AroundFaces") && !around_seen {
+            options.around_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 3)
+                .ok_or_else(|| CommandError::InvalidMeshTorusAroundFaceCount(value.to_owned()))?;
+            around_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_TORUS_USAGE));
+        }
+    }
+    if options
+        .vertical_count
+        .checked_mul(options.around_count)
+        .is_none_or(|faces| faces > MAX_MESH_TORUS_FACES)
     {
         return Err(GeometryError::TooManyMeshFaces.into());
     }
@@ -3141,6 +3206,40 @@ impl Command for MeshSphereCommand {
         Ok(format!(
             "Added UV mesh sphere {id} ({} around × {} vertical faces)",
             options.around_count, options.vertical_count
+        ))
+    }
+}
+
+struct MeshTorusCommand;
+
+impl Command for MeshTorusCommand {
+    fn name(&self) -> &'static str {
+        "MeshTorus"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_mesh_torus_options(arguments)?;
+        let tolerance = document.tolerance();
+        let (frame, major_radius) = axial_primitive_frame(
+            options.center,
+            options.major_radius,
+            options.axis,
+            tolerance,
+        )?;
+        let mesh = TriangleMesh::try_torus_grid(
+            frame,
+            major_radius,
+            options.minor_radius,
+            MeshTorusOptions {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+            },
+            tolerance,
+        )?;
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Added closed mesh torus {id} (major radius {major_radius:.6}, minor radius {:.6}; {} around × {} vertical faces)",
+            options.minor_radius, options.around_count, options.vertical_count
         ))
     }
 }
@@ -13324,6 +13423,12 @@ pub enum CommandError {
     #[error("'{0}' is not a valid mesh-sphere around face count of at least 3")]
     InvalidMeshSphereAroundFaceCount(String),
 
+    #[error("'{0}' is not a valid mesh-torus vertical face count of at least 3")]
+    InvalidMeshTorusVerticalFaceCount(String),
+
+    #[error("'{0}' is not a valid mesh-torus around face count of at least 3")]
+    InvalidMeshTorusAroundFaceCount(String),
+
     #[error("'{0}' is not a valid r,g,b color with components from 0 through 255")]
     InvalidColor(String),
 
@@ -13895,7 +14000,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshPlane, MeshSphere, MeshToNURB, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -14437,6 +14542,98 @@ mod tests {
             "MeshSphere 0,0,0 2 Axis=0,0,0",
             "MeshSphere 0,0,0 0,0,2 Axis=0,0,1",
             "MeshSphere 0,0,0 2 VerticalFaces=1000001 AroundFaces=3",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0, "{command}");
+            assert_eq!(document.undo_label(), None, "{command}");
+        }
+    }
+
+    #[test]
+    fn mesh_torus_matches_default_and_oriented_rhino_topology() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let parsed = parse_mesh_torus_options(&["0,0,0", "4", "1"]).unwrap();
+        assert_eq!(parsed.vertical_count, 10);
+        assert_eq!(parsed.around_count, 10);
+
+        let message = registry
+            .execute(&mut document, "MeshTorus 0,0,0 4 1")
+            .unwrap();
+        assert!(message.ends_with("10 around × 10 vertical faces)"));
+        assert_eq!(document.selected_object_count(), 0);
+        let Geometry::Mesh(default) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshTorus must create a polygon mesh")
+        };
+        assert_eq!(default.vertices().len(), 100);
+        assert_eq!(default.face_count(), 100);
+        assert_eq!(
+            default.vertices()[0],
+            Point3::try_new(5.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            default.faces()[0],
+            viboceros_geometry::MeshFace::Quad([0, 1, 11, 10])
+        );
+        assert_eq!(
+            default.faces()[90],
+            viboceros_geometry::MeshFace::Quad([90, 91, 1, 0])
+        );
+        assert_eq!(
+            default.faces()[99],
+            viboceros_geometry::MeshFace::Quad([99, 90, 0, 9])
+        );
+        assert!(default.topology().is_solid());
+        assert!(default.signed_volume().unwrap() > 0.0);
+        assert_eq!(document.undo_label(), Some("MeshTorus"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshTorus 1,2,3 1,6,3 1 Axis=1,0,0 VerticalFaces=4 AroundFaces=6",
+            )
+            .unwrap();
+        let Geometry::Mesh(oriented) = document.objects().next().unwrap().geometry() else {
+            panic!("oriented MeshTorus must create a mesh")
+        };
+        assert_eq!(oriented.vertices().len(), 24);
+        assert_eq!(oriented.face_count(), 24);
+        assert_eq!(
+            oriented.vertices()[0],
+            Point3::try_new(1.0, 7.0, 3.0).unwrap()
+        );
+        assert!((oriented.vertices()[6].x() - 2.0).abs() < 1.0e-12);
+        assert!((oriented.vertices()[6].y() - 6.0).abs() < 1.0e-12);
+        assert!((oriented.vertices()[6].z() - 3.0).abs() < 1.0e-12);
+        assert_eq!(
+            oriented.faces()[18],
+            viboceros_geometry::MeshFace::Quad([18, 19, 1, 0])
+        );
+        assert!(oriented.topology().is_solid());
+    }
+
+    #[test]
+    fn mesh_torus_rejects_invalid_options_and_radii_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "MeshTorus",
+            "MeshTorus 0,0,0 0 1",
+            "MeshTorus 0,0,0 4 0",
+            "MeshTorus 0,0,0 4 4",
+            "MeshTorus 0,0,0 1 2",
+            "MeshTorus 0,0,0 4 1 VerticalFaces=2",
+            "MeshTorus 0,0,0 4 1 AroundFaces=2",
+            "MeshTorus 0,0,0 4 1 AroundFaces=nope",
+            "MeshTorus 0,0,0 4 1 AroundFaces=6 AroundFaces=8",
+            "MeshTorus 0,0,0 4 1 Solid=Yes",
+            "MeshTorus 0,0,0 4 1 Axis=0,0,0",
+            "MeshTorus 0,0,0 0,0,4 1 Axis=0,0,1",
+            "MeshTorus 0,0,0 4 1 VerticalFaces=1000001 AroundFaces=3",
         ] {
             assert!(
                 registry.execute(&mut document, command).is_err(),
