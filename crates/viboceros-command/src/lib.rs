@@ -121,6 +121,9 @@ impl CommandRegistry {
             .register(MakeUniformUvCommand)
             .expect("unique built-in command");
         registry
+            .register(MakePeriodicCommand)
+            .expect("unique built-in command");
+        registry
             .register(MakeNonPeriodicCommand)
             .expect("unique built-in command");
         registry
@@ -2047,6 +2050,105 @@ fn parse_make_uniform_uv_direction(
         index += consumed;
     }
     Ok(direction)
+}
+
+const MAKE_PERIODIC_USAGE: &str = "MakePeriodic [Smooth=Yes|No] [DeleteInput=Yes|No]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct MakePeriodicOptions {
+    smooth: bool,
+    delete_input: bool,
+}
+
+struct MakePeriodicCommand;
+
+impl Command for MakePeriodicCommand {
+    fn name(&self) -> &'static str {
+        "MakePeriodic"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_make_periodic_options(arguments)?;
+        let mut replacements = Vec::new();
+        let mut curve_count = 0;
+        let mut surface_count = 0;
+        for object in document.selected_objects() {
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface) => {
+                    let make_u = surface.degree_u() >= 2
+                        && !surface.is_periodic_u()
+                        && surface.is_closed_u()?;
+                    let make_v = surface.degree_v() >= 2
+                        && !surface.is_periodic_v()
+                        && surface.is_closed_v()?;
+                    let direction = if make_u {
+                        SurfaceKnotDirection::U
+                    } else if make_v {
+                        SurfaceKnotDirection::V
+                    } else {
+                        continue;
+                    };
+                    surface_count += 1;
+                    Geometry::NurbsSurface(surface.try_make_periodic(direction, options.smooth)?)
+                }
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    if curve.degree() < 2 || curve.is_periodic() || !curve.is_closed()? {
+                        continue;
+                    }
+                    curve_count += 1;
+                    Geometry::NurbsCurve(curve.try_make_periodic(options.smooth)?)
+                }
+            };
+            replacements.push((object.id(), geometry));
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoMakePeriodicObjects);
+        }
+
+        let object_count = replacements.len();
+        if options.delete_input {
+            document.replace_object_geometries(replacements)?;
+        } else {
+            document.copy_object_geometries_into_source_groups(replacements)?;
+        }
+        Ok(format!(
+            "Made {object_count} object(s) periodic with Smooth={}, {} the input(s) ({curve_count} curve(s), {surface_count} NURBS surface(s))",
+            if options.smooth { "Yes" } else { "No" },
+            if options.delete_input {
+                "replacing"
+            } else {
+                "retaining"
+            }
+        ))
+    }
+}
+
+fn parse_make_periodic_options(arguments: &[&str]) -> Result<MakePeriodicOptions, CommandError> {
+    let mut options = MakePeriodicOptions {
+        smooth: true,
+        delete_input: true,
+    };
+    let mut smooth_seen = false;
+    let mut delete_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, MAKE_PERIODIC_USAGE)?;
+        if option_name_eq(name, "Smooth") && !smooth_seen {
+            options.smooth = parse_yes_no(value).ok_or(CommandError::Usage(MAKE_PERIODIC_USAGE))?;
+            smooth_seen = true;
+        } else if option_name_eq(name, "DeleteInput") && !delete_seen {
+            options.delete_input =
+                parse_yes_no(value).ok_or(CommandError::Usage(MAKE_PERIODIC_USAGE))?;
+            delete_seen = true;
+        } else {
+            return Err(CommandError::Usage(MAKE_PERIODIC_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
 }
 
 struct MakeNonPeriodicCommand;
@@ -17301,6 +17403,11 @@ pub enum CommandError {
     #[error("MakeUniformUV requires at least one selected untrimmed NURBS surface")]
     NoMakeUniformUvSurfaces,
 
+    #[error(
+        "MakePeriodic requires at least one selected closed, non-periodic curve or NURBS surface direction of degree two or higher"
+    )]
+    NoMakePeriodicObjects,
+
     #[error("MakeNonPeriodic requires at least one selected periodic NURBS curve or surface")]
     NoPeriodicObjects,
 
@@ -17844,7 +17951,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -27522,6 +27629,273 @@ mod tests {
             );
             assert_eq!(document.undo_label(), history.as_deref(), "{command}");
         }
+    }
+
+    #[test]
+    fn make_periodic_smooths_closed_curves_and_surfaces_in_place_and_undoes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Closed sources", ColorRgb::new(54, 108, 162))
+            .unwrap();
+        let source_curve = periodic_cubic_curve().try_make_non_periodic().unwrap();
+        let source_surface = periodic_cubic_u_surface()
+            .try_make_non_periodic(SurfaceKnotDirection::U)
+            .unwrap();
+        let curve_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source_curve.clone()),
+                ObjectAttributes::on_layer(layer).with_name("closed curve"),
+            )
+            .unwrap();
+        let surface_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(source_surface.clone()),
+                ObjectAttributes::on_layer(layer).with_name("closed surface"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([curve_id, surface_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "MakePeriodic").unwrap(),
+            "Made 2 object(s) periodic with Smooth=Yes, replacing the input(s) (1 curve(s), 1 NURBS surface(s))"
+        );
+        let curve_object = document.object(curve_id).unwrap();
+        assert_eq!(curve_object.attributes().layer_id(), layer);
+        assert_eq!(curve_object.attributes().name(), Some("closed curve"));
+        let Geometry::NurbsCurve(curve) = curve_object.geometry() else {
+            panic!("MakePeriodic must retain NURBS curve geometry")
+        };
+        assert!(curve.is_periodic());
+        assert!(curve.is_closed().unwrap());
+
+        let surface_object = document.object(surface_id).unwrap();
+        assert_eq!(surface_object.attributes().layer_id(), layer);
+        assert_eq!(surface_object.attributes().name(), Some("closed surface"));
+        let Geometry::NurbsSurface(surface) = surface_object.geometry() else {
+            panic!("MakePeriodic must retain NURBS surface geometry")
+        };
+        assert!(surface.is_periodic_u());
+        assert!(!surface.is_periodic_v());
+        assert!(document.is_selected(curve_id));
+        assert!(document.is_selected(surface_id));
+        assert!(document.is_selected(point_id));
+        assert_eq!(document.undo_label(), Some("MakePeriodic"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source_curve)
+        );
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source_surface)
+        );
+    }
+
+    #[test]
+    fn make_periodic_accepts_smooth_no_and_rejects_invalid_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects([line_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "MakePeriodic"),
+            Err(CommandError::NoMakePeriodicObjects)
+        ));
+
+        let source = periodic_cubic_curve().try_make_non_periodic().unwrap();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "MakePeriodic Smooth=Maybe",
+            "MakePeriodic Smooth=Yes Smooth=No",
+            "MakePeriodic DeleteInput=Maybe",
+            "MakePeriodic DeleteInput=Yes DeleteInput=No",
+            "MakePeriodic Direction=U",
+            "MakePeriodic extra",
+        ] {
+            assert!(
+                matches!(
+                    registry.execute(&mut document, command),
+                    Err(CommandError::Usage(MAKE_PERIODIC_USAGE))
+                ),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(curve_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(source.clone()),
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "_MakePeriodic Smooth _No")
+                .unwrap(),
+            "Made 1 object(s) periodic with Smooth=No, replacing the input(s) (1 curve(s), 0 NURBS surface(s))"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(curve_id).unwrap().geometry() else {
+            panic!("MakePeriodic must retain NURBS curve geometry")
+        };
+        assert!(curve.is_periodic());
+        assert_eq!(document.undo_label(), Some("MakePeriodic"));
+    }
+
+    #[test]
+    fn make_periodic_converts_a_double_closed_surface_u_then_v() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let coordinates = [0.0, 2.0, 4.0, 1.0, 0.0];
+        let controls = (0..5)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    Point3::try_new(
+                        coordinates[u],
+                        coordinates[v],
+                        coordinates[u] * coordinates[v] * 0.1,
+                    )
+                    .unwrap()
+                })
+            })
+            .collect();
+        let source = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            5,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 4.0, 9.0, 9.0, 9.0],
+        )
+        .unwrap();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(source.clone()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "MakePeriodic Smooth=No")
+            .unwrap();
+        let first = document.object(surface_id).unwrap().geometry().clone();
+        let Geometry::NurbsSurface(surface) = &first else {
+            panic!("MakePeriodic must retain NURBS surface geometry")
+        };
+        assert!(surface.is_periodic_u());
+        assert!(!surface.is_periodic_v());
+
+        registry
+            .execute(&mut document, "MakePeriodic Smooth=No")
+            .unwrap();
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("MakePeriodic must retain NURBS surface geometry")
+        };
+        assert!(surface.is_periodic_u());
+        assert!(surface.is_periodic_v());
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(surface_id).unwrap().geometry(), &first);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source)
+        );
+    }
+
+    #[test]
+    fn make_periodic_can_retain_inputs_and_copy_attributes_and_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Periodic copies", ColorRgb::new(61, 122, 183))
+            .unwrap();
+        let source_curve = periodic_cubic_curve().try_make_non_periodic().unwrap();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source_curve.clone()),
+                ObjectAttributes::on_layer(layer)
+                    .with_name("retained curve")
+                    .with_object_color(ColorRgb::new(17, 83, 149)),
+            )
+            .unwrap();
+        let group_id = document
+            .add_group(Some("Periodic source".to_owned()), [source_id])
+            .unwrap();
+        document
+            .select_objects([source_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "MakePeriodic DeleteInput _No Smooth _No",)
+                .unwrap(),
+            "Made 1 object(s) periodic with Smooth=No, retaining the input(s) (1 curve(s), 0 NURBS surface(s))"
+        );
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source_curve)
+        );
+        assert!(document.is_selected(source_id));
+        let copy = document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap();
+        assert!(!document.is_selected(copy.id()));
+        assert_eq!(
+            copy.attributes(),
+            document.object(source_id).unwrap().attributes()
+        );
+        assert!(matches!(
+            copy.geometry(),
+            Geometry::NurbsCurve(curve) if curve.is_periodic()
+        ));
+        let members = document
+            .group(group_id)
+            .unwrap()
+            .members()
+            .collect::<Vec<_>>();
+        assert_eq!(members.len(), 2);
+        assert!(members.contains(&source_id));
+        assert!(members.contains(&copy.id()));
+        assert_eq!(document.undo_label(), Some("MakePeriodic"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.is_selected(source_id));
+        assert_eq!(
+            document
+                .group(group_id)
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![source_id]
+        );
     }
 
     #[test]

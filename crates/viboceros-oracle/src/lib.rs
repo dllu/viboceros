@@ -539,6 +539,12 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
     },
+    CurveMakePeriodicGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        #[serde(default = "default_true")]
+        smooth: bool,
+    },
     CurveInsertKnotGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -559,6 +565,19 @@ pub enum Operation {
         knots_u: Vec<f64>,
         knots_v: Vec<f64>,
         direction: SurfaceUniformDirection,
+    },
+    SurfaceMakePeriodicGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceUniformDirection,
+        #[serde(default = "default_true")]
+        smooth: bool,
     },
     SurfaceInsertKnotGeometry {
         id: String,
@@ -870,9 +889,11 @@ impl Operation {
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
+            | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveMakeNonPeriodicGeometry { id, .. }
             | Self::SurfaceMakeUniformGeometry { id, .. }
+            | Self::SurfaceMakePeriodicGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceMakeNonPeriodicGeometry { id, .. }
             | Self::Paraboloid { id, .. }
@@ -2677,6 +2698,12 @@ fn execute(
             let (curve, elapsed) = measure(iterations, || source.try_make_uniform())?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveMakePeriodicGeometry { curve, smooth, .. } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) =
+                measure(iterations, || source.try_make_periodic(black_box(*smooth)))?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveInsertKnotGeometry {
             curve,
             parameter,
@@ -2716,6 +2743,32 @@ fn execute(
             )?;
             let (surface, elapsed) = measure(iterations, || {
                 source.try_make_uniform(black_box(direction.geometry()))
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceMakePeriodicGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            smooth,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_make_periodic(black_box(direction.geometry()), black_box(*smooth))
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -6199,6 +6252,10 @@ const fn default_iterations() -> u32 {
     1
 }
 
+const fn default_true() -> bool {
+    true
+}
+
 const fn unit_weight() -> f64 {
     1.0
 }
@@ -7862,6 +7919,73 @@ mod tests {
                 {"point": [4.0, 0.0, 0.0], "weight": 1.0},
             ])
         );
+    }
+
+    #[test]
+    fn captures_rhino_compatible_periodic_curve_and_surface_conversion() {
+        let curve = NurbsCurveDefinition {
+            degree: 3,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [4.0, 0.0, 0.0],
+                [5.0, 3.0, 0.0],
+                [0.0, 4.0, 0.0],
+                [0.0, 0.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots: vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+            domain: None,
+        };
+        let row = [
+            [0.0, 0.0, 0.0],
+            [3.0, -1.0, 0.0],
+            [5.0, 3.0, 0.0],
+            [0.0, 4.0, 0.0],
+            [0.0, 0.0, 0.0],
+        ];
+        let surface_controls = row
+            .into_iter()
+            .chain(row.into_iter().map(|mut point| {
+                point[2] = 3.0;
+                point
+            }))
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect();
+        let response = run_request(&request(vec![
+            Operation::CurveMakePeriodicGeometry {
+                id: "periodic-curve".to_owned(),
+                curve,
+                smooth: false,
+            },
+            Operation::SurfaceMakePeriodicGeometry {
+                id: "periodic-surface-u".to_owned(),
+                degree_u: 2,
+                degree_v: 1,
+                control_point_count_u: 5,
+                control_point_count_v: 2,
+                control_points: surface_controls,
+                knots_u: vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+                knots_v: vec![0.0, 0.0, 3.0, 3.0],
+                direction: SurfaceUniformDirection::U,
+                smooth: false,
+            },
+        ]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 3);
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 7);
+        assert_eq!(curve["domain"], json!([0.0, 2.0]));
+        assert_eq!(curve["closed"], true);
+        assert_eq!(curve["periodic"], true);
+
+        let surface = &response.results[1].value;
+        assert_eq!(surface["degree"], json!([2, 1]));
+        assert_eq!(surface["control_count"], json!([7, 2]));
+        assert_eq!(surface["periodic_u"], true);
+        assert_eq!(surface["periodic_v"], false);
     }
 
     #[test]

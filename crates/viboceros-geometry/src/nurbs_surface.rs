@@ -1257,6 +1257,39 @@ impl NurbsSurface {
         Ok(result)
     }
 
+    /// Converts selected closed degree-two-or-higher directions to
+    /// Rhino-compatible periodic form.
+    ///
+    /// With `smooth = false`, the existing homogeneous control net is changed
+    /// minimally at each seam. With `smooth = true`, the active knot breaks are
+    /// retained and the seam controls are interpolated in homogeneous space.
+    /// Directions that are already periodic are unchanged.
+    pub fn try_make_periodic(
+        &self,
+        direction: SurfaceKnotDirection,
+        smooth: bool,
+    ) -> Result<Self, GeometryError> {
+        let make_u = direction.includes_u() && !self.is_periodic_u();
+        let make_v = direction.includes_v() && !self.is_periodic_v();
+        if make_u && !self.is_closed_u()? {
+            return Err(GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "U" });
+        }
+        if make_v && !self.is_closed_v()? {
+            return Err(GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "V" });
+        }
+
+        let mut result = self.clone();
+        if make_u {
+            result = result
+                .map_u_control_curves(|curve| curve.try_make_periodic_assuming_closed(smooth))?;
+        }
+        if make_v {
+            result = result
+                .map_v_control_curves(|curve| curve.try_make_periodic_assuming_closed(smooth))?;
+        }
+        Ok(result)
+    }
+
     fn clamped_in_u(&self) -> Result<Self, GeometryError> {
         let mut controls = Vec::new();
         let mut clamped_u_count = None;
@@ -5228,6 +5261,156 @@ mod tests {
         assert_eq!(both.domain_u(), 0.0..=2.0);
         assert_eq!(both.domain_v(), 0.0..=2.0);
         assert!(both.is_rational());
+    }
+
+    #[test]
+    fn make_periodic_maps_closed_surface_rows_and_columns() {
+        let row = [
+            point(1.0, 0.0, 0.0),
+            point(4.0, -1.0, 0.0),
+            point(6.0, 2.0, 1.0),
+            point(4.0, 5.0, 0.0),
+            point(0.0, 4.0, -1.0),
+            point(-2.0, 1.0, 0.0),
+            point(1.0, 0.0, 0.0),
+        ];
+        let translation = Vector3::try_new(0.5, 0.0, 3.0).unwrap();
+        let translated = row.map(|point| point.translated(translation).unwrap());
+        let mut controls = row.to_vec();
+        controls.extend(translated);
+        let knots = vec![
+            10.0, 10.0, 10.0, 10.0, 11.0, 13.0, 19.0, 25.0, 25.0, 25.0, 25.0,
+        ];
+        let surface = NurbsSurface::try_new(
+            3,
+            1,
+            7,
+            2,
+            controls,
+            knots.clone(),
+            vec![2.0, 2.0, 9.0, 9.0],
+        )
+        .unwrap();
+
+        let periodic_u = surface
+            .try_make_periodic(SurfaceKnotDirection::U, false)
+            .unwrap();
+
+        assert!(periodic_u.is_periodic_u());
+        assert!(!periodic_u.is_periodic_v());
+        assert_eq!(periodic_u.control_point_count_u(), 9);
+        assert_eq!(periodic_u.control_point_count_v(), 2);
+        assert_eq!(periodic_u.knots_v(), surface.knots_v());
+        for (v, expected_row) in [row, translated].into_iter().enumerate() {
+            let expected = NurbsCurve::try_new(3, expected_row.to_vec(), knots.clone())
+                .unwrap()
+                .try_make_periodic(false)
+                .unwrap();
+            for u in 0..expected.control_points().len() {
+                assert_eq!(
+                    periodic_u.control_point(u, v),
+                    Some(expected.control_points()[u])
+                );
+            }
+            assert_eq!(periodic_u.knots_u(), expected.knots());
+        }
+
+        let controls = (0..7)
+            .flat_map(|v| [row[v], translated[v]])
+            .collect::<Vec<_>>();
+        let transposed =
+            NurbsSurface::try_new(1, 3, 2, 7, controls, vec![2.0, 2.0, 9.0, 9.0], knots).unwrap();
+        let periodic_v = transposed
+            .try_make_periodic(SurfaceKnotDirection::V, true)
+            .unwrap();
+        assert!(!periodic_v.is_periodic_u());
+        assert!(periodic_v.is_periodic_v());
+        assert_eq!(periodic_v.control_point_count_u(), 2);
+        assert_eq!(periodic_v.control_point_count_v(), 7);
+        assert_eq!(periodic_v.knots_u(), transposed.knots_u());
+    }
+
+    #[test]
+    fn make_periodic_can_convert_both_closed_surface_directions() {
+        let coordinates = [0.0, 2.0, 4.0, 1.0, 0.0];
+        let controls = (0..5)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    point(
+                        coordinates[u],
+                        coordinates[v],
+                        coordinates[u] * coordinates[v] * 0.1,
+                    )
+                })
+            })
+            .collect::<Vec<_>>();
+        let surface = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            5,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 4.0, 9.0, 9.0, 9.0],
+        )
+        .unwrap();
+        assert!(surface.is_closed_u().unwrap());
+        assert!(surface.is_closed_v().unwrap());
+
+        let sharp = surface
+            .try_make_periodic(SurfaceKnotDirection::Both, false)
+            .unwrap();
+        assert!(sharp.is_periodic_u());
+        assert!(sharp.is_periodic_v());
+        assert_eq!(sharp.control_point_count_u(), 7);
+        assert_eq!(sharp.control_point_count_v(), 7);
+
+        let smooth = surface
+            .try_make_periodic(SurfaceKnotDirection::Both, true)
+            .unwrap();
+        assert!(smooth.is_periodic_u());
+        assert!(smooth.is_periodic_v());
+        assert_eq!(smooth.control_point_count_u(), 5);
+        assert_eq!(smooth.control_point_count_v(), 5);
+        assert_eq!(smooth.domain_u(), surface.domain_u());
+        assert_eq!(smooth.domain_v(), surface.domain_v());
+    }
+
+    #[test]
+    fn make_periodic_surface_validates_requested_direction() {
+        let open = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+        ])
+        .unwrap();
+        assert_eq!(
+            open.try_make_periodic(SurfaceKnotDirection::U, false),
+            Err(GeometryError::PeriodicSurfaceDirectionMustBeClosed { direction: "U" })
+        );
+
+        let linear_closed = NurbsSurface::try_new(
+            1,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 0.0, 3.0),
+                point(2.0, 0.0, 3.0),
+                point(0.0, 0.0, 3.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_eq!(
+            linear_closed.try_make_periodic(SurfaceKnotDirection::U, false),
+            Err(GeometryError::PeriodicNurbsDegreeTooLow)
+        );
     }
 
     #[test]

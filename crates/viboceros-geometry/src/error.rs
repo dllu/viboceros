@@ -66,6 +66,27 @@ pub enum GeometryError {
     #[error("a NURBS curve trim interval must be finite, increasing, and inside its domain")]
     InvalidCurveTrimInterval,
 
+    #[error("periodic NURBS conversion requires degree two or higher")]
+    PeriodicNurbsDegreeTooLow,
+
+    #[error("a curve must be closed before it can be made periodic")]
+    PeriodicCurveMustBeClosed,
+
+    #[error("a surface must be closed in the {direction} direction before it can be made periodic")]
+    PeriodicSurfaceDirectionMustBeClosed { direction: &'static str },
+
+    #[error(
+        "smooth periodic degree-{degree} conversion requires at least {required} controls, got {actual}"
+    )]
+    InsufficientSmoothPeriodicControlPoints {
+        degree: usize,
+        required: usize,
+        actual: usize,
+    },
+
+    #[error("the smooth periodic interpolation system could not be solved reliably")]
+    PeriodicInterpolationSolveFailed,
+
     #[error("B-rep trim/isocurve intersection did not converge")]
     TrimIntersectionDidNotConverge,
 

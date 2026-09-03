@@ -5794,6 +5794,33 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, insert_surface_knot)
 
+    if kind == "curve_make_periodic_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        smooth = bool(operation.get("smooth", True))
+
+        def make_curve_periodic():
+            result = Rhino.Geometry.Curve.CreatePeriodicCurve(source, smooth)
+            if result is None:
+                raise ValueError("Rhino curve periodic conversion returned no result")
+            try:
+                nurbs = result.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino periodic curve has no NURBS representation")
+                try:
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, make_curve_periodic)
+        finally:
+            source.Dispose()
+
     if kind == "curve_make_non_periodic_geometry":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])
@@ -5835,6 +5862,114 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, make_curve_non_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_make_periodic_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction_name = str(operation["direction"]).lower()
+        directions = {"u": 0, "v": 1}
+        command_name = operation.get("rhino_command")
+        if command_name not in (None, "make_periodic"):
+            raise ValueError("surface periodic Rhino command must be make_periodic")
+        if command_name is None and direction_name not in directions:
+            raise ValueError("surface periodic API direction must be u or v")
+        if command_name is not None and direction_name not in ("u", "v", "both"):
+            raise ValueError("surface periodic command direction must be u, v, or both")
+        smooth = bool(operation.get("smooth", True))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate closed NURBS surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("closed NURBS surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def make_surface_periodic():
+            if command_name is None:
+                result = Rhino.Geometry.Surface.CreatePeriodicSurface(
+                    source, directions[direction_name], smooth
+                )
+                if result is None:
+                    raise ValueError(
+                        "Rhino surface periodic conversion returned no result"
+                    )
+                try:
+                    nurbs = result.ToNurbsSurface()
+                    if nurbs is None:
+                        raise ValueError(
+                            "Rhino periodic surface has no NURBS representation"
+                        )
+                    try:
+                        definition = _nurbs_surface_definition(nurbs)
+                        definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                        definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                        return definition
+                    finally:
+                        nurbs.Dispose()
+                finally:
+                    result.Dispose()
+
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add closed surface to Rhino")
+                command = (
+                    "_-MakePeriodic _Smooth=_%s '_-SelID %s _Enter "
+                    "_DeleteInput=_Yes _Enter"
+                ) % (
+                    "Yes" if smooth else "No",
+                    object_id,
+                )
+                Rhino.RhinoApp.RunScript(command, False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("MakePeriodic removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        history = Rhino.RhinoApp.CommandHistoryWindowText
+                        raise ValueError(
+                            "MakePeriodic made a %d-face polysurface; history tail: %s"
+                            % (geometry.Faces.Count, history[-3000:])
+                        )
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MakePeriodic returned no NURBS surface; history tail: %s"
+                        % history[-3000:]
+                    )
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, make_surface_periodic)
         finally:
             source.Dispose()
 

@@ -1,5 +1,7 @@
 use std::ops::RangeInclusive;
 
+use faer::{Mat, prelude::*};
+
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Polyline3, Real, Tolerance,
     Vector3, integration::integrate_adaptive, require_finite,
@@ -693,6 +695,184 @@ impl NurbsCurve {
         } else {
             Ok(self.clone())
         }
+    }
+
+    /// Converts a closed degree-two-or-higher curve to Rhino-compatible
+    /// periodic form.
+    ///
+    /// With `smooth = false`, existing homogeneous controls are cyclically
+    /// retained and only the seam knot distribution changes. With
+    /// `smooth = true`, the active knot breaks are retained and a periodic
+    /// interpolation solve at their Greville abscissae smooths the seam.
+    pub fn try_make_periodic(&self, smooth: bool) -> Result<Self, GeometryError> {
+        if self.is_periodic() {
+            return Ok(self.clone());
+        }
+        if self.degree < 2 {
+            return Err(GeometryError::PeriodicNurbsDegreeTooLow);
+        }
+        if !self.is_closed()? {
+            return Err(GeometryError::PeriodicCurveMustBeClosed);
+        }
+        self.try_make_periodic_assuming_closed(smooth)
+    }
+
+    pub(crate) fn try_make_periodic_assuming_closed(
+        &self,
+        smooth: bool,
+    ) -> Result<Self, GeometryError> {
+        if self.is_periodic() {
+            return Ok(self.clone());
+        }
+        if self.degree < 2 {
+            return Err(GeometryError::PeriodicNurbsDegreeTooLow);
+        }
+        if smooth {
+            self.make_periodic_smooth()
+        } else {
+            self.make_periodic_with_minimal_control_change()
+        }
+    }
+
+    fn make_periodic_with_minimal_control_change(&self) -> Result<Self, GeometryError> {
+        let degree = self.degree;
+        let source_count = self.control_points.len();
+        let mut unique_controls = if degree.is_multiple_of(2) {
+            self.control_points.clone()
+        } else {
+            self.control_points[..source_count - 1].to_vec()
+        };
+        unique_controls.rotate_right(degree / 2);
+        let output_count =
+            unique_controls
+                .len()
+                .checked_add(degree)
+                .ok_or(GeometryError::InvalidKnotVector {
+                    context: "periodic curve control-point count overflowed usize",
+                })?;
+        let mut controls = Vec::new();
+        controls
+            .try_reserve_exact(output_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "periodic curve controls exceed addressable memory",
+            })?;
+        controls.extend_from_slice(&unique_controls);
+        controls.extend_from_slice(&unique_controls[..degree]);
+
+        let knots = minimal_change_periodic_knots(degree, source_count, output_count, &self.knots)?;
+        Self::try_new_rational(degree, controls, knots)
+    }
+
+    fn make_periodic_smooth(&self) -> Result<Self, GeometryError> {
+        let degree = self.degree;
+        let control_count = self.control_points.len();
+        let required = if degree == 2 {
+            5
+        } else {
+            degree
+                .checked_mul(2)
+                .ok_or(GeometryError::PeriodicNurbsDegreeTooLow)?
+        };
+        if control_count < required {
+            return Err(GeometryError::InsufficientSmoothPeriodicControlPoints {
+                degree,
+                required,
+                actual: control_count,
+            });
+        }
+        let unique_count = control_count - degree;
+        let knots = periodic_knots_preserving_active(degree, control_count, &self.knots)?;
+        let parameters = periodic_greville_parameters(degree, control_count, unique_count, &knots)?;
+        let weight_scale = self
+            .control_points
+            .iter()
+            .map(|control| control.weight)
+            .fold(0.0, Real::max);
+        let mut rows = Vec::new();
+        let mut targets = Vec::new();
+        rows.try_reserve_exact(unique_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "periodic interpolation rows exceed addressable memory",
+            })?;
+        targets
+            .try_reserve_exact(unique_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "periodic interpolation targets exceed addressable memory",
+            })?;
+        for parameter in parameters {
+            let basis = bspline_basis_values(&knots, degree, control_count, parameter)?;
+            let mut folded = vec![0.0; unique_count];
+            for (index, value) in basis.into_iter().enumerate() {
+                folded[index % unique_count] += value;
+            }
+            rows.push(folded);
+            targets.push(self.evaluate_scaled_homogeneous(parameter, weight_scale)?);
+        }
+
+        let matrix = Mat::from_fn(unique_count, unique_count, |row, column| rows[row][column]);
+        let right_hand_side = Mat::from_fn(unique_count, 4, |row, column| targets[row][column]);
+        let solution = matrix.full_piv_lu().solve(&right_hand_side);
+        let mut unique_controls = Vec::new();
+        unique_controls
+            .try_reserve_exact(unique_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "periodic solution controls exceed addressable memory",
+            })?;
+        for row in 0..unique_count {
+            let normalized_weight = solution[(row, 3)];
+            let weight = normalized_weight * weight_scale;
+            let coordinates = [
+                solution[(row, 0)] / normalized_weight,
+                solution[(row, 1)] / normalized_weight,
+                solution[(row, 2)] / normalized_weight,
+            ];
+            require_finite(
+                coordinates.into_iter().chain([normalized_weight, weight]),
+                "smooth periodic NURBS controls",
+            )?;
+            if normalized_weight <= 0.0 || weight <= 0.0 {
+                return Err(GeometryError::PeriodicInterpolationSolveFailed);
+            }
+            unique_controls.push(WeightedPoint3::try_new(
+                Point3::try_from(coordinates)?,
+                weight,
+            )?);
+        }
+
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidKnotVector {
+                context: "periodic curve controls exceed addressable memory",
+            }
+        })?;
+        controls.extend_from_slice(&unique_controls);
+        controls.extend_from_slice(&unique_controls[..degree]);
+        Self::try_new_rational(degree, controls, knots)
+    }
+
+    fn evaluate_scaled_homogeneous(
+        &self,
+        parameter: Real,
+        weight_scale: Real,
+    ) -> Result<[Real; 4], GeometryError> {
+        let span = self.checked_span(parameter)?;
+        let first = span - self.degree;
+        let controls = self.control_points[first..=span]
+            .iter()
+            .map(|control| {
+                let weight = control.weight / weight_scale;
+                let point = control.point;
+                let value = [
+                    point.x() * weight,
+                    point.y() * weight,
+                    point.z() * weight,
+                    weight,
+                ];
+                require_finite(value, "smooth periodic homogeneous controls")?;
+                Ok(value)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        de_boor(&self.knots, self.degree, span, parameter, controls)
     }
 
     /// Returns every nonempty knot span in the active curve domain.
@@ -1682,6 +1862,172 @@ fn periodic_control_point_curve(
         .collect::<Vec<_>>();
     require_finite(knots.iter().copied(), "periodic control-point curve knots")?;
     NurbsCurve::try_new(degree, control_points, knots)
+}
+
+fn minimal_change_periodic_knots(
+    degree: usize,
+    source_control_count: usize,
+    output_control_count: usize,
+    source_knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    let normalized_source = normalized_active_knots(degree, source_control_count, source_knots)?;
+    let source_intervals = normalized_source
+        .windows(2)
+        .map(|pair| pair[1] - pair[0])
+        .collect::<Vec<_>>();
+    let seam_interval =
+        0.5 * source_intervals[0] + 0.5 * source_intervals[source_intervals.len() - 1];
+    let mut intervals = Vec::with_capacity(output_control_count - degree);
+    if source_intervals.len() == 1 {
+        intervals.resize(output_control_count - degree, seam_interval);
+    } else {
+        let seam_count = if degree.is_multiple_of(2) {
+            degree / 2
+        } else {
+            degree.div_ceil(2)
+        };
+        intervals.extend(std::iter::repeat_n(seam_interval, seam_count));
+        if degree.is_multiple_of(2) {
+            intervals.extend_from_slice(&source_intervals);
+        } else if source_intervals.len() > 2 {
+            intervals.extend_from_slice(&source_intervals[1..source_intervals.len() - 1]);
+        }
+        intervals.extend(std::iter::repeat_n(seam_interval, seam_count));
+    }
+    debug_assert_eq!(intervals.len(), output_control_count - degree);
+
+    let interval_sum = intervals.iter().sum::<Real>();
+    require_finite(
+        intervals.iter().copied().chain([interval_sum]),
+        "minimal-change periodic knot intervals",
+    )?;
+    if interval_sum <= 0.0 {
+        return Err(GeometryError::InvalidKnotVector {
+            context: "minimal-change periodic knot intervals must have positive length",
+        });
+    }
+    for interval in &mut intervals {
+        *interval /= interval_sum;
+    }
+    periodic_knots_from_normalized_intervals(
+        degree,
+        output_control_count,
+        &intervals,
+        source_knots[degree],
+        source_knots[source_control_count],
+    )
+}
+
+fn periodic_knots_preserving_active(
+    degree: usize,
+    control_count: usize,
+    source_knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    let normalized_source = normalized_active_knots(degree, control_count, source_knots)?;
+    let intervals = normalized_source
+        .windows(2)
+        .map(|pair| pair[1] - pair[0])
+        .collect::<Vec<_>>();
+    let mut knots = periodic_knots_from_normalized_intervals(
+        degree,
+        control_count,
+        &intervals,
+        source_knots[degree],
+        source_knots[control_count],
+    )?;
+    knots[degree..=control_count].copy_from_slice(&source_knots[degree..=control_count]);
+    Ok(knots)
+}
+
+fn normalized_active_knots(
+    degree: usize,
+    control_count: usize,
+    knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    let domain_start = knots[degree];
+    let domain_end = knots[control_count];
+    let mut normalized = knots[degree..=control_count]
+        .iter()
+        .map(|knot| reparameterize_value(*knot, domain_start, domain_end, 0.0, 1.0))
+        .collect::<Result<Vec<_>, _>>()?;
+    normalized[0] = 0.0;
+    let last = normalized.len() - 1;
+    normalized[last] = 1.0;
+    Ok(normalized)
+}
+
+fn periodic_knots_from_normalized_intervals(
+    degree: usize,
+    control_count: usize,
+    intervals: &[Real],
+    domain_start: Real,
+    domain_end: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    debug_assert_eq!(intervals.len(), control_count - degree);
+    let mut normalized = vec![0.0; control_count + degree + 1];
+    for (offset, interval) in intervals.iter().enumerate() {
+        normalized[degree + offset + 1] = normalized[degree + offset] + interval;
+    }
+    normalized[control_count] = 1.0;
+    for offset in 0..degree - 1 {
+        normalized[control_count + offset + 1] =
+            normalized[control_count + offset] + intervals[offset];
+    }
+    for offset in 0..degree - 1 {
+        normalized[degree - offset - 1] =
+            normalized[degree - offset] - intervals[intervals.len() - offset - 1];
+    }
+    normalized[0] = normalized[1];
+    let last = normalized.len() - 1;
+    normalized[last] = normalized[last - 1];
+
+    normalized
+        .into_iter()
+        .map(|knot| reparameterize_value(knot, 0.0, 1.0, domain_start, domain_end))
+        .collect()
+}
+
+fn periodic_greville_parameters(
+    degree: usize,
+    control_count: usize,
+    unique_count: usize,
+    knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    let domain_start = knots[degree];
+    let mut start_index = None;
+    for index in 0..degree {
+        let value = stable_knot_mean(&knots[index + 1..index + degree + 1])?;
+        if value >= domain_start {
+            start_index = Some(index);
+            break;
+        }
+    }
+    let start_index = start_index.ok_or(GeometryError::PeriodicInterpolationSolveFailed)?;
+    let mut parameters = (start_index..start_index + unique_count)
+        .map(|index| stable_knot_mean(&knots[index + 1..index + degree + 1]))
+        .collect::<Result<Vec<_>, _>>()?;
+    if parameters[0] < domain_start {
+        parameters[0] = domain_start;
+    }
+    let domain_end = knots[control_count];
+    if parameters.iter().any(|parameter| {
+        !parameter.is_finite() || *parameter < domain_start || *parameter > domain_end
+    }) {
+        return Err(GeometryError::PeriodicInterpolationSolveFailed);
+    }
+    Ok(parameters)
+}
+
+fn stable_knot_mean(knots: &[Real]) -> Result<Real, GeometryError> {
+    let divisor = knots.len() as Real;
+    let direct = knots.iter().sum::<Real>() / divisor;
+    if direct.is_finite() {
+        return Ok(direct);
+    }
+    let scale = knots.iter().map(|knot| knot.abs()).fold(0.0, Real::max);
+    let mean = knots.iter().map(|knot| knot / scale).sum::<Real>() / divisor * scale;
+    require_finite([mean], "periodic Greville abscissa")?;
+    Ok(mean)
 }
 
 pub(crate) fn bspline_basis_values(
@@ -3560,6 +3906,262 @@ mod tests {
             );
         }
         assert_eq!(clamped.try_make_non_periodic().unwrap(), clamped);
+    }
+
+    #[test]
+    fn make_periodic_without_smoothing_matches_rhino_control_rotation_and_knots() {
+        let source = NurbsCurve::try_new(
+            3,
+            vec![
+                point(1.0, 0.0),
+                point(4.0, -1.0),
+                Point3::try_new(6.0, 2.0, 1.0).unwrap(),
+                point(4.0, 5.0),
+                Point3::try_new(0.0, 4.0, -1.0).unwrap(),
+                point(-2.0, 1.0),
+                point(1.0, 0.0),
+            ],
+            vec![
+                10.0, 10.0, 10.0, 10.0, 11.0, 13.0, 19.0, 25.0, 25.0, 25.0, 25.0,
+            ],
+        )
+        .unwrap();
+
+        let periodic = source.try_make_periodic(false).unwrap();
+
+        assert!(periodic.is_periodic());
+        assert!(periodic.is_closed().unwrap());
+        assert_eq!(periodic.domain(), 10.0..=25.0);
+        let expected_points = [
+            [-2.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [4.0, -1.0, 0.0],
+            [6.0, 2.0, 1.0],
+            [4.0, 5.0, 0.0],
+            [0.0, 4.0, -1.0],
+            [-2.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [4.0, -1.0, 0.0],
+        ];
+        assert_eq!(periodic.control_points().len(), expected_points.len());
+        for (control, expected) in periodic.control_points().iter().zip(expected_points) {
+            assert_point_near(control.point(), Point3::try_from(expected).unwrap());
+            assert_eq!(control.weight(), 1.0);
+        }
+        let expected_knots = [
+            5.227272727272728,
+            5.227272727272728,
+            7.613636363636364,
+            10.0,
+            12.386363636363637,
+            14.772727272727273,
+            16.136363636363637,
+            20.227272727272727,
+            22.613636363636363,
+            25.0,
+            27.386363636363637,
+            29.772727272727273,
+            29.772727272727273,
+        ];
+        for (actual, expected) in periodic.knots().iter().zip(expected_knots) {
+            assert!((actual - expected).abs() <= 4.0e-15);
+        }
+    }
+
+    #[test]
+    fn make_periodic_without_smoothing_handles_single_span_odd_degrees() {
+        let cubic = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0),
+                point(5.0, -2.0),
+                Point3::try_new(4.0, 6.0, 1.0).unwrap(),
+                point(0.0, 0.0),
+            ],
+            vec![3.0, 3.0, 3.0, 3.0, 11.0, 11.0, 11.0, 11.0],
+        )
+        .unwrap();
+
+        let periodic = cubic.try_make_periodic(false).unwrap();
+
+        assert!(periodic.is_periodic());
+        assert_eq!(periodic.control_points().len(), 6);
+        let expected_knots = [
+            -2.333333333333333,
+            -2.333333333333333,
+            0.3333333333333335,
+            3.0,
+            5.666666666666666,
+            8.333333333333334,
+            11.0,
+            13.666666666666666,
+            16.333333333333332,
+            16.333333333333332,
+        ];
+        for (actual, expected) in periodic.knots().iter().zip(expected_knots) {
+            assert!((actual - expected).abs() <= 4.0e-15);
+        }
+    }
+
+    #[test]
+    fn make_periodic_with_smoothing_matches_rhino_homogeneous_interpolation() {
+        let source = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([-1.0, 0.0, 0.0], 0.75),
+                ([2.0, -2.0, 0.0], 1.5),
+                ([4.0, 2.0, 1.0], 0.6),
+                ([0.0, 4.0, 0.0], 1.8),
+                ([-1.0, 0.0, 0.0], 0.75),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+
+        let periodic = source.try_make_periodic(true).unwrap();
+
+        assert!(periodic.is_periodic());
+        assert!(periodic.is_closed().unwrap());
+        assert_eq!(periodic.domain(), source.domain());
+        assert_eq!(
+            periodic.knots(),
+            &[-3.0, -3.0, 0.0, 2.0, 5.0, 8.0, 10.0, 10.0]
+        );
+        let expected = [
+            (
+                [-0.5057939242092077, 4.476041340432196, 0.0],
+                1.5350961538461538,
+            ),
+            (
+                [1.8129330254041567, -2.651270207852194, 0.0],
+                1.2490384615384615,
+            ),
+            (
+                [3.8504479669193663, 1.893866299104066, 0.8600964851826325],
+                0.697596153846154,
+            ),
+            (
+                [-0.5057939242092077, 4.476041340432196, 0.0],
+                1.5350961538461538,
+            ),
+            (
+                [1.8129330254041567, -2.651270207852194, 0.0],
+                1.2490384615384615,
+            ),
+        ];
+        for (control, (expected_point, expected_weight)) in
+            periodic.control_points().iter().zip(expected)
+        {
+            assert_point_near(control.point(), Point3::try_from(expected_point).unwrap());
+            assert!((control.weight() - expected_weight).abs() <= 2.0e-15);
+        }
+    }
+
+    #[test]
+    fn smooth_periodic_greville_phase_starts_with_the_first_in_domain_value() {
+        let source_knots = [0.0, 0.0, 0.0, 0.0, 0.1, 9.0, 9.5, 10.0, 10.0, 10.0, 10.0];
+        let knots = periodic_knots_preserving_active(3, 7, &source_knots).unwrap();
+        let parameters = periodic_greville_parameters(3, 7, 4, &knots).unwrap();
+        let expected = [3.033333333333333, 6.2, 9.5, 9.866666666666667];
+        for (actual, expected) in parameters.into_iter().zip(expected) {
+            assert!((actual - expected).abs() <= 2.0e-15);
+        }
+
+        let source_knots = [0.0, 0.0, 0.0, 9.8, 9.9, 10.0, 10.0, 10.0];
+        let knots = periodic_knots_preserving_active(2, 5, &source_knots).unwrap();
+        let parameters = periodic_greville_parameters(2, 5, 3, &knots).unwrap();
+        assert!((parameters[0] - 4.9).abs() <= 4.0e-15);
+        assert!((parameters[1] - 9.85).abs() <= 4.0e-15);
+        assert!((parameters[2] - 9.95).abs() <= 4.0e-15);
+    }
+
+    #[test]
+    fn make_periodic_validates_degree_closure_and_smooth_control_count() {
+        let linear_loop = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(2.0, 0.0), point(0.0, 0.0)],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+        )
+        .unwrap();
+        assert_eq!(
+            linear_loop.try_make_periodic(false),
+            Err(GeometryError::PeriodicNurbsDegreeTooLow)
+        );
+
+        let open = NurbsCurve::try_clamped_uniform(
+            2,
+            vec![point(0.0, 0.0), point(1.0, 2.0), point(3.0, 0.0)],
+        )
+        .unwrap();
+        assert_eq!(
+            open.try_make_periodic(false),
+            Err(GeometryError::PeriodicCurveMustBeClosed)
+        );
+
+        let short_quadratic = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(5.0, -2.0),
+                Point3::try_new(4.0, 6.0, 1.0).unwrap(),
+                point(0.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 9.9, 10.0, 10.0, 10.0],
+        )
+        .unwrap();
+        assert_eq!(
+            short_quadratic.try_make_periodic(true),
+            Err(GeometryError::InsufficientSmoothPeriodicControlPoints {
+                degree: 2,
+                required: 5,
+                actual: 4,
+            })
+        );
+
+        let short_cubic = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0),
+                point(4.0, 0.0),
+                point(5.0, 3.0),
+                point(0.0, 4.0),
+                point(0.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        assert_eq!(
+            short_cubic.try_make_periodic(true),
+            Err(GeometryError::InsufficientSmoothPeriodicControlPoints {
+                degree: 3,
+                required: 6,
+                actual: 5,
+            })
+        );
+        assert!(short_cubic.try_make_periodic(false).unwrap().is_periodic());
+    }
+
+    #[test]
+    fn make_periodic_is_a_no_op_for_periodic_curves() {
+        let periodic = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(1.0, 2.0),
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        assert_eq!(periodic.try_make_periodic(false).unwrap(), periodic);
+        assert_eq!(periodic.try_make_periodic(true).unwrap(), periodic);
     }
 
     #[test]

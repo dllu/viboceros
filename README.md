@@ -40,6 +40,7 @@ FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=Curr
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
 MakeUniform
 MakeUniformUV Direction=U
+MakePeriodic Smooth=Yes DeleteInput=Yes
 MakeNonPeriodic
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
@@ -271,6 +272,17 @@ are first converted to their exact NURBS form. Both surface directions are
 changed. `MakeUniformUV Direction=U|V` performs the same operation on selected
 untrimmed NURBS surfaces in one direction only and defaults to U. Changing knot
 spacing can change the object shape.
+`MakePeriodic Smooth=Yes|No DeleteInput=Yes|No` converts selected closed
+degree-two-or-higher curves and one eligible closed direction of each selected
+untrimmed NURBS surface in place; smoothing defaults to Yes. U is chosen first
+when both surface directions are eligible, so running the command again
+converts V. `Smooth=Yes` retains active knot breaks and solves the seam in
+homogeneous space, while `Smooth=No` retains existing controls as closely as
+Rhino permits and redistributes seam knots. Active domains are preserved, and
+rational inputs are solved without discarding their weights. `DeleteInput=Yes`
+replaces inputs in place by default; No retains the selected sources and adds
+unselected copies with their attributes and group memberships. Both modes
+support undo.
 `MakeNonPeriodic` converts every selected periodic NURBS curve or surface to
 the equivalent clamped form in place. It preserves the active domains,
 parameterization, shape, object identity, attributes, and selection; surfaces
@@ -970,6 +982,18 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/make_non_periodic.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_make_periodic.json \
+  --absolute-epsilon 2e-11 --relative-epsilon 2e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_make_periodic_degrees.json \
+  --absolute-epsilon 2e-11 --relative-epsilon 2e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_make_periodic.json \
+  --absolute-epsilon 2e-11 --relative-epsilon 2e-12
 ```
 
 The same workflow is importable for instrumentation and tests:
