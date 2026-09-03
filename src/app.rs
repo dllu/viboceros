@@ -227,6 +227,10 @@ enum InteractiveCommand {
     SrfSeam {
         direction: Option<InteractiveIsocurveDirection>,
     },
+    SubCrv {
+        start: Option<Point3>,
+        copy: bool,
+    },
     Move {
         start: Option<Point3>,
     },
@@ -328,6 +332,7 @@ impl InteractiveCommand {
             Self::InsertControlPoint { .. } => "InsertControlPoint",
             Self::CrvSeam => "CrvSeam",
             Self::SrfSeam { .. } => "SrfSeam",
+            Self::SubCrv { .. } => "SubCrv",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
@@ -572,6 +577,12 @@ impl InteractiveCommand {
             Self::SrfSeam { .. } => {
                 "SrfSeam: pick a new seam location on the selected closed surface (Esc to cancel)"
             }
+            Self::SubCrv { start: None, .. } => {
+                "SubCrv: pick the subcurve start on the selected curve (Esc to cancel)"
+            }
+            Self::SubCrv { start: Some(_), .. } => {
+                "SubCrv: pick the directed subcurve end on the selected curve (Esc to cancel)"
+            }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -753,6 +764,7 @@ impl InteractiveCommand {
             | Self::InsertControlPoint { .. }
             | Self::CrvSeam
             | Self::SrfSeam { .. }
+            | Self::SubCrv { start: None, .. }
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -779,6 +791,7 @@ impl InteractiveCommand {
             | Self::MeshCone { center: start, .. }
             | Self::MeshCylinder { center: start, .. }
             | Self::MeshSphere { center: start, .. }
+            | Self::SubCrv { start, .. }
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
@@ -2046,6 +2059,28 @@ impl VibocerosApp {
                 });
             }
             InteractiveCommand::SrfSeam { direction }
+        } else if normalized == "subcrv" {
+            let mut copy = false;
+            let mut copy_seen = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if !name.eq_ignore_ascii_case("Copy") || copy_seen {
+                    return false;
+                }
+                copy = if value.eq_ignore_ascii_case("Yes") {
+                    true
+                } else if value.eq_ignore_ascii_case("No") {
+                    false
+                } else {
+                    return false;
+                };
+                copy_seen = true;
+            }
+            InteractiveCommand::SubCrv { start: None, copy }
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
             let mut ignore_trims = false;
@@ -2330,6 +2365,7 @@ impl VibocerosApp {
                 | InteractiveCommand::InsertControlPoint { .. }
                 | InteractiveCommand::CrvSeam
                 | InteractiveCommand::SrfSeam { .. }
+                | InteractiveCommand::SubCrv { .. }
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -3540,6 +3576,27 @@ impl VibocerosApp {
                     format!(" Direction={}", direction.option_value())
                 });
                 self.execute_command(&format!("SrfSeam {}{direction}", format_model_point(point)));
+            }
+            InteractiveCommand::SubCrv { start: None, copy } => {
+                let command = InteractiveCommand::SubCrv {
+                    start: Some(point),
+                    copy,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Start: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::SubCrv {
+                start: Some(start),
+                copy,
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "SubCrv {} {} Copy={}",
+                    format_model_point(start),
+                    format_model_point(point),
+                    if copy { "Yes" } else { "No" }
+                ));
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -7063,6 +7120,74 @@ mod tests {
 
         app.document.clear_selection();
         assert!(app.try_start_interactive_command("SrfSeam"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_subcurve_uses_two_directed_curve_picks_and_copy_option() {
+        let mut app = test_app();
+        app.execute_command("Line 0,0 10,0");
+        let source_id = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source_id, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        let source = app.document.object(source_id).unwrap().clone();
+
+        assert!(app.try_start_interactive_command("SubCrv Copy=Yes"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SubCrv {
+                start: None,
+                copy: true,
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("subcurve start"));
+        app.accept_drafting_point(point(8.0, 0.0, 0.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SubCrv {
+                start: Some(point(8.0, 0.0, 0.0)),
+                copy: true,
+            })
+        );
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("directed subcurve end")
+        );
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().count(), 2);
+        assert_eq!(app.document.object(source_id).unwrap(), &source);
+        let output = app
+            .document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap();
+        let Geometry::NurbsCurve(curve) = output.geometry() else {
+            panic!("interactive SubCrv must create exact NURBS geometry")
+        };
+        assert!(
+            curve
+                .evaluate(*curve.domain().start())
+                .unwrap()
+                .is_near(point(8.0, 0.0, 0.0), app.document.tolerance())
+        );
+        assert!(
+            curve
+                .evaluate(*curve.domain().end())
+                .unwrap()
+                .is_near(point(2.0, 0.0, 0.0), app.document.tolerance())
+        );
+        assert_eq!(app.document.undo_label(), Some("SubCrv"));
+
+        assert!(!app.try_start_interactive_command("SubCrv Parameter=0.2,0.8"));
+        assert!(!app.try_start_interactive_command("SubCrv Copy=Yes Copy=No"));
+        app.document.clear_selection();
+        assert!(app.try_start_interactive_command("SubCrv"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
     }

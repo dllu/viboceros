@@ -5797,6 +5797,34 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_subcurve_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        start = _finite(operation["start"], "subcurve start parameter")
+        end = _finite(operation["end"], "subcurve end parameter")
+
+        def extract_subcurve():
+            if source.IsClosed or start < end:
+                result = source.Trim(Rhino.Geometry.Interval(start, end))
+            else:
+                result = source.Trim(Rhino.Geometry.Interval(end, start))
+                if result is not None and not result.Reverse():
+                    result.Dispose()
+                    raise ValueError("Rhino could not reverse the open subcurve")
+            if result is None:
+                raise ValueError("Rhino subcurve extraction failed")
+            try:
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                result.Dispose()
+
+        try:
+            return _measure(iterations, extract_subcurve)
+        finally:
+            source.Dispose()
+
     if kind == "surface_change_seam_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

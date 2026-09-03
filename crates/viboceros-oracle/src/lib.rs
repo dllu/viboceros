@@ -562,6 +562,12 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         domain: Option<[f64; 2]>,
     },
+    CurveSubcurveGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        start: f64,
+        end: f64,
+    },
     CurveInsertControlPointGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1053,6 +1059,7 @@ impl Operation {
             | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveChangeSeamGeometry { id, .. }
             | Self::CurveReparameterizeGeometry { id, .. }
+            | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
@@ -2908,6 +2915,15 @@ fn execute(
             };
             let (curve, elapsed) = measure(iterations, || {
                 source.try_reparameterized(black_box(domain[0])..=black_box(domain[1]))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::CurveSubcurveGeometry {
+            curve, start, end, ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_subcurve(black_box(*start), black_box(*end))
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -8626,6 +8642,33 @@ mod tests {
         assert_eq!(response.results[0].value["domain"], json!([-4.0, 6.0]));
         assert_eq!(response.results[1].value["domain_u"], json!([0.0, 5.0]));
         assert_eq!(response.results[1].value["domain_v"], json!([0.0, 12.0]));
+    }
+
+    #[test]
+    fn captures_directed_subcurve_geometry() {
+        let response = run_request(&request(vec![Operation::CurveSubcurveGeometry {
+            id: "reverse-open-subcurve".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: [[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 1.0, 1.0],
+                domain: None,
+            },
+            start: 0.8,
+            end: 0.2,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 1);
+        assert_eq!(curve["domain"], json!([-0.8, -0.2]));
+        assert_eq!(curve["closed"], false);
+        assert_eq!(curve["periodic"], false);
+        assert_eq!(curve["control_points"][0]["point"], json!([8.0, 0.0, 0.0]));
+        assert_eq!(curve["control_points"][1]["point"], json!([2.0, 0.0, 0.0]));
     }
 
     #[test]

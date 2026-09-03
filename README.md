@@ -185,6 +185,7 @@ CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
+SubCrv 8,0,0 2,0,0 Copy=Yes
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -782,6 +783,15 @@ or OpenNURBS' longest-control-polygon surface size. Analytic curves are changed
 to exact NURBS form so the new domain can be retained; geometry, orientation,
 periodicity, object identity, attributes, groups, selection, and undo are
 preserved.
+`SubCrv start_point end_point` replaces one selected curve with the exact
+directed portion between the closest curve locations; omit both points for two
+viewport picks, or use `Parameter=start,end` for exact parameters. Reversing
+the point order reverses an open result and crosses the existing seam on a
+closed curve, matching Rhino/OpenNURBS trim behavior. `Copy=Yes` retains the
+source and adds an attribute-preserving result to its groups. Lines, analytic
+curves, polylines, and NURBS curves are converted to exact rational NURBS form
+as needed; replacement preserves identity, attributes, groups, selection, and
+undo.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input
@@ -1082,6 +1092,9 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/reparameterize_automatic.json \
   --relative-epsilon 1e-8
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_subcurve.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

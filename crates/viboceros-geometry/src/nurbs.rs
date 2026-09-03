@@ -2188,6 +2188,92 @@ impl NurbsCurve {
         }
     }
 
+    /// Extracts the directed subcurve from `start` to `end`.
+    ///
+    /// Increasing parameters retain the natural curve direction. Decreasing
+    /// parameters reverse an open subcurve; on a closed curve they select the
+    /// forward portion that crosses the existing seam, matching Rhino's
+    /// directed `SubCrv` selection behavior.
+    pub fn try_subcurve(&self, start: Real, end: Real) -> Result<Self, GeometryError> {
+        if !start.is_finite() || !end.is_finite() || start == end {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+        let domain = self.domain();
+        let domain_start = *domain.start();
+        let domain_end = *domain.end();
+        if start < domain_start || start > domain_end || end < domain_start || end > domain_end {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+        if start < end {
+            return self.try_trimmed(start..=end);
+        }
+        if !self.is_closed()? {
+            return self.try_trimmed(end..=start)?.reversed();
+        }
+        if start == domain_end {
+            return self.try_trimmed(domain_start..=end);
+        }
+        if end == domain_start {
+            return self.try_trimmed(start..=domain_end);
+        }
+
+        let left = self.try_trimmed(start..=domain_end)?;
+        let wrapped_end = translate_curve_parameter(end, domain_start, domain_end, 1)?;
+        let right = self
+            .try_trimmed(domain_start..=end)?
+            .try_reparameterized(domain_end..=wrapped_end)?;
+        left.try_append_clamped(&right)
+    }
+
+    fn try_append_clamped(&self, next: &Self) -> Result<Self, GeometryError> {
+        if self.degree != next.degree {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+        let degree = self.degree;
+        let left_end = *self.domain().end();
+        let right_start = *next.domain().start();
+        if left_end != right_start
+            || !self.knots[self.knots.len() - degree - 1..]
+                .iter()
+                .all(|knot| *knot == left_end)
+            || !next.knots[..=degree]
+                .iter()
+                .all(|knot| *knot == right_start)
+        {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+
+        let left_control = self.control_points[self.control_points.len() - 1];
+        let right_control = next.control_points[0];
+        let left_point = left_control.point();
+        let right_point = right_control.point();
+        let join = Point3::try_new(
+            0.5 * left_point.x() + 0.5 * right_point.x(),
+            0.5 * left_point.y() + 0.5 * right_point.y(),
+            0.5 * left_point.z() + 0.5 * right_point.z(),
+        )?;
+        let mut controls = self.control_points.clone();
+        *controls
+            .last_mut()
+            .expect("a validated NURBS curve has a final control") =
+            WeightedPoint3::try_new(join, left_control.weight())?;
+        let weight_scale = left_control.weight() / right_control.weight();
+        require_finite([weight_scale], "appended NURBS curve weight scale")?;
+        controls.extend(
+            next.control_points
+                .iter()
+                .skip(1)
+                .map(|control| {
+                    WeightedPoint3::try_new(control.point(), control.weight() * weight_scale)
+                })
+                .collect::<Result<Vec<_>, _>>()?,
+        );
+
+        let mut knots = self.knots[..self.knots.len() - 1].to_vec();
+        knots.extend_from_slice(&next.knots[degree + 1..]);
+        Self::try_new_rational(degree, controls, knots)
+    }
+
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
         let control_points = self
             .control_points
@@ -6137,6 +6223,87 @@ mod tests {
             curve.evaluate(0.0).unwrap(),
         );
         assert_eq!(curve.try_trimmed(curve.domain()).unwrap(), curve);
+    }
+
+    #[test]
+    fn directed_subcurves_reverse_open_curves_and_cross_closed_seams() {
+        let open = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(-2.0, 1.0), 0.75).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 4.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(5.0, -2.0), 0.5).unwrap(),
+                WeightedPoint3::try_new(point(8.0, 3.0), 1.25).unwrap(),
+            ],
+            vec![-2.0, -1.0, 0.0, 0.8, 2.0, 3.0, 4.0],
+        )
+        .unwrap();
+        assert_eq!(
+            open.try_subcurve(0.25, 1.6).unwrap(),
+            open.try_trimmed(0.25..=1.6).unwrap()
+        );
+        let reversed = open.try_subcurve(1.6, 0.25).unwrap();
+        assert_eq!(reversed.domain(), -1.6..=-0.25);
+        assert_point_near(
+            reversed.evaluate(-1.6).unwrap(),
+            open.evaluate(1.6).unwrap(),
+        );
+        assert_point_near(
+            reversed.evaluate(-0.25).unwrap(),
+            open.evaluate(0.25).unwrap(),
+        );
+
+        let closed = NurbsCurve::try_control_point_curve_with_closure(
+            3,
+            vec![
+                point(-3.0, 0.0),
+                point(-1.0, 3.0),
+                point(2.0, 4.0),
+                point(5.0, 1.0),
+                point(4.0, -3.0),
+                point(0.0, -4.0),
+            ],
+            ControlPointCurveClosure::Smooth,
+        )
+        .unwrap();
+        let domain = closed.domain();
+        let period = *domain.end() - *domain.start();
+        let start = closed.parameter_at(0.8).unwrap();
+        let end = closed.parameter_at(0.2).unwrap();
+        let wrapped = closed.try_subcurve(start, end).unwrap();
+        assert_eq!(wrapped.domain(), start..=end + period);
+        assert!(!wrapped.is_closed().unwrap());
+        for sample in 0..=32 {
+            let parameter = start + (end + period - start) * sample as Real / 32.0;
+            let source_parameter = if parameter <= *domain.end() {
+                parameter
+            } else {
+                parameter - period
+            };
+            assert_point_near(
+                wrapped.evaluate(parameter).unwrap(),
+                closed.evaluate(source_parameter).unwrap(),
+            );
+        }
+        assert_eq!(
+            closed.try_subcurve(*domain.end(), end).unwrap(),
+            closed.try_trimmed(*domain.start()..=end).unwrap()
+        );
+        assert_eq!(
+            closed.try_subcurve(start, *domain.start()).unwrap(),
+            closed.try_trimmed(start..=*domain.end()).unwrap()
+        );
+
+        for (start, end) in [
+            (0.5, 0.5),
+            (Real::NAN, 0.5),
+            (*open.domain().start() - 1.0, 0.5),
+        ] {
+            assert_eq!(
+                open.try_subcurve(start, end),
+                Err(GeometryError::InvalidCurveTrimInterval)
+            );
+        }
     }
 
     #[test]

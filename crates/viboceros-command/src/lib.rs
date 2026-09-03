@@ -413,6 +413,9 @@ impl CommandRegistry {
             .register(ReparameterizeCommand)
             .expect("unique built-in command");
         registry
+            .register(SubcurveCommand)
+            .expect("unique built-in command");
+        registry
             .register(DirectionCommand)
             .expect("unique built-in command");
         registry
@@ -11420,6 +11423,121 @@ fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOpti
     ))
 }
 
+const SUBCURVE_USAGE: &str =
+    "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum SubcurveLocation {
+    Parameters([Real; 2]),
+    Points([Point3; 2]),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct SubcurveOptions {
+    location: SubcurveLocation,
+    copy: bool,
+}
+
+struct SubcurveCommand;
+
+impl Command for SubcurveCommand {
+    fn name(&self) -> &'static str {
+        "SubCrv"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_subcurve_options(arguments)?;
+        let mut candidates = document
+            .selected_objects()
+            .filter_map(|object| {
+                object
+                    .geometry()
+                    .nurbs_curve_representation()
+                    .transpose()
+                    .map(|curve| curve.map(|curve| (object.id(), curve)))
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if candidates.len() != 1 {
+            return Err(CommandError::SubcurveRequiresOneCurve {
+                actual: candidates.len(),
+            });
+        }
+        let (id, curve) = candidates.pop().expect("one subcurve source was required");
+        let [start, end] = match options.location {
+            SubcurveLocation::Parameters(parameters) => parameters,
+            SubcurveLocation::Points(points) => [
+                curve.closest_parameter(points[0], document.tolerance())?,
+                curve.closest_parameter(points[1], document.tolerance())?,
+            ],
+        };
+        let geometry = Geometry::NurbsCurve(curve.try_subcurve(start, end)?);
+        if options.copy {
+            document.copy_object_geometries_into_source_groups([(id, geometry)])?;
+        } else {
+            document.replace_object_geometries([(id, geometry)])?;
+        }
+        Ok(format!(
+            "Created a directed subcurve from parameter {start} to {end}, {} the input",
+            if options.copy {
+                "retaining"
+            } else {
+                "replacing"
+            }
+        ))
+    }
+}
+
+fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, CommandError> {
+    let Some(first) = arguments.first() else {
+        return Err(CommandError::Usage(SUBCURVE_USAGE));
+    };
+    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
+    let (location, mut index) = if option_name_eq(first_name, "Parameter") {
+        let (name, value, consumed) = orient_option(arguments, 0, SUBCURVE_USAGE)?;
+        if !option_name_eq(name, "Parameter") {
+            return Err(CommandError::Usage(SUBCURVE_USAGE));
+        }
+        let values = value.split(',').collect::<Vec<_>>();
+        if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
+            return Err(CommandError::Usage(SUBCURVE_USAGE));
+        }
+        (
+            SubcurveLocation::Parameters([
+                parse_finite_real(values[0])?,
+                parse_finite_real(values[1])?,
+            ]),
+            consumed,
+        )
+    } else {
+        let (start, start_consumed) = parse_point(arguments).map_err(|error| match error {
+            CommandError::Usage(_) => CommandError::Usage(SUBCURVE_USAGE),
+            error => error,
+        })?;
+        let (end, end_consumed) =
+            parse_point(&arguments[start_consumed..]).map_err(|error| match error {
+                CommandError::Usage(_) => CommandError::Usage(SUBCURVE_USAGE),
+                error => error,
+            })?;
+        (
+            SubcurveLocation::Points([start, end]),
+            start_consumed + end_consumed,
+        )
+    };
+
+    let mut copy = false;
+    let mut copy_seen = false;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
+        if !option_name_eq(name, "Copy") || copy_seen {
+            return Err(CommandError::Usage(SUBCURVE_USAGE));
+        }
+        copy = parse_yes_no(value).ok_or(CommandError::Usage(SUBCURVE_USAGE))?;
+        copy_seen = true;
+        index += consumed;
+    }
+    Ok(SubcurveOptions { location, copy })
+}
+
 const DIRECTION_USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
 
@@ -18446,6 +18564,9 @@ pub enum CommandError {
     )]
     ReparameterizeRequiresOneObject { actual: usize },
 
+    #[error("SubCrv requires exactly one selected curve, got {actual}")]
+    SubcurveRequiresOneCurve { actual: usize },
+
     #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
@@ -19030,7 +19151,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -23267,6 +23388,187 @@ mod tests {
                 .find(|object| object.id() == surface_id)
                 .unwrap()
         );
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn subcurve_replaces_a_curve_without_losing_document_state() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New Subcurves")
+            .unwrap();
+        registry
+            .execute(&mut document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry
+            .execute(&mut document, "SetObjectName Shortened")
+            .unwrap();
+        registry.execute(&mut document, "Group Directed").unwrap();
+        let before = document.object(id).unwrap().clone();
+        let source = before
+            .geometry()
+            .nurbs_curve_representation()
+            .unwrap()
+            .unwrap();
+        let expected = source.try_subcurve(0.2, 0.8).unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "SubCrv Parameter=0.2,0.8")
+                .unwrap(),
+            "Created a directed subcurve from parameter 0.2 to 0.8, replacing the input"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected.clone()));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("Directed")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("SubCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(id).unwrap(), &before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(expected)
+        );
+    }
+
+    #[test]
+    fn subcurve_point_order_reverses_open_curves_and_copy_retains_groups() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName DirectedCopy")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group SubcurveCopies")
+            .unwrap();
+        let source = document.object(source_id).unwrap().clone();
+
+        registry
+            .execute(&mut document, "SubCrv 8,0 2,0 Copy=Yes")
+            .unwrap();
+        assert_eq!(document.objects().count(), 2);
+        assert_eq!(document.object(source_id).unwrap(), &source);
+        let copy = document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap();
+        let copy_id = copy.id();
+        assert_eq!(copy.attributes(), source.attributes());
+        let Geometry::NurbsCurve(curve) = copy.geometry() else {
+            panic!("SubCrv must create exact NURBS geometry")
+        };
+        assert!(curve.evaluate(*curve.domain().start()).unwrap().is_near(
+            Point3::try_new(8.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(curve.evaluate(*curve.domain().end()).unwrap().is_near(
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(document.is_selected(source_id));
+        assert!(!document.is_selected(copy_id));
+        let members = document
+            .group_by_name("SubcurveCopies")
+            .unwrap()
+            .members()
+            .collect::<BTreeSet<_>>();
+        assert_eq!(members, BTreeSet::from([source_id, copy_id]));
+        assert_eq!(document.undo_label(), Some("SubCrv"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 1);
+        assert_eq!(document.object(source_id).unwrap(), &source);
+    }
+
+    #[test]
+    fn subcurve_crosses_a_closed_curve_seam_in_pick_order() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 0,0 5").unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let source = document
+            .object(id)
+            .unwrap()
+            .geometry()
+            .nurbs_curve_representation()
+            .unwrap()
+            .unwrap();
+        let expected = source.try_subcurve(5.0, 1.0).unwrap();
+
+        registry
+            .execute(&mut document, "SubCrv Parameter=5,1 Copy=No")
+            .unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsCurve(expected)
+        );
+    }
+
+    #[test]
+    fn subcurve_rejects_invalid_or_ambiguous_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "SubCrv",
+            "SubCrv Parameter",
+            "SubCrv Parameter=0.2",
+            "SubCrv Parameter=0.2,0.8 Copy=Maybe",
+            "SubCrv 0,0 1,0 Copy=No Copy=Yes",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(SUBCURVE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "SubCrv Parameter=0.2,0.8"),
+            Err(CommandError::SubcurveRequiresOneCurve { actual: 0 })
+        ));
+
+        registry.execute(&mut document, "Line 0,0 2,0").unwrap();
+        registry.execute(&mut document, "Line 0,1 2,1").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "SubCrv Parameter=0.2,0.8"),
+            Err(CommandError::SubcurveRequiresOneCurve { actual: 2 })
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let first = before[0].id();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "SubCrv Parameter=0.5,0.5"),
+            Err(CommandError::Geometry(
+                GeometryError::InvalidCurveTrimInterval
+            ))
+        ));
+        assert_eq!(document.object(first).unwrap(), &before[0]);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 
