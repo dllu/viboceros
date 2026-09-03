@@ -90,6 +90,15 @@ pub enum GeometryError {
     #[error("the NURBS degree-change interpolation system could not be solved reliably")]
     DegreeChangeSolveFailed,
 
+    #[error("the NURBS knot-removal interpolation system could not be solved reliably")]
+    KnotRemovalSolveFailed,
+
+    #[error("knot removal is not supported for a periodic NURBS {direction}")]
+    PeriodicKnotRemovalUnsupported { direction: &'static str },
+
+    #[error("there is no removable NURBS knot near parameter {parameter}")]
+    NoRemovableKnot { parameter: f64 },
+
     #[error("B-rep trim/isocurve intersection did not converge")]
     TrimIntersectionDidNotConverge,
 

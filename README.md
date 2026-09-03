@@ -44,6 +44,7 @@ MakeUniformUV Direction=U
 MakePeriodic Smooth=Yes DeleteInput=Yes
 MakeNonPeriodic
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
+RemoveKnot 0.52,3.1 Direction=V
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -305,6 +306,15 @@ through the relevant degree. `Symmetrical=Yes` also inserts the parameter
 mirrored across the active domain. Rational refinement and periodic repair
 follow Rhino/OpenNURBS behavior; identity, attributes, selection, and undo are
 preserved.
+`RemoveKnot parameter|u,v Direction=U|V` requires exactly one selected curve
+or untrimmed NURBS surface and removes one knot in place. On curves, the
+parameter identifies a curve point and the knot with the nearest model-space
+point is selected, matching Rhino. On surfaces, U is the default and the knot
+value nearest the chosen coordinate is removed consistently across the whole
+control net. Remaining homogeneous controls are interpolated at Greville
+abscissae; rational weights, object identity, attributes, selection, and undo
+are preserved. Periodic directions are rejected, while non-clamped directions
+are first clamped without changing their active domain.
 `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
@@ -989,6 +999,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_insert_knot.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/remove_knot.json \
+  --absolute-epsilon 2e-11 --relative-epsilon 2e-12
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/make_non_periodic.json

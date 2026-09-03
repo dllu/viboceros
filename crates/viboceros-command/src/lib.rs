@@ -133,6 +133,9 @@ impl CommandRegistry {
             .register(InsertKnotCommand)
             .expect("unique built-in command");
         registry
+            .register(RemoveKnotCommand)
+            .expect("unique built-in command");
+        registry
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
@@ -2343,7 +2346,7 @@ impl Command for InsertKnotCommand {
         let (id, geometry) = candidates.pop().expect("one candidate was required");
         let (geometry, inserted, kind) = match geometry {
             Geometry::NurbsCurve(curve) => {
-                let InsertKnotLocation::Scalar(parameter) = options.location else {
+                let KnotLocation::Scalar(parameter) = options.location else {
                     return Err(CommandError::InsertKnotCurveRequiresParameter);
                 };
                 let before = curve.knots().len();
@@ -2373,25 +2376,26 @@ impl Command for InsertKnotCommand {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum InsertKnotLocation {
+enum KnotLocation {
     Scalar(Real),
     Surface { u: Real, v: Real },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct InsertKnotOptions {
-    location: InsertKnotLocation,
+    location: KnotLocation,
     multiplicity: usize,
     direction: SurfaceKnotDirection,
     symmetrical: bool,
 }
 
 fn parse_insert_knot_options(arguments: &[&str]) -> Result<InsertKnotOptions, CommandError> {
-    let location = parse_insert_knot_location(
+    let location = parse_knot_location(
         arguments
             .first()
             .copied()
             .ok_or(CommandError::Usage(INSERT_KNOT_USAGE))?,
+        INSERT_KNOT_USAGE,
     )?;
     let mut options = InsertKnotOptions {
         location,
@@ -2435,17 +2439,17 @@ fn parse_insert_knot_options(arguments: &[&str]) -> Result<InsertKnotOptions, Co
     Ok(options)
 }
 
-fn parse_insert_knot_location(argument: &str) -> Result<InsertKnotLocation, CommandError> {
+fn parse_knot_location(argument: &str, usage: &'static str) -> Result<KnotLocation, CommandError> {
     let coordinates = argument.split(',').collect::<Vec<_>>();
     match coordinates.as_slice() {
         [parameter] if !parameter.is_empty() => {
-            Ok(InsertKnotLocation::Scalar(parse_finite_real(parameter)?))
+            Ok(KnotLocation::Scalar(parse_finite_real(parameter)?))
         }
-        [u, v] if !u.is_empty() && !v.is_empty() => Ok(InsertKnotLocation::Surface {
+        [u, v] if !u.is_empty() && !v.is_empty() => Ok(KnotLocation::Surface {
             u: parse_finite_real(u)?,
             v: parse_finite_real(v)?,
         }),
-        _ => Err(CommandError::Usage(INSERT_KNOT_USAGE)),
+        _ => Err(CommandError::Usage(usage)),
     }
 }
 
@@ -2485,14 +2489,14 @@ fn insert_surface_knots(
     options: InsertKnotOptions,
 ) -> Result<NurbsSurface, CommandError> {
     let (u, v) = match options.location {
-        InsertKnotLocation::Scalar(parameter) => match options.direction {
+        KnotLocation::Scalar(parameter) => match options.direction {
             SurfaceKnotDirection::U => (Some(parameter), None),
             SurfaceKnotDirection::V => (None, Some(parameter)),
             SurfaceKnotDirection::Both => {
                 return Err(CommandError::InsertKnotBothDirectionsRequireUv);
             }
         },
-        InsertKnotLocation::Surface { u, v } => match options.direction {
+        KnotLocation::Surface { u, v } => match options.direction {
             SurfaceKnotDirection::U => (Some(u), None),
             SurfaceKnotDirection::V => (None, Some(v)),
             SurfaceKnotDirection::Both => (Some(u), Some(v)),
@@ -2597,6 +2601,118 @@ fn mirrored_parameter(
             context: "symmetrical NURBS parameter",
         })
     }
+}
+
+const REMOVE_KNOT_USAGE: &str = "RemoveKnot parameter|u,v [Direction=U|V]";
+
+struct RemoveKnotCommand;
+
+impl Command for RemoveKnotCommand {
+    fn name(&self) -> &'static str {
+        "RemoveKnot"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_remove_knot_options(arguments)?;
+        let mut candidates = Vec::new();
+        for object in document.selected_objects() {
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface.clone()),
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    Geometry::NurbsCurve(curve)
+                }
+            };
+            candidates.push((object.id(), geometry));
+        }
+        if candidates.len() != 1 {
+            return Err(CommandError::RemoveKnotRequiresOneObject {
+                actual: candidates.len(),
+            });
+        }
+
+        let (id, geometry) = candidates.pop().expect("one candidate was required");
+        let (geometry, description) = match geometry {
+            Geometry::NurbsCurve(curve) => {
+                let KnotLocation::Scalar(parameter) = options.location else {
+                    return Err(CommandError::RemoveKnotCurveRequiresParameter);
+                };
+                (
+                    Geometry::NurbsCurve(curve.try_remove_knot_near(parameter)?),
+                    "curve",
+                )
+            }
+            Geometry::NurbsSurface(surface) => {
+                let parameter = match (options.location, options.direction) {
+                    (KnotLocation::Scalar(parameter), _) => parameter,
+                    (KnotLocation::Surface { u, .. }, SurfaceKnotDirection::U) => u,
+                    (KnotLocation::Surface { v, .. }, SurfaceKnotDirection::V) => v,
+                    (_, SurfaceKnotDirection::Both) => {
+                        unreachable!("RemoveKnot only parses U or V")
+                    }
+                };
+                let (surface, description) = match options.direction {
+                    SurfaceKnotDirection::U => (
+                        surface.try_remove_knot_u_near(parameter)?,
+                        "surface U direction",
+                    ),
+                    SurfaceKnotDirection::V => (
+                        surface.try_remove_knot_v_near(parameter)?,
+                        "surface V direction",
+                    ),
+                    SurfaceKnotDirection::Both => unreachable!("RemoveKnot only parses U or V"),
+                };
+                (Geometry::NurbsSurface(surface), description)
+            }
+            _ => unreachable!("RemoveKnot candidates are converted to NURBS geometry"),
+        };
+
+        document.replace_object_geometries([(id, geometry)])?;
+        Ok(format!(
+            "Removed one knot from selected NURBS {description}"
+        ))
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct RemoveKnotOptions {
+    location: KnotLocation,
+    direction: SurfaceKnotDirection,
+}
+
+fn parse_remove_knot_options(arguments: &[&str]) -> Result<RemoveKnotOptions, CommandError> {
+    let location = parse_knot_location(
+        arguments
+            .first()
+            .copied()
+            .ok_or(CommandError::Usage(REMOVE_KNOT_USAGE))?,
+        REMOVE_KNOT_USAGE,
+    )?;
+    let mut direction = SurfaceKnotDirection::U;
+    let mut direction_seen = false;
+    let mut index = 1;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, REMOVE_KNOT_USAGE)?;
+        if !option_name_eq(name, "Direction") || direction_seen {
+            return Err(CommandError::Usage(REMOVE_KNOT_USAGE));
+        }
+        let value = value.trim_start_matches(['_', '-']);
+        direction = if value.eq_ignore_ascii_case("U") {
+            SurfaceKnotDirection::U
+        } else if value.eq_ignore_ascii_case("V") {
+            SurfaceKnotDirection::V
+        } else {
+            return Err(CommandError::Usage(REMOVE_KNOT_USAGE));
+        };
+        direction_seen = true;
+        index += consumed;
+    }
+    Ok(RemoveKnotOptions {
+        location,
+        direction,
+    })
 }
 
 struct SrfPtCommand;
@@ -17547,6 +17663,14 @@ pub enum CommandError {
     #[error("InsertKnot Direction=Both on a surface requires a u,v parameter pair")]
     InsertKnotBothDirectionsRequireUv,
 
+    #[error(
+        "RemoveKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
+    )]
+    RemoveKnotRequiresOneObject { actual: usize },
+
+    #[error("RemoveKnot on a curve requires one scalar parameter, not a u,v pair")]
+    RemoveKnotCurveRequiresParameter,
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -18076,7 +18200,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -28519,6 +28643,165 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "InsertKnot 0.5"),
             Err(CommandError::InsertKnotBothDirectionsRequireUv)
+        ));
+    }
+
+    #[test]
+    fn remove_knot_updates_curves_and_surfaces_in_place_and_undoes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Knot removal", ColorRgb::new(37, 91, 145))
+            .unwrap();
+        let source_curve = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 1.0).unwrap(),
+                Point3::try_new(5.0, -1.0, 2.0).unwrap(),
+                Point3::try_new(7.0, 3.0, -1.0).unwrap(),
+                Point3::try_new(9.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 5.0, 2.0).unwrap(),
+                Point3::try_new(15.0, -2.0, 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+        let curve_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source_curve.clone()),
+                ObjectAttributes::on_layer(layer).with_name("removable curve"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([curve_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "RemoveKnot 2").unwrap(),
+            "Removed one knot from selected NURBS curve"
+        );
+        let object = document.object(curve_id).unwrap();
+        let Geometry::NurbsCurve(curve) = object.geometry() else {
+            panic!("RemoveKnot must retain NURBS curve geometry")
+        };
+        assert_eq!(
+            curve.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 1.0, 5.0, 8.0, 8.0, 8.0, 8.0]
+        );
+        assert_eq!(object.attributes().layer_id(), layer);
+        assert_eq!(object.attributes().name(), Some("removable curve"));
+        assert!(document.is_selected(curve_id));
+        assert!(document.is_selected(point_id));
+        assert_eq!(document.undo_label(), Some("RemoveKnot"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source_curve)
+        );
+
+        let source_surface = rational_multi_span_surface();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(source_surface.clone()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "_RemoveKnot 0.5,11.3 Direction _V")
+                .unwrap(),
+            "Removed one knot from selected NURBS surface V direction"
+        );
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("RemoveKnot must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.control_point_count_v(), 3);
+        assert_eq!(surface.knots_v(), &[10.0, 10.0, 10.0, 14.0, 14.0, 14.0]);
+        assert_eq!(surface.knots_u(), source_surface.knots_u());
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source_surface)
+        );
+    }
+
+    #[test]
+    fn remove_knot_rejects_invalid_or_ineligible_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(5.0, -1.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.4, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        let second_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveKnot 0.4"),
+            Err(CommandError::RemoveKnotRequiresOneObject { actual: 0 })
+        ));
+        document
+            .select_objects([curve_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveKnot 0.4"),
+            Err(CommandError::RemoveKnotRequiresOneObject { actual: 2 })
+        ));
+
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "RemoveKnot",
+            "RemoveKnot 0.4,0.5",
+            "RemoveKnot nope",
+            "RemoveKnot NaN",
+            "RemoveKnot 0.4 Direction=Both",
+            "RemoveKnot 0.4 Direction=U Direction=V",
+            "RemoveKnot 0.4 Extra=Yes",
+            "RemoveKnot 0",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(curve_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(source.clone()),
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+
+        let periodic_id = document
+            .add_geometry(Geometry::NurbsCurve(periodic_cubic_curve()))
+            .unwrap();
+        document
+            .select_objects([periodic_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveKnot 4"),
+            Err(CommandError::Geometry(
+                GeometryError::PeriodicKnotRemovalUnsupported { .. }
+            ))
         ));
     }
 

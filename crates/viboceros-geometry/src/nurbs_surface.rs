@@ -1552,6 +1552,36 @@ impl NurbsSurface {
         )
     }
 
+    /// Removes the U knot value nearest `parameter` and adjusts every fixed-V
+    /// homogeneous control curve using Rhino's Greville-collocation rule.
+    /// Midpoint ties select the higher knot value. A non-clamped U direction
+    /// is clamped without changing its active domain before interpolation.
+    pub fn try_remove_knot_u_near(&self, parameter: Real) -> Result<Self, GeometryError> {
+        if self.is_periodic_u() {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported {
+                direction: "surface U direction",
+            });
+        }
+        self.map_u_control_curves(|curve| {
+            curve.try_remove_knot_near_parameter_with_periodic_topology(parameter, false)
+        })
+    }
+
+    /// Removes the V knot value nearest `parameter` and adjusts every fixed-U
+    /// homogeneous control curve using Rhino's Greville-collocation rule.
+    /// Midpoint ties select the higher knot value. A non-clamped V direction
+    /// is clamped without changing its active domain before interpolation.
+    pub fn try_remove_knot_v_near(&self, parameter: Real) -> Result<Self, GeometryError> {
+        if self.is_periodic_v() {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported {
+                direction: "surface V direction",
+            });
+        }
+        self.map_v_control_curves(|curve| {
+            curve.try_remove_knot_near_parameter_with_periodic_topology(parameter, false)
+        })
+    }
+
     /// Matches the high-dimensional non-rational curve that OpenNURBS uses
     /// internally for surface U insertion. Rational controls are compared in
     /// their stored homogeneous form, including their weights.
@@ -5587,6 +5617,96 @@ mod tests {
                 assert_point_near(refined_v.evaluate(u, v).unwrap(), expected);
             }
         }
+    }
+
+    #[test]
+    fn knot_removal_maps_surface_rows_and_columns_like_rhino() {
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    let z = [
+                        [0.0, 2.0, -1.0, 3.0, 0.0],
+                        [1.0, 5.0, 0.0, 4.0, 2.0],
+                        [-1.0, 1.0, 4.0, -2.0, 3.0],
+                        [2.0, -1.0, 3.0, 1.0, 0.0],
+                    ][v][u];
+                    point([0.0, 2.0, 5.0, 8.0, 11.0][u], [0.0, 3.0, 7.0, 10.0][v], z)
+                })
+            })
+            .collect();
+        let surface = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            4,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+
+        let removed_u = surface.try_remove_knot_u_near(4.8).unwrap();
+        assert_eq!(
+            (
+                removed_u.control_point_count_u(),
+                removed_u.control_point_count_v()
+            ),
+            (4, 4)
+        );
+        assert_eq!(removed_u.knots_u(), &[0.0, 0.0, 0.0, 2.0, 8.0, 8.0, 8.0]);
+        assert_eq!(removed_u.knots_v(), surface.knots_v());
+        assert_point_near(
+            removed_u.control_point(1, 0).unwrap().point(),
+            point(2.0750000000000006, 0.0, 1.6333333333333337),
+        );
+
+        let removed_v = surface.try_remove_knot_v_near(1.1).unwrap();
+        assert_eq!(
+            (
+                removed_v.control_point_count_u(),
+                removed_v.control_point_count_v()
+            ),
+            (5, 3)
+        );
+        assert_eq!(removed_v.knots_u(), surface.knots_u());
+        assert_eq!(removed_v.knots_v(), &[-2.0, -2.0, -2.0, 6.0, 6.0, 6.0]);
+        assert_point_near(
+            removed_v.control_point(0, 1).unwrap().point(),
+            point(0.0, 6.040000000000003, -1.1600000000000001),
+        );
+
+        let periodic_row = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+        ];
+        let mut periodic_controls = periodic_row.to_vec();
+        periodic_controls.extend(periodic_row.map(|point| {
+            point
+                .translated(Vector3::try_new(0.0, 0.0, 3.0).unwrap())
+                .unwrap()
+        }));
+        let periodic = NurbsSurface::try_new(
+            3,
+            1,
+            7,
+            2,
+            periodic_controls,
+            vec![0.0, 0.0, 1.0, 3.0, 6.0, 10.0, 11.0, 13.0, 16.0, 20.0, 20.0],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        assert!(periodic.is_periodic_u());
+        assert_eq!(
+            periodic.try_remove_knot_u_near(6.0),
+            Err(GeometryError::PeriodicKnotRemovalUnsupported {
+                direction: "surface U direction"
+            })
+        );
     }
 
     #[test]

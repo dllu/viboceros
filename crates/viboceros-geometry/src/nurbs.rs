@@ -708,7 +708,11 @@ impl NurbsCurve {
 
         let source = self.clamped_to_active_domain()?;
         let knots = changed_degree_knots(source.degree, desired_degree, deformable, &source.knots)?;
-        source.interpolate_homogeneous_in_basis(desired_degree, knots)
+        source.interpolate_homogeneous_in_basis(
+            desired_degree,
+            knots,
+            GeometryError::DegreeChangeSolveFailed,
+        )
     }
 
     /// Converts a periodic curve to the equivalent clamped, non-periodic form
@@ -904,13 +908,14 @@ impl NurbsCurve {
         &self,
         degree: usize,
         knots: Vec<Real>,
+        solve_failure: GeometryError,
     ) -> Result<Self, GeometryError> {
         let control_count = knots
             .len()
             .checked_sub(degree)
             .and_then(|count| count.checked_sub(1))
             .ok_or(GeometryError::InvalidKnotVector {
-                context: "degree-changed knot vector is too short",
+                context: "basis-interpolation knot vector is too short",
             })?;
         let weight_scale = self
             .control_points
@@ -921,12 +926,12 @@ impl NurbsCurve {
         let mut targets = Vec::new();
         rows.try_reserve_exact(control_count)
             .map_err(|_| GeometryError::InvalidKnotVector {
-                context: "degree-change interpolation rows exceed addressable memory",
+                context: "basis-interpolation rows exceed addressable memory",
             })?;
         targets
             .try_reserve_exact(control_count)
             .map_err(|_| GeometryError::InvalidKnotVector {
-                context: "degree-change interpolation targets exceed addressable memory",
+                context: "basis-interpolation targets exceed addressable memory",
             })?;
         for control in 0..control_count {
             let parameter = stable_knot_mean(&knots[control + 1..control + degree + 1])?;
@@ -947,7 +952,7 @@ impl NurbsCurve {
         let mut controls = Vec::new();
         controls.try_reserve_exact(control_count).map_err(|_| {
             GeometryError::InvalidKnotVector {
-                context: "degree-changed controls exceed addressable memory",
+                context: "basis-interpolated controls exceed addressable memory",
             }
         })?;
         for row in 0..control_count {
@@ -960,10 +965,10 @@ impl NurbsCurve {
             ];
             require_finite(
                 coordinates.into_iter().chain([normalized_weight, weight]),
-                "degree-changed homogeneous controls",
+                "basis-interpolated homogeneous controls",
             )?;
             if normalized_weight == 0.0 || weight == 0.0 {
-                return Err(GeometryError::DegreeChangeSolveFailed);
+                return Err(solve_failure.clone());
             }
             controls.push(WeightedPoint3::try_new(
                 Point3::try_from(coordinates)?,
@@ -1400,6 +1405,65 @@ impl NurbsCurve {
         Ok(self.knots.iter().filter(|knot| **knot == parameter).count())
     }
 
+    /// Removes the knot whose curve point is nearest the point at `parameter`
+    /// and adjusts the homogeneous controls to match Rhino's result.
+    ///
+    /// Rhino's scripting API performs this model-space search rather than
+    /// comparing parameter distances. The first knot wins equal-distance
+    /// ties, and choosing an active-domain endpoint fails because endpoint
+    /// knots are not removable. Periodic curves are rejected because removing
+    /// one knot cannot retain their cyclic control topology. Non-clamped ends
+    /// are shape-preservingly clamped before interpolation so the result keeps
+    /// the source active domain and a valid knot vector.
+    pub fn try_remove_knot_near(&self, parameter: Real) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        if self.is_periodic() {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported { direction: "curve" });
+        }
+        let knot_index = self.closest_active_knot_index_by_curve_point(parameter)?;
+        self.try_remove_selected_knot(parameter, knot_index)
+    }
+
+    pub(crate) fn try_remove_knot_near_parameter_with_periodic_topology(
+        &self,
+        parameter: Real,
+        periodic: bool,
+    ) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        if periodic {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported { direction: "curve" });
+        }
+        let knot_index = self.nearest_active_knot_index_by_parameter(parameter)?;
+        self.try_remove_selected_knot(parameter, knot_index)
+    }
+
+    fn try_remove_selected_knot(
+        &self,
+        parameter: Real,
+        knot_index: usize,
+    ) -> Result<Self, GeometryError> {
+        let first_removable = self.degree + 1;
+        let last_removable = self.control_points.len() - 1;
+        if knot_index < first_removable || knot_index > last_removable {
+            return Err(GeometryError::NoRemovableKnot { parameter });
+        }
+
+        let knot = self.knots[knot_index];
+        let source = self.clamped_to_active_domain()?;
+        let first_removable = source.degree + 1;
+        let last_removable = source.control_points.len() - 1;
+        let clamped_index = (first_removable..=last_removable)
+            .find(|index| source.knots[*index] == knot)
+            .ok_or(GeometryError::NoRemovableKnot { parameter })?;
+        let mut knots = source.knots.clone();
+        knots.remove(clamped_index);
+        source.interpolate_homogeneous_in_basis(
+            source.degree,
+            knots,
+            GeometryError::KnotRemovalSolveFailed,
+        )
+    }
+
     /// Inserts `parameter` until its full-knot-vector multiplicity is at least
     /// `target_multiplicity`, without changing the curve's parameterization or
     /// geometric image.
@@ -1571,6 +1635,53 @@ impl NurbsCurve {
     fn checked_span(&self, parameter: Real) -> Result<usize, GeometryError> {
         self.validate_parameter(parameter)?;
         Ok(self.find_span(parameter))
+    }
+
+    fn closest_active_knot_index_by_curve_point(
+        &self,
+        parameter: Real,
+    ) -> Result<usize, GeometryError> {
+        let target = self.evaluate(parameter)?;
+        let domain = self.domain();
+        let mut closest = None;
+        for knot_index in 1..self.knots.len() - 1 {
+            let knot = self.knots[knot_index];
+            if knot < *domain.start() || knot > *domain.end() {
+                continue;
+            }
+            let distance = self.evaluate(knot)?.distance_to(target)?;
+            if closest.is_none_or(|(_, closest_distance)| distance < closest_distance) {
+                closest = Some((knot_index, distance));
+            }
+        }
+        closest
+            .map(|(knot_index, _)| knot_index)
+            .ok_or(GeometryError::NoRemovableKnot { parameter })
+    }
+
+    fn nearest_active_knot_index_by_parameter(
+        &self,
+        parameter: Real,
+    ) -> Result<usize, GeometryError> {
+        let first = self.degree;
+        let last = self.control_points.len();
+        let active_knots = &self.knots[first..=last];
+        let upper = active_knots.partition_point(|knot| *knot <= parameter);
+        if upper == 0 {
+            return Ok(first);
+        }
+        if upper == active_knots.len() {
+            return Ok(last);
+        }
+
+        let lower_index = first + upper - 1;
+        let upper_index = first + upper;
+        let midpoint = stable_knot_mean(&[self.knots[lower_index], self.knots[upper_index]])?;
+        Ok(if parameter < midpoint {
+            lower_index
+        } else {
+            upper_index
+        })
     }
 
     fn validate_parameter(&self, parameter: Real) -> Result<(), GeometryError> {
@@ -3978,6 +4089,124 @@ mod tests {
             fully_refined.try_insert_knot(0.52, 2).unwrap(),
             fully_refined
         );
+    }
+
+    #[test]
+    fn knot_removal_matches_rhino_nearest_and_greville_rules() {
+        let source = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 4.0),
+                point(5.0, -1.0),
+                point(7.0, 3.0),
+                point(9.0, 1.0),
+                point(12.0, 5.0),
+                point(15.0, -2.0),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+
+        // Parameter 1.95 is numerically nearer knot one, but its curve point
+        // is nearer the point at knot three; Rhino therefore removes three.
+        let removed = source.try_remove_knot_near(1.95).unwrap();
+        assert_eq!(removed.degree(), 3);
+        assert_eq!(
+            removed.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 1.0, 5.0, 8.0, 8.0, 8.0, 8.0]
+        );
+        let expected = [
+            [0.0, 0.0, 0.0],
+            [2.0145063256868987, 3.71309711419245, 0.0],
+            [6.824390238905354, -0.8601625027947495, 0.0],
+            [7.66282653203088, 2.112986366500404, 0.0],
+            [12.02374775546043, 4.5303221697825595, 0.0],
+            [15.0, -2.0, 0.0],
+        ];
+        for (control, expected) in removed.control_points().iter().zip(expected) {
+            assert_point_near(control.point(), Point3::try_from(expected).unwrap());
+        }
+
+        assert!(matches!(
+            source.try_remove_knot_near(0.1),
+            Err(GeometryError::NoRemovableKnot { parameter: 0.1 })
+        ));
+        assert!(matches!(
+            source.try_remove_knot_near(Real::NAN),
+            Err(GeometryError::NonFinite { .. })
+        ));
+
+        let periodic = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0),
+                point(3.0, -1.0),
+                point(5.0, 4.0),
+                point(0.0, 0.0),
+                point(3.0, -1.0),
+            ],
+            vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+        )
+        .unwrap();
+        assert!(periodic.is_periodic());
+        assert_eq!(
+            periodic.try_remove_knot_near(1.0),
+            Err(GeometryError::PeriodicKnotRemovalUnsupported { direction: "curve" })
+        );
+    }
+
+    #[test]
+    fn knot_removal_handles_repeated_rational_knots() {
+        let source = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([-1.0, 0.0, 0.0], 0.7),
+                ([2.0, 5.0, 1.0], 1.6),
+                ([6.0, -2.0, 0.0], 0.8),
+                ([9.0, 4.0, -1.0], 1.3),
+                ([12.0, 0.0, 2.0], 0.9),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![-2.0, -2.0, -2.0, 1.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let removed = source.try_remove_knot_near(1.0).unwrap();
+        assert_eq!(removed.knots(), &[-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0]);
+        let expected_weights = [0.7, 1.3708333333333331, 1.0708333333333335, 0.9];
+        for (control, expected) in removed.control_points().iter().zip(expected_weights) {
+            assert!((control.weight() - expected).abs() <= 2.0e-15);
+        }
+
+        let non_clamped = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([0.0, 0.0, 0.0], 0.5),
+                ([2.0, 4.0, 1.0], 1.1),
+                ([5.0, -1.0, 2.0], 0.8),
+                ([8.0, 2.0, 0.0], 1.4),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![8.0, 9.0, 10.0, 11.5, 14.0, 15.0, 16.0],
+        )
+        .unwrap();
+        let endpoints = [
+            non_clamped.evaluate(10.0).unwrap(),
+            non_clamped.evaluate(14.0).unwrap(),
+        ];
+        let removed = non_clamped.try_remove_knot_near(11.3).unwrap();
+        assert_eq!(removed.domain(), 10.0..=14.0);
+        assert_eq!(removed.knots(), &[10.0, 10.0, 10.0, 14.0, 14.0, 14.0]);
+        assert_point_near(removed.evaluate(10.0).unwrap(), endpoints[0]);
+        assert_point_near(removed.evaluate(14.0).unwrap(), endpoints[1]);
     }
 
     #[test]

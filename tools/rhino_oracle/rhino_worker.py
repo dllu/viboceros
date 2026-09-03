@@ -5659,6 +5659,31 @@ def _execute(operation, iterations, tolerance):
         finally:
             curve.Dispose()
 
+    if kind == "curve_remove_knot_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "curve knot parameter")
+
+        def remove_curve_knot():
+            nurbs = curve.Duplicate()
+            if nurbs is None:
+                raise ValueError("Rhino could not duplicate curve for knot removal")
+            try:
+                if not isinstance(nurbs, Rhino.Geometry.NurbsCurve):
+                    raise ValueError("Rhino duplicate was not a NURBS curve")
+                if not nurbs.Knots.RemoveKnotAt(parameter):
+                    raise ValueError("Rhino curve knot removal failed")
+                definition = _nurbs_curve_definition(nurbs)
+                definition["closed"] = bool(nurbs.IsClosed)
+                definition["periodic"] = bool(nurbs.IsPeriodic)
+                return definition
+            finally:
+                nurbs.Dispose()
+
+        try:
+            return _measure(iterations, remove_curve_knot)
+        finally:
+            curve.Dispose()
+
     if kind == "surface_make_uniform_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
@@ -5793,6 +5818,55 @@ def _execute(operation, iterations, tolerance):
                 surface.Dispose()
 
         return _measure(iterations, insert_surface_knot)
+
+    if kind == "surface_remove_knot_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface knot direction must be u or v")
+        parameter = _finite(operation["parameter"], "surface knot parameter")
+
+        def remove_surface_knot():
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, True, degree_u + 1, degree_v + 1, count_u, count_v
+            )
+            if surface is None:
+                raise ValueError("could not allocate NURBS surface")
+            try:
+                _set_surface_controls(
+                    surface, operation["control_points"], count_u, count_v
+                )
+                _set_knots(
+                    surface.KnotsU, operation["knots_u"], "surface U knot"
+                )
+                _set_knots(
+                    surface.KnotsV, operation["knots_v"], "surface V knot"
+                )
+                if not surface.IsValid:
+                    raise ValueError("NURBS surface is invalid")
+                knots = surface.KnotsU if direction == "u" else surface.KnotsV
+                degree = degree_u if direction == "u" else degree_v
+                point_count = count_u if direction == "u" else count_v
+                knot_index = min(
+                    range(degree - 1, point_count),
+                    key=lambda index: (
+                        abs(float(knots[index]) - parameter),
+                        -float(knots[index]),
+                    ),
+                )
+                if not knots.RemoveKnots(knot_index, knot_index + 1):
+                    raise ValueError("Rhino surface knot removal failed")
+                definition = _nurbs_surface_definition(surface)
+                definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                return definition
+            finally:
+                surface.Dispose()
+
+        return _measure(iterations, remove_surface_knot)
 
     if kind == "curve_change_degree_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])

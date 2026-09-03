@@ -1,0 +1,88 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_remove_knot_geometry",
+      "id": "cubic-middle",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]},
+          {"point": [15, -2, 1]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 5, 8, 8, 8, 8]
+      },
+      "parameter": 3
+    },
+    {
+      "op": "curve_remove_knot_geometry",
+      "id": "rational-quadratic-repeated",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-1, 0, 0], "weight": 0.7},
+          {"point": [2, 5, 1], "weight": 1.6},
+          {"point": [6, -2, 0], "weight": 0.8},
+          {"point": [9, 4, -1], "weight": 1.3},
+          {"point": [12, 0, 2], "weight": 0.9}
+        ],
+        "knots": [-2, -2, -2, 1, 1, 6, 6, 6]
+      },
+      "parameter": 1
+    },
+    {
+      "op": "curve_remove_knot_geometry",
+      "id": "model-space-nearest",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]},
+          {"point": [15, -2, 1]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 5, 8, 8, 8, 8]
+      },
+      "parameter": 1.95
+    },
+    {
+      "op": "surface_remove_knot_geometry",
+      "id": "surface-remove-u",
+      "degree_u": 2,
+      "degree_v": 2,
+      "control_point_count_u": 5,
+      "control_point_count_v": 4,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 2]}, {"point": [5, 0, -1]}, {"point": [8, 0, 3]}, {"point": [11, 0, 0]},
+        {"point": [0, 3, 1]}, {"point": [2, 3, 5]}, {"point": [5, 3, 0]}, {"point": [8, 3, 4]}, {"point": [11, 3, 2]},
+        {"point": [0, 7, -1]}, {"point": [2, 7, 1]}, {"point": [5, 7, 4]}, {"point": [8, 7, -2]}, {"point": [11, 7, 3]},
+        {"point": [0, 10, 2]}, {"point": [2, 10, -1]}, {"point": [5, 10, 3]}, {"point": [8, 10, 1]}, {"point": [11, 10, 0]}
+      ],
+      "knots_u": [0, 0, 0, 2, 5, 8, 8, 8],
+      "knots_v": [-2, -2, -2, 1, 6, 6, 6],
+      "direction": "u",
+      "parameter": 4.8
+    },
+    {
+      "op": "surface_remove_knot_geometry",
+      "id": "surface-remove-v",
+      "degree_u": 2,
+      "degree_v": 2,
+      "control_point_count_u": 5,
+      "control_point_count_v": 4,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 2]}, {"point": [5, 0, -1]}, {"point": [8, 0, 3]}, {"point": [11, 0, 0]},
+        {"point": [0, 3, 1]}, {"point": [2, 3, 5]}, {"point": [5, 3, 0]}, {"point": [8, 3, 4]}, {"point": [11, 3, 2]},
+        {"point": [0, 7, -1]}, {"point": [2, 7, 1]}, {"point": [5, 7, 4]}, {"point": [8, 7, -2]}, {"point": [11, 7, 3]},
+        {"point": [0, 10, 2]}, {"point": [2, 10, -1]}, {"point": [5, 10, 3]}, {"point": [8, 10, 1]}, {"point": [11, 10, 0]}
+      ],
+      "knots_u": [0, 0, 0, 2, 5, 8, 8, 8],
+      "knots_v": [-2, -2, -2, 1, 6, 6, 6],
+      "direction": "v",
+      "parameter": 1.1
+    }
+  ]
+}
