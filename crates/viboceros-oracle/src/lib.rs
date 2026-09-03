@@ -461,6 +461,15 @@ pub enum Operation {
         axial_extent: f64,
         both_branches: bool,
     },
+    Helix {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        height: f64,
+        turns: f64,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -666,6 +675,7 @@ impl Operation {
             | Self::Parabola { id, .. }
             | Self::ParabolaThreePoint { id, .. }
             | Self::Hyperbola { id, .. }
+            | Self::Helix { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2191,6 +2201,31 @@ fn execute(
                 }),
                 elapsed,
             )
+        }
+        Operation::Helix {
+            origin,
+            x_axis,
+            y_axis,
+            radius,
+            height,
+            turns,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (curve, elapsed) = measure(iterations, || {
+                NurbsCurve::try_helix(
+                    frame,
+                    black_box(*radius),
+                    black_box(*height),
+                    black_box(*turns),
+                )
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
         }
         Operation::Paraboloid {
             origin,

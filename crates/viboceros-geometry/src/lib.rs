@@ -24,6 +24,7 @@ mod point;
 mod point2;
 mod point_cloud;
 mod polyline;
+mod spiral;
 mod tolerance;
 mod transform;
 mod vector;
@@ -62,6 +63,7 @@ pub use point2::Point2;
 pub use polyline::{
     JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, PolylineClosure, join_polylines,
 };
+pub use spiral::MAX_SPIRAL_CONTROL_POINTS;
 pub use tolerance::Tolerance;
 pub use transform::AffineTransform3;
 pub use vector::{UnitVector3, Vector3};

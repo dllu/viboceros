@@ -1,0 +1,46 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "helix",
+      "id": "three-turn-world-z",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height": 10,
+      "turns": 3
+    },
+    {
+      "op": "helix",
+      "id": "quarter-turn",
+      "origin": [1, -2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 1.5,
+      "height": 0.75,
+      "turns": 0.25
+    },
+    {
+      "op": "helix",
+      "id": "fractional-reverse",
+      "origin": [-4, 7, 2],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 0, -1],
+      "radius": 3,
+      "height": 8,
+      "turns": -1.25
+    },
+    {
+      "op": "helix",
+      "id": "oblique-frame",
+      "origin": [3, 5, -7],
+      "x_axis": [1, 1, 0],
+      "y_axis": [-1, 1, 2],
+      "radius": 0.75,
+      "height": 6.9,
+      "turns": 2.3
+    }
+  ]
+}

@@ -173,6 +173,9 @@ impl CommandRegistry {
             .register(HyperbolaCommand)
             .expect("unique built-in command");
         registry
+            .register(HelixCommand)
+            .expect("unique built-in command");
+        registry
             .register(TruncatedConeCommand)
             .expect("unique built-in command");
         registry
@@ -2543,6 +2546,7 @@ const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point t
 const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
 const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point | Conic Apex start apex end rho-or-through-point | Conic start Apex apex end rho-or-through-point";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
+const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
@@ -2711,6 +2715,21 @@ struct HyperbolaDefinition {
     semi_conjugate_axis: Real,
     axial_extent: Real,
     foci: [Point3; 2],
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum HelixAdvance {
+    Turns(Real),
+    Pitch(Real),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct HelixCommandOptions {
+    axis_start: Point3,
+    axis_end: Point3,
+    radius: AxialPrimitiveRadius,
+    advance: HelixAdvance,
+    reverse_twist: bool,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -3398,6 +3417,97 @@ fn parse_hyperbola_options(arguments: &[&str]) -> Result<HyperbolaCommandOptions
         both_branches,
         mark_foci,
         show_asymptotes,
+    })
+}
+
+fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, CommandError> {
+    let (axis_start, start_consumed) = parse_point(arguments)?;
+    let (axis_end, end_consumed) = parse_point(&arguments[start_consumed..])?;
+    let radius_start = start_consumed + end_consumed;
+    let remaining = &arguments[radius_start..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let (radius, radius_consumed) = if positional_count == 1 && remaining[0].contains(',') {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 1);
+        (AxialPrimitiveRadius::Point(point), consumed)
+    } else if positional_count == 1 {
+        (
+            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
+            1,
+        )
+    } else if positional_count == 3 {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 3);
+        (AxialPrimitiveRadius::Point(point), consumed)
+    } else {
+        return Err(CommandError::Usage(HELIX_USAGE));
+    };
+
+    #[derive(Clone, Copy, Eq, PartialEq)]
+    enum Mode {
+        Turns,
+        Pitch,
+    }
+
+    let mut mode = None;
+    let mut turns = None;
+    let mut pitch = None;
+    let mut reverse_twist = false;
+    let mut reverse_seen = false;
+    for argument in &arguments[radius_start + radius_consumed..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(HELIX_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Mode") && mode.is_none() {
+            mode = if value.eq_ignore_ascii_case("Turns") {
+                Some(Mode::Turns)
+            } else if value.eq_ignore_ascii_case("Pitch") {
+                Some(Mode::Pitch)
+            } else {
+                return Err(CommandError::Usage(HELIX_USAGE));
+            };
+        } else if option_name_eq(name, "Turns") && turns.is_none() {
+            let value = parse_finite_real(value)?;
+            if value <= 0.0 {
+                return Err(CommandError::Usage(HELIX_USAGE));
+            }
+            turns = Some(value);
+        } else if option_name_eq(name, "Pitch") && pitch.is_none() {
+            let value = parse_finite_real(value)?;
+            if value <= 0.0 {
+                return Err(CommandError::Usage(HELIX_USAGE));
+            }
+            pitch = Some(value);
+        } else if option_name_eq(name, "ReverseTwist") && !reverse_seen {
+            reverse_twist = parse_yes_no(value).ok_or(CommandError::Usage(HELIX_USAGE))?;
+            reverse_seen = true;
+        } else {
+            return Err(CommandError::Usage(HELIX_USAGE));
+        }
+    }
+
+    if turns.is_some() && pitch.is_some() {
+        return Err(CommandError::Usage(HELIX_USAGE));
+    }
+    let advance = match mode {
+        Some(Mode::Turns) if pitch.is_none() => HelixAdvance::Turns(turns.unwrap_or(3.0)),
+        Some(Mode::Pitch) if turns.is_none() => {
+            HelixAdvance::Pitch(pitch.ok_or(CommandError::Usage(HELIX_USAGE))?)
+        }
+        None if pitch.is_some() => HelixAdvance::Pitch(pitch.unwrap()),
+        None => HelixAdvance::Turns(turns.unwrap_or(3.0)),
+        _ => return Err(CommandError::Usage(HELIX_USAGE)),
+    };
+    Ok(HelixCommandOptions {
+        axis_start,
+        axis_end,
+        radius,
+        advance,
+        reverse_twist,
     })
 }
 
@@ -4958,6 +5068,42 @@ impl Command for HyperbolaCommand {
             },
             if options.show_asymptotes {
                 "; asymptotes are preview-only"
+            } else {
+                ""
+            }
+        ))
+    }
+}
+
+struct HelixCommand;
+
+impl Command for HelixCommand {
+    fn name(&self) -> &'static str {
+        "Helix"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_helix_options(arguments)?;
+        let tolerance = document.tolerance();
+        let axis = options.axis_start.vector_to(options.axis_end)?;
+        let height = axis.length()?;
+        let (frame, radius) =
+            axial_primitive_frame(options.axis_start, options.radius, axis, tolerance)?;
+        let turn_count = match options.advance {
+            HelixAdvance::Turns(turn_count) => turn_count,
+            HelixAdvance::Pitch(pitch) => height / pitch,
+        };
+        let signed_turn_count = if options.reverse_twist {
+            -turn_count
+        } else {
+            turn_count
+        };
+        let curve = NurbsCurve::try_helix(frame, radius, height, signed_turn_count)?;
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added NURBS helix {id} (radius {radius:.6}, height {height:.6}, turns {turn_count:.6}{})",
+            if options.reverse_twist {
+                ", reverse twist"
             } else {
                 ""
             }
@@ -15866,7 +16012,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -17538,6 +17684,110 @@ mod tests {
             "Hyperbola 0,0,0 5,0,0 3.75,3,0 A=3",
             "Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes BothBranches=No",
             "Hyperbola 0,0,0 5,0,0 3.75,3,0 ShowAsymptotes=Maybe",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.undo_label(), None);
+    }
+
+    #[test]
+    fn helix_supports_turn_pitch_radius_point_and_reverse_twist_forms() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+
+        let result = registry
+            .execute(&mut document, "Helix 0,0,0 0,0,10 2 Turns=3")
+            .unwrap();
+        assert!(result.contains("Added NURBS helix"));
+        assert!(result.contains("turns 3.000000"));
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("Helix must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert!(!curve.is_rational());
+        assert_eq!(curve.control_points().len(), 75);
+        assert_eq!(curve.domain(), 0.0..=3.0);
+        assert!(
+            curve
+                .evaluate(1.0 / 24.0)
+                .unwrap()
+                .distance_to(
+                    Point3::try_new(
+                        2.0 * (std::f64::consts::PI / 12.0).cos(),
+                        2.0 * (std::f64::consts::PI / 12.0).sin(),
+                        10.0 / 72.0,
+                    )
+                    .unwrap()
+                )
+                .unwrap()
+                < 2.0e-12
+        );
+        assert_eq!(document.undo_label(), Some("Helix"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(
+                &mut document,
+                "Helix 1,2,3 1,12,3 4,2,3 Mode=Pitch Pitch=4 ReverseTwist=Yes",
+            )
+            .unwrap();
+        assert!(result.contains("turns 2.500000, reverse twist"));
+        let Geometry::NurbsCurve(reverse) = document.objects().next().unwrap().geometry() else {
+            panic!("the pitch form must create a NURBS curve")
+        };
+        assert_eq!(reverse.control_points().len(), 93);
+        assert!(
+            reverse
+                .evaluate(1.0 / 36.0)
+                .unwrap()
+                .distance_to(
+                    Point3::try_new(
+                        1.0 + 3.0 * (std::f64::consts::PI / 18.0).cos(),
+                        2.0 + 10.0 / 90.0,
+                        3.0 + 3.0 * (std::f64::consts::PI / 18.0).sin(),
+                    )
+                    .unwrap()
+                )
+                .unwrap()
+                < 2.0e-12
+        );
+        assert!(
+            reverse
+                .evaluate(2.5)
+                .unwrap()
+                .distance_to(Point3::try_new(-2.0, 12.0, 3.0).unwrap())
+                .unwrap()
+                < 2.0e-12
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Helix 0 0 0 0 0 3 1 Pitch=1")
+            .unwrap();
+        let Geometry::NurbsCurve(inferred_pitch) = document.objects().next().unwrap().geometry()
+        else {
+            panic!("Pitch without an explicit mode must select pitch mode")
+        };
+        assert_eq!(inferred_pitch.control_points().len(), 75);
+        registry.execute(&mut document, "Undo").unwrap();
+
+        for invalid in [
+            "Helix",
+            "Helix 0,0,0 0,0,0 2 Turns=3",
+            "Helix 0,0,0 0,0,10 0 Turns=3",
+            "Helix 0,0,0 0,0,10 0,0,5 Turns=3",
+            "Helix 0,0,0 0,0,10 2 Turns=0",
+            "Helix 0,0,0 0,0,10 2 Pitch=-1",
+            "Helix 0,0,0 0,0,10 2 Turns=3 Pitch=2",
+            "Helix 0,0,0 0,0,10 2 Mode=Turns Pitch=2",
+            "Helix 0,0,0 0,0,10 2 Mode=Pitch Turns=3",
+            "Helix 0,0,0 0,0,10 2 Mode=Pitch",
+            "Helix 0,0,0 0,0,10 2 ReverseTwist=Maybe",
+            "Helix 0,0,0 0,0,10 2 ReverseTwist=Yes ReverseTwist=No",
         ] {
             assert!(
                 registry.execute(&mut document, invalid).is_err(),

@@ -5203,6 +5203,41 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_parabola_three_point)
 
+    if kind == "helix":
+        origin = _point(operation["origin"])
+        plane = Rhino.Geometry.Plane(
+            origin,
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        radius = _finite(operation["radius"], "helix radius")
+        height = _finite(operation["height"], "helix height")
+        turns = _finite(operation["turns"], "helix turns")
+        if not radius > 0.0 or not height > 0.0 or turns == 0.0:
+            raise ValueError("helix dimensions must be positive and nonzero")
+        radius_point = origin + radius * plane.XAxis
+        pitch = height / abs(turns)
+
+        def create_helix():
+            curve = Rhino.Geometry.NurbsCurve.CreateSpiral(
+                origin,
+                plane.ZAxis,
+                radius_point,
+                pitch,
+                turns,
+                radius,
+                radius,
+            )
+            if curve is None:
+                raise ValueError("Rhino could not create helix")
+            try:
+                curve.Domain = Rhino.Geometry.Interval(0.0, abs(turns))
+                return _nurbs_curve_definition(curve)
+            finally:
+                curve.Dispose()
+
+        return _measure(iterations, create_helix)
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

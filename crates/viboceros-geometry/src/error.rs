@@ -136,6 +136,14 @@ pub enum GeometryError {
     #[error("curve interpolation tangents require an open degree-three curve")]
     CurveInterpolationTangentsRequireOpenCubic,
 
+    #[error(
+        "a spiral requires a non-zero finite turn count and at least one non-zero finite radius"
+    )]
+    InvalidSpiralDimensions,
+
+    #[error("a spiral supports at most {maximum} NURBS control points")]
+    TooManySpiralControlPoints { maximum: usize },
+
     #[error("arc-length distance {distance} is outside [0, {length}]")]
     ArcLengthOutOfDomain { distance: f64, length: f64 },
 
