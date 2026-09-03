@@ -370,6 +370,83 @@ impl CurveRef<'_> {
             tangent: derivative.normalized_nonzero()?,
         })
     }
+
+    /// Returns the derivative of the unit tangent with respect to arc length.
+    ///
+    /// This is the curvature vector, including its model-space direction. At
+    /// the interior of a polyline segment it is zero; vertices have no unique
+    /// curvature and deterministically use the active segment's zero value.
+    pub(crate) fn curvature_vector(self, parameter: Real) -> Result<Vector3, GeometryError> {
+        let point = self.evaluate_with_tangent(parameter)?.point();
+        match self {
+            Self::Line(_) | Self::Polyline(_) => Vector3::try_new(0.0, 0.0, 0.0),
+            Self::Circle(circle) => radial_curvature(point, circle.center(), circle.radius()),
+            Self::Arc(arc) => radial_curvature(point, arc.center(), arc.radius()),
+            Self::Ellipse(ellipse) => {
+                let (sine, cosine) = parameter.sin_cos();
+                let first = combine_vectors(
+                    ellipse.x_axis().as_vector(),
+                    ellipse.y_axis().as_vector(),
+                    -ellipse.radius_x() * sine,
+                    ellipse.radius_y() * cosine,
+                )?;
+                let second = combine_vectors(
+                    ellipse.x_axis().as_vector(),
+                    ellipse.y_axis().as_vector(),
+                    -ellipse.radius_x() * cosine,
+                    -ellipse.radius_y() * sine,
+                )?;
+                curvature_from_derivatives(first, second)
+            }
+            Self::NurbsCurve(curve) => {
+                let (_, first, second) = curve.evaluate_with_second_derivative(parameter)?;
+                curvature_from_derivatives(first, second)
+            }
+        }
+    }
+}
+
+fn radial_curvature(point: Point3, center: Point3, radius: Real) -> Result<Vector3, GeometryError> {
+    point
+        .vector_to(center)?
+        .normalized_nonzero()?
+        .as_vector()
+        .scaled(1.0 / radius)
+}
+
+fn combine_vectors(
+    first: Vector3,
+    second: Vector3,
+    first_scale: Real,
+    second_scale: Real,
+) -> Result<Vector3, GeometryError> {
+    let first = first.to_array();
+    let second = second.to_array();
+    Vector3::try_new(
+        first_scale.mul_add(first[0], second_scale * second[0]),
+        first_scale.mul_add(first[1], second_scale * second[1]),
+        first_scale.mul_add(first[2], second_scale * second[2]),
+    )
+}
+
+fn curvature_from_derivatives(first: Vector3, second: Vector3) -> Result<Vector3, GeometryError> {
+    let speed = first.length()?;
+    if speed == 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "curve curvature",
+        });
+    }
+    let tangent = first.normalized_nonzero()?;
+    let tangential = tangent
+        .as_vector()
+        .scaled(tangent.as_vector().dot(second)?)?;
+    Vector3::try_new(
+        second.x() - tangential.x(),
+        second.y() - tangential.y(),
+        second.z() - tangential.z(),
+    )?
+    .scaled(1.0 / speed)?
+    .scaled(1.0 / speed)
 }
 
 fn require_periodic_parameter(parameter: Real, domain_end: Real) -> Result<(), GeometryError> {

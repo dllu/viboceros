@@ -10,10 +10,11 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, Circle3, CircularArc3,
     ControlPointCurveClosure, CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
-    Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
-    MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
-    MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
-    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, MeshConeOptions,
+    DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError,
+    InterpolatedCurveClosure, LineSegment, MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES,
+    MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
+    MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions,
     MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
@@ -2550,7 +2551,7 @@ const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-poi
 const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point | Conic Apex start apex end rho-or-through-point | Conic start Apex apex end rho-or-through-point";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const HELIX_USAGE: &str = "Helix axis-start axis-end radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
-const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No]";
+const SPIRAL_USAGE: &str = "Spiral axis-start axis-end start-radius-or-point end-radius-or-point [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No] | Spiral Flat center start-radius-or-point end-radius-or-point [Axis=x,y,z] [Turns=positive-number] [ReverseTwist=Yes|No] | Spiral AroundCurve start-radius-point end-radius-or-point [PathName=name] [PointsPerTurn=integer-at-least-5] [Mode=Turns Turns=positive-number | Mode=Pitch Pitch=positive-distance] [ReverseTwist=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
@@ -2736,13 +2737,23 @@ struct HelixCommandOptions {
     reverse_twist: bool,
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 enum SpiralAxis {
-    Segment { start: Point3, end: Point3 },
-    Flat { center: Point3, normal: Vector3 },
+    Segment {
+        start: Point3,
+        end: Point3,
+    },
+    Flat {
+        center: Point3,
+        normal: Vector3,
+    },
+    AroundCurve {
+        path_name: Option<String>,
+        points_per_turn: usize,
+    },
 }
 
-#[derive(Clone, Copy, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 struct SpiralCommandOptions {
     axis: SpiralAxis,
     radii: [AxialPrimitiveRadius; 2],
@@ -3582,6 +3593,58 @@ fn parse_helix_options(arguments: &[&str]) -> Result<HelixCommandOptions, Comman
 }
 
 fn parse_spiral_options(arguments: &[&str]) -> Result<SpiralCommandOptions, CommandError> {
+    if arguments.first().is_some_and(|argument| {
+        argument
+            .trim_start_matches('_')
+            .eq_ignore_ascii_case("AroundCurve")
+    }) {
+        let remaining = &arguments[1..];
+        let positional_count = remaining
+            .iter()
+            .take_while(|argument| !argument.contains('='))
+            .count();
+        let radii = parse_spiral_radii(&remaining[..positional_count], SPIRAL_USAGE)?;
+        if !matches!(radii[0], AxialPrimitiveRadius::Point(_)) {
+            return Err(CommandError::Usage(SPIRAL_USAGE));
+        }
+        let mut path_name = None;
+        let mut points_per_turn = DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN;
+        let mut points_per_turn_seen = false;
+        let mut advance_arguments = Vec::new();
+        for argument in &remaining[positional_count..] {
+            if let Some((name, value)) = argument.split_once('=')
+                && option_name_eq(name, "PathName")
+                && path_name.is_none()
+                && !value.is_empty()
+            {
+                path_name = Some(value.to_owned());
+            } else if let Some((name, value)) = argument.split_once('=')
+                && option_name_eq(name, "PointsPerTurn")
+                && !points_per_turn_seen
+            {
+                points_per_turn = value
+                    .parse::<usize>()
+                    .ok()
+                    .filter(|count| *count >= MIN_SWEPT_SPIRAL_POINTS_PER_TURN)
+                    .ok_or(CommandError::Usage(SPIRAL_USAGE))?;
+                points_per_turn_seen = true;
+            } else {
+                advance_arguments.push(*argument);
+            }
+        }
+        let (advance, reverse_twist) =
+            parse_spiral_advance_options(&advance_arguments, SPIRAL_USAGE)?;
+        return Ok(SpiralCommandOptions {
+            axis: SpiralAxis::AroundCurve {
+                path_name,
+                points_per_turn,
+            },
+            radii,
+            advance,
+            reverse_twist,
+        });
+    }
+
     if arguments.first().is_some_and(|argument| {
         argument
             .trim_start_matches('_')
@@ -5254,6 +5317,54 @@ impl Command for SpiralCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_spiral_options(arguments)?;
         let tolerance = document.tolerance();
+        if let SpiralAxis::AroundCurve {
+            path_name,
+            points_per_turn,
+        } = &options.axis
+        {
+            let (path_geometry, path_id) = spiral_curve_path(document, path_name.as_deref())?;
+            let rail = geometry_curve_ref(&path_geometry)
+                .expect("spiral path resolution validates the rail geometry");
+            let endpoint_samples = rail.divide_by_count_samples(1, true, tolerance)?;
+            let radius_point = match options.radii[0] {
+                AxialPrimitiveRadius::Point(point) => point,
+                AxialPrimitiveRadius::Numeric(_) => {
+                    return Err(CommandError::Usage(SPIRAL_USAGE));
+                }
+            };
+            let start_radius = curve_radius_value(endpoint_samples[0], options.radii[0])?;
+            let end_radius = curve_radius_value(endpoint_samples[1], options.radii[1])?;
+            if start_radius <= 0.0 || end_radius < 0.0 {
+                return Err(GeometryError::InvalidSpiralDimensions.into());
+            }
+            let rail_length = rail.length(tolerance)?;
+            let turn_count = match options.advance {
+                SpiralAdvance::Turns(turn_count) => turn_count,
+                SpiralAdvance::Pitch(pitch) => rail_length / pitch,
+            };
+            let signed_turn_count = if options.reverse_twist {
+                -turn_count
+            } else {
+                turn_count
+            };
+            let curve = NurbsCurve::try_swept_spiral(
+                rail,
+                radius_point,
+                signed_turn_count,
+                [start_radius, end_radius],
+                *points_per_turn,
+                tolerance,
+            )?;
+            let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+            return Ok(format!(
+                "Added NURBS spiral {id} around curve {path_id} (radii {start_radius:.6} to {end_radius:.6}, turns {turn_count:.6}, {points_per_turn} points per turn{})",
+                if options.reverse_twist {
+                    ", reverse twist"
+                } else {
+                    ""
+                }
+            ));
+        }
         let (axis_start, axis_end, axis, height) = match options.axis {
             SpiralAxis::Segment { start, end } => {
                 let axis = start.vector_to(end)?;
@@ -5261,6 +5372,9 @@ impl Command for SpiralCommand {
                 (start, end, axis, height)
             }
             SpiralAxis::Flat { center, normal } => (center, center, normal, 0.0),
+            SpiralAxis::AroundCurve { .. } => {
+                unreachable!("around-curve spirals return before axial construction")
+            }
         };
         let (frame, start_radius) =
             axial_primitive_frame(axis_start, options.radii[0], axis, tolerance)?;
@@ -5289,6 +5403,62 @@ impl Command for SpiralCommand {
             }
         ))
     }
+}
+
+fn curve_radius_value(
+    sample: CurveSample,
+    radius: AxialPrimitiveRadius,
+) -> Result<Real, CommandError> {
+    match radius {
+        AxialPrimitiveRadius::Numeric(radius) => Ok(radius),
+        AxialPrimitiveRadius::Point(point) => {
+            let vector = sample.point().vector_to(point)?;
+            let tangent_distance = vector.dot(sample.tangent().as_vector())?;
+            let tangent = sample.tangent().as_vector().scaled(tangent_distance)?;
+            Vector3::try_new(
+                vector.x() - tangent.x(),
+                vector.y() - tangent.y(),
+                vector.z() - tangent.z(),
+            )?
+            .length()
+            .map_err(Into::into)
+        }
+    }
+}
+
+fn spiral_curve_path(
+    document: &Document,
+    path_name: Option<&str>,
+) -> Result<(Geometry, ObjectId), CommandError> {
+    let path_id = if let Some(name) = path_name {
+        let matches = document
+            .objects()
+            .filter(|object| {
+                object
+                    .attributes()
+                    .name()
+                    .is_some_and(|candidate| candidate.eq_ignore_ascii_case(name))
+            })
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        match matches.as_slice() {
+            [] => return Err(CommandError::SpiralPathNotFound(name.to_owned())),
+            [id] => *id,
+            _ => return Err(CommandError::AmbiguousSpiralPath(name.to_owned())),
+        }
+    } else {
+        document
+            .selected_object_ids()
+            .last()
+            .ok_or(CommandError::SpiralPathRequired)?
+    };
+    let path = document
+        .object(path_id)
+        .expect("resolved spiral path identifiers are present");
+    if geometry_curve_ref(path.geometry()).is_none() {
+        return Err(CommandError::SpiralPathNotCurve);
+    }
+    Ok((path.geometry().clone(), path_id))
 }
 
 struct TruncatedConeCommand;
@@ -15684,6 +15854,18 @@ pub enum CommandError {
     #[error("ArrayCrv requires at least one selected source object besides the path")]
     CurveArraySourcesRequired,
 
+    #[error("no object named '{0}' was found for the spiral rail")]
+    SpiralPathNotFound(String),
+
+    #[error("more than one object named '{0}' could be the spiral rail")]
+    AmbiguousSpiralPath(String),
+
+    #[error("Spiral AroundCurve requires a named rail or a selected rail")]
+    SpiralPathRequired,
+
+    #[error("the Spiral AroundCurve rail must be a line, analytic curve, polyline, or NURBS curve")]
+    SpiralPathNotCurve,
+
     #[error("'{0}' is not a valid rectangular-array dimension count of 1 or more")]
     InvalidArrayDimensionCount(String),
 
@@ -18123,6 +18305,97 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 0);
         assert_eq!(document.undo_label(), None);
+    }
+
+    #[test]
+    fn spiral_around_curve_supports_named_and_selected_rails_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let tolerance = document.tolerance();
+        let rail = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                        Point3::try_new(0.0, 0.0, 10.0).unwrap(),
+                        tolerance,
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(document.current_layer_id()).with_name("Rail"),
+            )
+            .unwrap();
+
+        let message = registry
+            .execute(
+                &mut document,
+                "Spiral AroundCurve 1,0,0 2 PathName=rail Turns=1 PointsPerTurn=12",
+            )
+            .unwrap();
+        assert!(message.contains("around curve"));
+        assert!(message.contains("radii 1.000000 to 2.000000"));
+        let curve = document
+            .objects()
+            .find(|object| object.id() != rail)
+            .map(|object| object.geometry())
+            .and_then(|geometry| match geometry {
+                Geometry::NurbsCurve(curve) => Some(curve),
+                _ => None,
+            })
+            .expect("AroundCurve must add a NURBS curve");
+        assert_eq!(curve.control_points().len(), 15);
+        assert!((*curve.domain().end() - 1.5 * (10.0 + std::f64::consts::TAU)).abs() < 1.0e-12);
+        assert!(
+            curve
+                .evaluate(*curve.domain().end() * 0.5)
+                .unwrap()
+                .distance_to(Point3::try_new(-1.5, 0.0, 5.0).unwrap())
+                .unwrap()
+                < 3.0e-12
+        );
+        assert_eq!(document.undo_label(), Some("Spiral"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 1);
+        document
+            .select_object(rail, SelectionMode::Replace)
+            .unwrap();
+        let message = registry
+            .execute(
+                &mut document,
+                "Spiral AroundCurve 1 0 0 1 Pitch=5 ReverseTwist=Yes",
+            )
+            .unwrap();
+        assert!(message.contains("turns 2.000000"));
+        assert!(message.contains("reverse twist"));
+        let reverse = document
+            .objects()
+            .find(|object| object.id() != rail)
+            .and_then(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => Some(curve),
+                _ => None,
+            })
+            .expect("selected AroundCurve rail must add a NURBS curve");
+        assert_eq!(reverse.control_points().len(), 27);
+        assert!(reverse.evaluate(reverse.knots()[4]).unwrap().y() < 0.0);
+        registry.execute(&mut document, "Undo").unwrap();
+
+        for invalid in [
+            "Spiral AroundCurve",
+            "Spiral AroundCurve 1 2 PathName=Rail",
+            "Spiral AroundCurve 0,0,2 1 PathName=Rail",
+            "Spiral AroundCurve 1,0,0 -1 PathName=Rail",
+            "Spiral AroundCurve 1,0,0 1 PathName=Missing",
+            "Spiral AroundCurve 1,0,0 1 PathName=Rail PointsPerTurn=4",
+            "Spiral AroundCurve 1,0,0 1 PathName=Rail PointsPerTurn=12 PointsPerTurn=16",
+            "Spiral AroundCurve 1,0,0 1 PathName=Rail Turns=2 Pitch=1",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 1);
     }
 
     #[test]

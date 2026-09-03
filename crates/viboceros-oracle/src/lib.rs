@@ -479,6 +479,16 @@ pub enum Operation {
         turns: f64,
         radii: [f64; 2],
     },
+    SweptSpiral {
+        id: String,
+        rail_degree: usize,
+        rail_control_points: Vec<ControlPoint>,
+        rail_knots: Vec<f64>,
+        radius_point: [f64; 3],
+        turns: f64,
+        radii: [f64; 2],
+        points_per_turn: usize,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -686,6 +696,7 @@ impl Operation {
             | Self::Hyperbola { id, .. }
             | Self::Helix { id, .. }
             | Self::Spiral { id, .. }
+            | Self::SweptSpiral { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2258,6 +2269,34 @@ fn execute(
                     black_box(*height),
                     black_box(*turns),
                     black_box(*radii),
+                )
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
+        }
+        Operation::SweptSpiral {
+            rail_degree,
+            rail_control_points,
+            rail_knots,
+            radius_point,
+            turns,
+            radii,
+            points_per_turn,
+            ..
+        } => {
+            let rail = NurbsCurve::try_new_rational(
+                *rail_degree,
+                weighted_points(rail_control_points)?,
+                rail_knots.clone(),
+            )?;
+            let radius_point = point(*radius_point)?;
+            let (curve, elapsed) = measure(iterations, || {
+                NurbsCurve::try_swept_spiral(
+                    CurveRef::NurbsCurve(&rail),
+                    black_box(radius_point),
+                    black_box(*turns),
+                    black_box(*radii),
+                    black_box(*points_per_turn),
+                    tolerance,
                 )
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
@@ -6983,6 +7022,40 @@ mod tests {
         assert_eq!(spiral["control_points"][74]["point"][0], json!(4.0));
         assert_eq!(spiral["control_points"][74]["point"][2], json!(6.0));
         assert_eq!(spiral["knots"][4], json!(1.0 / 36.0));
+    }
+
+    #[test]
+    fn captures_swept_spiral_control_layout_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::SweptSpiral {
+            id: "swept".to_owned(),
+            rail_degree: 1,
+            rail_control_points: vec![
+                ControlPoint {
+                    point: [0.0, 0.0, 0.0],
+                    weight: 1.0,
+                },
+                ControlPoint {
+                    point: [0.0, 0.0, 10.0],
+                    weight: 1.0,
+                },
+            ],
+            rail_knots: vec![0.0, 0.0, 1.0, 1.0],
+            radius_point: [1.0, 0.0, 0.0],
+            turns: 1.0,
+            radii: [1.0, 1.0],
+            points_per_turn: 12,
+        }]))
+        .unwrap();
+
+        let spiral = &response.results[0].value;
+        assert_eq!(spiral["degree"], 3);
+        assert_eq!(spiral["domain"], json!([0.0, 10.0 + std::f64::consts::TAU]));
+        assert_eq!(spiral["control_points"].as_array().unwrap().len(), 15);
+        assert_eq!(spiral["knots"].as_array().unwrap().len(), 19);
+        assert_eq!(
+            spiral["control_points"][0],
+            json!({"point": [1.0, 0.0, 0.0], "weight": 1.0})
+        );
     }
 
     #[test]

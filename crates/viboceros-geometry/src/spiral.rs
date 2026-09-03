@@ -1,6 +1,9 @@
 use std::f64::consts::TAU;
 
-use crate::{Frame3, GeometryError, NurbsCurve, Point3, Real, require_finite};
+use crate::{
+    CurveRef, CurveSample, Frame3, GeometryError, NurbsCurve, Point3, Real, Tolerance, UnitVector3,
+    Vector3, require_finite,
+};
 
 const CUBIC_DEGREE: usize = 3;
 const SHORT_SPIRAL_SPANS_PER_TURN: Real = 36.0;
@@ -9,6 +12,12 @@ const MIN_SPIRAL_SPANS: usize = 4;
 
 /// Resource ceiling for one spiral or helix construction.
 pub const MAX_SPIRAL_CONTROL_POINTS: usize = 1_000_000;
+
+/// RhinoCommon's recommended interpolation density for a swept spiral.
+pub const DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN: usize = 12;
+
+/// Smallest interpolation density accepted by RhinoCommon's swept overload.
+pub const MIN_SWEPT_SPIRAL_POINTS_PER_TURN: usize = 5;
 
 impl NurbsCurve {
     /// Constructs a C2 uniform cubic approximation of an axial spiral.
@@ -109,6 +118,286 @@ impl NurbsCurve {
         }
         Self::try_spiral(frame, height, turns, [radius, radius])
     }
+
+    /// Constructs a C2 uniform cubic spiral swept around a rail curve.
+    ///
+    /// Stations divide the complete rail into equal arc-length intervals. A
+    /// rotation-minimizing frame is seeded by the perpendicular component of
+    /// `radius_point - rail.start`, transported along the rail, and twisted by
+    /// `turns * 2π`. Radius varies linearly between the two endpoints.
+    /// Negative turns and radii are supported, matching RhinoCommon's swept
+    /// spiral constructor. `points_per_turn` must be at least five; 12 is the
+    /// recommended default.
+    pub fn try_swept_spiral(
+        rail: CurveRef<'_>,
+        radius_point: Point3,
+        turns: Real,
+        radii: [Real; 2],
+        points_per_turn: usize,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([turns, radii[0], radii[1]], "swept spiral dimensions")?;
+        if turns == 0.0 || (radii[0] == 0.0 && radii[1] == 0.0) {
+            return Err(GeometryError::InvalidSpiralDimensions);
+        }
+        if points_per_turn < MIN_SWEPT_SPIRAL_POINTS_PER_TURN {
+            return Err(GeometryError::InvalidSweptSpiralPointsPerTurn {
+                actual: points_per_turn,
+            });
+        }
+
+        let turn_count = turns.abs();
+        let requested_spans = turn_count * points_per_turn as Real;
+        let maximum_spans = MAX_SPIRAL_CONTROL_POINTS - CUBIC_DEGREE;
+        if !requested_spans.is_finite() || requested_spans.ceil() > maximum_spans as Real {
+            return Err(GeometryError::TooManySpiralControlPoints {
+                maximum: MAX_SPIRAL_CONTROL_POINTS,
+            });
+        }
+        let span_count = (requested_spans.ceil() as usize).max(MIN_SPIRAL_SPANS);
+        let rail_length = rail.length(tolerance)?;
+        if rail_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "swept spiral rail",
+            });
+        }
+        let rail_samples = rail.divide_by_count_samples(span_count, true, tolerance)?;
+        let frames = swept_spiral_frames(rail, &rail_samples, radius_point, tolerance)?;
+
+        let samples = rail_samples
+            .iter()
+            .zip(&frames)
+            .enumerate()
+            .map(|(index, (rail_sample, frame))| {
+                let fraction = index as Real / span_count as Real;
+                let angle = turns * TAU * fraction;
+                let radius = (radii[1] - radii[0]).mul_add(fraction, radii[0]);
+                let radial = rotated_swept_axis(*frame, angle, false)?;
+                rail_sample.point().translated(radial.scaled(radius)?)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+
+        let start_curvature = rail.curvature_vector(rail_samples[0].parameter())?;
+        let end_curvature = rail.curvature_vector(rail_samples[span_count].parameter())?;
+        let start_derivative = swept_spiral_endpoint_derivative(
+            frames[0],
+            start_curvature,
+            rail_length,
+            turns,
+            radii,
+            0.0,
+        )?;
+        let end_derivative = swept_spiral_endpoint_derivative(
+            frames[span_count],
+            end_curvature,
+            rail_length,
+            turns,
+            radii,
+            1.0,
+        )?;
+        let handle_scale = 1.0 / (CUBIC_DEGREE * span_count) as Real;
+        let start_handle = samples[0].translated(start_derivative.scaled(handle_scale)?)?;
+        let end_handle = samples[span_count].translated(end_derivative.scaled(-handle_scale)?)?;
+
+        let interior =
+            solve_uniform_cubic_controls(&samples, start_handle, end_handle, span_count)?;
+        let mut controls = Vec::with_capacity(span_count + CUBIC_DEGREE);
+        controls.push(samples[0]);
+        controls.push(start_handle);
+        controls.extend(interior);
+        controls.push(end_handle);
+        controls.push(samples[span_count]);
+
+        // Rhino's swept overload uses this scale for its otherwise-uniform
+        // knot vector. It does not affect the locus, but retaining it makes
+        // edited control data and downstream parameter values interoperable.
+        let mean_radius = radii[0].abs() * 0.5 + radii[1].abs() * 0.5;
+        let domain_end = mean_radius * (rail_length + TAU * turn_count);
+        require_finite([domain_end], "swept spiral parameterization")?;
+        if domain_end <= 0.0 {
+            return Err(GeometryError::InvalidSpiralDimensions);
+        }
+        let parameter_step = domain_end / span_count as Real;
+        let mut knots = Vec::with_capacity(controls.len() + CUBIC_DEGREE + 1);
+        knots.extend([0.0; CUBIC_DEGREE + 1]);
+        knots.extend((1..span_count).map(|index| parameter_step * index as Real));
+        knots.extend([domain_end; CUBIC_DEGREE + 1]);
+        Self::try_new(CUBIC_DEGREE, controls, knots)
+    }
+}
+
+#[derive(Clone, Copy, Debug)]
+struct SweptSpiralFrame {
+    radial: UnitVector3,
+    angular: UnitVector3,
+    tangent: UnitVector3,
+}
+
+fn swept_spiral_frames(
+    rail: CurveRef<'_>,
+    samples: &[CurveSample],
+    radius_point: Point3,
+    tolerance: Tolerance,
+) -> Result<Vec<SweptSpiralFrame>, GeometryError> {
+    let tangent = samples[0].tangent();
+    let seed = samples[0].point().vector_to(radius_point)?;
+    let tangent_projection = seed.dot(tangent.as_vector())?;
+    let tangent_component = tangent.as_vector().scaled(tangent_projection)?;
+    let radial = subtract_vectors(seed, tangent_component)?.normalized(tolerance)?;
+    let angular = tangent
+        .as_vector()
+        .cross(radial.as_vector())?
+        .normalized_nonzero()?;
+    let mut frame = SweptSpiralFrame {
+        radial,
+        angular,
+        tangent,
+    };
+    let mut previous_sample = samples[0];
+    let mut frames = Vec::with_capacity(samples.len());
+    frames.push(frame);
+    let interval_count = samples.len().saturating_sub(1);
+    if interval_count == 0 {
+        return Ok(frames);
+    }
+    // The double-reflection method has fourth-order global error. Sparse
+    // spirals receive enough intermediate transport steps to keep the frame
+    // error below the interpolation error; dense spirals need no extra work.
+    let subdivisions = 256_usize.div_ceil(interval_count).clamp(1, 64);
+    for pair in samples.windows(2) {
+        for step in 1..=subdivisions {
+            let next_sample = if step == subdivisions {
+                pair[1]
+            } else {
+                let fraction = step as Real / subdivisions as Real;
+                let parameter = pair[0]
+                    .parameter()
+                    .mul_add(1.0 - fraction, pair[1].parameter() * fraction);
+                rail.evaluate_with_tangent(parameter)?
+            };
+            frame = double_reflect_swept_frame(frame, previous_sample, next_sample)?;
+            previous_sample = next_sample;
+        }
+        frames.push(frame);
+    }
+    Ok(frames)
+}
+
+fn double_reflect_swept_frame(
+    previous: SweptSpiralFrame,
+    previous_sample: CurveSample,
+    next_sample: CurveSample,
+) -> Result<SweptSpiralFrame, GeometryError> {
+    let chord = previous_sample.point().vector_to(next_sample.point())?;
+    let reflected_radial = reflect_vector(previous.radial.as_vector(), chord)?;
+    let reflected_tangent = reflect_vector(previous.tangent.as_vector(), chord)?;
+    let tangent = next_sample.tangent();
+    let tangent_bisector = subtract_vectors(tangent.as_vector(), reflected_tangent)?;
+    let transported_radial = if vector_is_zero(tangent_bisector) {
+        reflected_radial
+    } else {
+        reflect_vector(reflected_radial, tangent_bisector)?
+    };
+    let provisional_radial = transported_radial.normalized_nonzero()?;
+    let angular = tangent
+        .as_vector()
+        .cross(provisional_radial.as_vector())?
+        .normalized_nonzero()?;
+    let radial = angular
+        .as_vector()
+        .cross(tangent.as_vector())?
+        .normalized_nonzero()?;
+    Ok(SweptSpiralFrame {
+        radial,
+        angular,
+        tangent,
+    })
+}
+
+fn reflect_vector(vector: Vector3, reflection_normal: Vector3) -> Result<Vector3, GeometryError> {
+    let scale = reflection_normal
+        .x()
+        .abs()
+        .max(reflection_normal.y().abs())
+        .max(reflection_normal.z().abs());
+    if scale == 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "swept spiral frame transport",
+        });
+    }
+    let normal = Vector3::try_new(
+        reflection_normal.x() / scale,
+        reflection_normal.y() / scale,
+        reflection_normal.z() / scale,
+    )?;
+    let projection_scale = 2.0 * vector.dot(normal)? / normal.dot(normal)?;
+    subtract_vectors(vector, normal.scaled(projection_scale)?)
+}
+
+fn vector_is_zero(vector: Vector3) -> bool {
+    vector.x() == 0.0 && vector.y() == 0.0 && vector.z() == 0.0
+}
+
+fn subtract_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryError> {
+    Vector3::try_new(
+        left.x() - right.x(),
+        left.y() - right.y(),
+        left.z() - right.z(),
+    )
+}
+
+fn rotated_swept_axis(
+    frame: SweptSpiralFrame,
+    angle: Real,
+    derivative: bool,
+) -> Result<Vector3, GeometryError> {
+    let (sine, cosine) = angle.sin_cos();
+    let (radial_scale, angular_scale) = if derivative {
+        (-sine, cosine)
+    } else {
+        (cosine, sine)
+    };
+    let radial = frame.radial.as_vector().to_array();
+    let angular = frame.angular.as_vector().to_array();
+    Vector3::try_new(
+        radial_scale.mul_add(radial[0], angular_scale * angular[0]),
+        radial_scale.mul_add(radial[1], angular_scale * angular[1]),
+        radial_scale.mul_add(radial[2], angular_scale * angular[2]),
+    )
+}
+
+fn swept_spiral_endpoint_derivative(
+    frame: SweptSpiralFrame,
+    curvature: Vector3,
+    rail_length: Real,
+    turns: Real,
+    radii: [Real; 2],
+    fraction: Real,
+) -> Result<Vector3, GeometryError> {
+    let angle = turns * TAU * fraction;
+    let radius = (radii[1] - radii[0]).mul_add(fraction, radii[0]);
+    let radial = rotated_swept_axis(frame, angle, false)?;
+    let angular = rotated_swept_axis(frame, angle, true)?;
+    let tangent_scale = (-radius).mul_add(curvature.dot(radial)?, rail_length);
+    let radial_scale = radii[1] - radii[0];
+    let angular_scale = turns * TAU * radius;
+    let tangent = frame.tangent.as_vector().to_array();
+    let radial = radial.to_array();
+    let angular = angular.to_array();
+    Vector3::try_new(
+        tangent_scale.mul_add(
+            tangent[0],
+            radial_scale.mul_add(radial[0], angular_scale * angular[0]),
+        ),
+        tangent_scale.mul_add(
+            tangent[1],
+            radial_scale.mul_add(radial[1], angular_scale * angular[1]),
+        ),
+        tangent_scale.mul_add(
+            tangent[2],
+            radial_scale.mul_add(radial[2], angular_scale * angular[2]),
+        ),
+    )
 }
 
 fn spiral_point(
@@ -195,7 +484,11 @@ fn solve_uniform_cubic_controls(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{Tolerance, Vector3};
+    use crate::{LineSegment, Tolerance, Vector3};
+
+    fn point(x: Real, y: Real, z: Real) -> Point3 {
+        Point3::try_new(x, y, z).unwrap()
+    }
 
     fn world_frame() -> Frame3 {
         Frame3::try_from_normal(
@@ -303,6 +596,161 @@ mod tests {
             Err(GeometryError::TooManySpiralControlPoints {
                 maximum: MAX_SPIRAL_CONTROL_POINTS,
             })
+        );
+    }
+
+    #[test]
+    fn swept_spiral_matches_rhino_line_rail_layout() {
+        let rail = LineSegment::try_new(
+            point(0.0, 0.0, 0.0),
+            point(0.0, 0.0, 10.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_swept_spiral(
+            CurveRef::Line(&rail),
+            point(1.0, 0.0, 0.0),
+            1.0,
+            [1.0, 1.0],
+            DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        assert_eq!(curve.degree(), 3);
+        assert!(!curve.is_rational());
+        assert_eq!(curve.control_points().len(), 15);
+        assert_eq!(curve.domain(), 0.0..=10.0 + TAU);
+        assert_point_near(
+            curve.control_points()[0].point(),
+            point(1.0, 0.0, 0.0),
+            1.0e-14,
+        );
+        assert_point_near(
+            curve.control_points()[1].point(),
+            point(1.0, std::f64::consts::PI / 18.0, 10.0 / 36.0),
+            2.0e-15,
+        );
+        for index in 0..=12 {
+            let fraction = index as Real / 12.0;
+            let parameter = (10.0 + TAU) * fraction;
+            assert_point_near(
+                curve.evaluate(parameter).unwrap(),
+                point(
+                    (TAU * fraction).cos(),
+                    (TAU * fraction).sin(),
+                    10.0 * fraction,
+                ),
+                3.0e-12,
+            );
+        }
+    }
+
+    #[test]
+    fn swept_spiral_uses_equal_arc_rail_stations_and_rhino_endpoint_tangents() {
+        let rail = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(5.0, 0.0, 0.0),
+                point(5.0, 5.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_swept_spiral(
+            CurveRef::NurbsCurve(&rail),
+            point(0.0, 0.0, 2.0),
+            1.0,
+            [1.0, 2.0],
+            12,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        assert_eq!(curve.control_points().len(), 15);
+        assert!((*curve.domain().end() - 21.598967232867093).abs() < 5.0e-8);
+        assert_point_near(
+            curve.control_points()[1].point(),
+            point(0.22544794948329108, -0.174532925199433, 1.0277777777777777),
+            2.0e-9,
+        );
+        assert_point_near(
+            curve.control_points()[13].point(),
+            point(4.650934149601133, 4.774552050516709, 1.972222222222222),
+            2.0e-9,
+        );
+        assert_point_near(
+            curve.evaluate(*curve.domain().end() * 0.5).unwrap(),
+            point(3.749999992296474, 1.2499999922964744, -1.5),
+            3.0e-8,
+        );
+    }
+
+    #[test]
+    fn swept_spiral_transports_its_seed_frame_on_a_spatial_rail() {
+        let rail = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(4.0, 0.0, 2.0),
+                point(4.0, 4.0, 4.0),
+                point(0.0, 5.0, 6.0),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let curve = NurbsCurve::try_swept_spiral(
+            CurveRef::NurbsCurve(&rail),
+            point(0.0, 1.0, 0.0),
+            1.0,
+            [1.0, 1.0],
+            12,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        assert_point_near(
+            curve.evaluate(*curve.domain().end()).unwrap(),
+            point(-0.3817921072075612, 5.251548256397855, 5.11064165738595),
+            3.0e-8,
+        );
+        assert_point_near(
+            curve.control_points()[13].point(),
+            point(-0.07472151473754365, 5.352610108097121, 5.007404085332098),
+            3.0e-8,
+        );
+    }
+
+    #[test]
+    fn swept_spiral_rejects_bad_density_and_axial_radius_seed() {
+        let rail = LineSegment::try_new(
+            point(0.0, 0.0, 0.0),
+            point(0.0, 0.0, 10.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            NurbsCurve::try_swept_spiral(
+                CurveRef::Line(&rail),
+                point(1.0, 0.0, 0.0),
+                1.0,
+                [1.0, 1.0],
+                4,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidSweptSpiralPointsPerTurn { actual: 4 })
+        );
+        assert!(
+            NurbsCurve::try_swept_spiral(
+                CurveRef::Line(&rail),
+                point(0.0, 0.0, 2.0),
+                1.0,
+                [1.0, 1.0],
+                12,
+                Tolerance::DEFAULT,
+            )
+            .is_err()
         );
     }
 }

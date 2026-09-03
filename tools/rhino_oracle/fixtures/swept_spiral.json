@@ -1,0 +1,51 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "swept_spiral",
+      "id": "line-rail",
+      "rail_degree": 1,
+      "rail_control_points": [
+        {"point": [0, 0, 0]},
+        {"point": [0, 0, 10]}
+      ],
+      "rail_knots": [0, 0, 1, 1],
+      "radius_point": [1, 0, 0],
+      "turns": 1,
+      "radii": [1, 1],
+      "points_per_turn": 12
+    },
+    {
+      "op": "swept_spiral",
+      "id": "planar-quadratic-rail",
+      "rail_degree": 2,
+      "rail_control_points": [
+        {"point": [0, 0, 0]},
+        {"point": [5, 0, 0]},
+        {"point": [5, 5, 0]}
+      ],
+      "rail_knots": [0, 0, 0, 1, 1, 1],
+      "radius_point": [0, 0, 2],
+      "turns": 1,
+      "radii": [1, 2],
+      "points_per_turn": 12
+    },
+    {
+      "op": "swept_spiral",
+      "id": "spatial-cubic-rail",
+      "rail_degree": 3,
+      "rail_control_points": [
+        {"point": [0, 0, 0]},
+        {"point": [4, 0, 2]},
+        {"point": [4, 4, 4]},
+        {"point": [0, 5, 6]}
+      ],
+      "rail_knots": [0, 0, 0, 0, 1, 1, 1, 1],
+      "radius_point": [0, 1, 0],
+      "turns": 1,
+      "radii": [1, 1],
+      "points_per_turn": 12
+    }
+  ]
+}

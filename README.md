@@ -64,6 +64,7 @@ Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,1.25 MarkFocus=Yes
 Hyperbola 0,0,0 5,0,0 3.75,3,0 BothBranches=Yes MarkFoci=Yes
 Helix 0,0,0 0,0,10 2 Turns=3 ReverseTwist=No
 Spiral 0,0,0 0,0,6 1 4 Turns=2 ReverseTwist=No
+Spiral AroundCurve 1,0,0 2 PathName=Rail Turns=3 PointsPerTurn=12
 Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
@@ -504,13 +505,20 @@ modes. Each branch is one exact normalized rational quadratic span;
 picked radii, arbitrary axis directions, fractional `Turns=`, `Mode=Pitch`,
 and `ReverseTwist=Yes` are supported. `Spiral` extends the same workflow with
 independent numeric or picked start and end radii. `Flat` creates a planar
-spiral with an optional `Axis=` normal; `AroundCurve` is not implemented yet.
-The linear-time tridiagonal constructor
+spiral with an optional `Axis=` normal. `AroundCurve` follows a whole named or
+last-selected line, analytic curve, polyline, or NURBS rail. Its first radius
+must be a point to seed the radial direction; the end radius can be numeric or
+picked. It supports Turns/Pitch, reverse twist, and `PointsPerTurn=` values of
+at least five (12 by default).
+The axial linear-time tridiagonal constructor
 uses Rhino's 24-span density for long forward constant-radius helices and 36
 spans otherwise, interpolates every analytic sample, and has a one-million-
 control resource ceiling. Its C2 endpoint rule differs from Rhino's legacy C1
 endpoint perturbation by less than `3e-5` in the permanent `helix.json` and
-`spiral.json` NURBS-control oracle fixtures.
+`spiral.json` NURBS-control oracle fixtures. Swept spirals use equal-arc-length
+rail stations and rotation-minimizing frame transport; their complete cubic
+control layout agrees with Rhino within `2e-7` across straight, planar curved,
+and spatial curved rails in `swept_spiral.json`.
 `Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
 `Vertex vertex focus end-point` constructions; `Focus` is the default. The
 vertex form projects the end point perpendicular to the focus axis and derives
@@ -839,6 +847,10 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/spiral.json \
   --absolute-epsilon 3e-5 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/swept_spiral.json \
+  --absolute-epsilon 2e-7 --relative-epsilon 1e-12
 ```
 
 The same workflow is importable for instrumentation and tests:

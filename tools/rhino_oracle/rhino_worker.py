@@ -5275,6 +5275,51 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_spiral)
 
+    if kind == "swept_spiral":
+        degree = int(operation["rail_degree"])
+        controls = operation["rail_control_points"]
+        rail = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+        _set_curve_controls(rail, controls)
+        _set_knots(rail.Knots, operation["rail_knots"], "rail knot")
+        if not rail.IsValid:
+            raise ValueError("swept-spiral rail is invalid")
+        radius_point = _point(operation["radius_point"])
+        turns = _finite(operation["turns"], "swept-spiral turns")
+        if turns == 0.0:
+            raise ValueError("swept spiral requires a nonzero turn count")
+        pitch = rail.GetLength() / abs(turns)
+        if turns < 0.0:
+            pitch = -pitch
+        radii = [
+            _finite(value, "swept-spiral radius")
+            for value in operation["radii"]
+        ]
+        points_per_turn = int(operation["points_per_turn"])
+
+        def create_swept_spiral():
+            curve = Rhino.Geometry.NurbsCurve.CreateSpiral(
+                rail,
+                rail.Domain.T0,
+                rail.Domain.T1,
+                radius_point,
+                pitch,
+                turns,
+                radii[0],
+                radii[1],
+                points_per_turn,
+            )
+            if curve is None:
+                raise ValueError("Rhino could not create swept spiral")
+            try:
+                return _nurbs_curve_definition(curve)
+            finally:
+                curve.Dispose()
+
+        try:
+            return _measure(iterations, create_swept_spiral)
+        finally:
+            rail.Dispose()
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

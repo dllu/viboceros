@@ -144,6 +144,9 @@ pub enum GeometryError {
     #[error("a spiral supports at most {maximum} NURBS control points")]
     TooManySpiralControlPoints { maximum: usize },
 
+    #[error("a swept spiral requires at least 5 interpolation points per turn, got {actual}")]
+    InvalidSweptSpiralPointsPerTurn { actual: usize },
+
     #[error("arc-length distance {distance} is outside [0, {length}]")]
     ArcLengthOutOfDomain { distance: f64, length: f64 },
 

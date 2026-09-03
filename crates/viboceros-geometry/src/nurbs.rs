@@ -852,9 +852,98 @@ impl NurbsCurve {
                 .mul_add(weight_derivative, homogeneous_derivative[coordinate])
                 / weight
         });
+        Ok((point, Vector3::try_from(derivative)?))
+    }
+
+    /// Evaluates the point and exact first and second derivatives using
+    /// homogeneous derivative control polygons and the rational quotient
+    /// rule.
+    pub fn evaluate_with_second_derivative(
+        &self,
+        parameter: Real,
+    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
+        let span = self.checked_span(parameter)?;
+        let active = self.active_homogeneous_control_points(span)?;
+        let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
+        let point = project_homogeneous(homogeneous)?;
+
+        let first_control_point = span - self.degree;
+        let mut derivative_controls = Vec::with_capacity(self.degree);
+        for local_index in 0..self.degree {
+            let control_point_index = first_control_point + local_index;
+            let knot_start = self.knots[control_point_index + 1];
+            let knot_end = self.knots[control_point_index + self.degree + 1];
+            let mut derivative = [0.0; 4];
+            for coordinate in 0..4 {
+                derivative[coordinate] = stable_divided_difference(
+                    active[local_index + 1][coordinate],
+                    active[local_index][coordinate],
+                    self.degree,
+                    knot_start,
+                    knot_end,
+                )?;
+            }
+            derivative_controls.push(derivative);
+        }
+
+        let homogeneous_derivative = de_boor(
+            &self.knots[1..self.knots.len() - 1],
+            self.degree - 1,
+            span - 1,
+            parameter,
+            derivative_controls.clone(),
+        )?;
+        let weight = homogeneous[3];
+        let weight_derivative = homogeneous_derivative[3];
+        let point_coordinates = point.to_array();
+        let first_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
+            (-point_coordinates[coordinate])
+                .mul_add(weight_derivative, homogeneous_derivative[coordinate])
+                / weight
+        });
+        let first_derivative = Vector3::try_from(first_derivative)?;
+
+        if self.degree == 1 {
+            return Ok((point, first_derivative, Vector3::try_new(0.0, 0.0, 0.0)?));
+        }
+
+        let mut second_derivative_controls = Vec::with_capacity(self.degree - 1);
+        for local_index in 0..self.degree - 1 {
+            let derivative_control_index = first_control_point + local_index;
+            let knot_start = self.knots[derivative_control_index + 2];
+            let knot_end = self.knots[derivative_control_index + self.degree + 1];
+            let mut derivative = [0.0; 4];
+            for coordinate in 0..4 {
+                derivative[coordinate] = stable_divided_difference(
+                    derivative_controls[local_index + 1][coordinate],
+                    derivative_controls[local_index][coordinate],
+                    self.degree - 1,
+                    knot_start,
+                    knot_end,
+                )?;
+            }
+            second_derivative_controls.push(derivative);
+        }
+        let homogeneous_second_derivative = de_boor(
+            &self.knots[2..self.knots.len() - 2],
+            self.degree - 2,
+            span - 2,
+            parameter,
+            second_derivative_controls,
+        )?;
+        let weight_second_derivative = homogeneous_second_derivative[3];
+        let first_coordinates = first_derivative.to_array();
+        let second_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
+            let quotient_terms = (2.0 * weight_derivative).mul_add(
+                first_coordinates[coordinate],
+                weight_second_derivative * point_coordinates[coordinate],
+            );
+            (homogeneous_second_derivative[coordinate] - quotient_terms) / weight
+        });
         Ok((
             point,
-            Vector3::try_new(derivative[0], derivative[1], derivative[2])?,
+            first_derivative,
+            Vector3::try_from(second_derivative)?,
         ))
     }
 
@@ -2723,6 +2812,48 @@ mod tests {
             curve.derivative_at(0.5).unwrap(),
             Vector3::try_new(2.0, 0.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn exact_second_derivative_matches_polynomial_and_rational_curves() {
+        let polynomial = NurbsCurve::try_new(
+            2,
+            vec![point(0.0, 0.0), point(1.0, 2.0), point(3.0, 1.0)],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (_, first, second) = polynomial.evaluate_with_second_derivative(0.25).unwrap();
+        assert_eq!(first, Vector3::try_new(2.5, 2.5, 0.0).unwrap());
+        assert_eq!(second, Vector3::try_new(2.0, -6.0, 0.0).unwrap());
+
+        let middle_weight = 0.5_f64.sqrt();
+        let rational = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), middle_weight).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (_, _, exact) = rational.evaluate_with_second_derivative(0.5).unwrap();
+        let step = 1.0e-5;
+        let before = rational.derivative_at(0.5 - step).unwrap();
+        let after = rational.derivative_at(0.5 + step).unwrap();
+        let finite_difference = Vector3::try_new(
+            (after.x() - before.x()) / (2.0 * step),
+            (after.y() - before.y()) / (2.0 * step),
+            (after.z() - before.z()) / (2.0 * step),
+        )
+        .unwrap();
+        for (actual, expected) in exact
+            .to_array()
+            .into_iter()
+            .zip(finite_difference.to_array())
+        {
+            assert!((actual - expected).abs() < 2.0e-8);
+        }
     }
 
     #[test]
