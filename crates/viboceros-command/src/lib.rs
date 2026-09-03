@@ -114,6 +114,9 @@ impl CommandRegistry {
             .register(RebuildCurveCommand)
             .expect("unique built-in command");
         registry
+            .register(MakeUniformCommand)
+            .expect("unique built-in command");
+        registry
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
@@ -1929,6 +1932,33 @@ fn parse_rebuild_curve_options(arguments: &[&str]) -> Result<RebuildCurveOptions
         delete_input,
         output_layer,
     })
+}
+
+struct MakeUniformCommand;
+
+impl Command for MakeUniformCommand {
+    fn name(&self) -> &'static str {
+        "MakeUniform"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        require_consumed(arguments, 0, "MakeUniform")?;
+        let mut replacements = Vec::new();
+        for object in document.selected_objects() {
+            let Some(curve) = object.geometry().nurbs_curve_representation()? else {
+                continue;
+            };
+            replacements.push((object.id(), Geometry::NurbsCurve(curve.try_make_uniform()?)));
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoMakeUniformCurves);
+        }
+
+        let curve_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Made {curve_count} curve knot vector(s) uniform without changing control points"
+        ))
+    }
 }
 
 struct SrfPtCommand;
@@ -16846,6 +16876,9 @@ pub enum CommandError {
     #[error("Rebuild requires at least one selected curve")]
     NoRebuildCurves,
 
+    #[error("MakeUniform requires at least one selected curve")]
+    NoMakeUniformCurves,
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -17333,7 +17366,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeUniform, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -26784,6 +26817,106 @@ mod tests {
         };
         assert_eq!(curve.control_points().len(), 4);
         registry.execute(&mut document, "Undo").unwrap();
+    }
+
+    #[test]
+    fn make_uniform_replaces_curve_knots_without_losing_identity_or_controls() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let input_layer = document
+            .add_layer("Uniform source", ColorRgb::new(35, 70, 105))
+            .unwrap();
+        let controls = vec![
+            WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+            WeightedPoint3::try_new(Point3::try_new(1.0, 2.0, 0.0).unwrap(), 0.5).unwrap(),
+            WeightedPoint3::try_new(Point3::try_new(3.0, 1.0, 0.0).unwrap(), 2.0).unwrap(),
+            WeightedPoint3::try_new(Point3::try_new(4.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+        ];
+        let source = NurbsCurve::try_new_rational(
+            2,
+            controls.clone(),
+            vec![0.0, 0.0, 0.0, 0.2, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source.clone()),
+                ObjectAttributes::on_layer(input_layer).with_name("weighted source"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 30.0, 40.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([source_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "MakeUniform").unwrap(),
+            "Made 1 curve knot vector(s) uniform without changing control points"
+        );
+        assert_eq!(document.objects().len(), 2);
+        let object = document.object(source_id).unwrap();
+        assert_eq!(object.attributes().layer_id(), input_layer);
+        assert_eq!(object.attributes().name(), Some("weighted source"));
+        assert!(document.is_selected(source_id));
+        assert!(document.is_selected(point_id));
+        let Geometry::NurbsCurve(curve) = object.geometry() else {
+            panic!("MakeUniform must replace eligible curves with NURBS geometry")
+        };
+        assert_eq!(curve.control_points(), controls);
+        assert_eq!(curve.knots(), &[0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0]);
+        assert_eq!(document.undo_label(), Some("MakeUniform"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+    }
+
+    #[test]
+    fn make_uniform_validates_arguments_and_curve_selection_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([point_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "MakeUniform"),
+            Err(CommandError::NoMakeUniformCurves)
+        ));
+
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects([line_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(line_id).unwrap().geometry().clone();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "MakeUniform extra"),
+            Err(CommandError::Usage("MakeUniform"))
+        ));
+        assert_eq!(document.object(line_id).unwrap().geometry(), &before);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "_MakeUniform").unwrap();
+        let Geometry::NurbsCurve(curve) = document.object(line_id).unwrap().geometry() else {
+            panic!("MakeUniform must convert analytic curves to NURBS")
+        };
+        assert_eq!(curve.knots(), &[0.0, 0.0, 1.0, 1.0]);
     }
 
     #[test]

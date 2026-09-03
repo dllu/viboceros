@@ -671,6 +671,19 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, self.control_points.clone(), knots)
     }
 
+    /// Replaces the knot vector with Rhino-compatible unit spacing while
+    /// leaving the degree, control locations, and rational weights unchanged.
+    ///
+    /// Clamping is detected independently at the start and end. This mirrors
+    /// OpenNURBS' omitted-end-knot convention: an unclamped end retains only
+    /// the duplicated artificial knot in our full representation, while a
+    /// clamped end retains its full multiplicity. The curve's shape and
+    /// parameter domain can therefore change.
+    pub fn try_make_uniform(&self) -> Result<Self, GeometryError> {
+        let knots = uniform_knots_like(self.degree, self.control_points.len(), &self.knots)?;
+        Self::try_new_rational(self.degree, self.control_points.clone(), knots)
+    }
+
     /// Returns every nonempty knot span in the active curve domain.
     pub fn spans(&self) -> impl Iterator<Item = (Real, Real)> + '_ {
         self.knots
@@ -1957,6 +1970,37 @@ pub(crate) fn clamped_uniform_knots(
         .collect())
 }
 
+/// Builds the unit-spaced full knot vector used by Rhino's `MakeUniform`.
+/// Start and end clamping are retained independently; every other short-knot
+/// interval becomes one. The first and last full knots duplicate the omitted
+/// OpenNURBS endpoint values used by the oracle protocol.
+pub(crate) fn uniform_knots_like(
+    degree: usize,
+    control_point_count: usize,
+    source_knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    validate_direction(degree, control_point_count, source_knots)?;
+    let short_knot_count = source_knots.len() - 2;
+    let start_clamped = source_knots[1] == source_knots[degree];
+    let end_clamped = source_knots[control_point_count] == source_knots[source_knots.len() - 2];
+    let start_offset = if start_clamped { degree - 1 } else { 0 };
+    let end_value = end_clamped.then(|| {
+        short_knot_count
+            .saturating_sub(degree)
+            .saturating_sub(start_offset)
+    });
+
+    let knots = (0..source_knots.len())
+        .map(|full_index| {
+            let short_index = full_index.saturating_sub(1).min(short_knot_count - 1);
+            let value = short_index.saturating_sub(start_offset);
+            value.min(end_value.unwrap_or(value)) as Real
+        })
+        .collect::<Vec<_>>();
+    require_finite(knots.iter().copied(), "uniform NURBS knots")?;
+    Ok(knots)
+}
+
 fn validate_control_point_count(degree: usize, count: usize) -> Result<(), GeometryError> {
     if degree == 0 {
         return Err(GeometryError::InvalidDegree);
@@ -2929,6 +2973,103 @@ mod tests {
         ] {
             assert!(mapped.try_reparameterized(domain).is_err());
         }
+    }
+
+    #[test]
+    fn make_uniform_preserves_rational_controls_and_resets_clamped_knots() {
+        let controls = vec![
+            WeightedPoint3::try_new(point(0.0, 0.0), 1.0).unwrap(),
+            WeightedPoint3::try_new(point(1.0, 2.0), 0.5).unwrap(),
+            WeightedPoint3::try_new(point(3.0, 1.0), 2.0).unwrap(),
+            WeightedPoint3::try_new(point(4.0, 0.0), 1.0).unwrap(),
+        ];
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            controls.clone(),
+            vec![10.0, 10.0, 10.0, 10.2, 11.0, 11.0, 11.0],
+        )
+        .unwrap();
+
+        let uniform = curve.try_make_uniform().unwrap();
+
+        assert_eq!(uniform.degree(), 2);
+        assert_eq!(uniform.control_points(), controls);
+        assert_eq!(uniform.knots(), &[0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0]);
+        assert_eq!(uniform.domain(), 0.0..=2.0);
+        assert!(uniform.is_rational());
+    }
+
+    #[test]
+    fn make_uniform_retains_each_endpoint_clamp_independently() {
+        let controls = vec![
+            point(0.0, 0.0),
+            point(1.0, 3.0),
+            point(3.0, -2.0),
+            point(6.0, 4.0),
+            point(9.0, -1.0),
+            point(10.0, 0.0),
+        ];
+        let cases = [
+            (
+                vec![0.0, 0.0, 1.0, 2.0, 4.0, 7.0, 10.0, 12.0, 13.0, 13.0],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 7.0],
+            ),
+            (
+                vec![0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 10.0, 12.0, 12.0],
+                vec![0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0],
+            ),
+            (
+                vec![0.0, 0.0, 2.0, 4.0, 6.0, 8.0, 10.0, 10.0, 10.0, 10.0],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0, 5.0, 5.0],
+            ),
+        ];
+
+        for (source_knots, expected_knots) in cases {
+            let curve = NurbsCurve::try_new(3, controls.clone(), source_knots).unwrap();
+            assert_eq!(curve.try_make_uniform().unwrap().knots(), expected_knots);
+        }
+    }
+
+    #[test]
+    fn make_uniform_retains_periodic_topology() {
+        let points = [
+            (0.2857142857142857, 2.0),
+            (-0.5714285714285714, -0.5714285714285714),
+            (2.0, 0.2857142857142857),
+            (4.571428571428571, -0.5714285714285714),
+            (3.714285714285714, 2.0),
+            (4.571428571428571, 4.571428571428571),
+            (2.0, 3.714285714285714),
+            (-0.5714285714285714, 4.571428571428571),
+            (0.2857142857142857, 2.0),
+            (-0.5714285714285714, -0.5714285714285714),
+            (2.0, 0.2857142857142857),
+        ];
+        let controls = points
+            .into_iter()
+            .map(|(x, y)| point(x, y))
+            .collect::<Vec<_>>();
+        let curve = NurbsCurve::try_new(
+            3,
+            controls,
+            vec![
+                -2.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 10.0,
+            ],
+        )
+        .unwrap();
+        assert!(curve.is_periodic());
+
+        let uniform = curve.try_make_uniform().unwrap();
+
+        assert_eq!(
+            uniform.knots(),
+            &[
+                0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 12.0
+            ]
+        );
+        assert_eq!(uniform.domain(), 2.0..=10.0);
+        assert!(uniform.is_periodic());
+        assert!(uniform.is_closed().unwrap());
     }
 
     #[test]

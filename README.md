@@ -38,6 +38,7 @@ CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
+MakeUniform
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -259,6 +260,12 @@ counts below the structural minimum are raised automatically, as in Rhino.
 `PreserveTangents=Yes` aligns eligible open-curve end handles. The
 `DeleteInput` and `OutputLayer` options follow `FitCrv`; surface rebuilding is
 not yet represented.
+`MakeUniform` replaces each selected curve in place with the same degree,
+control locations, and rational weights but Rhino-compatible unit-spaced
+knots. Start and end clamping are retained independently, periodic curves stay
+periodic, and supported analytic curves are first converted to their exact
+NURBS form. Changing knot spacing can change the curve shape; surface
+uniformization is not yet represented.
 `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
@@ -925,6 +932,12 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_fit.json \
   --absolute-epsilon 2e-12 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_rebuild.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_make_uniform.json
 ```
 
 The same workflow is importable for instrumentation and tests:

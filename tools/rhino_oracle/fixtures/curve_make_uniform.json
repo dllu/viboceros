@@ -1,0 +1,119 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "clamped-nonuniform-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 3, 0]},
+          {"point": [3, -2, 1]}, {"point": [6, 4, -1]},
+          {"point": [9, -1, 0]}, {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 7, 10, 10, 10, 10]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "clamped-uniform-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 3, 0]},
+          {"point": [3, -2, 1]}, {"point": [6, 4, -1]},
+          {"point": [9, -1, 0]}, {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 2, 3, 3, 3, 3]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "closed-clamped-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [4, 0, 0]},
+          {"point": [4, 4, 0]}, {"point": [0, 4, 0]},
+          {"point": [0, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 2, 5, 5, 5, 5]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "periodic-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0.2857142857142857, 2, 0]},
+          {"point": [-0.5714285714285714, -0.5714285714285714, 0]},
+          {"point": [2, 0.2857142857142857, 0]},
+          {"point": [4.571428571428571, -0.5714285714285714, 0]},
+          {"point": [3.714285714285714, 2, 0]},
+          {"point": [4.571428571428571, 4.571428571428571, 0]},
+          {"point": [2, 3.714285714285714, 0]},
+          {"point": [-0.5714285714285714, 4.571428571428571, 0]},
+          {"point": [0.2857142857142857, 2, 0]},
+          {"point": [-0.5714285714285714, -0.5714285714285714, 0]},
+          {"point": [2, 0.2857142857142857, 0]}
+        ],
+        "knots": [-2, -2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "rational-quadratic",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 1},
+          {"point": [1, 2, 0], "weight": 0.5},
+          {"point": [3, 1, 0], "weight": 2},
+          {"point": [4, 0, 0], "weight": 1}
+        ],
+        "knots": [0, 0, 0, 0.2, 1, 1, 1]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "unclamped-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 3, 0]},
+          {"point": [3, -2, 1]}, {"point": [6, 4, -1]},
+          {"point": [9, -1, 0]}, {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 4, 7, 10, 12, 13, 13]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "start-clamped-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 3, 0]},
+          {"point": [3, -2, 1]}, {"point": [6, 4, -1]},
+          {"point": [9, -1, 0]}, {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 2, 5, 8, 10, 12, 12]
+      }
+    },
+    {
+      "op": "curve_make_uniform_geometry",
+      "id": "end-clamped-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 3, 0]},
+          {"point": [3, -2, 1]}, {"point": [6, 4, -1]},
+          {"point": [9, -1, 0]}, {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 2, 4, 6, 8, 10, 10, 10, 10]
+      }
+    }
+  ]
+}

@@ -535,6 +535,10 @@ pub enum Operation {
         #[serde(default)]
         preserve_tangents: bool,
     },
+    CurveMakeUniformGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -796,6 +800,7 @@ impl Operation {
             | Self::CurveTweenGeometry { id, .. }
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
+            | Self::CurveMakeUniformGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2591,6 +2596,11 @@ fn execute(
                     tolerance,
                 )
             })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::CurveMakeUniformGeometry { curve, .. } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || source.try_make_uniform())?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
         Operation::Paraboloid {
@@ -7622,6 +7632,54 @@ mod tests {
             json!([0.0, 0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 3.0, 3.0, 3.0])
         );
         assert_eq!(curve["control_points"].as_array().unwrap().len(), 6);
+    }
+
+    #[test]
+    fn captures_rhino_compatible_curve_uniformization() {
+        let controls = vec![
+            ControlPoint {
+                point: [0.0, 0.0, 0.0],
+                weight: 1.0,
+            },
+            ControlPoint {
+                point: [1.0, 2.0, 0.0],
+                weight: 0.5,
+            },
+            ControlPoint {
+                point: [3.0, 1.0, 0.0],
+                weight: 2.0,
+            },
+            ControlPoint {
+                point: [4.0, 0.0, 0.0],
+                weight: 1.0,
+            },
+        ];
+        let response = run_request(&request(vec![Operation::CurveMakeUniformGeometry {
+            id: "uniform-rational".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 2,
+                control_points: controls,
+                knots: vec![0.0, 0.0, 0.0, 0.2, 1.0, 1.0, 1.0],
+                domain: None,
+            },
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 2);
+        assert_eq!(curve["domain"], json!([0.0, 2.0]));
+        assert_eq!(curve["closed"], false);
+        assert_eq!(curve["periodic"], false);
+        assert_eq!(curve["knots"], json!([0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0]));
+        assert_eq!(
+            curve["control_points"],
+            json!([
+                {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+                {"point": [1.0, 2.0, 0.0], "weight": 0.5},
+                {"point": [3.0, 1.0, 0.0], "weight": 2.0},
+                {"point": [4.0, 0.0, 0.0], "weight": 1.0},
+            ])
+        );
     }
 
     #[test]

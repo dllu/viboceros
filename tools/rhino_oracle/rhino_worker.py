@@ -5601,6 +5601,34 @@ def _execute(operation, iterations, tolerance):
         finally:
             curve.Dispose()
 
+    if kind == "curve_make_uniform_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+
+        def make_uniform_curve():
+            duplicate = curve.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for uniformization")
+            try:
+                nurbs = duplicate.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino could not convert curve for uniformization")
+                try:
+                    if not nurbs.MakeUniform():
+                        raise ValueError("Rhino curve uniformization failed")
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, make_uniform_curve)
+        finally:
+            curve.Dispose()
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])
