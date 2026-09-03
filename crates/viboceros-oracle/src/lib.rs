@@ -545,6 +545,10 @@ pub enum Operation {
         parameter: f64,
         multiplicity: usize,
     },
+    CurveMakeNonPeriodicGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+    },
     SurfaceMakeUniformGeometry {
         id: String,
         degree_u: usize,
@@ -568,6 +572,16 @@ pub enum Operation {
         direction: SurfaceKnotAxis,
         parameter: f64,
         multiplicity: usize,
+    },
+    SurfaceMakeNonPeriodicGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
     },
     Paraboloid {
         id: String,
@@ -857,8 +871,10 @@ impl Operation {
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
+            | Self::CurveMakeNonPeriodicGeometry { id, .. }
             | Self::SurfaceMakeUniformGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
+            | Self::SurfaceMakeNonPeriodicGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2673,6 +2689,11 @@ fn execute(
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveMakeNonPeriodicGeometry { curve, .. } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || source.try_make_non_periodic())?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::SurfaceMakeUniformGeometry {
             degree_u,
             degree_v,
@@ -2727,6 +2748,30 @@ fn execute(
                 SurfaceKnotAxis::V => {
                     source.try_insert_knot_v(black_box(*parameter), black_box(*multiplicity))
                 }
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceMakeNonPeriodicGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_make_non_periodic(SurfaceKnotDirection::Both)
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -7940,6 +7985,86 @@ mod tests {
         );
         assert_eq!(surface["domain_u"], json!([0.0, 1.0]));
         assert_eq!(surface["domain_v"], json!([10.0, 20.0]));
+        assert_eq!(surface["periodic_u"], false);
+        assert_eq!(surface["periodic_v"], false);
+    }
+
+    #[test]
+    fn captures_exact_non_periodic_curve_conversion() {
+        let points = [
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [2.0, 2.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [2.0, 2.0, 0.0],
+        ];
+        let response = run_request(&request(vec![Operation::CurveMakeNonPeriodicGeometry {
+            id: "make-curve-non-periodic".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 3,
+                control_points: points
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+                domain: None,
+            },
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 3);
+        assert_eq!(curve["domain"], json!([2.0, 6.0]));
+        assert_eq!(curve["closed"], true);
+        assert_eq!(curve["periodic"], false);
+        assert_eq!(
+            curve["knots"],
+            json!([2.0, 2.0, 2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.0, 6.0, 6.0])
+        );
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 7);
+    }
+
+    #[test]
+    fn captures_exact_non_periodic_surface_conversion() {
+        let row = [
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [2.0, 2.0, 0.0],
+            [0.0, 2.0, 0.0],
+            [0.0, 0.0, 0.0],
+            [2.0, 0.0, 0.0],
+            [2.0, 2.0, 0.0],
+        ];
+        let control_points = row
+            .into_iter()
+            .chain(row.into_iter().map(|point| [point[0], point[1], 3.0]))
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect();
+        let response = run_request(&request(vec![Operation::SurfaceMakeNonPeriodicGeometry {
+            id: "make-surface-non-periodic".to_owned(),
+            degree_u: 3,
+            degree_v: 1,
+            control_point_count_u: 7,
+            control_point_count_v: 2,
+            control_points,
+            knots_u: vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+            knots_v: vec![0.0, 0.0, 5.0, 5.0],
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        assert_eq!(surface["degree"], json!([3, 1]));
+        assert_eq!(surface["control_count"], json!([7, 2]));
+        assert_eq!(surface["control_points"].as_array().unwrap().len(), 14);
+        assert_eq!(
+            surface["knots_u"],
+            json!([2.0, 2.0, 2.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.0, 6.0, 6.0])
+        );
+        assert_eq!(surface["knots_v"], json!([0.0, 0.0, 5.0, 5.0]));
+        assert_eq!(surface["domain_u"], json!([2.0, 6.0]));
+        assert_eq!(surface["domain_v"], json!([0.0, 5.0]));
         assert_eq!(surface["periodic_u"], false);
         assert_eq!(surface["periodic_v"], false);
     }

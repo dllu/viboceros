@@ -39,6 +39,7 @@ TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=Curre
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
 MakeUniform Direction=Both
+MakeNonPeriodic
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
@@ -268,6 +269,10 @@ independently, periodic topology stays periodic, and supported analytic curves
 are first converted to their exact NURBS form. `Direction=U|V|Both` selects
 the changed surface directions and defaults to both; changing knot spacing can
 change the object shape.
+`MakeNonPeriodic` converts every selected periodic NURBS curve or surface to
+the equivalent clamped form in place. It preserves the active domains,
+parameterization, shape, object identity, attributes, and selection; surfaces
+are clamped in every periodic direction.
 `InsertKnot` requires exactly one selected curve or untrimmed NURBS surface and
 refines it in place without changing its parameterization or shape. Curves take
 one parameter; surfaces take `u,v`, with a scalar accepted when `Direction=U`
@@ -957,6 +962,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_insert_knot.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/make_non_periodic.json
 ```
 
 The same workflow is importable for instrumentation and tests:

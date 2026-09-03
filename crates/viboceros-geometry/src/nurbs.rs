@@ -684,6 +684,17 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, self.control_points.clone(), knots)
     }
 
+    /// Converts a periodic curve to the equivalent clamped, non-periodic form
+    /// without changing its active domain, parameterization, or locus.
+    /// Curves that are already non-periodic are returned unchanged.
+    pub fn try_make_non_periodic(&self) -> Result<Self, GeometryError> {
+        if self.is_periodic() {
+            self.clamped_to_active_domain()
+        } else {
+            Ok(self.clone())
+        }
+    }
+
     /// Returns every nonempty knot span in the active curve domain.
     pub fn spans(&self) -> impl Iterator<Item = (Real, Real)> + '_ {
         self.knots
@@ -1382,7 +1393,7 @@ impl NurbsCurve {
         self
     }
 
-    fn clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
+    pub(crate) fn clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
         let start = *self.domain().start();
         let end = *self.domain().end();
         self.clamped_at_start(start)?.clamped_at_end(end)
@@ -3508,6 +3519,47 @@ mod tests {
                 );
             }
         }
+    }
+
+    #[test]
+    fn make_non_periodic_clamps_a_periodic_curve_without_changing_its_locus() {
+        let source = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(2.0, 2.0),
+                point(0.0, 2.0),
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(2.0, 2.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+        )
+        .unwrap();
+        let domain = source.domain();
+        let clamped = source.try_make_non_periodic().unwrap();
+        assert!(!clamped.is_periodic());
+        assert!(clamped.is_closed().unwrap());
+        assert_eq!(clamped.domain(), domain);
+        assert!(
+            clamped.knots()[..=clamped.degree()]
+                .iter()
+                .all(|knot| *knot == *domain.start())
+        );
+        assert!(
+            clamped.knots()[clamped.knots().len() - clamped.degree() - 1..]
+                .iter()
+                .all(|knot| *knot == *domain.end())
+        );
+        for sample in 0..=64 {
+            let parameter = source.parameter_at(sample as Real / 64.0).unwrap();
+            assert_point_near(
+                clamped.evaluate(parameter).unwrap(),
+                source.evaluate(parameter).unwrap(),
+            );
+        }
+        assert_eq!(clamped.try_make_non_periodic().unwrap(), clamped);
     }
 
     #[test]

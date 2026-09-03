@@ -5740,6 +5740,119 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, insert_surface_knot)
 
+    if kind == "curve_make_non_periodic_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+
+        def make_curve_non_periodic():
+            duplicate = source.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("could not duplicate periodic curve")
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(duplicate)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add periodic curve to Rhino")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select periodic curve")
+                Rhino.RhinoApp.RunScript("_-MakeNonPeriodic _Enter", False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("MakeNonPeriodic removed the curve object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None or result.IsPeriodic:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MakeNonPeriodic did not produce a non-periodic curve; "
+                        "history tail: %s" % history[-3000:]
+                    )
+                definition = _nurbs_curve_definition(result)
+                definition["closed"] = bool(result.IsClosed)
+                definition["periodic"] = bool(result.IsPeriodic)
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, make_curve_non_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_make_non_periodic_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate periodic NURBS surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("periodic NURBS surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def make_surface_non_periodic():
+            duplicate = source.Duplicate()
+            if duplicate is None:
+                raise ValueError("could not duplicate periodic surface")
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddSurface(duplicate)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add periodic surface to Rhino")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select periodic surface")
+                Rhino.RhinoApp.RunScript("_-MakeNonPeriodic _Enter", False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("MakeNonPeriodic removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("MakeNonPeriodic surface became a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None or result.IsPeriodic(0) or result.IsPeriodic(1):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MakeNonPeriodic left a periodic surface direction; "
+                        "history tail: %s" % history[-3000:]
+                    )
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, make_surface_non_periodic)
+        finally:
+            source.Dispose()
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

@@ -1238,6 +1238,118 @@ impl NurbsSurface {
         )
     }
 
+    /// Converts selected periodic directions to equivalent clamped,
+    /// non-periodic form without changing the active parameterization or
+    /// surface locus. Directions that are already non-periodic are unchanged.
+    pub fn try_make_non_periodic(
+        &self,
+        direction: SurfaceKnotDirection,
+    ) -> Result<Self, GeometryError> {
+        let clamp_u = direction.includes_u() && self.is_periodic_u();
+        let clamp_v = direction.includes_v() && self.is_periodic_v();
+        let mut result = self.clone();
+        if clamp_u {
+            result = result.clamped_in_u()?;
+        }
+        if clamp_v {
+            result = result.clamped_in_v()?;
+        }
+        Ok(result)
+    }
+
+    fn clamped_in_u(&self) -> Result<Self, GeometryError> {
+        let mut controls = Vec::new();
+        let mut clamped_u_count = None;
+        let mut clamped_knots_u = None;
+        for v in 0..self.control_point_count_v {
+            let start = v * self.control_point_count_u;
+            let row = NurbsCurve::try_new_rational(
+                self.degree_u,
+                self.control_points[start..start + self.control_point_count_u].to_vec(),
+                self.knots_u.clone(),
+            )?
+            .clamped_to_active_domain()?;
+            if clamped_u_count.is_none() {
+                let count = row.control_points().len();
+                let total = count.checked_mul(self.control_point_count_v).ok_or(
+                    GeometryError::InvalidControlNet {
+                        context: "clamped U control-net size overflowed usize",
+                    },
+                )?;
+                controls.try_reserve_exact(total).map_err(|_| {
+                    GeometryError::InvalidControlNet {
+                        context: "clamped U control net exceeds addressable memory",
+                    }
+                })?;
+                clamped_u_count = Some(count);
+                clamped_knots_u = Some(row.knots().to_vec());
+            }
+            debug_assert_eq!(clamped_u_count, Some(row.control_points().len()));
+            debug_assert_eq!(clamped_knots_u.as_deref(), Some(row.knots()));
+            controls.extend_from_slice(row.control_points());
+        }
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            clamped_u_count.expect("a valid surface has at least one V row"),
+            self.control_point_count_v,
+            controls,
+            clamped_knots_u.expect("a valid surface has a U knot vector"),
+            self.knots_v.clone(),
+        )
+    }
+
+    fn clamped_in_v(&self) -> Result<Self, GeometryError> {
+        let mut columns = Vec::new();
+        columns
+            .try_reserve_exact(self.control_point_count_u)
+            .map_err(|_| GeometryError::InvalidControlNet {
+                context: "clamped V column list exceeds addressable memory",
+            })?;
+        let mut clamped_v_count = None;
+        let mut clamped_knots_v = None;
+        for u in 0..self.control_point_count_u {
+            let column = (0..self.control_point_count_v)
+                .map(|v| self.control_points[self.control_index(u, v)])
+                .collect::<Vec<_>>();
+            let column = NurbsCurve::try_new_rational(self.degree_v, column, self.knots_v.clone())?
+                .clamped_to_active_domain()?;
+            if clamped_v_count.is_none() {
+                clamped_v_count = Some(column.control_points().len());
+                clamped_knots_v = Some(column.knots().to_vec());
+            }
+            debug_assert_eq!(clamped_v_count, Some(column.control_points().len()));
+            debug_assert_eq!(clamped_knots_v.as_deref(), Some(column.knots()));
+            columns.push(column);
+        }
+
+        let clamped_v_count = clamped_v_count.expect("a valid surface has at least one U column");
+        let total = self
+            .control_point_count_u
+            .checked_mul(clamped_v_count)
+            .ok_or(GeometryError::InvalidControlNet {
+                context: "clamped V control-net size overflowed usize",
+            })?;
+        let mut controls = Vec::new();
+        controls
+            .try_reserve_exact(total)
+            .map_err(|_| GeometryError::InvalidControlNet {
+                context: "clamped V control net exceeds addressable memory",
+            })?;
+        for v in 0..clamped_v_count {
+            controls.extend(columns.iter().map(|column| column.control_points()[v]));
+        }
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            clamped_v_count,
+            controls,
+            self.knots_u.clone(),
+            clamped_knots_v.expect("a valid surface has a V knot vector"),
+        )
+    }
+
     /// Inserts a U-direction knot to a target multiplicity without changing
     /// the surface locus or parameterization.
     ///
@@ -5210,6 +5322,12 @@ mod tests {
         assert_eq!(uniform.domain_u(), 2.0..=6.0);
         assert!(uniform.is_periodic_u());
         assert!(!uniform.is_periodic_v());
+        assert_eq!(
+            uniform
+                .try_make_non_periodic(SurfaceKnotDirection::V)
+                .unwrap(),
+            uniform
+        );
         assert!(matches!(
             uniform.try_insert_knot_u(4.5, 0),
             Err(GeometryError::InvalidKnotMultiplicity {
@@ -5231,6 +5349,33 @@ mod tests {
                 degree: 3
             })
         ));
+
+        let clamped = uniform
+            .try_make_non_periodic(SurfaceKnotDirection::U)
+            .unwrap();
+        assert!(!clamped.is_periodic_u());
+        assert!(!clamped.is_periodic_v());
+        assert_eq!(clamped.domain_u(), uniform.domain_u());
+        assert_eq!(clamped.domain_v(), uniform.domain_v());
+        assert!(
+            clamped.knots_u()[..=clamped.degree_u()]
+                .iter()
+                .all(|knot| *knot == *uniform.domain_u().start())
+        );
+        assert!(
+            clamped.knots_u()[clamped.knots_u().len() - clamped.degree_u() - 1..]
+                .iter()
+                .all(|knot| *knot == *uniform.domain_u().end())
+        );
+        for u_index in 0..=16 {
+            let u = 2.0 + u_index as Real / 4.0;
+            for v in [0.0, 1.25, 5.0] {
+                assert_point_near(
+                    clamped.evaluate(u, v).unwrap(),
+                    uniform.evaluate(u, v).unwrap(),
+                );
+            }
+        }
 
         let refined = uniform.try_insert_knot_u(4.5, 1).unwrap();
         assert_eq!(refined.control_point_count_u(), 8);
