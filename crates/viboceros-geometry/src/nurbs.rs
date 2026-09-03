@@ -1410,6 +1410,27 @@ impl NurbsCurve {
             return Err(GeometryError::CurveSeamMustBeClosed);
         }
 
+        self.change_closed_seam_with_periodic_topology(parameter, self.is_periodic())
+    }
+
+    /// Surface seam relocation flattens an entire control-net direction into
+    /// one high-dimensional non-rational curve. Individual three-dimensional
+    /// rows can be constant or have different apparent periodicity, so the
+    /// surface supplies the flattened curve's already-validated topology.
+    pub(crate) fn try_change_closed_seam_with_periodic_topology(
+        &self,
+        parameter: Real,
+        periodic: bool,
+    ) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        self.change_closed_seam_with_periodic_topology(parameter, periodic)
+    }
+
+    fn change_closed_seam_with_periodic_topology(
+        &self,
+        parameter: Real,
+        periodic: bool,
+    ) -> Result<Self, GeometryError> {
         let domain = self.domain();
         let start = *domain.start();
         let end = *domain.end();
@@ -1419,10 +1440,10 @@ impl NurbsCurve {
         if parameter == end {
             return self.translate_parameterization_by_period(start, end, 1);
         }
-        if self.is_periodic() && self.knot_multiplicity_unchecked(parameter) <= 1 {
+        if periodic && self.knot_multiplicity_unchecked(parameter) <= 1 {
             self.change_periodic_seam(parameter, start, end)
         } else {
-            self.change_non_periodic_seam(parameter, start, end)
+            self.change_non_periodic_seam(parameter, start, end, periodic)
         }
     }
 
@@ -1543,8 +1564,10 @@ impl NurbsCurve {
         parameter: Real,
         old_start: Real,
         old_end: Real,
+        refine_periodic_topology: bool,
     ) -> Result<Self, GeometryError> {
-        let (left, right) = self.try_split(parameter)?;
+        let (left, right) =
+            self.try_split_with_periodic_topology(parameter, refine_periodic_topology)?;
         let shifted_left = left.translate_parameterization_by_period(old_start, old_end, 1)?;
         let scale = right.control_points[right.control_points.len() - 1].weight
             / shifted_left.control_points[0].weight;
@@ -2072,6 +2095,14 @@ impl NurbsCurve {
     /// their active ends. At an existing `degree + 1` knot, the independent
     /// left- and right-hand controls remain independent.
     pub fn try_split(&self, parameter: Real) -> Result<(Self, Self), GeometryError> {
+        self.try_split_with_periodic_topology(parameter, self.is_periodic())
+    }
+
+    fn try_split_with_periodic_topology(
+        &self,
+        parameter: Real,
+        restore_periodic_topology: bool,
+    ) -> Result<(Self, Self), GeometryError> {
         require_finite([parameter], "NURBS curve split parameter")?;
         let domain = self.domain();
         if parameter <= *domain.start() || parameter >= *domain.end() {
@@ -2080,7 +2111,11 @@ impl NurbsCurve {
 
         let multiplicity = self.knot_multiplicity_unchecked(parameter);
         let refined = if multiplicity < self.degree {
-            self.try_insert_knot(parameter, self.degree)?
+            self.try_insert_knot_with_periodic_topology(
+                parameter,
+                self.degree,
+                restore_periodic_topology,
+            )?
         } else {
             self.clone()
         };

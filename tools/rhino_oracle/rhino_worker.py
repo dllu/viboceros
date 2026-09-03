@@ -5758,6 +5758,72 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "surface_change_seam_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v", "both"):
+            raise ValueError("surface seam direction must be u, v, or both")
+        parameters = operation["parameter"]
+        if len(parameters) != 2:
+            raise ValueError("surface seam relocation requires a u,v parameter")
+        parameter_u = _finite(parameters[0], "surface U seam parameter")
+        parameter_v = _finite(parameters[1], "surface V seam parameter")
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface seam source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface seam source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def change_surface_seam():
+            current = source.ToBrep()
+            if current is None or current.Faces.Count != 1:
+                raise ValueError("could not create a one-face surface seam B-rep")
+            try:
+                axes = []
+                if direction in ("u", "both"):
+                    axes.append((0, parameter_u))
+                if direction in ("v", "both"):
+                    axes.append((1, parameter_v))
+                for axis, parameter in axes:
+                    changed = Rhino.Geometry.Brep.ChangeSeam(
+                        current.Faces[0], axis, parameter, tolerance["absolute"]
+                    )
+                    if changed is None:
+                        raise ValueError("Rhino surface seam relocation failed")
+                    current.Dispose()
+                    current = changed
+                nurbs = current.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                if nurbs is None:
+                    raise ValueError("surface seam relocation returned no NURBS surface")
+                try:
+                    definition = _nurbs_surface_definition(nurbs)
+                    definition["periodic_u"] = bool(nurbs.IsPeriodic(0))
+                    definition["periodic_v"] = bool(nurbs.IsPeriodic(1))
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                current.Dispose()
+
+        try:
+            return _measure(iterations, change_surface_seam)
+        finally:
+            source.Dispose()
+
     if kind == "surface_direction_edit_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

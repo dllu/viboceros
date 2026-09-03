@@ -184,6 +184,7 @@ ConvertToBeziers DeleteInput=No
 CloseCrv
 CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 CrvSeam 4,1,0
+SrfSeam 5,0,0 Direction=U
 Dir SwapUV
 Dir Mode=FlipU
 Flip
@@ -763,6 +764,15 @@ the output domain starts at the chosen parameter. Smooth periodic seams remain
 periodic and gain a control point when required, while an existing
 multiple-knot seam becomes Rhino's equivalent clamped form. Rational geometry,
 object identity, attributes, groups, selection, and undo are preserved.
+`SrfSeam point Direction=U|V|Both` performs the corresponding exact edit on
+one selected untrimmed NURBS surface; omit the point for a one-click viewport
+pick. `Parameter=value` targets one axis directly, while `Parameter=u,v` also
+supports `Direction=Both`. Without `Direction`, the only closed axis is chosen,
+or U is used when both axes close. The implementation follows OpenNURBS by
+flattening the stored homogeneous control net, so rational and periodic tensor
+structure, parameter-span lengths, surface orientation, identity, attributes,
+groups, selection, and undo are preserved. A projectively coincident boundary
+whose stored homogeneous seam controls do not close is rejected as Rhino does.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input
@@ -1053,6 +1063,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_change_seam.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_change_seam.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

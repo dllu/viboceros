@@ -407,6 +407,9 @@ impl CommandRegistry {
             .register(CurveSeamCommand)
             .expect("unique built-in command");
         registry
+            .register(SurfaceSeamCommand)
+            .expect("unique built-in command");
+        registry
             .register(DirectionCommand)
             .expect("unique built-in command");
         registry
@@ -11173,6 +11176,126 @@ fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, Co
     Ok(CurveSeamLocation::Point(point))
 }
 
+const SURFACE_SEAM_USAGE: &str =
+    "SrfSeam point [Direction=U|V|Both] | SrfSeam Parameter=u[,v] [Direction=U|V|Both]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum SurfaceSeamLocation {
+    Point(Point3),
+    Parameter(KnotLocation),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct SurfaceSeamOptions {
+    location: SurfaceSeamLocation,
+    direction: Option<SurfaceKnotDirection>,
+}
+
+struct SurfaceSeamCommand;
+
+impl Command for SurfaceSeamCommand {
+    fn name(&self) -> &'static str {
+        "SrfSeam"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_surface_seam_options(arguments)?;
+        let mut candidates = document
+            .selected_objects()
+            .filter_map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => Some((object.id(), surface.clone())),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        if candidates.len() != 1 {
+            return Err(CommandError::SurfaceSeamRequiresOneSurface {
+                actual: candidates.len(),
+            });
+        }
+        let (id, surface) = candidates
+            .pop()
+            .expect("one NURBS surface candidate was required");
+        let direction = if let Some(direction) = options.direction {
+            direction
+        } else {
+            match (surface.is_closed_u()?, surface.is_closed_v()?) {
+                (true, _) => SurfaceKnotDirection::U,
+                (false, true) => SurfaceKnotDirection::V,
+                (false, false) => return Err(CommandError::SurfaceSeamHasNoClosedDirection),
+            }
+        };
+        let (u, v) = match options.location {
+            SurfaceSeamLocation::Point(point) => {
+                surface.closest_parameters(point, document.tolerance())?
+            }
+            SurfaceSeamLocation::Parameter(KnotLocation::Surface { u, v }) => (u, v),
+            SurfaceSeamLocation::Parameter(KnotLocation::Scalar(parameter)) => match direction {
+                SurfaceKnotDirection::U => (parameter, Real::NAN),
+                SurfaceKnotDirection::V => (Real::NAN, parameter),
+                SurfaceKnotDirection::Both => {
+                    return Err(CommandError::SurfaceSeamBothDirectionsRequireUv);
+                }
+            },
+        };
+        let relocated = surface.try_change_closed_seam(direction, u, v)?;
+        document.replace_object_geometries([(id, Geometry::NurbsSurface(relocated))])?;
+        let description = match direction {
+            SurfaceKnotDirection::U => format!("U at parameter {u}"),
+            SurfaceKnotDirection::V => format!("V at parameter {v}"),
+            SurfaceKnotDirection::Both => format!("U at {u} and V at {v}"),
+        };
+        Ok(format!(
+            "Set the selected NURBS surface seam in {description}"
+        ))
+    }
+}
+
+fn parse_surface_seam_options(arguments: &[&str]) -> Result<SurfaceSeamOptions, CommandError> {
+    let Some(first) = arguments.first() else {
+        return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
+    };
+    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
+    let (location, mut index) = if option_name_eq(first_name, "Parameter") {
+        let (name, value, consumed) = orient_option(arguments, 0, SURFACE_SEAM_USAGE)?;
+        if !option_name_eq(name, "Parameter") {
+            return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
+        }
+        (
+            SurfaceSeamLocation::Parameter(parse_knot_location(value, SURFACE_SEAM_USAGE)?),
+            consumed,
+        )
+    } else {
+        let (point, consumed) = parse_point(arguments).map_err(|error| match error {
+            CommandError::Usage(_) => CommandError::Usage(SURFACE_SEAM_USAGE),
+            error => error,
+        })?;
+        (SurfaceSeamLocation::Point(point), consumed)
+    };
+
+    let mut direction = None;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, SURFACE_SEAM_USAGE)?;
+        if !option_name_eq(name, "Direction") || direction.is_some() {
+            return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
+        }
+        let value = value.trim_start_matches(['_', '-']);
+        direction = Some(if value.eq_ignore_ascii_case("U") {
+            SurfaceKnotDirection::U
+        } else if value.eq_ignore_ascii_case("V") {
+            SurfaceKnotDirection::V
+        } else if value.eq_ignore_ascii_case("Both") {
+            SurfaceKnotDirection::Both
+        } else {
+            return Err(CommandError::Usage(SURFACE_SEAM_USAGE));
+        });
+        index += consumed;
+    }
+    Ok(SurfaceSeamOptions {
+        location,
+        direction,
+    })
+}
+
 const DIRECTION_USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
 
@@ -18185,6 +18308,15 @@ pub enum CommandError {
     #[error("CrvSeam requires exactly one selected closed curve, got {actual}")]
     CurveSeamRequiresOneClosedCurve { actual: usize },
 
+    #[error("SrfSeam requires exactly one selected untrimmed NURBS surface, got {actual}")]
+    SurfaceSeamRequiresOneSurface { actual: usize },
+
+    #[error("SrfSeam requires a surface with at least one closed parameter direction")]
+    SurfaceSeamHasNoClosedDirection,
+
+    #[error("SrfSeam Direction=Both requires a u,v Parameter value")]
+    SurfaceSeamBothDirectionsRequireUv,
+
     #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
@@ -18769,7 +18901,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -22633,6 +22765,154 @@ mod tests {
             before.iter().collect::<Vec<_>>()
         );
         assert_eq!(multiple.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn changes_surface_seams_in_both_directions_without_losing_document_state() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New SeamSurfaces")
+            .unwrap();
+        registry
+            .execute(&mut document, "Torus 0,0,0 5 1.5")
+            .unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry
+            .execute(&mut document, "SetObjectName ClosedSurface")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group SeamSurface")
+            .unwrap();
+        let before = document.object(id).unwrap().clone();
+        let Geometry::NurbsSurface(source) = before.geometry() else {
+            panic!("Torus must create an exact NURBS surface")
+        };
+        let expected = source
+            .try_change_closed_seam(SurfaceKnotDirection::Both, 5.0, 1.0)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "SrfSeam Parameter=5,1 Direction=Both",)
+                .unwrap(),
+            "Set the selected NURBS surface seam in U at 5 and V at 1"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsSurface(expected.clone()));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("SeamSurface")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("SrfSeam"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(id).unwrap(), &before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsSurface(expected)
+        );
+    }
+
+    #[test]
+    fn surface_seam_uses_a_model_point_and_infers_the_only_closed_direction() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Sphere 0,0,0 5").unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let Geometry::NurbsSurface(source) = document.object(id).unwrap().geometry() else {
+            panic!("Sphere must create an exact NURBS surface")
+        };
+        assert!(source.is_closed_u().unwrap());
+        assert!(!source.is_closed_v().unwrap());
+        let source = source.clone();
+        let u = source.parameter_at_u(0.37).unwrap();
+        let v = source.parameter_at_v(0.43).unwrap();
+        let pick = source.evaluate(u, v).unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                &format!("SrfSeam {:.17},{:.17},{:.17}", pick.x(), pick.y(), pick.z()),
+            )
+            .unwrap();
+        let Geometry::NurbsSurface(relocated) = document.object(id).unwrap().geometry() else {
+            panic!("SrfSeam must retain NURBS surface geometry")
+        };
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(*relocated.domain_u().start(), u)
+        );
+        assert_eq!(relocated.domain_v(), source.domain_v());
+        assert!(
+            relocated
+                .evaluate(*relocated.domain_u().start(), v)
+                .unwrap()
+                .is_near(pick, document.tolerance())
+        );
+    }
+
+    #[test]
+    fn surface_seam_rejects_invalid_open_or_ambiguous_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "SrfSeam",
+            "SrfSeam Parameter",
+            "SrfSeam Parameter=1,2 Direction=Sideways",
+            "SrfSeam 1,2,3 Direction=U Direction=V",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(SURFACE_SEAM_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "SrfSeam 0,0"),
+            Err(CommandError::SurfaceSeamRequiresOneSurface { actual: 0 })
+        ));
+
+        registry
+            .execute(&mut document, "SrfPt 0,0 4,0 4,3 0,3")
+            .unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "SrfSeam 2,1"),
+            Err(CommandError::SurfaceSeamHasNoClosedDirection)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        document.clear_selection();
+        registry.execute(&mut document, "Torus 10,0,0 5 1").unwrap();
+        let torus = document.objects().last().unwrap().id();
+        document
+            .select_object(torus, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "SrfSeam Parameter=1 Direction=Both"),
+            Err(CommandError::SurfaceSeamBothDirectionsRequireUv)
+        ));
+        registry.execute(&mut document, "Sphere 25,0,0 3").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "SrfSeam 10,0,0"),
+            Err(CommandError::SurfaceSeamRequiresOneSurface { actual: 3 })
+        ));
     }
 
     #[test]

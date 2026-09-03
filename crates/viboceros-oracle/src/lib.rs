@@ -655,6 +655,18 @@ pub enum Operation {
         knots_v: Vec<f64>,
         edit: SurfaceDirectionEdit,
     },
+    SurfaceChangeSeamGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceUniformDirection,
+        parameter: [f64; 2],
+    },
     SurfaceInsertKnotGeometry {
         id: String,
         degree_u: usize,
@@ -1034,6 +1046,7 @@ impl Operation {
             | Self::SurfaceMakePeriodicGeometry { id, .. }
             | Self::SurfaceInsertControlPointGeometry { id, .. }
             | Self::SurfaceDirectionEditGeometry { id, .. }
+            | Self::SurfaceChangeSeamGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
             | Self::SurfaceRemoveControlPointGeometry { id, .. }
@@ -3070,6 +3083,36 @@ fn execute(
                 SurfaceDirectionEdit::UReverse => source.try_reversed_u(),
                 SurfaceDirectionEdit::VReverse => source.try_reversed_v(),
                 SurfaceDirectionEdit::SwapUv => source.try_swapped_uv(),
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceChangeSeamGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            parameter,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_change_closed_seam(
+                    direction.geometry(),
+                    black_box(parameter[0]),
+                    black_box(parameter[1]),
+                )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8466,6 +8509,43 @@ mod tests {
         assert_eq!(curve["periodic"], true);
         assert_eq!(curve["control_points"].as_array().unwrap().len(), 8);
         assert_eq!(curve["knots"].as_array().unwrap().len(), 12);
+    }
+
+    #[test]
+    fn captures_closed_surface_seam_relocation_in_both_directions() {
+        let u_points = [[0.0, 0.0, 0.0], [4.0, 0.0, 0.0], [2.0, 3.0, 0.0]];
+        let v_offsets = [[0.0, 0.0, 0.0], [0.0, 1.0, 2.0], [0.0, -1.0, 2.0]];
+        let control_points = (0..5)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    let point = std::array::from_fn(|coordinate| {
+                        u_points[u % 3][coordinate] + v_offsets[v % 3][coordinate]
+                    });
+                    ControlPoint { point, weight: 1.0 }
+                })
+            })
+            .collect();
+        let response = run_request(&request(vec![Operation::SurfaceChangeSeamGeometry {
+            id: "periodic-surface-both-seams".to_owned(),
+            degree_u: 2,
+            degree_v: 2,
+            control_point_count_u: 5,
+            control_point_count_v: 5,
+            control_points,
+            knots_u: vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            knots_v: vec![-2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0],
+            direction: SurfaceUniformDirection::Both,
+            parameter: [1.25, 0.6],
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        assert_eq!(surface["degree"], json!([2, 2]));
+        assert_eq!(surface["control_count"], json!([6, 6]));
+        assert_eq!(surface["domain_u"], json!([1.25, 4.25]));
+        assert_eq!(surface["domain_v"], json!([0.6, 3.6]));
+        assert_eq!(surface["periodic_u"], true);
+        assert_eq!(surface["periodic_v"], true);
     }
 
     #[test]

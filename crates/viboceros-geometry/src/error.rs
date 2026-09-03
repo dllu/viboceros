@@ -69,6 +69,11 @@ pub enum GeometryError {
     #[error("a curve must be closed before its seam can be changed")]
     CurveSeamMustBeClosed,
 
+    #[error(
+        "surface seam relocation requires a closed homogeneous {direction} control-net direction"
+    )]
+    SurfaceSeamDirectionMustBeClosed { direction: &'static str },
+
     #[error("periodic NURBS conversion requires degree two or higher")]
     PeriodicNurbsDegreeTooLow,
 

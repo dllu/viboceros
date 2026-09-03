@@ -224,6 +224,9 @@ enum InteractiveCommand {
         midpoint: bool,
     },
     CrvSeam,
+    SrfSeam {
+        direction: Option<InteractiveIsocurveDirection>,
+    },
     Move {
         start: Option<Point3>,
     },
@@ -324,6 +327,7 @@ impl InteractiveCommand {
             Self::ExtractIsocurve { .. } => "ExtractIsocurve",
             Self::InsertControlPoint { .. } => "InsertControlPoint",
             Self::CrvSeam => "CrvSeam",
+            Self::SrfSeam { .. } => "SrfSeam",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
@@ -565,6 +569,9 @@ impl InteractiveCommand {
             Self::CrvSeam => {
                 "CrvSeam: pick a new seam location on the selected closed curve (Esc to cancel)"
             }
+            Self::SrfSeam { .. } => {
+                "SrfSeam: pick a new seam location on the selected closed surface (Esc to cancel)"
+            }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -745,6 +752,7 @@ impl InteractiveCommand {
             | Self::ExtractIsocurve { .. }
             | Self::InsertControlPoint { .. }
             | Self::CrvSeam
+            | Self::SrfSeam { .. }
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -2016,6 +2024,28 @@ impl VibocerosApp {
                 direction,
                 midpoint,
             }
+        } else if normalized == "srfseam" {
+            let mut direction = None;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if !name.eq_ignore_ascii_case("Direction") || direction.is_some() {
+                    return false;
+                }
+                direction = Some(if value.eq_ignore_ascii_case("U") {
+                    InteractiveIsocurveDirection::U
+                } else if value.eq_ignore_ascii_case("V") {
+                    InteractiveIsocurveDirection::V
+                } else if value.eq_ignore_ascii_case("Both") {
+                    InteractiveIsocurveDirection::Both
+                } else {
+                    return false;
+                });
+            }
+            InteractiveCommand::SrfSeam { direction }
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
             let mut ignore_trims = false;
@@ -2299,6 +2329,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtractIsocurve { .. }
                 | InteractiveCommand::InsertControlPoint { .. }
                 | InteractiveCommand::CrvSeam
+                | InteractiveCommand::SrfSeam { .. }
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -3502,6 +3533,13 @@ impl VibocerosApp {
             InteractiveCommand::CrvSeam => {
                 self.active_command = None;
                 self.execute_command(&format!("CrvSeam {}", format_model_point(point)));
+            }
+            InteractiveCommand::SrfSeam { direction } => {
+                self.active_command = None;
+                let direction = direction.map_or(String::new(), |direction| {
+                    format!(" Direction={}", direction.option_value())
+                });
+                self.execute_command(&format!("SrfSeam {}{direction}", format_model_point(point)));
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -6969,6 +7007,62 @@ mod tests {
 
         app.document.clear_selection();
         assert!(app.try_start_interactive_command("CrvSeam"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_surface_seam_uses_one_location_pick_and_direction_options() {
+        let mut app = test_app();
+        app.execute_command("Sphere 0,0,0 5");
+        let source_id = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source_id, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        let Geometry::NurbsSurface(source) = app.document.object(source_id).unwrap().geometry()
+        else {
+            panic!("Sphere must create an exact NURBS surface")
+        };
+        let source = source.clone();
+        let u = source.parameter_at_u(0.37).unwrap();
+        let v = source.parameter_at_v(0.43).unwrap();
+        let pick = source.evaluate(u, v).unwrap();
+
+        assert!(app.try_start_interactive_command("SrfSeam"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SrfSeam { direction: None })
+        );
+        assert!(app.command_log.back().unwrap().contains("closed surface"));
+        app.accept_drafting_point(pick);
+
+        assert_eq!(app.active_command, None);
+        let Geometry::NurbsSurface(relocated) = app.document.object(source_id).unwrap().geometry()
+        else {
+            panic!("expected an interactively edited NURBS surface")
+        };
+        assert!(
+            app.document
+                .tolerance()
+                .approx_eq(*relocated.domain_u().start(), u)
+        );
+        assert_eq!(relocated.domain_v(), source.domain_v());
+        assert!(app.document.is_selected(source_id));
+        assert_eq!(app.document.undo_label(), Some("SrfSeam"));
+
+        assert!(app.try_start_interactive_command("SrfSeam Direction=Both"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SrfSeam {
+                direction: Some(InteractiveIsocurveDirection::Both),
+            })
+        );
+        app.cancel_interactive_command(false);
+        assert!(!app.try_start_interactive_command("SrfSeam Parameter=1 Direction=U"));
+        assert!(!app.try_start_interactive_command("SrfSeam Direction=Sideways"));
+
+        app.document.clear_selection();
+        assert!(app.try_start_interactive_command("SrfSeam"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
     }

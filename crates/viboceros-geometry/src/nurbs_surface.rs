@@ -1286,6 +1286,43 @@ impl NurbsSurface {
         )
     }
 
+    /// Relocates the seam in each requested closed surface direction without
+    /// changing the surface locus or orientation.
+    ///
+    /// OpenNURBS performs this edit by flattening all stored homogeneous
+    /// controls in one direction into a single high-dimensional curve. This
+    /// implementation validates that same closure and supplies its shared
+    /// periodic topology to every three-dimensional control row or column.
+    /// The resulting direction starts at the requested parameter and retains
+    /// its original domain length.
+    pub fn try_change_closed_seam(
+        &self,
+        direction: SurfaceKnotDirection,
+        parameter_u: Real,
+        parameter_v: Real,
+    ) -> Result<Self, GeometryError> {
+        let mut result = self.clone();
+        if direction.includes_u() {
+            if !result.homogeneous_control_curve_is_closed_u()? {
+                return Err(GeometryError::SurfaceSeamDirectionMustBeClosed { direction: "U" });
+            }
+            let periodic = result.insertion_curve_is_periodic_u();
+            result = result.map_u_control_curves(|curve| {
+                curve.try_change_closed_seam_with_periodic_topology(parameter_u, periodic)
+            })?;
+        }
+        if direction.includes_v() {
+            if !result.homogeneous_control_curve_is_closed_v()? {
+                return Err(GeometryError::SurfaceSeamDirectionMustBeClosed { direction: "V" });
+            }
+            let periodic = result.insertion_curve_is_periodic_v();
+            result = result.map_v_control_curves(|curve| {
+                curve.try_change_closed_seam_with_periodic_topology(parameter_v, periodic)
+            })?;
+        }
+        Ok(result)
+    }
+
     /// Replaces the selected knot direction(s) with Rhino-compatible unit
     /// spacing without changing the degree, control net, or rational weights.
     ///
@@ -1928,6 +1965,28 @@ impl NurbsSurface {
                 )
             })
         })
+    }
+
+    fn homogeneous_control_curve_is_closed_u(&self) -> Result<bool, GeometryError> {
+        homogeneous_control_curve_is_closed(
+            self.degree_u,
+            &self.knots_u,
+            self.control_points
+                .chunks_exact(self.control_point_count_u)
+                .map(<[WeightedPoint3]>::to_vec),
+        )
+    }
+
+    fn homogeneous_control_curve_is_closed_v(&self) -> Result<bool, GeometryError> {
+        homogeneous_control_curve_is_closed(
+            self.degree_v,
+            &self.knots_v,
+            (0..self.control_point_count_u).map(|u| {
+                (0..self.control_point_count_v)
+                    .map(|v| self.control_points[self.control_index(u, v)])
+                    .collect()
+            }),
+        )
     }
 
     /// Returns whether the U knot vector and repeated end controls form an
@@ -3448,6 +3507,49 @@ fn isocurve_controls_coincident(left: &crate::NurbsCurve, right: &crate::NurbsCu
         })
 }
 
+fn homogeneous_control_curve_is_closed(
+    degree: usize,
+    knots: &[Real],
+    control_curves: impl IntoIterator<Item = Vec<WeightedPoint3>>,
+) -> Result<bool, GeometryError> {
+    let mut curve_count = 0_usize;
+    let mut endpoint_coincident = true;
+    let mut interior_distinct = [false; 4];
+    for controls in control_curves {
+        curve_count += 1;
+        if controls.len() < 4 {
+            return Ok(false);
+        }
+        let homogeneous_points = controls
+            .iter()
+            .map(|control| {
+                let point = control.point();
+                let weight = control.weight();
+                Point3::try_new(point.x() * weight, point.y() * weight, point.z() * weight)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let homogeneous_weights = controls
+            .iter()
+            .map(|control| Point3::try_new(control.weight(), 0.0, 0.0))
+            .collect::<Result<Vec<_>, _>>()?;
+        for coordinates in [homogeneous_points, homogeneous_weights] {
+            let curve = NurbsCurve::try_new(degree, coordinates, knots.to_vec())?;
+            let start = curve.evaluate(*curve.domain().start())?;
+            let end = curve.evaluate(*curve.domain().end())?;
+            let first_interior = curve.evaluate(curve.parameter_at(1.0 / 3.0)?)?;
+            let second_interior = curve.evaluate(curve.parameter_at(2.0 / 3.0)?)?;
+            endpoint_coincident &= curve_points_coincident(start, end);
+            interior_distinct[0] |= !curve_points_coincident(start, first_interior);
+            interior_distinct[1] |= !curve_points_coincident(start, second_interior);
+            interior_distinct[2] |= !curve_points_coincident(end, first_interior);
+            interior_distinct[3] |= !curve_points_coincident(end, second_interior);
+        }
+    }
+    Ok(curve_count > 0
+        && endpoint_coincident
+        && interior_distinct.into_iter().all(|distinct| distinct))
+}
+
 #[derive(Clone, Copy)]
 enum SurfaceIsoDirection {
     U,
@@ -4172,6 +4274,165 @@ mod tests {
         {
             assert!(Tolerance::DEFAULT.approx_eq(actual, expected));
         }
+    }
+
+    #[test]
+    fn surface_seam_relocation_preserves_periodic_tensor_structure_exactly() {
+        let row = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+        ];
+        let controls = row
+            .into_iter()
+            .chain(row.into_iter().map(|point| {
+                point
+                    .translated(Vector3::try_new(0.0, 0.0, 3.0).unwrap())
+                    .unwrap()
+            }))
+            .collect();
+        let surface = NurbsSurface::try_new(
+            3,
+            1,
+            7,
+            2,
+            controls,
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+            vec![10.0, 10.0, 17.0, 17.0],
+        )
+        .unwrap();
+
+        let relocated = surface
+            .try_change_closed_seam(SurfaceKnotDirection::U, 3.25, Real::NAN)
+            .unwrap();
+        assert_eq!(relocated.domain_u(), 3.25..=7.25);
+        assert_eq!(relocated.domain_v(), surface.domain_v());
+        assert_eq!(relocated.control_point_count_u(), 8);
+        assert_eq!(relocated.control_point_count_v(), 2);
+        assert_eq!(
+            relocated.knots_u(),
+            &[2.0, 2.0, 3.0, 3.25, 4.0, 5.0, 6.0, 7.0, 7.25, 8.0, 9.0, 9.0]
+        );
+        assert!(relocated.is_periodic_u());
+        for u_index in 0..=32 {
+            let u = 3.25 + u_index as Real / 32.0 * 4.0;
+            let source_u = if u <= 6.0 { u } else { u - 4.0 };
+            for v in [10.0, 12.5, 17.0] {
+                assert_point_near(
+                    relocated.evaluate(u, v).unwrap(),
+                    surface.evaluate(source_u, v).unwrap(),
+                );
+            }
+        }
+
+        let transposed = surface.try_swapped_uv().unwrap();
+        let relocated_v = transposed
+            .try_change_closed_seam(SurfaceKnotDirection::V, Real::NAN, 3.25)
+            .unwrap();
+        assert_eq!(relocated_v, relocated.try_swapped_uv().unwrap());
+    }
+
+    #[test]
+    fn surface_seam_relocation_preserves_closed_rational_rows() {
+        let controls = [
+            ([0.0, 0.0, 0.0], 0.5),
+            ([3.0, -1.0, 0.0], 1.3),
+            ([5.0, 3.0, 0.0], 0.8),
+            ([0.0, 4.0, 0.0], 1.7),
+            ([0.0, 0.0, 0.0], 0.5),
+            ([0.0, 0.0, 4.0], 0.9),
+            ([3.0, -1.0, 4.0], 1.1),
+            ([5.0, 3.0, 4.0], 1.4),
+            ([0.0, 4.0, 4.0], 0.7),
+            ([0.0, 0.0, 4.0], 0.9),
+        ]
+        .into_iter()
+        .map(|(coordinates, weight)| {
+            WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+        })
+        .collect();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            5,
+            2,
+            controls,
+            vec![4.0, 4.0, 4.0, 5.0, 9.0, 12.0, 12.0, 12.0],
+            vec![0.0, 0.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let relocated = surface
+            .try_change_closed_seam(SurfaceKnotDirection::U, 7.0, 0.0)
+            .unwrap();
+        assert_eq!(relocated.domain_u(), 7.0..=15.0);
+        assert_eq!(relocated.control_point_count_u(), 7);
+        assert_eq!(
+            relocated.knots_u(),
+            &[7.0, 7.0, 7.0, 9.0, 12.0, 12.0, 13.0, 15.0, 15.0, 15.0]
+        );
+        assert!(!relocated.is_periodic_u());
+        for u_index in 0..=32 {
+            let u = 7.0 + u_index as Real / 4.0;
+            let source_u = if u <= 12.0 { u } else { u - 8.0 };
+            for v in [0.0, 1.5, 4.0] {
+                assert_point_near(
+                    relocated.evaluate(u, v).unwrap(),
+                    surface.evaluate(source_u, v).unwrap(),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn surface_seam_relocation_rejects_open_and_projectively_only_closed_nets() {
+        let open = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(3.0, 0.0, 0.0),
+            point(3.0, 2.0, 1.0),
+            point(0.0, 2.0, 0.0),
+        ])
+        .unwrap();
+        assert_eq!(
+            open.try_change_closed_seam(SurfaceKnotDirection::U, 0.5, 0.5),
+            Err(GeometryError::SurfaceSeamDirectionMustBeClosed { direction: "U" })
+        );
+
+        let controls = [
+            ([0.0, 0.0, 0.0], 0.5),
+            ([3.0, -1.0, 0.0], 1.3),
+            ([5.0, 3.0, 0.0], 0.8),
+            ([0.0, 4.0, 0.0], 1.7),
+            ([0.0, 0.0, 0.0], 2.0),
+            ([0.0, 0.0, 4.0], 0.9),
+            ([3.0, -1.0, 4.0], 1.1),
+            ([5.0, 3.0, 4.0], 1.4),
+            ([0.0, 4.0, 4.0], 0.7),
+            ([0.0, 0.0, 4.0], 3.6),
+        ]
+        .into_iter()
+        .map(|(coordinates, weight)| {
+            WeightedPoint3::try_new(Point3::try_from(coordinates).unwrap(), weight).unwrap()
+        })
+        .collect();
+        let projectively_closed = NurbsSurface::try_new_rational(
+            2,
+            1,
+            5,
+            2,
+            controls,
+            vec![4.0, 4.0, 4.0, 5.0, 9.0, 12.0, 12.0, 12.0],
+            vec![0.0, 0.0, 4.0, 4.0],
+        )
+        .unwrap();
+        assert!(projectively_closed.is_closed_u().unwrap());
+        assert_eq!(
+            projectively_closed.try_change_closed_seam(SurfaceKnotDirection::U, 7.0, 0.0),
+            Err(GeometryError::SurfaceSeamDirectionMustBeClosed { direction: "U" })
+        );
     }
 
     #[test]
