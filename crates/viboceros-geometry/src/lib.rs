@@ -9,6 +9,7 @@ mod brep;
 mod catenary;
 mod circular;
 mod curve;
+mod curve_through;
 mod ellipse;
 mod error;
 mod frame;
@@ -42,6 +43,10 @@ pub use catenary::{
 };
 pub use circular::{Circle3, CircularArc3};
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
+pub use curve_through::{
+    CurveThroughConstruction, MAX_CURVE_THROUGH_DEGREE, sort_and_cull_points,
+    try_curve_through_points,
+};
 pub use ellipse::Ellipse3;
 pub use error::GeometryError;
 pub use frame::Frame3;

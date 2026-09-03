@@ -33,6 +33,8 @@ Polygon 6 0,0 5
 Curve 0,0 2,3 5,3 8,0 Degree=3
 ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
+CurveThroughPt CurveType=Interpolated Knots=Chord Closed=No
+CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -216,7 +218,17 @@ through 11, and lowers the degree when too few controls are supplied.
 `InterpCrv` defaults to an open, degree-three, chord-knot curve through the
 input points.
 It also supports `Degree=1`, `Knots=Uniform|SqrtChrd`, smooth periodic or sharp
-`Close=` modes, and start/end tangent directions on open cubics. `Polygon`
+`Close=` modes, and start/end tangent directions on open cubics.
+`CurveThroughPt` orders selected point objects into a nearest-neighbor chain,
+ignores coincident locations, and creates one control-point or
+interpolated curve; `Closed=Yes` requests a smooth closed seam (degree-one
+output remains linear and non-periodic). `CurveThroughPolyline`
+creates one curve through each selected polyline's vertices, inheriting whether
+each source is open or closed. Both commands support control-point degrees 1
+through 11 (lowered when necessary), while interpolated output currently
+supports degrees 1 and 3 with uniform, chord, or square-root-chord spacing.
+Polyline sources are retained by default; `DeleteInput=Yes` replaces their
+geometry in place while preserving identity and attributes. `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
@@ -866,6 +878,10 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/catenary.json \
   --absolute-epsilon 2e-8 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_through.json \
+  --absolute-epsilon 2e-12 --relative-epsilon 1e-12
 ```
 
 The same workflow is importable for instrumentation and tests:

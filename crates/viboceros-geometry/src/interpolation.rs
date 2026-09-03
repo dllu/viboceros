@@ -2,12 +2,28 @@ use faer::{Mat, prelude::*};
 
 use crate::{
     GeometryError, NurbsCurve, Point3, Real, Tolerance, UnitVector3, Vector3,
-    nurbs::bspline_basis_values, require_finite,
+    nurbs::{bspline_basis_values, control_polygon_length},
+    require_finite,
 };
 
 /// Maximum point count accepted by one interpolation solve.
 pub const MAX_CURVE_INTERPOLATION_POINTS: usize = 256;
 const CUBIC_DEGREE: usize = 3;
+
+#[derive(Clone, Copy)]
+enum InterpolationCoincidence {
+    Exact,
+    Within(Tolerance),
+}
+
+impl InterpolationCoincidence {
+    fn matches(self, first: Point3, second: Point3) -> Result<bool, GeometryError> {
+        match self {
+            Self::Exact => Ok(first == second),
+            Self::Within(tolerance) => Ok(first.distance_to(second)? <= tolerance.absolute()),
+        }
+    }
+}
 
 /// Parameter interval policy between consecutive interpolation points.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -113,7 +129,12 @@ impl NurbsCurve {
         options: CurveInterpolationOptions,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        Self::try_interpolate_impl(points, options, tolerance, false)
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Within(tolerance),
+            false,
+        )
     }
 
     /// Interpolates points using the behavior of Rhino's `InterpCrv` command.
@@ -125,13 +146,27 @@ impl NurbsCurve {
         options: CurveInterpolationOptions,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
-        Self::try_interpolate_impl(points, options, tolerance, true)
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Within(tolerance),
+            true,
+        )
+    }
+
+    /// Interpolates locations using the curve-through commands' exact
+    /// coincidence rule instead of the document modelling tolerance.
+    pub(crate) fn try_interpolate_for_curve_through(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+    ) -> Result<Self, GeometryError> {
+        Self::try_interpolate_impl(points, options, InterpolationCoincidence::Exact, true)
     }
 
     fn try_interpolate_impl(
         points: &[Point3],
         options: CurveInterpolationOptions,
-        tolerance: Tolerance,
+        coincidence: InterpolationCoincidence,
         preserve_two_point_degree: bool,
     ) -> Result<Self, GeometryError> {
         if !matches!(options.degree, 1 | CUBIC_DEGREE) {
@@ -159,14 +194,14 @@ impl NurbsCurve {
         match options.closure {
             InterpolatedCurveClosure::Open => {}
             InterpolatedCurveClosure::Smooth => {
-                if points[0].is_near(points[points.len() - 1], tolerance) {
+                if coincidence.matches(points[0], points[points.len() - 1])? {
                     points.pop();
                 }
             }
             InterpolatedCurveClosure::Sharp => {
                 let first = points[0];
                 let last = points.len() - 1;
-                if first.is_near(points[last], tolerance) {
+                if coincidence.matches(first, points[last])? {
                     points[last] = first;
                 } else {
                     points.push(first);
@@ -183,9 +218,9 @@ impl NurbsCurve {
                 maximum: MAX_CURVE_INTERPOLATION_POINTS,
             });
         }
-        validate_adjacent_points(&points, tolerance)?;
+        validate_adjacent_points(&points, coincidence)?;
         if options.closure == InterpolatedCurveClosure::Smooth
-            && points[points.len() - 1].distance_to(points[0])? <= tolerance.absolute()
+            && coincidence.matches(points[points.len() - 1], points[0])?
         {
             return Err(GeometryError::CoincidentCurveInterpolationPoints { second_index: 0 });
         }
@@ -194,7 +229,7 @@ impl NurbsCurve {
             if options.closure == InterpolatedCurveClosure::Smooth {
                 points.push(points[0]);
             }
-            return interpolate_degree_one(&points);
+            return interpolate_degree_one(&points, options.knot_spacing);
         }
         if options.closure == InterpolatedCurveClosure::Smooth {
             return interpolate_periodic_cubic(&points, options.knot_spacing);
@@ -218,9 +253,12 @@ impl NurbsCurve {
     }
 }
 
-fn validate_adjacent_points(points: &[Point3], tolerance: Tolerance) -> Result<(), GeometryError> {
+fn validate_adjacent_points(
+    points: &[Point3],
+    coincidence: InterpolationCoincidence,
+) -> Result<(), GeometryError> {
     for (index, pair) in points.windows(2).enumerate() {
-        if pair[0].distance_to(pair[1])? <= tolerance.absolute() {
+        if coincidence.matches(pair[0], pair[1])? {
             return Err(GeometryError::CoincidentCurveInterpolationPoints {
                 second_index: index + 1,
             });
@@ -229,15 +267,25 @@ fn validate_adjacent_points(points: &[Point3], tolerance: Tolerance) -> Result<(
     Ok(())
 }
 
-fn interpolate_degree_one(points: &[Point3]) -> Result<NurbsCurve, GeometryError> {
-    if points.len() == 2 {
-        return interpolate_two_point_line(points[0], points[1]);
-    }
-    let last = (points.len() - 1) as Real;
+fn interpolate_degree_one(
+    points: &[Point3],
+    spacing: CurveKnotSpacing,
+) -> Result<NurbsCurve, GeometryError> {
+    let intervals = interpolation_intervals(points, spacing, false)?;
+    let parameters = cumulative_parameters(&intervals)?;
+    let parameter_end = parameters[parameters.len() - 1];
+    let domain_end = control_polygon_length(points)?;
+    let scale = domain_end / parameter_end;
+    require_finite([scale], "degree-one interpolation parameter scale")?;
+
     let mut knots = Vec::with_capacity(points.len() + 2);
-    knots.extend([0.0, 0.0]);
-    knots.extend((1..points.len() - 1).map(|index| index as Real));
-    knots.extend([last, last]);
+    knots.push(0.0);
+    knots.extend(parameters.into_iter().map(|parameter| parameter * scale));
+    *knots
+        .last_mut()
+        .expect("interpolation parameters contain both endpoints") = domain_end;
+    knots.push(domain_end);
+    require_finite(knots.iter().copied(), "degree-one interpolation knots")?;
     NurbsCurve::try_new(1, points.to_vec(), knots)
 }
 
@@ -744,6 +792,29 @@ mod tests {
             linear.control_points()[0].point(),
             linear.control_points()[3].point()
         );
+    }
+
+    #[test]
+    fn degree_one_interpolation_scales_each_knot_style_to_polygon_length() {
+        let points = [
+            point(0.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(5.0, 0.0, 0.0),
+        ];
+        for (spacing, middle_knot) in [
+            (CurveKnotSpacing::Uniform, 2.5),
+            (CurveKnotSpacing::Chord, 1.0),
+            (CurveKnotSpacing::SquareRootChord, 5.0 / 3.0),
+        ] {
+            let curve = NurbsCurve::try_interpolate(
+                &points,
+                CurveInterpolationOptions::new(1, spacing, InterpolatedCurveClosure::Open),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(curve.domain(), 0.0..=5.0);
+            assert_eq!(curve.knots(), &[0.0, 0.0, middle_knot, 5.0, 5.0]);
+        }
     }
 
     #[test]

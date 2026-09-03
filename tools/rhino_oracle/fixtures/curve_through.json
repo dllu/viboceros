@@ -1,0 +1,136 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_through_geometry",
+      "id": "points-control-degree-five",
+      "source": "points",
+      "point_sets": [[[0, 0, 0], [1, 2, 0], [2.0000000002, -1, 1], [2, -1, 1], [2, -1, 1], [4, 3, 0], [6, -2, 1], [8, 1, 0], [10, 0, 0]]],
+      "degree": 5,
+      "curve_type": "control_point",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "points-interpolated-uniform",
+      "source": "points",
+      "point_sets": [[[0, 0, 0], [1, 2, 0], [2.0000000002, -1, 1], [2, -1, 1], [2, -1, 1], [4, 3, 0], [6, -2, 1], [8, 1, 0], [10, 0, 0]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "points-interpolated-chord",
+      "source": "points",
+      "point_sets": [[[0, 0, 0], [1, 2, 0], [2, -1, 1], [4, 3, 0], [6, -2, 1], [8, 1, 0], [10, 0, 0]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "chord",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-control-degree-lowered",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [3, 1, 0], [6, -1, 0], [10, 0, 0]]],
+      "degree": 7,
+      "curve_type": "control_point",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-uniform",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 1, 0], [4, -1, 0], [7, 2, 1], [10, 0, 0]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-chord",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 1, 0], [4, -1, 0], [7, 2, 1], [10, 0, 0]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "chord",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-square-root-chord",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [1, 0, 0], [5, 2, 0], [10, 0, 0]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "sqrt_chord",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "closed-polyline-control",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 0, 0], [2, 2, 0], [0, 2, 0], [0, 0, 0]]],
+      "degree": 3,
+      "curve_type": "control_point",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "closed-polyline-interpolated",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 0, 0], [2, 2, 0], [0, 2, 0], [0, 0, 0]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-two-points",
+      "source": "polylines",
+      "point_sets": [[[1, 2, 3], [7, -1, 5]]],
+      "degree": 3,
+      "curve_type": "interpolated",
+      "knots": "chord",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-degree-one",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 1, 0], [4, -1, 0], [7, 2, 1], [10, 0, 0]]],
+      "degree": 1,
+      "curve_type": "interpolated",
+      "knots": "uniform",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-degree-one-chord",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 1, 0], [4, -1, 0], [7, 2, 1], [10, 0, 0]]],
+      "degree": 1,
+      "curve_type": "interpolated",
+      "knots": "chord",
+      "closed": false
+    },
+    {
+      "op": "curve_through_geometry",
+      "id": "polyline-interpolated-degree-one-square-root-chord",
+      "source": "polylines",
+      "point_sets": [[[0, 0, 0], [2, 1, 0], [4, -1, 0], [7, 2, 1], [10, 0, 0]]],
+      "degree": 1,
+      "curve_type": "interpolated",
+      "knots": "sqrt_chord",
+      "closed": false
+    }
+  ]
+}

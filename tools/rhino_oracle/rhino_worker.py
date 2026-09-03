@@ -5403,6 +5403,93 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_catenary)
 
+    if kind == "curve_through_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = operation["source"]
+        point_sets = operation["point_sets"]
+        degree = int(operation["degree"])
+        curve_type = operation["curve_type"]
+        knots = operation["knots"]
+        closed = bool(operation.get("closed", False))
+        if source not in ("points", "polylines"):
+            raise ValueError("curve-through source must be points or polylines")
+        if curve_type not in ("control_point", "interpolated"):
+            raise ValueError("unknown curve-through curve type")
+        knot_name = {
+            "uniform": "Uniform",
+            "chord": "Chord",
+            "sqrt_chord": "SqrtChord",
+        }.get(knots)
+        if knot_name is None:
+            raise ValueError("unknown curve-through knot style")
+        curve_type_name = {
+            "control_point": "ControlPoint",
+            "interpolated": "Interpolated",
+        }[curve_type]
+        if source == "points":
+            knot_option = " _Knots=_%s" % knot_name if curve_type == "interpolated" else ""
+            command = (
+                "_-CurveThroughPt _Degree=%d _CurveType=_%s%s _Closed=_%s _Enter"
+                % (degree, curve_type_name, knot_option, "Yes" if closed else "No")
+            )
+        else:
+            knot_option = " _Knots=_%s" % knot_name if curve_type == "interpolated" else ""
+            command = (
+                "_-CurveThroughPolyline _Degree=%d _CurveType=_%s%s "
+                "_DeleteInput=_No _Enter"
+                % (degree, curve_type_name, knot_option)
+            )
+
+        def create_curves_through_geometry():
+            before_all = set(obj.Id for obj in document.Objects)
+            source_ids = []
+            try:
+                if source == "points":
+                    if len(point_sets) != 1:
+                        raise ValueError("point source requires one point set")
+                    for coordinates in point_sets[0]:
+                        source_ids.append(document.Objects.AddPoint(_point(coordinates)))
+                else:
+                    for coordinates in point_sets:
+                        polyline = Rhino.Geometry.Polyline(
+                            [_point(point) for point in coordinates]
+                        )
+                        source_ids.append(document.Objects.AddPolyline(polyline))
+                document.Objects.UnselectAll()
+                for source_id in source_ids:
+                    document.Objects.Select(source_id, True)
+                before_output = set(obj.Id for obj in document.Objects)
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                curves = [
+                    obj
+                    for obj in document.Objects
+                    if obj.Id not in before_output
+                    and isinstance(obj.Geometry, Rhino.Geometry.Curve)
+                    and obj.Geometry.GetType().Name != "PolylineCurve"
+                ]
+                curves.sort(key=lambda obj: obj.RuntimeSerialNumber)
+                if len(curves) != len(point_sets):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "curve-through macro %r returned %r and created %d curves; "
+                        "history tail: %s"
+                        % (command, succeeded, len(curves), history[-3000:])
+                    )
+                definitions = []
+                for obj in curves:
+                    definition = _nurbs_curve_definition(obj.Geometry)
+                    definition["knots"] = definition["knots"][1:-1]
+                    definition["closed"] = bool(obj.Geometry.IsClosed)
+                    definition["periodic"] = bool(obj.Geometry.IsPeriodic)
+                    definitions.append(definition)
+                return {"curves": definitions}
+            finally:
+                for obj in list(document.Objects):
+                    if obj.Id not in before_all:
+                        document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_curves_through_geometry)
+
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc
         start = _point(operation["start"])

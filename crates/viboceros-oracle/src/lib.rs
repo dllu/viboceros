@@ -15,12 +15,13 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, CurveRef, Ellipse3, Frame3, GeometryError, LineSegment,
-    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_polylines, try_catenary,
+    CatenaryOutput, Circle3, CircularArc3, CurveKnotSpacing, CurveRef, CurveThroughConstruction,
+    Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions,
+    MeshCylinderOptions, MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
+    Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_polylines, sort_and_cull_points,
+    try_catenary, try_curve_through_points,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -499,6 +500,15 @@ pub enum Operation {
         smooth: bool,
         point_count: usize,
     },
+    CurveThroughGeometry {
+        id: String,
+        source: CurveThroughSource,
+        point_sets: Vec<Vec<[f64; 3]>>,
+        degree: usize,
+        curve_type: CurveThroughCurveType,
+        knots: CurveThroughKnotStyle,
+        closed: bool,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -644,6 +654,28 @@ pub enum CatenaryDefinition {
     Apex { point: [f64; 3] },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveThroughSource {
+    Points,
+    Polylines,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveThroughCurveType {
+    ControlPoint,
+    Interpolated,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveThroughKnotStyle {
+    Uniform,
+    Chord,
+    SqrtChord,
+}
+
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
@@ -717,6 +749,7 @@ impl Operation {
             | Self::Spiral { id, .. }
             | Self::SweptSpiral { id, .. }
             | Self::Catenary { id, .. }
+            | Self::CurveThroughGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2367,6 +2400,80 @@ fn execute(
                 }),
             };
             (value, elapsed)
+        }
+        Operation::CurveThroughGeometry {
+            source,
+            point_sets,
+            degree,
+            curve_type,
+            knots,
+            closed,
+            ..
+        } => {
+            let point_sets = point_sets
+                .iter()
+                .map(|points| {
+                    points
+                        .iter()
+                        .copied()
+                        .map(point)
+                        .collect::<Result<Vec<_>, _>>()
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let spacing = match knots {
+                CurveThroughKnotStyle::Uniform => CurveKnotSpacing::Uniform,
+                CurveThroughKnotStyle::Chord => CurveKnotSpacing::Chord,
+                CurveThroughKnotStyle::SqrtChord => CurveKnotSpacing::SquareRootChord,
+            };
+            let construction = match curve_type {
+                CurveThroughCurveType::ControlPoint => CurveThroughConstruction::ControlPoint,
+                CurveThroughCurveType::Interpolated => {
+                    CurveThroughConstruction::Interpolated(spacing)
+                }
+            };
+            if matches!(source, CurveThroughSource::Points) && point_sets.len() != 1 {
+                return Err(ProbeError::FixtureInvariant(
+                    "curve-through point source requires one point set",
+                ));
+            }
+            let (curves, elapsed) = measure(iterations, || {
+                let mut curves = Vec::with_capacity(point_sets.len());
+                match source {
+                    CurveThroughSource::Points => {
+                        let mut points = point_sets[0].clone();
+                        points.reverse();
+                        let points = sort_and_cull_points(&points)?;
+                        curves.push(try_curve_through_points(
+                            &points,
+                            *degree,
+                            construction,
+                            *closed,
+                        )?);
+                    }
+                    CurveThroughSource::Polylines => {
+                        for points in &point_sets {
+                            let polyline = Polyline3::try_new(points.clone(), tolerance)?;
+                            curves.push(try_curve_through_points(
+                                polyline.vertices(),
+                                *degree,
+                                construction,
+                                polyline.is_closed(),
+                            )?);
+                        }
+                    }
+                }
+                Ok(curves)
+            })?;
+            let definitions = curves
+                .iter()
+                .map(curve_through_definition_value)
+                .collect::<Result<Vec<_>, _>>()?;
+            (
+                json!({
+                    "curves": definitions,
+                }),
+                elapsed,
+            )
         }
         Operation::Paraboloid {
             origin,
@@ -5485,6 +5592,21 @@ fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
     })
 }
 
+fn curve_through_definition_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {
+    let knots = curve.knots();
+    Ok(json!({
+        "closed": curve.is_closed()?,
+        "control_points": curve.control_points().iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": curve.degree(),
+        "domain": [*curve.domain().start(), *curve.domain().end()],
+        "knots": &knots[1..knots.len() - 1],
+        "periodic": curve.is_periodic(),
+    }))
+}
+
 fn mesh_to_nurb_brep_value(brep: &Brep) -> Result<Value, GeometryError> {
     let faces = brep
         .faces()
@@ -7165,6 +7287,62 @@ mod tests {
         assert_eq!(polyline["curve_type"], "PolylineCurve");
         assert_eq!(polyline["points"].as_array().unwrap().len(), 7);
         assert_eq!(polyline["points"][6], json!([10.0, 0.0, -2.0]));
+    }
+
+    #[test]
+    fn captures_curve_through_point_order_and_periodic_topology_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::CurveThroughGeometry {
+                id: "points".to_owned(),
+                source: CurveThroughSource::Points,
+                point_sets: vec![vec![
+                    [0.0, 0.0, 0.0],
+                    [1.0, 2.0, 0.0],
+                    [2.0, -1.0, 1.0],
+                    [4.0, 3.0, 0.0],
+                    [6.0, -2.0, 1.0],
+                    [8.0, 1.0, 0.0],
+                    [10.0, 0.0, 0.0],
+                ]],
+                degree: 5,
+                curve_type: CurveThroughCurveType::ControlPoint,
+                knots: CurveThroughKnotStyle::Uniform,
+                closed: false,
+            },
+            Operation::CurveThroughGeometry {
+                id: "closed-polyline".to_owned(),
+                source: CurveThroughSource::Polylines,
+                point_sets: vec![vec![
+                    [0.0, 0.0, 0.0],
+                    [2.0, 0.0, 0.0],
+                    [2.0, 2.0, 0.0],
+                    [0.0, 2.0, 0.0],
+                    [0.0, 0.0, 0.0],
+                ]],
+                degree: 3,
+                curve_type: CurveThroughCurveType::Interpolated,
+                knots: CurveThroughKnotStyle::Uniform,
+                closed: false,
+            },
+        ]))
+        .unwrap();
+
+        let points = &response.results[0].value["curves"][0];
+        assert_eq!(points["degree"], 5);
+        assert_eq!(points["domain"], json!([0.0, 2.0]));
+        assert_eq!(points["control_points"].as_array().unwrap().len(), 7);
+        assert_eq!(
+            points["control_points"][0],
+            json!({"point": [10.0, 0.0, 0.0], "weight": 1.0})
+        );
+        assert_eq!(points["knots"].as_array().unwrap().len(), 11);
+
+        let closed = &response.results[1].value["curves"][0];
+        assert_eq!(closed["closed"], true);
+        assert_eq!(closed["periodic"], true);
+        assert_eq!(closed["domain"], json!([0.0, 4.0]));
+        assert_eq!(closed["control_points"].as_array().unwrap().len(), 7);
+        assert_eq!(closed["knots"].as_array().unwrap().len(), 9);
     }
 
     #[test]

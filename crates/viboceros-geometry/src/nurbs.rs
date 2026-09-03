@@ -1485,7 +1485,7 @@ fn quadratic_parabola_from_second_difference(
     Ok(curve)
 }
 
-fn control_polygon_length(control_points: &[Point3]) -> Result<Real, GeometryError> {
+pub(crate) fn control_polygon_length(control_points: &[Point3]) -> Result<Real, GeometryError> {
     let mut sum = 0.0;
     let mut correction = 0.0;
     for pair in control_points.windows(2) {

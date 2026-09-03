@@ -136,6 +136,9 @@ pub enum GeometryError {
     #[error("curve interpolation tangents require an open degree-three curve")]
     CurveInterpolationTangentsRequireOpenCubic,
 
+    #[error("curve-through degree must be from 1 through {maximum}, got {actual}")]
+    InvalidCurveThroughDegree { actual: usize, maximum: usize },
+
     #[error(
         "a spiral requires a non-zero finite turn count and at least one non-zero finite radius"
     )]

@@ -10,17 +10,19 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
     CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveInterpolationOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, DEFAULT_CATENARY_POINT_COUNT,
-    DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError,
-    InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
-    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
-    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
-    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_POLYLINE_CATENARY_POINT_COUNT,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines, try_catenary,
+    CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction,
+    DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
+    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
+    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_THROUGH_DEGREE, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
+    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
+    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
+    MIN_POLYLINE_CATENARY_POINT_COUNT, MIN_SMOOTH_CATENARY_POINT_COUNT,
+    MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
+    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, join_polylines, sort_and_cull_points, try_catenary,
+    try_curve_through_points,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -93,6 +95,12 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(InterpCurveCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CurveThroughPointCommand)
+            .expect("unique built-in command");
+        registry
+            .register(CurveThroughPolylineCommand)
             .expect("unique built-in command");
         registry
             .register(SrfPtCommand)
@@ -1043,8 +1051,22 @@ impl Command for ControlPointCurveCommand {
 }
 
 const INTERP_CRV_USAGE: &str = "InterpCrv point1 point2 ... [Degree=1|3] [Knots=Uniform|Chord|SqrtChrd] [Close=Open|Smooth|Sharp] [StartTangent=x,y,z] [EndTangent=x,y,z]";
+const CURVE_THROUGH_POINT_USAGE: &str = "CurveThroughPt [Degree=1..11] [CurveType=ControlPoint|Interpolated] [Knots=Uniform|Chord|SqrtChord] [Closed=Yes|No]";
+const CURVE_THROUGH_POLYLINE_USAGE: &str = "CurveThroughPolyline [Degree=1..11] [CurveType=ControlPoint|Interpolated] [Knots=Uniform|Chord|SqrtChord] [DeleteInput=Yes|No]";
 
 struct InterpCurveCommand;
+
+struct CurveThroughPointCommand;
+
+struct CurveThroughPolylineCommand;
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct CurveThroughCommandOptions {
+    degree: usize,
+    construction: CurveThroughConstruction,
+    closed: bool,
+    delete_input: bool,
+}
 
 impl Command for InterpCurveCommand {
     fn name(&self) -> &'static str {
@@ -1157,6 +1179,189 @@ fn parse_interp_curve_tangent(value: &str) -> Result<Vector3, CommandError> {
     let (point, consumed) = parse_point(&[value])?;
     debug_assert_eq!(consumed, 1);
     Ok(Vector3::try_from(point.to_array())?)
+}
+
+fn parse_curve_through_options(
+    arguments: &[&str],
+    for_polylines: bool,
+) -> Result<CurveThroughCommandOptions, CommandError> {
+    let usage = if for_polylines {
+        CURVE_THROUGH_POLYLINE_USAGE
+    } else {
+        CURVE_THROUGH_POINT_USAGE
+    };
+    let mut degree = 3;
+    let mut interpolated = false;
+    let mut knot_spacing = CurveKnotSpacing::Uniform;
+    let mut closed = false;
+    let mut delete_input = false;
+    let mut degree_seen = false;
+    let mut curve_type_seen = false;
+    let mut knots_seen = false;
+    let mut closed_seen = false;
+    let mut delete_input_seen = false;
+
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(usage));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Degree") && !degree_seen {
+            degree = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            degree_seen = true;
+        } else if option_name_eq(name, "CurveType") && !curve_type_seen {
+            interpolated = if value.eq_ignore_ascii_case("ControlPoint") {
+                false
+            } else if value.eq_ignore_ascii_case("Interpolated") {
+                true
+            } else {
+                return Err(CommandError::Usage(usage));
+            };
+            curve_type_seen = true;
+        } else if option_name_eq(name, "Knots") && !knots_seen {
+            knot_spacing = if value.eq_ignore_ascii_case("Uniform") {
+                CurveKnotSpacing::Uniform
+            } else if value.eq_ignore_ascii_case("Chord") {
+                CurveKnotSpacing::Chord
+            } else if value.eq_ignore_ascii_case("SqrtChrd")
+                || value.eq_ignore_ascii_case("SqrtChord")
+                || value.eq_ignore_ascii_case("ChordSquareRoot")
+                || value.eq_ignore_ascii_case("SquareRootChord")
+            {
+                CurveKnotSpacing::SquareRootChord
+            } else {
+                return Err(CommandError::Usage(usage));
+            };
+            knots_seen = true;
+        } else if !for_polylines && option_name_eq(name, "Closed") && !closed_seen {
+            closed = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+            closed_seen = true;
+        } else if for_polylines && option_name_eq(name, "DeleteInput") && !delete_input_seen {
+            delete_input = parse_yes_no(value).ok_or(CommandError::Usage(usage))?;
+            delete_input_seen = true;
+        } else {
+            return Err(CommandError::Usage(usage));
+        }
+    }
+
+    if degree == 0 || degree > MAX_CURVE_THROUGH_DEGREE {
+        return Err(GeometryError::InvalidCurveThroughDegree {
+            actual: degree,
+            maximum: MAX_CURVE_THROUGH_DEGREE,
+        }
+        .into());
+    }
+    let construction = if interpolated {
+        if !matches!(degree, 1 | 3) {
+            return Err(
+                GeometryError::UnsupportedCurveInterpolationDegree { actual: degree }.into(),
+            );
+        }
+        CurveThroughConstruction::Interpolated(knot_spacing)
+    } else {
+        CurveThroughConstruction::ControlPoint
+    };
+    Ok(CurveThroughCommandOptions {
+        degree,
+        construction,
+        closed,
+        delete_input,
+    })
+}
+
+impl Command for CurveThroughPointCommand {
+    fn name(&self) -> &'static str {
+        "CurveThroughPt"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_curve_through_options(arguments, false)?;
+        let mut points = document
+            .selected_objects()
+            .filter_map(|object| match object.geometry() {
+                Geometry::Point(point) => Some(*point),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        // Rhino enumerates preselected point objects newest-first before its
+        // nearest-neighbor ordering pass.
+        points.reverse();
+        let points = sort_and_cull_points(&points)?;
+        if points.len() < 2 {
+            return Err(CommandError::NotEnoughCurveThroughPoints);
+        }
+        let curve = try_curve_through_points(
+            &points,
+            options.degree,
+            options.construction,
+            options.closed,
+        )?;
+        let degree = curve.degree();
+        let point_count = points.len();
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added {}degree {degree} {} curve {id} through {point_count} unique point object(s)",
+            if options.closed { "closed " } else { "" },
+            match options.construction {
+                CurveThroughConstruction::ControlPoint => "control-point",
+                CurveThroughConstruction::Interpolated(_) => "interpolated",
+            }
+        ))
+    }
+}
+
+impl Command for CurveThroughPolylineCommand {
+    fn name(&self) -> &'static str {
+        "CurveThroughPolyline"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_curve_through_options(arguments, true)?;
+        let sources = document
+            .selected_objects()
+            .filter_map(|object| match object.geometry() {
+                Geometry::Polyline(polyline) => Some((object.id(), polyline.clone())),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        if sources.is_empty() {
+            return Err(CommandError::NoCurveThroughPolylines);
+        }
+        let curves = sources
+            .iter()
+            .map(|(id, polyline)| {
+                try_curve_through_points(
+                    polyline.vertices(),
+                    options.degree,
+                    options.construction,
+                    polyline.is_closed(),
+                )
+                .map(|curve| (*id, Geometry::NurbsCurve(curve)))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let curve_count = curves.len();
+        if options.delete_input {
+            document.replace_object_geometries(curves)?;
+        } else {
+            for (_, curve) in curves {
+                document.add_geometry(curve)?;
+            }
+        }
+        Ok(format!(
+            "Created {curve_count} {} curve(s) through polyline vertices, {} the input(s)",
+            match options.construction {
+                CurveThroughConstruction::ControlPoint => "control-point",
+                CurveThroughConstruction::Interpolated(_) => "interpolated",
+            },
+            if options.delete_input {
+                "replacing"
+            } else {
+                "retaining"
+            }
+        ))
+    }
 }
 
 struct SrfPtCommand;
@@ -16059,6 +16264,12 @@ pub enum CommandError {
     #[error("no objects are selected")]
     NoObjectsSelected,
 
+    #[error("CurveThroughPt requires at least two distinct selected point objects")]
+    NotEnoughCurveThroughPoints,
+
+    #[error("CurveThroughPolyline requires at least one selected polyline")]
+    NoCurveThroughPolylines,
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -16546,7 +16757,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -25187,6 +25398,227 @@ mod tests {
             Err(CommandError::NoPlanarSurfaceBoundaries)
         ));
         assert_eq!(document.objects().len(), 4);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn curve_through_point_objects_sorts_culls_and_retains_sources() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let points = [
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+            Point3::try_new(2.0 + 2.0e-10, -1.0, 1.0).unwrap(),
+            Point3::try_new(2.0, -1.0, 1.0).unwrap(),
+            Point3::try_new(2.0, -1.0, 1.0).unwrap(),
+            Point3::try_new(4.0, 3.0, 0.0).unwrap(),
+            Point3::try_new(6.0, -2.0, 1.0).unwrap(),
+            Point3::try_new(8.0, 1.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+        ];
+        let ids = points
+            .into_iter()
+            .map(|point| document.add_geometry(Geometry::Point(point)).unwrap())
+            .collect::<Vec<_>>();
+        document
+            .select_objects(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(
+                &mut document,
+                "CurveThroughPt CurveType=Interpolated Knots=Uniform Degree=3",
+            )
+            .unwrap();
+        assert!(message.contains("through 8 unique point object(s)"));
+        assert_eq!(document.objects().len(), ids.len() + 1);
+        let output = document.objects().last().unwrap();
+        assert!(!document.is_selected(output.id()));
+        let Geometry::NurbsCurve(curve) = output.geometry() else {
+            panic!("CurveThroughPt must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 3);
+        assert_eq!(curve.control_points().len(), 10);
+        assert_eq!(
+            curve.evaluate(*curve.domain().start()).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap()
+        );
+        assert!(
+            curve
+                .evaluate(*curve.domain().end())
+                .unwrap()
+                .distance_to(Point3::try_new(4.0, 3.0, 0.0).unwrap())
+                .unwrap()
+                < 1.0e-12
+        );
+        assert!(ids.iter().all(|id| document.is_selected(*id)));
+        assert_eq!(document.undo_label(), Some("CurveThroughPt"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), ids.len());
+        assert!(ids.iter().all(|id| document.is_selected(*id)));
+
+        let message = registry
+            .execute(
+                &mut document,
+                "CurveThroughPt CurveType=ControlPoint Degree=3 Closed=Yes",
+            )
+            .unwrap();
+        assert!(message.contains("Added closed degree 3 control-point curve"));
+        let Geometry::NurbsCurve(closed) = document.objects().last().unwrap().geometry() else {
+            panic!("closed CurveThroughPt must create a NURBS curve")
+        };
+        assert!(closed.is_periodic());
+        assert!(closed.is_closed().unwrap());
+        assert_eq!(closed.domain(), 0.0..=8.0);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), ids.len());
+    }
+
+    #[test]
+    fn curve_through_polylines_copies_or_replaces_sources_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let current_layer = document.current_layer_id();
+        let source_layer = document
+            .add_layer("Curve sources", ColorRgb::new(70, 80, 90))
+            .unwrap();
+        let open = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(4.0, -1.0, 0.0).unwrap(),
+                Point3::try_new(7.0, 2.0, 1.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let closed = Polyline3::try_new(
+            vec![
+                Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 5.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 7.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 7.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let attributes = ObjectAttributes::on_layer(source_layer)
+            .with_name("Source polyline")
+            .with_object_color(ColorRgb::new(11, 22, 33));
+        let open_id = document
+            .add_geometry_with_attributes(Geometry::Polyline(open.clone()), attributes.clone())
+            .unwrap();
+        let closed_id = document
+            .add_geometry_with_attributes(Geometry::Polyline(closed.clone()), attributes.clone())
+            .unwrap();
+        let group = document
+            .add_group(Some("Curve sources".to_owned()), [open_id, closed_id])
+            .unwrap();
+        document
+            .select_objects([open_id, closed_id], SelectionMode::Replace)
+            .unwrap();
+
+        let message = registry
+            .execute(&mut document, "CurveThroughPolyline Degree=3")
+            .unwrap();
+        assert!(message.contains("Created 2 control-point curve(s)"));
+        assert!(message.contains("retaining the input(s)"));
+        assert_eq!(document.objects().len(), 4);
+        assert!(document.is_selected(open_id));
+        assert!(document.is_selected(closed_id));
+        for output in document.objects().skip(2) {
+            assert!(!document.is_selected(output.id()));
+            assert_eq!(output.attributes().name(), None);
+            assert_eq!(output.attributes().layer_id(), current_layer);
+            let Geometry::NurbsCurve(_) = output.geometry() else {
+                panic!("CurveThroughPolyline must create NURBS curves")
+            };
+        }
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+
+        let message = registry
+            .execute(
+                &mut document,
+                "CurveThroughPolyline CurveType=Interpolated Knots=Chord DeleteInput=Yes",
+            )
+            .unwrap();
+        assert!(message.contains("replacing the input(s)"));
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [open_id, closed_id]
+        );
+        let Geometry::NurbsCurve(open_curve) = document.object(open_id).unwrap().geometry() else {
+            panic!("the open polyline must be replaced in place")
+        };
+        assert!(!open_curve.is_periodic());
+        let Geometry::NurbsCurve(closed_curve) = document.object(closed_id).unwrap().geometry()
+        else {
+            panic!("the closed polyline must be replaced in place")
+        };
+        assert!(closed_curve.is_periodic());
+        assert_eq!(document.object(open_id).unwrap().attributes(), &attributes);
+        assert_eq!(
+            document
+                .group(group)
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([open_id, closed_id])
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(open_id).unwrap().geometry(),
+            &Geometry::Polyline(open)
+        );
+        assert_eq!(
+            document.object(closed_id).unwrap().geometry(),
+            &Geometry::Polyline(closed)
+        );
+    }
+
+    #[test]
+    fn curve_through_commands_reject_invalid_inputs_without_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for invalid in [
+            "CurveThroughPt",
+            "CurveThroughPt Degree=0",
+            "CurveThroughPt Degree=12",
+            "CurveThroughPt CurveType=Interpolated Degree=5",
+            "CurveThroughPt CurveType=Other",
+            "CurveThroughPt Knots=Other",
+            "CurveThroughPt Closed=Maybe",
+            "CurveThroughPt DeleteInput=Yes",
+            "CurveThroughPolyline",
+            "CurveThroughPolyline Closed=Yes",
+            "CurveThroughPolyline DeleteInput=Maybe",
+        ] {
+            let history = document.undo_label().map(str::to_owned);
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{invalid}");
+        }
+
+        let coincident = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let first = document.add_geometry(Geometry::Point(coincident)).unwrap();
+        let second = document.add_geometry(Geometry::Point(coincident)).unwrap();
+        document
+            .select_objects([first, second], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "CurveThroughPt"),
+            Err(CommandError::NotEnoughCurveThroughPoints)
+        ));
+        assert_eq!(document.objects().len(), 2);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 
