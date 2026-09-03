@@ -96,6 +96,101 @@ impl NurbsCurve {
         })
     }
 
+    /// Constructs Rhino's exact single-span conic from its endpoints, tangent
+    /// intersection (apex), and rho value.
+    ///
+    /// `rho` is strictly between zero and one. The equivalent rational
+    /// quadratic middle weight is `rho / (1 - rho)`; consequently values
+    /// below, equal to, and above one half produce elliptic, parabolic, and
+    /// hyperbolic segments respectively. The curve runs from `start` to `end`
+    /// on the normalized `[0, 1]` domain. As Rhino does for typed rho input,
+    /// coincident or collinear control points are retained rather than
+    /// rejected.
+    pub fn try_conic(
+        start: Point3,
+        apex: Point3,
+        end: Point3,
+        rho: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([rho], "conic rho")?;
+        if !(0.0..1.0).contains(&rho) {
+            return Err(GeometryError::Degenerate { context: "conic" });
+        }
+        let middle_weight = rho / (1.0 - rho);
+        Self::try_conic_with_middle_weight(start, apex, end, middle_weight)
+    }
+
+    /// Constructs Rhino's exact single-span conic through an interior point.
+    ///
+    /// Rhino projects the picked point orthogonally into the plane of the
+    /// start, apex, and end points. Its barycentric coordinates in that
+    /// control triangle determine the unique positive middle weight.
+    pub fn try_conic_through_point(
+        start: Point3,
+        apex: Point3,
+        end: Point3,
+        through: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let chord = start.vector_to(end)?;
+        let to_apex = start.vector_to(apex)?;
+        let to_through = start.vector_to(through)?;
+        let chord_length = chord.length()?;
+        if chord_length <= tolerance.absolute() {
+            let apex_length = to_apex.length()?;
+            let apex_direction = to_apex.normalized(tolerance)?;
+            let rho = to_through.dot(apex_direction.as_vector())? / apex_length;
+            if !(0.0..1.0).contains(&rho) {
+                return Err(GeometryError::Degenerate { context: "conic" });
+            }
+            return Self::try_conic_with_middle_weight(start, apex, end, rho / (1.0 - rho));
+        }
+
+        let frame = Frame3::try_from_points(start, end, apex, tolerance)?;
+        let apex_x = to_apex.dot(frame.x_axis().as_vector())?;
+        let apex_y = to_apex.dot(frame.y_axis().as_vector())?;
+        let through_x = to_through.dot(frame.x_axis().as_vector())?;
+        let through_y = to_through.dot(frame.y_axis().as_vector())?;
+
+        let apex_coefficient = through_y / apex_y;
+        let end_coefficient = (-apex_coefficient).mul_add(apex_x, through_x) / chord_length;
+        let start_coefficient = 1.0 - apex_coefficient - end_coefficient;
+        require_finite(
+            [apex_coefficient, end_coefficient, start_coefficient],
+            "conic through-point coordinates",
+        )?;
+        if apex_coefficient <= 0.0 || end_coefficient <= 0.0 || start_coefficient <= 0.0 {
+            return Err(GeometryError::Degenerate { context: "conic" });
+        }
+
+        // For rational Bernstein coefficients alpha, beta, gamma,
+        // beta / (2 sqrt(alpha gamma)) is the middle control weight. Taking
+        // the roots separately avoids underflow in alpha * gamma.
+        let middle_weight =
+            (0.5 * apex_coefficient / start_coefficient.sqrt()) / end_coefficient.sqrt();
+        Self::try_conic_with_middle_weight(start, apex, end, middle_weight)
+    }
+
+    fn try_conic_with_middle_weight(
+        start: Point3,
+        apex: Point3,
+        end: Point3,
+        middle_weight: Real,
+    ) -> Result<Self, GeometryError> {
+        if !middle_weight.is_finite() || middle_weight <= 0.0 {
+            return Err(GeometryError::Degenerate { context: "conic" });
+        }
+        Self::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(start, 1.0)?,
+                WeightedPoint3::try_new(apex, middle_weight)?,
+                WeightedPoint3::try_new(end, 1.0)?,
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+    }
+
     /// Constructs Rhino's exact quadratic parabola NURBS curve.
     ///
     /// The frame origin is the vertex, frame Z is the opening direction, and
@@ -1891,6 +1986,100 @@ mod tests {
             curve.derivative_at(0.25).unwrap(),
             Vector3::try_new(2.0, 4.0, 0.0).unwrap()
         );
+    }
+
+    #[test]
+    fn conic_matches_rhino_rho_weight_and_normalized_layout() {
+        let start = point(0.0, 0.0);
+        let apex = point(5.0, 5.0);
+        let end = point(10.0, 0.0);
+
+        for (rho, expected_weight, rational) in [
+            (0.25, 1.0 / 3.0, true),
+            (0.5, 1.0, false),
+            (0.75, 3.0, true),
+        ] {
+            let curve = NurbsCurve::try_conic(start, apex, end, rho).unwrap();
+            assert_eq!(curve.degree(), 2);
+            assert_eq!(curve.is_rational(), rational);
+            assert_eq!(curve.domain(), 0.0..=1.0);
+            assert_eq!(curve.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+            assert_eq!(curve.control_points()[0].point(), start);
+            assert_eq!(curve.control_points()[0].weight(), 1.0);
+            assert_eq!(curve.control_points()[1].point(), apex);
+            assert_eq!(curve.control_points()[1].weight(), expected_weight);
+            assert_eq!(curve.control_points()[2].point(), end);
+            assert_eq!(curve.control_points()[2].weight(), 1.0);
+        }
+    }
+
+    #[test]
+    fn conic_through_point_projects_to_plane_and_recovers_weight() {
+        let start = point(0.0, 0.0);
+        let apex = point(5.0, 5.0);
+        let end = point(10.0, 0.0);
+        let through = Point3::try_new(5.0, 2.0, 37.0).unwrap();
+        let curve =
+            NurbsCurve::try_conic_through_point(start, apex, end, through, Tolerance::DEFAULT)
+                .unwrap();
+        assert!((curve.control_points()[1].weight() - 2.0 / 3.0).abs() < 1.0e-15);
+        assert_point_near(curve.evaluate(0.5).unwrap(), point(5.0, 2.0));
+
+        let start = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let apex = Point3::try_new(4.0, 9.0, 7.0).unwrap();
+        let end = Point3::try_new(9.0, 4.0, 5.0).unwrap();
+        let through = Point3::try_new(
+            3.666_666_666_666_666_5,
+            5.047_619_047_619_047_4,
+            4.904_761_904_761_905,
+        )
+        .unwrap();
+        let curve =
+            NurbsCurve::try_conic_through_point(start, apex, end, through, Tolerance::DEFAULT)
+                .unwrap();
+        assert!((curve.control_points()[1].weight() - 2.0 / 3.0).abs() < 1.0e-14);
+        assert_point_near(curve.evaluate(0.4).unwrap(), through);
+
+        let closed_cusp = NurbsCurve::try_conic_through_point(
+            point(0.0, 0.0),
+            point(5.0, 5.0),
+            point(0.0, 0.0),
+            point(2.0, 2.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!((closed_cusp.control_points()[1].weight() - 2.0 / 3.0).abs() < 1.0e-15);
+        assert_point_near(closed_cusp.evaluate(0.5).unwrap(), point(2.0, 2.0));
+    }
+
+    #[test]
+    fn conic_accepts_degenerate_rho_controls_and_rejects_invalid_through_points() {
+        let start = point(0.0, 0.0);
+        let apex = point(5.0, 5.0);
+        let end = point(10.0, 0.0);
+        for rho in [-1.0, 0.0, 1.0, Real::INFINITY, Real::NAN] {
+            assert!(NurbsCurve::try_conic(start, apex, end, rho).is_err());
+        }
+        let collinear = NurbsCurve::try_conic(start, point(5.0, 0.0), end, 0.5).unwrap();
+        assert_eq!(collinear.control_points()[1].point(), point(5.0, 0.0));
+        let coincident = NurbsCurve::try_conic(start, start, start, 0.5).unwrap();
+        assert!(
+            coincident
+                .control_points()
+                .iter()
+                .all(|control| control.point() == start)
+        );
+        for through in [
+            point(5.0, 0.0),
+            point(5.0, 5.0),
+            point(5.0, 6.0),
+            point(-1.0, 1.0),
+        ] {
+            assert!(
+                NurbsCurve::try_conic_through_point(start, apex, end, through, Tolerance::DEFAULT,)
+                    .is_err()
+            );
+        }
     }
 
     #[test]

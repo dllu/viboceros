@@ -158,6 +158,9 @@ impl CommandRegistry {
             .register(ConeCommand)
             .expect("unique built-in command");
         registry
+            .register(ConicCommand)
+            .expect("unique built-in command");
+        registry
             .register(ParabolaCommand)
             .expect("unique built-in command");
         registry
@@ -2538,6 +2541,7 @@ const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center poin
 const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point | Parabola Vertex vertex focus end-point [Half=Yes|No] [MarkFocus=Yes|No]";
 const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
 const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
+const CONIC_USAGE: &str = "Conic [Default] start end apex rho-or-through-point | Conic Apex start apex end rho-or-through-point | Conic start Apex apex end rho-or-through-point";
 const HYPERBOLA_USAGE: &str = "Hyperbola [Default] center focus end-point | Hyperbola FromCoefficient center direction-point end-point [A=positive-number] [B=positive-number] | Hyperbola FromFoci first-focus second-focus end-point | Hyperbola FromVertex vertex focus end-point [BothBranches=Yes|No] [MarkFoci=Yes|No] [ShowAsymptotes=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
@@ -2655,6 +2659,20 @@ struct ParaboloidCommandOptions {
     positionals: ParabolicPositionals,
     mark_focus: bool,
     solid: bool,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum ConicDefinition {
+    Rho(Real),
+    ThroughPoint(Point3),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct ConicCommandOptions {
+    start: Point3,
+    apex: Point3,
+    end: Point3,
+    definition: ConicDefinition,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -3247,6 +3265,56 @@ fn parse_paraboloid_options(arguments: &[&str]) -> Result<ParaboloidCommandOptio
         positionals,
         mark_focus,
         solid,
+    })
+}
+
+fn parse_conic_options(arguments: &[&str]) -> Result<ConicCommandOptions, CommandError> {
+    let first_argument = arguments.first().ok_or(CommandError::Usage(CONIC_USAGE))?;
+    let mode = first_argument.trim_start_matches('_');
+    let (leading_apex, positional_start) = if mode.eq_ignore_ascii_case("Apex") {
+        (true, 1)
+    } else if mode.eq_ignore_ascii_case("Default") {
+        (false, 1)
+    } else {
+        (false, 0)
+    };
+
+    let (first, first_consumed) = parse_point(&arguments[positional_start..])?;
+    let after_first = positional_start + first_consumed;
+    let inline_apex = arguments
+        .get(after_first)
+        .is_some_and(|argument| option_name_eq(argument, "Apex"));
+    if positional_start != 0 && inline_apex {
+        return Err(CommandError::Usage(CONIC_USAGE));
+    }
+    let apex_first = leading_apex || inline_apex;
+    let second_start = after_first + usize::from(inline_apex);
+    let (second, second_consumed) = parse_point(&arguments[second_start..])?;
+    let third_start = second_start + second_consumed;
+    let (third, third_consumed) = parse_point(&arguments[third_start..])?;
+    let definition_start = third_start + third_consumed;
+    let remaining = &arguments[definition_start..];
+    let definition = if remaining.len() == 1 && !remaining[0].contains(',') {
+        let rho = parse_finite_real(remaining[0])?;
+        if !(0.0..1.0).contains(&rho) {
+            return Err(CommandError::Usage(CONIC_USAGE));
+        }
+        ConicDefinition::Rho(rho)
+    } else {
+        let (through, consumed) = parse_point(remaining)?;
+        require_consumed(remaining, consumed, CONIC_USAGE)?;
+        ConicDefinition::ThroughPoint(through)
+    };
+    let (start, apex, end) = if apex_first {
+        (first, second, third)
+    } else {
+        (first, third, second)
+    };
+    Ok(ConicCommandOptions {
+        start,
+        apex,
+        end,
+        definition,
     })
 }
 
@@ -4408,6 +4476,36 @@ impl Command for ConeCommand {
                 options.height
             ))
         }
+    }
+}
+
+struct ConicCommand;
+
+impl Command for ConicCommand {
+    fn name(&self) -> &'static str {
+        "Conic"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_conic_options(arguments)?;
+        let tolerance = document.tolerance();
+        let curve = match options.definition {
+            ConicDefinition::Rho(rho) => {
+                NurbsCurve::try_conic(options.start, options.apex, options.end, rho)?
+            }
+            ConicDefinition::ThroughPoint(through) => NurbsCurve::try_conic_through_point(
+                options.start,
+                options.apex,
+                options.end,
+                through,
+                tolerance,
+            )?,
+        };
+        let middle_weight = curve.control_points()[1].weight();
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        Ok(format!(
+            "Added exact NURBS conic {id} (middle weight {middle_weight:.6})"
+        ))
     }
 }
 
@@ -15768,7 +15866,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -16982,6 +17080,105 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("TruncatedPyramid"));
+    }
+
+    #[test]
+    fn conic_supports_rho_through_point_and_apex_pick_orders() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+
+        let result = registry
+            .execute(&mut document, "Conic 0,0,0 10,0,0 5,5,0 0.25")
+            .unwrap();
+        assert!(result.contains("Added exact NURBS conic"));
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("Conic must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 2);
+        assert!(curve.is_rational());
+        assert_eq!(curve.domain(), 0.0..=1.0);
+        assert_eq!(curve.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+        assert_eq!(
+            curve.control_points()[0].point(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            curve.control_points()[1].point(),
+            Point3::try_new(5.0, 5.0, 0.0).unwrap()
+        );
+        assert_eq!(curve.control_points()[1].weight(), 1.0 / 3.0);
+        assert_eq!(
+            curve.control_points()[2].point(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("Conic"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Conic 0 0 0 Apex 5 5 0 10 0 0 0.75")
+            .unwrap();
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("the Apex option must preserve start-to-end direction")
+        };
+        assert_eq!(
+            curve.control_points()[0].point(),
+            Point3::try_new(0.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(curve.control_points()[1].weight(), 3.0);
+        assert_eq!(
+            curve.control_points()[2].point(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap()
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Conic Default 0,0,0 10,0,0 5,5,0 5,2,37")
+            .unwrap();
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("a through-point conic must create a NURBS curve")
+        };
+        assert!((curve.control_points()[1].weight() - 2.0 / 3.0).abs() < 1.0e-15);
+        assert!(
+            curve
+                .evaluate(0.5)
+                .unwrap()
+                .distance_to(Point3::try_new(5.0, 2.0, 0.0).unwrap())
+                .unwrap()
+                < 1.0e-14
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(&mut document, "Conic 0,0,0 0,0,0 0,0,0 0.5")
+            .unwrap();
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("rho input must retain Rhino's degenerate conic controls")
+        };
+        assert!(
+            curve
+                .control_points()
+                .iter()
+                .all(|control| control.point() == Point3::try_new(0.0, 0.0, 0.0).unwrap())
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        for invalid in [
+            "Conic",
+            "Conic 0,0,0 10,0,0 5,5,0 0",
+            "Conic 0,0,0 10,0,0 5,5,0 1",
+            "Conic 0,0,0 10,0,0 5,5,0 nan",
+            "Conic 0,0,0 10,0,0 5,5,0 5,0,0",
+            "Conic 0,0,0 10,0,0 5,5,0 5,6,0",
+            "Conic Apex 0,0,0 5,5,0 10,0,0 0.5 extra",
+            "Conic Apex 0,0,0 Apex 5,5,0 10,0,0 0.5",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.undo_label(), None);
     }
 
     #[test]

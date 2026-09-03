@@ -5203,6 +5203,65 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_parabola_three_point)
 
+    if kind == "conic":
+        document = Rhino.RhinoDoc.ActiveDoc
+        start = _point(operation["start"])
+        apex = _point(operation["apex"])
+        end = _point(operation["end"])
+        if bool(operation.get("apex_first", False)):
+            command = "_-Conic %s _Apex %s %s" % (
+                _command_point(_xyz(start)),
+                _command_point(_xyz(apex)),
+                _command_point(_xyz(end)),
+            )
+        else:
+            command = "_-Conic %s %s %s" % (
+                _command_point(_xyz(start)),
+                _command_point(_xyz(end)),
+                _command_point(_xyz(apex)),
+            )
+        definition = operation["definition"]
+        mode = str(definition["mode"])
+        if mode == "rho":
+            rho = _finite(definition["value"], "conic rho")
+            if not 0.0 < rho < 1.0:
+                raise ValueError("conic rho must be between zero and one")
+            command += " %.17g" % rho
+        elif mode == "through_point":
+            command += " " + _command_point(
+                _xyz(_point(definition["point"]))
+            )
+        else:
+            raise ValueError("unknown conic definition mode: %s" % mode)
+
+        def create_conic():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "conic macro %r returned %r and created %d objects; "
+                        "history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Curve):
+                    curve = geometry.DuplicateCurve()
+                if curve is None:
+                    raise ValueError("conic did not create curve geometry")
+                return _nurbs_curve_definition(curve)
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_conic)
+
     if kind == "hyperbola":
         document = Rhino.RhinoDoc.ActiveDoc
         plane = Rhino.Geometry.Plane(

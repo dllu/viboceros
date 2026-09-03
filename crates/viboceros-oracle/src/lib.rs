@@ -424,6 +424,15 @@ pub enum Operation {
         height: f64,
         solid: bool,
     },
+    Conic {
+        id: String,
+        start: [f64; 3],
+        apex: [f64; 3],
+        end: [f64; 3],
+        definition: ConicDefinition,
+        #[serde(default)]
+        apex_first: bool,
+    },
     Parabola {
         id: String,
         origin: [f64; 3],
@@ -581,6 +590,13 @@ pub enum ParabolaThreePointMode {
     Vertex,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[serde(tag = "mode", rename_all = "snake_case")]
+pub enum ConicDefinition {
+    Rho { value: f64 },
+    ThroughPoint { point: [f64; 3] },
+}
+
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
@@ -646,6 +662,7 @@ impl Operation {
             | Self::MeshCone { id, .. }
             | Self::MeshTruncatedCone { id, .. }
             | Self::TruncatedCone { id, .. }
+            | Self::Conic { id, .. }
             | Self::Parabola { id, .. }
             | Self::ParabolaThreePoint { id, .. }
             | Self::Hyperbola { id, .. }
@@ -2033,6 +2050,35 @@ fn execute(
                 }
             })?;
             (value, elapsed)
+        }
+        Operation::Conic {
+            start,
+            apex,
+            end,
+            definition,
+            ..
+        } => {
+            let start = point(*start)?;
+            let apex = point(*apex)?;
+            let end = point(*end)?;
+            let (curve, elapsed) = measure(iterations, || match definition {
+                ConicDefinition::Rho { value } => NurbsCurve::try_conic(
+                    black_box(start),
+                    black_box(apex),
+                    black_box(end),
+                    black_box(*value),
+                ),
+                ConicDefinition::ThroughPoint { point: through } => {
+                    NurbsCurve::try_conic_through_point(
+                        black_box(start),
+                        black_box(apex),
+                        black_box(end),
+                        black_box(point(*through)?),
+                        tolerance,
+                    )
+                }
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
         }
         Operation::Parabola {
             origin,
@@ -6647,6 +6693,49 @@ mod tests {
                 .map(|trim| trim["type"].as_str().unwrap())
                 .collect::<Vec<_>>(),
             vec!["Mated", "Seam", "Mated", "Seam"]
+        );
+    }
+
+    #[test]
+    fn captures_exact_conic_rho_and_through_point_forms_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::Conic {
+                id: "rho".to_owned(),
+                start: [0.0, 0.0, 0.0],
+                apex: [5.0, 5.0, 0.0],
+                end: [10.0, 0.0, 0.0],
+                definition: ConicDefinition::Rho { value: 0.75 },
+                apex_first: false,
+            },
+            Operation::Conic {
+                id: "through-point".to_owned(),
+                start: [0.0, 0.0, 0.0],
+                apex: [5.0, 5.0, 0.0],
+                end: [10.0, 0.0, 0.0],
+                definition: ConicDefinition::ThroughPoint {
+                    point: [5.0, 2.0, 3.0],
+                },
+                apex_first: true,
+            },
+        ]))
+        .unwrap();
+
+        let rho = &response.results[0].value;
+        assert_eq!(rho["degree"], 2);
+        assert_eq!(rho["domain"], json!([0.0, 1.0]));
+        assert_eq!(rho["knots"], json!([0.0, 0.0, 0.0, 1.0, 1.0, 1.0]));
+        assert_eq!(
+            rho["control_points"],
+            json!([
+                {"point": [0.0, 0.0, 0.0], "weight": 1.0},
+                {"point": [5.0, 5.0, 0.0], "weight": 3.0},
+                {"point": [10.0, 0.0, 0.0], "weight": 1.0},
+            ])
+        );
+
+        let through = &response.results[1].value;
+        assert!(
+            (through["control_points"][1]["weight"].as_f64().unwrap() - 2.0 / 3.0).abs() < 1.0e-15
         );
     }
 

@@ -1,0 +1,75 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "conic",
+      "id": "rho-quarter",
+      "start": [0, 0, 0],
+      "apex": [5, 5, 0],
+      "end": [10, 0, 0],
+      "definition": {"mode": "rho", "value": 0.25}
+    },
+    {
+      "op": "conic",
+      "id": "rho-half-apex-first",
+      "start": [-3, 2, 7],
+      "apex": [4, 11, 5],
+      "end": [13, -5, 9],
+      "definition": {"mode": "rho", "value": 0.5},
+      "apex_first": true
+    },
+    {
+      "op": "conic",
+      "id": "rho-three-quarter",
+      "start": [1, 2, 3],
+      "apex": [4, 9, 7],
+      "end": [9, 4, 5],
+      "definition": {"mode": "rho", "value": 0.75}
+    },
+    {
+      "op": "conic",
+      "id": "through-midpoint-off-plane",
+      "start": [0, 0, 0],
+      "apex": [5, 5, 0],
+      "end": [10, 0, 0],
+      "definition": {"mode": "through_point", "point": [5, 2, 37]}
+    },
+    {
+      "op": "conic",
+      "id": "through-general",
+      "start": [1, 2, 3],
+      "apex": [4, 9, 7],
+      "end": [9, 4, 5],
+      "definition": {
+        "mode": "through_point",
+        "point": [3.6666666666666665, 5.0476190476190474, 4.904761904761905]
+      },
+      "apex_first": true
+    },
+    {
+      "op": "conic",
+      "id": "rho-near-one",
+      "start": [-2, -3, 5],
+      "apex": [7, 13, -11],
+      "end": [17, 19, 23],
+      "definition": {"mode": "rho", "value": 0.999999}
+    },
+    {
+      "op": "conic",
+      "id": "rho-degenerate-controls",
+      "start": [2, -3, 5],
+      "apex": [2, -3, 5],
+      "end": [2, -3, 5],
+      "definition": {"mode": "rho", "value": 0.5}
+    },
+    {
+      "op": "conic",
+      "id": "through-coincident-endpoints",
+      "start": [0, 0, 0],
+      "apex": [5, 5, 0],
+      "end": [0, 0, 0],
+      "definition": {"mode": "through_point", "point": [2, 2, 0]}
+    }
+  ]
+}
