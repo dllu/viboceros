@@ -2425,6 +2425,109 @@ impl NurbsCurve {
         self.try_extended_to(start..=end)
     }
 
+    /// Extends an open curve with an exact degree-matched straight tangent
+    /// span of the requested model-space length. `Both` applies the full
+    /// length independently at each end, matching Rhino's line-style curve
+    /// extension.
+    pub fn try_extended_linearly_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let mut result = self.clone();
+        if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+            result = result.extended_linearly_at_start(length, tolerance)?;
+        }
+        if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            result = result.extended_linearly_at_end(length, tolerance)?;
+        }
+        Ok(result)
+    }
+
+    fn extended_linearly_at_start(
+        &self,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let endpoint_parameter = *self.domain().start();
+        let derivative = self.derivative_at(endpoint_parameter)?;
+        let speed = derivative.length()?;
+        let tangent = derivative.normalized(tolerance)?;
+        let parameter = endpoint_parameter - length / speed;
+        require_finite([parameter], "linear curve extension parameter")?;
+        if parameter == endpoint_parameter {
+            return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+        }
+
+        let source = self.clamped_at_start(endpoint_parameter)?;
+        let endpoint = source.control_points[0];
+        let degree = source.degree as Real;
+        let mut controls = Vec::with_capacity(source.control_points.len() + source.degree);
+        for index in 0..source.degree {
+            let fraction = (source.degree - index) as Real / degree;
+            let point = endpoint
+                .point
+                .translated(tangent.as_vector().scaled(-length * fraction)?)?;
+            controls.push(WeightedPoint3::try_new(point, 1.0)?);
+        }
+        controls.extend(
+            source
+                .control_points
+                .iter()
+                .map(|control| {
+                    WeightedPoint3::try_new(control.point, control.weight / endpoint.weight)
+                })
+                .collect::<Result<Vec<_>, _>>()?,
+        );
+
+        let mut knots = Vec::with_capacity(controls.len() + source.degree + 1);
+        knots.resize(source.degree + 1, parameter);
+        knots.extend_from_slice(&source.knots[1..]);
+        Self::try_new_rational(source.degree, controls, knots)
+    }
+
+    fn extended_linearly_at_end(
+        &self,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let endpoint_parameter = *self.domain().end();
+        let derivative = self.derivative_at(endpoint_parameter)?;
+        let speed = derivative.length()?;
+        let tangent = derivative.normalized(tolerance)?;
+        let parameter = endpoint_parameter + length / speed;
+        require_finite([parameter], "linear curve extension parameter")?;
+        if parameter == endpoint_parameter {
+            return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+        }
+
+        let source = self.clamped_at_end(endpoint_parameter)?;
+        let endpoint = source.control_points[source.control_points.len() - 1];
+        let degree = source.degree as Real;
+        let mut controls = source.control_points;
+        controls.reserve_exact(source.degree);
+        for index in 1..=source.degree {
+            let fraction = index as Real / degree;
+            let point = endpoint
+                .point
+                .translated(tangent.as_vector().scaled(length * fraction)?)?;
+            controls.push(WeightedPoint3::try_new(point, endpoint.weight)?);
+        }
+
+        let mut knots = source.knots;
+        knots.pop();
+        knots.resize(knots.len() + source.degree + 1, parameter);
+        Self::try_new_rational(source.degree, controls, knots)
+    }
+
     fn extension_parameter_by_length(
         &self,
         at_start: bool,
@@ -6725,6 +6828,114 @@ mod tests {
     }
 
     #[test]
+    fn linear_extension_by_length_adds_degree_matched_tangent_spans() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 1.0).unwrap(),
+                Point3::try_new(3.0, 1.0, -1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = curve
+            .try_extended_linearly_by_length(CurveExtensionSide::Both, 1.5, Tolerance::DEFAULT)
+            .unwrap();
+
+        let start = -1.5 / 24.0_f64.sqrt();
+        let end = 1.0 + 1.5 / 6.0;
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain().start(), start));
+        assert_eq!(*extended.domain().end(), end);
+        assert_eq!(extended.knots().len(), 10);
+        assert!(
+            extended.knots()[..3]
+                .iter()
+                .all(|knot| Tolerance::DEFAULT.approx_eq(*knot, start))
+        );
+        assert_eq!(&extended.knots()[3..], &[0.0, 0.0, 1.0, 1.0, end, end, end]);
+        let expected = [
+            [
+                -0.612_372_435_695_794_6,
+                -1.224_744_871_391_589_2,
+                -0.612_372_435_695_794_6,
+            ],
+            [
+                -0.306_186_217_847_897_3,
+                -0.612_372_435_695_794_6,
+                -0.306_186_217_847_897_3,
+            ],
+            [0.0, 0.0, 0.0],
+            [1.0, 2.0, 1.0],
+            [3.0, 1.0, -1.0],
+            [3.5, 0.75, -1.5],
+            [4.0, 0.5, -2.0],
+        ];
+        assert_eq!(extended.control_points().len(), expected.len());
+        for (control, expected) in extended.control_points().iter().zip(expected) {
+            assert_point_near(control.point(), Point3::try_from(expected).unwrap());
+            assert_eq!(control.weight(), 1.0);
+        }
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                extended
+                    .try_trimmed(*extended.domain().start()..=0.0)
+                    .unwrap()
+                    .length(Tolerance::DEFAULT)
+                    .unwrap(),
+                1.5,
+            )
+        );
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                extended
+                    .try_trimmed(1.0..=*extended.domain().end())
+                    .unwrap()
+                    .length(Tolerance::DEFAULT)
+                    .unwrap(),
+                1.5,
+            )
+        );
+    }
+
+    #[test]
+    fn linear_extension_clamps_rational_nonclamped_ends_without_moving_the_source() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(-2.0, 1.0, 0.0).unwrap(), 0.75).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(0.0, 4.0, 1.0).unwrap(), 2.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(5.0, -2.0, -1.0).unwrap(), 0.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(8.0, 3.0, 2.0).unwrap(), 1.25).unwrap(),
+            ],
+            vec![-1.0, -1.0, 0.0, 0.8, 2.0, 3.0, 3.0],
+        )
+        .unwrap();
+        let extended = curve
+            .try_extended_linearly_by_length(CurveExtensionSide::Both, 0.5, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert_eq!(extended.control_points().len(), 8);
+        assert!(
+            extended.control_points()[..3]
+                .iter()
+                .all(|control| control.weight() == extended.control_points()[2].weight())
+        );
+        assert!(
+            extended.control_points()[5..]
+                .iter()
+                .all(|control| control.weight() == extended.control_points()[5].weight())
+        );
+        for sample in 0..=32 {
+            let parameter = 2.0 * sample as Real / 32.0;
+            assert_point_near(
+                extended.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
+    }
+
+    #[test]
     fn natural_extension_ignores_interior_bound_and_rejects_invalid_inputs() {
         let curve = NurbsCurve::try_new(
             1,
@@ -6762,9 +6973,25 @@ mod tests {
             closed.try_extended_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT),
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
+        assert_eq!(
+            closed.try_extended_linearly_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
         for length in [0.0, -1.0, Real::NAN] {
             assert_eq!(
                 curve.try_extended_by_length(CurveExtensionSide::End, length, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_extended_linearly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
                 Err(GeometryError::InvalidCurveExtensionLength)
             );
         }

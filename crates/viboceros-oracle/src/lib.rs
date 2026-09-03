@@ -572,6 +572,8 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         side: CurveExtensionEnd,
         length: f64,
+        #[serde(default)]
+        style: CurveLengthExtensionStyle,
     },
     CurveSubcurveGeometry {
         id: String,
@@ -979,6 +981,14 @@ pub enum CurveExtensionEnd {
     Start,
     End,
     Both,
+}
+
+#[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveLengthExtensionStyle {
+    Line,
+    #[default]
+    Smooth,
 }
 
 impl CurveExtensionEnd {
@@ -3020,15 +3030,21 @@ fn execute(
             curve,
             side,
             length,
+            style,
             ..
         } => {
             let source = nurbs_curve_from_definition(curve)?;
-            let (curve, elapsed) = measure(iterations, || {
-                source.try_extended_by_length(
+            let (curve, elapsed) = measure(iterations, || match style {
+                CurveLengthExtensionStyle::Line => source.try_extended_linearly_by_length(
                     black_box(side.geometry()),
                     black_box(*length),
                     tolerance,
-                )
+                ),
+                CurveLengthExtensionStyle::Smooth => source.try_extended_by_length(
+                    black_box(side.geometry()),
+                    black_box(*length),
+                    tolerance,
+                ),
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
@@ -9063,6 +9079,7 @@ mod tests {
             },
             side: CurveExtensionEnd::Start,
             length: 3.0,
+            style: CurveLengthExtensionStyle::Smooth,
         }]))
         .unwrap();
 
@@ -9070,6 +9087,34 @@ mod tests {
         assert_eq!(curve["domain"], json!([-0.3, 1.0]));
         assert_eq!(curve["control_points"][0]["point"], json!([-3.0, 0.0, 0.0]));
         assert_eq!(curve["control_points"][1]["point"], json!([10.0, 0.0, 0.0]));
+    }
+
+    #[test]
+    fn captures_linear_curve_extension_by_length() {
+        let response = run_request(&request(vec![Operation::CurveExtendLengthGeometry {
+            id: "extend-quadratic-line".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 2,
+                control_points: [[0.0, 0.0, 0.0], [1.0, 2.0, 1.0], [3.0, 1.0, -1.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                domain: None,
+            },
+            side: CurveExtensionEnd::End,
+            length: 2.25,
+            style: CurveLengthExtensionStyle::Line,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["domain"], json!([0.0, 1.375]));
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 5);
+        assert_eq!(
+            curve["control_points"][4]["point"],
+            json!([4.5, 0.25, -2.5])
+        );
     }
 
     #[test]

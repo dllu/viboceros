@@ -188,6 +188,7 @@ SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
+Extend Length=2 Side=Both Type=Line Join=Merge
 ExtendSrf Direction=U Domain=-1,2 Type=Smooth Merge=Yes
 ExtendSrf Edge=East Distance=3 Type=Smooth Merge=Yes
 ExtendSrf Edge=West Distance=2 Type=Line Merge=Yes
@@ -791,14 +792,16 @@ or OpenNURBS' longest-control-polygon surface size. Analytic curves are changed
 to exact NURBS form so the new domain can be retained; geometry, orientation,
 periodicity, object identity, attributes, groups, selection, and undo are
 preserved.
-`Extend Length=value Side=Start|End|Both` applies Rhino-compatible natural
-NURBS extrapolation to one selected open curve; `Both` adds the full requested
-arc length independently at each end. `Extend Domain=start,end` exposes the
-exact analytic-domain operation. `Type=Natural` and `Join=Merge` are accepted
-explicitly; other extension styles, boundary objects, and separate extension
-segments remain future work. Analytic curves and polylines are promoted to
-exact NURBS form, while identity, attributes, groups, selection, and undo are
-preserved.
+`Extend Length=value Side=Start|End|Both` extends one selected open curve;
+`Both` adds the full requested model-space length independently at each end.
+`Type=Natural` applies Rhino-compatible natural NURBS extrapolation, while
+`Type=Line` joins Rhino's exact degree-matched straight tangent span, including
+its knot and rational-weight normalization rules. `Extend Domain=start,end`
+exposes the exact natural analytic-domain operation. `Join=Merge` is accepted
+explicitly; arc and smooth extension styles, boundary objects, and separate
+extension segments remain future work. Analytic curves and polylines are
+promoted to exact NURBS form, while identity, attributes, groups, selection,
+and undo are preserved.
 `ExtendSrf Edge=West|South|East|North Distance=value` performs Rhino's
 physical-distance operation on one selected untrimmed NURBS surface. Positive
 distances use Rhino's homogeneous-control-curve RMS scaling, including
@@ -1143,6 +1146,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_extend_line.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_extend_line.json \
+  --absolute-epsilon 5e-14 --relative-epsilon 1e-12
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_shrink.json \
