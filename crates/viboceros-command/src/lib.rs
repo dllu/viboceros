@@ -13,11 +13,11 @@ use viboceros_geometry::{
     Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
     MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
     MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
-    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
-    MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3,
-    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, join_polylines,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, MeshConeOptions,
+    MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -120,6 +120,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(MeshConeCommand)
+            .expect("unique built-in command");
+        registry
+            .register(MeshTruncatedConeCommand)
             .expect("unique built-in command");
         registry
             .register(MeshCylinderCommand)
@@ -2503,6 +2506,8 @@ const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | Mes
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
 pub const DEFAULT_MESH_CONE_FACE_COUNT: usize = 10;
 const MESH_CONE_USAGE: &str = "MeshCone base-center radius height | MeshCone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
+pub const DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT: usize = 10;
+const MESH_TRUNCATED_CONE_USAGE: &str = "MeshTruncatedCone base-center base-radius height end-radius | MeshTruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
@@ -2557,6 +2562,19 @@ struct MeshConeCommandOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
     height: Real,
+    axis: Vector3,
+    solid: bool,
+    vertical_count: usize,
+    around_count: usize,
+    cap_style: MeshCapFaceStyle,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct MeshTruncatedConeCommandOptions {
+    center: Point3,
+    base_radius: AxialPrimitiveRadius,
+    height: Real,
+    end_radius: Real,
     axis: Vector3,
     solid: bool,
     vertical_count: usize,
@@ -3127,6 +3145,131 @@ fn parse_mesh_cone_options(arguments: &[&str]) -> Result<MeshConeCommandOptions,
     Ok(options)
 }
 
+fn parse_mesh_truncated_cone_options(
+    arguments: &[&str],
+) -> Result<MeshTruncatedConeCommandOptions, CommandError> {
+    let (center, center_consumed) = parse_point(arguments)?;
+    let remaining = &arguments[center_consumed..];
+    let positional_count = remaining
+        .iter()
+        .take_while(|argument| !argument.contains('='))
+        .count();
+    let (base_radius, height, end_radius, option_offset) = if remaining
+        .first()
+        .is_some_and(|argument| argument.contains(','))
+    {
+        if positional_count != 3 {
+            return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
+        }
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 1);
+        (
+            AxialPrimitiveRadius::Point(point),
+            parse_finite_real(remaining[1])?,
+            parse_finite_real(remaining[2])?,
+            3,
+        )
+    } else if positional_count == 3 {
+        (
+            AxialPrimitiveRadius::Numeric(parse_finite_real(remaining[0])?),
+            parse_finite_real(remaining[1])?,
+            parse_finite_real(remaining[2])?,
+            3,
+        )
+    } else if positional_count == 5 {
+        let (point, consumed) = parse_point(remaining)?;
+        debug_assert_eq!(consumed, 3);
+        (
+            AxialPrimitiveRadius::Point(point),
+            parse_finite_real(remaining[3])?,
+            parse_finite_real(remaining[4])?,
+            5,
+        )
+    } else {
+        return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
+    };
+
+    let mut options = MeshTruncatedConeCommandOptions {
+        center,
+        base_radius,
+        height,
+        end_radius,
+        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+        solid: true,
+        vertical_count: DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT,
+        around_count: DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT,
+        cap_style: MeshCapFaceStyle::Triangles,
+    };
+    let mut axis_seen = false;
+    let mut solid_seen = false;
+    let mut vertical_seen = false;
+    let mut around_seen = false;
+    let mut cap_style_seen = false;
+    for argument in &arguments[center_consumed + option_offset..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Axis") && !axis_seen {
+            options.axis = parse_axis_option(value, MESH_TRUNCATED_CONE_USAGE)?;
+            axis_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            options.solid =
+                parse_yes_no(value).ok_or(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE))?;
+            solid_seen = true;
+        } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
+            options.vertical_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count > 0)
+                .ok_or_else(|| {
+                    CommandError::InvalidMeshTruncatedConeVerticalFaceCount(value.to_owned())
+                })?;
+            vertical_seen = true;
+        } else if option_name_eq(name, "AroundFaces") && !around_seen {
+            options.around_count = value
+                .parse::<usize>()
+                .ok()
+                .filter(|count| *count >= 3)
+                .ok_or_else(|| {
+                    CommandError::InvalidMeshTruncatedConeAroundFaceCount(value.to_owned())
+                })?;
+            around_seen = true;
+        } else if option_name_eq(name, "CapFaceStyle") && !cap_style_seen {
+            options.cap_style = parse_mesh_cap_face_style(value)
+                .ok_or(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE))?;
+            cap_style_seen = true;
+        } else {
+            return Err(CommandError::Usage(MESH_TRUNCATED_CONE_USAGE));
+        }
+    }
+
+    let wall_faces = options.vertical_count.checked_mul(options.around_count);
+    let cap_faces = if !options.solid {
+        Some(0)
+    } else {
+        let one_cap = if options.cap_style == MeshCapFaceStyle::Quadrilaterals
+            && options.around_count.is_multiple_of(2)
+        {
+            if options.around_count == 4 {
+                1
+            } else {
+                options.around_count / 2
+            }
+        } else {
+            options.around_count
+        };
+        one_cap.checked_mul(2)
+    };
+    if wall_faces
+        .and_then(|wall| cap_faces.and_then(|caps| wall.checked_add(caps)))
+        .is_none_or(|faces| faces > MAX_MESH_TRUNCATED_CONE_FACES)
+    {
+        return Err(GeometryError::TooManyMeshFaces.into());
+    }
+    Ok(options)
+}
+
 fn parse_mesh_cylinder_options(
     arguments: &[&str],
 ) -> Result<MeshCylinderCommandOptions, CommandError> {
@@ -3366,6 +3509,53 @@ impl Command for MeshConeCommand {
         let id = document.add_geometry(Geometry::Mesh(mesh))?;
         Ok(format!(
             "Added {} mesh cone {id} ({} around × {} vertical faces)",
+            if options.solid { "closed" } else { "open" },
+            options.around_count,
+            options.vertical_count
+        ))
+    }
+}
+
+struct MeshTruncatedConeCommand;
+
+impl Command for MeshTruncatedConeCommand {
+    fn name(&self) -> &'static str {
+        "MeshTruncatedCone"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_mesh_truncated_cone_options(arguments)?;
+        if options.height == 0.0 {
+            return Err(GeometryError::InvalidMeshTruncatedConeDimensions.into());
+        }
+        let tolerance = document.tolerance();
+        let (base_frame, base_radius) =
+            axial_primitive_frame(options.center, options.base_radius, options.axis, tolerance)?;
+        let direction = base_frame
+            .z_axis()
+            .as_vector()
+            .scaled(if options.height > 0.0 { 1.0 } else { -1.0 })?;
+        let frame = Frame3::try_from_x_and_normal(
+            options.center,
+            base_frame.x_axis().as_vector(),
+            direction,
+            tolerance,
+        )?;
+        let mesh = TriangleMesh::try_truncated_cone_grid(
+            frame,
+            [base_radius, options.end_radius],
+            options.height.abs(),
+            MeshTruncatedConeOptions {
+                vertical_count: options.vertical_count,
+                around_count: options.around_count,
+                solid: options.solid,
+                cap_style: options.cap_style,
+            },
+            tolerance,
+        )?;
+        let id = document.add_geometry(Geometry::Mesh(mesh))?;
+        Ok(format!(
+            "Added {} mesh truncated cone {id} ({} around × {} vertical faces)",
             if options.solid { "closed" } else { "open" },
             options.around_count,
             options.vertical_count
@@ -13668,6 +13858,12 @@ pub enum CommandError {
     #[error("'{0}' is not a valid mesh-cone around face count of at least 3")]
     InvalidMeshConeAroundFaceCount(String),
 
+    #[error("'{0}' is not a valid positive mesh truncated-cone vertical face count")]
+    InvalidMeshTruncatedConeVerticalFaceCount(String),
+
+    #[error("'{0}' is not a valid mesh truncated-cone around face count of at least 3")]
+    InvalidMeshTruncatedConeAroundFaceCount(String),
+
     #[error("mesh-sphere style '{0}' is not supported; use UV, Quads, or Triangles")]
     UnsupportedMeshSphereStyle(String),
 
@@ -14263,7 +14459,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -14709,6 +14905,128 @@ mod tests {
             "MeshCone 0,0,0 2 5 Axis=0,0,0",
             "MeshCone 0,0,0 0,0,2 5 Axis=0,0,1",
             "MeshCone 0,0,0 2 5 VerticalFaces=1000001 AroundFaces=3 Solid=No",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), 0, "{command}");
+            assert_eq!(document.undo_label(), None, "{command}");
+        }
+    }
+
+    #[test]
+    fn mesh_truncated_cone_matches_default_and_configurable_rhino_topology() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let parsed = parse_mesh_truncated_cone_options(&["0,0,0", "3", "5", "1"]).unwrap();
+        assert_eq!(parsed.vertical_count, 10);
+        assert_eq!(parsed.around_count, 10);
+        assert!(parsed.solid);
+        assert_eq!(parsed.cap_style, MeshCapFaceStyle::Triangles);
+
+        let message = registry
+            .execute(&mut document, "MeshTruncatedCone 0,0,0 3 5 1")
+            .unwrap();
+        assert!(message.ends_with("(10 around × 10 vertical faces)"));
+        assert_eq!(document.selected_object_count(), 0);
+        let Geometry::Mesh(default) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshTruncatedCone must create a polygon mesh")
+        };
+        assert_eq!(default.vertices().len(), 132);
+        assert_eq!(default.face_count(), 120);
+        assert_eq!(
+            default.vertices()[0],
+            Point3::try_new(3.0, 0.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            default.vertices()[100],
+            Point3::try_new(1.0, 0.0, 5.0).unwrap()
+        );
+        assert_eq!(
+            default.faces()[0],
+            viboceros_geometry::MeshFace::Quad([0, 1, 11, 10])
+        );
+        assert_eq!(
+            default.faces()[100],
+            viboceros_geometry::MeshFace::Triangle([110, 112, 111])
+        );
+        assert_eq!(
+            default.faces()[110],
+            viboceros_geometry::MeshFace::Triangle([121, 122, 123])
+        );
+        assert!(default.topology().is_solid());
+        assert!(default.signed_volume().unwrap() > 0.0);
+        assert_eq!(document.undo_label(), Some("MeshTruncatedCone"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshTruncatedCone 1,2,3 2 -5 4 VerticalFaces=2 AroundFaces=6 CapFaceStyle=Quad",
+            )
+            .unwrap();
+        let Geometry::Mesh(quads) = document.objects().next().unwrap().geometry() else {
+            panic!("MeshTruncatedCone quad-cap form must create a mesh")
+        };
+        assert_eq!(quads.vertices().len(), 32);
+        assert_eq!(quads.face_count(), 18);
+        assert_eq!(quads.vertices()[0], Point3::try_new(3.0, 2.0, 3.0).unwrap());
+        assert!(quads.vertices()[1].y() < 2.0);
+        assert_eq!(
+            quads.vertices()[12],
+            Point3::try_new(5.0, 2.0, -2.0).unwrap()
+        );
+        assert_eq!(
+            quads.faces()[12],
+            viboceros_geometry::MeshFace::Quad([18, 21, 20, 19])
+        );
+        assert_eq!(
+            quads.faces()[15],
+            viboceros_geometry::MeshFace::Quad([25, 26, 27, 28])
+        );
+        assert_eq!(quads.bounds().min().z(), -2.0);
+        assert_eq!(quads.bounds().max().z(), 3.0);
+        assert!(quads.topology().is_solid());
+        assert!(quads.signed_volume().unwrap() > 0.0);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        registry
+            .execute(
+                &mut document,
+                "MeshTruncatedCone 0,0,0 0,2,0 4 1 Axis=1,0,0 Solid=No VerticalFaces=2 AroundFaces=4",
+            )
+            .unwrap();
+        let Geometry::Mesh(open) = document.objects().next().unwrap().geometry() else {
+            panic!("open MeshTruncatedCone must create a mesh")
+        };
+        assert_eq!(open.vertices().len(), 12);
+        assert_eq!(open.face_count(), 8);
+        assert_eq!(open.bounds().min().x(), 0.0);
+        assert_eq!(open.bounds().max().x(), 4.0);
+        assert!(!open.topology().is_closed());
+    }
+
+    #[test]
+    fn mesh_truncated_cone_rejects_invalid_options_and_dimensions_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "MeshTruncatedCone",
+            "MeshTruncatedCone 0,0,0 0 5 1",
+            "MeshTruncatedCone 0,0,0 3 0 1",
+            "MeshTruncatedCone 0,0,0 3 5 0",
+            "MeshTruncatedCone 0,0,0 3 5 -1",
+            "MeshTruncatedCone 0,0,0 3 5 1 VerticalFaces=0",
+            "MeshTruncatedCone 0,0,0 3 5 1 AroundFaces=2",
+            "MeshTruncatedCone 0,0,0 3 5 1 AroundFaces=nope",
+            "MeshTruncatedCone 0,0,0 3 5 1 AroundFaces=6 AroundFaces=8",
+            "MeshTruncatedCone 0,0,0 3 5 1 CapFaceStyle=Pentagon",
+            "MeshTruncatedCone 0,0,0 3 5 1 Solid=Maybe",
+            "MeshTruncatedCone 0,0,0 3 5 1 BothSides=Yes",
+            "MeshTruncatedCone 0,0,0 3 5 1 Axis=0,0,0",
+            "MeshTruncatedCone 0,0,0 0,0,2 5 1 Axis=0,0,1",
+            "MeshTruncatedCone 0,0,0 3 5 1 VerticalFaces=1000001 AroundFaces=3 Solid=No",
         ] {
             assert!(
                 registry.execute(&mut document, command).is_err(),

@@ -38,6 +38,7 @@ PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2
 MeshCone 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
+MeshTruncatedCone 0,0,0 3 8 1.5 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshCylinder 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshSphere 0,0,0 3 Style=UV VerticalFaces=12 AroundFaces=24
@@ -251,6 +252,14 @@ and signed apex height. `VerticalFaces` and `AroundFaces` default to 10,
 triangle fans or Rhino's even-sided quad fan; odd side counts fall back to
 triangles. `Axis=x,y,z` orients typed commands, the three-pick toolbar workflow
 uses World Z, and one cone is bounded to one million faces.
+`MeshTruncatedCone` draws a polygonal frustum from a base center, numeric or
+picked base radius, signed height, and positive end radius. Radii interpolate
+linearly through the height-major wall rings. `VerticalFaces` and `AroundFaces`
+default to 10; `Solid=Yes` adds independent, topology-joined end caps, and
+`CapFaceStyle=Tri|Quad` follows Rhino's even-sided quad fans and odd-count
+triangle fallback. `Axis=x,y,z` orients typed commands, including the winding
+direction for negative heights. The four-pick toolbar workflow uses World Z,
+and one truncated cone is bounded to one million faces.
 `MeshCylinder` draws a polygonal cylinder from a center, numeric or picked
 radius, and signed height. `VerticalFaces` and `AroundFaces` default to 10,
 `Solid=Yes` adds independently stored but topology-joined caps, and

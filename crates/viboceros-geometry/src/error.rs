@@ -250,6 +250,17 @@ pub enum GeometryError {
     InvalidMeshConeDimensions,
 
     #[error(
+        "mesh truncated-cone face counts require at least one vertical face and three around faces, got {vertical_count} by {around_count}"
+    )]
+    InvalidMeshTruncatedConeFaceCount {
+        vertical_count: usize,
+        around_count: usize,
+    },
+
+    #[error("mesh truncated-cone radii and height must be positive")]
+    InvalidMeshTruncatedConeDimensions,
+
+    #[error(
         "UV mesh-sphere face counts require at least two vertical faces and three around faces, got {vertical_count} by {around_count}"
     )]
     InvalidMeshSphereFaceCount {

@@ -17,9 +17,9 @@ use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, Circle3, CircularArc3, CurveRef, Ellipse3,
     Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
     MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions,
-    MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
-    SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_polylines,
+    MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -401,6 +401,19 @@ pub enum Operation {
         solid: bool,
         quad_caps: bool,
     },
+    MeshTruncatedCone {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        base_radius: f64,
+        end_radius: f64,
+        height: f64,
+        vertical: usize,
+        around: usize,
+        solid: bool,
+        quad_caps: bool,
+    },
     MeshSphere {
         id: String,
         origin: [f64; 3],
@@ -546,6 +559,7 @@ impl Operation {
             | Self::MeshBox { id, .. }
             | Self::MeshCylinder { id, .. }
             | Self::MeshCone { id, .. }
+            | Self::MeshTruncatedCone { id, .. }
             | Self::MeshSphere { id, .. }
             | Self::MeshEllipsoid { id, .. }
             | Self::MeshQuadSphere { id, .. }
@@ -1839,6 +1853,46 @@ fn execute(
                     frame,
                     black_box(*radius),
                     black_box(*height_to_base),
+                    black_box(options),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::MeshTruncatedCone {
+            origin,
+            x_axis,
+            y_axis,
+            base_radius,
+            end_radius,
+            height,
+            vertical,
+            around,
+            solid,
+            quad_caps,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let options = MeshTruncatedConeOptions {
+                vertical_count: *vertical,
+                around_count: *around,
+                solid: *solid,
+                cap_style: if *quad_caps {
+                    MeshCapFaceStyle::Quadrilaterals
+                } else {
+                    MeshCapFaceStyle::Triangles
+                },
+            };
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_truncated_cone_grid(
+                    frame,
+                    black_box([*base_radius, *end_radius]),
+                    black_box(*height),
                     black_box(options),
                     tolerance,
                 )
@@ -6111,6 +6165,32 @@ mod tests {
         assert_eq!(vertices.len(), 5);
         assert_eq!(vertices[0], json!([0.0, 0.0, 5.0]));
         assert_eq!(vertices[1], json!([2.0, 0.0, 0.0]));
+    }
+
+    #[test]
+    fn creates_ordered_mesh_truncated_cone_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshTruncatedCone {
+            id: "truncated-cone".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            base_radius: 3.0,
+            end_radius: 1.0,
+            height: 5.0,
+            vertical: 1,
+            around: 4,
+            solid: false,
+            quad_caps: false,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value["faces"],
+            json!([[0, 1, 5, 4], [1, 2, 6, 5], [2, 3, 7, 6], [3, 0, 4, 7],])
+        );
+        let vertices = response.results[0].value["vertices"].as_array().unwrap();
+        assert_eq!(vertices.len(), 8);
+        assert_eq!(vertices[0], json!([3.0, 0.0, 0.0]));
+        assert_eq!(vertices[4], json!([1.0, 0.0, 5.0]));
     }
 
     #[test]

@@ -4944,6 +4944,83 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_ellipsoid)
 
+    if kind == "mesh_truncated_cone":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        base_radius = _finite(
+            operation["base_radius"], "mesh truncated-cone base radius"
+        )
+        end_radius = _finite(
+            operation["end_radius"], "mesh truncated-cone end radius"
+        )
+        height = _finite(operation["height"], "mesh truncated-cone height")
+        vertical = int(operation["vertical"])
+        around = int(operation["around"])
+        solid = bool(operation["solid"])
+        quad_caps = bool(operation["quad_caps"])
+        option_text = "_VerticalFaces=%d _AroundFaces=%d _Solid=_No" % (
+            vertical,
+            around,
+        )
+        if solid:
+            # CapFaceStyle is offered only while AroundFaces is even. Set a
+            # temporary even count, choose the style, then restore the target;
+            # Rhino itself falls back to triangle caps for odd target counts.
+            option_text = (
+                "_VerticalFaces=%d _AroundFaces=4 _Solid=_Yes "
+                "_CapFaceStyle=_%s _AroundFaces=%d"
+                % (
+                    vertical,
+                    "Quad" if quad_caps else "Tri",
+                    around,
+                )
+            )
+        command = "_-MeshTruncatedCone %s 0,0,0 %.17g %.17g %.17g" % (
+            option_text,
+            base_radius,
+            height,
+            end_radius,
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+
+        def create_mesh_truncated_cone():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            try:
+                meshes = [
+                    obj.Geometry
+                    for obj in created
+                    if isinstance(obj.Geometry, Rhino.Geometry.Mesh)
+                ]
+                if len(meshes) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "MeshTruncatedCone macro %r returned %r and created %d meshes; history tail: %s"
+                        % (command, succeeded, len(meshes), history[-2000:])
+                    )
+                mesh = meshes[0].DuplicateMesh()
+                if mesh is None:
+                    raise ValueError("could not duplicate mesh truncated cone")
+                try:
+                    if not mesh.Transform(transform):
+                        raise ValueError("could not orient mesh truncated cone")
+                    return _polygon_mesh_value(mesh)
+                finally:
+                    mesh.Dispose()
+            finally:
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_mesh_truncated_cone)
+
     if kind == "mesh_quad_sphere" or kind == "mesh_ico_sphere":
         plane = Rhino.Geometry.Plane(
             _point(operation["origin"]),

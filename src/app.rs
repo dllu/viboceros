@@ -5,15 +5,16 @@ use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
     DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
     DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
+    DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
+    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
     MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
     CircularArc3, ControlPointCurveClosure, Ellipse3, Frame3, MAX_MESH_BOX_FACES,
     MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES,
-    MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle,
-    Point3, Tolerance,
+    MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES,
+    MAX_REGULAR_POLYGON_SIDES, MeshCapFaceStyle, Point3, Tolerance,
 };
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
@@ -126,6 +127,15 @@ enum InteractiveCommand {
     MeshCone {
         center: Option<Point3>,
         radius_point: Option<Point3>,
+        vertical_count: usize,
+        around_count: usize,
+        solid: bool,
+        cap_style: MeshCapFaceStyle,
+    },
+    MeshTruncatedCone {
+        center: Option<Point3>,
+        base_radius_point: Option<Point3>,
+        end_center: Option<Point3>,
         vertical_count: usize,
         around_count: usize,
         solid: bool,
@@ -267,6 +277,7 @@ impl InteractiveCommand {
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
             Self::MeshCone { .. } => "MeshCone",
+            Self::MeshTruncatedCone { .. } => "MeshTruncatedCone",
             Self::MeshCylinder { .. } => "MeshCylinder",
             Self::MeshSphere { .. } => "MeshSphere",
             Self::MeshEllipsoid { .. } => "MeshEllipsoid",
@@ -396,6 +407,23 @@ impl InteractiveCommand {
                 radius_point: Some(_),
                 ..
             } => "MeshCone: pick the apex height in the viewport (Esc to cancel)",
+            Self::MeshTruncatedCone { center: None, .. } => {
+                "MeshTruncatedCone: pick the base center in the viewport (Esc to cancel)"
+            }
+            Self::MeshTruncatedCone {
+                center: Some(_),
+                base_radius_point: None,
+                ..
+            } => "MeshTruncatedCone: pick the base radius in the viewport (Esc to cancel)",
+            Self::MeshTruncatedCone {
+                base_radius_point: Some(_),
+                end_center: None,
+                ..
+            } => "MeshTruncatedCone: pick the end-circle center in the viewport (Esc to cancel)",
+            Self::MeshTruncatedCone {
+                end_center: Some(_),
+                ..
+            } => "MeshTruncatedCone: pick the end-circle radius in the viewport (Esc to cancel)",
             Self::MeshCylinder { center: None, .. } => {
                 "MeshCylinder: pick the base center in the viewport (Esc to cancel)"
             }
@@ -657,6 +685,7 @@ impl InteractiveCommand {
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
             | Self::MeshCone { center: None, .. }
+            | Self::MeshTruncatedCone { center: None, .. }
             | Self::MeshCylinder { center: None, .. }
             | Self::MeshSphere { center: None, .. }
             | Self::MeshEllipsoid {
@@ -719,6 +748,15 @@ impl InteractiveCommand {
             | Self::Revolve {
                 axis_start: start, ..
             } => start,
+            Self::MeshTruncatedCone {
+                center: Some(center),
+                end_center: None,
+                ..
+            } => Some(center),
+            Self::MeshTruncatedCone {
+                end_center: Some(end_center),
+                ..
+            } => Some(end_center),
             Self::MeshTorus {
                 center: Some(center),
                 major_point: None,
@@ -1117,6 +1155,100 @@ impl VibocerosApp {
                 major_point: None,
                 vertical_count,
                 around_count,
+            }
+        } else if normalized == "meshtruncatedcone" {
+            let mut vertical_count = DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT;
+            let mut around_count = DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT;
+            let mut solid = true;
+            let mut cap_style = MeshCapFaceStyle::Triangles;
+            let mut seen = [false; 4];
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                let option_index = if name.eq_ignore_ascii_case("VerticalFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count == 0 {
+                        return false;
+                    }
+                    vertical_count = count;
+                    0
+                } else if name.eq_ignore_ascii_case("AroundFaces") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    if count < 3 {
+                        return false;
+                    }
+                    around_count = count;
+                    1
+                } else if name.eq_ignore_ascii_case("Solid") {
+                    solid = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    2
+                } else if name.eq_ignore_ascii_case("CapFaceStyle") {
+                    cap_style = if value.eq_ignore_ascii_case("Tri")
+                        || value.eq_ignore_ascii_case("Triangle")
+                        || value.eq_ignore_ascii_case("Triangles")
+                    {
+                        MeshCapFaceStyle::Triangles
+                    } else if value.eq_ignore_ascii_case("Quad")
+                        || value.eq_ignore_ascii_case("Quadrilateral")
+                        || value.eq_ignore_ascii_case("Quadrilaterals")
+                    {
+                        MeshCapFaceStyle::Quadrilaterals
+                    } else {
+                        return false;
+                    };
+                    3
+                } else {
+                    return false;
+                };
+                if seen[option_index] {
+                    return false;
+                }
+                seen[option_index] = true;
+            }
+            let wall_faces = vertical_count.checked_mul(around_count);
+            let cap_faces = if !solid {
+                Some(0)
+            } else {
+                let one_cap = if cap_style == MeshCapFaceStyle::Quadrilaterals
+                    && around_count.is_multiple_of(2)
+                {
+                    if around_count == 4 {
+                        1
+                    } else {
+                        around_count / 2
+                    }
+                } else {
+                    around_count
+                };
+                one_cap.checked_mul(2)
+            };
+            if wall_faces
+                .and_then(|wall| cap_faces.and_then(|caps| wall.checked_add(caps)))
+                .is_none_or(|faces| faces > MAX_MESH_TRUNCATED_CONE_FACES)
+            {
+                return false;
+            }
+            InteractiveCommand::MeshTruncatedCone {
+                center: None,
+                base_radius_point: None,
+                end_center: None,
+                vertical_count,
+                around_count,
+                solid,
+                cap_style,
             }
         } else if normalized == "meshcone" {
             let mut vertical_count = DEFAULT_MESH_CONE_FACE_COUNT;
@@ -2705,6 +2837,151 @@ impl VibocerosApp {
                 radius_point: Some(_),
                 ..
             } => unreachable!("mesh-cone radius requires a center"),
+            InteractiveCommand::MeshTruncatedCone {
+                center: None,
+                vertical_count,
+                around_count,
+                solid,
+                cap_style,
+                ..
+            } => {
+                let command = InteractiveCommand::MeshTruncatedCone {
+                    center: Some(point),
+                    base_radius_point: None,
+                    end_center: None,
+                    vertical_count,
+                    around_count,
+                    solid,
+                    cap_style,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!("Base center: {}", format_model_point(point)));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshTruncatedCone {
+                center: Some(center),
+                base_radius_point: None,
+                end_center: None,
+                vertical_count,
+                around_count,
+                solid,
+                cap_style,
+            } => {
+                if same_top_point(center, point, self.document.tolerance()) {
+                    self.push_log(
+                        "Error: mesh truncated-cone base radius must exceed model tolerance"
+                            .to_owned(),
+                    );
+                    return;
+                }
+                let Ok(base_radius_point) = Point3::try_new(point.x(), point.y(), center.z())
+                else {
+                    self.push_log(
+                        "Error: mesh truncated-cone base-radius point is not finite".to_owned(),
+                    );
+                    return;
+                };
+                let command = InteractiveCommand::MeshTruncatedCone {
+                    center: Some(center),
+                    base_radius_point: Some(base_radius_point),
+                    end_center: None,
+                    vertical_count,
+                    around_count,
+                    solid,
+                    cap_style,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!(
+                    "Base-radius point: {}",
+                    format_model_point(base_radius_point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshTruncatedCone {
+                center: Some(center),
+                base_radius_point: Some(base_radius_point),
+                end_center: None,
+                vertical_count,
+                around_count,
+                solid,
+                cap_style,
+            } => {
+                let height = point.z() - center.z();
+                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
+                    self.push_log(
+                        "Error: mesh truncated-cone height must exceed model tolerance".to_owned(),
+                    );
+                    return;
+                }
+                let Ok(end_center) = Point3::try_new(center.x(), center.y(), point.z()) else {
+                    self.push_log("Error: mesh truncated-cone end center is not finite".to_owned());
+                    return;
+                };
+                let command = InteractiveCommand::MeshTruncatedCone {
+                    center: Some(center),
+                    base_radius_point: Some(base_radius_point),
+                    end_center: Some(end_center),
+                    vertical_count,
+                    around_count,
+                    solid,
+                    cap_style,
+                };
+                self.active_command = Some(command);
+                self.push_log(format!(
+                    "End-circle center: {}",
+                    format_model_point(end_center)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::MeshTruncatedCone {
+                center: Some(center),
+                base_radius_point: Some(base_radius_point),
+                end_center: Some(end_center),
+                vertical_count,
+                around_count,
+                solid,
+                cap_style,
+            } => {
+                if same_top_point(end_center, point, self.document.tolerance()) {
+                    self.push_log(
+                        "Error: mesh truncated-cone end radius must exceed model tolerance"
+                            .to_owned(),
+                    );
+                    return;
+                }
+                let Ok(end_radius_point) = Point3::try_new(point.x(), point.y(), end_center.z())
+                else {
+                    self.push_log(
+                        "Error: mesh truncated-cone end-radius point is not finite".to_owned(),
+                    );
+                    return;
+                };
+                let Ok(end_radius) = end_center.distance_to(end_radius_point) else {
+                    self.push_log("Error: mesh truncated-cone end radius is not finite".to_owned());
+                    return;
+                };
+                let height = end_center.z() - center.z();
+                self.active_command = None;
+                let cap_style = match cap_style {
+                    MeshCapFaceStyle::Triangles => "Tri",
+                    MeshCapFaceStyle::Quadrilaterals => "Quad",
+                };
+                self.execute_command(&format!(
+                    "MeshTruncatedCone {} {} {height} {end_radius} VerticalFaces={} AroundFaces={} Solid={} CapFaceStyle={}",
+                    format_model_point(center),
+                    format_model_point(base_radius_point),
+                    vertical_count,
+                    around_count,
+                    if solid { "Yes" } else { "No" },
+                    cap_style
+                ));
+            }
+            InteractiveCommand::MeshTruncatedCone {
+                center: Some(_),
+                base_radius_point: None,
+                end_center: Some(_),
+                ..
+            } => unreachable!("mesh truncated-cone end center requires a base radius"),
             InteractiveCommand::MeshCylinder {
                 center: None,
                 radius_point: None,
@@ -3653,6 +3930,7 @@ impl VibocerosApp {
         let mut mesh_to_nurb_clicked = false;
         let mut mesh_box_clicked = false;
         let mut mesh_cone_clicked = false;
+        let mut mesh_truncated_cone_clicked = false;
         let mut mesh_cylinder_clicked = false;
         let mut mesh_plane_clicked = false;
         let mut mesh_sphere_clicked = false;
@@ -3871,6 +4149,12 @@ impl VibocerosApp {
                 mesh_cone_clicked = ui
                     .button("Mesh Cone")
                     .on_hover_text("Draw a polygonal cone with configurable grid faces")
+                    .clicked();
+                mesh_truncated_cone_clicked = ui
+                    .button("Mesh Truncated Cone")
+                    .on_hover_text(
+                        "Draw a polygonal truncated cone with two configurable radii",
+                    )
                     .clicked();
                 mesh_cylinder_clicked = ui
                     .button("Mesh Cylinder")
@@ -4203,6 +4487,8 @@ impl VibocerosApp {
             self.try_start_interactive_command("MeshBox");
         } else if mesh_cone_clicked {
             self.try_start_interactive_command("MeshCone");
+        } else if mesh_truncated_cone_clicked {
+            self.try_start_interactive_command("MeshTruncatedCone");
         } else if mesh_cylinder_clicked {
             self.try_start_interactive_command("MeshCylinder");
         } else if mesh_plane_clicked {
@@ -5357,6 +5643,87 @@ mod tests {
         assert!(mesh.signed_volume().unwrap() > 0.0);
         assert_eq!(app.document.selected_object_count(), 0);
         assert_eq!(app.document.undo_label(), Some("MeshCone"));
+    }
+
+    #[test]
+    fn interactive_mesh_truncated_cone_retains_options_and_validates_four_picks() {
+        let mut app = test_app();
+        assert!(!app.try_start_interactive_command("MeshTruncatedCone AroundFaces=2"));
+        assert!(!app.try_start_interactive_command(
+            "MeshTruncatedCone VerticalFaces=1000001 AroundFaces=3 Solid=No"
+        ));
+        assert!(app.try_start_interactive_command(
+            "MeshTruncatedCone VerticalFaces=2 AroundFaces=6 Solid=Yes CapFaceStyle=Quadrilaterals"
+        ));
+        let center = point(1.0, 2.0, 1.0);
+        app.accept_drafting_point(center);
+        app.accept_drafting_point(point(1.0, 2.0, 9.0));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::MeshTruncatedCone {
+                center: Some(center),
+                base_radius_point: None,
+                end_center: None,
+                vertical_count: 2,
+                around_count: 6,
+                solid: true,
+                cap_style: MeshCapFaceStyle::Quadrilaterals,
+            })
+        );
+        assert_eq!(app.document.objects().len(), 0);
+
+        let base_radius_point = point(3.0, 2.0, 1.0);
+        app.accept_drafting_point(point(3.0, 2.0, 9.0));
+        let awaiting_height = InteractiveCommand::MeshTruncatedCone {
+            center: Some(center),
+            base_radius_point: Some(base_radius_point),
+            end_center: None,
+            vertical_count: 2,
+            around_count: 6,
+            solid: true,
+            cap_style: MeshCapFaceStyle::Quadrilaterals,
+        };
+        assert_eq!(app.active_command, Some(awaiting_height));
+        assert_eq!(awaiting_height.anchor(), Some(center));
+        app.accept_drafting_point(point(9.0, 9.0, 1.0));
+        assert_eq!(app.active_command, Some(awaiting_height));
+        assert_eq!(app.document.objects().len(), 0);
+
+        let end_center = point(1.0, 2.0, 4.0);
+        app.accept_drafting_point(point(9.0, 9.0, 4.0));
+        let awaiting_end_radius = InteractiveCommand::MeshTruncatedCone {
+            center: Some(center),
+            base_radius_point: Some(base_radius_point),
+            end_center: Some(end_center),
+            vertical_count: 2,
+            around_count: 6,
+            solid: true,
+            cap_style: MeshCapFaceStyle::Quadrilaterals,
+        };
+        assert_eq!(app.active_command, Some(awaiting_end_radius));
+        assert_eq!(awaiting_end_radius.anchor(), Some(end_center));
+        app.accept_drafting_point(point(1.0, 2.0, 20.0));
+        assert_eq!(app.active_command, Some(awaiting_end_radius));
+        assert_eq!(app.document.objects().len(), 0);
+
+        app.accept_drafting_point(point(5.0, 2.0, 99.0));
+        assert_eq!(app.active_command, None);
+        let Geometry::Mesh(mesh) = app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created mesh truncated cone")
+        };
+        assert_eq!(mesh.vertices().len(), 32);
+        assert_eq!(mesh.face_count(), 18);
+        assert_eq!(mesh.vertices()[0], point(3.0, 2.0, 1.0));
+        assert_eq!(mesh.vertices()[6], point(4.0, 2.0, 2.5));
+        assert_eq!(mesh.vertices()[12], point(5.0, 2.0, 4.0));
+        assert_eq!(mesh.faces()[12], MeshFace::Quad([18, 21, 20, 19]));
+        assert_eq!(mesh.faces()[15], MeshFace::Quad([25, 26, 27, 28]));
+        assert_eq!(mesh.bounds().min().z(), 1.0);
+        assert_eq!(mesh.bounds().max().z(), 4.0);
+        assert!(mesh.topology().is_solid());
+        assert!(mesh.signed_volume().unwrap() > 0.0);
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("MeshTruncatedCone"));
     }
 
     #[test]
