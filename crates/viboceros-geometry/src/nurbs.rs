@@ -1123,6 +1123,23 @@ impl NurbsCurve {
         parameter: Real,
         target_multiplicity: usize,
     ) -> Result<Self, GeometryError> {
+        self.try_insert_knot_with_periodic_topology(
+            parameter,
+            target_multiplicity,
+            self.is_periodic(),
+        )
+    }
+
+    /// Internal refinement entry point used when a surface direction has been
+    /// flattened into OpenNURBS' single high-dimensional control curve. The
+    /// caller supplies that entire curve's periodic state instead of letting
+    /// one three-dimensional control row decide it independently.
+    pub(crate) fn try_insert_knot_with_periodic_topology(
+        &self,
+        parameter: Real,
+        target_multiplicity: usize,
+        restore_periodic_topology: bool,
+    ) -> Result<Self, GeometryError> {
         self.validate_parameter(parameter)?;
         let maximum = self
             .degree
@@ -1137,21 +1154,30 @@ impl NurbsCurve {
 
         let current_multiplicity = self.knot_multiplicity_unchecked(parameter);
         if current_multiplicity >= target_multiplicity {
-            return Ok(self.clone());
+            return Ok(self.clone().with_opennurbs_outer_knots());
         }
         let domain = self.domain();
         if parameter == *domain.start() {
-            return self.clamped_at_start(parameter);
+            return self
+                .clamped_at_start(parameter)
+                .map(Self::with_opennurbs_outer_knots);
         }
         if parameter == *domain.end() {
-            return self.clamped_at_end(parameter);
+            return self
+                .clamped_at_end(parameter)
+                .map(Self::with_opennurbs_outer_knots);
         }
 
+        let periodic_span = (restore_periodic_topology && target_multiplicity <= self.degree)
+            .then(|| self.find_span(parameter) - self.degree);
         let mut refined = self.clone();
         while refined.knot_multiplicity_unchecked(parameter) < target_multiplicity {
             refined = refined.insert_knot_once(parameter)?;
         }
-        Ok(refined)
+        if let Some(span_index) = periodic_span {
+            refined = refined.restore_periodic_after_knot_insertion(span_index)?;
+        }
+        Ok(refined.with_opennurbs_outer_knots())
     }
 
     /// Splits at a parameter strictly inside the active domain.
@@ -1311,6 +1337,49 @@ impl NurbsCurve {
         knots.push(parameter);
         knots.extend_from_slice(&self.knots[span + 1..]);
         Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    /// Restores OpenNURBS' repeated controls and matching exterior knot
+    /// intervals after inserting into a periodic curve. `span_index` is the
+    /// zero-based active span in the pre-insertion curve.
+    fn restore_periodic_after_knot_insertion(
+        self,
+        span_index: usize,
+    ) -> Result<Self, GeometryError> {
+        let degree = self.degree;
+        let control_count = self.control_points.len();
+        let mut controls = self.control_points;
+        for leading in 0..degree {
+            let trailing = control_count - degree + leading;
+            if leading > span_index {
+                controls[trailing] = controls[leading];
+            } else {
+                controls[leading] = controls[trailing];
+            }
+        }
+
+        let mut knots = self.knots;
+        // OpenNURBS stores the short knot vector `knots[1..len-1]`. Its
+        // periodic repair copies the first degree-1 intervals to the right,
+        // then the last degree-1 intervals back to the left.
+        for offset in 0..degree - 1 {
+            let left = degree + offset;
+            let right = control_count + offset;
+            knots[right + 1] = (knots[left + 1] - knots[left]) + knots[right];
+        }
+        for offset in 0..degree - 1 {
+            let left = degree - offset;
+            let right = control_count - offset;
+            knots[left - 1] = (knots[right - 1] - knots[right]) + knots[left];
+        }
+        Self::try_new_rational(degree, controls, knots)
+    }
+
+    fn with_opennurbs_outer_knots(mut self) -> Self {
+        self.knots[0] = self.knots[1];
+        let last = self.knots.len() - 1;
+        self.knots[last] = self.knots[last - 1];
+        self
     }
 
     fn clamped_to_active_domain(&self) -> Result<Self, GeometryError> {
@@ -1684,11 +1753,13 @@ pub(crate) fn curve_points_coincident(left: Point3, right: Point3) -> bool {
     left.to_array()
         .into_iter()
         .zip(right.to_array())
-        .all(|(left, right)| {
-            let difference = (left - right).abs();
-            difference <= CURVE_COINCIDENCE_ABSOLUTE
-                || difference <= (left.abs() + right.abs()) * CURVE_COINCIDENCE_RELATIVE
-        })
+        .all(|(left, right)| curve_coordinates_coincident(left, right))
+}
+
+pub(crate) fn curve_coordinates_coincident(left: Real, right: Real) -> bool {
+    let difference = (left - right).abs();
+    difference <= CURVE_COINCIDENCE_ABSOLUTE
+        || difference <= (left.abs() + right.abs()) * CURVE_COINCIDENCE_RELATIVE
 }
 
 /// Returns the half-open raw-control window used by OpenNURBS control
@@ -3390,6 +3461,56 @@ mod tests {
     }
 
     #[test]
+    fn knot_insertion_restores_periodic_controls_and_knot_intervals() {
+        let source = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(2.0, 2.0),
+                point(0.0, 2.0),
+                point(0.0, 0.0),
+                point(2.0, 0.0),
+                point(2.0, 2.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+        )
+        .unwrap();
+        assert!(source.is_periodic());
+
+        let cases = [
+            (
+                4.5,
+                vec![0.5, 0.5, 1.0, 2.0, 3.0, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 8.0],
+            ),
+            (
+                2.25,
+                vec![0.0, 0.0, 1.0, 2.0, 2.25, 3.0, 4.0, 5.0, 6.0, 6.25, 7.0, 7.0],
+            ),
+        ];
+        for (parameter, expected_knots) in cases {
+            let refined = source.try_insert_knot(parameter, 1).unwrap();
+            assert_eq!(refined.knots(), expected_knots);
+            assert!(refined.is_periodic());
+            assert!(refined.is_closed().unwrap());
+            let repeat_start = refined.control_points().len() - refined.degree();
+            assert_eq!(
+                &refined.control_points()[..refined.degree()],
+                &refined.control_points()[repeat_start..]
+            );
+            for sample in 0..=64 {
+                let normalized = sample as Real / 64.0;
+                let source_parameter = source.parameter_at(normalized).unwrap();
+                let refined_parameter = refined.parameter_at(normalized).unwrap();
+                assert_point_near(
+                    refined.evaluate(refined_parameter).unwrap(),
+                    source.evaluate(source_parameter).unwrap(),
+                );
+            }
+        }
+    }
+
+    #[test]
     fn endpoint_refinement_preserves_nonclamped_curve_evaluation() {
         let curve = NurbsCurve::try_new(
             2,
@@ -3406,6 +3527,11 @@ mod tests {
         for parameter in [0.0, 2.0] {
             let refined = curve.try_insert_knot(parameter, 3).unwrap();
             assert_eq!(refined.knot_multiplicity(parameter).unwrap(), 3);
+            assert_eq!(refined.knots()[0], refined.knots()[1]);
+            assert_eq!(
+                refined.knots()[refined.knots().len() - 1],
+                refined.knots()[refined.knots().len() - 2]
+            );
             for sample in 0..=32 {
                 let t = sample as Real / 16.0;
                 let actual = refined.evaluate(t).unwrap();

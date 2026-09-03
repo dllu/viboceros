@@ -2,13 +2,13 @@ use std::ops::RangeInclusive;
 
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
-    clamped_uniform_knots, control_polygon_range, curve_points_coincident, de_boor,
-    knot_vector_is_periodic, project_homogeneous, stable_divided_difference, uniform_knots_like,
-    validate_direction,
+    clamped_uniform_knots, control_polygon_range, curve_coordinates_coincident,
+    curve_points_coincident, de_boor, knot_vector_is_periodic, project_homogeneous,
+    stable_divided_difference, uniform_knots_like, validate_direction,
 };
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
-    Plane, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    NurbsCurve, Plane, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
     require_finite, vector::product_three,
 };
 
@@ -44,6 +44,57 @@ impl SurfaceKnotDirection {
     const fn includes_v(self) -> bool {
         matches!(self, Self::V | Self::Both)
     }
+}
+
+fn homogeneous_controls_coincident(left: WeightedPoint3, right: WeightedPoint3) -> bool {
+    if !curve_coordinates_coincident(left.weight(), right.weight()) {
+        return false;
+    }
+    left.point()
+        .to_array()
+        .into_iter()
+        .zip(right.point().to_array())
+        .all(|(left_coordinate, right_coordinate)| {
+            let left_homogeneous = left_coordinate * left.weight();
+            let right_homogeneous = right_coordinate * right.weight();
+            left_homogeneous.is_finite()
+                && right_homogeneous.is_finite()
+                && curve_coordinates_coincident(left_homogeneous, right_homogeneous)
+        })
+}
+
+fn validate_surface_knot_insertion(
+    parameter: Real,
+    target_multiplicity: usize,
+    degree: usize,
+    domain: RangeInclusive<Real>,
+) -> Result<(), GeometryError> {
+    if target_multiplicity == 0 || target_multiplicity > degree {
+        return Err(GeometryError::InvalidKnotMultiplicity {
+            actual: target_multiplicity,
+            maximum: degree,
+        });
+    }
+    require_finite([parameter], "NURBS surface knot parameter")?;
+    let domain_start = *domain.start();
+    let domain_end = *domain.end();
+    if parameter < domain_start || parameter > domain_end {
+        return Err(GeometryError::ParameterOutOfDomain {
+            parameter,
+            domain_start,
+            domain_end,
+        });
+    }
+    if (parameter == domain_start || parameter == domain_end)
+        && target_multiplicity != 1
+        && target_multiplicity != degree
+    {
+        return Err(GeometryError::InvalidEndpointKnotMultiplicity {
+            actual: target_multiplicity,
+            degree,
+        });
+    }
+    Ok(())
 }
 
 impl NurbsSurface {
@@ -1185,6 +1236,181 @@ impl NurbsSurface {
             knots_u,
             knots_v,
         )
+    }
+
+    /// Inserts a U-direction knot to a target multiplicity without changing
+    /// the surface locus or parameterization.
+    ///
+    /// Every fixed-V control row is refined by the exact curve algorithm, so
+    /// rational weights and eligible periodic U topology are retained. Target
+    /// multiplicity follows OpenNURBS and ranges from one through the U degree;
+    /// an endpoint accepts only one (a no-op) or the degree (full clamping).
+    pub fn try_insert_knot_u(
+        &self,
+        parameter: Real,
+        target_multiplicity: usize,
+    ) -> Result<Self, GeometryError> {
+        validate_surface_knot_insertion(
+            parameter,
+            target_multiplicity,
+            self.degree_u,
+            self.domain_u(),
+        )?;
+        let restore_periodic_topology = self.insertion_curve_is_periodic_u();
+        let mut controls = Vec::new();
+        let mut refined_u_count = None;
+        let mut refined_knots_u = None;
+        for v in 0..self.control_point_count_v {
+            let start = v * self.control_point_count_u;
+            let row = NurbsCurve::try_new_rational(
+                self.degree_u,
+                self.control_points[start..start + self.control_point_count_u].to_vec(),
+                self.knots_u.clone(),
+            )?
+            .try_insert_knot_with_periodic_topology(
+                parameter,
+                target_multiplicity,
+                restore_periodic_topology,
+            )?;
+            if refined_u_count.is_none() {
+                let count = row.control_points().len();
+                let total = count.checked_mul(self.control_point_count_v).ok_or(
+                    GeometryError::InvalidControlNet {
+                        context: "inserted U control-net size overflowed usize",
+                    },
+                )?;
+                controls.try_reserve_exact(total).map_err(|_| {
+                    GeometryError::InvalidControlNet {
+                        context: "inserted U control net exceeds addressable memory",
+                    }
+                })?;
+                refined_u_count = Some(count);
+                refined_knots_u = Some(row.knots().to_vec());
+            }
+            debug_assert_eq!(refined_u_count, Some(row.control_points().len()));
+            debug_assert_eq!(refined_knots_u.as_deref(), Some(row.knots()));
+            controls.extend_from_slice(row.control_points());
+        }
+
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            refined_u_count.expect("a valid surface has at least one V row"),
+            self.control_point_count_v,
+            controls,
+            refined_knots_u.expect("a valid surface has a U knot vector"),
+            self.knots_v.clone(),
+        )
+    }
+
+    /// Inserts a V-direction knot to a target multiplicity without changing
+    /// the surface locus or parameterization.
+    ///
+    /// Every fixed-U control column is refined by the exact curve algorithm,
+    /// then transposed back into the surface's row-major control layout. Target
+    /// multiplicity follows OpenNURBS and ranges from one through the V degree;
+    /// an endpoint accepts only one (a no-op) or the degree (full clamping).
+    pub fn try_insert_knot_v(
+        &self,
+        parameter: Real,
+        target_multiplicity: usize,
+    ) -> Result<Self, GeometryError> {
+        validate_surface_knot_insertion(
+            parameter,
+            target_multiplicity,
+            self.degree_v,
+            self.domain_v(),
+        )?;
+        let restore_periodic_topology = self.insertion_curve_is_periodic_v();
+        let mut columns = Vec::new();
+        columns
+            .try_reserve_exact(self.control_point_count_u)
+            .map_err(|_| GeometryError::InvalidControlNet {
+                context: "inserted V column list exceeds addressable memory",
+            })?;
+        let mut refined_v_count = None;
+        let mut refined_knots_v = None;
+        for u in 0..self.control_point_count_u {
+            let column = (0..self.control_point_count_v)
+                .map(|v| self.control_points[self.control_index(u, v)])
+                .collect::<Vec<_>>();
+            let column = NurbsCurve::try_new_rational(self.degree_v, column, self.knots_v.clone())?
+                .try_insert_knot_with_periodic_topology(
+                    parameter,
+                    target_multiplicity,
+                    restore_periodic_topology,
+                )?;
+            if refined_v_count.is_none() {
+                refined_v_count = Some(column.control_points().len());
+                refined_knots_v = Some(column.knots().to_vec());
+            }
+            debug_assert_eq!(refined_v_count, Some(column.control_points().len()));
+            debug_assert_eq!(refined_knots_v.as_deref(), Some(column.knots()));
+            columns.push(column);
+        }
+
+        let refined_v_count = refined_v_count.expect("a valid surface has at least one U column");
+        let total = self
+            .control_point_count_u
+            .checked_mul(refined_v_count)
+            .ok_or(GeometryError::InvalidControlNet {
+                context: "inserted V control-net size overflowed usize",
+            })?;
+        let mut controls = Vec::new();
+        controls
+            .try_reserve_exact(total)
+            .map_err(|_| GeometryError::InvalidControlNet {
+                context: "inserted V control net exceeds addressable memory",
+            })?;
+        for v in 0..refined_v_count {
+            controls.extend(columns.iter().map(|column| column.control_points()[v]));
+        }
+
+        Self::try_new_rational(
+            self.degree_u,
+            self.degree_v,
+            self.control_point_count_u,
+            refined_v_count,
+            controls,
+            self.knots_u.clone(),
+            refined_knots_v.expect("a valid surface has a V knot vector"),
+        )
+    }
+
+    /// Matches the high-dimensional non-rational curve that OpenNURBS uses
+    /// internally for surface U insertion. Rational controls are compared in
+    /// their stored homogeneous form, including their weights.
+    fn insertion_curve_is_periodic_u(&self) -> bool {
+        knot_vector_is_periodic(
+            self.degree_u + 1,
+            self.control_point_count_u,
+            &self.knots_u[1..self.knots_u.len() - 1],
+        ) && (0..self.control_point_count_v).all(|v| {
+            (0..self.degree_u).all(|u| {
+                let repeated = self.control_point_count_u - self.degree_u + u;
+                homogeneous_controls_coincident(
+                    self.control_points[self.control_index(u, v)],
+                    self.control_points[self.control_index(repeated, v)],
+                )
+            })
+        })
+    }
+
+    /// V-direction counterpart of [`Self::insertion_curve_is_periodic_u`].
+    fn insertion_curve_is_periodic_v(&self) -> bool {
+        knot_vector_is_periodic(
+            self.degree_v + 1,
+            self.control_point_count_v,
+            &self.knots_v[1..self.knots_v.len() - 1],
+        ) && (0..self.control_point_count_u).all(|u| {
+            (0..self.degree_v).all(|v| {
+                let repeated = self.control_point_count_v - self.degree_v + v;
+                homogeneous_controls_coincident(
+                    self.control_points[self.control_index(u, v)],
+                    self.control_points[self.control_index(u, repeated)],
+                )
+            })
+        })
     }
 
     /// Returns whether the U knot vector and repeated end controls form an
@@ -4893,6 +5119,59 @@ mod tests {
     }
 
     #[test]
+    fn knot_insertion_refines_rational_surface_rows_and_columns_exactly() {
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..4).map(move |u| {
+                    WeightedPoint3::try_new(
+                        point(u as Real, v as Real, (u * v) as Real * 0.2),
+                        0.6 + (2 * u + v) as Real * 0.15,
+                    )
+                    .unwrap()
+                })
+            })
+            .collect::<Vec<_>>();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            2,
+            4,
+            4,
+            controls,
+            vec![0.0, 0.0, 0.0, 0.35, 1.0, 1.0, 1.0],
+            vec![2.0, 2.0, 2.0, 2.6, 4.0, 4.0, 4.0],
+        )
+        .unwrap();
+
+        let refined_u = surface.try_insert_knot_u(0.52, 2).unwrap();
+        assert_eq!(refined_u.control_point_count_u(), 6);
+        assert_eq!(refined_u.control_point_count_v(), 4);
+        assert_eq!(
+            refined_u.knots_u(),
+            &[0.0, 0.0, 0.0, 0.35, 0.52, 0.52, 1.0, 1.0, 1.0]
+        );
+        assert_eq!(refined_u.knots_v(), surface.knots_v());
+
+        let refined_v = surface.try_insert_knot_v(3.1, 1).unwrap();
+        assert_eq!(refined_v.control_point_count_u(), 4);
+        assert_eq!(refined_v.control_point_count_v(), 5);
+        assert_eq!(refined_v.knots_u(), surface.knots_u());
+        assert_eq!(
+            refined_v.knots_v(),
+            &[2.0, 2.0, 2.0, 2.6, 3.1, 4.0, 4.0, 4.0]
+        );
+
+        for u_index in 0..=12 {
+            let u = u_index as Real / 12.0;
+            for v_index in 0..=12 {
+                let v = 2.0 + v_index as Real / 6.0;
+                let expected = surface.evaluate(u, v).unwrap();
+                assert_point_near(refined_u.evaluate(u, v).unwrap(), expected);
+                assert_point_near(refined_v.evaluate(u, v).unwrap(), expected);
+            }
+        }
+    }
+
+    #[test]
     fn make_uniform_retains_periodic_surface_direction() {
         let row = [
             point(0.0, 0.0, 0.0),
@@ -4931,6 +5210,101 @@ mod tests {
         assert_eq!(uniform.domain_u(), 2.0..=6.0);
         assert!(uniform.is_periodic_u());
         assert!(!uniform.is_periodic_v());
+        assert!(matches!(
+            uniform.try_insert_knot_u(4.5, 0),
+            Err(GeometryError::InvalidKnotMultiplicity {
+                actual: 0,
+                maximum: 3
+            })
+        ));
+        assert!(matches!(
+            uniform.try_insert_knot_u(4.5, 4),
+            Err(GeometryError::InvalidKnotMultiplicity {
+                actual: 4,
+                maximum: 3
+            })
+        ));
+        assert!(matches!(
+            uniform.try_insert_knot_u(2.0, 2),
+            Err(GeometryError::InvalidEndpointKnotMultiplicity {
+                actual: 2,
+                degree: 3
+            })
+        ));
+
+        let refined = uniform.try_insert_knot_u(4.5, 1).unwrap();
+        assert_eq!(refined.control_point_count_u(), 8);
+        assert_eq!(
+            refined.knots_u(),
+            &[0.5, 0.5, 1.0, 2.0, 3.0, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 8.0]
+        );
+        assert!(refined.is_periodic_u());
+        for u_index in 0..=16 {
+            let u = 2.0 + u_index as Real / 4.0;
+            for v in [0.0, 1.25, 5.0] {
+                assert_point_near(
+                    refined.evaluate(u, v).unwrap(),
+                    uniform.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn surface_insertion_uses_the_full_homogeneous_net_for_periodicity() {
+        let row = [
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(0.0, 2.0, 0.0),
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(2.0, 2.0, 0.0),
+        ];
+        let points = row
+            .into_iter()
+            .chain(row.into_iter().map(|point| {
+                point
+                    .translated(Vector3::try_new(0.0, 0.0, 3.0).unwrap())
+                    .unwrap()
+            }))
+            .collect::<Vec<_>>();
+        let weights = [
+            1.0, 1.2, 0.8, 1.5, 2.0, 0.7, 1.8, 1.1, 0.9, 1.3, 0.6, 1.7, 1.4, 0.75,
+        ];
+        let controls = points
+            .into_iter()
+            .zip(weights)
+            .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+            .collect();
+        let surface = NurbsSurface::try_new_rational(
+            3,
+            1,
+            7,
+            2,
+            controls,
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        assert!(surface.is_periodic_u());
+        assert!(!surface.insertion_curve_is_periodic_u());
+
+        let refined = surface.try_insert_knot_u(4.5, 1).unwrap();
+        assert_eq!(
+            refined.knots_u(),
+            &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0, 8.0]
+        );
+        assert!(!refined.is_periodic_u());
+        for u_index in 0..=16 {
+            let u = 2.0 + u_index as Real / 4.0;
+            for v in [0.0, 1.25, 5.0] {
+                assert_point_near(
+                    refined.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
     }
 
     #[test]

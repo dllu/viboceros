@@ -1,0 +1,132 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "open-rational-new-triple",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [-3, 1, 0], "weight": 0.75},
+          {"point": [-1, 4, 1], "weight": 2},
+          {"point": [2, -2, 0], "weight": 0.4},
+          {"point": [4, 3, -1], "weight": 3.5},
+          {"point": [7, -1, 2], "weight": 1.25},
+          {"point": [9, 2, 0], "weight": 0.9}
+        ],
+        "knots": [0, 0, 0, 0, 0.35, 0.8, 1, 1, 1, 1]
+      },
+      "parameter": 0.52,
+      "multiplicity": 3
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "existing-double-to-triple",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 3, 0]},
+          {"point": [3, -2, 1]}, {"point": [5, 2, 0]},
+          {"point": [7, -1, 0]}, {"point": [9, 2, 0]},
+          {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 0.4, 0.4, 0.8, 1, 1, 1, 1]
+      },
+      "parameter": 0.4,
+      "multiplicity": 3
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "nonclamped-start-clamp",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-2, 1, 0]}, {"point": [0, 4, 0]},
+          {"point": [5, -2, 0]}, {"point": [8, 3, 0]}
+        ],
+        "knots": [-2, -1, 0, 0.8, 2, 3, 4]
+      },
+      "parameter": 0,
+      "multiplicity": 2
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "nonclamped-end-clamp",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-2, 1, 0]}, {"point": [0, 4, 0]},
+          {"point": [5, -2, 0]}, {"point": [8, 3, 0]}
+        ],
+        "knots": [-2, -1, 0, 0.8, 2, 3, 4]
+      },
+      "parameter": 2,
+      "multiplicity": 2
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "periodic-middle",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 4.5,
+      "multiplicity": 1
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "periodic-middle-triple",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 4.5,
+      "multiplicity": 3
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "periodic-near-start",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 2.25,
+      "multiplicity": 1
+    },
+    {
+      "op": "curve_insert_knot_geometry",
+      "id": "periodic-existing-to-double",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 4,
+      "multiplicity": 2
+    }
+  ]
+}

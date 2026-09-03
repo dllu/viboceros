@@ -5629,6 +5629,36 @@ def _execute(operation, iterations, tolerance):
         finally:
             curve.Dispose()
 
+    if kind == "curve_insert_knot_geometry":
+        curve = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "curve knot parameter")
+        multiplicity = int(operation["multiplicity"])
+
+        def insert_curve_knot():
+            duplicate = curve.DuplicateCurve()
+            if duplicate is None:
+                raise ValueError("Rhino could not duplicate curve for knot insertion")
+            try:
+                nurbs = duplicate.ToNurbsCurve()
+                if nurbs is None:
+                    raise ValueError("Rhino could not convert curve for knot insertion")
+                try:
+                    if not nurbs.Knots.InsertKnot(parameter, multiplicity):
+                        raise ValueError("Rhino curve knot insertion failed")
+                    definition = _nurbs_curve_definition(nurbs)
+                    definition["closed"] = bool(nurbs.IsClosed)
+                    definition["periodic"] = bool(nurbs.IsPeriodic)
+                    return definition
+                finally:
+                    nurbs.Dispose()
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, insert_curve_knot)
+        finally:
+            curve.Dispose()
+
     if kind == "surface_make_uniform_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
@@ -5668,6 +5698,47 @@ def _execute(operation, iterations, tolerance):
                 surface.Dispose()
 
         return _measure(iterations, make_uniform_surface)
+
+    if kind == "surface_insert_knot_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface knot direction must be u or v")
+        parameter = _finite(operation["parameter"], "surface knot parameter")
+        multiplicity = int(operation["multiplicity"])
+
+        def insert_surface_knot():
+            surface = Rhino.Geometry.NurbsSurface.Create(
+                3, True, degree_u + 1, degree_v + 1, count_u, count_v
+            )
+            if surface is None:
+                raise ValueError("could not allocate NURBS surface")
+            try:
+                _set_surface_controls(
+                    surface, operation["control_points"], count_u, count_v
+                )
+                _set_knots(
+                    surface.KnotsU, operation["knots_u"], "surface U knot"
+                )
+                _set_knots(
+                    surface.KnotsV, operation["knots_v"], "surface V knot"
+                )
+                if not surface.IsValid:
+                    raise ValueError("NURBS surface is invalid")
+                knots = surface.KnotsU if direction == "u" else surface.KnotsV
+                if not knots.InsertKnot(parameter, multiplicity):
+                    raise ValueError("Rhino surface knot insertion failed")
+                definition = _nurbs_surface_definition(surface)
+                definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                return definition
+            finally:
+                surface.Dispose()
+
+        return _measure(iterations, insert_surface_knot)
 
     if kind == "conic":
         document = Rhino.RhinoDoc.ActiveDoc

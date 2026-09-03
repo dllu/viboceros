@@ -9,7 +9,7 @@ analytic circles, circular arcs, and ellipses, validated open and closed
 polylines, planes, bounding boxes, rational NURBS curves with analytic first
 and second derivatives and exact knot refinement, splitting, and interval trimming,
 rational NURBS surfaces with analytic partial derivatives and exact tensor
-splitting and rectangular domain trimming,
+splitting, knot refinement, and rectangular domain trimming,
 validated shared-topology B-reps with exact rational parameter-space trims,
 validated mixed triangle/quad polygon meshes, layers, groups, and bounded
 undo/redo.
@@ -39,6 +39,7 @@ TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=Curre
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
 MakeUniform Direction=Both
+InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -267,6 +268,14 @@ independently, periodic topology stays periodic, and supported analytic curves
 are first converted to their exact NURBS form. `Direction=U|V|Both` selects
 the changed surface directions and defaults to both; changing knot spacing can
 change the object shape.
+`InsertKnot` requires exactly one selected curve or untrimmed NURBS surface and
+refines it in place without changing its parameterization or shape. Curves take
+one parameter; surfaces take `u,v`, with a scalar accepted when `Direction=U`
+or `V`. `Multiplicity` is the target knot multiplicity and may range from one
+through the relevant degree. `Symmetrical=Yes` also inserts the parameter
+mirrored across the active domain. Rational refinement and periodic repair
+follow Rhino/OpenNURBS behavior; identity, attributes, selection, and undo are
+preserved.
 `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
@@ -942,6 +951,12 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_make_uniform.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_insert_knot.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_insert_knot.json
 ```
 
 The same workflow is importable for instrumentation and tests:

@@ -539,6 +539,12 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
     },
+    CurveInsertKnotGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        parameter: f64,
+        multiplicity: usize,
+    },
     SurfaceMakeUniformGeometry {
         id: String,
         degree_u: usize,
@@ -549,6 +555,19 @@ pub enum Operation {
         knots_u: Vec<f64>,
         knots_v: Vec<f64>,
         direction: SurfaceUniformDirection,
+    },
+    SurfaceInsertKnotGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceKnotAxis,
+        parameter: f64,
+        multiplicity: usize,
     },
     Paraboloid {
         id: String,
@@ -733,6 +752,13 @@ pub enum SurfaceUniformDirection {
     Both,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum SurfaceKnotAxis {
+    U,
+    V,
+}
+
 impl SurfaceUniformDirection {
     const fn geometry(self) -> SurfaceKnotDirection {
         match self {
@@ -830,7 +856,9 @@ impl Operation {
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
+            | Self::CurveInsertKnotGeometry { id, .. }
             | Self::SurfaceMakeUniformGeometry { id, .. }
+            | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2633,6 +2661,18 @@ fn execute(
             let (curve, elapsed) = measure(iterations, || source.try_make_uniform())?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveInsertKnotGeometry {
+            curve,
+            parameter,
+            multiplicity,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_insert_knot(black_box(*parameter), black_box(*multiplicity))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::SurfaceMakeUniformGeometry {
             degree_u,
             degree_v,
@@ -2655,6 +2695,38 @@ fn execute(
             )?;
             let (surface, elapsed) = measure(iterations, || {
                 source.try_make_uniform(black_box(direction.geometry()))
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceInsertKnotGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            parameter,
+            multiplicity,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || match direction {
+                SurfaceKnotAxis::U => {
+                    source.try_insert_knot_u(black_box(*parameter), black_box(*multiplicity))
+                }
+                SurfaceKnotAxis::V => {
+                    source.try_insert_knot_v(black_box(*parameter), black_box(*multiplicity))
+                }
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -7781,6 +7853,93 @@ mod tests {
         assert_eq!(surface["knots_v"], json!([0.0, 0.0, 1.0, 2.0, 2.0]));
         assert_eq!(surface["domain_u"], json!([0.0, 1.0]));
         assert_eq!(surface["domain_v"], json!([0.0, 2.0]));
+        assert_eq!(surface["periodic_u"], false);
+        assert_eq!(surface["periodic_v"], false);
+    }
+
+    #[test]
+    fn captures_exact_rational_curve_knot_insertion() {
+        let response = run_request(&request(vec![Operation::CurveInsertKnotGeometry {
+            id: "insert-rational-curve".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 2,
+                control_points: vec![
+                    ControlPoint {
+                        point: [0.0, 0.0, 0.0],
+                        weight: 0.75,
+                    },
+                    ControlPoint {
+                        point: [1.0, 3.0, 0.0],
+                        weight: 1.5,
+                    },
+                    ControlPoint {
+                        point: [4.0, -1.0, 1.0],
+                        weight: 0.5,
+                    },
+                    ControlPoint {
+                        point: [7.0, 2.0, 0.0],
+                        weight: 2.0,
+                    },
+                ],
+                knots: vec![0.0, 0.0, 0.0, 0.3, 1.0, 1.0, 1.0],
+                domain: None,
+            },
+            parameter: 0.5,
+            multiplicity: 2,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 2);
+        assert_eq!(curve["domain"], json!([0.0, 1.0]));
+        assert_eq!(curve["closed"], false);
+        assert_eq!(curve["periodic"], false);
+        assert_eq!(
+            curve["knots"],
+            json!([0.0, 0.0, 0.0, 0.3, 0.5, 0.5, 1.0, 1.0, 1.0])
+        );
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 6);
+    }
+
+    #[test]
+    fn captures_exact_surface_knot_insertion() {
+        let control_points = (0..3)
+            .flat_map(|v| {
+                (0..4).map(move |u| ControlPoint {
+                    point: [u as f64, v as f64, (u * v) as f64 * 0.2],
+                    weight: 0.6 + (u + 2 * v) as f64 * 0.15,
+                })
+            })
+            .collect();
+        let response = run_request(&request(vec![Operation::SurfaceInsertKnotGeometry {
+            id: "insert-surface-v".to_owned(),
+            degree_u: 2,
+            degree_v: 1,
+            control_point_count_u: 4,
+            control_point_count_v: 3,
+            control_points,
+            knots_u: vec![0.0, 0.0, 0.0, 0.25, 1.0, 1.0, 1.0],
+            knots_v: vec![10.0, 10.0, 13.0, 20.0, 20.0],
+            direction: SurfaceKnotAxis::V,
+            parameter: 12.0,
+            multiplicity: 1,
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        assert_eq!(surface["degree"], json!([2, 1]));
+        assert_eq!(surface["control_count"], json!([4, 4]));
+        assert_eq!(surface["control_points"].as_array().unwrap().len(), 16);
+        assert_eq!(
+            surface["knots_u"],
+            json!([0.0, 0.0, 0.0, 0.25, 1.0, 1.0, 1.0])
+        );
+        assert_eq!(
+            surface["knots_v"],
+            json!([10.0, 10.0, 12.0, 13.0, 20.0, 20.0])
+        );
+        assert_eq!(surface["domain_u"], json!([0.0, 1.0]));
+        assert_eq!(surface["domain_v"], json!([10.0, 20.0]));
         assert_eq!(surface["periodic_u"], false);
         assert_eq!(surface["periodic_v"], false);
     }

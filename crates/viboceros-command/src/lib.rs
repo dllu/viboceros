@@ -118,6 +118,9 @@ impl CommandRegistry {
             .register(MakeUniformCommand)
             .expect("unique built-in command");
         registry
+            .register(InsertKnotCommand)
+            .expect("unique built-in command");
+        registry
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
@@ -2004,6 +2007,296 @@ fn parse_make_uniform_direction(arguments: &[&str]) -> Result<SurfaceKnotDirecti
         index += consumed;
     }
     Ok(direction)
+}
+
+const INSERT_KNOT_USAGE: &str =
+    "InsertKnot parameter|u,v [Multiplicity=1..degree] [Direction=U|V|Both] [Symmetrical=Yes|No]";
+
+struct InsertKnotCommand;
+
+impl Command for InsertKnotCommand {
+    fn name(&self) -> &'static str {
+        "InsertKnot"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_insert_knot_options(arguments)?;
+        let mut candidates = Vec::new();
+        for object in document.selected_objects() {
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface.clone()),
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    Geometry::NurbsCurve(curve)
+                }
+            };
+            candidates.push((object.id(), geometry));
+        }
+        if candidates.len() != 1 {
+            return Err(CommandError::InsertKnotRequiresOneObject {
+                actual: candidates.len(),
+            });
+        }
+
+        let (id, geometry) = candidates.pop().expect("one candidate was required");
+        let (geometry, inserted, kind) = match geometry {
+            Geometry::NurbsCurve(curve) => {
+                let InsertKnotLocation::Scalar(parameter) = options.location else {
+                    return Err(CommandError::InsertKnotCurveRequiresParameter);
+                };
+                let before = curve.knots().len();
+                let curve = insert_curve_knots(
+                    curve,
+                    parameter,
+                    options.multiplicity,
+                    options.symmetrical,
+                )?;
+                let inserted = curve.knots().len() - before;
+                (Geometry::NurbsCurve(curve), inserted, "curve")
+            }
+            Geometry::NurbsSurface(surface) => {
+                let before = surface.knots_u().len() + surface.knots_v().len();
+                let surface = insert_surface_knots(surface, options)?;
+                let inserted = surface.knots_u().len() + surface.knots_v().len() - before;
+                (Geometry::NurbsSurface(surface), inserted, "surface")
+            }
+            _ => unreachable!("InsertKnot candidates are converted to NURBS geometry"),
+        };
+
+        document.replace_object_geometries([(id, geometry)])?;
+        Ok(format!(
+            "Inserted {inserted} knot value(s) into selected NURBS {kind}"
+        ))
+    }
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum InsertKnotLocation {
+    Scalar(Real),
+    Surface { u: Real, v: Real },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct InsertKnotOptions {
+    location: InsertKnotLocation,
+    multiplicity: usize,
+    direction: SurfaceKnotDirection,
+    symmetrical: bool,
+}
+
+fn parse_insert_knot_options(arguments: &[&str]) -> Result<InsertKnotOptions, CommandError> {
+    let location = parse_insert_knot_location(
+        arguments
+            .first()
+            .copied()
+            .ok_or(CommandError::Usage(INSERT_KNOT_USAGE))?,
+    )?;
+    let mut options = InsertKnotOptions {
+        location,
+        multiplicity: 1,
+        direction: SurfaceKnotDirection::Both,
+        symmetrical: false,
+    };
+    let mut multiplicity_seen = false;
+    let mut direction_seen = false;
+    let mut symmetrical_seen = false;
+    let mut index = 1;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, INSERT_KNOT_USAGE)?;
+        if option_name_eq(name, "Multiplicity") && !multiplicity_seen {
+            let value = value.trim_start_matches('_');
+            options.multiplicity = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            multiplicity_seen = true;
+        } else if option_name_eq(name, "Direction") && !direction_seen {
+            let value = value.trim_start_matches(['_', '-']);
+            options.direction = if value.eq_ignore_ascii_case("U") {
+                SurfaceKnotDirection::U
+            } else if value.eq_ignore_ascii_case("V") {
+                SurfaceKnotDirection::V
+            } else if value.eq_ignore_ascii_case("Both") {
+                SurfaceKnotDirection::Both
+            } else {
+                return Err(CommandError::Usage(INSERT_KNOT_USAGE));
+            };
+            direction_seen = true;
+        } else if option_name_eq(name, "Symmetrical") && !symmetrical_seen {
+            options.symmetrical =
+                parse_yes_no(value).ok_or(CommandError::Usage(INSERT_KNOT_USAGE))?;
+            symmetrical_seen = true;
+        } else {
+            return Err(CommandError::Usage(INSERT_KNOT_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
+}
+
+fn parse_insert_knot_location(argument: &str) -> Result<InsertKnotLocation, CommandError> {
+    let coordinates = argument.split(',').collect::<Vec<_>>();
+    match coordinates.as_slice() {
+        [parameter] if !parameter.is_empty() => {
+            Ok(InsertKnotLocation::Scalar(parse_finite_real(parameter)?))
+        }
+        [u, v] if !u.is_empty() && !v.is_empty() => Ok(InsertKnotLocation::Surface {
+            u: parse_finite_real(u)?,
+            v: parse_finite_real(v)?,
+        }),
+        _ => Err(CommandError::Usage(INSERT_KNOT_USAGE)),
+    }
+}
+
+fn insert_curve_knots(
+    mut curve: NurbsCurve,
+    parameter: Real,
+    multiplicity: usize,
+    symmetrical: bool,
+) -> Result<NurbsCurve, CommandError> {
+    let domain = curve.domain();
+    validate_insert_knot_request(
+        parameter,
+        *domain.start(),
+        *domain.end(),
+        curve.degree(),
+        multiplicity,
+    )?;
+    curve = curve.try_insert_knot(parameter, multiplicity)?;
+    if symmetrical {
+        let mirrored = mirrored_parameter(parameter, *domain.start(), *domain.end())?;
+        if mirrored != parameter {
+            validate_insert_knot_request(
+                mirrored,
+                *domain.start(),
+                *domain.end(),
+                curve.degree(),
+                multiplicity,
+            )?;
+            curve = curve.try_insert_knot(mirrored, multiplicity)?;
+        }
+    }
+    Ok(curve)
+}
+
+fn insert_surface_knots(
+    mut surface: NurbsSurface,
+    options: InsertKnotOptions,
+) -> Result<NurbsSurface, CommandError> {
+    let (u, v) = match options.location {
+        InsertKnotLocation::Scalar(parameter) => match options.direction {
+            SurfaceKnotDirection::U => (Some(parameter), None),
+            SurfaceKnotDirection::V => (None, Some(parameter)),
+            SurfaceKnotDirection::Both => {
+                return Err(CommandError::InsertKnotBothDirectionsRequireUv);
+            }
+        },
+        InsertKnotLocation::Surface { u, v } => match options.direction {
+            SurfaceKnotDirection::U => (Some(u), None),
+            SurfaceKnotDirection::V => (None, Some(v)),
+            SurfaceKnotDirection::Both => (Some(u), Some(v)),
+        },
+    };
+
+    if let Some(parameter) = u {
+        let domain = surface.domain_u();
+        let degree = surface.degree_u();
+        validate_insert_knot_request(
+            parameter,
+            *domain.start(),
+            *domain.end(),
+            degree,
+            options.multiplicity,
+        )?;
+        surface = surface.try_insert_knot_u(parameter, options.multiplicity)?;
+        if options.symmetrical {
+            let mirrored = mirrored_parameter(parameter, *domain.start(), *domain.end())?;
+            if mirrored != parameter {
+                surface = surface.try_insert_knot_u(mirrored, options.multiplicity)?;
+            }
+        }
+    }
+    if let Some(parameter) = v {
+        let domain = surface.domain_v();
+        let degree = surface.degree_v();
+        validate_insert_knot_request(
+            parameter,
+            *domain.start(),
+            *domain.end(),
+            degree,
+            options.multiplicity,
+        )?;
+        surface = surface.try_insert_knot_v(parameter, options.multiplicity)?;
+        if options.symmetrical {
+            let mirrored = mirrored_parameter(parameter, *domain.start(), *domain.end())?;
+            if mirrored != parameter {
+                surface = surface.try_insert_knot_v(mirrored, options.multiplicity)?;
+            }
+        }
+    }
+    Ok(surface)
+}
+
+fn validate_insert_knot_request(
+    parameter: Real,
+    domain_start: Real,
+    domain_end: Real,
+    degree: usize,
+    multiplicity: usize,
+) -> Result<(), CommandError> {
+    if multiplicity == 0 || multiplicity > degree {
+        return Err(GeometryError::InvalidKnotMultiplicity {
+            actual: multiplicity,
+            maximum: degree,
+        }
+        .into());
+    }
+    if !parameter.is_finite() {
+        return Err(GeometryError::NonFinite {
+            context: "NURBS parameter",
+        }
+        .into());
+    }
+    if parameter < domain_start || parameter > domain_end {
+        return Err(GeometryError::ParameterOutOfDomain {
+            parameter,
+            domain_start,
+            domain_end,
+        }
+        .into());
+    }
+    if (parameter == domain_start || parameter == domain_end)
+        && multiplicity != 1
+        && multiplicity != degree
+    {
+        return Err(GeometryError::InvalidEndpointKnotMultiplicity {
+            actual: multiplicity,
+            degree,
+        }
+        .into());
+    }
+    Ok(())
+}
+
+fn mirrored_parameter(
+    parameter: Real,
+    domain_start: Real,
+    domain_end: Real,
+) -> Result<Real, GeometryError> {
+    let midpoint = domain_start / 2.0 + domain_end / 2.0;
+    let mirrored = if parameter <= midpoint {
+        domain_end - (parameter - domain_start)
+    } else {
+        domain_start + (domain_end - parameter)
+    };
+    if mirrored.is_finite() {
+        Ok(mirrored)
+    } else {
+        Err(GeometryError::NonFinite {
+            context: "symmetrical NURBS parameter",
+        })
+    }
 }
 
 struct SrfPtCommand;
@@ -16924,6 +17217,17 @@ pub enum CommandError {
     #[error("MakeUniform requires at least one selected curve or untrimmed NURBS surface")]
     NoMakeUniformObjects,
 
+    #[error(
+        "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
+    )]
+    InsertKnotRequiresOneObject { actual: usize },
+
+    #[error("InsertKnot on a curve requires one scalar parameter, not a u,v pair")]
+    InsertKnotCurveRequiresParameter,
+
+    #[error("InsertKnot Direction=Both on a surface requires a u,v parameter pair")]
+    InsertKnotBothDirectionsRequireUv,
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -17411,7 +17715,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeUniform, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeUniform, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -27038,6 +27342,281 @@ mod tests {
             );
             assert_eq!(document.undo_label(), history.as_deref(), "{command}");
         }
+    }
+
+    #[test]
+    fn insert_knot_refines_a_rational_curve_in_place_and_undoes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Knot source", ColorRgb::new(28, 84, 140))
+            .unwrap();
+        let source = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 0.75).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(2.0, 3.0, 1.0).unwrap(), 1.5).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(5.0, -1.0, 0.5).unwrap(), 0.6).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(8.0, 2.0, 0.0).unwrap(), 2.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.4, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source.clone()),
+                ObjectAttributes::on_layer(layer).with_name("rational knot source"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([source_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "InsertKnot 0.6 Multiplicity _2 Symmetrical _Yes",
+                )
+                .unwrap(),
+            "Inserted 3 knot value(s) into selected NURBS curve"
+        );
+        assert_eq!(document.objects().len(), 2);
+        let object = document.object(source_id).unwrap();
+        assert_eq!(object.attributes().layer_id(), layer);
+        assert_eq!(object.attributes().name(), Some("rational knot source"));
+        assert!(document.is_selected(source_id));
+        assert!(document.is_selected(point_id));
+        let Geometry::NurbsCurve(refined) = object.geometry() else {
+            panic!("InsertKnot must retain NURBS curve geometry")
+        };
+        assert_eq!(
+            refined.knots(),
+            &[0.0, 0.0, 0.0, 0.4, 0.4, 0.6, 0.6, 1.0, 1.0, 1.0]
+        );
+        assert_eq!(refined.control_points().len(), 7);
+        for parameter in [0.0, 0.13, 0.4, 0.6, 0.89, 1.0] {
+            assert!(
+                refined
+                    .evaluate(parameter)
+                    .unwrap()
+                    .is_near(source.evaluate(parameter).unwrap(), Tolerance::DEFAULT)
+            );
+        }
+        assert_eq!(document.undo_label(), Some("InsertKnot"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+    }
+
+    #[test]
+    fn insert_knot_refines_both_surface_directions_and_preserves_locus() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = rational_multi_span_surface();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(source.clone()))
+            .unwrap();
+        document
+            .select_objects([source_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "InsertKnot 0.5,12 Multiplicity=2 Direction _Both Symmetrical=Yes",
+                )
+                .unwrap(),
+            "Inserted 6 knot value(s) into selected NURBS surface"
+        );
+        let Geometry::NurbsSurface(refined) = document.object(source_id).unwrap().geometry() else {
+            panic!("InsertKnot must retain NURBS surface geometry")
+        };
+        assert_eq!(refined.control_point_count_u(), 8);
+        assert_eq!(refined.control_point_count_v(), 6);
+        assert_eq!(
+            refined
+                .knots_u()
+                .iter()
+                .filter(|knot| **knot == 0.5)
+                .count(),
+            2
+        );
+        assert_eq!(
+            refined
+                .knots_u()
+                .iter()
+                .filter(|knot| **knot == 1.5)
+                .count(),
+            2
+        );
+        assert_eq!(
+            refined
+                .knots_v()
+                .iter()
+                .filter(|knot| **knot == 12.0)
+                .count(),
+            2
+        );
+        for u in [0.0, 0.31, 0.5, 1.5, 1.87, 2.0] {
+            for v in [10.0, 10.9, 12.0, 13.4, 14.0] {
+                assert!(
+                    refined
+                        .evaluate(u, v)
+                        .unwrap()
+                        .is_near(source.evaluate(u, v).unwrap(), Tolerance::DEFAULT)
+                );
+            }
+        }
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source)
+        );
+    }
+
+    #[test]
+    fn insert_knot_accepts_scalar_surface_direction_and_analytic_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(rational_multi_span_surface()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "InsertKnot 11 Direction V")
+                .unwrap(),
+            "Inserted 1 knot value(s) into selected NURBS surface"
+        );
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("InsertKnot must retain NURBS surface geometry")
+        };
+        assert!(surface.knots_v().contains(&11.0));
+
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects([line_id], SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut document, "_InsertKnot 2").unwrap();
+        let Geometry::NurbsCurve(line) = document.object(line_id).unwrap().geometry() else {
+            panic!("InsertKnot must convert an analytic curve to NURBS")
+        };
+        assert_eq!(line.degree(), 1);
+        assert_eq!(line.knots(), &[0.0, 0.0, 2.0, 5.0, 5.0]);
+    }
+
+    #[test]
+    fn insert_knot_rejects_invalid_inputs_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = NurbsCurve::try_clamped_uniform(
+            3,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.0, -1.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        let second_curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(9.0, 9.0, 9.0).unwrap()))
+            .unwrap();
+
+        document
+            .select_objects([point_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "InsertKnot 0.5"),
+            Err(CommandError::InsertKnotRequiresOneObject { actual: 0 })
+        ));
+        document
+            .select_objects([curve_id, second_curve_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "InsertKnot 0.5"),
+            Err(CommandError::InsertKnotRequiresOneObject { actual: 2 })
+        ));
+
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "InsertKnot",
+            "InsertKnot 0.5,0.5",
+            "InsertKnot 0.5 Multiplicity=0",
+            "InsertKnot 0.5 Multiplicity=4",
+            "InsertKnot 0 Multiplicity=2",
+            "InsertKnot -1",
+            "InsertKnot 0.5 Direction=Other",
+            "InsertKnot 0.5 Direction=U Direction=V",
+            "InsertKnot 0.5 Symmetrical=Maybe",
+            "InsertKnot 0.5 Multiplicity=one",
+            "InsertKnot 0.5 Other=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(curve_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(source.clone()),
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(rational_multi_span_surface()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "InsertKnot 0.5"),
+            Err(CommandError::InsertKnotBothDirectionsRequireUv)
+        ));
+    }
+
+    #[test]
+    fn symmetrical_knot_parameter_handles_the_full_finite_range() {
+        assert_eq!(mirrored_parameter(0.0, -Real::MAX, Real::MAX).unwrap(), 0.0);
+        assert_eq!(
+            mirrored_parameter(-Real::MAX, -Real::MAX, Real::MAX).unwrap(),
+            Real::MAX
+        );
+        assert_eq!(
+            mirrored_parameter(Real::MAX, -Real::MAX, Real::MAX).unwrap(),
+            -Real::MAX
+        );
     }
 
     #[test]

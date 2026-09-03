@@ -55,6 +55,11 @@ pub enum GeometryError {
     #[error("NURBS knot multiplicity must be from 1 through {maximum}, got {actual}")]
     InvalidKnotMultiplicity { actual: usize, maximum: usize },
 
+    #[error(
+        "at a NURBS domain endpoint, knot multiplicity must be 1 or the direction degree {degree}, got {actual}"
+    )]
+    InvalidEndpointKnotMultiplicity { actual: usize, degree: usize },
+
     #[error("a NURBS curve split parameter must lie strictly inside its domain")]
     InvalidCurveSplitParameter,
 
