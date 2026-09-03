@@ -1,0 +1,67 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_split_geometry",
+      "id": "open-rational-between-knots",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-2, 1, 0], "weight": 0.75},
+          {"point": [0, 4, 1], "weight": 2},
+          {"point": [5, -2, -1], "weight": 0.5},
+          {"point": [8, 3, 2], "weight": 1.25}
+        ],
+        "knots": [-2, -1, 0, 0.8, 2, 3, 4]
+      },
+      "parameter": 0.25
+    },
+    {
+      "op": "curve_split_geometry",
+      "id": "open-rational-at-knot",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-2, 1, 0], "weight": 0.75},
+          {"point": [0, 4, 1], "weight": 2},
+          {"point": [5, -2, -1], "weight": 0.5},
+          {"point": [8, 3, 2], "weight": 1.25}
+        ],
+        "knots": [-2, -1, 0, 0.8, 2, 3, 4]
+      },
+      "parameter": 0.8
+    },
+    {
+      "op": "curve_split_geometry",
+      "id": "periodic-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 3.25
+    },
+    {
+      "op": "curve_split_geometry",
+      "id": "closed-rational",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-1, 0, 0], "weight": 0.75},
+          {"point": [2, -2, 0], "weight": 1.5},
+          {"point": [4, 2, 1], "weight": 0.6},
+          {"point": [0, 4, 0], "weight": 1.8},
+          {"point": [-1, 0, 0], "weight": 0.75}
+        ],
+        "knots": [0, 0, 0, 2, 5, 8, 8, 8]
+      },
+      "parameter": 6.5
+    }
+  ]
+}

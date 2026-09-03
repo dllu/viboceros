@@ -5825,6 +5825,34 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_split_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(operation["parameter"], "curve split parameter")
+
+        def split_curve():
+            pieces = source.Split(parameter)
+            if pieces is None or len(pieces) != 2:
+                if pieces is not None:
+                    for piece in pieces:
+                        piece.Dispose()
+                raise ValueError("Rhino curve split failed")
+            try:
+                definitions = []
+                for piece in pieces:
+                    definition = _nurbs_curve_definition(piece)
+                    definition["closed"] = bool(piece.IsClosed)
+                    definition["periodic"] = bool(piece.IsPeriodic)
+                    definitions.append(definition)
+                return definitions
+            finally:
+                for piece in pieces:
+                    piece.Dispose()
+
+        try:
+            return _measure(iterations, split_curve)
+        finally:
+            source.Dispose()
+
     if kind == "surface_change_seam_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

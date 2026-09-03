@@ -231,6 +231,7 @@ enum InteractiveCommand {
         start: Option<Point3>,
         copy: bool,
     },
+    SplitCurve,
     Move {
         start: Option<Point3>,
     },
@@ -333,6 +334,7 @@ impl InteractiveCommand {
             Self::CrvSeam => "CrvSeam",
             Self::SrfSeam { .. } => "SrfSeam",
             Self::SubCrv { .. } => "SubCrv",
+            Self::SplitCurve => "Split",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
@@ -583,6 +585,9 @@ impl InteractiveCommand {
             Self::SubCrv { start: Some(_), .. } => {
                 "SubCrv: pick the directed subcurve end on the selected curve (Esc to cancel)"
             }
+            Self::SplitCurve => {
+                "Split: pick one split location on the selected curve (Esc to cancel)"
+            }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -765,6 +770,7 @@ impl InteractiveCommand {
             | Self::CrvSeam
             | Self::SrfSeam { .. }
             | Self::SubCrv { start: None, .. }
+            | Self::SplitCurve
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -2299,6 +2305,7 @@ impl VibocerosApp {
                 "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
                 "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
                 "crvseam" => InteractiveCommand::CrvSeam,
+                "split" => InteractiveCommand::SplitCurve,
                 "move" | "m" => InteractiveCommand::Move { start: None },
                 "copy" => InteractiveCommand::Copy { start: None },
                 "scale" => InteractiveCommand::Scale {
@@ -2366,6 +2373,7 @@ impl VibocerosApp {
                 | InteractiveCommand::CrvSeam
                 | InteractiveCommand::SrfSeam { .. }
                 | InteractiveCommand::SubCrv { .. }
+                | InteractiveCommand::SplitCurve
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -3597,6 +3605,10 @@ impl VibocerosApp {
                     format_model_point(point),
                     if copy { "Yes" } else { "No" }
                 ));
+            }
+            InteractiveCommand::SplitCurve => {
+                self.active_command = None;
+                self.execute_command(&format!("Split {}", format_model_point(point)));
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -7188,6 +7200,48 @@ mod tests {
         assert!(!app.try_start_interactive_command("SubCrv Copy=Yes Copy=No"));
         app.document.clear_selection();
         assert!(app.try_start_interactive_command("SubCrv"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_split_uses_one_curve_location_pick() {
+        let mut app = test_app();
+        app.execute_command("Line 0,0 10,0");
+        let source_id = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source_id, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("Split"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::SplitCurve));
+        assert!(app.command_log.back().unwrap().contains("split location"));
+        app.accept_drafting_point(point(4.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().count(), 2);
+        assert_eq!(app.document.selected_object_count(), 2);
+        for object in app.document.objects() {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("interactive Split must create exact NURBS pieces")
+            };
+            let split = point(4.0, 0.0, 0.0);
+            assert!(
+                curve
+                    .evaluate(*curve.domain().start())
+                    .unwrap()
+                    .is_near(split, app.document.tolerance())
+                    || curve
+                        .evaluate(*curve.domain().end())
+                        .unwrap()
+                        .is_near(split, app.document.tolerance())
+            );
+        }
+        assert_eq!(app.document.undo_label(), Some("Split"));
+        assert!(!app.try_start_interactive_command("Split Parameter=0.5"));
+
+        app.document.clear_selection();
+        assert!(app.try_start_interactive_command("Split"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
     }

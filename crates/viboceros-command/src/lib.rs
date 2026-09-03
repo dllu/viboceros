@@ -416,6 +416,9 @@ impl CommandRegistry {
             .register(SubcurveCommand)
             .expect("unique built-in command");
         registry
+            .register(SplitCurveCommand)
+            .expect("unique built-in command");
+        registry
             .register(DirectionCommand)
             .expect("unique built-in command");
         registry
@@ -11538,6 +11541,83 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
     Ok(SubcurveOptions { location, copy })
 }
 
+const SPLIT_CURVE_USAGE: &str = "Split point | Split Parameter=value";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum CurveSplitLocation {
+    Parameter(Real),
+    Point(Point3),
+}
+
+struct SplitCurveCommand;
+
+impl Command for SplitCurveCommand {
+    fn name(&self) -> &'static str {
+        "Split"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let location = parse_curve_split_location(arguments)?;
+        let mut candidates = document
+            .selected_objects()
+            .filter_map(|object| {
+                object
+                    .geometry()
+                    .nurbs_curve_representation()
+                    .transpose()
+                    .map(|curve| curve.map(|curve| (object.id(), curve)))
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if candidates.len() != 1 {
+            return Err(CommandError::SplitRequiresOneCurve {
+                actual: candidates.len(),
+            });
+        }
+        let (id, curve) = candidates
+            .pop()
+            .expect("one curve split source was required");
+        let parameter = match location {
+            CurveSplitLocation::Parameter(parameter) => parameter,
+            CurveSplitLocation::Point(point) => {
+                curve.closest_parameter(point, document.tolerance())?
+            }
+        };
+        let (left, right) = curve.try_split(parameter)?;
+        document.replace_object_geometries([(id, Geometry::NurbsCurve(left))])?;
+        let right_ids = document
+            .copy_object_geometries_into_source_groups([(id, Geometry::NurbsCurve(right))])?;
+        let right_id = right_ids
+            .into_iter()
+            .next()
+            .expect("one split result copy was required");
+        document.select_objects_direct([id, right_id], SelectionMode::Replace)?;
+        Ok(format!(
+            "Split the selected curve into 2 exact NURBS pieces at parameter {parameter}"
+        ))
+    }
+}
+
+fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, CommandError> {
+    let Some(first) = arguments.first() else {
+        return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+    };
+    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
+    if option_name_eq(first_name, "Parameter") {
+        let (name, value, consumed) = orient_option(arguments, 0, SPLIT_CURVE_USAGE)?;
+        if !option_name_eq(name, "Parameter") || consumed != arguments.len() {
+            return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+        }
+        return Ok(CurveSplitLocation::Parameter(parse_finite_real(value)?));
+    }
+
+    let (point, consumed) = parse_point(arguments).map_err(|error| match error {
+        CommandError::Usage(_) => CommandError::Usage(SPLIT_CURVE_USAGE),
+        error => error,
+    })?;
+    require_consumed(arguments, consumed, SPLIT_CURVE_USAGE)?;
+    Ok(CurveSplitLocation::Point(point))
+}
+
 const DIRECTION_USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
 
@@ -18567,6 +18647,9 @@ pub enum CommandError {
     #[error("SubCrv requires exactly one selected curve, got {actual}")]
     SubcurveRequiresOneCurve { actual: usize },
 
+    #[error("Split currently requires exactly one selected curve, got {actual}")]
+    SplitRequiresOneCurve { actual: usize },
+
     #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
@@ -19151,7 +19234,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -23566,6 +23649,151 @@ mod tests {
             registry.execute(&mut document, "SubCrv Parameter=0.5,0.5"),
             Err(CommandError::Geometry(
                 GeometryError::InvalidCurveTrimInterval
+            ))
+        ));
+        assert_eq!(document.object(first).unwrap(), &before[0]);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn split_curve_preserves_attributes_groups_selection_and_undo() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New SplitCurves")
+            .unwrap();
+        registry
+            .execute(
+                &mut document,
+                "ControlPointCurve 3 0,0,0 2,3,1 5,-2,-1 8,1,2",
+            )
+            .unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName SplitSource")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group SplitResults")
+            .unwrap();
+        let source = document.object(source_id).unwrap().clone();
+        let curve = source
+            .geometry()
+            .nurbs_curve_representation()
+            .unwrap()
+            .unwrap();
+        let parameter = curve.parameter_at(0.4).unwrap();
+        let (expected_left, expected_right) = curve.try_split(parameter).unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, &format!("Split Parameter={parameter}"))
+                .unwrap(),
+            format!("Split the selected curve into 2 exact NURBS pieces at parameter {parameter}")
+        );
+        assert_eq!(document.objects().count(), 2);
+        let left = document.object(source_id).unwrap();
+        assert_eq!(left.geometry(), &Geometry::NurbsCurve(expected_left));
+        assert_eq!(left.attributes(), source.attributes());
+        let right = document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap();
+        let right_id = right.id();
+        assert_eq!(right.geometry(), &Geometry::NurbsCurve(expected_right));
+        assert_eq!(right.attributes(), source.attributes());
+        assert!(document.is_selected(source_id));
+        assert!(document.is_selected(right_id));
+        assert_eq!(
+            document
+                .group_by_name("SplitResults")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source_id, right_id])
+        );
+        assert_eq!(document.undo_label(), Some("Split"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 1);
+        assert_eq!(document.object(source_id).unwrap(), &source);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().count(), 2);
+    }
+
+    #[test]
+    fn split_curve_accepts_a_model_point_and_converts_analytic_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 0,0 5").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+
+        registry.execute(&mut document, "Split 0,5,0").unwrap();
+        assert_eq!(document.objects().count(), 2);
+        for object in document.objects() {
+            let Geometry::NurbsCurve(curve) = object.geometry() else {
+                panic!("Split must convert analytic curves to exact NURBS pieces")
+            };
+            assert!(
+                curve.evaluate(*curve.domain().end()).unwrap().is_near(
+                    Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+                    document.tolerance()
+                ) || curve.evaluate(*curve.domain().start()).unwrap().is_near(
+                    Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+                    document.tolerance()
+                )
+            );
+        }
+    }
+
+    #[test]
+    fn split_curve_rejects_invalid_or_ambiguous_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Split",
+            "Split Parameter",
+            "Split Parameter=0.5 extra",
+            "Split 1,2,3 extra",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(SPLIT_CURVE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "Split Parameter=0.5"),
+            Err(CommandError::SplitRequiresOneCurve { actual: 0 })
+        ));
+
+        registry.execute(&mut document, "Line 0,0 2,0").unwrap();
+        registry.execute(&mut document, "Line 0,1 2,1").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Split Parameter=0.5"),
+            Err(CommandError::SplitRequiresOneCurve { actual: 2 })
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let first = before[0].id();
+        document
+            .select_object(first, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Split Parameter=0"),
+            Err(CommandError::Geometry(
+                GeometryError::InvalidCurveSplitParameter
             ))
         ));
         assert_eq!(document.object(first).unwrap(), &before[0]);

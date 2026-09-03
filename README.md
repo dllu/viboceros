@@ -186,6 +186,7 @@ CloseCrv CloseWideGapsWithLine=No Tolerance=0.01
 CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
+Split 4,0,0
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -792,6 +793,13 @@ source and adds an attribute-preserving result to its groups. Lines, analytic
 curves, polylines, and NURBS curves are converted to exact rational NURBS form
 as needed; replacement preserves identity, attributes, groups, selection, and
 undo.
+`Split point` divides one selected curve into two exact NURBS pieces at the
+closest curve location; omit the point for a one-click viewport pick, or use
+`Split Parameter=value` for an exact parameter. Lines, analytic curves,
+polylines, and NURBS curves are supported. The first piece retains the source
+identity and both pieces retain its attributes and group membership, become
+selected, and participate in one undo step. This is the curve `Point` path;
+cutting-object and surface splitting remain future extensions.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input
@@ -1095,6 +1103,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_subcurve.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_split.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

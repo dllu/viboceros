@@ -568,6 +568,11 @@ pub enum Operation {
         start: f64,
         end: f64,
     },
+    CurveSplitGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        parameter: f64,
+    },
     CurveInsertControlPointGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1060,6 +1065,7 @@ impl Operation {
             | Self::CurveChangeSeamGeometry { id, .. }
             | Self::CurveReparameterizeGeometry { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
+            | Self::CurveSplitGeometry { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
@@ -2926,6 +2932,20 @@ fn execute(
                 source.try_subcurve(black_box(*start), black_box(*end))
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
+        Operation::CurveSplitGeometry {
+            curve, parameter, ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let ((left, right), elapsed) =
+                measure(iterations, || source.try_split(black_box(*parameter)))?;
+            (
+                json!([
+                    rebuilt_curve_definition_value(&left)?,
+                    rebuilt_curve_definition_value(&right)?,
+                ]),
+                elapsed,
+            )
         }
         Operation::CurveInsertControlPointGeometry {
             curve,
@@ -8669,6 +8689,37 @@ mod tests {
         assert_eq!(curve["periodic"], false);
         assert_eq!(curve["control_points"][0]["point"], json!([8.0, 0.0, 0.0]));
         assert_eq!(curve["control_points"][1]["point"], json!([2.0, 0.0, 0.0]));
+    }
+
+    #[test]
+    fn captures_curve_split_geometry() {
+        let response = run_request(&request(vec![Operation::CurveSplitGeometry {
+            id: "split-line".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: [[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 1.0, 1.0],
+                domain: None,
+            },
+            parameter: 0.3,
+        }]))
+        .unwrap();
+
+        let pieces = response.results[0].value.as_array().unwrap();
+        assert_eq!(pieces.len(), 2);
+        assert_eq!(pieces[0]["domain"], json!([0.0, 0.3]));
+        assert_eq!(pieces[1]["domain"], json!([0.3, 1.0]));
+        assert_eq!(
+            pieces[0]["control_points"][1]["point"],
+            json!([3.0, 0.0, 0.0])
+        );
+        assert_eq!(
+            pieces[1]["control_points"][0]["point"],
+            json!([3.0, 0.0, 0.0])
+        );
     }
 
     #[test]
