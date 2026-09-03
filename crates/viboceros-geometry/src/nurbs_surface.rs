@@ -1582,6 +1582,36 @@ impl NurbsSurface {
         })
     }
 
+    /// Inserts one control row in the requested parameter direction.
+    ///
+    /// U insertion adds one U-indexed control to every fixed-V control curve;
+    /// V insertion does the transpose. `Both` performs U and then V insertion
+    /// from the same source parameters. Each row follows
+    /// [`NurbsCurve::try_insert_control_point`], including unit-weight controls,
+    /// midpoint snapping, rational inputs, and periodic topology.
+    pub fn try_insert_control_point(
+        &self,
+        direction: SurfaceKnotDirection,
+        u_parameter: Real,
+        v_parameter: Real,
+        midpoint: bool,
+    ) -> Result<Self, GeometryError> {
+        match direction {
+            SurfaceKnotDirection::U => self.map_u_control_curves(|curve| {
+                curve.try_insert_control_point(u_parameter, midpoint)
+            }),
+            SurfaceKnotDirection::V => self.map_v_control_curves(|curve| {
+                curve.try_insert_control_point(v_parameter, midpoint)
+            }),
+            SurfaceKnotDirection::Both => {
+                self.map_u_control_curves(|curve| {
+                    curve.try_insert_control_point(u_parameter, midpoint)
+                })?
+                .map_v_control_curves(|curve| curve.try_insert_control_point(v_parameter, midpoint))
+            }
+        }
+    }
+
     /// Removes a complete control row in one parameter direction.
     ///
     /// Every orthogonal control curve uses [`NurbsCurve::try_remove_control_point`],
@@ -5926,6 +5956,103 @@ mod tests {
                 direction: "surface U direction"
             })
         );
+    }
+
+    #[test]
+    fn control_point_insertion_adds_complete_surface_rows() {
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    point(
+                        [0.0, 2.0, 5.0, 8.0, 11.0][u],
+                        [0.0, 3.0, 7.0, 10.0][v],
+                        (u * v) as Real,
+                    )
+                })
+            })
+            .collect();
+        let surface = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            4,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+
+        let inserted_u = surface
+            .try_insert_control_point(SurfaceKnotDirection::U, 3.0, 2.0, false)
+            .unwrap();
+        assert_eq!(
+            (
+                inserted_u.control_point_count_u(),
+                inserted_u.control_point_count_v()
+            ),
+            (6, 4)
+        );
+        assert_eq!(
+            inserted_u.knots_u(),
+            &[0.0, 0.0, 0.0, 2.0, 3.0, 5.0, 8.0, 8.0, 8.0]
+        );
+        assert_eq!(inserted_u.knots_v(), surface.knots_v());
+        for v in 0..4 {
+            let expected = surface.control_point(1, v).unwrap().point().to_array();
+            let right = surface.control_point(2, v).unwrap().point().to_array();
+            assert!(
+                inserted_u.control_point(2, v).unwrap().point().is_near(
+                    Point3::try_from(std::array::from_fn(|coordinate| {
+                        expected[coordinate].mul_add(0.2, right[coordinate] * 0.8)
+                    }))
+                    .unwrap(),
+                    Tolerance::DEFAULT,
+                )
+            );
+            assert_eq!(inserted_u.control_point(2, v).unwrap().weight(), 1.0);
+        }
+
+        let inserted_v = surface
+            .try_insert_control_point(SurfaceKnotDirection::V, 3.0, 2.0, true)
+            .unwrap();
+        assert_eq!(
+            (
+                inserted_v.control_point_count_u(),
+                inserted_v.control_point_count_v()
+            ),
+            (5, 5)
+        );
+        assert_eq!(inserted_v.knots_u(), surface.knots_u());
+        assert_eq!(
+            inserted_v.knots_v(),
+            &[-2.0, -2.0, -2.0, 1.0, 1.5, 6.0, 6.0, 6.0]
+        );
+        for u in 0..5 {
+            let lower = surface.control_point(u, 1).unwrap().point().to_array();
+            let upper = surface.control_point(u, 2).unwrap().point().to_array();
+            assert!(
+                inserted_v.control_point(u, 2).unwrap().point().is_near(
+                    Point3::try_from(std::array::from_fn(|coordinate| {
+                        lower[coordinate].mul_add(0.5, upper[coordinate] * 0.5)
+                    }))
+                    .unwrap(),
+                    Tolerance::DEFAULT,
+                )
+            );
+        }
+
+        let inserted_both = surface
+            .try_insert_control_point(SurfaceKnotDirection::Both, 3.0, 2.0, false)
+            .unwrap();
+        assert_eq!(
+            (
+                inserted_both.control_point_count_u(),
+                inserted_both.control_point_count_v()
+            ),
+            (6, 5)
+        );
+        assert!(inserted_both.knots_u().contains(&3.0));
+        assert!(inserted_both.knots_v().contains(&2.0));
     }
 
     #[test]

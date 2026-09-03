@@ -1,0 +1,150 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "cubic-picked-location",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]},
+          {"point": [15, -2, 1]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 5, 8, 8, 8, 8]
+      },
+      "parameter": 2.25
+    },
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "cubic-midpoint",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]},
+          {"point": [15, -2, 1]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 5, 8, 8, 8, 8]
+      },
+      "parameter": 2.25,
+      "midpoint": true
+    },
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "quadratic-exact-greville",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [8, 3, -1]},
+          {"point": [11, 1, 0]}, {"point": [14, 5, 2]},
+          {"point": [17, -2, 1]}, {"point": [20, 2, -2]}
+        ],
+        "knots": [0, 0, 0, 1, 2, 4, 7, 11, 14, 14, 14]
+      },
+      "parameter": 3
+    },
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "rational-quadratic-unit-new-weight",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-1, 0, 0], "weight": 0.7},
+          {"point": [2, 5, 1], "weight": 1.6},
+          {"point": [6, -2, 0], "weight": 0.8},
+          {"point": [9, 4, -1], "weight": 1.3},
+          {"point": [12, 0, 2], "weight": 0.9}
+        ],
+        "knots": [-2, -2, -2, 1, 1, 6, 6, 6]
+      },
+      "parameter": 2
+    },
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "periodic-cubic-interior",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 3.4
+    },
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "periodic-cubic-before-seam",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 4.5
+    },
+    {
+      "op": "curve_insert_control_point_geometry",
+      "id": "periodic-cubic-after-seam",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}, {"point": [0, 2, 0]},
+          {"point": [0, 0, 0]}, {"point": [2, 0, 0]},
+          {"point": [2, 2, 0]}
+        ],
+        "knots": [0, 0, 1, 2, 3, 4, 5, 6, 7, 8, 8]
+      },
+      "parameter": 5.5
+    },
+    {
+      "op": "surface_insert_control_point_geometry",
+      "id": "surface-u-axis",
+      "degree_u": 2,
+      "degree_v": 2,
+      "control_point_count_u": 5,
+      "control_point_count_v": 4,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 2]}, {"point": [5, 0, -1]}, {"point": [8, 0, 3]}, {"point": [11, 0, 0]},
+        {"point": [0, 3, 1]}, {"point": [2, 3, 5]}, {"point": [5, 3, 0]}, {"point": [8, 3, 4]}, {"point": [11, 3, 2]},
+        {"point": [0, 7, -1]}, {"point": [2, 7, 1]}, {"point": [5, 7, 4]}, {"point": [8, 7, -2]}, {"point": [11, 7, 3]},
+        {"point": [0, 10, 2]}, {"point": [2, 10, -1]}, {"point": [5, 10, 3]}, {"point": [8, 10, 1]}, {"point": [11, 10, 0]}
+      ],
+      "knots_u": [0, 0, 0, 2, 5, 8, 8, 8],
+      "knots_v": [-2, -2, -2, 1, 6, 6, 6],
+      "direction": "u",
+      "parameter": [3, 2]
+    },
+    {
+      "op": "surface_insert_control_point_geometry",
+      "id": "surface-v-axis-midpoint",
+      "degree_u": 2,
+      "degree_v": 2,
+      "control_point_count_u": 5,
+      "control_point_count_v": 4,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 2]}, {"point": [5, 0, -1]}, {"point": [8, 0, 3]}, {"point": [11, 0, 0]},
+        {"point": [0, 3, 1]}, {"point": [2, 3, 5]}, {"point": [5, 3, 0]}, {"point": [8, 3, 4]}, {"point": [11, 3, 2]},
+        {"point": [0, 7, -1]}, {"point": [2, 7, 1]}, {"point": [5, 7, 4]}, {"point": [8, 7, -2]}, {"point": [11, 7, 3]},
+        {"point": [0, 10, 2]}, {"point": [2, 10, -1]}, {"point": [5, 10, 3]}, {"point": [8, 10, 1]}, {"point": [11, 10, 0]}
+      ],
+      "knots_u": [0, 0, 0, 2, 5, 8, 8, 8],
+      "knots_v": [-2, -2, -2, 1, 6, 6, 6],
+      "direction": "v",
+      "parameter": [3, 2],
+      "midpoint": true
+    }
+  ]
+}

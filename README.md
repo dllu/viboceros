@@ -43,6 +43,7 @@ MakeUniform
 MakeUniformUV Direction=U
 MakePeriodic Smooth=Yes DeleteInput=Yes
 MakeNonPeriodic
+InsertControlPoint 5.2,1.1,0 Direction=U Midpoint=No
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 RemoveKnot 0.52,3.1 Direction=V
 RemoveControlPoint 3 Direction=U
@@ -300,6 +301,15 @@ support undo.
 the equivalent clamped form in place. It preserves the active domains,
 parameterization, shape, object identity, attributes, and selection; surfaces
 are clamped in every periodic direction.
+`InsertControlPoint point Direction=U|V|Both Midpoint=Yes|No` requires exactly
+one selected curve or untrimmed NURBS surface. The model-space point is
+projected to the object, then a unit-weight control is inserted between the
+bracketing control-point Greville parameters, matching Rhino and generally
+changing shape. `Midpoint=Yes` snaps the new control and knot to the middle of
+that interval; omit the point to pick it in a viewport. On surfaces, Direction
+names the row orientation as it does in Rhino (a U row adds a V-axis control);
+U is the default. Rational and periodic inputs, object identity, attributes,
+selection, and undo are preserved.
 `InsertKnot` requires exactly one selected curve or untrimmed NURBS surface and
 refines it in place without changing its parameterization or shape. Curves take
 one parameter; surfaces take `u,v`, with a scalar accepted when `Direction=U`
@@ -1019,6 +1029,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_insert_knot.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/insert_control_point.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/remove_knot.json \

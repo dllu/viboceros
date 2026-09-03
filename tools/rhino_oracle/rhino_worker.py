@@ -5729,6 +5729,151 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_insert_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        parameter = _finite(
+            operation["parameter"], "curve control-point insertion parameter"
+        )
+        midpoint = bool(operation.get("midpoint", False))
+        point = source.PointAt(parameter)
+        command = "_InsertControlPoint _Midpoint=_%s %s _Enter" % (
+            "Yes" if midpoint else "No",
+            _command_point(_xyz(point)),
+        )
+
+        def insert_curve_control_point():
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add InsertControlPoint source curve")
+                document.Objects.Select(object_id, True)
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino curve control-point insertion failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("InsertControlPoint removed the curve")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("InsertControlPoint returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, insert_curve_control_point)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_insert_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface control-point insertion axis must be u or v")
+        parameters = operation["parameter"]
+        if len(parameters) != 2:
+            raise ValueError("surface control-point insertion requires a u,v parameter")
+        parameter_u = _finite(parameters[0], "surface U insertion parameter")
+        parameter_v = _finite(parameters[1], "surface V insertion parameter")
+        midpoint = bool(operation.get("midpoint", False))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate InsertControlPoint source surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("InsertControlPoint source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+        point = source.PointAt(parameter_u, parameter_v)
+        # Rhino's option names the orientation of the inserted row. A U row
+        # therefore adds one control in the V parameter direction, and vice
+        # versa; the protocol names the parameter axis whose count increases.
+        command_direction = "V" if direction == "u" else "U"
+        command = "_InsertControlPoint _Direction=_%s _Midpoint=_%s %s _Enter" % (
+            command_direction,
+            "Yes" if midpoint else "No",
+            _command_point(_xyz(point)),
+        )
+
+        def insert_surface_control_point():
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add InsertControlPoint source surface")
+                document.Objects.Select(object_id, True)
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino surface control-point insertion failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("InsertControlPoint removed the surface")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError(
+                            "surface control-point insertion returned a polysurface"
+                        )
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("InsertControlPoint returned no NURBS surface")
+                expected_u = count_u + (1 if direction == "u" else 0)
+                expected_v = count_v + (1 if direction == "v" else 0)
+                if result.Points.CountU != expected_u or result.Points.CountV != expected_v:
+                    raise ValueError(
+                        "InsertControlPoint returned an unexpected surface control count"
+                    )
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    document.Objects.Delete(object_id, True)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+
+        try:
+            return _measure(iterations, insert_surface_control_point)
+        finally:
+            source.Dispose()
+
     if kind == "curve_remove_control_point_geometry":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])

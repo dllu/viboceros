@@ -1424,6 +1424,97 @@ impl NurbsCurve {
         self.try_remove_selected_knot(parameter, knot_index)
     }
 
+    /// Inserts one Rhino-style control point at a curve parameter.
+    ///
+    /// The parameter is bracketed by the source control points' Greville
+    /// abscissae. The new unit-weight control is their Euclidean interpolation,
+    /// and the same parameter is inserted into the knot vector. `midpoint`
+    /// snaps both interpolations to the middle of that Greville interval.
+    /// Periodic curves retain their unique cyclic controls and use Rhino's
+    /// normalized unit-spaced periodic knots.
+    pub fn try_insert_control_point(
+        &self,
+        parameter: Real,
+        midpoint: bool,
+    ) -> Result<Self, GeometryError> {
+        self.validate_parameter(parameter)?;
+        let (lower, upper, insertion_parameter) =
+            self.control_point_insertion_interval(parameter, midpoint)?;
+        let lower_control = self.control_points[lower];
+        let upper_control = self.control_points[upper];
+        let lower_parameter = self.control_greville_parameter(lower)?;
+        let upper_parameter = self.control_greville_parameter(upper)?;
+        let alpha = interval_fraction(insertion_parameter, lower_parameter, upper_parameter)?;
+        let point = Point3::try_from(blend_homogeneous(
+            lower_control.point.to_array(),
+            upper_control.point.to_array(),
+            alpha,
+        )?)?;
+        let control = WeightedPoint3::try_new(point, 1.0)?;
+
+        if self.is_periodic() {
+            let unique_count = self.control_points.len() - self.degree;
+            let insertion_index = if upper <= unique_count {
+                upper
+            } else {
+                upper % unique_count
+            };
+            let mut unique_controls = self.control_points[..unique_count].to_vec();
+            unique_controls.insert(insertion_index, control);
+            return Self::try_unit_periodic_from_unique_controls(self.degree, unique_controls);
+        }
+
+        let mut controls = self.control_points.clone();
+        controls.insert(upper, control);
+        let mut knots = self.knots.clone();
+        let knot_index = knots.partition_point(|knot| *knot <= insertion_parameter);
+        knots.insert(knot_index, insertion_parameter);
+        Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    fn control_point_insertion_interval(
+        &self,
+        parameter: Real,
+        midpoint: bool,
+    ) -> Result<(usize, usize, Real), GeometryError> {
+        let control_count = self.control_points.len();
+        let mut greville_parameters = Vec::new();
+        greville_parameters
+            .try_reserve_exact(control_count)
+            .map_err(|_| GeometryError::InvalidControlNet {
+                context: "control-point insertion parameters exceed addressable memory",
+            })?;
+        for control in 0..control_count {
+            greville_parameters.push(self.control_greville_parameter(control)?);
+        }
+
+        let partition = greville_parameters.partition_point(|candidate| *candidate < parameter);
+        let upper = partition.clamp(1, control_count - 1);
+        let lower = upper - 1;
+        let lower_parameter = greville_parameters[lower];
+        let upper_parameter = greville_parameters[upper];
+        if lower_parameter >= upper_parameter
+            || (!midpoint
+                && (parameter < lower_parameter
+                    || parameter > upper_parameter
+                    || (!self.is_periodic()
+                        && (parameter == *self.domain().start()
+                            || parameter == *self.domain().end()))))
+        {
+            return Err(GeometryError::NoControlPointInsertionInterval { parameter });
+        }
+        let insertion_parameter = if midpoint {
+            stable_knot_mean(&[lower_parameter, upper_parameter])?
+        } else {
+            parameter
+        };
+        Ok((lower, upper, insertion_parameter))
+    }
+
+    fn control_greville_parameter(&self, control: usize) -> Result<Real, GeometryError> {
+        stable_knot_mean(&self.knots[control + 1..control + self.degree + 1])
+    }
+
     /// Removes one Rhino control-point grip and updates the curve structure.
     ///
     /// Open curves retain their remaining control locations and interior
@@ -1529,12 +1620,12 @@ impl NurbsCurve {
                 .len()
                 .checked_add(degree)
                 .ok_or(GeometryError::InvalidControlNet {
-                    context: "removed periodic control-point count overflowed usize",
+                    context: "periodic control-point edit count overflowed usize",
                 })?;
         let mut controls = Vec::new();
         controls.try_reserve_exact(control_count).map_err(|_| {
             GeometryError::InvalidControlNet {
-                context: "removed periodic controls exceed addressable memory",
+                context: "periodic control-point edit exceeds addressable memory",
             }
         })?;
         controls.extend_from_slice(&unique_controls);
@@ -1543,7 +1634,7 @@ impl NurbsCurve {
             .checked_add(degree)
             .and_then(|count| count.checked_add(1))
             .ok_or(GeometryError::InvalidKnotVector {
-                context: "removed periodic knot count overflowed usize",
+                context: "periodic control-point edit knot count overflowed usize",
             })?;
         let knots = (0..knot_count)
             .map(|knot| knot as Real - degree as Real)
@@ -4345,6 +4436,185 @@ mod tests {
             fully_refined.try_insert_knot(0.52, 2).unwrap(),
             fully_refined
         );
+    }
+
+    #[test]
+    fn control_point_insertion_matches_rhino_greville_rules() {
+        let controls = [
+            [0.0, 0.0, 0.0],
+            [2.0, 4.0, 1.0],
+            [5.0, -1.0, 2.0],
+            [7.0, 3.0, -1.0],
+            [9.0, 1.0, 0.0],
+            [12.0, 5.0, 2.0],
+            [15.0, -2.0, 1.0],
+        ]
+        .into_iter()
+        .map(|point| Point3::try_from(point).unwrap())
+        .collect::<Vec<_>>();
+        let cubic = NurbsCurve::try_new(
+            3,
+            controls.clone(),
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+
+        let inserted = cubic.try_insert_control_point(2.25, false).unwrap();
+        assert_eq!(inserted.degree(), 3);
+        assert_eq!(
+            inserted.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 1.0, 2.25, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0,]
+        );
+        assert_point_near(
+            inserted.control_points()[3].point(),
+            Point3::try_new(6.1, 1.2, 0.35).unwrap(),
+        );
+        assert_eq!(inserted.control_points()[3].weight(), 1.0);
+        assert_eq!(inserted.control_points()[4].point(), controls[3]);
+
+        let midpoint = cubic.try_insert_control_point(2.25, true).unwrap();
+        assert_eq!(
+            midpoint.knots(),
+            &[
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                1.0,
+                13.0 / 6.0,
+                3.0,
+                5.0,
+                8.0,
+                8.0,
+                8.0,
+                8.0,
+            ]
+        );
+        assert_point_near(
+            midpoint.control_points()[3].point(),
+            Point3::try_new(6.0, 1.0, 0.5).unwrap(),
+        );
+
+        assert!(matches!(
+            cubic.try_insert_control_point(0.0, false),
+            Err(GeometryError::NoControlPointInsertionInterval { .. })
+        ));
+        let extended = cubic.try_insert_control_point(0.0, true).unwrap();
+        assert_eq!(extended.knots()[4], 1.0 / 6.0);
+        assert_point_near(
+            extended.control_points()[1].point(),
+            Point3::try_new(1.0, 2.0, 0.5).unwrap(),
+        );
+
+        let quadratic = NurbsCurve::try_new(
+            2,
+            [
+                [0.0, 0.0, 0.0],
+                [2.0, 4.0, 1.0],
+                [5.0, -1.0, 2.0],
+                [8.0, 3.0, -1.0],
+                [11.0, 1.0, 0.0],
+                [14.0, 5.0, 2.0],
+                [17.0, -2.0, 1.0],
+                [20.0, 2.0, -2.0],
+            ]
+            .into_iter()
+            .map(|point| Point3::try_from(point).unwrap())
+            .collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 4.0, 7.0, 11.0, 14.0, 14.0, 14.0],
+        )
+        .unwrap();
+        let inserted = quadratic.try_insert_control_point(3.0, false).unwrap();
+        assert_eq!(
+            inserted.control_points()[3].point(),
+            quadratic.control_points()[3].point()
+        );
+        assert_eq!(
+            inserted.control_points()[4].point(),
+            quadratic.control_points()[3].point()
+        );
+        assert_eq!(
+            inserted.knots(),
+            &[
+                0.0, 0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 7.0, 11.0, 14.0, 14.0, 14.0,
+            ]
+        );
+        let midpoint = quadratic.try_insert_control_point(3.0, true).unwrap();
+        assert_eq!(midpoint.knots()[5], 2.25);
+        assert_point_near(
+            midpoint.control_points()[3].point(),
+            Point3::try_new(6.5, 1.0, 0.5).unwrap(),
+        );
+    }
+
+    #[test]
+    fn control_point_insertion_handles_rational_and_periodic_curves() {
+        let rational = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([-1.0, 0.0, 0.0], 0.7),
+                ([2.0, 5.0, 1.0], 1.6),
+                ([6.0, -2.0, 0.0], 0.8),
+                ([9.0, 4.0, -1.0], 1.3),
+                ([12.0, 0.0, 2.0], 0.9),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![-2.0, -2.0, -2.0, 1.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap()
+        .try_insert_control_point(2.0, false)
+        .unwrap();
+        assert_eq!(
+            rational.knots(),
+            &[-2.0, -2.0, -2.0, 1.0, 1.0, 2.0, 6.0, 6.0, 6.0]
+        );
+        assert_point_near(
+            rational.control_points()[3].point(),
+            Point3::try_new(7.2, 0.4, -0.4).unwrap(),
+        );
+        assert_eq!(rational.control_points()[3].weight(), 1.0);
+        assert_eq!(
+            rational
+                .control_points()
+                .iter()
+                .map(|control| control.weight())
+                .collect::<Vec<_>>(),
+            vec![0.7, 1.6, 0.8, 1.0, 1.3, 0.9]
+        );
+
+        let unique = [
+            point(0.0, 0.0),
+            point(2.0, 0.0),
+            point(2.0, 2.0),
+            point(0.0, 2.0),
+        ];
+        let periodic = NurbsCurve::try_new(
+            3,
+            unique.iter().chain(&unique[..3]).copied().collect(),
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+        )
+        .unwrap()
+        .try_insert_control_point(3.4, false)
+        .unwrap();
+        assert!(periodic.is_periodic());
+        assert_eq!(
+            periodic.knots(),
+            &[
+                -2.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 7.0,
+            ]
+        );
+        let expected_unique = [unique[0], unique[1], unique[2], point(1.2, 2.0), unique[3]];
+        for (actual, expected) in periodic
+            .control_points()
+            .iter()
+            .zip(expected_unique.iter().chain(&expected_unique[..3]))
+        {
+            assert_point_near(actual.point(), *expected);
+        }
     }
 
     #[test]

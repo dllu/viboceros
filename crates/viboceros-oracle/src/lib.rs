@@ -552,6 +552,13 @@ pub enum Operation {
         #[serde(default = "default_true")]
         smooth: bool,
     },
+    CurveInsertControlPointGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        parameter: f64,
+        #[serde(default)]
+        midpoint: bool,
+    },
     CurveInsertKnotGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -617,6 +624,20 @@ pub enum Operation {
         direction: SurfaceUniformDirection,
         #[serde(default = "default_true")]
         smooth: bool,
+    },
+    SurfaceInsertControlPointGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceKnotAxis,
+        parameter: [f64; 2],
+        #[serde(default)]
+        midpoint: bool,
     },
     SurfaceInsertKnotGeometry {
         id: String,
@@ -977,6 +998,7 @@ impl Operation {
             | Self::CurveMakeUniformGeometry { id, .. }
             | Self::CurveChangeDegreeGeometry { id, .. }
             | Self::CurveMakePeriodicGeometry { id, .. }
+            | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
             | Self::CurveRemoveControlPointGeometry { id, .. }
@@ -985,6 +1007,7 @@ impl Operation {
             | Self::SurfaceMakeUniformGeometry { id, .. }
             | Self::SurfaceChangeDegreeGeometry { id, .. }
             | Self::SurfaceMakePeriodicGeometry { id, .. }
+            | Self::SurfaceInsertControlPointGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
             | Self::SurfaceRemoveControlPointGeometry { id, .. }
@@ -2810,6 +2833,18 @@ fn execute(
                 measure(iterations, || source.try_make_periodic(black_box(*smooth)))?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveInsertControlPointGeometry {
+            curve,
+            parameter,
+            midpoint,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_insert_control_point(black_box(*parameter), black_box(*midpoint))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveInsertKnotGeometry {
             curve,
             parameter,
@@ -2941,6 +2976,38 @@ fn execute(
             )?;
             let (surface, elapsed) = measure(iterations, || {
                 source.try_make_periodic(black_box(direction.geometry()), black_box(*smooth))
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceInsertControlPointGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            parameter,
+            midpoint,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_insert_control_point(
+                    black_box(direction.geometry()),
+                    black_box(parameter[0]),
+                    black_box(parameter[1]),
+                    black_box(*midpoint),
+                )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8495,6 +8562,80 @@ mod tests {
             surface["knots_v"],
             json!([-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0])
         );
+    }
+
+    #[test]
+    fn captures_curve_and_surface_control_point_insertion() {
+        let curve = NurbsCurveDefinition {
+            degree: 2,
+            control_points: [
+                ([-1.0, 0.0, 0.0], 0.7),
+                ([2.0, 5.0, 1.0], 1.6),
+                ([6.0, -2.0, 0.0], 0.8),
+                ([9.0, 4.0, -1.0], 1.3),
+                ([12.0, 0.0, 2.0], 0.9),
+            ]
+            .into_iter()
+            .map(|(point, weight)| ControlPoint { point, weight })
+            .collect(),
+            knots: vec![-2.0, -2.0, -2.0, 1.0, 1.0, 6.0, 6.0, 6.0],
+            domain: None,
+        };
+        let surface_controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| ControlPoint {
+                    point: [u as f64 * 2.0, v as f64 * 3.0, (u * v) as f64 * 0.2],
+                    weight: 1.0,
+                })
+            })
+            .collect();
+        let response = run_request(&request(vec![
+            Operation::CurveInsertControlPointGeometry {
+                id: "insert-rational-control".to_owned(),
+                curve,
+                parameter: 2.0,
+                midpoint: false,
+            },
+            Operation::SurfaceInsertControlPointGeometry {
+                id: "insert-surface-u-control-row".to_owned(),
+                degree_u: 2,
+                degree_v: 2,
+                control_point_count_u: 5,
+                control_point_count_v: 4,
+                control_points: surface_controls,
+                knots_u: vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+                knots_v: vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+                direction: SurfaceKnotAxis::U,
+                parameter: [3.0, 2.0],
+                midpoint: false,
+            },
+        ]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 2);
+        assert_eq!(curve["domain"], json!([-2.0, 6.0]));
+        assert_eq!(
+            curve["knots"],
+            json!([-2.0, -2.0, -2.0, 1.0, 1.0, 2.0, 6.0, 6.0, 6.0])
+        );
+        assert_eq!(
+            curve["control_points"][3],
+            json!({"point": [7.2, 0.40000000000000013, -0.4], "weight": 1.0})
+        );
+
+        let surface = &response.results[1].value;
+        assert_eq!(surface["degree"], json!([2, 2]));
+        assert_eq!(surface["control_count"], json!([6, 4]));
+        assert_eq!(
+            surface["knots_u"],
+            json!([0.0, 0.0, 0.0, 2.0, 3.0, 5.0, 8.0, 8.0, 8.0])
+        );
+        assert_eq!(
+            surface["knots_v"],
+            json!([-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0])
+        );
+        assert_eq!(surface["control_points"].as_array().unwrap().len(), 24);
     }
 
     #[test]

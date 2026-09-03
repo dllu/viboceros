@@ -111,6 +111,9 @@ pub enum GeometryError {
         control_point_count: usize,
     },
 
+    #[error("no valid control-point insertion interval contains parameter {parameter}")]
+    NoControlPointInsertionInterval { parameter: f64 },
+
     #[error("B-rep trim/isocurve intersection did not converge")]
     TrimIntersectionDidNotConverge,
 

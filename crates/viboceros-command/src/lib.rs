@@ -130,6 +130,9 @@ impl CommandRegistry {
             .register(MakeNonPeriodicCommand)
             .expect("unique built-in command");
         registry
+            .register(InsertControlPointCommand)
+            .expect("unique built-in command");
+        registry
             .register(InsertKnotCommand)
             .expect("unique built-in command");
         registry
@@ -2316,6 +2319,129 @@ impl Command for MakeNonPeriodicCommand {
             "Made {object_count} object(s) non-periodic without changing their shape ({curve_count} curve(s), {surface_count} NURBS surface(s))"
         ))
     }
+}
+
+const INSERT_CONTROL_POINT_USAGE: &str =
+    "InsertControlPoint point [Direction=U|V|Both] [Midpoint=Yes|No]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct InsertControlPointOptions {
+    point: Point3,
+    row_direction: SurfaceKnotDirection,
+    midpoint: bool,
+}
+
+struct InsertControlPointCommand;
+
+impl Command for InsertControlPointCommand {
+    fn name(&self) -> &'static str {
+        "InsertControlPoint"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_insert_control_point_options(arguments)?;
+        let tolerance = document.tolerance();
+        let mut candidates = Vec::new();
+        for object in document.selected_objects() {
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface.clone()),
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    Geometry::NurbsCurve(curve)
+                }
+            };
+            candidates.push((object.id(), geometry));
+        }
+        if candidates.len() != 1 {
+            return Err(CommandError::InsertControlPointRequiresOneObject {
+                actual: candidates.len(),
+            });
+        }
+
+        let (id, geometry) = candidates.pop().expect("one candidate was required");
+        let (geometry, description) = match geometry {
+            Geometry::NurbsCurve(curve) => {
+                let parameter = curve.closest_parameter(options.point, tolerance)?;
+                (
+                    Geometry::NurbsCurve(
+                        curve.try_insert_control_point(parameter, options.midpoint)?,
+                    ),
+                    "one control point into the selected NURBS curve".to_owned(),
+                )
+            }
+            Geometry::NurbsSurface(surface) => {
+                let (u, v) = surface.closest_parameters(options.point, tolerance)?;
+                // Rhino names the orientation of the inserted row: a U row
+                // varies in U, so its new control index lies on the V axis.
+                let parameter_direction = match options.row_direction {
+                    SurfaceKnotDirection::U => SurfaceKnotDirection::V,
+                    SurfaceKnotDirection::V => SurfaceKnotDirection::U,
+                    SurfaceKnotDirection::Both => SurfaceKnotDirection::Both,
+                };
+                let surface = surface.try_insert_control_point(
+                    parameter_direction,
+                    u,
+                    v,
+                    options.midpoint,
+                )?;
+                let row = match options.row_direction {
+                    SurfaceKnotDirection::U => "one U control row",
+                    SurfaceKnotDirection::V => "one V control row",
+                    SurfaceKnotDirection::Both => "one U and one V control row",
+                };
+                (
+                    Geometry::NurbsSurface(surface),
+                    format!("{row} into the selected NURBS surface"),
+                )
+            }
+            _ => unreachable!("InsertControlPoint candidates are converted to NURBS geometry"),
+        };
+
+        document.replace_object_geometries([(id, geometry)])?;
+        Ok(format!("Inserted {description}"))
+    }
+}
+
+fn parse_insert_control_point_options(
+    arguments: &[&str],
+) -> Result<InsertControlPointOptions, CommandError> {
+    let (point, mut index) = parse_point(arguments).map_err(|error| match error {
+        CommandError::Usage(_) => CommandError::Usage(INSERT_CONTROL_POINT_USAGE),
+        error => error,
+    })?;
+    let mut options = InsertControlPointOptions {
+        point,
+        row_direction: SurfaceKnotDirection::U,
+        midpoint: false,
+    };
+    let mut direction_seen = false;
+    let mut midpoint_seen = false;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, INSERT_CONTROL_POINT_USAGE)?;
+        if option_name_eq(name, "Direction") && !direction_seen {
+            let value = value.trim_start_matches(['_', '-']);
+            options.row_direction = if value.eq_ignore_ascii_case("U") {
+                SurfaceKnotDirection::U
+            } else if value.eq_ignore_ascii_case("V") {
+                SurfaceKnotDirection::V
+            } else if value.eq_ignore_ascii_case("Both") {
+                SurfaceKnotDirection::Both
+            } else {
+                return Err(CommandError::Usage(INSERT_CONTROL_POINT_USAGE));
+            };
+            direction_seen = true;
+        } else if option_name_eq(name, "Midpoint") && !midpoint_seen {
+            options.midpoint =
+                parse_yes_no(value).ok_or(CommandError::Usage(INSERT_CONTROL_POINT_USAGE))?;
+            midpoint_seen = true;
+        } else {
+            return Err(CommandError::Usage(INSERT_CONTROL_POINT_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(options)
 }
 
 const INSERT_KNOT_USAGE: &str =
@@ -17857,6 +17983,11 @@ pub enum CommandError {
     NoPeriodicObjects,
 
     #[error(
+        "InsertControlPoint requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
+    )]
+    InsertControlPointRequiresOneObject { actual: usize },
+
+    #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
     InsertKnotRequiresOneObject { actual: usize },
@@ -18437,7 +18568,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -28619,6 +28750,312 @@ mod tests {
             &Geometry::NurbsCurve(source)
         );
         assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn insert_control_point_updates_a_rational_curve_in_place_and_undoes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Control insertion", ColorRgb::new(31, 89, 147))
+            .unwrap();
+        let source = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([-1.0, 0.0, 0.0], 0.7),
+                ([2.0, 5.0, 1.0], 1.6),
+                ([6.0, -2.0, 0.0], 0.8),
+                ([9.0, 4.0, -1.0], 1.3),
+                ([12.0, 0.0, 2.0], 0.9),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![-2.0, -2.0, -2.0, 1.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let source_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source.clone()),
+                ObjectAttributes::on_layer(layer).with_name("rational control source"),
+            )
+            .unwrap();
+        let unrelated_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([source_id, unrelated_id], SelectionMode::Replace)
+            .unwrap();
+        let pick = source.evaluate(2.0).unwrap();
+        let coordinates = pick.to_array();
+        let command = format!(
+            "InsertControlPoint {:.17},{:.17},{:.17}",
+            coordinates[0], coordinates[1], coordinates[2]
+        );
+        let parameter = source
+            .closest_parameter(pick, document.tolerance())
+            .unwrap();
+        let expected = source.try_insert_control_point(parameter, false).unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, &command).unwrap(),
+            "Inserted one control point into the selected NURBS curve"
+        );
+        assert_eq!(document.objects().len(), 2);
+        let object = document.object(source_id).unwrap();
+        assert_eq!(object.attributes().layer_id(), layer);
+        assert_eq!(object.attributes().name(), Some("rational control source"));
+        assert!(document.is_selected(source_id));
+        assert!(document.is_selected(unrelated_id));
+        let Geometry::NurbsCurve(inserted) = object.geometry() else {
+            panic!("InsertControlPoint must retain NURBS curve geometry")
+        };
+        assert_eq!(inserted, &expected);
+        assert_eq!(inserted.control_points()[3].weight(), 1.0);
+        assert_eq!(document.undo_label(), Some("InsertControlPoint"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+    }
+
+    #[test]
+    fn insert_control_point_maps_rhino_surface_row_directions_and_midpoints() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    Point3::try_new(
+                        [0.0, 2.0, 5.0, 8.0, 11.0][u],
+                        [0.0, 3.0, 7.0, 10.0][v],
+                        (u * v) as Real,
+                    )
+                    .unwrap()
+                })
+            })
+            .collect();
+        let source = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            4,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(source.clone()))
+            .unwrap();
+        document
+            .select_objects([source_id], SelectionMode::Replace)
+            .unwrap();
+        let pick = source.evaluate(3.0, 2.0).unwrap();
+        let coordinates = pick.to_array();
+        let point = format!(
+            "{:.17},{:.17},{:.17}",
+            coordinates[0], coordinates[1], coordinates[2]
+        );
+        let (u, v) = source
+            .closest_parameters(pick, document.tolerance())
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("InsertControlPoint {point} Direction _U"),
+                )
+                .unwrap(),
+            "Inserted one U control row into the selected NURBS surface"
+        );
+        let Geometry::NurbsSurface(inserted_u_row) = document.object(source_id).unwrap().geometry()
+        else {
+            panic!("InsertControlPoint must retain NURBS surface geometry")
+        };
+        assert_eq!(inserted_u_row.control_point_count_u(), 5);
+        assert_eq!(inserted_u_row.control_point_count_v(), 5);
+        assert_eq!(
+            inserted_u_row,
+            &source
+                .try_insert_control_point(SurfaceKnotDirection::V, u, v, false)
+                .unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    &format!("_InsertControlPoint {point} Direction=Both Midpoint=_Yes"),
+                )
+                .unwrap(),
+            "Inserted one U and one V control row into the selected NURBS surface"
+        );
+        let Geometry::NurbsSurface(inserted_both) = document.object(source_id).unwrap().geometry()
+        else {
+            panic!("InsertControlPoint must retain NURBS surface geometry")
+        };
+        assert_eq!(
+            (
+                inserted_both.control_point_count_u(),
+                inserted_both.control_point_count_v()
+            ),
+            (6, 5)
+        );
+        assert_eq!(
+            inserted_both,
+            &source
+                .try_insert_control_point(SurfaceKnotDirection::Both, u, v, true)
+                .unwrap()
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source)
+        );
+    }
+
+    #[test]
+    fn insert_control_point_supports_periodic_and_analytic_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let periodic = periodic_cubic_curve();
+        let periodic_id = document
+            .add_geometry(Geometry::NurbsCurve(periodic.clone()))
+            .unwrap();
+        document
+            .select_objects([periodic_id], SelectionMode::Replace)
+            .unwrap();
+        let pick = periodic.evaluate(3.4).unwrap().to_array();
+        registry
+            .execute(
+                &mut document,
+                &format!(
+                    "InsertControlPoint {:.17},{:.17},{:.17}",
+                    pick[0], pick[1], pick[2]
+                ),
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(inserted) = document.object(periodic_id).unwrap().geometry()
+        else {
+            panic!("InsertControlPoint must retain periodic NURBS geometry")
+        };
+        assert!(inserted.is_periodic());
+        assert_eq!(inserted.control_points().len(), 8);
+
+        let line_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects([line_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "InsertControlPoint 2.5,0,0")
+            .unwrap();
+        let Geometry::NurbsCurve(line) = document.object(line_id).unwrap().geometry() else {
+            panic!("InsertControlPoint must convert an analytic line to NURBS")
+        };
+        assert_eq!(line.degree(), 1);
+        assert_eq!(line.control_points().len(), 3);
+        assert_eq!(line.knots(), &[0.0, 0.0, 2.5, 5.0, 5.0]);
+    }
+
+    #[test]
+    fn insert_control_point_rejects_invalid_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(5.0, -1.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.4, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let first_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        let second_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+
+        assert!(matches!(
+            registry.execute(&mut document, "InsertControlPoint 1,1,0"),
+            Err(CommandError::InsertControlPointRequiresOneObject { actual: 0 })
+        ));
+        document
+            .select_objects([first_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "InsertControlPoint 1,1,0"),
+            Err(CommandError::InsertControlPointRequiresOneObject { actual: 2 })
+        ));
+
+        document
+            .select_objects([first_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "InsertControlPoint",
+            "InsertControlPoint 0,0,0,0",
+            "InsertControlPoint NaN,0,0",
+            "InsertControlPoint 1,1,0 Direction=Other",
+            "InsertControlPoint 1,1,0 Direction=U Direction=V",
+            "InsertControlPoint 1,1,0 Midpoint=Maybe",
+            "InsertControlPoint 1,1,0 Midpoint=No Midpoint=Yes",
+            "InsertControlPoint 1,1,0 Extra=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(first_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(source.clone()),
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+
+        assert!(matches!(
+            registry.execute(&mut document, "InsertControlPoint 0,0,0"),
+            Err(CommandError::Geometry(
+                GeometryError::NoControlPointInsertionInterval { .. }
+            ))
+        ));
+        assert_eq!(
+            document.object(first_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source.clone())
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry
+            .execute(
+                &mut document,
+                "InsertControlPoint 0 0 0 Direction _V Midpoint _Yes",
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(inserted) = document.object(first_id).unwrap().geometry() else {
+            panic!("InsertControlPoint midpoint should edit the NURBS curve")
+        };
+        assert_eq!(inserted.control_points().len(), 5);
     }
 
     #[test]
