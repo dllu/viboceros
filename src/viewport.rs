@@ -3,7 +3,7 @@ use std::collections::HashMap;
 use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
 };
-use nalgebra::Vector3 as NaVector3;
+use nalgebra::{Matrix4 as NaMatrix4, Vector3 as NaVector3};
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, nearest_object_snap_projected,
@@ -12,6 +12,12 @@ use viboceros_drafting::{
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real,
     Tolerance, TriangleMesh,
+};
+
+use crate::viewport_gpu::{
+    LineInstance as GpuLineInstance, PointInstance as GpuPointInstance,
+    TriangleVertex as GpuTriangleVertex, ViewUniform as GpuViewUniform,
+    ViewportScene as GpuViewportScene,
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
@@ -117,6 +123,62 @@ struct SurfaceDisplayStyle {
     wire_density: i32,
 }
 
+#[derive(Clone, Copy)]
+struct DepthTriangle {
+    depth: Real,
+    vertices: [GpuTriangleVertex; 3],
+}
+
+struct GpuSceneBuilder {
+    triangles: Vec<DepthTriangle>,
+    lines: Vec<GpuLineInstance>,
+    points: Vec<GpuPointInstance>,
+    min_depth: Real,
+    max_depth: Real,
+}
+
+impl GpuSceneBuilder {
+    fn new() -> Self {
+        Self {
+            triangles: Vec::new(),
+            lines: Vec::new(),
+            points: Vec::new(),
+            min_depth: Real::INFINITY,
+            max_depth: Real::NEG_INFINITY,
+        }
+    }
+
+    fn include_depth(&mut self, depth: Real) {
+        if depth.is_finite() {
+            self.min_depth = self.min_depth.min(depth);
+            self.max_depth = self.max_depth.max(depth);
+        }
+    }
+
+    fn depth_range(&self) -> Option<(Real, Real)> {
+        (self.min_depth.is_finite() && self.max_depth.is_finite())
+            .then_some((self.min_depth, self.max_depth))
+    }
+
+    fn finish(mut self, uniform: GpuViewUniform, transparent: bool) -> GpuViewportScene {
+        if transparent {
+            self.triangles
+                .sort_by(|left, right| right.depth.total_cmp(&left.depth));
+        }
+        GpuViewportScene {
+            uniform,
+            triangles: self
+                .triangles
+                .into_iter()
+                .flat_map(|triangle| triangle.vertices)
+                .collect(),
+            lines: self.lines,
+            points: self.points,
+            transparent,
+        }
+    }
+}
+
 #[derive(Default)]
 struct ProjectedPrimitives {
     points: Vec<Pos2>,
@@ -202,6 +264,7 @@ impl Viewport {
         document: &Document,
         drafting: DraftingInput,
         preview_polyline: &[Point3],
+        viewport_index: usize,
         active: bool,
     ) -> ViewportOutput {
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
@@ -269,7 +332,7 @@ impl Viewport {
 
         painter.rect_filled(rect, 0.0, self.background_color());
         self.paint_grid(&painter, rect);
-        self.paint_objects(&painter, rect, document);
+        self.paint_objects(&painter, rect, document, viewport_index);
         if let Some(cursor) = drafting_cursor {
             self.paint_drafting(&painter, rect, drafting, cursor, preview_polyline);
         }
@@ -1122,7 +1185,14 @@ impl Viewport {
         }
     }
 
-    fn paint_objects(&self, painter: &egui::Painter, rect: Rect, document: &Document) {
+    fn paint_objects(
+        &self,
+        painter: &egui::Painter,
+        rect: Rect,
+        document: &Document,
+        viewport_index: usize,
+    ) {
+        let mut scene = GpuSceneBuilder::new();
         for object in document.objects() {
             let attributes = object.attributes();
             let Some(layer) = document.layer(attributes.layer_id()) else {
@@ -1156,74 +1226,65 @@ impl Viewport {
 
             match object.geometry() {
                 Geometry::Point(point) => {
-                    if let Some(center) = self.project(*point, rect)
-                        && rect.expand(6.0).contains(center)
-                    {
-                        painter.circle_filled(center, 3.5, color);
-                        painter.circle_stroke(center, 5.0, Stroke::new(1.0, color));
-                    }
+                    self.add_gpu_point(&mut scene, rect, *point, 4.5, color);
                 }
                 Geometry::PointCloud(cloud) => {
                     let radius = if selected { 3.5 } else { 2.5 };
                     for point in cloud.points() {
-                        if let Some(center) = self.project(*point, rect)
-                            && rect.expand(radius).contains(center)
-                        {
-                            painter.circle_filled(center, radius, color);
-                        }
+                        self.add_gpu_point(&mut scene, rect, *point, radius, color);
                     }
                 }
                 Geometry::Line(line) => {
-                    if let (Some(start), Some(end)) = (
-                        self.project(line.start(), rect),
-                        self.project(line.end(), rect),
-                    ) {
-                        painter.line_segment([start, end], Stroke::new(width, color));
-                    }
+                    self.add_gpu_line(&mut scene, rect, line.start(), line.end(), width, color);
                 }
                 Geometry::Circle(circle) => {
-                    self.paint_parametric_curve(
-                        painter,
+                    self.add_gpu_parametric_curve(
+                        &mut scene,
                         rect,
                         CIRCLE_SAMPLES,
-                        Stroke::new(width, color),
+                        width,
+                        color,
                         |parameter| circle.point_at_angle(std::f64::consts::TAU * parameter),
                     );
                 }
                 Geometry::Arc(arc) => {
-                    self.paint_parametric_curve(
-                        painter,
+                    self.add_gpu_parametric_curve(
+                        &mut scene,
                         rect,
                         circular_arc_samples(*arc),
-                        Stroke::new(width, color),
+                        width,
+                        color,
                         |parameter| arc.point_at(parameter),
                     );
                 }
                 Geometry::Ellipse(ellipse) => {
-                    self.paint_parametric_curve(
-                        painter,
+                    self.add_gpu_parametric_curve(
+                        &mut scene,
                         rect,
                         CIRCLE_SAMPLES,
-                        Stroke::new(width, color),
+                        width,
+                        color,
                         |parameter| ellipse.point_at_angle(std::f64::consts::TAU * parameter),
                     );
                 }
                 Geometry::Polyline(polyline) => {
                     for segment in polyline.segments() {
-                        if let (Some(start), Some(end)) = (
-                            self.project(segment.start(), rect),
-                            self.project(segment.end(), rect),
-                        ) {
-                            painter.line_segment([start, end], Stroke::new(width, color));
-                        }
+                        self.add_gpu_line(
+                            &mut scene,
+                            rect,
+                            segment.start(),
+                            segment.end(),
+                            width,
+                            color,
+                        );
                     }
                 }
                 Geometry::NurbsCurve(curve) => {
-                    self.paint_nurbs_curve(painter, rect, curve, Stroke::new(width, color));
+                    self.add_gpu_nurbs_curve(&mut scene, rect, curve, width, color);
                 }
                 Geometry::NurbsSurface(surface) => {
-                    self.paint_nurbs_surface(
-                        painter,
+                    self.add_gpu_nurbs_surface(
+                        &mut scene,
                         rect,
                         surface,
                         SurfaceDisplayStyle {
@@ -1235,8 +1296,8 @@ impl Viewport {
                     );
                 }
                 Geometry::Brep(brep) => {
-                    self.paint_brep(
-                        painter,
+                    self.add_gpu_brep(
+                        &mut scene,
                         rect,
                         brep,
                         SurfaceDisplayStyle {
@@ -1248,18 +1309,82 @@ impl Viewport {
                     );
                 }
                 Geometry::Mesh(mesh) => {
-                    self.paint_mesh(painter, rect, mesh, color, width, document.tolerance());
+                    self.add_gpu_mesh(&mut scene, rect, mesh, color, width, document.tolerance());
                 }
             }
         }
+
+        let uniform = self.gpu_view_uniform(rect, scene.depth_range());
+        let transparent = self.display_mode == DisplayMode::Ghosted;
+        crate::viewport_gpu::paint(
+            painter,
+            rect,
+            viewport_index,
+            scene.finish(uniform, transparent),
+        );
     }
 
-    fn paint_nurbs_curve(
+    fn add_gpu_point(
         &self,
-        painter: &egui::Painter,
+        scene: &mut GpuSceneBuilder,
+        rect: Rect,
+        point: Point3,
+        radius: f32,
+        color: Color32,
+    ) {
+        let Some(projected) = self.project(point, rect) else {
+            return;
+        };
+        if !rect.expand(radius).contains(projected) {
+            return;
+        }
+        let Some(position) = point_to_gpu(point) else {
+            return;
+        };
+        scene.include_depth(self.view_depth(point));
+        scene.points.push(GpuPointInstance {
+            position_size: [position[0], position[1], position[2], radius],
+            color: color_to_gpu(color),
+        });
+    }
+
+    fn add_gpu_line(
+        &self,
+        scene: &mut GpuSceneBuilder,
+        rect: Rect,
+        start: Point3,
+        end: Point3,
+        width: f32,
+        color: Color32,
+    ) {
+        if self.project(start, rect).is_none() || self.project(end, rect).is_none() {
+            return;
+        }
+        let (Some(start_position), Some(end_position)) = (point_to_gpu(start), point_to_gpu(end))
+        else {
+            return;
+        };
+        scene.include_depth(self.view_depth(start));
+        scene.include_depth(self.view_depth(end));
+        scene.lines.push(GpuLineInstance {
+            start_width: [
+                start_position[0],
+                start_position[1],
+                start_position[2],
+                width,
+            ],
+            end_padding: [end_position[0], end_position[1], end_position[2], 0.0],
+            color: color_to_gpu(color),
+        });
+    }
+
+    fn add_gpu_nurbs_curve(
+        &self,
+        scene: &mut GpuSceneBuilder,
         rect: Rect,
         curve: &NurbsCurve,
-        stroke: Stroke,
+        width: f32,
+        color: Color32,
     ) {
         let domain_end = *curve.domain().end();
         for (span_start, span_end) in curve.spans() {
@@ -1274,41 +1399,37 @@ impl Viewport {
                     parameter = span_end.next_down().max(span_start);
                 }
 
-                let projected = curve
-                    .evaluate(parameter)
-                    .ok()
-                    .and_then(|point| self.project(point, rect));
-                if let (Some(start), Some(end)) = (previous, projected) {
-                    painter.line_segment([start, end], stroke);
+                let evaluated = curve.evaluate(parameter).ok();
+                if let (Some(start), Some(end)) = (previous, evaluated) {
+                    self.add_gpu_line(scene, rect, start, end, width, color);
                 }
-                previous = projected;
+                previous = evaluated;
             }
         }
     }
 
-    fn paint_parametric_curve(
+    fn add_gpu_parametric_curve(
         &self,
-        painter: &egui::Painter,
+        scene: &mut GpuSceneBuilder,
         rect: Rect,
         samples: usize,
-        stroke: Stroke,
+        width: f32,
+        color: Color32,
         mut evaluate: impl FnMut(Real) -> Result<Point3, viboceros_geometry::GeometryError>,
     ) {
         let mut previous = None;
         for sample in 0..=samples {
-            let projected = evaluate(sample as Real / samples as Real)
-                .ok()
-                .and_then(|point| self.project(point, rect));
-            if let (Some(start), Some(end)) = (previous, projected) {
-                painter.line_segment([start, end], stroke);
+            let evaluated = evaluate(sample as Real / samples as Real).ok();
+            if let (Some(start), Some(end)) = (previous, evaluated) {
+                self.add_gpu_line(scene, rect, start, end, width, color);
             }
-            previous = projected;
+            previous = evaluated;
         }
     }
 
-    fn paint_nurbs_surface(
+    fn add_gpu_nurbs_surface(
         &self,
-        painter: &egui::Painter,
+        scene: &mut GpuSceneBuilder,
         rect: Rect,
         surface: &NurbsSurface,
         style: SurfaceDisplayStyle,
@@ -1317,20 +1438,19 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = surface.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            self.paint_mesh_faces(painter, rect, &mesh, style.color);
+            self.add_gpu_mesh_faces(scene, rect, &mesh, style.color);
         }
 
-        let stroke = Stroke::new(style.width, style.color);
         if let Ok(curves) = surface.wireframe_curves(style.wire_density) {
             for curve in &curves {
-                self.paint_nurbs_curve(painter, rect, curve, stroke);
+                self.add_gpu_nurbs_curve(scene, rect, curve, style.width, style.color);
             }
         }
     }
 
-    fn paint_brep(
+    fn add_gpu_brep(
         &self,
-        painter: &egui::Painter,
+        scene: &mut GpuSceneBuilder,
         rect: Rect,
         brep: &Brep,
         style: SurfaceDisplayStyle,
@@ -1339,42 +1459,35 @@ impl Viewport {
         if self.display_mode != DisplayMode::Wireframe
             && let Ok(mesh) = brep.tessellate(SURFACE_SAMPLES_PER_SPAN, tolerance)
         {
-            self.paint_mesh_faces(painter, rect, &mesh, style.color);
+            self.add_gpu_mesh_faces(scene, rect, &mesh, style.color);
         }
-        let stroke = Stroke::new(style.width, style.color);
         if let Ok(curves) = brep.wireframe_curves(style.wire_density, tolerance) {
             for curve in &curves {
-                self.paint_nurbs_curve(painter, rect, curve, stroke);
+                self.add_gpu_nurbs_curve(scene, rect, curve, style.width, style.color);
             }
         }
     }
 
-    fn paint_mesh(
+    fn add_gpu_mesh(
         &self,
-        painter: &egui::Painter,
+        scene: &mut GpuSceneBuilder,
         rect: Rect,
         mesh: &TriangleMesh,
         color: Color32,
         width: f32,
         tolerance: Tolerance,
     ) {
-        let edge = Stroke::new(width, color);
-        self.paint_mesh_faces(painter, rect, mesh, color);
+        self.add_gpu_mesh_faces(scene, rect, mesh, color);
         if let Ok(lines) = mesh.wireframe_lines(tolerance) {
             for line in lines {
-                if let (Some(start), Some(end)) = (
-                    self.project(line.start(), rect),
-                    self.project(line.end(), rect),
-                ) {
-                    painter.line_segment([start, end], edge);
-                }
+                self.add_gpu_line(scene, rect, line.start(), line.end(), width, color);
             }
         }
     }
 
-    fn paint_mesh_faces(
+    fn add_gpu_mesh_faces(
         &self,
-        painter: &egui::Painter,
+        scene: &mut GpuSceneBuilder,
         rect: Rect,
         mesh: &TriangleMesh,
         color: Color32,
@@ -1383,52 +1496,167 @@ impl Viewport {
             return;
         }
 
-        let corner_normals =
-            (self.display_mode == DisplayMode::Shaded).then(|| smooth_corner_normals(mesh));
-        let ghosted = Color32::from_rgba_unmultiplied(color.r(), color.g(), color.b(), 35);
-        let mut projected_triangles = Vec::with_capacity(mesh.triangles().len());
-        for triangle_index in 0..mesh.triangles().len() {
+        let corner_normals = smooth_corner_normals(mesh);
+        let face_color = if self.display_mode == DisplayMode::Ghosted {
+            color_with_alpha(color, 35)
+        } else {
+            color
+        };
+        let gpu_color = color_to_gpu(face_color);
+        for (triangle_index, normals) in corner_normals.into_iter().enumerate() {
             let Some(points) = mesh.triangle_points(triangle_index) else {
                 continue;
             };
-            let [Some(first), Some(second), Some(third)] =
-                points.map(|point| self.project(point, rect))
-            else {
+            if points
+                .iter()
+                .any(|point| self.project(*point, rect).is_none())
+            {
+                continue;
+            }
+            let [Some(first), Some(second), Some(third)] = points.map(point_to_gpu) else {
                 continue;
             };
-            let colors = corner_normals.as_ref().map_or([ghosted; 3], |normals| {
-                normals[triangle_index].map(|normal| shaded_color(color, normal))
-            });
+            let normals = normals.map(vector_to_gpu);
             let depth = points
                 .into_iter()
                 .map(|point| self.view_depth(point))
                 .sum::<Real>()
                 / 3.0;
-            projected_triangles.push((depth, [first, second, third], colors));
-        }
-
-        // egui intentionally has no depth buffer. Painter ordering therefore
-        // has to put farther facets first so the visible side of a closed
-        // surface wins over its back side.
-        projected_triangles.sort_by(|left, right| right.0.total_cmp(&left.0));
-        let mut painted = egui::Mesh::default();
-        for (_, points, colors) in projected_triangles {
-            let Ok(first_index) = u32::try_from(painted.vertices.len()) else {
-                break;
-            };
-            let Some(second_index) = first_index.checked_add(1) else {
-                break;
-            };
-            let Some(third_index) = first_index.checked_add(2) else {
-                break;
-            };
-            for (point, vertex_color) in points.into_iter().zip(colors) {
-                painted.colored_vertex(point, vertex_color);
+            for point in points {
+                scene.include_depth(self.view_depth(point));
             }
-            painted.add_triangle(first_index, second_index, third_index);
+            scene.triangles.push(DepthTriangle {
+                depth,
+                vertices: [
+                    GpuTriangleVertex {
+                        position: first,
+                        normal: normals[0],
+                        color: gpu_color,
+                    },
+                    GpuTriangleVertex {
+                        position: second,
+                        normal: normals[1],
+                        color: gpu_color,
+                    },
+                    GpuTriangleVertex {
+                        position: third,
+                        normal: normals[2],
+                        color: gpu_color,
+                    },
+                ],
+            });
         }
-        if !painted.is_empty() {
-            painter.add(egui::Shape::mesh(painted));
+    }
+
+    fn gpu_view_uniform(&self, rect: Rect, depth_range: Option<(Real, Real)>) -> GpuViewUniform {
+        let width = Real::from(rect.width().max(1.0));
+        let height = Real::from(rect.height().max(1.0));
+        let offset_x = 2.0 * Real::from(self.pan.x) / width;
+        let offset_y = -2.0 * Real::from(self.pan.y) / height;
+        let view_projection = match self.kind {
+            ViewKind::Perspective => {
+                let (right, up, forward) = self.perspective_basis();
+                let camera = -forward * self.perspective_camera_distance;
+                let view = NaMatrix4::new(
+                    right.x,
+                    right.y,
+                    right.z,
+                    -right.dot(&camera),
+                    up.x,
+                    up.y,
+                    up.z,
+                    -up.dot(&camera),
+                    forward.x,
+                    forward.y,
+                    forward.z,
+                    -forward.dot(&camera),
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                );
+                let (minimum_depth, maximum_depth) = depth_range.unwrap_or((
+                    self.perspective_camera_distance * 0.5,
+                    self.perspective_camera_distance * 1.5,
+                ));
+                let near = (minimum_depth * 0.5)
+                    .max(self.perspective_camera_distance * 1.0e-6)
+                    .max(1.0e-6);
+                let far = (maximum_depth * 1.5)
+                    .max(self.perspective_camera_distance * 2.0)
+                    .max(near + 1.0);
+                let focal_length = self.perspective_focal_length_pixels(rect);
+                let projection = NaMatrix4::new(
+                    2.0 * focal_length / width,
+                    0.0,
+                    offset_x,
+                    0.0,
+                    0.0,
+                    2.0 * focal_length / height,
+                    offset_y,
+                    0.0,
+                    0.0,
+                    0.0,
+                    far / (far - near),
+                    -far * near / (far - near),
+                    0.0,
+                    0.0,
+                    1.0,
+                    0.0,
+                );
+                projection * view
+            }
+            ViewKind::Top | ViewKind::Front | ViewKind::Right => {
+                let (right, up, forward) = match self.kind {
+                    ViewKind::Top => (
+                        NaVector3::new(1.0, 0.0, 0.0),
+                        NaVector3::new(0.0, 1.0, 0.0),
+                        NaVector3::new(0.0, 0.0, -1.0),
+                    ),
+                    ViewKind::Front => (
+                        NaVector3::new(1.0, 0.0, 0.0),
+                        NaVector3::new(0.0, 0.0, 1.0),
+                        NaVector3::new(0.0, 1.0, 0.0),
+                    ),
+                    ViewKind::Right => (
+                        NaVector3::new(0.0, 1.0, 0.0),
+                        NaVector3::new(0.0, 0.0, 1.0),
+                        NaVector3::new(-1.0, 0.0, 0.0),
+                    ),
+                    ViewKind::Perspective => unreachable!(),
+                };
+                let (minimum_depth, maximum_depth) = depth_range.unwrap_or((-1.0, 1.0));
+                let span = (maximum_depth - minimum_depth).abs().max(1.0);
+                let near = minimum_depth - span * 0.05 - 1.0e-3;
+                let far = maximum_depth + span * 0.05 + 1.0e-3;
+                let depth_span = far - near;
+                let horizontal_scale = 2.0 * Real::from(self.pixels_per_unit) / width;
+                let vertical_scale = 2.0 * Real::from(self.pixels_per_unit) / height;
+                NaMatrix4::new(
+                    horizontal_scale * right.x,
+                    horizontal_scale * right.y,
+                    horizontal_scale * right.z,
+                    offset_x,
+                    vertical_scale * up.x,
+                    vertical_scale * up.y,
+                    vertical_scale * up.z,
+                    offset_y,
+                    forward.x / depth_span,
+                    forward.y / depth_span,
+                    forward.z / depth_span,
+                    -near / depth_span,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                )
+            }
+        };
+
+        GpuViewUniform {
+            view_projection: matrix_to_gpu(view_projection),
+            viewport_size: [rect.width().max(1.0), rect.height().max(1.0)],
+            padding: [0.0; 2],
         }
     }
 
@@ -1678,11 +1906,35 @@ fn point_in_triangle(point: Pos2, first: Pos2, second: Pos2, third: Pos2) -> boo
     signs.iter().all(|value| *value >= -tolerance) || signs.iter().all(|value| *value <= tolerance)
 }
 
-fn blend_toward_white(color: Color32, amount: f32) -> Color32 {
-    let blend = |component: u8| {
-        (f32::from(component) + (255.0 - f32::from(component)) * amount).round() as u8
-    };
-    Color32::from_rgb(blend(color.r()), blend(color.g()), blend(color.b()))
+fn point_to_gpu(point: Point3) -> Option<[f32; 3]> {
+    Some([
+        real_to_gpu(point.x())?,
+        real_to_gpu(point.y())?,
+        real_to_gpu(point.z())?,
+    ])
+}
+
+fn vector_to_gpu(vector: NaVector3<Real>) -> [f32; 3] {
+    [vector.x as f32, vector.y as f32, vector.z as f32]
+}
+
+fn real_to_gpu(value: Real) -> Option<f32> {
+    (value.is_finite() && value.abs() <= Real::from(f32::MAX)).then_some(value as f32)
+}
+
+fn color_to_gpu(color: Color32) -> [f32; 4] {
+    color
+        .to_srgba_unmultiplied()
+        .map(|component| f32::from(component) / 255.0)
+}
+
+fn color_with_alpha(color: Color32, alpha: u8) -> Color32 {
+    let [red, green, blue, _] = color.to_srgba_unmultiplied();
+    Color32::from_rgba_unmultiplied(red, green, blue, alpha)
+}
+
+fn matrix_to_gpu(matrix: NaMatrix4<Real>) -> [[f32; 4]; 4] {
+    std::array::from_fn(|column| std::array::from_fn(|row| matrix[(row, column)] as f32))
 }
 
 fn resolved_display_color(attributes: &ObjectAttributes, layer_color: ColorRgb) -> Color32 {
@@ -1745,17 +1997,6 @@ fn point_position_key(point: Point3) -> [u64; 3] {
     })
 }
 
-fn shaded_color(color: Color32, normal: NaVector3<Real>) -> Color32 {
-    // Absolute diffuse response gives both sides the same material instead of
-    // making back-facing (or oppositely wound) surface patches look inverted.
-    let illumination = normal
-        .x
-        .mul_add(-0.35, normal.y.mul_add(-0.45, normal.z * 0.82))
-        .abs()
-        .clamp(0.0, 1.0) as f32;
-    blend_toward_white(color, 0.35 + 0.55 * illumination)
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1767,6 +2008,31 @@ mod tests {
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    fn gpu_project(
+        viewport: &Viewport,
+        rect: Rect,
+        point: Point3,
+        depth_range: (Real, Real),
+    ) -> (Pos2, f32) {
+        let matrix = viewport
+            .gpu_view_uniform(rect, Some(depth_range))
+            .view_projection;
+        let position = [point.x() as f32, point.y() as f32, point.z() as f32, 1.0];
+        let clip: [f32; 4] = std::array::from_fn(|row| {
+            (0..4)
+                .map(|column| matrix[column][row] * position[column])
+                .sum()
+        });
+        let ndc = [clip[0] / clip[3], clip[1] / clip[3], clip[2] / clip[3]];
+        (
+            Pos2::new(
+                rect.center().x + ndc[0] * rect.width() * 0.5,
+                rect.center().y - ndc[1] * rect.height() * 0.5,
+            ),
+            ndc[2],
+        )
     }
 
     fn viewport_frame(
@@ -1784,7 +2050,7 @@ mod tests {
                     ..egui::RawInput::default()
                 },
                 |ui| {
-                    output = viewport.show(ui, document, DraftingInput::default(), &[], true);
+                    output = viewport.show(ui, document, DraftingInput::default(), &[], 0, true);
                 },
             )
             .drop_without_applying_deltas();
@@ -2085,15 +2351,6 @@ mod tests {
     }
 
     #[test]
-    fn shaded_faces_are_lit_the_same_from_either_side() {
-        let up = NaVector3::new(0.0, 0.0, 1.0);
-        let down = NaVector3::new(0.0, 0.0, -1.0);
-        let lit = shaded_color(Color32::BLACK, up);
-        let reverse_lit = shaded_color(Color32::BLACK, down);
-        assert_eq!(lit, reverse_lit);
-    }
-
-    #[test]
     fn smooth_shading_keeps_ninety_degree_mesh_edges_hard() {
         let mesh = TriangleMesh::try_new(
             vec![
@@ -2178,6 +2435,55 @@ mod tests {
         assert!((round_trip.x() - on_construction_plane.x()).abs() < 1.0e-5);
         assert!((round_trip.y() - on_construction_plane.y()).abs() < 1.0e-5);
         assert!(round_trip.z().abs() < 1.0e-5);
+    }
+
+    #[test]
+    fn gpu_projection_matches_interaction_projection_and_orders_depth() {
+        let rect = Rect::from_min_size(Pos2::new(10.0, 20.0), Vec2::new(800.0, 600.0));
+        let model = point(3.25, -2.75, 1.5);
+        for kind in [
+            ViewKind::Top,
+            ViewKind::Front,
+            ViewKind::Right,
+            ViewKind::Perspective,
+        ] {
+            let viewport = Viewport {
+                kind,
+                pan: Vec2::new(17.0, -23.0),
+                ..Viewport::default()
+            };
+            let depth = viewport.view_depth(model);
+            let depth_range = (depth - 10.0, depth + 10.0);
+            let cpu = viewport.project(model, rect).unwrap();
+            let (gpu, gpu_depth) = gpu_project(&viewport, rect, model, depth_range);
+            assert!(
+                (gpu - cpu).length() < 1.0e-3,
+                "{kind:?}: {gpu:?} != {cpu:?}"
+            );
+            assert!((0.0..=1.0).contains(&gpu_depth), "{kind:?}: {gpu_depth}");
+
+            let (near, far) = match kind {
+                ViewKind::Top => (point(0.0, 0.0, 5.0), point(0.0, 0.0, -5.0)),
+                ViewKind::Front => (point(0.0, -5.0, 0.0), point(0.0, 5.0, 0.0)),
+                ViewKind::Right => (point(5.0, 0.0, 0.0), point(-5.0, 0.0, 0.0)),
+                ViewKind::Perspective => {
+                    let (_, _, forward) = viewport.perspective_basis();
+                    let camera = -forward * viewport.perspective_camera_distance;
+                    let near = camera + forward * 40.0;
+                    let far = camera + forward * 60.0;
+                    (point(near.x, near.y, near.z), point(far.x, far.y, far.z))
+                }
+            };
+            let near_depth = viewport.view_depth(near);
+            let far_depth = viewport.view_depth(far);
+            let range = (near_depth.min(far_depth), near_depth.max(far_depth));
+            let (_, near_gpu_depth) = gpu_project(&viewport, rect, near, range);
+            let (_, far_gpu_depth) = gpu_project(&viewport, rect, far, range);
+            assert!(
+                near_gpu_depth < far_gpu_depth,
+                "{kind:?}: near={near_gpu_depth}, far={far_gpu_depth}"
+            );
+        }
     }
 
     #[test]

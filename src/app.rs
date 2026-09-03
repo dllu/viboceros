@@ -743,6 +743,9 @@ impl VibocerosApp {
         creation_context
             .egui_ctx
             .set_visuals(egui::Visuals::light());
+        if let Some(render_state) = &creation_context.wgpu_render_state {
+            crate::viewport_gpu::install(render_state);
+        }
         let mut command_log = VecDeque::new();
         command_log.push_back("Viboceros ready — enter Help for commands.".to_owned());
         Self {
@@ -4154,6 +4157,7 @@ impl eframe::App for VibocerosApp {
                                     document,
                                     drafting,
                                     curve_points,
+                                    index,
                                     index == active_viewport,
                                 );
                             },

@@ -23,6 +23,7 @@ license = "MIT"
 rust-version = "1.95"
 
 [workspace.dependencies]
+bytemuck = { version = "1.25.2", features = ["derive"] }
 faer = { version = "0.24.4", default-features = false, features = ["linalg", "std"] }
 nalgebra = "0.35.0"
 monstertruck = { version = "0.4.0", default-features = false, features = ["assembly", "meshing", "step"] }
@@ -39,6 +40,7 @@ viboceros-geometry = { path = "crates/viboceros-geometry" }
 viboceros-io = { path = "crates/viboceros-io" }
 
 [dependencies]
+bytemuck.workspace = true
 eframe = { version = "0.36.1", default-features = false, features = [
     "default_fonts",
     "wayland",
