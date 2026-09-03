@@ -136,6 +136,9 @@ impl CommandRegistry {
             .register(RemoveKnotCommand)
             .expect("unique built-in command");
         registry
+            .register(RemoveControlPointCommand)
+            .expect("unique built-in command");
+        registry
             .register(RemoveMultiKnotCommand)
             .expect("unique built-in command");
         registry
@@ -2716,6 +2719,108 @@ fn parse_remove_knot_options(arguments: &[&str]) -> Result<RemoveKnotOptions, Co
         location,
         direction,
     })
+}
+
+const REMOVE_CONTROL_POINT_USAGE: &str = "RemoveControlPoint index [Direction=U|V]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct RemoveControlPointOptions {
+    index: usize,
+    direction: SurfaceKnotDirection,
+}
+
+struct RemoveControlPointCommand;
+
+impl Command for RemoveControlPointCommand {
+    fn name(&self) -> &'static str {
+        "RemoveControlPoint"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_remove_control_point_options(arguments)?;
+        let mut candidates = Vec::new();
+        for object in document.selected_objects() {
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface.clone()),
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    Geometry::NurbsCurve(curve)
+                }
+            };
+            candidates.push((object.id(), geometry));
+        }
+        if candidates.len() != 1 {
+            return Err(CommandError::RemoveControlPointRequiresOneObject {
+                actual: candidates.len(),
+            });
+        }
+
+        let (id, geometry) = candidates.pop().expect("one candidate was required");
+        let (geometry, description) = match geometry {
+            Geometry::NurbsCurve(curve) => (
+                Geometry::NurbsCurve(curve.try_remove_control_point(options.index)?),
+                "curve".to_owned(),
+            ),
+            Geometry::NurbsSurface(surface) => (
+                Geometry::NurbsSurface(
+                    surface.try_remove_control_point(options.direction, options.index)?,
+                ),
+                format!(
+                    "surface {} direction",
+                    match options.direction {
+                        SurfaceKnotDirection::U => "U",
+                        SurfaceKnotDirection::V => "V",
+                        SurfaceKnotDirection::Both => {
+                            unreachable!("RemoveControlPoint only parses U or V")
+                        }
+                    }
+                ),
+            ),
+            _ => unreachable!("RemoveControlPoint candidates are converted to NURBS geometry"),
+        };
+
+        document.replace_object_geometries([(id, geometry)])?;
+        Ok(format!(
+            "Removed control point {} from selected NURBS {description}",
+            options.index
+        ))
+    }
+}
+
+fn parse_remove_control_point_options(
+    arguments: &[&str],
+) -> Result<RemoveControlPointOptions, CommandError> {
+    let raw_index = arguments
+        .first()
+        .copied()
+        .ok_or(CommandError::Usage(REMOVE_CONTROL_POINT_USAGE))?
+        .trim_start_matches('_');
+    let index = raw_index
+        .parse::<usize>()
+        .map_err(|_| CommandError::InvalidInteger(raw_index.to_owned()))?;
+    let mut direction = SurfaceKnotDirection::U;
+    let mut direction_seen = false;
+    let mut argument_index = 1;
+    while argument_index < arguments.len() {
+        let (name, value, consumed) =
+            orient_option(arguments, argument_index, REMOVE_CONTROL_POINT_USAGE)?;
+        if !option_name_eq(name, "Direction") || direction_seen {
+            return Err(CommandError::Usage(REMOVE_CONTROL_POINT_USAGE));
+        }
+        let value = value.trim_start_matches(['_', '-']);
+        direction = if value.eq_ignore_ascii_case("U") {
+            SurfaceKnotDirection::U
+        } else if value.eq_ignore_ascii_case("V") {
+            SurfaceKnotDirection::V
+        } else {
+            return Err(CommandError::Usage(REMOVE_CONTROL_POINT_USAGE));
+        };
+        direction_seen = true;
+        argument_index += consumed;
+    }
+    Ok(RemoveControlPointOptions { index, direction })
 }
 
 const REMOVE_MULTI_KNOT_USAGE: &str =
@@ -17770,6 +17875,11 @@ pub enum CommandError {
     #[error("RemoveKnot on a curve requires one scalar parameter, not a u,v pair")]
     RemoveKnotCurveRequiresParameter,
 
+    #[error(
+        "RemoveControlPoint requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
+    )]
+    RemoveControlPointRequiresOneObject { actual: usize },
+
     #[error("no qualifying multiple knots were removed from the selected curves or surfaces")]
     NoMultipleKnotsRemoved,
 
@@ -18327,7 +18437,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -28930,6 +29040,263 @@ mod tests {
                 GeometryError::PeriodicKnotRemovalUnsupported { .. }
             ))
         ));
+    }
+
+    #[test]
+    fn remove_control_point_updates_curves_and_surface_rows_in_place_and_undoes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Control removal", ColorRgb::new(43, 97, 151))
+            .unwrap();
+        let source_curve = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 1.0).unwrap(),
+                Point3::try_new(5.0, -1.0, 2.0).unwrap(),
+                Point3::try_new(7.0, 3.0, -1.0).unwrap(),
+                Point3::try_new(9.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 5.0, 2.0).unwrap(),
+                Point3::try_new(15.0, -2.0, 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+        let curve_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source_curve.clone()),
+                ObjectAttributes::on_layer(layer).with_name("editable curve"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([curve_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "RemoveControlPoint 3")
+                .unwrap(),
+            "Removed control point 3 from selected NURBS curve"
+        );
+        let object = document.object(curve_id).unwrap();
+        let Geometry::NurbsCurve(curve) = object.geometry() else {
+            panic!("RemoveControlPoint must retain NURBS curve geometry")
+        };
+        assert_eq!(curve.control_points().len(), 6);
+        assert_eq!(
+            curve.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 1.0, 5.0, 8.0, 8.0, 8.0, 8.0]
+        );
+        assert_eq!(
+            curve.control_points()[3].point(),
+            source_curve.control_points()[4].point()
+        );
+        assert_eq!(object.attributes().layer_id(), layer);
+        assert_eq!(object.attributes().name(), Some("editable curve"));
+        assert!(document.is_selected(curve_id));
+        assert!(document.is_selected(point_id));
+        assert_eq!(document.undo_label(), Some("RemoveControlPoint"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source_curve)
+        );
+
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    Point3::try_new(u as Real * 2.0, v as Real * 3.0, (u * v) as Real).unwrap()
+                })
+            })
+            .collect();
+        let source_surface = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            4,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(source_surface.clone()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "_RemoveControlPoint _1 Direction _V")
+                .unwrap(),
+            "Removed control point 1 from selected NURBS surface V direction"
+        );
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("RemoveControlPoint must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.control_point_count_u(), 5);
+        assert_eq!(surface.control_point_count_v(), 3);
+        assert_eq!(surface.knots_u(), source_surface.knots_u());
+        assert_eq!(surface.knots_v(), &[-2.0, -2.0, -2.0, 6.0, 6.0, 6.0]);
+        for u in 0..5 {
+            assert_eq!(
+                surface.control_point(u, 0),
+                source_surface.control_point(u, 0)
+            );
+            assert_eq!(
+                surface.control_point(u, 1),
+                source_surface.control_point(u, 2)
+            );
+            assert_eq!(
+                surface.control_point(u, 2),
+                source_surface.control_point(u, 3)
+            );
+        }
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source_surface)
+        );
+    }
+
+    #[test]
+    fn remove_control_point_supports_periodic_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = periodic_cubic_curve();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "RemoveControlPoint 1")
+                .unwrap(),
+            "Removed control point 1 from selected NURBS curve"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(curve_id).unwrap().geometry() else {
+            panic!("RemoveControlPoint must retain NURBS curve geometry")
+        };
+        assert!(curve.is_periodic());
+        assert_eq!(curve.control_points().len(), 6);
+        assert_eq!(
+            curve.knots(),
+            &[-2.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0]
+        );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+    }
+
+    #[test]
+    fn remove_control_point_rejects_invalid_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(5.0, -1.0, 0.0).unwrap(),
+                Point3::try_new(8.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.4, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        let second_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveControlPoint 1"),
+            Err(CommandError::RemoveControlPointRequiresOneObject { actual: 0 })
+        ));
+        document
+            .select_objects([curve_id, second_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveControlPoint 1"),
+            Err(CommandError::RemoveControlPointRequiresOneObject { actual: 2 })
+        ));
+
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "RemoveControlPoint",
+            "RemoveControlPoint nope",
+            "RemoveControlPoint -1",
+            "RemoveControlPoint 1.5",
+            "RemoveControlPoint 1 Direction=Both",
+            "RemoveControlPoint 1 Direction=U Direction=V",
+            "RemoveControlPoint 1 Extra=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(curve_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(source.clone()),
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveControlPoint 4"),
+            Err(CommandError::Geometry(
+                GeometryError::ControlPointIndexOutOfRange { .. }
+            ))
+        ));
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let line = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let line_id = document
+            .add_geometry(Geometry::NurbsCurve(line.clone()))
+            .unwrap();
+        document
+            .select_objects([line_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveControlPoint 0"),
+            Err(CommandError::Geometry(
+                GeometryError::InsufficientControlPoints { .. }
+            ))
+        ));
+        assert_eq!(
+            document.object(line_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(line)
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

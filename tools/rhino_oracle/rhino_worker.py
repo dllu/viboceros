@@ -5729,6 +5729,154 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_remove_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        control_point_index = int(operation["control_point_index"])
+
+        def remove_control_point():
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveControlPoint source curve")
+                curve_object = document.Objects.FindId(object_id)
+                curve_object.GripsOn = True
+                grips = curve_object.GetGrips()
+                if (
+                    grips is None
+                    or control_point_index < 0
+                    or control_point_index >= len(grips)
+                ):
+                    raise ValueError("RemoveControlPoint control index is invalid")
+                if int(grips[control_point_index].Select(True)) == 0:
+                    raise ValueError("could not select RemoveControlPoint curve grip")
+                if not Rhino.RhinoApp.RunScript("_Delete", False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino curve control-point removal failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveControlPoint removed the curve object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("RemoveControlPoint returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    existing.GripsOn = False
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, remove_control_point)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_remove_control_point_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface control-point direction must be u or v")
+        control_point_index = int(operation["control_point_index"])
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate RemoveControlPoint source surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("RemoveControlPoint source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def remove_surface_control_point():
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveControlPoint source surface")
+                surface_object = document.Objects.FindId(object_id)
+                surface_object.GripsOn = True
+                grips = surface_object.GetGrips()
+                if grips is None:
+                    raise ValueError("could not enable surface grips")
+                grip_count_u = count_u - degree_u if source.IsPeriodic(0) else count_u
+                grip_count_v = count_v - degree_v if source.IsPeriodic(1) else count_v
+                if direction == "u":
+                    if control_point_index < 0 or control_point_index >= grip_count_u:
+                        raise ValueError("surface U control-point index is invalid")
+                    grip_indices = [
+                        control_point_index * grip_count_v + v_index
+                        for v_index in range(grip_count_v)
+                    ]
+                else:
+                    if control_point_index < 0 or control_point_index >= grip_count_v:
+                        raise ValueError("surface V control-point index is invalid")
+                    grip_indices = [
+                        u_index * grip_count_v + control_point_index
+                        for u_index in range(grip_count_u)
+                    ]
+                if any(int(grips[index].Select(True)) == 0 for index in grip_indices):
+                    raise ValueError("could not select RemoveControlPoint surface grips")
+                if not Rhino.RhinoApp.RunScript("_Delete", False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino surface control-point removal failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveControlPoint removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("surface grip deletion returned a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("RemoveControlPoint returned no NURBS surface")
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                existing = document.Objects.FindId(object_id)
+                if existing is not None:
+                    existing.GripsOn = False
+                    document.Objects.Delete(object_id, True)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+
+        try:
+            return _measure(iterations, remove_surface_control_point)
+        finally:
+            source.Dispose()
+
     if kind == "surface_make_uniform_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

@@ -102,6 +102,15 @@ pub enum GeometryError {
     #[error("there is no removable NURBS knot near parameter {parameter}")]
     NoRemovableKnot { parameter: f64 },
 
+    #[error(
+        "NURBS {direction} control-point index {index} is outside the control-point count {control_point_count}"
+    )]
+    ControlPointIndexOutOfRange {
+        direction: &'static str,
+        index: usize,
+        control_point_count: usize,
+    },
+
     #[error("B-rep trim/isocurve intersection did not converge")]
     TrimIntersectionDidNotConverge,
 

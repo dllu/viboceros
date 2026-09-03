@@ -1582,6 +1582,57 @@ impl NurbsSurface {
         })
     }
 
+    /// Removes a complete control row in one parameter direction.
+    ///
+    /// Every orthogonal control curve uses [`NurbsCurve::try_remove_control_point`],
+    /// so degree lowering, rational endpoint normalization, even-degree knot
+    /// merging, and periodic topology match Rhino in both directions.
+    pub fn try_remove_control_point(
+        &self,
+        direction: SurfaceKnotDirection,
+        index: usize,
+    ) -> Result<Self, GeometryError> {
+        let (control_point_count, direction_name) = match direction {
+            SurfaceKnotDirection::U => (
+                if self.is_periodic_u() {
+                    self.control_point_count_u - self.degree_u
+                } else {
+                    self.control_point_count_u
+                },
+                "surface U direction",
+            ),
+            SurfaceKnotDirection::V => (
+                if self.is_periodic_v() {
+                    self.control_point_count_v - self.degree_v
+                } else {
+                    self.control_point_count_v
+                },
+                "surface V direction",
+            ),
+            SurfaceKnotDirection::Both => {
+                return Err(GeometryError::InvalidControlNet {
+                    context: "control-point removal requires one surface direction",
+                });
+            }
+        };
+        if index >= control_point_count {
+            return Err(GeometryError::ControlPointIndexOutOfRange {
+                direction: direction_name,
+                index,
+                control_point_count,
+            });
+        }
+        match direction {
+            SurfaceKnotDirection::U => {
+                self.map_u_control_curves(|curve| curve.try_remove_control_point(index))
+            }
+            SurfaceKnotDirection::V => {
+                self.map_v_control_curves(|curve| curve.try_remove_control_point(index))
+            }
+            SurfaceKnotDirection::Both => unreachable!("Both was rejected above"),
+        }
+    }
+
     /// Collapses qualifying multiple knots in the selected parameter
     /// direction(s), using the same descending-knot interpolation order as
     /// [`NurbsCurve::try_remove_multiple_knots`].
@@ -5874,6 +5925,82 @@ mod tests {
             Err(GeometryError::PeriodicKnotRemovalUnsupported {
                 direction: "surface U direction"
             })
+        );
+    }
+
+    #[test]
+    fn control_point_removal_drops_complete_surface_rows() {
+        let controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| {
+                    point(
+                        [0.0, 2.0, 5.0, 8.0, 11.0][u],
+                        [0.0, 3.0, 7.0, 10.0][v],
+                        (u * v) as Real,
+                    )
+                })
+            })
+            .collect();
+        let surface = NurbsSurface::try_new(
+            2,
+            2,
+            5,
+            4,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+
+        let removed_u = surface
+            .try_remove_control_point(SurfaceKnotDirection::U, 2)
+            .unwrap();
+        assert_eq!(
+            (
+                removed_u.control_point_count_u(),
+                removed_u.control_point_count_v()
+            ),
+            (4, 4)
+        );
+        assert_eq!(removed_u.knots_u(), &[0.0, 0.0, 0.0, 5.0, 8.0, 8.0, 8.0]);
+        assert_eq!(removed_u.knots_v(), surface.knots_v());
+        for v in 0..4 {
+            assert_eq!(removed_u.control_point(0, v), surface.control_point(0, v));
+            assert_eq!(removed_u.control_point(1, v), surface.control_point(1, v));
+            assert_eq!(removed_u.control_point(2, v), surface.control_point(3, v));
+            assert_eq!(removed_u.control_point(3, v), surface.control_point(4, v));
+        }
+
+        let removed_v = surface
+            .try_remove_control_point(SurfaceKnotDirection::V, 1)
+            .unwrap();
+        assert_eq!(
+            (
+                removed_v.control_point_count_u(),
+                removed_v.control_point_count_v()
+            ),
+            (5, 3)
+        );
+        assert_eq!(removed_v.knots_u(), surface.knots_u());
+        assert_eq!(removed_v.knots_v(), &[-2.0, -2.0, -2.0, 6.0, 6.0, 6.0]);
+        for u in 0..5 {
+            assert_eq!(removed_v.control_point(u, 0), surface.control_point(u, 0));
+            assert_eq!(removed_v.control_point(u, 1), surface.control_point(u, 2));
+            assert_eq!(removed_v.control_point(u, 2), surface.control_point(u, 3));
+        }
+
+        assert!(matches!(
+            surface.try_remove_control_point(SurfaceKnotDirection::U, 5),
+            Err(GeometryError::ControlPointIndexOutOfRange {
+                direction: "surface U direction",
+                index: 5,
+                control_point_count: 5,
+            })
+        ));
+        assert!(
+            surface
+                .try_remove_control_point(SurfaceKnotDirection::Both, 0)
+                .is_err()
         );
     }
 

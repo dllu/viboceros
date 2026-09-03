@@ -563,6 +563,11 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         parameter: f64,
     },
+    CurveRemoveControlPointGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        control_point_index: usize,
+    },
     CurveRemoveMultiKnotGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -637,6 +642,18 @@ pub enum Operation {
         knots_v: Vec<f64>,
         direction: SurfaceKnotAxis,
         parameter: f64,
+    },
+    SurfaceRemoveControlPointGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceKnotAxis,
+        control_point_index: usize,
     },
     SurfaceRemoveMultiKnotGeometry {
         id: String,
@@ -862,6 +879,15 @@ impl SurfaceUniformDirection {
     }
 }
 
+impl SurfaceKnotAxis {
+    const fn geometry(self) -> SurfaceKnotDirection {
+        match self {
+            Self::U => SurfaceKnotDirection::U,
+            Self::V => SurfaceKnotDirection::V,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct NurbsCurveDefinition {
     pub degree: usize,
@@ -953,6 +979,7 @@ impl Operation {
             | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
+            | Self::CurveRemoveControlPointGeometry { id, .. }
             | Self::CurveRemoveMultiKnotGeometry { id, .. }
             | Self::CurveMakeNonPeriodicGeometry { id, .. }
             | Self::SurfaceMakeUniformGeometry { id, .. }
@@ -960,6 +987,7 @@ impl Operation {
             | Self::SurfaceMakePeriodicGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
+            | Self::SurfaceRemoveControlPointGeometry { id, .. }
             | Self::SurfaceRemoveMultiKnotGeometry { id, .. }
             | Self::SurfaceMakeNonPeriodicGeometry { id, .. }
             | Self::Paraboloid { id, .. }
@@ -2803,6 +2831,17 @@ fn execute(
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveRemoveControlPointGeometry {
+            curve,
+            control_point_index,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_remove_control_point(black_box(*control_point_index))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveRemoveMultiKnotGeometry {
             curve,
             remove_fully_multiple_knots,
@@ -2961,6 +3000,35 @@ fn execute(
             let (surface, elapsed) = measure(iterations, || match direction {
                 SurfaceKnotAxis::U => source.try_remove_knot_u_near(black_box(*parameter)),
                 SurfaceKnotAxis::V => source.try_remove_knot_v_near(black_box(*parameter)),
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceRemoveControlPointGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            control_point_index,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_remove_control_point(
+                    black_box(direction.geometry()),
+                    black_box(*control_point_index),
+                )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8427,6 +8495,80 @@ mod tests {
             surface["knots_v"],
             json!([-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0])
         );
+    }
+
+    #[test]
+    fn captures_curve_and_surface_control_point_removal() {
+        let curve = NurbsCurveDefinition {
+            degree: 2,
+            control_points: [
+                ([-1.0, 0.0, 0.0], 0.7),
+                ([2.0, 5.0, 1.0], 1.6),
+                ([6.0, -2.0, 0.0], 0.8),
+                ([9.0, 4.0, -1.0], 1.3),
+                ([12.0, 0.0, 2.0], 0.9),
+            ]
+            .into_iter()
+            .map(|(point, weight)| ControlPoint { point, weight })
+            .collect(),
+            knots: vec![-2.0, -2.0, -2.0, 1.0, 1.0, 6.0, 6.0, 6.0],
+            domain: None,
+        };
+        let surface_controls = (0..4)
+            .flat_map(|v| {
+                (0..5).map(move |u| ControlPoint {
+                    point: [u as f64 * 2.0, v as f64 * 3.0, (u * v) as f64 * 0.2],
+                    weight: 1.0,
+                })
+            })
+            .collect();
+        let response = run_request(&request(vec![
+            Operation::CurveRemoveControlPointGeometry {
+                id: "remove-rational-control".to_owned(),
+                curve,
+                control_point_index: 2,
+            },
+            Operation::SurfaceRemoveControlPointGeometry {
+                id: "remove-surface-v-control-row".to_owned(),
+                degree_u: 2,
+                degree_v: 2,
+                control_point_count_u: 5,
+                control_point_count_v: 4,
+                control_points: surface_controls,
+                knots_u: vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+                knots_v: vec![-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0],
+                direction: SurfaceKnotAxis::V,
+                control_point_index: 1,
+            },
+        ]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 2);
+        assert_eq!(curve["domain"], json!([-2.0, 6.0]));
+        assert_eq!(
+            curve["knots"],
+            json!([-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0])
+        );
+        assert_eq!(
+            curve["control_points"],
+            json!([
+                {"point": [-1.0, 0.0, 0.0], "weight": 1.0},
+                {"point": [2.0, 5.0, 1.0], "weight": 1.6},
+                {"point": [9.0, 4.0, -1.0], "weight": 1.3},
+                {"point": [12.0, 0.0, 2.0], "weight": 1.0},
+            ])
+        );
+
+        let surface = &response.results[1].value;
+        assert_eq!(surface["degree"], json!([2, 2]));
+        assert_eq!(surface["control_count"], json!([5, 3]));
+        assert_eq!(
+            surface["knots_u"],
+            json!([0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0])
+        );
+        assert_eq!(surface["knots_v"], json!([-2.0, -2.0, -2.0, 6.0, 6.0, 6.0]));
+        assert_eq!(surface["control_points"].as_array().unwrap().len(), 15);
     }
 
     #[test]

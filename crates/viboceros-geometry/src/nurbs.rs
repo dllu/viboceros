@@ -1424,6 +1424,133 @@ impl NurbsCurve {
         self.try_remove_selected_knot(parameter, knot_index)
     }
 
+    /// Removes one Rhino control-point grip and updates the curve structure.
+    ///
+    /// Open curves retain their remaining control locations and interior
+    /// weights, while new rational endpoint weights are normalized. The knot
+    /// associated with the removed control is dropped directly for odd
+    /// degrees; for even degrees, the two central associated knots are merged
+    /// at their overflow-safe mean. Removing from a single-span curve lowers
+    /// its degree by one. Periodic curves remove one unique cyclic control and
+    /// rebuild the repeated tail with Rhino's unit-spaced periodic knots. The
+    /// periodic degree is lowered when necessary; a minimum quadratic or cubic
+    /// control layout is retained because no valid periodic result can be
+    /// formed.
+    pub fn try_remove_control_point(&self, index: usize) -> Result<Self, GeometryError> {
+        if self.is_periodic() {
+            return self.try_remove_periodic_control_point(index);
+        }
+
+        let control_count = self.control_points.len();
+        if index >= control_count {
+            return Err(GeometryError::ControlPointIndexOutOfRange {
+                direction: "curve",
+                index,
+                control_point_count: control_count,
+            });
+        }
+        if control_count == 2 {
+            return Err(GeometryError::InsufficientControlPoints {
+                degree: 1,
+                required: 2,
+                actual: 1,
+            });
+        }
+
+        let clamped_start = self.knots[..=self.degree]
+            .iter()
+            .all(|knot| *knot == self.knots[self.degree]);
+        let clamped_end = self.knots[control_count..]
+            .iter()
+            .all(|knot| *knot == self.knots[control_count]);
+        if !clamped_start || !clamped_end {
+            return self
+                .clamped_to_active_domain()?
+                .try_remove_control_point(index);
+        }
+
+        let mut controls = self.control_points.clone();
+        controls.remove(index);
+        normalize_control_point_removal_end_weights(&mut controls)?;
+
+        if controls.len() == self.degree {
+            let degree = self.degree - 1;
+            let knots = self.knots[1..self.knots.len() - 1].to_vec();
+            if degree == 0 {
+                return Err(GeometryError::InvalidDegree);
+            }
+            debug_assert_eq!(knots.len(), controls.len() + degree + 1);
+            return Self::try_new_rational(degree, controls, knots);
+        }
+
+        let first_interior = self.degree + 1;
+        let last_interior = control_count - 1;
+        let half_degree_rounded_up = self.degree.div_ceil(2);
+        let target = index
+            .saturating_add(half_degree_rounded_up)
+            .clamp(first_interior, last_interior);
+        let mut knots = self.knots.clone();
+        if self.degree.is_multiple_of(2) && target > first_interior && target < last_interior {
+            knots[target - 1] = stable_knot_mean(&[knots[target - 1], knots[target]])?;
+        }
+        knots.remove(target);
+        Self::try_new_rational(self.degree, controls, knots)
+    }
+
+    fn try_remove_periodic_control_point(&self, index: usize) -> Result<Self, GeometryError> {
+        let unique_count = self.control_points.len() - self.degree;
+        if index >= unique_count {
+            return Err(GeometryError::ControlPointIndexOutOfRange {
+                direction: "periodic curve",
+                index,
+                control_point_count: unique_count,
+            });
+        }
+        let remaining_unique_count = unique_count - 1;
+        if remaining_unique_count < 3 {
+            return Self::try_unit_periodic_from_unique_controls(
+                self.degree,
+                self.control_points[..unique_count].to_vec(),
+            );
+        }
+
+        let mut unique_controls = self.control_points[..unique_count].to_vec();
+        unique_controls.remove(index);
+        let degree = self.degree.min(remaining_unique_count);
+        Self::try_unit_periodic_from_unique_controls(degree, unique_controls)
+    }
+
+    fn try_unit_periodic_from_unique_controls(
+        degree: usize,
+        unique_controls: Vec<WeightedPoint3>,
+    ) -> Result<Self, GeometryError> {
+        let control_count =
+            unique_controls
+                .len()
+                .checked_add(degree)
+                .ok_or(GeometryError::InvalidControlNet {
+                    context: "removed periodic control-point count overflowed usize",
+                })?;
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidControlNet {
+                context: "removed periodic controls exceed addressable memory",
+            }
+        })?;
+        controls.extend_from_slice(&unique_controls);
+        controls.extend(unique_controls.iter().copied().cycle().take(degree));
+        let knot_count = control_count
+            .checked_add(degree)
+            .and_then(|count| count.checked_add(1))
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "removed periodic knot count overflowed usize",
+            })?;
+        let knots = (0..knot_count)
+            .map(|knot| knot as Real - degree as Real)
+            .collect();
+        Ok(Self::try_new_rational(degree, controls, knots)?.with_opennurbs_outer_knots())
+    }
+
     /// Collapses qualifying interior multiple-knot groups in descending
     /// parameter order, matching Rhino's `RemoveMultiKnot` command.
     ///
@@ -2419,6 +2546,17 @@ pub(crate) fn stable_knot_mean(knots: &[Real]) -> Result<Real, GeometryError> {
     let mean = knots.iter().map(|knot| knot / scale).sum::<Real>() / divisor * scale;
     require_finite([mean], "periodic Greville abscissa")?;
     Ok(mean)
+}
+
+fn normalize_control_point_removal_end_weights(
+    controls: &mut [WeightedPoint3],
+) -> Result<(), GeometryError> {
+    let first = controls[0];
+    controls[0] = WeightedPoint3::try_new(first.point(), 1.0)?;
+    let last_index = controls.len() - 1;
+    let last = controls[last_index];
+    controls[last_index] = WeightedPoint3::try_new(last.point(), 1.0)?;
+    Ok(())
 }
 
 pub(crate) fn bspline_basis_values(
@@ -4207,6 +4345,224 @@ mod tests {
             fully_refined.try_insert_knot(0.52, 2).unwrap(),
             fully_refined
         );
+    }
+
+    #[test]
+    fn control_point_removal_matches_rhino_knot_and_degree_rules() {
+        let cubic_controls = [
+            point(0.0, 0.0),
+            point(2.0, 4.0),
+            point(5.0, -1.0),
+            point(7.0, 3.0),
+            point(9.0, 1.0),
+            point(12.0, 5.0),
+            point(15.0, -2.0),
+        ];
+        let cubic = NurbsCurve::try_new(
+            3,
+            cubic_controls.to_vec(),
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+        )
+        .unwrap();
+        for (index, expected_knots) in [
+            vec![0.0, 0.0, 0.0, 0.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+            vec![0.0, 0.0, 0.0, 0.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+            vec![0.0, 0.0, 0.0, 0.0, 3.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 5.0, 8.0, 8.0, 8.0, 8.0],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 8.0, 8.0, 8.0, 8.0],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 8.0, 8.0, 8.0, 8.0],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 8.0, 8.0, 8.0, 8.0],
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let removed = cubic.try_remove_control_point(index).unwrap();
+            assert_eq!(removed.knots(), expected_knots);
+            let expected_controls = cubic_controls
+                .iter()
+                .enumerate()
+                .filter_map(|(control, point)| (control != index).then_some(*point))
+                .collect::<Vec<_>>();
+            assert_eq!(
+                removed
+                    .control_points()
+                    .iter()
+                    .map(|control| control.point())
+                    .collect::<Vec<_>>(),
+                expected_controls
+            );
+        }
+
+        let quadratic = NurbsCurve::try_new(
+            2,
+            (0..8).map(|index| point(index as Real, 0.0)).collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 4.0, 7.0, 11.0, 14.0, 14.0, 14.0],
+        )
+        .unwrap();
+        assert_eq!(
+            quadratic.try_remove_control_point(3).unwrap().knots(),
+            &[0.0, 0.0, 0.0, 1.5, 4.0, 7.0, 11.0, 14.0, 14.0, 14.0]
+        );
+        assert_eq!(
+            quadratic.try_remove_control_point(5).unwrap().knots(),
+            &[0.0, 0.0, 0.0, 1.0, 2.0, 5.5, 11.0, 14.0, 14.0, 14.0]
+        );
+
+        let bezier = NurbsCurve::try_new(
+            3,
+            cubic_controls[..4].to_vec(),
+            vec![0.0, 0.0, 0.0, 0.0, 7.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap()
+        .try_remove_control_point(1)
+        .unwrap();
+        assert_eq!(bezier.degree(), 2);
+        assert_eq!(bezier.knots(), &[0.0, 0.0, 0.0, 7.0, 7.0, 7.0]);
+        assert_eq!(
+            bezier
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![cubic_controls[0], cubic_controls[2], cubic_controls[3]]
+        );
+    }
+
+    #[test]
+    fn control_point_removal_handles_rational_and_periodic_curves() {
+        let rational = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([-1.0, 0.0, 0.0], 0.7),
+                ([2.0, 5.0, 1.0], 1.6),
+                ([6.0, -2.0, 0.0], 0.8),
+                ([9.0, 4.0, -1.0], 1.3),
+                ([12.0, 0.0, 2.0], 0.9),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect(),
+            vec![-2.0, -2.0, -2.0, 1.0, 1.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap()
+        .try_remove_control_point(2)
+        .unwrap();
+        assert_eq!(rational.knots(), &[-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0]);
+        assert_eq!(
+            rational
+                .control_points()
+                .iter()
+                .map(|control| control.weight())
+                .collect::<Vec<_>>(),
+            vec![1.0, 1.6, 1.3, 1.0]
+        );
+
+        let unique = [
+            point(0.0, 0.0),
+            point(2.0, 0.0),
+            point(2.0, 2.0),
+            point(0.0, 2.0),
+        ];
+        let periodic = NurbsCurve::try_new(
+            3,
+            unique.iter().chain(&unique[..3]).copied().collect(),
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 8.0],
+        )
+        .unwrap()
+        .try_remove_control_point(1)
+        .unwrap();
+        assert!(periodic.is_periodic());
+        assert_eq!(
+            periodic.knots(),
+            &[-2.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0]
+        );
+        let remaining = [unique[0], unique[2], unique[3]];
+        assert_eq!(
+            periodic
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            remaining
+                .iter()
+                .chain(&remaining)
+                .copied()
+                .collect::<Vec<_>>()
+        );
+
+        let minimal_quadratic = NurbsCurve::try_new(
+            2,
+            unique[..3].iter().chain(&unique[..2]).copied().collect(),
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0],
+        )
+        .unwrap()
+        .try_remove_control_point(1)
+        .unwrap();
+        assert_eq!(minimal_quadratic.degree(), 2);
+        assert!(minimal_quadratic.is_periodic());
+        assert_eq!(
+            minimal_quadratic.knots(),
+            &[-1.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        );
+        assert_eq!(
+            minimal_quadratic
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            unique[..3]
+                .iter()
+                .chain(&unique[..2])
+                .copied()
+                .collect::<Vec<_>>()
+        );
+
+        let minimal_quartic = NurbsCurve::try_new(
+            4,
+            unique.iter().chain(&unique).copied().collect(),
+            vec![
+                -3.0, -3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 7.0,
+            ],
+        )
+        .unwrap()
+        .try_remove_control_point(1)
+        .unwrap();
+        assert_eq!(minimal_quartic.degree(), 3);
+        assert!(minimal_quartic.is_periodic());
+        assert_eq!(
+            minimal_quartic.knots(),
+            &[-2.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 5.0]
+        );
+        let remaining = [unique[0], unique[2], unique[3]];
+        assert_eq!(
+            minimal_quartic
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            remaining
+                .iter()
+                .chain(&remaining)
+                .copied()
+                .collect::<Vec<_>>()
+        );
+
+        assert!(matches!(
+            periodic.try_remove_control_point(3),
+            Err(GeometryError::ControlPointIndexOutOfRange { .. })
+        ));
+        let line = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(1.0, 0.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(matches!(
+            line.try_remove_control_point(0),
+            Err(GeometryError::InsufficientControlPoints { .. })
+        ));
     }
 
     #[test]

@@ -45,6 +45,7 @@ MakePeriodic Smooth=Yes DeleteInput=Yes
 MakeNonPeriodic
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 RemoveKnot 0.52,3.1 Direction=V
+RemoveControlPoint 3 Direction=U
 RemoveMultiKnot RemoveFullyMultipleKnots=Yes MaxKinkAngle=5
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
@@ -316,6 +317,13 @@ control net. Remaining homogeneous controls are interpolated at Greville
 abscissae; rational weights, object identity, attributes, selection, and undo
 are preserved. Periodic directions are rejected, while non-clamped directions
 are first clamped without changing their active domain.
+`RemoveControlPoint index Direction=U|V` requires exactly one selected curve
+or untrimmed NURBS surface and removes a zero-based control-point grip in
+place. On a surface, the complete row at that index is removed in the chosen
+direction, which defaults to U. Remaining controls are retained, with
+Rhino-compatible knot updates, endpoint-weight normalization, single-span
+degree lowering, and periodic topology repair. The operation generally changes
+shape while preserving object identity, attributes, selection, and undo.
 `RemoveMultiKnot RemoveFullyMultipleKnots=Yes|No MaxKinkAngle=0..180`
 reduces qualifying stacked knots on every selected curve and untrimmed NURBS
 surface. By default, only non-full multiple knots are collapsed to simple
@@ -1015,6 +1023,10 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/remove_knot.json \
   --absolute-epsilon 2e-11 --relative-epsilon 2e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/remove_control_point.json \
+  --absolute-epsilon 1e-10 --relative-epsilon 1e-10
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/remove_multi_knot.json
