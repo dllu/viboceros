@@ -5867,6 +5867,133 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_extend_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        length = _finite(operation["length"], "curve extension length")
+        if not length > 0.0:
+            source.Dispose()
+            raise ValueError("curve extension length must be positive")
+        side_name = str(operation["side"]).lower()
+        style_name = str(operation["style"]).lower()
+        join_name = str(operation["join"]).lower()
+        if side_name not in ("start", "end", "both"):
+            source.Dispose()
+            raise ValueError("invalid curve extension side")
+        if style_name not in ("natural", "line"):
+            source.Dispose()
+            raise ValueError("invalid curve extension style")
+        if join_name not in ("merge", "no"):
+            source.Dispose()
+            raise ValueError("invalid curve extension join mode")
+
+        def crossing_selection(point, radius):
+            return "_SelCrossing %.17g,%.17g %.17g,%.17g" % (
+                point.X - radius,
+                point.Y - radius,
+                point.X + radius,
+                point.Y + radius,
+            )
+
+        def extend_curve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            object_id = System.Guid.Empty
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Extend Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                object_id = document.Objects.AddCurve(source, attributes)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add Extend command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Extend Group " + str(System.Guid.NewGuid()),
+                    [object_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Extend command source curve")
+                Rhino.RhinoApp.RunScript("_-SetView _World _Top _Zoom _Extents", False)
+                radius = max(1.0, float(source.GetBoundingBox(True).Diagonal.Length)) * 0.02
+                selections = []
+                if side_name in ("start", "both"):
+                    selections.append(crossing_selection(source.PointAtStart, radius))
+                if side_name in ("end", "both"):
+                    selections.append(crossing_selection(source.PointAtEnd, radius))
+                command = "_-Extend _Type=_%s _Join=_%s %.17g %s _Enter" % (
+                    "Natural" if style_name == "natural" else "Line",
+                    "Merge" if join_name == "merge" else "No",
+                    length,
+                    " ".join(selections),
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                expected_count = 1 + (
+                    (2 if side_name == "both" else 1) if join_name == "no" else 0
+                )
+                if len(objects) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Extend macro %r returned %r and left %d curve objects; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(objects),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Extend Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(item.Geometry),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == object_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: (
+                        record["original_id"],
+                        tuple(record["curve"]["control_points"][0]["point"]),
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, extend_curve_command)
+        finally:
+            source.Dispose()
+
     if kind == "curve_subcurve_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])
         start = _finite(operation["start"], "subcurve start parameter")

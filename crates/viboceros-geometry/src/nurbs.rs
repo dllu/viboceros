@@ -2452,6 +2452,147 @@ impl NurbsCurve {
         Ok(result)
     }
 
+    /// Applies Rhino's `Join=Merge` cleanup to a tangent-line extension.
+    /// Degree-one curves merge into their terminal line span, geometrically
+    /// linear higher-degree curves collapse to one line, and other curves
+    /// retain the degree-matched appended span.
+    pub fn try_merged_linearly_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if self.degree == 1 {
+            return self.try_extended_by_length(side, length, tolerance);
+        }
+        if !self.is_linear_at_zero_tolerance()? {
+            return self.try_extended_linearly_by_length(side, length, tolerance);
+        }
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let domain = self.domain();
+        let original_start = *domain.start();
+        let original_end = *domain.end();
+        let start_derivative = self.derivative_at(original_start)?;
+        let end_derivative = self.derivative_at(original_end)?;
+        let start_speed = start_derivative.length()?;
+        let end_speed = end_derivative.length()?;
+        let start_tangent = start_derivative.normalized(tolerance)?;
+        let end_tangent = end_derivative.normalized(tolerance)?;
+        let mut start = self.evaluate(original_start)?;
+        let mut end = self.evaluate(original_end)?;
+        let mut domain_start = original_start;
+        let mut domain_end = original_end;
+        if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+            domain_start -= length / start_speed;
+            start = start.translated(start_tangent.as_vector().scaled(-length)?)?;
+        }
+        if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            domain_end += length / end_speed;
+            end = end.translated(end_tangent.as_vector().scaled(length)?)?;
+        }
+        require_finite(
+            [domain_start, domain_end],
+            "merged linear curve extension domain",
+        )?;
+        if domain_start >= original_start && domain_end <= original_end {
+            return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+        }
+        Self::try_new(
+            1,
+            vec![start, end],
+            vec![domain_start, domain_start, domain_end, domain_end],
+        )
+    }
+
+    /// Creates independent degree-one tangent-line extensions without
+    /// changing this curve. Each output uses Rhino command geometry's unit
+    /// domain, and `Both` returns the start extension followed by the end
+    /// extension.
+    pub fn try_separate_linear_extensions_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Self>, GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let domain = self.domain();
+        let mut extensions = Vec::with_capacity(if side == CurveExtensionSide::Both {
+            2
+        } else {
+            1
+        });
+        if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+            let parameter = *domain.start();
+            let endpoint = self.evaluate(parameter)?;
+            let tangent = self.derivative_at(parameter)?.normalized(tolerance)?;
+            let outer = endpoint.translated(tangent.as_vector().scaled(-length)?)?;
+            extensions.push(Self::try_new(
+                1,
+                vec![outer, endpoint],
+                vec![0.0, 0.0, 1.0, 1.0],
+            )?);
+        }
+        if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            let parameter = *domain.end();
+            let endpoint = self.evaluate(parameter)?;
+            let tangent = self.derivative_at(parameter)?.normalized(tolerance)?;
+            let outer = endpoint.translated(tangent.as_vector().scaled(length)?)?;
+            extensions.push(Self::try_new(
+                1,
+                vec![endpoint, outer],
+                vec![0.0, 0.0, 1.0, 1.0],
+            )?);
+        }
+        Ok(extensions)
+    }
+
+    /// Creates independent natural-extension pieces without changing this
+    /// curve. Degree-one inputs use Rhino's standalone line representation;
+    /// other inputs retain the natural extension's source parameter values.
+    pub fn try_separate_natural_extensions_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Self>, GeometryError> {
+        if self.degree == 1 {
+            return self.try_separate_linear_extensions_by_length(side, length, tolerance);
+        }
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let mut extensions = Vec::with_capacity(if side == CurveExtensionSide::Both {
+            2
+        } else {
+            1
+        });
+        if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+            let parameter = self.extension_parameter_by_length(true, length, tolerance)?;
+            extensions.push(self.extension_segment(true, parameter)?);
+        }
+        if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            let parameter = self.extension_parameter_by_length(false, length, tolerance)?;
+            extensions.push(self.extension_segment(false, parameter)?);
+        }
+        Ok(extensions)
+    }
+
     fn extended_linearly_at_start(
         &self,
         length: Real,
@@ -6936,6 +7077,140 @@ mod tests {
     }
 
     #[test]
+    fn merged_linear_extension_simplifies_lines_and_extends_polyline_end_spans() {
+        let straight = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let merged = straight
+            .try_merged_linearly_by_length(CurveExtensionSide::End, 2.0, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(merged.degree(), 1);
+        assert_eq!(merged.domain(), 0.0..=1.125);
+        assert_eq!(
+            merged
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+
+        let polyline = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let merged = polyline
+            .try_merged_linearly_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(merged.degree(), 1);
+        assert_eq!(merged.control_points().len(), 3);
+        assert_eq!(merged.domain(), 0.0..=3.0);
+        assert_eq!(
+            merged.control_points()[2].point(),
+            Point3::try_new(1.0, 2.0, 0.0).unwrap()
+        );
+    }
+
+    #[test]
+    fn separate_linear_extensions_are_unit_domain_tangent_lines() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extensions = curve
+            .try_separate_linear_extensions_by_length(
+                CurveExtensionSide::Both,
+                2.0,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+
+        assert_eq!(extensions.len(), 2);
+        for extension in &extensions {
+            assert_eq!(extension.degree(), 1);
+            assert_eq!(extension.domain(), 0.0..=1.0);
+            assert_eq!(extension.knots(), &[0.0, 0.0, 1.0, 1.0]);
+            assert!(
+                Tolerance::DEFAULT.approx_eq(extension.length(Tolerance::DEFAULT).unwrap(), 2.0,)
+            );
+        }
+        assert_point_near(
+            extensions[0].control_points()[0].point(),
+            Point3::try_new(-0.894_427_190_999_915_9, -1.788_854_381_999_831_7, 0.0).unwrap(),
+        );
+        assert_eq!(
+            extensions[0].control_points()[1].point(),
+            curve.evaluate(0.0).unwrap()
+        );
+        assert_eq!(
+            extensions[1].control_points()[0].point(),
+            curve.evaluate(1.0).unwrap()
+        );
+        assert_point_near(
+            extensions[1].control_points()[1].point(),
+            Point3::try_new(4.788_854_381_999_831_5, 0.105_572_809_000_084_14, 0.0).unwrap(),
+        );
+    }
+
+    #[test]
+    fn separate_natural_extension_is_the_exact_extrapolated_piece() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let mut extensions = curve
+            .try_separate_natural_extensions_by_length(
+                CurveExtensionSide::End,
+                2.0,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        let extension = extensions.pop().unwrap();
+
+        assert_eq!(*extension.domain().start(), *curve.domain().end());
+        assert!(Tolerance::DEFAULT.approx_eq(extension.length(Tolerance::DEFAULT).unwrap(), 2.0,));
+        assert_point_near(
+            extension.evaluate(1.0).unwrap(),
+            curve.evaluate(1.0).unwrap(),
+        );
+        let extended = curve
+            .try_extended_by_length(CurveExtensionSide::End, 2.0, Tolerance::DEFAULT)
+            .unwrap();
+        let expected = extended
+            .try_trimmed(1.0..=*extended.domain().end())
+            .unwrap();
+        assert_eq!(extension, expected);
+    }
+
+    #[test]
     fn natural_extension_ignores_interior_bound_and_rejects_invalid_inputs() {
         let curve = NurbsCurve::try_new(
             1,
@@ -6981,6 +7256,26 @@ mod tests {
             ),
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
+        assert_eq!(
+            closed.try_merged_linearly_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed.try_separate_linear_extensions_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed.try_separate_natural_extensions_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
         for length in [0.0, -1.0, Real::NAN] {
             assert_eq!(
                 curve.try_extended_by_length(CurveExtensionSide::End, length, Tolerance::DEFAULT),
@@ -6988,6 +7283,30 @@ mod tests {
             );
             assert_eq!(
                 curve.try_extended_linearly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_merged_linearly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_separate_linear_extensions_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_separate_natural_extensions_by_length(
                     CurveExtensionSide::End,
                     length,
                     Tolerance::DEFAULT,

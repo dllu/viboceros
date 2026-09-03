@@ -575,6 +575,14 @@ pub enum Operation {
         #[serde(default)]
         style: CurveLengthExtensionStyle,
     },
+    CurveExtendCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        side: CurveExtensionEnd,
+        length: f64,
+        style: CurveCommandExtensionStyle,
+        join: CurveCommandExtensionJoin,
+    },
     CurveSubcurveGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -991,6 +999,20 @@ pub enum CurveLengthExtensionStyle {
     Smooth,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveCommandExtensionStyle {
+    Natural,
+    Line,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveCommandExtensionJoin {
+    Merge,
+    No,
+}
+
 impl CurveExtensionEnd {
     const fn geometry(self) -> CurveExtensionSide {
         match self {
@@ -1156,6 +1178,7 @@ impl Operation {
             | Self::CurveReparameterizeGeometry { id, .. }
             | Self::CurveExtendGeometry { id, .. }
             | Self::CurveExtendLengthGeometry { id, .. }
+            | Self::CurveExtendCommand { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
@@ -3048,6 +3071,14 @@ fn execute(
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveExtendCommand {
+            curve,
+            side,
+            length,
+            style,
+            join,
+            ..
+        } => curve_extend_command(iterations, curve, *side, *length, *style, *join, tolerance)?,
         Operation::CurveSubcurveGeometry {
             curve, start, end, ..
         } => {
@@ -6694,6 +6725,106 @@ fn nurbs_surface_definition_value(surface: &NurbsSurface) -> Value {
     })
 }
 
+fn curve_extend_command(
+    iterations: u32,
+    definition: &NurbsCurveDefinition,
+    side: CurveExtensionEnd,
+    length: f64,
+    style: CurveCommandExtensionStyle,
+    join: CurveCommandExtensionJoin,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let registry = CommandRegistry::with_builtins();
+    let source = nurbs_curve_from_definition(definition)?;
+    let mut document = Document::new(tolerance);
+    let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+        .with_name("Viboceros Extend Source")
+        .with_object_color(ColorRgb::new(12, 34, 56));
+    let source_id = document
+        .add_geometry_with_attributes(Geometry::NurbsCurve(source.clone()), attributes.clone())?;
+    let group_id = document.add_group(Some("Viboceros Extend Group".to_owned()), [source_id])?;
+    document.select_object(source_id, SelectionMode::Replace)?;
+    let side_name = match side {
+        CurveExtensionEnd::Start => "Start",
+        CurveExtensionEnd::End => "End",
+        CurveExtensionEnd::Both => "Both",
+    };
+    let style_name = match style {
+        CurveCommandExtensionStyle::Natural => "Natural",
+        CurveCommandExtensionStyle::Line => "Line",
+    };
+    let join_name = match join {
+        CurveCommandExtensionJoin::Merge => "Merge",
+        CurveCommandExtensionJoin::No => "No",
+    };
+    registry.execute(
+        &mut document,
+        &format!("Extend Length={length} Side={side_name} Type={style_name} Join={join_name}"),
+    )?;
+
+    let source_group_members = document
+        .group(group_id)
+        .expect("the Extend source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .map(|object| {
+            let curve = object
+                .geometry()
+                .nurbs_curve_representation()?
+                .expect("the Extend command produces only curve objects");
+            let first_point = curve.control_points()[0].point().to_array();
+            Ok((
+                object.id() == source_id,
+                first_point,
+                json!({
+                    "attributes_match_source": object.attributes() == &attributes,
+                    "curve": nurbs_curve_definition_value(&curve),
+                    "in_source_group": source_group_members.contains(&object.id()),
+                    "original_id": object.id() == source_id,
+                    "selected": document.is_selected(object.id()),
+                }),
+            ))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    records.sort_by(
+        |(left_original, left_point, _), (right_original, right_point, _)| {
+            left_original
+                .cmp(right_original)
+                .then_with(|| compare_point(left_point, right_point))
+        },
+    );
+    let value = json!({
+        "command_succeeded": true,
+        "objects": records.into_iter().map(|(_, _, value)| value).collect::<Vec<_>>(),
+    });
+
+    let (_, elapsed_ns) = measure(iterations, || match (style, join) {
+        (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::Merge) => source
+            .try_extended_by_length(black_box(side.geometry()), black_box(length), tolerance)
+            .map(|_| 1),
+        (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::No) => source
+            .try_separate_natural_extensions_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            )
+            .map(|curves| curves.len()),
+        (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::Merge) => source
+            .try_merged_linearly_by_length(black_box(side.geometry()), black_box(length), tolerance)
+            .map(|_| 1),
+        (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::No) => source
+            .try_separate_linear_extensions_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            )
+            .map(|curves| curves.len()),
+    })?;
+    Ok((value, elapsed_ns))
+}
+
 fn uniform_surface_definition_value(surface: &NurbsSurface) -> Value {
     let mut value = nurbs_surface_definition_value(surface);
     let object = value
@@ -9115,6 +9246,39 @@ mod tests {
             curve["control_points"][4]["point"],
             json!([4.5, 0.25, -2.5])
         );
+    }
+
+    #[test]
+    fn captures_separate_curve_extension_command_behavior() {
+        let response = run_request(&request(vec![Operation::CurveExtendCommand {
+            id: "extend-quadratic-line-separately".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 2,
+                control_points: [[0.0, 0.0, 0.0], [1.0, 2.0, 0.0], [3.0, 1.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                domain: None,
+            },
+            side: CurveExtensionEnd::End,
+            length: 2.0,
+            style: CurveCommandExtensionStyle::Line,
+            join: CurveCommandExtensionJoin::No,
+        }]))
+        .unwrap();
+
+        let objects = response.results[0].value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 2);
+        assert_eq!(objects[0]["original_id"], false);
+        assert_eq!(objects[0]["attributes_match_source"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["selected"], false);
+        assert_eq!(objects[0]["curve"]["degree"], 1);
+        assert_eq!(objects[0]["curve"]["domain"], json!([0.0, 1.0]));
+        assert_eq!(objects[1]["original_id"], true);
+        assert_eq!(objects[1]["in_source_group"], true);
+        assert_eq!(objects[1]["selected"], false);
     }
 
     #[test]

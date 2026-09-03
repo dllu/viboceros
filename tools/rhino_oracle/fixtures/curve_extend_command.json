@@ -1,0 +1,108 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-line-no-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "line",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-line-no-start",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "start",
+      "length": 2,
+      "style": "line",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-line-no-both",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "both",
+      "length": 2,
+      "style": "line",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-natural-no-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "natural",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-line-merge-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "nonuniform-straight-line-merge-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 0, 0]},
+          {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "line",
+      "join": "merge"
+    }
+  ]
+}
