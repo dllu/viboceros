@@ -1,0 +1,116 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_tween_geometry",
+      "id": "compatible-rational-control-points",
+      "method": "control_point",
+      "number": 2,
+      "start_curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0], "weight": 1},
+          {"point": [2, 3, 0], "weight": 2},
+          {"point": [4, 0, 0], "weight": 4}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "end_curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 6, 2], "weight": 3},
+          {"point": [2, 9, 4], "weight": 4},
+          {"point": [4, 6, 2], "weight": 2}
+        ],
+        "knots": [2, 2, 2, 8, 8, 8]
+      }
+    },
+    {
+      "op": "curve_tween_geometry",
+      "id": "extra-end-controls",
+      "method": "control_point",
+      "number": 1,
+      "start_curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 2, 0]},
+          {"point": [3, -1, 0]}, {"point": [5, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 1, 1, 1]
+      },
+      "end_curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 6, 0]}, {"point": [1, 8, 0]},
+          {"point": [3, 5, 0]}, {"point": [5, 8, 0]},
+          {"point": [7, 6, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 0.5, 1, 1, 1, 1]
+      }
+    },
+    {
+      "op": "curve_tween_geometry",
+      "id": "first-knot-structure-wins",
+      "method": "control_point",
+      "number": 2,
+      "start_curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [1, 2, 0]},
+          {"point": [3, -1, 0]}, {"point": [5, 2, 0]},
+          {"point": [7, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 0.2, 1, 1, 1, 1]
+      },
+      "end_curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 6, 0]}, {"point": [1, 8, 0]},
+          {"point": [3, 5, 0]}, {"point": [5, 8, 0]},
+          {"point": [7, 6, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 0.8, 1, 1, 1, 1]
+      }
+    },
+    {
+      "op": "curve_tween_geometry",
+      "id": "sampled-lines",
+      "method": "sample_points",
+      "number": 2,
+      "sample_number": 4,
+      "start_curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [9, 0, 0]}],
+        "knots": [0, 0, 9, 9]
+      },
+      "end_curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 6, 3]}, {"point": [9, 9, 0]}],
+        "knots": [-2, -2, 1, 1]
+      }
+    },
+    {
+      "op": "curve_tween_geometry",
+      "id": "sampled-nonlinear-curves",
+      "method": "sample_points",
+      "number": 1,
+      "sample_number": 5,
+      "start_curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [3, 5, 0]}, {"point": [8, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "end_curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 6, 1]}, {"point": [1, 9, 2]},
+          {"point": [6, 4, -1]}, {"point": [8, 7, 0]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 1, 1, 1]
+      }
+    }
+  ]
+}

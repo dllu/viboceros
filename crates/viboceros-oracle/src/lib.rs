@@ -16,12 +16,13 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
     CatenaryOutput, Circle3, CircularArc3, CurveKnotSpacing, CurveRef, CurveThroughConstruction,
-    Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions,
-    MeshCylinderOptions, MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions,
-    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
-    Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_polylines, sort_and_cull_points,
-    try_catenary, try_curve_through_points,
+    CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points,
+    try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -509,6 +510,15 @@ pub enum Operation {
         knots: CurveThroughKnotStyle,
         closed: bool,
     },
+    CurveTweenGeometry {
+        id: String,
+        start_curve: NurbsCurveDefinition,
+        end_curve: NurbsCurveDefinition,
+        method: CurveTweenMethod,
+        number: usize,
+        #[serde(default)]
+        sample_number: Option<usize>,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -676,6 +686,23 @@ pub enum CurveThroughKnotStyle {
     SqrtChord,
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum CurveTweenMethod {
+    ControlPoint,
+    Refit,
+    SamplePoints,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct NurbsCurveDefinition {
+    pub degree: usize,
+    pub control_points: Vec<ControlPoint>,
+    pub knots: Vec<f64>,
+    #[serde(default)]
+    pub domain: Option<[f64; 2]>,
+}
+
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
@@ -750,6 +777,7 @@ impl Operation {
             | Self::SweptSpiral { id, .. }
             | Self::Catenary { id, .. }
             | Self::CurveThroughGeometry { id, .. }
+            | Self::CurveTweenGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2471,6 +2499,39 @@ fn execute(
             (
                 json!({
                     "curves": definitions,
+                }),
+                elapsed,
+            )
+        }
+        Operation::CurveTweenGeometry {
+            start_curve,
+            end_curve,
+            method,
+            number,
+            sample_number,
+            ..
+        } => {
+            let start = nurbs_curve_from_definition(start_curve)?;
+            let end = nurbs_curve_from_definition(end_curve)?;
+            let method = match method {
+                CurveTweenMethod::ControlPoint => CurveTweenMatchMethod::ControlPoint,
+                CurveTweenMethod::Refit => CurveTweenMatchMethod::Refit,
+                CurveTweenMethod::SamplePoints => CurveTweenMatchMethod::SamplePoints {
+                    sample_number: sample_number.unwrap_or(100),
+                },
+            };
+            let (curves, elapsed) = measure(iterations, || {
+                try_tween_nurbs_curves(
+                    &start,
+                    &end,
+                    black_box(*number),
+                    black_box(method),
+                    tolerance,
+                )
+            })?;
+            (
+                json!({
+                    "curves": curves.iter().map(nurbs_curve_definition_value).collect::<Vec<_>>(),
                 }),
                 elapsed,
             )
@@ -5500,6 +5561,20 @@ fn weighted_points(points: &[ControlPoint]) -> Result<Vec<WeightedPoint3>, Geome
         .collect()
 }
 
+fn nurbs_curve_from_definition(
+    definition: &NurbsCurveDefinition,
+) -> Result<NurbsCurve, GeometryError> {
+    let curve = NurbsCurve::try_new_rational(
+        definition.degree,
+        weighted_points(&definition.control_points)?,
+        definition.knots.clone(),
+    )?;
+    match definition.domain {
+        Some([start, end]) => curve.try_reparameterized(start..=end),
+        None => Ok(curve),
+    }
+}
+
 fn mesh_value(mesh: &TriangleMesh) -> Value {
     json!({
         "triangles": mesh.triangles(),
@@ -7343,6 +7418,63 @@ mod tests {
         assert_eq!(closed["domain"], json!([0.0, 4.0]));
         assert_eq!(closed["control_points"].as_array().unwrap().len(), 7);
         assert_eq!(closed["knots"].as_array().unwrap().len(), 9);
+    }
+
+    #[test]
+    fn captures_control_point_curve_tweens_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::CurveTweenGeometry {
+            id: "tweens".to_owned(),
+            start_curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: vec![
+                    ControlPoint {
+                        point: [0.0, 0.0, 0.0],
+                        weight: 1.0,
+                    },
+                    ControlPoint {
+                        point: [6.0, 0.0, 0.0],
+                        weight: 2.0,
+                    },
+                ],
+                knots: vec![0.0, 0.0, 6.0, 6.0],
+                domain: None,
+            },
+            end_curve: NurbsCurveDefinition {
+                degree: 1,
+                control_points: vec![
+                    ControlPoint {
+                        point: [0.0, 9.0, 3.0],
+                        weight: 4.0,
+                    },
+                    ControlPoint {
+                        point: [6.0, 6.0, 0.0],
+                        weight: 5.0,
+                    },
+                ],
+                knots: vec![10.0, 10.0, 20.0, 20.0],
+                domain: None,
+            },
+            method: CurveTweenMethod::ControlPoint,
+            number: 2,
+            sample_number: None,
+        }]))
+        .unwrap();
+
+        let curves = response.results[0].value["curves"].as_array().unwrap();
+        assert_eq!(curves.len(), 2);
+        assert_eq!(curves[0]["domain"], json!([0.0, 6.0]));
+        assert_eq!(curves[0]["knots"], json!([0.0, 0.0, 6.0, 6.0]));
+        assert_eq!(
+            curves[0]["control_points"],
+            json!([
+                {"point": [0.0, 3.0, 1.0], "weight": 2.0},
+                {"point": [6.0, 2.0, 0.0], "weight": 3.0},
+            ])
+        );
+        assert_eq!(
+            curves[1]["control_points"][0]["point"],
+            json!([0.0, 6.0, 2.0])
+        );
     }
 
     #[test]

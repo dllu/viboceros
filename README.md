@@ -35,6 +35,7 @@ ControlPointCurve 3 0,0 2,3 5,3 8,0
 InterpCrv 0,0 1,2 4,-1 6,0 Knots=Chord Close=Open
 CurveThroughPt CurveType=Interpolated Knots=Chord Closed=No
 CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
+TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -228,7 +229,18 @@ each source is open or closed. Both commands support control-point degrees 1
 through 11 (lowered when necessary), while interpolated output currently
 supports degrees 1 and 3 with uniform, chord, or square-root-chord spacing.
 Polyline sources are retained by default; `DeleteInput=Yes` replaces their
-geometry in place while preserving identity and attributes. `Polygon`
+geometry in place while preserving identity and attributes.
+`TweenCurves` requires exactly two selected curves, uses their selection order,
+and leaves both sources selected. `MatchMethod=None` connects corresponding
+NURBS control locations and weights, including Rhino's last-control rule when
+the counts differ. `MatchMethod=SamplePoints` supports 2 through 9999
+equal-length divisions with bounded, linear-memory interpolation.
+`OutputLayer=` accepts `CurrentLayer`, `StartCrv`, or `EndCrv`; `FlipStart=Yes`
+and `FlipEnd=Yes`
+reverse either temporary source direction. `MatchMethod=Refit` is recognized
+but reports an explicit unsupported error until tolerance-driven `FitCrv`
+matching is implemented.
+`Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
@@ -881,6 +893,14 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_through.json \
+  --absolute-epsilon 2e-12 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_tween.json \
+  --absolute-epsilon 5e-8 --relative-epsilon 1e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_tween_short_samples.json \
   --absolute-epsilon 2e-12 --relative-epsilon 1e-12
 ```
 

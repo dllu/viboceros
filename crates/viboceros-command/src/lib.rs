@@ -10,19 +10,20 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
     CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveInterpolationOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction,
+    CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction, CurveTweenMatchMethod,
     DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
     GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
-    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_THROUGH_DEGREE, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
+    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT,
+    MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
     MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
     MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_POLYLINE_CATENARY_POINT_COUNT, MIN_SMOOTH_CATENARY_POINT_COUNT,
-    MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
-    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
-    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, join_polylines, sort_and_cull_points, try_catenary,
-    try_curve_through_points,
+    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
+    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, join_polylines,
+    sort_and_cull_points, try_catenary, try_curve_through_points, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -101,6 +102,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(CurveThroughPolylineCommand)
+            .expect("unique built-in command");
+        registry
+            .register(TweenCurvesCommand)
             .expect("unique built-in command");
         registry
             .register(SrfPtCommand)
@@ -1362,6 +1366,200 @@ impl Command for CurveThroughPolylineCommand {
             }
         ))
     }
+}
+
+const TWEEN_CURVES_USAGE: &str = "TweenCurves [Number=1..1000000] [MatchMethod=None|Refit|SamplePoints] [SampleNumber=2..9999] [OutputLayer=CurrentLayer|StartCrv|EndCrv] [FlipStart=Yes|No] [FlipEnd=Yes|No]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum TweenCurveOutputLayer {
+    Current,
+    Start,
+    End,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct TweenCurvesOptions {
+    number: usize,
+    method: CurveTweenMatchMethod,
+    output_layer: TweenCurveOutputLayer,
+    flip_start: bool,
+    flip_end: bool,
+}
+
+struct TweenCurvesCommand;
+
+impl Command for TweenCurvesCommand {
+    fn name(&self) -> &'static str {
+        "TweenCurves"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_tween_curves_options(arguments)?;
+        let (mut start, mut end, source_layers) = {
+            let sources = document
+                .selected_objects()
+                .filter(|object| geometry_curve_ref(object.geometry()).is_some())
+                .collect::<Vec<_>>();
+            if sources.len() != 2 {
+                return Err(CommandError::TweenCurvesRequiresTwoCurves {
+                    actual: sources.len(),
+                });
+            }
+            (
+                sources[0]
+                    .geometry()
+                    .nurbs_curve_representation()?
+                    .expect("curve geometry has an exact NURBS representation"),
+                sources[1]
+                    .geometry()
+                    .nurbs_curve_representation()?
+                    .expect("curve geometry has an exact NURBS representation"),
+                [
+                    sources[0].attributes().layer_id(),
+                    sources[1].attributes().layer_id(),
+                ],
+            )
+        };
+        if options.flip_start {
+            start = start.reversed()?;
+        }
+        if options.flip_end {
+            end = end.reversed()?;
+        }
+        let curves = try_tween_nurbs_curves(
+            &start,
+            &end,
+            options.number,
+            options.method,
+            document.tolerance(),
+        )?;
+        let layer = match options.output_layer {
+            TweenCurveOutputLayer::Current => document.current_layer_id(),
+            TweenCurveOutputLayer::Start => source_layers[0],
+            TweenCurveOutputLayer::End => source_layers[1],
+        };
+        for curve in curves {
+            document.add_geometry_with_attributes(
+                Geometry::NurbsCurve(curve),
+                ObjectAttributes::on_layer(layer),
+            )?;
+        }
+        Ok(format!(
+            "Created {} tween curve(s) using {} matching on the {} layer",
+            options.number,
+            match options.method {
+                CurveTweenMatchMethod::ControlPoint => "control-point",
+                CurveTweenMatchMethod::Refit => "refit",
+                CurveTweenMatchMethod::SamplePoints { .. } => "sample-point",
+            },
+            match options.output_layer {
+                TweenCurveOutputLayer::Current => "current",
+                TweenCurveOutputLayer::Start => "start-curve",
+                TweenCurveOutputLayer::End => "end-curve",
+            }
+        ))
+    }
+}
+
+fn parse_tween_curves_options(arguments: &[&str]) -> Result<TweenCurvesOptions, CommandError> {
+    let mut number = 1;
+    let mut method = CurveTweenMatchMethod::ControlPoint;
+    let mut sample_number = 100;
+    let mut output_layer = TweenCurveOutputLayer::Current;
+    let mut flip_start = false;
+    let mut flip_end = false;
+    let mut number_seen = false;
+    let mut method_seen = false;
+    let mut sample_number_seen = false;
+    let mut output_layer_seen = false;
+    let mut flip_start_seen = false;
+    let mut flip_end_seen = false;
+
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(TWEEN_CURVES_USAGE));
+        };
+        let value = value.trim_start_matches(['_', '-']);
+        if option_name_eq(name, "Number") && !number_seen {
+            number = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            number_seen = true;
+        } else if option_name_eq(name, "MatchMethod") && !method_seen {
+            method = if value.eq_ignore_ascii_case("None")
+                || value.eq_ignore_ascii_case("ControlPoint")
+            {
+                CurveTweenMatchMethod::ControlPoint
+            } else if value.eq_ignore_ascii_case("Refit") {
+                CurveTweenMatchMethod::Refit
+            } else if value.eq_ignore_ascii_case("SamplePoints")
+                || value.eq_ignore_ascii_case("Sampling")
+            {
+                CurveTweenMatchMethod::SamplePoints { sample_number }
+            } else {
+                return Err(CommandError::Usage(TWEEN_CURVES_USAGE));
+            };
+            method_seen = true;
+        } else if option_name_eq(name, "SampleNumber") && !sample_number_seen {
+            sample_number = value
+                .parse::<usize>()
+                .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+            sample_number_seen = true;
+        } else if option_name_eq(name, "OutputLayer") && !output_layer_seen {
+            output_layer = if value.eq_ignore_ascii_case("Current")
+                || value.eq_ignore_ascii_case("CurrentLayer")
+            {
+                TweenCurveOutputLayer::Current
+            } else if value.eq_ignore_ascii_case("Start") || value.eq_ignore_ascii_case("StartCrv")
+            {
+                TweenCurveOutputLayer::Start
+            } else if value.eq_ignore_ascii_case("End") || value.eq_ignore_ascii_case("EndCrv") {
+                TweenCurveOutputLayer::End
+            } else {
+                return Err(CommandError::Usage(TWEEN_CURVES_USAGE));
+            };
+            output_layer_seen = true;
+        } else if option_name_eq(name, "FlipStart") && !flip_start_seen {
+            flip_start = parse_yes_no(value).ok_or(CommandError::Usage(TWEEN_CURVES_USAGE))?;
+            flip_start_seen = true;
+        } else if option_name_eq(name, "FlipEnd") && !flip_end_seen {
+            flip_end = parse_yes_no(value).ok_or(CommandError::Usage(TWEEN_CURVES_USAGE))?;
+            flip_end_seen = true;
+        } else {
+            return Err(CommandError::Usage(TWEEN_CURVES_USAGE));
+        }
+    }
+
+    if sample_number_seen && !matches!(method, CurveTweenMatchMethod::SamplePoints { .. }) {
+        return Err(CommandError::Usage(TWEEN_CURVES_USAGE));
+    }
+    if matches!(method, CurveTweenMatchMethod::SamplePoints { .. }) {
+        method = CurveTweenMatchMethod::SamplePoints { sample_number };
+    }
+    if !(1..=MAX_CURVE_TWEEN_COUNT).contains(&number) {
+        return Err(GeometryError::InvalidCurveTweenCount {
+            actual: number,
+            maximum: MAX_CURVE_TWEEN_COUNT,
+        }
+        .into());
+    }
+    if let CurveTweenMatchMethod::SamplePoints { sample_number } = method
+        && !(MIN_CURVE_TWEEN_SAMPLE_NUMBER..=MAX_CURVE_TWEEN_SAMPLE_NUMBER).contains(&sample_number)
+    {
+        return Err(GeometryError::InvalidCurveTweenSampleCount {
+            actual: sample_number,
+            minimum: MIN_CURVE_TWEEN_SAMPLE_NUMBER,
+            maximum: MAX_CURVE_TWEEN_SAMPLE_NUMBER,
+        }
+        .into());
+    }
+    Ok(TweenCurvesOptions {
+        number,
+        method,
+        output_layer,
+        flip_start,
+        flip_end,
+    })
 }
 
 struct SrfPtCommand;
@@ -16270,6 +16468,9 @@ pub enum CommandError {
     #[error("CurveThroughPolyline requires at least one selected polyline")]
     NoCurveThroughPolylines,
 
+    #[error("TweenCurves requires exactly two selected curves, got {actual}")]
+    TweenCurvesRequiresTwoCurves { actual: usize },
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -16757,7 +16958,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -25619,6 +25820,264 @@ mod tests {
             Err(CommandError::NotEnoughCurveThroughPoints)
         ));
         assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn tween_curves_preserves_sources_selection_order_and_output_layer() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let start_layer = document
+            .add_layer("Tween start", ColorRgb::new(30, 40, 50))
+            .unwrap();
+        let end_layer = document
+            .add_layer("Tween end", ColorRgb::new(60, 70, 80))
+            .unwrap();
+        let start = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.0, -1.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 5.0, 5.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let end = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 6.0, 2.0).unwrap(),
+                Point3::try_new(1.0, 5.0, 3.0).unwrap(),
+                Point3::try_new(3.0, 9.0, -1.0).unwrap(),
+                Point3::try_new(5.0, 6.0, 2.0).unwrap(),
+            ],
+            vec![10.0, 10.0, 10.0, 10.0, 30.0, 30.0, 30.0, 30.0],
+        )
+        .unwrap();
+        let start_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(start),
+                ObjectAttributes::on_layer(start_layer).with_name("start"),
+            )
+            .unwrap();
+        let end_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(end),
+                ObjectAttributes::on_layer(end_layer).with_name("end"),
+            )
+            .unwrap();
+        document
+            .select_objects([start_id, end_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "TweenCurves Number=2 MatchMethod=None OutputLayer=StartCrv",
+                )
+                .unwrap(),
+            "Created 2 tween curve(s) using control-point matching on the start-curve layer"
+        );
+        assert_eq!(document.objects().len(), 4);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [start_id, end_id]
+        );
+        let outputs = document.objects().skip(2).collect::<Vec<_>>();
+        assert!(
+            outputs
+                .iter()
+                .all(|object| !document.is_selected(object.id()))
+        );
+        assert!(
+            outputs
+                .iter()
+                .all(|object| object.attributes().layer_id() == start_layer)
+        );
+        assert!(
+            outputs
+                .iter()
+                .all(|object| object.attributes().name().is_none())
+        );
+        let Geometry::NurbsCurve(first) = outputs[0].geometry() else {
+            panic!("TweenCurves must create NURBS curves")
+        };
+        assert_eq!(first.domain(), 0.0..=5.0);
+        assert_eq!(
+            first.control_points()[0].point(),
+            Point3::try_new(0.0, 2.0, 2.0 / 3.0).unwrap()
+        );
+        assert_eq!(document.undo_label(), Some("TweenCurves"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [start_id, end_id]
+        );
+    }
+
+    #[test]
+    fn tween_curves_sampling_flips_direction_and_uses_end_layer() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let end_layer = document
+            .add_layer("Tween destination", ColorRgb::new(90, 100, 110))
+            .unwrap();
+        let start_id = document
+            .add_geometry(Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                    Point3::try_new(9.0, 0.0, 0.0).unwrap(),
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let end_id = document
+            .add_geometry_with_attributes(
+                Geometry::Line(
+                    LineSegment::try_new(
+                        Point3::try_new(0.0, 6.0, 0.0).unwrap(),
+                        Point3::try_new(12.0, 6.0, 0.0).unwrap(),
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ),
+                ObjectAttributes::on_layer(end_layer),
+            )
+            .unwrap();
+        document
+            .select_objects([start_id, end_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                "TweenCurves MatchMethod=SamplePoints SampleNumber=4 FlipEnd=Yes OutputLayer=EndCrv",
+            )
+            .unwrap();
+        let output = document.objects().last().unwrap();
+        assert_eq!(output.attributes().layer_id(), end_layer);
+        let Geometry::NurbsCurve(curve) = output.geometry() else {
+            panic!("sample matching must create a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 1);
+        assert_eq!(curve.control_points().len(), 5);
+        assert_eq!(
+            curve.control_points()[0].point(),
+            Point3::try_new(6.0, 3.0, 0.0).unwrap()
+        );
+        assert_eq!(
+            curve.control_points()[4].point(),
+            Point3::try_new(4.5, 3.0, 0.0).unwrap()
+        );
+        assert!(!curve.is_closed().unwrap());
+    }
+
+    #[test]
+    fn tween_curves_rejects_invalid_inputs_and_unimplemented_refits_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let line = |y| {
+            Geometry::Line(
+                LineSegment::try_new(
+                    Point3::try_new(0.0, y, 0.0).unwrap(),
+                    Point3::try_new(5.0, y, 0.0).unwrap(),
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            )
+        };
+        let ids = [0.0, 2.0, 4.0]
+            .into_iter()
+            .map(|y| document.add_geometry(line(y)).unwrap())
+            .collect::<Vec<_>>();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+
+        for command in [
+            "TweenCurves Number=0",
+            "TweenCurves Number=1000001",
+            "TweenCurves Number=nope",
+            "TweenCurves MatchMethod=Other",
+            "TweenCurves MatchMethod=None SampleNumber=8",
+            "TweenCurves MatchMethod=SamplePoints SampleNumber=1",
+            "TweenCurves MatchMethod=SamplePoints SampleNumber=10000",
+            "TweenCurves OutputLayer=Other",
+            "TweenCurves FlipStart=Maybe",
+            "TweenCurves Number=1 Number=2",
+            "TweenCurves extra",
+        ] {
+            let object_count = document.objects().len();
+            let history = document.undo_label().map(str::to_owned);
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.objects().len(), object_count, "{command}");
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+
+        document
+            .select_objects([ids[0], point_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "TweenCurves"),
+            Err(CommandError::TweenCurvesRequiresTwoCurves { actual: 1 })
+        ));
+        document
+            .select_objects(ids.iter().copied(), SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "TweenCurves"),
+            Err(CommandError::TweenCurvesRequiresTwoCurves { actual: 3 })
+        ));
+
+        document
+            .select_objects([ids[0], ids[1]], SelectionMode::Replace)
+            .unwrap();
+        let object_count = document.objects().len();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "TweenCurves Number=500001"),
+            Err(CommandError::Geometry(
+                GeometryError::TooManyCurveTweenControlPoints { .. }
+            ))
+        ));
+        assert_eq!(document.objects().len(), object_count);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        let incompatible = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 8.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 10.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 7.0, 0.0).unwrap(),
+                Point3::try_new(4.0, 10.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 8.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let incompatible_id = document
+            .add_geometry(Geometry::NurbsCurve(incompatible))
+            .unwrap();
+        document
+            .select_objects([ids[0], incompatible_id], SelectionMode::Replace)
+            .unwrap();
+        let object_count = document.objects().len();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "TweenCurves MatchMethod=Refit"),
+            Err(CommandError::Geometry(
+                GeometryError::UnsupportedCurveTweenRefit
+            ))
+        ));
+        assert_eq!(document.objects().len(), object_count);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

@@ -10,6 +10,7 @@ mod catenary;
 mod circular;
 mod curve;
 mod curve_through;
+mod curve_tween;
 mod ellipse;
 mod error;
 mod frame;
@@ -46,6 +47,10 @@ pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
 pub use curve_through::{
     CurveThroughConstruction, MAX_CURVE_THROUGH_DEGREE, sort_and_cull_points,
     try_curve_through_points,
+};
+pub use curve_tween::{
+    CurveTweenMatchMethod, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_OUTPUT_CONTROL_POINTS,
+    MAX_CURVE_TWEEN_SAMPLE_NUMBER, MIN_CURVE_TWEEN_SAMPLE_NUMBER, try_tween_nurbs_curves,
 };
 pub use ellipse::Ellipse3;
 pub use error::GeometryError;

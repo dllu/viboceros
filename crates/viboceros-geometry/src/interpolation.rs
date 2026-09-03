@@ -2,13 +2,14 @@ use faer::{Mat, prelude::*};
 
 use crate::{
     GeometryError, NurbsCurve, Point3, Real, Tolerance, UnitVector3, Vector3,
-    nurbs::{bspline_basis_values, control_polygon_length},
+    nurbs::{bspline_basis_values, control_polygon_length, find_span_in_knots, interval_fraction},
     require_finite,
 };
 
 /// Maximum point count accepted by one interpolation solve.
 pub const MAX_CURVE_INTERPOLATION_POINTS: usize = 256;
 const CUBIC_DEGREE: usize = 3;
+const MAX_DENSE_INTERPOLATION_CONTROL_POINTS: usize = MAX_CURVE_INTERPOLATION_POINTS + 2;
 
 #[derive(Clone, Copy)]
 enum InterpolationCoincidence {
@@ -134,6 +135,7 @@ impl NurbsCurve {
             options,
             InterpolationCoincidence::Within(tolerance),
             false,
+            MAX_CURVE_INTERPOLATION_POINTS,
         )
     }
 
@@ -151,6 +153,7 @@ impl NurbsCurve {
             options,
             InterpolationCoincidence::Within(tolerance),
             true,
+            MAX_CURVE_INTERPOLATION_POINTS,
         )
     }
 
@@ -160,7 +163,31 @@ impl NurbsCurve {
         points: &[Point3],
         options: CurveInterpolationOptions,
     ) -> Result<Self, GeometryError> {
-        Self::try_interpolate_impl(points, options, InterpolationCoincidence::Exact, true)
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Exact,
+            true,
+            MAX_CURVE_INTERPOLATION_POINTS,
+        )
+    }
+
+    /// Interpolates one potentially large point set for `TweenCurves` sample
+    /// matching. The command's documented sample ceiling is supplied by the
+    /// caller; large open cubics use a linear-memory tridiagonal solve.
+    pub(crate) fn try_interpolate_for_tween_sampling(
+        points: &[Point3],
+        options: CurveInterpolationOptions,
+        maximum_points: usize,
+    ) -> Result<Self, GeometryError> {
+        debug_assert_eq!(options.closure, InterpolatedCurveClosure::Open);
+        Self::try_interpolate_impl(
+            points,
+            options,
+            InterpolationCoincidence::Exact,
+            false,
+            maximum_points,
+        )
     }
 
     fn try_interpolate_impl(
@@ -168,6 +195,7 @@ impl NurbsCurve {
         options: CurveInterpolationOptions,
         coincidence: InterpolationCoincidence,
         preserve_two_point_degree: bool,
+        maximum_points: usize,
     ) -> Result<Self, GeometryError> {
         if !matches!(options.degree, 1 | CUBIC_DEGREE) {
             return Err(GeometryError::UnsupportedCurveInterpolationDegree {
@@ -179,9 +207,9 @@ impl NurbsCurve {
                 actual: points.len(),
             });
         }
-        if points.len() > MAX_CURVE_INTERPOLATION_POINTS {
+        if points.len() > maximum_points {
             return Err(GeometryError::TooManyCurveInterpolationPoints {
-                maximum: MAX_CURVE_INTERPOLATION_POINTS,
+                maximum: maximum_points,
             });
         }
         if (options.start_tangent.is_some() || options.end_tangent.is_some())
@@ -213,9 +241,9 @@ impl NurbsCurve {
                 actual: points.len(),
             });
         }
-        if points.len() > MAX_CURVE_INTERPOLATION_POINTS {
+        if points.len() > maximum_points {
             return Err(GeometryError::TooManyCurveInterpolationPoints {
-                maximum: MAX_CURVE_INTERPOLATION_POINTS,
+                maximum: maximum_points,
             });
         }
         validate_adjacent_points(&points, coincidence)?;
@@ -334,18 +362,6 @@ fn interpolate_open_cubic(
     knots.extend_from_slice(&parameters[1..parameters.len() - 1]);
     knots.extend([parameters[parameters.len() - 1]; CUBIC_DEGREE + 1]);
 
-    let mut rows = Vec::with_capacity(control_count);
-    let mut targets = Vec::with_capacity(control_count);
-    for (point, parameter) in points.iter().zip(&parameters) {
-        rows.push(bspline_basis_values(
-            &knots,
-            CUBIC_DEGREE,
-            control_count,
-            *parameter,
-        )?);
-        targets.push(*point);
-    }
-
     let start_direction = match start_tangent {
         Some(tangent) => tangent.normalized_nonzero()?,
         None => automatic_start_tangent(points)?,
@@ -364,6 +380,47 @@ fn interpolate_open_cubic(
             .as_vector()
             .scaled(-points[points.len() - 2].distance_to(points[points.len() - 1])? / 3.0)?,
     )?;
+    let controls = if control_count <= MAX_DENSE_INTERPOLATION_CONTROL_POINTS {
+        solve_open_cubic_dense(
+            points,
+            &parameters,
+            &knots,
+            control_count,
+            start_handle,
+            end_handle,
+        )?
+    } else {
+        solve_open_cubic_tridiagonal(
+            points,
+            &parameters,
+            &knots,
+            control_count,
+            start_handle,
+            end_handle,
+        )?
+    };
+    NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)
+}
+
+fn solve_open_cubic_dense(
+    points: &[Point3],
+    parameters: &[Real],
+    knots: &[Real],
+    control_count: usize,
+    start_handle: Point3,
+    end_handle: Point3,
+) -> Result<Vec<Point3>, GeometryError> {
+    let mut rows = Vec::with_capacity(control_count);
+    let mut targets = Vec::with_capacity(control_count);
+    for (point, parameter) in points.iter().zip(parameters) {
+        rows.push(bspline_basis_values(
+            knots,
+            CUBIC_DEGREE,
+            control_count,
+            *parameter,
+        )?);
+        targets.push(*point);
+    }
     let mut start_row = vec![0.0; control_count];
     start_row[1] = 1.0;
     rows.push(start_row);
@@ -372,9 +429,135 @@ fn interpolate_open_cubic(
     end_row[control_count - 2] = 1.0;
     rows.push(end_row);
     targets.push(end_handle);
+    solve_control_points(&rows, &targets)
+}
 
-    let controls = solve_control_points(&rows, &targets)?;
-    NurbsCurve::try_new(CUBIC_DEGREE, controls, knots)
+fn solve_open_cubic_tridiagonal(
+    points: &[Point3],
+    parameters: &[Real],
+    knots: &[Real],
+    control_count: usize,
+    start_handle: Point3,
+    end_handle: Point3,
+) -> Result<Vec<Point3>, GeometryError> {
+    let unknown_count = points.len() - 2;
+    let mut lower = vec![0.0; unknown_count];
+    let mut diagonal = vec![0.0; unknown_count];
+    let mut upper = vec![0.0; unknown_count];
+    let mut right_hand_side = points[1..points.len() - 1]
+        .iter()
+        .map(|point| point.to_array())
+        .collect::<Vec<_>>();
+    let last_handle_index = control_count - 2;
+
+    for row in 0..unknown_count {
+        let point_index = row + 1;
+        let (first_control, basis) =
+            cubic_local_basis_values(knots, control_count, parameters[point_index])?;
+        for (offset, coefficient) in basis.into_iter().enumerate() {
+            if coefficient == 0.0 {
+                continue;
+            }
+            let control_index = first_control + offset;
+            match control_index {
+                0 => subtract_fixed_control(&mut right_hand_side[row], points[0], coefficient),
+                1 => subtract_fixed_control(&mut right_hand_side[row], start_handle, coefficient),
+                index if index == last_handle_index => {
+                    subtract_fixed_control(&mut right_hand_side[row], end_handle, coefficient)
+                }
+                index if index + 1 == control_count => subtract_fixed_control(
+                    &mut right_hand_side[row],
+                    points[points.len() - 1],
+                    coefficient,
+                ),
+                index => {
+                    let column = index.checked_sub(2).ok_or(GeometryError::SingularSystem)?;
+                    if column + 1 == row {
+                        lower[row] += coefficient;
+                    } else if column == row {
+                        diagonal[row] += coefficient;
+                    } else if column == row + 1 {
+                        upper[row] += coefficient;
+                    } else {
+                        return Err(GeometryError::SingularSystem);
+                    }
+                }
+            }
+        }
+    }
+
+    for row in 1..unknown_count {
+        let pivot = diagonal[row - 1];
+        if !pivot.is_finite() || pivot == 0.0 {
+            return Err(GeometryError::SingularSystem);
+        }
+        let factor = lower[row] / pivot;
+        diagonal[row] = (-factor).mul_add(upper[row - 1], diagonal[row]);
+        let previous = right_hand_side[row - 1];
+        for (value, previous) in right_hand_side[row].iter_mut().zip(previous) {
+            *value = (-factor).mul_add(previous, *value);
+        }
+    }
+
+    for row in (0..unknown_count).rev() {
+        let pivot = diagonal[row];
+        if !pivot.is_finite() || pivot == 0.0 {
+            return Err(GeometryError::SingularSystem);
+        }
+        let next = if row + 1 < unknown_count {
+            right_hand_side[row + 1]
+        } else {
+            [0.0; 3]
+        };
+        for (value, next) in right_hand_side[row].iter_mut().zip(next) {
+            *value = (*value - upper[row] * next) / pivot;
+        }
+        require_finite(
+            right_hand_side[row].iter().copied(),
+            "curve interpolation control point",
+        )?;
+    }
+
+    let mut controls = Vec::with_capacity(control_count);
+    controls.extend([points[0], start_handle]);
+    controls.extend(
+        right_hand_side
+            .into_iter()
+            .map(Point3::try_from)
+            .collect::<Result<Vec<_>, _>>()?,
+    );
+    controls.extend([end_handle, points[points.len() - 1]]);
+    Ok(controls)
+}
+
+fn cubic_local_basis_values(
+    knots: &[Real],
+    control_count: usize,
+    parameter: Real,
+) -> Result<(usize, [Real; CUBIC_DEGREE + 1]), GeometryError> {
+    let span = find_span_in_knots(knots, CUBIC_DEGREE, control_count, parameter);
+    let mut local = [0.0; CUBIC_DEGREE + 1];
+    local[0] = 1.0;
+    for column in 1..=CUBIC_DEGREE {
+        let mut saved = 0.0;
+        for row in 0..column {
+            let left_knot = knots[span + 1 - column + row];
+            let right_knot = knots[span + row + 1];
+            let left_fraction = interval_fraction(parameter, left_knot, right_knot)?;
+            let value = local[row];
+            local[row] = (1.0 - left_fraction).mul_add(value, saved);
+            saved = left_fraction * value;
+        }
+        local[column] = saved;
+    }
+    require_finite(local, "B-spline basis")?;
+    Ok((span - CUBIC_DEGREE, local))
+}
+
+fn subtract_fixed_control(target: &mut [Real; 3], control: Point3, coefficient: Real) {
+    for (value, coordinate) in target.iter_mut().zip(control.to_array()) {
+        *value = (-coefficient).mul_add(coordinate, *value);
+    }
 }
 
 fn interpolate_periodic_cubic(
@@ -883,6 +1066,69 @@ mod tests {
         .unwrap();
         assert_eq!(uniform.degree(), 3);
         assert_eq!(uniform.domain(), 0.0..=1.0);
+    }
+
+    #[test]
+    fn large_open_cubic_uses_linear_memory_and_still_interpolates() {
+        let points = (0..300)
+            .map(|index| {
+                let x = index as Real * 0.03;
+                point(x, (x * 0.7).sin(), (x * 0.2).cos() * 0.1)
+            })
+            .collect::<Vec<_>>();
+        let curve = NurbsCurve::try_interpolate_for_tween_sampling(
+            &points,
+            CurveInterpolationOptions::new(
+                3,
+                CurveKnotSpacing::Chord,
+                InterpolatedCurveClosure::Open,
+            ),
+            points.len(),
+        )
+        .unwrap();
+        assert_eq!(curve.control_points().len(), points.len() + 2);
+
+        let mut parameter = 0.0;
+        for (index, expected) in points.iter().enumerate() {
+            if index > 0 {
+                parameter += points[index - 1].distance_to(*expected).unwrap();
+            }
+            assert!(
+                curve
+                    .evaluate(parameter)
+                    .unwrap()
+                    .distance_to(*expected)
+                    .unwrap()
+                    < 2.0e-12,
+                "interpolation missed point {index}"
+            );
+        }
+    }
+
+    #[test]
+    fn linear_memory_solver_accepts_the_tween_sample_ceiling() {
+        let points = (0..10_000)
+            .map(|index| {
+                let x = index as Real * 0.001;
+                point(x, (x * 0.2).sin(), 0.0)
+            })
+            .collect::<Vec<_>>();
+        let curve = NurbsCurve::try_interpolate_for_tween_sampling(
+            &points,
+            CurveInterpolationOptions::new(
+                3,
+                CurveKnotSpacing::Chord,
+                InterpolatedCurveClosure::Open,
+            ),
+            points.len(),
+        )
+        .unwrap();
+        assert_eq!(curve.control_points().len(), 10_002);
+        assert_eq!(curve.evaluate(*curve.domain().start()).unwrap(), points[0]);
+        assert_eq!(
+            curve.evaluate(*curve.domain().end()).unwrap(),
+            points[9_999]
+        );
     }
 
     #[test]

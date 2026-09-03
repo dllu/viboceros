@@ -1,0 +1,31 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 0.000001,
+    "relative": 0.000000000001,
+    "angular": 0.0000000001
+  },
+  "operations": [
+    {
+      "op": "curve_tween_geometry",
+      "id": "sample-spacing-below-model-tolerance",
+      "method": "sample_points",
+      "number": 1,
+      "sample_number": 100,
+      "start_curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [0.00001, 0, 0]}],
+        "knots": [0, 0, 0.00001, 0.00001]
+      },
+      "end_curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0.00001, 0]},
+          {"point": [0.00001, 0.00001, 0]}
+        ],
+        "knots": [0, 0, 0.00001, 0.00001]
+      }
+    }
+  ]
+}

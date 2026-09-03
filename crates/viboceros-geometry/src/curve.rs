@@ -139,6 +139,27 @@ impl CurveRef<'_> {
         include_start: bool,
         tolerance: Tolerance,
     ) -> Result<Vec<Point3>, GeometryError> {
+        self.divide_by_count_impl(segment_count, include_start, tolerance, None)
+    }
+
+    /// Uses RhinoCommon's fixed fractional length tolerance for the sampling
+    /// stage behind `TweenCurves`.
+    pub(crate) fn divide_by_count_for_tween(
+        self,
+        segment_count: usize,
+        include_start: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Point3>, GeometryError> {
+        self.divide_by_count_impl(segment_count, include_start, tolerance, Some(1.0e-8))
+    }
+
+    fn divide_by_count_impl(
+        self,
+        segment_count: usize,
+        include_start: bool,
+        tolerance: Tolerance,
+        fractional_tolerance: Option<Real>,
+    ) -> Result<Vec<Point3>, GeometryError> {
         if segment_count == 0 {
             return Err(GeometryError::InvalidCurveDivisionCount {
                 actual: segment_count,
@@ -162,7 +183,11 @@ impl CurveRef<'_> {
             } else {
                 sampler.total_length * (index as Real / segment_count as Real)
             };
-            points.push(sampler.point_at_distance(distance)?);
+            points.push(match fractional_tolerance {
+                Some(fractional_tolerance) => sampler
+                    .point_at_distance_with_fractional_tolerance(distance, fractional_tolerance)?,
+                None => sampler.point_at_distance(distance)?,
+            });
         }
         Ok(points)
     }
@@ -731,6 +756,22 @@ impl<'a> ArcLengthSampler<'a> {
     }
 
     fn point_at_distance(&self, distance: Real) -> Result<Point3, GeometryError> {
+        self.point_at_distance_impl(distance, None)
+    }
+
+    fn point_at_distance_with_fractional_tolerance(
+        &self,
+        distance: Real,
+        fractional_tolerance: Real,
+    ) -> Result<Point3, GeometryError> {
+        self.point_at_distance_impl(distance, Some(fractional_tolerance))
+    }
+
+    fn point_at_distance_impl(
+        &self,
+        distance: Real,
+        fractional_tolerance: Option<Real>,
+    ) -> Result<Point3, GeometryError> {
         require_finite([distance], "curve arc-length distance")?;
         if distance < 0.0 || distance > self.total_length {
             return Err(GeometryError::ArcLengthOutOfDomain {
@@ -762,7 +803,15 @@ impl<'a> ArcLengthSampler<'a> {
             return self.evaluate(stable_lerp(span.start, span.end, fraction));
         }
 
-        let parameter = self.parameter_at_span_distance(span, local_distance)?;
+        let distance_tolerance = fractional_tolerance
+            .map(|fractional| {
+                (fractional * self.total_length.abs())
+                    .max(64.0 * Real::EPSILON * self.total_length.abs())
+                    .max(Real::MIN_POSITIVE)
+            })
+            .unwrap_or_else(|| numerical_distance_tolerance(span.length, self.tolerance));
+        let parameter =
+            self.parameter_at_span_distance(span, local_distance, distance_tolerance)?;
         self.evaluate(parameter)
     }
 
@@ -803,7 +852,9 @@ impl<'a> ArcLengthSampler<'a> {
                 .evaluate_with_tangent(stable_lerp(span.start, span.end, fraction));
         }
 
-        let parameter = self.parameter_at_span_distance(span, local_distance)?;
+        let distance_tolerance = numerical_distance_tolerance(span.length, self.tolerance);
+        let parameter =
+            self.parameter_at_span_distance(span, local_distance, distance_tolerance)?;
         self.curve.evaluate_with_tangent(parameter)
     }
 
@@ -811,8 +862,8 @@ impl<'a> ArcLengthSampler<'a> {
         &self,
         span: ParameterSpan,
         target: Real,
+        distance_tolerance: Real,
     ) -> Result<Real, GeometryError> {
-        let distance_tolerance = numerical_distance_tolerance(span.length, self.tolerance);
         let mut lower = span.start;
         let mut upper = span.end;
         let mut parameter = stable_lerp(span.start, span.end, target / span.length);

@@ -136,6 +136,22 @@ pub enum GeometryError {
     #[error("curve interpolation tangents require an open degree-three curve")]
     CurveInterpolationTangentsRequireOpenCubic,
 
+    #[error("curve tween count must be from 1 through {maximum}, got {actual}")]
+    InvalidCurveTweenCount { actual: usize, maximum: usize },
+
+    #[error("curve tween sample count must be from {minimum} through {maximum}, got {actual}")]
+    InvalidCurveTweenSampleCount {
+        actual: usize,
+        minimum: usize,
+        maximum: usize,
+    },
+
+    #[error("curve tween would create more than {maximum} output control points")]
+    TooManyCurveTweenControlPoints { maximum: usize },
+
+    #[error("curve tween refit matching is not yet supported")]
+    UnsupportedCurveTweenRefit,
+
     #[error("curve-through degree must be from 1 through {maximum}, got {actual}")]
     InvalidCurveThroughDegree { actual: usize, maximum: usize },
 
