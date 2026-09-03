@@ -16,9 +16,9 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, Circle3, CircularArc3, CurveRef, Ellipse3,
     Frame3, GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshFace, MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    PointMorph, Polyline3, SurfaceIso, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, WeightedPoint3, join_polylines,
+    MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions, MeshUvSphereOptions, NurbsCurve,
+    NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceIso, SurfacePointMorph,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_polylines,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -409,6 +409,22 @@ pub enum Operation {
         around: usize,
         vertical: usize,
     },
+    MeshQuadSphere {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        subdivisions: usize,
+    },
+    MeshIcoSphere {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        subdivisions: usize,
+    },
     MeshTorus {
         id: String,
         origin: [f64; 3],
@@ -520,6 +536,8 @@ impl Operation {
             | Self::MeshCylinder { id, .. }
             | Self::MeshCone { id, .. }
             | Self::MeshSphere { id, .. }
+            | Self::MeshQuadSphere { id, .. }
+            | Self::MeshIcoSphere { id, .. }
             | Self::MeshTorus { id, .. }
             | Self::NurbsSurfaceMesh { id, .. }
             | Self::NurbsSurfaceExtractPoints { id, .. }
@@ -1836,6 +1854,60 @@ fn execute(
             };
             let (mesh, elapsed) = measure(iterations, || {
                 TriangleMesh::try_uv_sphere_grid(
+                    frame,
+                    black_box(*radius),
+                    black_box(options),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::MeshQuadSphere {
+            origin,
+            x_axis,
+            y_axis,
+            radius,
+            subdivisions,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let options = MeshSubdivisionSphereOptions {
+                subdivisions: *subdivisions,
+            };
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_quad_sphere(
+                    frame,
+                    black_box(*radius),
+                    black_box(options),
+                    tolerance,
+                )
+            })?;
+            (polygon_mesh_value(&mesh), elapsed)
+        }
+        Operation::MeshIcoSphere {
+            origin,
+            x_axis,
+            y_axis,
+            radius,
+            subdivisions,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let options = MeshSubdivisionSphereOptions {
+                subdivisions: *subdivisions,
+            };
+            let (mesh, elapsed) = measure(iterations, || {
+                TriangleMesh::try_ico_sphere(
                     frame,
                     black_box(*radius),
                     black_box(options),
@@ -6023,6 +6095,59 @@ mod tests {
         assert_eq!(vertices.len(), 6);
         assert_eq!(vertices[0], json!([0.0, 0.0, -2.0]));
         assert_eq!(vertices[5], json!([0.0, 0.0, 2.0]));
+    }
+
+    #[test]
+    fn creates_ordered_quad_mesh_sphere_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshQuadSphere {
+            id: "quad-sphere".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            radius: 2.0,
+            subdivisions: 0,
+        }]))
+        .unwrap();
+        assert_eq!(
+            response.results[0].value["faces"],
+            json!([
+                [3, 2, 1, 0],
+                [2, 6, 5, 1],
+                [5, 6, 7, 4],
+                [0, 4, 7, 3],
+                [3, 7, 6, 2],
+                [1, 5, 4, 0],
+            ])
+        );
+        assert_eq!(
+            response.results[0].value["vertices"]
+                .as_array()
+                .unwrap()
+                .len(),
+            8
+        );
+    }
+
+    #[test]
+    fn creates_ordered_icosphere_for_oracle_comparison() {
+        let response = run_request(&request(vec![Operation::MeshIcoSphere {
+            id: "icosphere".to_owned(),
+            origin: [0.0, 0.0, 0.0],
+            x_axis: [1.0, 0.0, 0.0],
+            y_axis: [0.0, 1.0, 0.0],
+            radius: 2.0,
+            subdivisions: 0,
+        }]))
+        .unwrap();
+        assert_eq!(response.results[0].value["faces"][0], json!([0, 11, 5]));
+        assert_eq!(response.results[0].value["faces"][19], json!([9, 8, 1]));
+        assert_eq!(
+            response.results[0].value["vertices"]
+                .as_array()
+                .unwrap()
+                .len(),
+            12
+        );
     }
 
     #[test]

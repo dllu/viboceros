@@ -260,6 +260,9 @@ pub enum GeometryError {
     #[error("mesh-sphere radius must be positive")]
     InvalidMeshSphereRadius,
 
+    #[error("mesh-sphere subdivision count {subdivisions} exceeds the style maximum {maximum}")]
+    InvalidMeshSphereSubdivisionCount { subdivisions: usize, maximum: usize },
+
     #[error(
         "mesh-torus face counts require at least three vertical and three around faces, got {vertical_count} by {around_count}"
     )]

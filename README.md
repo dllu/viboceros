@@ -41,6 +41,8 @@ MeshCone 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshCylinder 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
 MeshPlane 0,0,0 8,5,0 XCount=8 YCount=5
 MeshSphere 0,0,0 3 Style=UV VerticalFaces=12 AroundFaces=24
+MeshSphere 0,0,0 3 Style=Quads Subdivisions=3
+MeshSphere 0,0,0 3 Style=Triangles Subdivisions=3
 MeshTorus 0,0,0 5 1.5 VerticalFaces=12 AroundFaces=24
 MeshToNURB TrimTriangularFaces=Yes UseNgons=Yes
 Box 0,0,0 8,5,0 3
@@ -262,12 +264,15 @@ order is normalized, the second corner is projected to the first corner's
 elevation, and vertices/faces follow Rhino's x-fastest row-major ordering.
 One grid is bounded to one million faces and tolerance-degenerate cells are
 rejected atomically.
-`MeshSphere` creates Rhino's UV-style polygon sphere from a center and numeric
-or picked equator radius. `VerticalFaces` and `AroundFaces` default to 10,
-shared pole vertices close the latitude-major quad grid with triangle fans,
-and `Axis=x,y,z` orients typed commands. The toolbar workflow uses World Z and
-one sphere is bounded to one million faces. `Style=UV` is currently supported;
-the evenly distributed `Quads` and `Triangles` styles remain to be implemented.
+`MeshSphere` creates all three Rhino polygon-sphere styles from a center and
+numeric or picked equator radius. `Style=UV` uses a latitude-major quad grid
+with shared triangle-fan poles; `VerticalFaces` and `AroundFaces` default to
+10. `Style=Quads` applies Catmull-Clark cube refinement before radial
+projection, while `Style=Triangles` recursively refines an icosahedron; both
+use `Subdivisions=3` by default and preserve Rhino's welded indexing. The
+command limits subdivisions to 6 quads or 5 triangles, `Axis=x,y,z` orients
+typed commands, and the two-pick toolbar workflow uses World Z. One sphere is
+bounded to one million faces.
 `MeshTorus` creates a closed quadrilateral ring torus from a center, numeric or
 picked major radius, and a positive minor radius smaller than the major radius.
 `VerticalFaces` divides the tube circle, `AroundFaces` divides the major circle,

@@ -1,0 +1,87 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "mesh_quad_sphere",
+      "id": "quad-zero",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "subdivisions": 0
+    },
+    {
+      "op": "mesh_quad_sphere",
+      "id": "quad-one-offset",
+      "origin": [1, 2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 3,
+      "subdivisions": 1
+    },
+    {
+      "op": "mesh_quad_sphere",
+      "id": "quad-two",
+      "origin": [-2, 5, 7],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 4,
+      "subdivisions": 2
+    },
+    {
+      "op": "mesh_quad_sphere",
+      "id": "quad-three",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "subdivisions": 3
+    },
+    {
+      "op": "mesh_quad_sphere",
+      "id": "quad-oblique",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radius": 2.5,
+      "subdivisions": 1
+    },
+    {
+      "op": "mesh_ico_sphere",
+      "id": "ico-zero",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "subdivisions": 0
+    },
+    {
+      "op": "mesh_ico_sphere",
+      "id": "ico-one-offset",
+      "origin": [1, 2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 3,
+      "subdivisions": 1
+    },
+    {
+      "op": "mesh_ico_sphere",
+      "id": "ico-two",
+      "origin": [-2, 5, 7],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 4,
+      "subdivisions": 2
+    },
+    {
+      "op": "mesh_ico_sphere",
+      "id": "ico-oblique",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radius": 2.5,
+      "subdivisions": 1
+    }
+  ]
+}

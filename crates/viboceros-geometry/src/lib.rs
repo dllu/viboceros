@@ -44,10 +44,12 @@ pub use interpolation::{
 };
 pub use line::LineSegment;
 pub use mesh::{
-    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_PLANE_FACES,
+    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
+    MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
     MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MeshCapFaceStyle, MeshConeOptions,
-    MeshCylinderOptions, MeshEdgeFilter, MeshFace, MeshFaceExtraction, MeshHoleFill, MeshTopology,
-    MeshTorusOptions, MeshUvSphereOptions, TriangleMesh,
+    MeshCylinderOptions, MeshEdgeFilter, MeshFace, MeshFaceExtraction, MeshHoleFill,
+    MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions, MeshUvSphereOptions,
+    TriangleMesh,
 };
 pub use morph::{PointMorph, SurfacePointMorph};
 pub use nurbs::{ControlPointCurveClosure, NurbsCurve, WeightedPoint3};

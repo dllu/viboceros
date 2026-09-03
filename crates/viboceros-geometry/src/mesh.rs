@@ -25,6 +25,12 @@ pub const MAX_MESH_CONE_FACES: usize = 1_000_000;
 /// Resource ceiling for one generated UV mesh-sphere shell.
 pub const MAX_MESH_SPHERE_FACES: usize = 1_000_000;
 
+/// RhinoCommon's maximum subdivision count for a quad mesh sphere.
+pub const MAX_MESH_QUAD_SPHERE_SUBDIVISIONS: usize = 8;
+
+/// RhinoCommon's maximum subdivision count for a triangular icosphere.
+pub const MAX_MESH_ICO_SPHERE_SUBDIVISIONS: usize = 7;
+
 /// Resource ceiling for one generated mesh-torus shell.
 pub const MAX_MESH_TORUS_FACES: usize = 1_000_000;
 
@@ -60,6 +66,12 @@ pub struct MeshConeOptions {
 pub struct MeshUvSphereOptions {
     pub vertical_count: usize,
     pub around_count: usize,
+}
+
+/// Refinement control for an evenly distributed mesh-sphere primitive.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MeshSubdivisionSphereOptions {
+    pub subdivisions: usize,
 }
 
 /// Topology controls for an exact polygonal torus primitive.
@@ -1013,6 +1025,335 @@ impl TriangleMesh {
         }
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's evenly distributed quad mesh sphere.
+    ///
+    /// Subdivision zero is a cube projected onto the sphere. Each refinement
+    /// applies one Catmull-Clark step to the cube control mesh, storing face
+    /// points, edge points, and updated old vertices in that order. The final
+    /// control vertices are projected radially onto the sphere. This preserves
+    /// `Mesh.CreateQuadSphere` geometry and indexing.
+    pub fn try_quad_sphere(
+        frame: Frame3,
+        radius: Real,
+        options: MeshSubdivisionSphereOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        validate_subdivision_sphere_options(
+            radius,
+            options.subdivisions,
+            MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
+            6,
+        )?;
+
+        let cube_coordinate = radius / 3.0_f64.sqrt();
+        require_finite([cube_coordinate], "quad mesh-sphere sampling")?;
+        let mut coordinates = vec![
+            [-cube_coordinate, -cube_coordinate, -cube_coordinate],
+            [cube_coordinate, -cube_coordinate, -cube_coordinate],
+            [cube_coordinate, cube_coordinate, -cube_coordinate],
+            [-cube_coordinate, cube_coordinate, -cube_coordinate],
+            [-cube_coordinate, -cube_coordinate, cube_coordinate],
+            [cube_coordinate, -cube_coordinate, cube_coordinate],
+            [cube_coordinate, cube_coordinate, cube_coordinate],
+            [-cube_coordinate, cube_coordinate, cube_coordinate],
+        ];
+        let mut quads = vec![
+            [3, 2, 1, 0],
+            [2, 6, 5, 1],
+            [5, 6, 7, 4],
+            [0, 4, 7, 3],
+            [3, 7, 6, 2],
+            [1, 5, 4, 0],
+        ];
+        // The directions record Rhino's persistent topology-edge orientation.
+        // Edge points are stored in this order. At later levels, each edge's
+        // two children precede the new face-center spokes.
+        let mut ordered_edges = vec![
+            (1, 0),
+            (0, 3),
+            (4, 0),
+            (1, 2),
+            (1, 5),
+            (2, 3),
+            (6, 2),
+            (3, 7),
+            (5, 4),
+            (4, 7),
+            (5, 6),
+            (7, 6),
+        ];
+
+        for subdivision in 0..options.subdivisions {
+            let next_vertex_count = quads
+                .len()
+                .checked_add(ordered_edges.len())
+                .and_then(|count| count.checked_add(coordinates.len()))
+                .ok_or(GeometryError::TooManyMeshVertices)?;
+            let mut next_coordinates = Vec::new();
+            next_coordinates
+                .try_reserve_exact(next_vertex_count)
+                .map_err(|_| GeometryError::TooManyMeshVertices)?;
+
+            let mut face_points = Vec::new();
+            face_points
+                .try_reserve_exact(quads.len())
+                .map_err(|_| GeometryError::TooManyMeshVertices)?;
+            for quad in &quads {
+                let mut center = [0.0; 3];
+                for vertex in quad {
+                    let coordinate = coordinates[*vertex as usize];
+                    for axis in 0..3 {
+                        center[axis] += coordinate[axis] * 0.25;
+                    }
+                }
+                face_points.push(center);
+            }
+            next_coordinates.extend_from_slice(&face_points);
+
+            let mut edge_order_by_index = BTreeMap::new();
+            for (edge_index, &(first, second)) in ordered_edges.iter().enumerate() {
+                let previous =
+                    edge_order_by_index.insert(mesh_index_edge(first, second), edge_index);
+                debug_assert!(previous.is_none());
+            }
+            let mut edge_faces = vec![[usize::MAX; 2]; ordered_edges.len()];
+            let mut edge_face_counts = vec![0_u8; ordered_edges.len()];
+            for (face_index, quad) in quads.iter().enumerate() {
+                for index in 0..4 {
+                    let edge = mesh_index_edge(quad[index], quad[(index + 1) % 4]);
+                    let edge_index = edge_order_by_index[&edge];
+                    let incident_count = usize::from(edge_face_counts[edge_index]);
+                    debug_assert!(incident_count < 2);
+                    edge_faces[edge_index][incident_count] = face_index;
+                    edge_face_counts[edge_index] += 1;
+                }
+            }
+
+            let face_count = quads.len();
+            let mut edge_vertices = BTreeMap::new();
+            for (edge_index, &(first, second)) in ordered_edges.iter().enumerate() {
+                debug_assert_eq!(edge_face_counts[edge_index], 2);
+                let [first_face, second_face] = edge_faces[edge_index];
+                let first_coordinate = coordinates[first as usize];
+                let second_coordinate = coordinates[second as usize];
+                let edge_point = std::array::from_fn(|axis| {
+                    0.25 * (first_coordinate[axis]
+                        + second_coordinate[axis]
+                        + face_points[first_face][axis]
+                        + face_points[second_face][axis])
+                });
+                let vertex = u32::try_from(face_count + edge_index)
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                next_coordinates.push(edge_point);
+                edge_vertices.insert(mesh_index_edge(first, second), vertex);
+            }
+
+            let old_vertex_offset = next_coordinates.len();
+            let mut face_point_sums = vec![[0.0; 3]; coordinates.len()];
+            let mut incident_face_counts = vec![0_usize; coordinates.len()];
+            for (face_index, quad) in quads.iter().enumerate() {
+                for &vertex in quad {
+                    for axis in 0..3 {
+                        face_point_sums[vertex as usize][axis] += face_points[face_index][axis];
+                    }
+                    incident_face_counts[vertex as usize] += 1;
+                }
+            }
+            let mut edge_midpoint_sums = vec![[0.0; 3]; coordinates.len()];
+            let mut incident_edge_counts = vec![0_usize; coordinates.len()];
+            for &(first, second) in &ordered_edges {
+                let first_coordinate = coordinates[first as usize];
+                let second_coordinate = coordinates[second as usize];
+                for vertex in [first, second] {
+                    for axis in 0..3 {
+                        edge_midpoint_sums[vertex as usize][axis] +=
+                            0.5 * (first_coordinate[axis] + second_coordinate[axis]);
+                    }
+                    incident_edge_counts[vertex as usize] += 1;
+                }
+            }
+            for (vertex_index, coordinate) in coordinates.iter().enumerate() {
+                let valence = incident_face_counts[vertex_index];
+                debug_assert!(valence >= 3);
+                debug_assert_eq!(incident_edge_counts[vertex_index], valence);
+                let valence_real = valence as Real;
+                let updated = std::array::from_fn(|axis| {
+                    let average_face_point = face_point_sums[vertex_index][axis] / valence_real;
+                    let average_edge_midpoint =
+                        edge_midpoint_sums[vertex_index][axis] / valence_real;
+                    (average_face_point
+                        + 2.0 * average_edge_midpoint
+                        + (valence_real - 3.0) * coordinate[axis])
+                        / valence_real
+                });
+                next_coordinates.push(updated);
+            }
+
+            let next_face_count = quads
+                .len()
+                .checked_mul(4)
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+            let mut next_quads = Vec::new();
+            next_quads
+                .try_reserve_exact(next_face_count)
+                .map_err(|_| GeometryError::TooManyMeshFaces)?;
+            for (face_index, quad) in quads.iter().enumerate() {
+                let face_center =
+                    u32::try_from(face_index).map_err(|_| GeometryError::TooManyMeshVertices)?;
+                for index in 0..4 {
+                    let previous = quad[(index + 3) % 4];
+                    let current = quad[index];
+                    let next = quad[(index + 1) % 4];
+                    next_quads.push([
+                        edge_vertices[&mesh_index_edge(previous, current)],
+                        u32::try_from(old_vertex_offset + current as usize)
+                            .map_err(|_| GeometryError::TooManyMeshVertices)?,
+                        edge_vertices[&mesh_index_edge(current, next)],
+                        face_center,
+                    ]);
+                }
+            }
+            if subdivision + 1 < options.subdivisions {
+                let next_edge_count = ordered_edges
+                    .len()
+                    .checked_mul(2)
+                    .and_then(|count| quads.len().checked_mul(4)?.checked_add(count))
+                    .ok_or(GeometryError::TooManyMeshVertices)?;
+                let mut next_ordered_edges = Vec::new();
+                next_ordered_edges
+                    .try_reserve_exact(next_edge_count)
+                    .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                for &(first, second) in &ordered_edges {
+                    let edge_vertex = edge_vertices[&mesh_index_edge(first, second)];
+                    let shifted_first = u32::try_from(old_vertex_offset + first as usize)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                    let shifted_second = u32::try_from(old_vertex_offset + second as usize)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                    next_ordered_edges.push((shifted_first, edge_vertex));
+                    next_ordered_edges.push((edge_vertex, shifted_second));
+                }
+                for (face_index, quad) in quads.iter().enumerate() {
+                    let face_vertex = u32::try_from(face_index)
+                        .map_err(|_| GeometryError::TooManyMeshVertices)?;
+                    for index in 0..4 {
+                        let previous = quad[(index + 3) % 4];
+                        let current = quad[index];
+                        let edge_vertex = edge_vertices[&mesh_index_edge(previous, current)];
+                        next_ordered_edges.push((face_vertex, edge_vertex));
+                    }
+                }
+                debug_assert_eq!(next_ordered_edges.len(), next_edge_count);
+                ordered_edges = next_ordered_edges;
+            }
+            coordinates = next_coordinates;
+            quads = next_quads;
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(coordinates.len())
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for coordinate in coordinates {
+            let [x, y, z] = project_sphere_coordinate(coordinate, radius)?;
+            vertices.push(mesh_frame_point(frame, x, y, z)?);
+        }
+        let faces = quads.into_iter().map(MeshFace::Quad).collect();
+        Self::try_new_faces(vertices, faces, tolerance)
+    }
+
+    /// Constructs Rhino's evenly distributed triangular icosphere.
+    ///
+    /// Subdivision zero is a regular icosahedron projected onto the sphere.
+    /// Every refinement appends projected edge midpoints in first-face-use
+    /// order and replaces each triangle with three corner faces followed by
+    /// its central face, matching `Mesh.CreateIcoSphere`.
+    pub fn try_ico_sphere(
+        frame: Frame3,
+        radius: Real,
+        options: MeshSubdivisionSphereOptions,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        validate_subdivision_sphere_options(
+            radius,
+            options.subdivisions,
+            MAX_MESH_ICO_SPHERE_SUBDIVISIONS,
+            20,
+        )?;
+
+        let golden_ratio = 0.5 * (1.0 + 5.0_f64.sqrt());
+        let short = radius / (1.0 + golden_ratio * golden_ratio).sqrt();
+        let long = golden_ratio * short;
+        require_finite([short, long], "icosphere sampling")?;
+        let mut coordinates = vec![
+            [-short, long, 0.0],
+            [short, long, 0.0],
+            [-short, -long, 0.0],
+            [short, -long, 0.0],
+            [0.0, -short, long],
+            [0.0, short, long],
+            [0.0, -short, -long],
+            [0.0, short, -long],
+            [long, 0.0, -short],
+            [long, 0.0, short],
+            [-long, 0.0, -short],
+            [-long, 0.0, short],
+        ];
+        let mut triangles = vec![
+            [0, 11, 5],
+            [0, 5, 1],
+            [0, 1, 7],
+            [0, 7, 10],
+            [0, 10, 11],
+            [1, 5, 9],
+            [5, 11, 4],
+            [11, 10, 2],
+            [10, 7, 6],
+            [7, 1, 8],
+            [3, 9, 4],
+            [3, 4, 2],
+            [3, 2, 6],
+            [3, 6, 8],
+            [3, 8, 9],
+            [4, 9, 5],
+            [2, 4, 11],
+            [6, 2, 10],
+            [8, 6, 7],
+            [9, 8, 1],
+        ];
+
+        for _ in 0..options.subdivisions {
+            let next_face_count = triangles
+                .len()
+                .checked_mul(4)
+                .ok_or(GeometryError::TooManyMeshFaces)?;
+            let mut next_triangles = Vec::new();
+            next_triangles
+                .try_reserve_exact(next_face_count)
+                .map_err(|_| GeometryError::TooManyMeshFaces)?;
+            let mut edge_vertices = BTreeMap::new();
+            for [a, b, c] in triangles {
+                let ab =
+                    append_icosphere_midpoint(&mut coordinates, &mut edge_vertices, a, b, radius)?;
+                let bc =
+                    append_icosphere_midpoint(&mut coordinates, &mut edge_vertices, b, c, radius)?;
+                let ca =
+                    append_icosphere_midpoint(&mut coordinates, &mut edge_vertices, c, a, radius)?;
+                next_triangles.extend([[a, ab, ca], [b, bc, ab], [c, ca, bc], [ab, bc, ca]]);
+            }
+            triangles = next_triangles;
+        }
+
+        let mut vertices = Vec::new();
+        vertices
+            .try_reserve_exact(coordinates.len())
+            .map_err(|_| GeometryError::TooManyMeshVertices)?;
+        for [x, y, z] in coordinates {
+            vertices.push(mesh_frame_point(frame, x, y, z)?);
+        }
+        let faces = triangles.into_iter().map(MeshFace::Triangle).collect();
         Self::try_new_faces(vertices, faces, tolerance)
     }
 
@@ -4117,6 +4458,96 @@ fn mesh_frame_point(frame: Frame3, x: Real, y: Real, z: Real) -> Result<Point3, 
         .translated(frame.z_axis().as_vector().scaled(z)?)
 }
 
+fn validate_subdivision_sphere_options(
+    radius: Real,
+    subdivisions: usize,
+    maximum: usize,
+    base_face_count: usize,
+) -> Result<(), GeometryError> {
+    require_finite([radius], "mesh-sphere radius")?;
+    if radius <= 0.0 {
+        return Err(GeometryError::InvalidMeshSphereRadius);
+    }
+    if subdivisions > maximum {
+        return Err(GeometryError::InvalidMeshSphereSubdivisionCount {
+            subdivisions,
+            maximum,
+        });
+    }
+    let face_count = (0..subdivisions).try_fold(base_face_count, |count, _| {
+        count.checked_mul(4).ok_or(GeometryError::TooManyMeshFaces)
+    })?;
+    if face_count > MAX_MESH_SPHERE_FACES {
+        return Err(GeometryError::TooManyMeshFaces);
+    }
+    Ok(())
+}
+
+fn mesh_index_edge(first: u32, second: u32) -> (u32, u32) {
+    if first < second {
+        (first, second)
+    } else {
+        (second, first)
+    }
+}
+
+fn project_sphere_coordinate(
+    coordinate: [Real; 3],
+    radius: Real,
+) -> Result<[Real; 3], GeometryError> {
+    require_finite(coordinate, "mesh-sphere projection")?;
+    let length = coordinate[0].hypot(coordinate[1]).hypot(coordinate[2]);
+    if length == 0.0 {
+        return Err(GeometryError::Degenerate {
+            context: "mesh-sphere projection",
+        });
+    }
+    let scale = radius / length;
+    let projected = coordinate.map(|component| component * scale);
+    require_finite(projected, "mesh-sphere projection")?;
+    Ok(projected)
+}
+
+fn average_sphere_coordinates(
+    first: [Real; 3],
+    second: [Real; 3],
+    radius: Real,
+) -> Result<[Real; 3], GeometryError> {
+    project_sphere_coordinate(
+        [
+            0.5 * first[0] + 0.5 * second[0],
+            0.5 * first[1] + 0.5 * second[1],
+            0.5 * first[2] + 0.5 * second[2],
+        ],
+        radius,
+    )
+}
+
+fn append_icosphere_midpoint(
+    coordinates: &mut Vec<[Real; 3]>,
+    edge_vertices: &mut BTreeMap<(u32, u32), u32>,
+    first: u32,
+    second: u32,
+    radius: Real,
+) -> Result<u32, GeometryError> {
+    let edge = mesh_index_edge(first, second);
+    if let Some(index) = edge_vertices.get(&edge) {
+        return Ok(*index);
+    }
+    let midpoint = average_sphere_coordinates(
+        coordinates[first as usize],
+        coordinates[second as usize],
+        radius,
+    )?;
+    let index = u32::try_from(coordinates.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
+    coordinates
+        .try_reserve(1)
+        .map_err(|_| GeometryError::TooManyMeshVertices)?;
+    coordinates.push(midpoint);
+    edge_vertices.insert(edge, index);
+    Ok(index)
+}
+
 fn append_mesh_grid_side(
     vertices: &mut Vec<Point3>,
     faces: &mut Vec<MeshFace>,
@@ -5255,6 +5686,202 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::TooManyMeshFaces)
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_quad_sphere_subdivisions() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let base = TriangleMesh::try_quad_sphere(
+            frame,
+            2.0,
+            MeshSubdivisionSphereOptions { subdivisions: 0 },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cube_coordinate = 2.0 / 3.0_f64.sqrt();
+        assert_eq!(base.vertices().len(), 8);
+        assert_eq!(base.face_count(), 6);
+        assert_eq!(
+            base.vertices()[0],
+            point(-cube_coordinate, -cube_coordinate, -cube_coordinate)
+        );
+        assert_eq!(
+            base.faces(),
+            &[
+                MeshFace::Quad([3, 2, 1, 0]),
+                MeshFace::Quad([2, 6, 5, 1]),
+                MeshFace::Quad([5, 6, 7, 4]),
+                MeshFace::Quad([0, 4, 7, 3]),
+                MeshFace::Quad([3, 7, 6, 2]),
+                MeshFace::Quad([1, 5, 4, 0]),
+            ]
+        );
+
+        let refined = TriangleMesh::try_quad_sphere(
+            frame,
+            2.0,
+            MeshSubdivisionSphereOptions { subdivisions: 1 },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(refined.vertices().len(), 26);
+        assert_eq!(refined.face_count(), 24);
+        assert_eq!(refined.vertices()[0], point(0.0, 0.0, -2.0));
+        assert_eq!(refined.vertices()[5], point(0.0, -2.0, 0.0));
+        assert!((refined.vertices()[6].y() + 2.0_f64.sqrt()).abs() < 1.0e-12);
+        assert!((refined.vertices()[6].z() + 2.0_f64.sqrt()).abs() < 1.0e-12);
+        assert_eq!(refined.faces()[0], MeshFace::Quad([7, 21, 11, 0]));
+        assert_eq!(refined.faces()[3], MeshFace::Quad([6, 18, 7, 0]));
+        assert_eq!(refined.faces()[23], MeshFace::Quad([8, 18, 6, 5]));
+        assert!(refined.topology().is_solid());
+        assert!(refined.signed_volume().unwrap() > 0.0);
+
+        let twice_refined = TriangleMesh::try_quad_sphere(
+            frame,
+            2.0,
+            MeshSubdivisionSphereOptions { subdivisions: 2 },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(twice_refined.vertices().len(), 98);
+        assert_eq!(twice_refined.face_count(), 96);
+        assert_eq!(twice_refined.faces()[0], MeshFace::Quad([48, 79, 27, 0]));
+        assert!((twice_refined.vertices()[0].x() + 0.731_390_176_158_283_5).abs() < 1.0e-15);
+        assert!((twice_refined.vertices()[0].y() - 0.731_390_176_158_283_5).abs() < 1.0e-15);
+        assert!((twice_refined.vertices()[0].z() + 1.711_764_242_072_578_5).abs() < 1.0e-15);
+        assert!((twice_refined.vertices()[48].x() + 0.786_898_192_394_776_4).abs() < 1.0e-15);
+        assert_eq!(twice_refined.vertices()[48].y(), 0.0);
+        assert!((twice_refined.vertices()[48].z() + 1.838_692_805_991_754_9).abs() < 1.0e-15);
+
+        let three_times_refined = TriangleMesh::try_quad_sphere(
+            frame,
+            2.0,
+            MeshSubdivisionSphereOptions { subdivisions: 3 },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(three_times_refined.vertices().len(), 386);
+        assert_eq!(three_times_refined.face_count(), 384);
+        assert_eq!(
+            three_times_refined.faces()[0],
+            MeshFace::Quad([192, 336, 145, 0])
+        );
+        assert!(
+            (three_times_refined.vertices()[144].x() + 0.404_369_143_821_347_9).abs() < 1.0e-15
+        );
+        assert_eq!(three_times_refined.vertices()[144].y(), 0.0);
+        assert!(
+            (three_times_refined.vertices()[144].z() + 1.958_694_870_449_501_7).abs() < 1.0e-15
+        );
+    }
+
+    #[test]
+    fn creates_rhino_ordered_icosphere_subdivisions() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let base = TriangleMesh::try_ico_sphere(
+            frame,
+            2.0,
+            MeshSubdivisionSphereOptions { subdivisions: 0 },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(base.vertices().len(), 12);
+        assert_eq!(base.face_count(), 20);
+        assert!((base.vertices()[0].x() + 1.051_462_224_238_267_2).abs() < 1.0e-15);
+        assert!((base.vertices()[0].y() - 1.701_301_616_704_08).abs() < 1.0e-15);
+        assert_eq!(base.faces()[0], MeshFace::Triangle([0, 11, 5]));
+        assert_eq!(base.faces()[19], MeshFace::Triangle([9, 8, 1]));
+
+        let refined = TriangleMesh::try_ico_sphere(
+            frame,
+            2.0,
+            MeshSubdivisionSphereOptions { subdivisions: 1 },
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(refined.vertices().len(), 42);
+        assert_eq!(refined.face_count(), 80);
+        assert!((refined.vertices()[12].x() + 1.618_033_988_749_895).abs() < 1.0e-15);
+        assert!((refined.vertices()[12].y() - 1.0).abs() < 1.0e-15);
+        assert!((refined.vertices()[12].z() - 0.618_033_988_749_894_9).abs() < 1.0e-15);
+        assert_eq!(refined.vertices()[16], point(0.0, 2.0, 0.0));
+        assert_eq!(refined.vertices()[41], point(2.0, 0.0, 0.0));
+        assert_eq!(refined.faces()[0], MeshFace::Triangle([0, 12, 14]));
+        assert_eq!(refined.faces()[3], MeshFace::Triangle([12, 13, 14]));
+        assert_eq!(refined.faces()[79], MeshFace::Triangle([41, 30, 23]));
+        assert!(refined.topology().is_solid());
+        assert!(refined.signed_volume().unwrap() > 0.0);
+    }
+
+    #[test]
+    fn subdivision_spheres_reject_invalid_radii_and_style_limits() {
+        let frame = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            TriangleMesh::try_quad_sphere(
+                frame,
+                0.0,
+                MeshSubdivisionSphereOptions { subdivisions: 0 },
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshSphereRadius)
+        );
+        assert!(matches!(
+            TriangleMesh::try_ico_sphere(
+                frame,
+                Real::NAN,
+                MeshSubdivisionSphereOptions { subdivisions: 0 },
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::NonFinite {
+                context: "mesh-sphere radius"
+            })
+        ));
+        assert_eq!(
+            TriangleMesh::try_quad_sphere(
+                frame,
+                2.0,
+                MeshSubdivisionSphereOptions {
+                    subdivisions: MAX_MESH_QUAD_SPHERE_SUBDIVISIONS + 1,
+                },
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshSphereSubdivisionCount {
+                subdivisions: MAX_MESH_QUAD_SPHERE_SUBDIVISIONS + 1,
+                maximum: MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,
+            })
+        );
+        assert_eq!(
+            TriangleMesh::try_ico_sphere(
+                frame,
+                2.0,
+                MeshSubdivisionSphereOptions {
+                    subdivisions: MAX_MESH_ICO_SPHERE_SUBDIVISIONS + 1,
+                },
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidMeshSphereSubdivisionCount {
+                subdivisions: MAX_MESH_ICO_SPHERE_SUBDIVISIONS + 1,
+                maximum: MAX_MESH_ICO_SPHERE_SUBDIVISIONS,
+            })
         );
     }
 

@@ -4,7 +4,9 @@ use eframe::egui::{self, RichText};
 use viboceros_command::{
     CommandRegistry, DEFAULT_MESH_BOX_FACE_COUNT, DEFAULT_MESH_CONE_FACE_COUNT,
     DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_PLANE_FACE_COUNT,
-    DEFAULT_MESH_SPHERE_FACE_COUNT, DEFAULT_MESH_TORUS_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
+    DEFAULT_MESH_SPHERE_FACE_COUNT, DEFAULT_MESH_SPHERE_SUBDIVISIONS,
+    DEFAULT_MESH_TORUS_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE, MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
+    MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
 use viboceros_geometry::{
@@ -32,6 +34,20 @@ enum InteractiveIsocurveDirection {
     U,
     V,
     Both,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InteractiveMeshSphereTopology {
+    Uv {
+        vertical_count: usize,
+        around_count: usize,
+    },
+    Quads {
+        subdivisions: usize,
+    },
+    Triangles {
+        subdivisions: usize,
+    },
 }
 
 impl InteractiveIsocurveDirection {
@@ -116,8 +132,7 @@ enum InteractiveCommand {
     },
     MeshSphere {
         center: Option<Point3>,
-        vertical_count: usize,
-        around_count: usize,
+        topology: InteractiveMeshSphereTopology,
     },
     MeshTorus {
         center: Option<Point3>,
@@ -838,9 +853,14 @@ impl VibocerosApp {
         let arguments = tokens.collect::<Vec<_>>();
         let normalized = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
         let command = if normalized == "meshsphere" {
-            let mut vertical_count = DEFAULT_MESH_SPHERE_FACE_COUNT;
-            let mut around_count = DEFAULT_MESH_SPHERE_FACE_COUNT;
-            let mut seen = [false; 3];
+            let mut topology = InteractiveMeshSphereTopology::Uv {
+                vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+                around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+            };
+            let mut vertical_count = None;
+            let mut around_count = None;
+            let mut subdivisions = None;
+            let mut seen = [false; 4];
             for option in arguments {
                 let Some((name, value)) = option.split_once('=') else {
                     return false;
@@ -848,9 +868,26 @@ impl VibocerosApp {
                 let name = name.trim_start_matches(['_', '-']);
                 let value = value.trim_start_matches('_');
                 let option_index = if name.eq_ignore_ascii_case("Style") {
-                    if !value.eq_ignore_ascii_case("UV") {
+                    topology = if value.eq_ignore_ascii_case("UV") {
+                        InteractiveMeshSphereTopology::Uv {
+                            vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+                            around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+                        }
+                    } else if value.eq_ignore_ascii_case("Quad")
+                        || value.eq_ignore_ascii_case("Quads")
+                    {
+                        InteractiveMeshSphereTopology::Quads {
+                            subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
+                        }
+                    } else if value.eq_ignore_ascii_case("Triangle")
+                        || value.eq_ignore_ascii_case("Triangles")
+                    {
+                        InteractiveMeshSphereTopology::Triangles {
+                            subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
+                        }
+                    } else {
                         return false;
-                    }
+                    };
                     0
                 } else if name.eq_ignore_ascii_case("VerticalFaces") {
                     let Ok(count) = value.parse::<usize>() else {
@@ -859,7 +896,7 @@ impl VibocerosApp {
                     if count < 2 {
                         return false;
                     }
-                    vertical_count = count;
+                    vertical_count = Some(count);
                     1
                 } else if name.eq_ignore_ascii_case("AroundFaces") {
                     let Ok(count) = value.parse::<usize>() else {
@@ -868,8 +905,14 @@ impl VibocerosApp {
                     if count < 3 {
                         return false;
                     }
-                    around_count = count;
+                    around_count = Some(count);
                     2
+                } else if name.eq_ignore_ascii_case("Subdivisions") {
+                    let Ok(count) = value.parse::<usize>() else {
+                        return false;
+                    };
+                    subdivisions = Some(count);
+                    3
                 } else {
                     return false;
                 };
@@ -878,16 +921,48 @@ impl VibocerosApp {
                 }
                 seen[option_index] = true;
             }
-            if vertical_count
-                .checked_mul(around_count)
-                .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
-            {
-                return false;
-            }
+            topology = match topology {
+                InteractiveMeshSphereTopology::Uv { .. } => {
+                    if subdivisions.is_some() {
+                        return false;
+                    }
+                    let vertical_count = vertical_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
+                    let around_count = around_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
+                    if vertical_count
+                        .checked_mul(around_count)
+                        .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
+                    {
+                        return false;
+                    }
+                    InteractiveMeshSphereTopology::Uv {
+                        vertical_count,
+                        around_count,
+                    }
+                }
+                InteractiveMeshSphereTopology::Quads { .. } => {
+                    if vertical_count.is_some() || around_count.is_some() {
+                        return false;
+                    }
+                    let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
+                    if subdivisions > MAX_MESH_SPHERE_QUAD_SUBDIVISIONS {
+                        return false;
+                    }
+                    InteractiveMeshSphereTopology::Quads { subdivisions }
+                }
+                InteractiveMeshSphereTopology::Triangles { .. } => {
+                    if vertical_count.is_some() || around_count.is_some() {
+                        return false;
+                    }
+                    let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
+                    if subdivisions > MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS {
+                        return false;
+                    }
+                    InteractiveMeshSphereTopology::Triangles { subdivisions }
+                }
+            };
             InteractiveCommand::MeshSphere {
                 center: None,
-                vertical_count,
-                around_count,
+                topology,
             }
         } else if normalized == "meshtorus" {
             let mut vertical_count = DEFAULT_MESH_TORUS_FACE_COUNT;
@@ -2524,13 +2599,11 @@ impl VibocerosApp {
             } => unreachable!("mesh-cylinder radius requires a center"),
             InteractiveCommand::MeshSphere {
                 center: None,
-                vertical_count,
-                around_count,
+                topology,
             } => {
                 let command = InteractiveCommand::MeshSphere {
                     center: Some(point),
-                    vertical_count,
-                    around_count,
+                    topology,
                 };
                 self.active_command = Some(command);
                 self.push_log(format!("Center: {}", format_model_point(point)));
@@ -2538,8 +2611,7 @@ impl VibocerosApp {
             }
             InteractiveCommand::MeshSphere {
                 center: Some(center),
-                vertical_count,
-                around_count,
+                topology,
             } => {
                 if same_top_point(center, point, self.document.tolerance()) {
                     self.push_log(
@@ -2552,12 +2624,25 @@ impl VibocerosApp {
                     return;
                 };
                 self.active_command = None;
+                let topology_options = match topology {
+                    InteractiveMeshSphereTopology::Uv {
+                        vertical_count,
+                        around_count,
+                    } => format!(
+                        "Style=UV VerticalFaces={vertical_count} AroundFaces={around_count}"
+                    ),
+                    InteractiveMeshSphereTopology::Quads { subdivisions } => {
+                        format!("Style=Quads Subdivisions={subdivisions}")
+                    }
+                    InteractiveMeshSphereTopology::Triangles { subdivisions } => {
+                        format!("Style=Triangles Subdivisions={subdivisions}")
+                    }
+                };
                 self.execute_command(&format!(
-                    "MeshSphere {} {} Style=UV VerticalFaces={} AroundFaces={}",
+                    "MeshSphere {} {} {}",
                     format_model_point(center),
                     format_model_point(radius_point),
-                    vertical_count,
-                    around_count
+                    topology_options
                 ));
             }
             InteractiveCommand::MeshTorus {
@@ -3594,7 +3679,7 @@ impl VibocerosApp {
                     .clicked();
                 mesh_sphere_clicked = ui
                     .button("Mesh Sphere")
-                    .on_hover_text("Draw a UV polygon mesh sphere")
+                    .on_hover_text("Draw a UV, quad, or triangular polygon mesh sphere")
                     .clicked();
                 mesh_torus_clicked = ui
                     .button("Mesh Torus")
@@ -4914,10 +4999,13 @@ mod tests {
     }
 
     #[test]
-    fn interactive_mesh_sphere_retains_uv_counts_and_validates_radius_pick() {
+    fn interactive_mesh_sphere_retains_each_style_and_validates_radius_pick() {
         let mut app = test_app();
         assert!(!app.try_start_interactive_command("MeshSphere VerticalFaces=1"));
-        assert!(!app.try_start_interactive_command("MeshSphere Style=Triangles"));
+        assert!(!app.try_start_interactive_command("MeshSphere Style=UV Subdivisions=1"));
+        assert!(!app.try_start_interactive_command("MeshSphere Style=Quads VerticalFaces=4"));
+        assert!(!app.try_start_interactive_command("MeshSphere Style=Quads Subdivisions=7"));
+        assert!(!app.try_start_interactive_command("MeshSphere Style=Triangles Subdivisions=6"));
         assert!(
             !app.try_start_interactive_command("MeshSphere VerticalFaces=1000001 AroundFaces=3")
         );
@@ -4931,8 +5019,10 @@ mod tests {
             app.active_command,
             Some(InteractiveCommand::MeshSphere {
                 center: Some(center),
-                vertical_count: 4,
-                around_count: 6,
+                topology: InteractiveMeshSphereTopology::Uv {
+                    vertical_count: 4,
+                    around_count: 6,
+                },
             })
         );
         assert_eq!(app.document.objects().len(), 0);
@@ -4953,6 +5043,33 @@ mod tests {
         assert!(mesh.signed_volume().unwrap() > 0.0);
         assert_eq!(app.document.selected_object_count(), 0);
         assert_eq!(app.document.undo_label(), Some("MeshSphere"));
+
+        let mut quad_app = test_app();
+        assert!(quad_app.try_start_interactive_command("MeshSphere Style=Quads Subdivisions=2"));
+        quad_app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        quad_app.accept_drafting_point(point(2.0, 0.0, 4.0));
+        let Geometry::Mesh(quad) = quad_app.document.objects().next().unwrap().geometry() else {
+            panic!("expected an interactively created quad mesh sphere")
+        };
+        assert_eq!(quad.vertices().len(), 98);
+        assert_eq!(quad.face_count(), 96);
+        assert_eq!(quad.faces()[0], MeshFace::Quad([48, 79, 27, 0]));
+        assert!(quad.topology().is_solid());
+
+        let mut triangle_app = test_app();
+        assert!(
+            triangle_app.try_start_interactive_command("MeshSphere Style=Triangles Subdivisions=1")
+        );
+        triangle_app.accept_drafting_point(point(0.0, 0.0, 0.0));
+        triangle_app.accept_drafting_point(point(2.0, 0.0, 4.0));
+        let Geometry::Mesh(triangle) = triangle_app.document.objects().next().unwrap().geometry()
+        else {
+            panic!("expected an interactively created triangular mesh sphere")
+        };
+        assert_eq!(triangle.vertices().len(), 42);
+        assert_eq!(triangle.face_count(), 80);
+        assert_eq!(triangle.faces()[0], MeshFace::Triangle([0, 12, 14]));
+        assert!(triangle.topology().is_solid());
     }
 
     #[test]

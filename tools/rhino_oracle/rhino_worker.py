@@ -4884,6 +4884,32 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_sphere)
 
+    if kind == "mesh_quad_sphere" or kind == "mesh_ico_sphere":
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        sphere = Rhino.Geometry.Sphere(
+            plane,
+            _finite(operation["radius"], "subdivision mesh-sphere radius"),
+        )
+        subdivisions = int(operation["subdivisions"])
+
+        def create_subdivision_mesh_sphere():
+            if kind == "mesh_quad_sphere":
+                mesh = Rhino.Geometry.Mesh.CreateQuadSphere(sphere, subdivisions)
+            else:
+                mesh = Rhino.Geometry.Mesh.CreateIcoSphere(sphere, subdivisions)
+            if mesh is None:
+                raise ValueError("could not create subdivision mesh sphere")
+            try:
+                return _polygon_mesh_value(mesh)
+            finally:
+                mesh.Dispose()
+
+        return _measure(iterations, create_subdivision_mesh_sphere)
+
     if kind == "mesh_torus":
         plane = Rhino.Geometry.Plane(
             _point(operation["origin"]),

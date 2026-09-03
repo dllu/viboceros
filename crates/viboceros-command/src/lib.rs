@@ -14,9 +14,9 @@ use viboceros_geometry::{
     MAX_CURVE_DIVISION_POINTS, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES,
     MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES, MAX_REGULAR_POLYGON_SIDES,
     MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshFaceExtraction,
-    MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3,
-    Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, join_polylines,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
+    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfacePointMorph, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, join_polylines,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -2522,7 +2522,10 @@ impl Command for SphereCommand {
 }
 
 pub const DEFAULT_MESH_SPHERE_FACE_COUNT: usize = 10;
-const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV] [VerticalFaces=integer-at-least-2] [AroundFaces=integer-at-least-3]";
+pub const DEFAULT_MESH_SPHERE_SUBDIVISIONS: usize = 3;
+pub const MAX_MESH_SPHERE_QUAD_SUBDIVISIONS: usize = 6;
+pub const MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS: usize = 5;
+const MESH_SPHERE_USAGE: &str = "MeshSphere center radius | MeshSphere center point-on-equator [Axis=x,y,z] [Style=UV|Quads|Triangles] [VerticalFaces=integer-at-least-2 AroundFaces=integer-at-least-3 | Subdivisions=non-negative-integer]";
 pub const DEFAULT_MESH_TORUS_FACE_COUNT: usize = 10;
 const MESH_TORUS_USAGE: &str = "MeshTorus center major-radius minor-radius | MeshTorus center point-on-major-circle minor-radius [Axis=x,y,z] [VerticalFaces=integer-at-least-3] [AroundFaces=integer-at-least-3]";
 const CYLINDER_USAGE: &str = "Cylinder center radius height | Cylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No]";
@@ -2594,8 +2597,21 @@ struct MeshSphereCommandOptions {
     center: Point3,
     radius: AxialPrimitiveRadius,
     axis: Vector3,
-    vertical_count: usize,
-    around_count: usize,
+    topology: MeshSphereCommandTopology,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum MeshSphereCommandTopology {
+    Uv {
+        vertical_count: usize,
+        around_count: usize,
+    },
+    Quads {
+        subdivisions: usize,
+    },
+    Triangles {
+        subdivisions: usize,
+    },
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -2758,58 +2774,133 @@ fn parse_mesh_cap_face_style(value: &str) -> Option<MeshCapFaceStyle> {
 
 fn parse_mesh_sphere_options(arguments: &[&str]) -> Result<MeshSphereCommandOptions, CommandError> {
     let positionals = parse_radial_radius_positionals(arguments, MESH_SPHERE_USAGE)?;
-    let mut options = MeshSphereCommandOptions {
-        center: positionals.center,
-        radius: positionals.radius,
-        axis: Vector3::try_new(0.0, 0.0, 1.0)?,
+    let mut axis = Vector3::try_new(0.0, 0.0, 1.0)?;
+    let mut style = MeshSphereCommandTopology::Uv {
         vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
         around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
     };
+    let mut vertical_count = None;
+    let mut around_count = None;
+    let mut subdivisions = None;
     let mut axis_seen = false;
     let mut style_seen = false;
     let mut vertical_seen = false;
     let mut around_seen = false;
+    let mut subdivisions_seen = false;
     for argument in &arguments[positionals.option_start..] {
         let Some((name, value)) = argument.split_once('=') else {
             return Err(CommandError::Usage(MESH_SPHERE_USAGE));
         };
         let value = value.trim_start_matches('_');
         if option_name_eq(name, "Axis") && !axis_seen {
-            options.axis = parse_axis_option(value, MESH_SPHERE_USAGE)?;
+            axis = parse_axis_option(value, MESH_SPHERE_USAGE)?;
             axis_seen = true;
         } else if option_name_eq(name, "Style") && !style_seen {
-            if !value.eq_ignore_ascii_case("UV") {
+            style = if value.eq_ignore_ascii_case("UV") {
+                MeshSphereCommandTopology::Uv {
+                    vertical_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+                    around_count: DEFAULT_MESH_SPHERE_FACE_COUNT,
+                }
+            } else if value.eq_ignore_ascii_case("Quad") || value.eq_ignore_ascii_case("Quads") {
+                MeshSphereCommandTopology::Quads {
+                    subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
+                }
+            } else if value.eq_ignore_ascii_case("Triangle")
+                || value.eq_ignore_ascii_case("Triangles")
+            {
+                MeshSphereCommandTopology::Triangles {
+                    subdivisions: DEFAULT_MESH_SPHERE_SUBDIVISIONS,
+                }
+            } else {
                 return Err(CommandError::UnsupportedMeshSphereStyle(value.to_owned()));
-            }
+            };
             style_seen = true;
         } else if option_name_eq(name, "VerticalFaces") && !vertical_seen {
-            options.vertical_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 2)
-                .ok_or_else(|| {
-                    CommandError::InvalidMeshSphereVerticalFaceCount(value.to_owned())
-                })?;
+            vertical_count = Some(
+                value
+                    .parse::<usize>()
+                    .ok()
+                    .filter(|count| *count >= 2)
+                    .ok_or_else(|| {
+                        CommandError::InvalidMeshSphereVerticalFaceCount(value.to_owned())
+                    })?,
+            );
             vertical_seen = true;
         } else if option_name_eq(name, "AroundFaces") && !around_seen {
-            options.around_count = value
-                .parse::<usize>()
-                .ok()
-                .filter(|count| *count >= 3)
-                .ok_or_else(|| CommandError::InvalidMeshSphereAroundFaceCount(value.to_owned()))?;
+            around_count = Some(
+                value
+                    .parse::<usize>()
+                    .ok()
+                    .filter(|count| *count >= 3)
+                    .ok_or_else(|| {
+                        CommandError::InvalidMeshSphereAroundFaceCount(value.to_owned())
+                    })?,
+            );
             around_seen = true;
+        } else if option_name_eq(name, "Subdivisions") && !subdivisions_seen {
+            subdivisions = Some(value.parse::<usize>().map_err(|_| {
+                CommandError::InvalidMeshSphereSubdivisionCount {
+                    value: value.to_owned(),
+                    maximum: MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
+                }
+            })?);
+            subdivisions_seen = true;
         } else {
             return Err(CommandError::Usage(MESH_SPHERE_USAGE));
         }
     }
-    if options
-        .vertical_count
-        .checked_mul(options.around_count)
-        .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
-    {
-        return Err(GeometryError::TooManyMeshFaces.into());
-    }
-    Ok(options)
+
+    let topology = match style {
+        MeshSphereCommandTopology::Uv { .. } => {
+            if subdivisions.is_some() {
+                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
+            }
+            let vertical_count = vertical_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
+            let around_count = around_count.unwrap_or(DEFAULT_MESH_SPHERE_FACE_COUNT);
+            if vertical_count
+                .checked_mul(around_count)
+                .is_none_or(|faces| faces > MAX_MESH_SPHERE_FACES)
+            {
+                return Err(GeometryError::TooManyMeshFaces.into());
+            }
+            MeshSphereCommandTopology::Uv {
+                vertical_count,
+                around_count,
+            }
+        }
+        MeshSphereCommandTopology::Quads { .. } => {
+            if vertical_count.is_some() || around_count.is_some() {
+                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
+            }
+            let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
+            if subdivisions > MAX_MESH_SPHERE_QUAD_SUBDIVISIONS {
+                return Err(CommandError::InvalidMeshSphereSubdivisionCount {
+                    value: subdivisions.to_string(),
+                    maximum: MAX_MESH_SPHERE_QUAD_SUBDIVISIONS,
+                });
+            }
+            MeshSphereCommandTopology::Quads { subdivisions }
+        }
+        MeshSphereCommandTopology::Triangles { .. } => {
+            if vertical_count.is_some() || around_count.is_some() {
+                return Err(CommandError::Usage(MESH_SPHERE_USAGE));
+            }
+            let subdivisions = subdivisions.unwrap_or(DEFAULT_MESH_SPHERE_SUBDIVISIONS);
+            if subdivisions > MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS {
+                return Err(CommandError::InvalidMeshSphereSubdivisionCount {
+                    value: subdivisions.to_string(),
+                    maximum: MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
+                });
+            }
+            MeshSphereCommandTopology::Triangles { subdivisions }
+        }
+    };
+    Ok(MeshSphereCommandOptions {
+        center: positionals.center,
+        radius: positionals.radius,
+        axis,
+        topology,
+    })
 }
 
 fn parse_mesh_torus_options(arguments: &[&str]) -> Result<MeshTorusCommandOptions, CommandError> {
@@ -3193,20 +3284,54 @@ impl Command for MeshSphereCommand {
         let tolerance = document.tolerance();
         let (frame, radius) =
             axial_primitive_frame(options.center, options.radius, options.axis, tolerance)?;
-        let mesh = TriangleMesh::try_uv_sphere_grid(
-            frame,
-            radius,
-            MeshUvSphereOptions {
-                vertical_count: options.vertical_count,
-                around_count: options.around_count,
-            },
-            tolerance,
-        )?;
+        let (mesh, style, details) = match options.topology {
+            MeshSphereCommandTopology::Uv {
+                vertical_count,
+                around_count,
+            } => (
+                TriangleMesh::try_uv_sphere_grid(
+                    frame,
+                    radius,
+                    MeshUvSphereOptions {
+                        vertical_count,
+                        around_count,
+                    },
+                    tolerance,
+                )?,
+                "UV",
+                format!("({around_count} around × {vertical_count} vertical faces)"),
+            ),
+            MeshSphereCommandTopology::Quads { subdivisions } => {
+                let mesh = TriangleMesh::try_quad_sphere(
+                    frame,
+                    radius,
+                    MeshSubdivisionSphereOptions { subdivisions },
+                    tolerance,
+                )?;
+                let face_count = mesh.face_count();
+                (
+                    mesh,
+                    "quad",
+                    format!("({subdivisions} subdivisions, {face_count} faces)"),
+                )
+            }
+            MeshSphereCommandTopology::Triangles { subdivisions } => {
+                let mesh = TriangleMesh::try_ico_sphere(
+                    frame,
+                    radius,
+                    MeshSubdivisionSphereOptions { subdivisions },
+                    tolerance,
+                )?;
+                let face_count = mesh.face_count();
+                (
+                    mesh,
+                    "triangle",
+                    format!("({subdivisions} subdivisions, {face_count} faces)"),
+                )
+            }
+        };
         let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added UV mesh sphere {id} ({} around × {} vertical faces)",
-            options.around_count, options.vertical_count
-        ))
+        Ok(format!("Added {style} mesh sphere {id} {details}"))
     }
 }
 
@@ -13414,7 +13539,7 @@ pub enum CommandError {
     #[error("'{0}' is not a valid mesh-cone around face count of at least 3")]
     InvalidMeshConeAroundFaceCount(String),
 
-    #[error("mesh-sphere style '{0}' is not supported yet; supported style: UV")]
+    #[error("mesh-sphere style '{0}' is not supported; use UV, Quads, or Triangles")]
     UnsupportedMeshSphereStyle(String),
 
     #[error("'{0}' is not a valid mesh-sphere vertical face count of at least 2")]
@@ -13422,6 +13547,9 @@ pub enum CommandError {
 
     #[error("'{0}' is not a valid mesh-sphere around face count of at least 3")]
     InvalidMeshSphereAroundFaceCount(String),
+
+    #[error("'{value}' is not a valid mesh-sphere subdivision count from 0 through {maximum}")]
+    InvalidMeshSphereSubdivisionCount { value: String, maximum: usize },
 
     #[error("'{0}' is not a valid mesh-torus vertical face count of at least 3")]
     InvalidMeshTorusVerticalFaceCount(String),
@@ -14456,12 +14584,23 @@ mod tests {
     }
 
     #[test]
-    fn mesh_sphere_matches_default_and_oriented_uv_rhino_topology() {
+    fn mesh_sphere_matches_all_rhino_styles_and_orientations() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let parsed = parse_mesh_sphere_options(&["0,0,0", "2"]).unwrap();
-        assert_eq!(parsed.vertical_count, 10);
-        assert_eq!(parsed.around_count, 10);
+        assert_eq!(
+            parsed.topology,
+            MeshSphereCommandTopology::Uv {
+                vertical_count: 10,
+                around_count: 10,
+            }
+        );
+        assert_eq!(
+            parse_mesh_sphere_options(&["0,0,0", "2", "Style=Quads"])
+                .unwrap()
+                .topology,
+            MeshSphereCommandTopology::Quads { subdivisions: 3 }
+        );
 
         let message = registry
             .execute(&mut document, "MeshSphere 0,0,0 2")
@@ -14522,10 +14661,55 @@ mod tests {
             viboceros_geometry::MeshFace::Quad([1, 2, 8, 7])
         );
         assert!(oriented.topology().is_solid());
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let message = registry
+            .execute(
+                &mut document,
+                "MeshSphere 0,0,0 2 Style=Quad Subdivisions=2",
+            )
+            .unwrap();
+        assert!(message.contains("Added quad mesh sphere"));
+        assert!(message.ends_with("(2 subdivisions, 96 faces)"));
+        let Geometry::Mesh(quad) = document.objects().next().unwrap().geometry() else {
+            panic!("quad MeshSphere must create a mesh")
+        };
+        assert_eq!(quad.vertices().len(), 98);
+        assert_eq!(quad.face_count(), 96);
+        assert_eq!(
+            quad.faces()[0],
+            viboceros_geometry::MeshFace::Quad([48, 79, 27, 0])
+        );
+        assert!((quad.vertices()[0].x() + 0.731_390_176_158_283_5).abs() < 1.0e-15);
+        assert!((quad.vertices()[0].y() - 0.731_390_176_158_283_5).abs() < 1.0e-15);
+        assert!((quad.vertices()[0].z() + 1.711_764_242_072_578_5).abs() < 1.0e-15);
+        assert!(quad.topology().is_solid());
+        assert!(quad.signed_volume().unwrap() > 0.0);
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let message = registry
+            .execute(
+                &mut document,
+                "MeshSphere 0,0,0 2 Style=Triangle Subdivisions=1",
+            )
+            .unwrap();
+        assert!(message.contains("Added triangle mesh sphere"));
+        assert!(message.ends_with("(1 subdivisions, 80 faces)"));
+        let Geometry::Mesh(triangle) = document.objects().next().unwrap().geometry() else {
+            panic!("triangle MeshSphere must create a mesh")
+        };
+        assert_eq!(triangle.vertices().len(), 42);
+        assert_eq!(triangle.face_count(), 80);
+        assert_eq!(
+            triangle.faces()[0],
+            viboceros_geometry::MeshFace::Triangle([0, 12, 14])
+        );
+        assert!(triangle.topology().is_solid());
+        assert!(triangle.signed_volume().unwrap() > 0.0);
     }
 
     #[test]
-    fn mesh_sphere_rejects_unsupported_styles_and_invalid_input_atomically() {
+    fn mesh_sphere_rejects_incompatible_styles_and_invalid_input_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         for command in [
@@ -14536,7 +14720,15 @@ mod tests {
             "MeshSphere 0,0,0 2 AroundFaces=2",
             "MeshSphere 0,0,0 2 AroundFaces=nope",
             "MeshSphere 0,0,0 2 AroundFaces=6 AroundFaces=8",
-            "MeshSphere 0,0,0 2 Style=Triangles",
+            "MeshSphere 0,0,0 2 Style=Hexagons",
+            "MeshSphere 0,0,0 2 Subdivisions=1",
+            "MeshSphere 0,0,0 2 Style=UV Subdivisions=1",
+            "MeshSphere 0,0,0 2 Style=Quads VerticalFaces=4",
+            "MeshSphere 0,0,0 2 Style=Triangles AroundFaces=6",
+            "MeshSphere 0,0,0 2 Style=Quads Subdivisions=7",
+            "MeshSphere 0,0,0 2 Style=Triangles Subdivisions=6",
+            "MeshSphere 0,0,0 2 Style=Triangles Subdivisions=nope",
+            "MeshSphere 0,0,0 2 Style=Quads Subdivisions=1 Subdivisions=2",
             "MeshSphere 0,0,0 2 Style=UV Style=UV",
             "MeshSphere 0,0,0 2 Solid=Yes",
             "MeshSphere 0,0,0 2 Axis=0,0,0",
