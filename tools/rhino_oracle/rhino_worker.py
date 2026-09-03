@@ -6089,6 +6089,62 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "surface_extend_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v"):
+            raise ValueError("surface extension direction must be u or v")
+        values = operation["domain"]
+        if len(values) != 2:
+            raise ValueError("surface extension domain requires two parameters")
+        target = Rhino.Geometry.Interval(
+            _finite(values[0], "surface extension domain start"),
+            _finite(values[1], "surface extension domain end"),
+        )
+        if not target.IsIncreasing:
+            raise ValueError("surface extension domain must be increasing")
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate surface extension source")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("surface extension source is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def extend_surface():
+            duplicate = source.Duplicate()
+            if duplicate is None or not isinstance(
+                duplicate, Rhino.Geometry.NurbsSurface
+            ):
+                raise ValueError("Rhino could not duplicate surface for extension")
+            try:
+                axis = 0 if direction == "u" else 1
+                if not duplicate.Extend(axis, target):
+                    raise ValueError("Rhino natural surface extension failed")
+                definition = _nurbs_surface_definition(duplicate)
+                definition["periodic_u"] = bool(duplicate.IsPeriodic(0))
+                definition["periodic_v"] = bool(duplicate.IsPeriodic(1))
+                return definition
+            finally:
+                duplicate.Dispose()
+
+        try:
+            return _measure(iterations, extend_surface)
+        finally:
+            source.Dispose()
+
     if kind == "surface_direction_edit_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])

@@ -416,6 +416,9 @@ impl CommandRegistry {
             .register(ExtendCurveCommand)
             .expect("unique built-in command");
         registry
+            .register(ExtendSurfaceCommand)
+            .expect("unique built-in command");
+        registry
             .register(SubcurveCommand)
             .expect("unique built-in command");
         registry
@@ -11536,6 +11539,90 @@ fn parse_extend_curve_target(arguments: &[&str]) -> Result<ExtendCurveTarget, Co
     Ok(target)
 }
 
+const EXTEND_SURFACE_USAGE: &str =
+    "ExtendSrf Direction=U|V Domain=start,end [Type=Smooth] [Merge=Yes]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum SurfaceExtensionDirection {
+    U,
+    V,
+}
+
+struct ExtendSurfaceCommand;
+
+impl Command for ExtendSurfaceCommand {
+    fn name(&self) -> &'static str {
+        "ExtendSrf"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let (direction, [start, end]) = parse_extend_surface_options(arguments)?;
+        let mut candidates = document
+            .selected_objects()
+            .filter_map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => Some((object.id(), surface.clone())),
+                _ => None,
+            })
+            .collect::<Vec<_>>();
+        if candidates.len() != 1 {
+            return Err(CommandError::ExtendSurfaceRequiresOneSurface {
+                actual: candidates.len(),
+            });
+        }
+        let (id, surface) = candidates
+            .pop()
+            .expect("one surface extension source was required");
+        let surface = match direction {
+            SurfaceExtensionDirection::U => surface.try_extended_u(start..=end)?,
+            SurfaceExtensionDirection::V => surface.try_extended_v(start..=end)?,
+        };
+        document.replace_object_geometries([(id, Geometry::NurbsSurface(surface))])?;
+        Ok(format!(
+            "Smoothly extended the selected surface in {direction:?} to include domain {start}..{end}, merging the extension"
+        ))
+    }
+}
+
+fn parse_extend_surface_options(
+    arguments: &[&str],
+) -> Result<(SurfaceExtensionDirection, [Real; 2]), CommandError> {
+    let mut direction = None;
+    let mut domain = None;
+    let mut type_seen = false;
+    let mut merge_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, EXTEND_SURFACE_USAGE)?;
+        if option_name_eq(name, "Direction") && direction.is_none() {
+            direction = Some(if option_name_eq(value, "U") {
+                SurfaceExtensionDirection::U
+            } else if option_name_eq(value, "V") {
+                SurfaceExtensionDirection::V
+            } else {
+                return Err(CommandError::Usage(EXTEND_SURFACE_USAGE));
+            });
+        } else if option_name_eq(name, "Domain") && domain.is_none() {
+            let values = value.split(',').collect::<Vec<_>>();
+            if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
+                return Err(CommandError::Usage(EXTEND_SURFACE_USAGE));
+            }
+            domain = Some([parse_finite_real(values[0])?, parse_finite_real(values[1])?]);
+        } else if option_name_eq(name, "Type") && !type_seen && option_name_eq(value, "Smooth") {
+            type_seen = true;
+        } else if option_name_eq(name, "Merge") && !merge_seen && parse_yes_no(value) == Some(true)
+        {
+            merge_seen = true;
+        } else {
+            return Err(CommandError::Usage(EXTEND_SURFACE_USAGE));
+        }
+        index += consumed;
+    }
+    Ok((
+        direction.ok_or(CommandError::Usage(EXTEND_SURFACE_USAGE))?,
+        domain.ok_or(CommandError::Usage(EXTEND_SURFACE_USAGE))?,
+    ))
+}
+
 const SUBCURVE_USAGE: &str =
     "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No]";
 
@@ -18797,6 +18884,9 @@ pub enum CommandError {
     #[error("Extend requires exactly one selected curve, got {actual}")]
     ExtendRequiresOneCurve { actual: usize },
 
+    #[error("ExtendSrf requires exactly one selected untrimmed NURBS surface, got {actual}")]
+    ExtendSurfaceRequiresOneSurface { actual: usize },
+
     #[error("Split currently requires exactly one selected curve, got {actual}")]
     SplitRequiresOneCurve { actual: usize },
 
@@ -19384,7 +19474,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -23782,6 +23872,100 @@ mod tests {
                 GeometryError::InvalidCurveExtensionLength
             ))
         ));
+    }
+
+    #[test]
+    fn extend_surface_preserves_tensor_state_and_history() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New SurfaceExtensions")
+            .unwrap();
+        registry
+            .execute(&mut document, "SrfPt 0,0,0 3,0,1 3,4,4 0,4,2")
+            .unwrap();
+        let id = document.objects().next().unwrap().id();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        registry
+            .execute(&mut document, "SetObjectName ExtendedPatch")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group SurfaceExtension")
+            .unwrap();
+        let before = document.object(id).unwrap().clone();
+        let Geometry::NurbsSurface(source) = before.geometry() else {
+            panic!("SrfPt must create a NURBS surface")
+        };
+        let expected = source.try_extended_u(-0.5..=2.0).unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "ExtendSrf Direction=U Domain=-0.5,2 Type=Smooth Merge=Yes"
+                )
+                .unwrap(),
+            "Smoothly extended the selected surface in U to include domain -0.5..2, merging the extension"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsSurface(expected.clone()));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(document.is_selected(id));
+        assert!(
+            document
+                .group_by_name("SurfaceExtension")
+                .unwrap()
+                .members()
+                .any(|member| member == id)
+        );
+        assert_eq!(document.undo_label(), Some("ExtendSrf"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(id).unwrap(), &before);
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(
+            document.object(id).unwrap().geometry(),
+            &Geometry::NurbsSurface(expected)
+        );
+    }
+
+    #[test]
+    fn extend_surface_rejects_invalid_requests_selection_and_closed_directions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "ExtendSrf",
+            "ExtendSrf Direction=U",
+            "ExtendSrf Domain=0,2",
+            "ExtendSrf Direction=Both Domain=0,2",
+            "ExtendSrf Direction=U Domain=0",
+            "ExtendSrf Direction=U Domain=0,2 Type=Line",
+            "ExtendSrf Direction=U Domain=0,2 Merge=No",
+            "ExtendSrf Direction=U Direction=V Domain=0,2",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(EXTEND_SURFACE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "ExtendSrf Direction=U Domain=-1,2"),
+            Err(CommandError::ExtendSurfaceRequiresOneSurface { actual: 0 })
+        ));
+
+        registry.execute(&mut document, "Sphere 0,0,0 2").unwrap();
+        let sphere = document.objects().next().unwrap().id();
+        document
+            .select_object(sphere, SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(sphere).unwrap().clone();
+        assert!(matches!(
+            registry.execute(&mut document, "ExtendSrf Direction=U Domain=-1,7"),
+            Err(CommandError::Geometry(
+                GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "U" }
+            ))
+        ));
+        assert_eq!(document.object(sphere).unwrap(), &before);
     }
 
     #[test]

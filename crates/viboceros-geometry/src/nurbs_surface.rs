@@ -98,6 +98,22 @@ fn validate_surface_knot_insertion(
     Ok(())
 }
 
+fn validate_surface_extension_interval(
+    interval: &RangeInclusive<Real>,
+    domain: RangeInclusive<Real>,
+) -> Result<(), GeometryError> {
+    let start = *interval.start();
+    let end = *interval.end();
+    if !start.is_finite()
+        || !end.is_finite()
+        || start >= end
+        || (start >= *domain.start() && end <= *domain.end())
+    {
+        return Err(GeometryError::InvalidSurfaceExtensionInterval);
+    }
+    Ok(())
+}
+
 impl NurbsSurface {
     /// Constructs a non-rational surface whose control weights are all one.
     #[allow(clippy::too_many_arguments)]
@@ -2106,6 +2122,26 @@ impl NurbsSurface {
         v: RangeInclusive<Real>,
     ) -> Result<Self, GeometryError> {
         self.try_trimmed_u(u)?.try_trimmed_v(v)
+    }
+
+    /// Naturally extends the open U direction to include the requested
+    /// parameter interval while leaving V topology and parameterization intact.
+    pub fn try_extended_u(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        if self.is_closed_u()? {
+            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "U" });
+        }
+        validate_surface_extension_interval(&interval, self.domain_u())?;
+        self.map_u_control_curves(|curve| curve.try_extended_control_curve_to(interval.clone()))
+    }
+
+    /// Naturally extends the open V direction to include the requested
+    /// parameter interval while leaving U topology and parameterization intact.
+    pub fn try_extended_v(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        if self.is_closed_v()? {
+            return Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "V" });
+        }
+        validate_surface_extension_interval(&interval, self.domain_v())?;
+        self.map_v_control_curves(|curve| curve.try_extended_control_curve_to(interval.clone()))
     }
 
     /// Returns whether the natural U direction closes without a border.
@@ -7520,6 +7556,108 @@ mod tests {
         assert!(surface.try_split_v(14.0).is_err());
         assert!(surface.try_trimmed_u(1.0..=0.5).is_err());
         assert!(surface.try_trimmed_v(9.0..=12.0).is_err());
+    }
+
+    #[test]
+    fn natural_surface_extension_preserves_rational_tensor_structure_and_source_domain() {
+        let mut controls = Vec::new();
+        for v in 0..4 {
+            for u in 0..4 {
+                controls.push(
+                    WeightedPoint3::try_new(
+                        point(
+                            u as Real * 2.0 + v as Real * 0.25,
+                            v as Real * 1.5 - u as Real * 0.4,
+                            (u * v) as Real * 0.3,
+                        ),
+                        0.5 + (u + 2 * v) as Real * 0.2,
+                    )
+                    .unwrap(),
+                );
+            }
+        }
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            2,
+            4,
+            4,
+            controls,
+            vec![-1.0, -1.0, 0.0, 0.7, 2.0, 3.0, 3.0],
+            vec![9.0, 9.0, 10.0, 11.5, 14.0, 15.0, 15.0],
+        )
+        .unwrap();
+
+        let extended_u = surface.try_extended_u(-0.25..=2.5).unwrap();
+        assert_eq!(extended_u.domain_u(), -0.25..=2.5);
+        assert_eq!(extended_u.knots_v(), surface.knots_v());
+        assert_eq!(
+            extended_u.control_point_count_v(),
+            surface.control_point_count_v()
+        );
+        for u in [0.0, 0.3, 1.2, 2.0] {
+            for v in [10.0, 10.7, 12.2, 14.0] {
+                assert_point_near(
+                    extended_u.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+
+        let extended_v = surface.try_extended_v(9.5..=14.75).unwrap();
+        assert_eq!(extended_v.domain_v(), 9.5..=14.75);
+        assert_eq!(extended_v.knots_u(), surface.knots_u());
+        assert_eq!(
+            extended_v.control_point_count_u(),
+            surface.control_point_count_u()
+        );
+        for u in [0.0, 0.3, 1.2, 2.0] {
+            for v in [10.0, 10.7, 12.2, 14.0] {
+                assert_point_near(
+                    extended_v.evaluate(u, v).unwrap(),
+                    surface.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn natural_surface_extension_rejects_interior_intervals_and_closed_directions() {
+        let open = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(2.0, 0.0, 0.0),
+            point(0.0, 2.0, 1.0),
+            point(2.0, 2.0, 1.0),
+        ])
+        .unwrap();
+        for interval in [0.0..=1.0, 0.75..=0.25, Real::NAN..=2.0] {
+            assert_eq!(
+                open.try_extended_u(interval),
+                Err(GeometryError::InvalidSurfaceExtensionInterval)
+            );
+        }
+
+        let closed_u = NurbsSurface::try_new(
+            1,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(2.0, 0.0, 0.0),
+                point(0.0, 0.0, 0.0),
+                point(0.0, 2.0, 1.0),
+                point(2.0, 2.0, 1.0),
+                point(0.0, 2.0, 1.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(closed_u.is_closed_u().unwrap());
+        assert_eq!(
+            closed_u.try_extended_u(-1.0..=3.0),
+            Err(GeometryError::SurfaceExtensionDirectionMustBeOpen { direction: "U" })
+        );
     }
 
     #[test]

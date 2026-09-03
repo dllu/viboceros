@@ -711,6 +711,18 @@ pub enum Operation {
         domain_u: Option<[f64; 2]>,
         domain_v: Option<[f64; 2]>,
     },
+    SurfaceExtendGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        direction: SurfaceKnotAxis,
+        domain: [f64; 2],
+    },
     SurfaceInsertKnotGeometry {
         id: String,
         degree_u: usize,
@@ -1116,6 +1128,7 @@ impl Operation {
             | Self::SurfaceDirectionEditGeometry { id, .. }
             | Self::SurfaceChangeSeamGeometry { id, .. }
             | Self::SurfaceReparameterizeGeometry { id, .. }
+            | Self::SurfaceExtendGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
             | Self::SurfaceRemoveControlPointGeometry { id, .. }
@@ -3297,6 +3310,37 @@ fn execute(
                     black_box(domain_u[0])..=black_box(domain_u[1]),
                     black_box(domain_v[0])..=black_box(domain_v[1]),
                 )
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceExtendGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            direction,
+            domain,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || match direction {
+                SurfaceKnotAxis::U => {
+                    source.try_extended_u(black_box(domain[0])..=black_box(domain[1]))
+                }
+                SurfaceKnotAxis::V => {
+                    source.try_extended_v(black_box(domain[0])..=black_box(domain[1]))
+                }
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -8739,6 +8783,44 @@ mod tests {
         assert_eq!(response.results[0].value["domain"], json!([-4.0, 6.0]));
         assert_eq!(response.results[1].value["domain_u"], json!([0.0, 5.0]));
         assert_eq!(response.results[1].value["domain_v"], json!([0.0, 12.0]));
+    }
+
+    #[test]
+    fn captures_natural_surface_extension_geometry() {
+        let response = run_request(&request(vec![Operation::SurfaceExtendGeometry {
+            id: "extend-bilinear-u".to_owned(),
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [3.0, 0.0, 1.0],
+                [0.0, 4.0, 2.0],
+                [3.0, 4.0, 4.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            direction: SurfaceKnotAxis::U,
+            domain: [-0.5, 2.0],
+        }]))
+        .unwrap();
+
+        let surface = &response.results[0].value;
+        assert_eq!(surface["domain_u"], json!([-0.5, 2.0]));
+        assert_eq!(surface["domain_v"], json!([0.0, 1.0]));
+        assert_eq!(surface["knots_u"], json!([-0.5, -0.5, 2.0, 2.0]));
+        assert_eq!(
+            surface["control_points"][0]["point"],
+            json!([-1.5, 0.0, -0.5])
+        );
+        assert_eq!(
+            surface["control_points"][1]["point"],
+            json!([6.0, 0.0, 2.0])
+        );
     }
 
     #[test]

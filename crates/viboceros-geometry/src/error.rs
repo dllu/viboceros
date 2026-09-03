@@ -78,6 +78,12 @@ pub enum GeometryError {
     #[error("the requested natural curve extension length could not be reached")]
     CurveExtensionLengthDidNotConverge,
 
+    #[error("a NURBS surface extension interval must be finite, increasing, and extend its domain")]
+    InvalidSurfaceExtensionInterval,
+
+    #[error("a surface must be open in {direction} before it can be extended in that direction")]
+    SurfaceExtensionDirectionMustBeOpen { direction: &'static str },
+
     #[error("a curve must be closed before its seam can be changed")]
     CurveSeamMustBeClosed,
 

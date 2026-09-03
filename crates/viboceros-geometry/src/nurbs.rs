@@ -2254,6 +2254,21 @@ impl NurbsCurve {
     /// current domain are ignored, matching OpenNURBS' natural extension
     /// behavior. At least one bound must extend the current domain.
     pub fn try_extended_to(&self, interval: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        self.try_extended_to_impl(interval, true)
+    }
+
+    pub(crate) fn try_extended_control_curve_to(
+        &self,
+        interval: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        self.try_extended_to_impl(interval, false)
+    }
+
+    fn try_extended_to_impl(
+        &self,
+        interval: RangeInclusive<Real>,
+        require_open: bool,
+    ) -> Result<Self, GeometryError> {
         let requested_start = *interval.start();
         let requested_end = *interval.end();
         if !requested_start.is_finite()
@@ -2262,7 +2277,7 @@ impl NurbsCurve {
         {
             return Err(GeometryError::InvalidCurveExtensionInterval);
         }
-        if self.is_closed()? {
+        if require_open && self.is_closed()? {
             return Err(GeometryError::CurveExtensionMustBeOpen);
         }
 
