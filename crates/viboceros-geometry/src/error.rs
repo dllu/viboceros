@@ -87,6 +87,9 @@ pub enum GeometryError {
     #[error("the smooth periodic interpolation system could not be solved reliably")]
     PeriodicInterpolationSolveFailed,
 
+    #[error("the NURBS degree-change interpolation system could not be solved reliably")]
+    DegreeChangeSolveFailed,
+
     #[error("B-rep trim/isocurve intersection did not converge")]
     TrimIntersectionDidNotConverge,
 
@@ -102,7 +105,7 @@ pub enum GeometryError {
     #[error("B-rep face index {face} appears more than once")]
     DuplicateBrepFaceIndex { face: usize },
 
-    #[error("NURBS weight {index} must be finite and strictly positive")]
+    #[error("NURBS weight {index} must be finite and nonzero")]
     InvalidWeight { index: usize },
 
     #[error("NURBS parameter {parameter} is outside [{domain_start}, {domain_end}]")]

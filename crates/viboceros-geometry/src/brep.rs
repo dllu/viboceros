@@ -4074,7 +4074,7 @@ fn scalar_bezier_spans(
     let weight_scale = curve
         .control_points()
         .iter()
-        .map(|control| control.weight())
+        .map(|control| control.weight().abs())
         .fold(0.0, Real::max);
     let controls = curve
         .control_points()

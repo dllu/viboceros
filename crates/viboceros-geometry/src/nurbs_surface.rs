@@ -150,7 +150,7 @@ impl NurbsSurface {
             });
         }
         for (index, control_point) in control_points.iter().enumerate() {
-            if !control_point.weight().is_finite() || control_point.weight() <= 0.0 {
+            if !control_point.weight().is_finite() || control_point.weight() == 0.0 {
                 return Err(GeometryError::InvalidWeight { index });
             }
         }
@@ -1238,6 +1238,36 @@ impl NurbsSurface {
         )
     }
 
+    /// Changes the polynomial degree in each parameter direction using the
+    /// same knot and Greville-collocation rules as [`crate::NurbsCurve`].
+    ///
+    /// Directions whose requested degree is unchanged retain their existing
+    /// representation. Raising with `deformable = false` is exact; lowering,
+    /// and either direction with `deformable = true`, uses simple interior
+    /// knots and interpolates the original homogeneous surface.
+    pub fn try_change_degree(
+        &self,
+        desired_degree_u: usize,
+        desired_degree_v: usize,
+        deformable: bool,
+    ) -> Result<Self, GeometryError> {
+        if desired_degree_u == 0 || desired_degree_v == 0 {
+            return Err(GeometryError::InvalidDegree);
+        }
+        let mut result = self.clone();
+        if desired_degree_u != result.degree_u {
+            result = result.map_u_control_curves(|curve| {
+                curve.try_change_degree(desired_degree_u, deformable)
+            })?;
+        }
+        if desired_degree_v != result.degree_v {
+            result = result.map_v_control_curves(|curve| {
+                curve.try_change_degree(desired_degree_v, deformable)
+            })?;
+        }
+        Ok(result)
+    }
+
     /// Converts selected periodic directions to equivalent clamped,
     /// non-periodic form without changing the active parameterization or
     /// surface locus. Directions that are already non-periodic are unchanged.
@@ -1920,7 +1950,7 @@ impl NurbsSurface {
                 SurfaceIsoDirection::V => self.control_points[self.control_index(fixed, varying)],
             };
             let weight_scale = (0..=fixed_degree)
-                .map(|local_fixed| control_at(first_fixed + local_fixed).weight())
+                .map(|local_fixed| control_at(first_fixed + local_fixed).weight().abs())
                 .fold(0.0_f64, Real::max);
             debug_assert!(weight_scale > 0.0);
             let mut active = Vec::with_capacity(fixed_degree + 1);
@@ -2657,7 +2687,8 @@ impl NurbsSurface {
             for local_u in 0..=self.degree_u {
                 weight_scale = weight_scale.max(
                     self.control_points[self.control_index(first_u + local_u, first_v + local_v)]
-                        .weight(),
+                        .weight()
+                        .abs(),
                 );
             }
         }
@@ -2688,6 +2719,7 @@ impl NurbsSurface {
         let mut controls = Vec::new();
         let mut output_knots = None;
         let mut output_count = None;
+        let mut output_degree = None;
         for row in self.control_points.chunks_exact(self.control_point_count_u) {
             let curve = crate::NurbsCurve::try_new_rational(
                 self.degree_u,
@@ -2695,27 +2727,28 @@ impl NurbsSurface {
                 self.knots_u.clone(),
             )?;
             let mapped = map(&curve)?;
-            if mapped.degree() != self.degree_u
+            if output_degree.is_some_and(|degree| degree != mapped.degree())
                 || output_count.is_some_and(|count| count != mapped.control_points().len())
                 || output_knots
                     .as_ref()
                     .is_some_and(|knots| knots != mapped.knots())
             {
                 return Err(GeometryError::InvalidControlNet {
-                    context: "U control curves produced inconsistent subdivision layouts",
+                    context: "U control curves produced inconsistent mapped layouts",
                 });
             }
+            output_degree.get_or_insert(mapped.degree());
             if output_count.is_none() {
                 let control_count = mapped
                     .control_points()
                     .len()
                     .checked_mul(self.control_point_count_v)
                     .ok_or(GeometryError::InvalidControlNet {
-                        context: "subdivided surface control-point count overflowed usize",
+                        context: "mapped surface control-point count overflowed usize",
                     })?;
                 controls.try_reserve_exact(control_count).map_err(|_| {
                     GeometryError::InvalidControlNet {
-                        context: "subdivided surface control net exceeds addressable memory",
+                        context: "mapped surface control net exceeds addressable memory",
                     }
                 })?;
             }
@@ -2726,11 +2759,14 @@ impl NurbsSurface {
         let control_point_count_u = output_count.ok_or(GeometryError::InvalidControlNet {
             context: "a surface has no U control curves",
         })?;
+        let degree_u = output_degree.ok_or(GeometryError::InvalidControlNet {
+            context: "a surface has no U control-curve degree",
+        })?;
         let knots_u = output_knots.ok_or(GeometryError::InvalidControlNet {
             context: "a surface has no U control-curve knot vector",
         })?;
         Self::try_new_rational(
-            self.degree_u,
+            degree_u,
             self.degree_v,
             control_point_count_u,
             self.control_point_count_v,
@@ -2747,6 +2783,7 @@ impl NurbsSurface {
         let mut columns = Vec::with_capacity(self.control_point_count_u);
         let mut output_knots = None;
         let mut output_count = None;
+        let mut output_degree = None;
         for u in 0..self.control_point_count_u {
             let column = (0..self.control_point_count_v)
                 .map(|v| self.control_points[self.control_index(u, v)])
@@ -2754,22 +2791,26 @@ impl NurbsSurface {
             let curve =
                 crate::NurbsCurve::try_new_rational(self.degree_v, column, self.knots_v.clone())?;
             let mapped = map(&curve)?;
-            if mapped.degree() != self.degree_v
+            if output_degree.is_some_and(|degree| degree != mapped.degree())
                 || output_count.is_some_and(|count| count != mapped.control_points().len())
                 || output_knots
                     .as_ref()
                     .is_some_and(|knots| knots != mapped.knots())
             {
                 return Err(GeometryError::InvalidControlNet {
-                    context: "V control curves produced inconsistent subdivision layouts",
+                    context: "V control curves produced inconsistent mapped layouts",
                 });
             }
+            output_degree.get_or_insert(mapped.degree());
             output_count.get_or_insert(mapped.control_points().len());
             output_knots.get_or_insert_with(|| mapped.knots().to_vec());
             columns.push(mapped.control_points().to_vec());
         }
         let control_point_count_v = output_count.ok_or(GeometryError::InvalidControlNet {
             context: "a surface has no V control curves",
+        })?;
+        let degree_v = output_degree.ok_or(GeometryError::InvalidControlNet {
+            context: "a surface has no V control-curve degree",
         })?;
         let knots_v = output_knots.ok_or(GeometryError::InvalidControlNet {
             context: "a surface has no V control-curve knot vector",
@@ -2778,12 +2819,12 @@ impl NurbsSurface {
             .control_point_count_u
             .checked_mul(control_point_count_v)
             .ok_or(GeometryError::InvalidControlNet {
-                context: "subdivided surface control-point count overflowed usize",
+                context: "mapped surface control-point count overflowed usize",
             })?;
         let mut controls = Vec::new();
         controls.try_reserve_exact(control_count).map_err(|_| {
             GeometryError::InvalidControlNet {
-                context: "subdivided surface control net exceeds addressable memory",
+                context: "mapped surface control net exceeds addressable memory",
             }
         })?;
         for v in 0..control_point_count_v {
@@ -2793,7 +2834,7 @@ impl NurbsSurface {
         }
         Self::try_new_rational(
             self.degree_u,
-            self.degree_v,
+            degree_v,
             self.control_point_count_u,
             control_point_count_v,
             controls,
@@ -3033,12 +3074,12 @@ fn isocurve_controls_coincident(left: &crate::NurbsCurve, right: &crate::NurbsCu
     let left_scale = left
         .control_points()
         .iter()
-        .map(|control| control.weight())
+        .map(|control| control.weight().abs())
         .fold(0.0_f64, Real::max);
     let right_scale = right
         .control_points()
         .iter()
-        .map(|control| control.weight())
+        .map(|control| control.weight().abs())
         .fold(0.0_f64, Real::max);
     left.control_points()
         .iter()
@@ -5261,6 +5302,88 @@ mod tests {
         assert_eq!(both.domain_u(), 0.0..=2.0);
         assert_eq!(both.domain_v(), 0.0..=2.0);
         assert!(both.is_rational());
+    }
+
+    #[test]
+    fn change_degree_elevates_surfaces_exactly_and_supports_signed_weights() {
+        let row = [
+            ([-1.0, 0.0, 0.0], 0.75),
+            ([2.0, -2.0, 0.0], 1.5),
+            ([4.0, 2.0, 1.0], 0.6),
+            ([0.0, 4.0, 0.0], 1.8),
+            ([-1.0, 0.0, 0.0], 0.75),
+        ];
+        let controls = row
+            .into_iter()
+            .chain(row.into_iter().map(|(mut point, weight)| {
+                point[0] += 0.5;
+                point[2] += 4.0;
+                (point, weight * 1.2)
+            }))
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect();
+        let source = NurbsSurface::try_new_rational(
+            2,
+            1,
+            5,
+            2,
+            controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-3.0, -3.0, 2.0, 2.0],
+        )
+        .unwrap();
+
+        let elevated = source.try_change_degree(4, 3, false).unwrap();
+        assert_eq!((elevated.degree_u(), elevated.degree_v()), (4, 3));
+        assert_eq!(
+            (
+                elevated.control_point_count_u(),
+                elevated.control_point_count_v()
+            ),
+            (11, 4)
+        );
+        assert_eq!(
+            elevated.knots_u(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 5.0, 5.0, 5.0, 8.0, 8.0, 8.0, 8.0, 8.0,
+            ]
+        );
+        assert_eq!(
+            elevated.knots_v(),
+            &[-3.0, -3.0, -3.0, -3.0, 2.0, 2.0, 2.0, 2.0]
+        );
+        for v_sample in 0..=8 {
+            for u_sample in 0..=8 {
+                let u = u_sample as Real;
+                let v = -3.0 + 5.0 * v_sample as Real / 8.0;
+                assert_point_near(
+                    elevated.evaluate(u, v).unwrap(),
+                    source.evaluate(u, v).unwrap(),
+                );
+            }
+        }
+
+        let deformable = source.try_change_degree(4, 3, true).unwrap();
+        assert_eq!(
+            (
+                deformable.control_point_count_u(),
+                deformable.control_point_count_v()
+            ),
+            (7, 4)
+        );
+        assert!(
+            deformable
+                .control_points()
+                .iter()
+                .any(|control| control.weight() < 0.0)
+        );
+        assert_eq!(source.try_change_degree(2, 1, true).unwrap(), source);
+        assert_eq!(
+            source.try_change_degree(0, 1, false),
+            Err(GeometryError::InvalidDegree)
+        );
     }
 
     #[test]

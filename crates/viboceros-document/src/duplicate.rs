@@ -15,9 +15,9 @@ impl Geometry {
     /// duplicate-object selection. Points and meshes compare stored values;
     /// point-cloud locations and supported curves use OpenNURBS' scale-aware
     /// fixed zero policy rather than document tolerance. Degree-one NURBS
-    /// control polygons compare with native lines and polylines because
-    /// positive weights and knot spacing change only parameterization, not the
-    /// traced shape.
+    /// control polygons compare with native lines and polylines when their
+    /// weights have one sign because knot spacing and same-sign weights change
+    /// only parameterization, not the traced shape.
     pub fn geometrically_equals(&self, other: &Self) -> Result<bool, GeometryError> {
         if let (Some(left), Some(right)) = (
             self.piecewise_linear_vertices(),
@@ -306,12 +306,17 @@ fn nurbs_piecewise_linear_vertices(curve: &NurbsCurve) -> Option<Vec<Point3>> {
     let control_count = controls.len();
     let clamped = knots[0] == knots[1] && knots[control_count] == knots[control_count + 1];
     let every_segment_active = (1..control_count).all(|index| knots[index] < knots[index + 1]);
+    let weight_sign = controls[0].weight().is_sign_positive();
+    let weights_have_one_sign = controls
+        .iter()
+        .all(|control| control.weight().is_sign_positive() == weight_sign);
     let vertices = controls
         .iter()
         .map(|control| control.point())
         .collect::<Vec<_>>();
     let no_degenerate_segments = vertices.windows(2).all(|points| points[0] != points[1]);
-    (clamped && every_segment_active && no_degenerate_segments).then_some(vertices)
+    (clamped && every_segment_active && weights_have_one_sign && no_degenerate_segments)
+        .then_some(vertices)
 }
 
 fn canonical_nurbs_curve_key(curve: &NurbsCurve) -> NurbsCurveDuplicateKey {
@@ -344,10 +349,11 @@ fn canonical_nurbs_curve_key(curve: &NurbsCurve) -> NurbsCurveDuplicateKey {
 fn normalized_control_keys(
     controls: &[viboceros_geometry::WeightedPoint3],
 ) -> Vec<([u64; 3], u64)> {
-    let weight_scale = controls
+    let weight_magnitude = controls
         .iter()
-        .map(|control| control.weight())
+        .map(|control| control.weight().abs())
         .fold(0.0, f64::max);
+    let weight_scale = weight_magnitude.copysign(controls[0].weight());
     controls
         .iter()
         .map(|control| {

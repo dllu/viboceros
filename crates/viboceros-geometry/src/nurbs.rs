@@ -23,11 +23,11 @@ pub enum ControlPointCurveClosure {
     Sharp,
 }
 
-/// A Euclidean control point paired with a strictly positive rational weight.
+/// A Euclidean control point paired with a finite, nonzero rational weight.
 ///
-/// Positive weights make every evaluated point a convex combination of its
-/// active control points and guarantee a nonzero rational denominator in exact
-/// arithmetic.
+/// Negative weights are required for projective NURBS produced by Rhino
+/// operations such as deformable degree changes. Evaluation still fails at a
+/// parameter where the blended rational denominator vanishes.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WeightedPoint3 {
     point: Point3,
@@ -36,7 +36,7 @@ pub struct WeightedPoint3 {
 
 impl WeightedPoint3 {
     pub fn try_new(point: Point3, weight: Real) -> Result<Self, GeometryError> {
-        if weight.is_finite() && weight > 0.0 {
+        if weight.is_finite() && weight != 0.0 {
             Ok(Self { point, weight })
         } else {
             Err(GeometryError::InvalidWeight { index: 0 })
@@ -686,6 +686,31 @@ impl NurbsCurve {
         Self::try_new_rational(self.degree, self.control_points.clone(), knots)
     }
 
+    /// Changes the polynomial degree using Rhino's knot-structure rules.
+    ///
+    /// Raising with `deformable = false` preserves the exact homogeneous
+    /// curve and parameterization by increasing every knot multiplicity by the
+    /// degree delta. Lowering, or either direction with `deformable = true`,
+    /// retains each distinct active knot break once and interpolates the
+    /// source at the target Greville abscissae. A periodic source is clamped
+    /// when its degree changes, matching OpenNURBS degree elevation.
+    pub fn try_change_degree(
+        &self,
+        desired_degree: usize,
+        deformable: bool,
+    ) -> Result<Self, GeometryError> {
+        if desired_degree == 0 {
+            return Err(GeometryError::InvalidDegree);
+        }
+        if desired_degree == self.degree {
+            return Ok(self.clone());
+        }
+
+        let source = self.clamped_to_active_domain()?;
+        let knots = changed_degree_knots(source.degree, desired_degree, deformable, &source.knots)?;
+        source.interpolate_homogeneous_in_basis(desired_degree, knots)
+    }
+
     /// Converts a periodic curve to the equivalent clamped, non-periodic form
     /// without changing its active domain, parameterization, or locus.
     /// Curves that are already non-periodic are returned unchanged.
@@ -786,7 +811,7 @@ impl NurbsCurve {
         let weight_scale = self
             .control_points
             .iter()
-            .map(|control| control.weight)
+            .map(|control| control.weight.abs())
             .fold(0.0, Real::max);
         let mut rows = Vec::new();
         let mut targets = Vec::new();
@@ -830,7 +855,7 @@ impl NurbsCurve {
                 coordinates.into_iter().chain([normalized_weight, weight]),
                 "smooth periodic NURBS controls",
             )?;
-            if normalized_weight <= 0.0 || weight <= 0.0 {
+            if normalized_weight == 0.0 || weight == 0.0 {
                 return Err(GeometryError::PeriodicInterpolationSolveFailed);
             }
             unique_controls.push(WeightedPoint3::try_new(
@@ -873,6 +898,81 @@ impl NurbsCurve {
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         de_boor(&self.knots, self.degree, span, parameter, controls)
+    }
+
+    fn interpolate_homogeneous_in_basis(
+        &self,
+        degree: usize,
+        knots: Vec<Real>,
+    ) -> Result<Self, GeometryError> {
+        let control_count = knots
+            .len()
+            .checked_sub(degree)
+            .and_then(|count| count.checked_sub(1))
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "degree-changed knot vector is too short",
+            })?;
+        let weight_scale = self
+            .control_points
+            .iter()
+            .map(|control| control.weight.abs())
+            .fold(0.0, Real::max);
+        let mut rows = Vec::new();
+        let mut targets = Vec::new();
+        rows.try_reserve_exact(control_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "degree-change interpolation rows exceed addressable memory",
+            })?;
+        targets
+            .try_reserve_exact(control_count)
+            .map_err(|_| GeometryError::InvalidKnotVector {
+                context: "degree-change interpolation targets exceed addressable memory",
+            })?;
+        for control in 0..control_count {
+            let parameter = stable_knot_mean(&knots[control + 1..control + degree + 1])?;
+            rows.push(bspline_basis_values(
+                &knots,
+                degree,
+                control_count,
+                parameter,
+            )?);
+            targets.push(self.evaluate_scaled_homogeneous(parameter, weight_scale)?);
+        }
+
+        let matrix = Mat::from_fn(control_count, control_count, |row, column| {
+            rows[row][column]
+        });
+        let right_hand_side = Mat::from_fn(control_count, 4, |row, column| targets[row][column]);
+        let solution = matrix.full_piv_lu().solve(&right_hand_side);
+        let mut controls = Vec::new();
+        controls.try_reserve_exact(control_count).map_err(|_| {
+            GeometryError::InvalidKnotVector {
+                context: "degree-changed controls exceed addressable memory",
+            }
+        })?;
+        for row in 0..control_count {
+            let normalized_weight = solution[(row, 3)];
+            let weight = normalized_weight * weight_scale;
+            let coordinates = [
+                solution[(row, 0)] / normalized_weight,
+                solution[(row, 1)] / normalized_weight,
+                solution[(row, 2)] / normalized_weight,
+            ];
+            require_finite(
+                coordinates.into_iter().chain([normalized_weight, weight]),
+                "degree-changed homogeneous controls",
+            )?;
+            if normalized_weight == 0.0 || weight == 0.0 {
+                return Err(GeometryError::DegreeChangeSolveFailed);
+            }
+            controls.push(WeightedPoint3::try_new(
+                Point3::try_from(coordinates)?,
+                weight,
+            )?);
+        }
+        controls[0] = self.control_points[0];
+        controls[control_count - 1] = self.control_points[self.control_points.len() - 1];
+        Self::try_new_rational(degree, controls, knots)
     }
 
     /// Returns every nonempty knot span in the active curve domain.
@@ -1651,7 +1751,7 @@ impl NurbsCurve {
         let active = &self.control_points[first_control_point..=span];
         let weight_scale = active
             .iter()
-            .map(|control_point| control_point.weight)
+            .map(|control_point| control_point.weight.abs())
             .fold(0.0, Real::max);
         let mut homogeneous = Vec::with_capacity(active.len());
         for control_point in active {
@@ -1862,6 +1962,68 @@ fn periodic_control_point_curve(
         .collect::<Vec<_>>();
     require_finite(knots.iter().copied(), "periodic control-point curve knots")?;
     NurbsCurve::try_new(degree, control_points, knots)
+}
+
+fn changed_degree_knots(
+    source_degree: usize,
+    desired_degree: usize,
+    deformable: bool,
+    source_knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    debug_assert!(source_degree >= 1 && desired_degree >= 1);
+    debug_assert!(source_knots.len() >= 2 * (source_degree + 1));
+    let start = source_knots[source_degree];
+    let end = source_knots[source_knots.len() - source_degree - 1];
+    let interior = &source_knots[source_degree + 1..source_knots.len() - source_degree - 1];
+    let exact_elevation = desired_degree > source_degree && !deformable;
+    let degree_delta = desired_degree.saturating_sub(source_degree);
+    let endpoint_multiplicity = desired_degree
+        .checked_add(1)
+        .ok_or(GeometryError::InvalidDegree)?;
+    let mut interior_runs = Vec::new();
+    let mut target_interior_count = 0_usize;
+    let mut index = 0;
+    while index < interior.len() {
+        let value = interior[index];
+        let mut next = index + 1;
+        while next < interior.len() && interior[next] == value {
+            next += 1;
+        }
+        let source_multiplicity = next - index;
+        let target_multiplicity = if exact_elevation {
+            source_multiplicity
+                .checked_add(degree_delta)
+                .ok_or(GeometryError::InvalidDegree)?
+        } else {
+            1
+        };
+        target_interior_count = target_interior_count
+            .checked_add(target_multiplicity)
+            .ok_or(GeometryError::InvalidKnotVector {
+                context: "degree-changed interior knot count overflowed usize",
+            })?;
+        interior_runs.push((value, target_multiplicity));
+        index = next;
+    }
+    let knot_count = endpoint_multiplicity
+        .checked_mul(2)
+        .and_then(|count| count.checked_add(target_interior_count))
+        .ok_or(GeometryError::InvalidKnotVector {
+            context: "degree-changed knot count overflowed usize",
+        })?;
+    let mut knots = Vec::new();
+    knots
+        .try_reserve_exact(knot_count)
+        .map_err(|_| GeometryError::InvalidKnotVector {
+            context: "degree-changed knots exceed addressable memory",
+        })?;
+    knots.extend(std::iter::repeat_n(start, endpoint_multiplicity));
+    for (value, multiplicity) in interior_runs {
+        knots.extend(std::iter::repeat_n(value, multiplicity));
+    }
+    knots.extend(std::iter::repeat_n(end, endpoint_multiplicity));
+    debug_assert_eq!(knots.len(), knot_count);
+    Ok(knots)
 }
 
 fn minimal_change_periodic_knots(
@@ -2200,7 +2362,7 @@ pub(crate) fn de_boor<const DIMENSION: usize>(
 
 pub(crate) fn project_homogeneous(homogeneous: [Real; 4]) -> Result<Point3, GeometryError> {
     let weight = homogeneous[3];
-    if !weight.is_finite() || weight <= 0.0 {
+    if !weight.is_finite() || weight == 0.0 {
         return Err(GeometryError::ZeroWeightAtParameter);
     }
     Point3::try_new(
@@ -2294,7 +2456,7 @@ fn validate_structure(
 ) -> Result<(), GeometryError> {
     validate_direction(degree, control_points.len(), knots)?;
     for (index, control_point) in control_points.iter().enumerate() {
-        if !control_point.weight.is_finite() || control_point.weight <= 0.0 {
+        if !control_point.weight.is_finite() || control_point.weight == 0.0 {
             return Err(GeometryError::InvalidWeight { index });
         }
     }
@@ -2477,27 +2639,28 @@ fn blend_weighted_control_points(
         });
     }
 
-    // Work with weights normalized by their local maximum. This avoids the
+    // Work with weights normalized by their largest magnitude. This avoids the
     // overflow in `weight * coordinate` that a literal homogeneous blend can
     // encounter, while producing the identical projective control point.
-    let scale = left.weight.max(right.weight);
+    let scale = left.weight.abs().max(right.weight.abs());
     let left_weight = left.weight / scale;
     let right_weight = right.weight / scale;
     let complement = 1.0 - alpha;
     let normalized_weight = left_weight.mul_add(complement, right_weight * alpha);
-    if !normalized_weight.is_finite() || normalized_weight <= 0.0 {
+    if !normalized_weight.is_finite() || normalized_weight == 0.0 {
         return Err(GeometryError::NonFinite {
             context: "knot-insertion control weight",
         });
     }
     let weight = normalized_weight * scale;
-    if !weight.is_finite() || weight <= 0.0 {
+    if !weight.is_finite() || weight == 0.0 {
         return Err(GeometryError::NonFinite {
             context: "knot-insertion control weight",
         });
     }
 
-    let right_fraction = ((right_weight * alpha) / normalized_weight).clamp(0.0, 1.0);
+    let right_fraction = (right_weight * alpha) / normalized_weight;
+    require_finite([right_fraction], "knot-insertion projective blend factor")?;
     let left_coordinates = left.point.to_array();
     let right_coordinates = right.point.to_array();
     let point: [Real; 3] = std::array::from_fn(|index| {
@@ -3906,6 +4069,97 @@ mod tests {
             );
         }
         assert_eq!(clamped.try_make_non_periodic().unwrap(), clamped);
+    }
+
+    #[test]
+    fn change_degree_matches_rhino_knot_and_greville_interpolation_rules() {
+        let source = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 1.0).unwrap(),
+                Point3::try_new(5.0, -1.0, 2.0).unwrap(),
+                Point3::try_new(7.0, 3.0, -1.0).unwrap(),
+                Point3::try_new(9.0, 1.0, 0.0).unwrap(),
+                Point3::try_new(12.0, 5.0, 2.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 7.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+
+        let elevated = source.try_change_degree(5, false).unwrap();
+        assert_eq!(elevated.degree(), 5);
+        assert_eq!(elevated.control_points().len(), 12);
+        assert_eq!(
+            elevated.knots(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 3.0, 3.0, 3.0, 7.0, 7.0, 7.0, 7.0,
+                7.0, 7.0,
+            ]
+        );
+        for sample in 0..=64 {
+            let parameter = source.parameter_at(sample as Real / 64.0).unwrap();
+            assert_point_near(
+                elevated.evaluate(parameter).unwrap(),
+                source.evaluate(parameter).unwrap(),
+            );
+        }
+
+        let reduced = source.try_change_degree(2, false).unwrap();
+        assert_eq!(reduced.knots(), &[0.0, 0.0, 0.0, 1.0, 3.0, 7.0, 7.0, 7.0]);
+        let expected = [
+            [0.0, 0.0, 0.0],
+            [2.795509342977698, 3.882157926461724, 1.4232971669680532],
+            [5.778782399035563, -0.4382157926461724, 1.2326702833031946],
+            [7.876130198915011, 1.465340566606389, -1.1549125979505726],
+            [12.0, 5.0, 2.0],
+        ];
+        for (control, expected) in reduced.control_points().iter().zip(expected) {
+            assert_point_near(control.point(), Point3::try_from(expected).unwrap());
+        }
+
+        let deformable = source.try_change_degree(5, true).unwrap();
+        assert_eq!(
+            deformable.knots(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 3.0, 7.0, 7.0, 7.0, 7.0, 7.0, 7.0
+            ]
+        );
+        assert_point_near(
+            deformable.control_points()[3].point(),
+            Point3::try_new(6.353798126845488, -3.487896224537079, 1.5666404989296816).unwrap(),
+        );
+        assert_eq!(source.try_change_degree(3, true).unwrap(), source);
+        assert_eq!(
+            source.try_change_degree(0, false),
+            Err(GeometryError::InvalidDegree)
+        );
+    }
+
+    #[test]
+    fn signed_rational_weights_evaluate_and_refine_projectively() {
+        assert!(WeightedPoint3::try_new(point(0.0, 0.0), -0.2).is_ok());
+        assert!(WeightedPoint3::try_new(point(0.0, 0.0), 0.0).is_err());
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(2.0, 3.0), -0.2).unwrap(),
+                WeightedPoint3::try_new(point(5.0, 0.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_point_near(curve.evaluate(0.5).unwrap(), point(2.625, -0.75));
+
+        let refined = curve.try_insert_knot(0.25, 1).unwrap();
+        for sample in 0..=32 {
+            let parameter = sample as Real / 32.0;
+            assert_point_near(
+                refined.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
     }
 
     #[test]

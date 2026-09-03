@@ -259,7 +259,7 @@ bool append_nurbs(const ON_Curve& source, BridgeObject& output) {
     ON_3dPoint point;
     const double weight = curve.Weight(index);
     if (!curve.GetCV(index, point) || !point.IsValid() ||
-        !std::isfinite(weight) || weight <= 0.0) {
+        !std::isfinite(weight) || weight == 0.0) {
       return false;
     }
     output.coordinates.insert(output.coordinates.end(),
@@ -301,7 +301,7 @@ bool append_nurbs_surface(const ON_Surface& source, BridgeObject& output) {
       ON_3dPoint point;
       const double weight = surface.Weight(u, v);
       if (!surface.GetCV(u, v, point) || !point.IsValid() ||
-          !std::isfinite(weight) || weight <= 0.0) {
+          !std::isfinite(weight) || weight == 0.0) {
         return false;
       }
       output.coordinates.insert(output.coordinates.end(),
@@ -341,7 +341,7 @@ bool write_nurbs_curve(const ON_Curve& source, int dimension,
     ON_3dPoint point;
     const double weight = curve.Weight(index);
     if (!curve.GetCV(index, point) || !point.IsValid() ||
-        !std::isfinite(weight) || weight <= 0.0) {
+        !std::isfinite(weight) || weight == 0.0) {
       return false;
     }
     writer.Double(point.x);
@@ -378,7 +378,7 @@ bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
       ON_3dPoint point;
       const double weight = surface.Weight(u, v);
       if (!surface.GetCV(u, v, point) || !point.IsValid() ||
-          !std::isfinite(weight) || weight <= 0.0) {
+          !std::isfinite(weight) || weight == 0.0) {
         return false;
       }
       writer.Double(point.x);
@@ -618,7 +618,7 @@ std::unique_ptr<ON_NurbsCurve> read_nurbs_curve(ByteReader& reader,
       valid = valid && reader.Double(values[coordinate]) &&
               std::isfinite(values[coordinate]);
     }
-    if (!valid || values[dimension] <= 0.0 ||
+    if (!valid || values[dimension] == 0.0 ||
         !curve->SetCV(static_cast<int>(index), ON::euclidean_rational,
                       values)) {
       error = "B-rep NURBS curve has an invalid control point";
@@ -975,7 +975,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       for (size_t index = 0; index < source.control_point_count_u; ++index) {
         const double* point = source.coordinates + index * 4;
         const double weight = point[3];
-        if (weight <= 0.0 ||
+        if (weight == 0.0 ||
             !curve->SetCV(static_cast<int>(index),
                           ON_4dPoint(point[0] * weight, point[1] * weight,
                                      point[2] * weight, weight))) {
@@ -1029,7 +1029,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
           const size_t index = v * source.control_point_count_u + u;
           const double* point = source.coordinates + index * 4;
           const double weight = point[3];
-          if (weight <= 0.0 ||
+          if (weight == 0.0 ||
               !surface->SetCV(
                   static_cast<int>(u), static_cast<int>(v),
                   ON_4dPoint(point[0] * weight, point[1] * weight,

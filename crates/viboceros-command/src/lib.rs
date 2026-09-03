@@ -115,6 +115,9 @@ impl CommandRegistry {
             .register(RebuildCurveCommand)
             .expect("unique built-in command");
         registry
+            .register(ChangeDegreeCommand)
+            .expect("unique built-in command");
+        registry
             .register(MakeUniformCommand)
             .expect("unique built-in command");
         registry
@@ -1949,6 +1952,120 @@ fn parse_rebuild_curve_options(arguments: &[&str]) -> Result<RebuildCurveOptions
 
 const MAKE_UNIFORM_USAGE: &str = "MakeUniform";
 const MAKE_UNIFORM_UV_USAGE: &str = "MakeUniformUV [Direction=U|V]";
+
+const CHANGE_DEGREE_USAGE: &str = "ChangeDegree degree|u_degree,v_degree [Deformable=Yes|No]";
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct ChangeDegreeOptions {
+    degree_u: usize,
+    degree_v: usize,
+    deformable: bool,
+}
+
+struct ChangeDegreeCommand;
+
+impl Command for ChangeDegreeCommand {
+    fn name(&self) -> &'static str {
+        "ChangeDegree"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_change_degree_options(arguments)?;
+        let mut replacements = Vec::new();
+        let mut curve_count = 0;
+        let mut surface_count = 0;
+        for object in document.selected_objects() {
+            let geometry = match object.geometry() {
+                Geometry::NurbsSurface(surface)
+                    if surface.degree_u() != options.degree_u
+                        || surface.degree_v() != options.degree_v =>
+                {
+                    surface_count += 1;
+                    Geometry::NurbsSurface(surface.try_change_degree(
+                        options.degree_u,
+                        options.degree_v,
+                        options.deformable,
+                    )?)
+                }
+                Geometry::NurbsSurface(_) => continue,
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    if curve.degree() == options.degree_u {
+                        continue;
+                    }
+                    curve_count += 1;
+                    Geometry::NurbsCurve(
+                        curve.try_change_degree(options.degree_u, options.deformable)?,
+                    )
+                }
+            };
+            replacements.push((object.id(), geometry));
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoChangeDegreeObjects);
+        }
+
+        let object_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Changed degree of {object_count} object(s) with Deformable={} ({curve_count} curve(s), {surface_count} NURBS surface(s))",
+            if options.deformable { "Yes" } else { "No" }
+        ))
+    }
+}
+
+fn parse_change_degree_options(arguments: &[&str]) -> Result<ChangeDegreeOptions, CommandError> {
+    let degrees = arguments
+        .first()
+        .copied()
+        .ok_or(CommandError::Usage(CHANGE_DEGREE_USAGE))?
+        .split(',')
+        .collect::<Vec<_>>();
+    let (degree_u, degree_v) = match degrees.as_slice() {
+        [degree] if !degree.is_empty() => {
+            let degree = parse_change_degree(degree)?;
+            (degree, degree)
+        }
+        [degree_u, degree_v] if !degree_u.is_empty() && !degree_v.is_empty() => (
+            parse_change_degree(degree_u)?,
+            parse_change_degree(degree_v)?,
+        ),
+        _ => return Err(CommandError::Usage(CHANGE_DEGREE_USAGE)),
+    };
+
+    let mut deformable = false;
+    let mut deformable_seen = false;
+    let mut index = 1;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, CHANGE_DEGREE_USAGE)?;
+        if !option_name_eq(name, "Deformable") || deformable_seen {
+            return Err(CommandError::Usage(CHANGE_DEGREE_USAGE));
+        }
+        deformable = parse_yes_no(value).ok_or(CommandError::Usage(CHANGE_DEGREE_USAGE))?;
+        deformable_seen = true;
+        index += consumed;
+    }
+    Ok(ChangeDegreeOptions {
+        degree_u,
+        degree_v,
+        deformable,
+    })
+}
+
+fn parse_change_degree(value: &str) -> Result<usize, CommandError> {
+    let value = value.trim_start_matches('_');
+    let degree = value
+        .parse::<usize>()
+        .map_err(|_| CommandError::InvalidInteger(value.to_owned()))?;
+    if !(1..=MAX_CURVE_COMMAND_DEGREE).contains(&degree) {
+        return Err(CommandError::InvalidChangeDegree {
+            actual: degree,
+            maximum: MAX_CURVE_COMMAND_DEGREE,
+        });
+    }
+    Ok(degree)
+}
 
 struct MakeUniformCommand;
 
@@ -17397,6 +17514,14 @@ pub enum CommandError {
     #[error("Rebuild requires at least one selected curve")]
     NoRebuildCurves,
 
+    #[error("ChangeDegree degree {actual} must be between 1 and {maximum}")]
+    InvalidChangeDegree { actual: usize, maximum: usize },
+
+    #[error(
+        "ChangeDegree requires at least one selected curve or untrimmed NURBS surface whose degree differs"
+    )]
+    NoChangeDegreeObjects,
+
     #[error("MakeUniform requires at least one selected curve or untrimmed NURBS surface")]
     NoMakeUniformObjects,
 
@@ -17951,7 +18076,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -27629,6 +27754,120 @@ mod tests {
             );
             assert_eq!(document.undo_label(), history.as_deref(), "{command}");
         }
+    }
+
+    #[test]
+    fn change_degree_updates_mixed_curves_and_surfaces_in_place_and_undoes() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Degree changes", ColorRgb::new(48, 96, 144))
+            .unwrap();
+        let source_curve = periodic_cubic_curve();
+        let source_surface = periodic_cubic_u_surface();
+        let curve_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source_curve.clone()),
+                ObjectAttributes::on_layer(layer).with_name("degree curve"),
+            )
+            .unwrap();
+        let surface_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(source_surface.clone()),
+                ObjectAttributes::on_layer(layer).with_name("degree surface"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([curve_id, surface_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "ChangeDegree 5,3 Deformable=No")
+                .unwrap(),
+            "Changed degree of 2 object(s) with Deformable=No (1 curve(s), 1 NURBS surface(s))"
+        );
+        let curve_object = document.object(curve_id).unwrap();
+        let Geometry::NurbsCurve(curve) = curve_object.geometry() else {
+            panic!("ChangeDegree must produce a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 5);
+        assert!(!curve.is_periodic());
+        assert_eq!(curve.domain(), source_curve.domain());
+        assert_eq!(curve_object.attributes().name(), Some("degree curve"));
+        let surface_object = document.object(surface_id).unwrap();
+        let Geometry::NurbsSurface(surface) = surface_object.geometry() else {
+            panic!("ChangeDegree must retain NURBS surface geometry")
+        };
+        assert_eq!((surface.degree_u(), surface.degree_v()), (5, 3));
+        assert!(!surface.is_periodic_u());
+        assert_eq!(surface_object.attributes().name(), Some("degree surface"));
+        assert!(document.is_selected(curve_id));
+        assert!(document.is_selected(surface_id));
+        assert!(document.is_selected(point_id));
+        assert_eq!(document.undo_label(), Some("ChangeDegree"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source_curve)
+        );
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source_surface)
+        );
+    }
+
+    #[test]
+    fn change_degree_parses_scalar_and_pair_targets_and_rejects_invalid_input_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(periodic_cubic_curve()))
+            .unwrap();
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(curve_id).unwrap().geometry().clone();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "ChangeDegree",
+            "ChangeDegree 0",
+            "ChangeDegree 12",
+            "ChangeDegree 3,",
+            "ChangeDegree ,3",
+            "ChangeDegree 2,3,4",
+            "ChangeDegree nope",
+            "ChangeDegree 2 Deformable=Maybe",
+            "ChangeDegree 2 Deformable=Yes Deformable=No",
+            "ChangeDegree 2 Extra=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(document.object(curve_id).unwrap().geometry(), &before);
+            assert_eq!(document.undo_label(), history.as_deref());
+        }
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "_ChangeDegree _2 Deformable _Yes")
+                .unwrap(),
+            "Changed degree of 1 object(s) with Deformable=Yes (1 curve(s), 0 NURBS surface(s))"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(curve_id).unwrap().geometry() else {
+            panic!("ChangeDegree must produce a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 2);
+
+        assert!(matches!(
+            registry.execute(&mut document, "ChangeDegree 2"),
+            Err(CommandError::NoChangeDegreeObjects)
+        ));
     }
 
     #[test]

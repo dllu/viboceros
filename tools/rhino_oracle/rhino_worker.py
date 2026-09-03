@@ -5794,6 +5794,53 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, insert_surface_knot)
 
+    if kind == "curve_change_degree_geometry":
+        source = _nurbs_curve_from_definition(operation["curve"])
+        degree = int(operation["degree"])
+        deformable = bool(operation.get("deformable", False))
+
+        def change_curve_degree():
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add ChangeDegree source curve")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select ChangeDegree source curve")
+                command = "_-ChangeDegree _Deformable=_%s %d _Enter" % (
+                    "Yes" if deformable else "No",
+                    degree,
+                )
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino curve ChangeDegree failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("ChangeDegree removed the curve object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("ChangeDegree returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, change_curve_degree)
+        finally:
+            source.Dispose()
+
     if kind == "curve_make_periodic_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])
         smooth = bool(operation.get("smooth", True))
@@ -5862,6 +5909,80 @@ def _execute(operation, iterations, tolerance):
 
         try:
             return _measure(iterations, make_curve_non_periodic)
+        finally:
+            source.Dispose()
+
+    if kind == "surface_change_degree_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        desired_u = int(operation["desired_degree_u"])
+        desired_v = int(operation["desired_degree_v"])
+        deformable = bool(operation.get("deformable", False))
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate ChangeDegree source surface")
+        try:
+            _set_surface_controls(
+                source, operation["control_points"], count_u, count_v
+            )
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("ChangeDegree source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def change_surface_degree():
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add ChangeDegree source surface")
+                if not document.Objects.Select(object_id):
+                    raise ValueError("could not select ChangeDegree source surface")
+                command = "_-ChangeDegree _Deformable=_%s %d %d _Enter" % (
+                    "Yes" if deformable else "No",
+                    desired_u,
+                    desired_v,
+                )
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Rhino surface ChangeDegree failed; history tail: %s"
+                        % history[-3000:]
+                    )
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("ChangeDegree removed the surface object")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("ChangeDegree returned a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("ChangeDegree returned no NURBS surface")
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, change_surface_degree)
         finally:
             source.Dispose()
 

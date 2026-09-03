@@ -539,6 +539,13 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
     },
+    CurveChangeDegreeGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        degree: usize,
+        #[serde(default)]
+        deformable: bool,
+    },
     CurveMakePeriodicGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -565,6 +572,20 @@ pub enum Operation {
         knots_u: Vec<f64>,
         knots_v: Vec<f64>,
         direction: SurfaceUniformDirection,
+    },
+    SurfaceChangeDegreeGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        desired_degree_u: usize,
+        desired_degree_v: usize,
+        #[serde(default)]
+        deformable: bool,
     },
     SurfaceMakePeriodicGeometry {
         id: String,
@@ -889,10 +910,12 @@ impl Operation {
             | Self::CurveFitGeometry { id, .. }
             | Self::CurveRebuildGeometry { id, .. }
             | Self::CurveMakeUniformGeometry { id, .. }
+            | Self::CurveChangeDegreeGeometry { id, .. }
             | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveMakeNonPeriodicGeometry { id, .. }
             | Self::SurfaceMakeUniformGeometry { id, .. }
+            | Self::SurfaceChangeDegreeGeometry { id, .. }
             | Self::SurfaceMakePeriodicGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceMakeNonPeriodicGeometry { id, .. }
@@ -2698,6 +2721,18 @@ fn execute(
             let (curve, elapsed) = measure(iterations, || source.try_make_uniform())?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveChangeDegreeGeometry {
+            curve,
+            degree,
+            deformable,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let (curve, elapsed) = measure(iterations, || {
+                source.try_change_degree(black_box(*degree), black_box(*deformable))
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveMakePeriodicGeometry { curve, smooth, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) =
@@ -2743,6 +2778,37 @@ fn execute(
             )?;
             let (surface, elapsed) = measure(iterations, || {
                 source.try_make_uniform(black_box(direction.geometry()))
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceChangeDegreeGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            desired_degree_u,
+            desired_degree_v,
+            deformable,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let (surface, elapsed) = measure(iterations, || {
+                source.try_change_degree(
+                    black_box(*desired_degree_u),
+                    black_box(*desired_degree_v),
+                    black_box(*deformable),
+                )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -7919,6 +7985,61 @@ mod tests {
                 {"point": [4.0, 0.0, 0.0], "weight": 1.0},
             ])
         );
+    }
+
+    #[test]
+    fn captures_curve_and_surface_degree_changes() {
+        let line = NurbsCurveDefinition {
+            degree: 1,
+            control_points: [[-2.0, 1.0, 3.0], [6.0, 5.0, -1.0]]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![4.0, 4.0, 11.0, 11.0],
+            domain: None,
+        };
+        let surface_controls = [
+            [0.0, 0.0, 0.0],
+            [4.0, 0.0, 1.0],
+            [0.0, 3.0, 2.0],
+            [4.0, 3.0, 4.0],
+        ]
+        .into_iter()
+        .map(|point| ControlPoint { point, weight: 1.0 })
+        .collect();
+        let response = run_request(&request(vec![
+            Operation::CurveChangeDegreeGeometry {
+                id: "degree-curve".to_owned(),
+                curve: line,
+                degree: 3,
+                deformable: false,
+            },
+            Operation::SurfaceChangeDegreeGeometry {
+                id: "degree-surface".to_owned(),
+                degree_u: 1,
+                degree_v: 1,
+                control_point_count_u: 2,
+                control_point_count_v: 2,
+                control_points: surface_controls,
+                knots_u: vec![0.0, 0.0, 5.0, 5.0],
+                knots_v: vec![-2.0, -2.0, 6.0, 6.0],
+                desired_degree_u: 2,
+                desired_degree_v: 3,
+                deformable: false,
+            },
+        ]))
+        .unwrap();
+
+        assert_eq!(response.results[0].value["degree"], 3);
+        assert_eq!(
+            response.results[0].value["control_points"]
+                .as_array()
+                .unwrap()
+                .len(),
+            4
+        );
+        assert_eq!(response.results[1].value["degree"], json!([2, 3]));
+        assert_eq!(response.results[1].value["control_count"], json!([3, 4]));
     }
 
     #[test]

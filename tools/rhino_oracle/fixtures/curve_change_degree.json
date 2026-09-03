@@ -1,0 +1,81 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_change_degree_geometry",
+      "id": "linear-to-cubic-exact",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [-2, 1, 3]}, {"point": [6, 5, -1]}
+        ],
+        "knots": [4, 4, 11, 11]
+      },
+      "degree": 3,
+      "deformable": false
+    },
+    {
+      "op": "curve_change_degree_geometry",
+      "id": "cubic-to-quintic-exact",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 7, 7, 7, 7]
+      },
+      "degree": 5,
+      "deformable": false
+    },
+    {
+      "op": "curve_change_degree_geometry",
+      "id": "rational-quadratic-to-quartic-exact",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [-1, 0, 0], "weight": 0.7},
+          {"point": [2, 5, 1], "weight": 1.6},
+          {"point": [6, -2, 0], "weight": 0.8},
+          {"point": [9, 4, -1], "weight": 1.3},
+          {"point": [12, 0, 2], "weight": 0.9}
+        ],
+        "knots": [-2, -2, -2, 1, 1, 6, 6, 6]
+      },
+      "degree": 4,
+      "deformable": false
+    },
+    {
+      "op": "curve_change_degree_geometry",
+      "id": "cubic-to-quadratic-approximate",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 7, 7, 7, 7]
+      },
+      "degree": 2,
+      "deformable": false
+    },
+    {
+      "op": "curve_change_degree_geometry",
+      "id": "cubic-to-quintic-deformable",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {"point": [0, 0, 0]}, {"point": [2, 4, 1]},
+          {"point": [5, -1, 2]}, {"point": [7, 3, -1]},
+          {"point": [9, 1, 0]}, {"point": [12, 5, 2]}
+        ],
+        "knots": [0, 0, 0, 0, 1, 3, 7, 7, 7, 7]
+      },
+      "degree": 5,
+      "deformable": true
+    }
+  ]
+}

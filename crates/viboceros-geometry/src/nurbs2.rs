@@ -3,7 +3,7 @@ use std::ops::RangeInclusive;
 use crate::nurbs::{de_boor, find_span_in_knots, stable_divided_difference, validate_direction};
 use crate::{GeometryError, Point2, Real, require_finite};
 
-/// A two-dimensional Euclidean control point with a positive rational weight.
+/// A two-dimensional Euclidean control point with a finite, nonzero weight.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct WeightedPoint2 {
     point: Point2,
@@ -12,7 +12,7 @@ pub struct WeightedPoint2 {
 
 impl WeightedPoint2 {
     pub fn try_new(point: Point2, weight: Real) -> Result<Self, GeometryError> {
-        if weight.is_finite() && weight > 0.0 {
+        if weight.is_finite() && weight != 0.0 {
             Ok(Self { point, weight })
         } else {
             Err(GeometryError::InvalidWeight { index: 0 })
@@ -63,7 +63,7 @@ impl NurbsCurve2 {
     ) -> Result<Self, GeometryError> {
         validate_direction(degree, control_points.len(), &knots)?;
         for (index, control_point) in control_points.iter().enumerate() {
-            if !control_point.weight.is_finite() || control_point.weight <= 0.0 {
+            if !control_point.weight.is_finite() || control_point.weight == 0.0 {
                 return Err(GeometryError::InvalidWeight { index });
             }
         }
@@ -237,7 +237,7 @@ impl NurbsCurve2 {
         let active = &self.control_points[first..=span];
         let weight_scale = active
             .iter()
-            .map(|control_point| control_point.weight)
+            .map(|control_point| control_point.weight.abs())
             .fold(0.0, Real::max);
         let mut homogeneous = Vec::with_capacity(active.len());
         for control_point in active {
@@ -253,7 +253,7 @@ impl NurbsCurve2 {
 
 fn project_homogeneous(homogeneous: [Real; 3]) -> Result<Point2, GeometryError> {
     let weight = homogeneous[2];
-    if !weight.is_finite() || weight <= 0.0 {
+    if !weight.is_finite() || weight == 0.0 {
         return Err(GeometryError::ZeroWeightAtParameter);
     }
     Point2::try_new(homogeneous[0] / weight, homogeneous[1] / weight)
@@ -338,5 +338,23 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn parameter_curve_supports_negative_projective_weights() {
+        assert!(WeightedPoint2::try_new(point(0.0, 0.0), 0.0).is_err());
+        let curve = NurbsCurve2::try_new_rational(
+            2,
+            vec![
+                WeightedPoint2::try_new(point(0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint2::try_new(point(2.0, 3.0), -0.2).unwrap(),
+                WeightedPoint2::try_new(point(5.0, 0.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let middle = curve.evaluate(0.5).unwrap();
+        assert!(Tolerance::DEFAULT.approx_eq(middle.x(), 2.625));
+        assert!(Tolerance::DEFAULT.approx_eq(middle.y(), -0.75));
     }
 }

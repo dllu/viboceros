@@ -2503,6 +2503,32 @@ mod tests {
         );
         assert!(line.geometrically_equals(&weighted_line).unwrap());
 
+        let negative_weighted_line = Geometry::NurbsCurve(
+            NurbsCurve::try_new_rational(
+                1,
+                vec![
+                    viboceros_geometry::WeightedPoint3::try_new(start, -2.0).unwrap(),
+                    viboceros_geometry::WeightedPoint3::try_new(end, -5.0).unwrap(),
+                ],
+                vec![2.0, 2.0, 8.0, 8.0],
+            )
+            .unwrap(),
+        );
+        assert!(line.geometrically_equals(&negative_weighted_line).unwrap());
+
+        let mixed_weight_line = Geometry::NurbsCurve(
+            NurbsCurve::try_new_rational(
+                1,
+                vec![
+                    viboceros_geometry::WeightedPoint3::try_new(start, 2.0).unwrap(),
+                    viboceros_geometry::WeightedPoint3::try_new(end, -5.0).unwrap(),
+                ],
+                vec![2.0, 2.0, 8.0, 8.0],
+            )
+            .unwrap(),
+        );
+        assert!(!line.geometrically_equals(&mixed_weight_line).unwrap());
+
         let open = Geometry::Polyline(
             Polyline3::try_new(vec![start, point(2.0, 0.0, 0.0), end], tolerance).unwrap(),
         );

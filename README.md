@@ -38,6 +38,7 @@ CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
+ChangeDegree 5,3 Deformable=No
 MakeUniform
 MakeUniformUV Direction=U
 MakePeriodic Smooth=Yes DeleteInput=Yes
@@ -264,6 +265,15 @@ counts below the structural minimum are raised automatically, as in Rhino.
 `PreserveTangents=Yes` aligns eligible open-curve end handles. The
 `DeleteInput` and `OutputLayer` options follow `FitCrv`; surface rebuilding is
 not yet represented.
+`ChangeDegree degree|u_degree,v_degree Deformable=Yes|No` changes selected
+curves and untrimmed NURBS surfaces in place and defaults to `Deformable=No`.
+A scalar applies to curves and both surface directions; with a pair, the first
+degree also applies to curves. Non-deformable elevation preserves exact
+geometry and parameterization while raising knot multiplicities. Lowering, or
+`Deformable=Yes`, keeps distinct knot breaks as simple knots and interpolates
+the source in homogeneous space at the new Greville abscissae. Degree changes
+support values 1 through 11 and can turn periodic directions into clamped
+ones, matching Rhino.
 `MakeUniform` replaces selected curves and untrimmed NURBS surfaces in place
 with the same degree, control locations, and rational weights but
 Rhino-compatible unit-spaced knots. Start and end clamping are retained
@@ -415,8 +425,8 @@ objects by default; `Cumulative=No` creates one per object. `Output=` supports
 exact B-rep solids, shared-vertex triangle meshes, six grouped rectangle curves,
 or report-only `None`. World-plane selections produce a rectangle or mesh plane.
 `CoordinateSystem=CPlane` is accepted and currently shares the World XY basis;
-analytic bounds are tight, while NURBS bounds conservatively enclose their
-positive-weight control geometry.
+analytic bounds are tight, while NURBS bounds use their control geometry and
+can be non-conservative for negative-weight projective inputs.
 `DupBorder` duplicates the open boundaries of selected NURBS surfaces, B-reps,
 and triangle meshes. Surface borders are exact rational isocurves, including
 at non-clamped domain ends; closed seams and collapsed singular sides are
@@ -993,6 +1003,14 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_make_periodic.json \
+  --absolute-epsilon 2e-11 --relative-epsilon 2e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_change_degree.json \
+  --absolute-epsilon 2e-11 --relative-epsilon 2e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_change_degree.json \
   --absolute-epsilon 2e-11 --relative-epsilon 2e-12
 ```
 

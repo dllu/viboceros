@@ -1242,6 +1242,82 @@ mod tests {
         fs::remove_file(path).unwrap();
     }
 
+    #[test]
+    fn open_nurbs_round_trip_preserves_negative_projective_weights() {
+        let path = temporary_path("signed-weights.3dm");
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(2.0, 3.0, 0.0).unwrap(), -0.2).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(5.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let row = [
+            ([-1.0, 0.0, 0.0], 0.75),
+            ([2.0, -2.0, 0.0], 1.5),
+            ([4.0, 2.0, 1.0], 0.6),
+            ([0.0, 4.0, 0.0], 1.8),
+            ([-1.0, 0.0, 0.0], 0.75),
+        ];
+        let surface_controls = row
+            .into_iter()
+            .chain(row.into_iter().map(|(mut point, weight)| {
+                point[2] += 4.0;
+                (point, weight * 1.2)
+            }))
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_from(point).unwrap(), weight).unwrap()
+            })
+            .collect();
+        let surface = NurbsSurface::try_new_rational(
+            2,
+            1,
+            5,
+            2,
+            surface_controls,
+            vec![0.0, 0.0, 0.0, 2.0, 5.0, 8.0, 8.0, 8.0],
+            vec![-3.0, -3.0, 2.0, 2.0],
+        )
+        .unwrap()
+        .try_change_degree(4, 3, true)
+        .unwrap();
+        assert!(
+            surface
+                .control_points()
+                .iter()
+                .any(|control| control.weight() < 0.0)
+        );
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Signed weights".to_owned(),
+                color: [40, 80, 120],
+                visible: true,
+                locked: false,
+            }],
+            Vec::new(),
+            vec![
+                ThreeDmObject::new(ThreeDmGeometry::NurbsCurve(curve.clone()), 0),
+                ThreeDmObject::new(ThreeDmGeometry::NurbsSurface(surface.clone()), 0),
+            ],
+        );
+
+        write_3dm_file(&path, &model).unwrap();
+        let decoded_model = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        let ThreeDmGeometry::NurbsCurve(decoded_curve) = &decoded_model.objects[0].geometry else {
+            panic!("signed rational curve must round-trip as NURBS")
+        };
+        assert_curve_near(decoded_curve, &curve, 2.0e-12);
+        let ThreeDmGeometry::NurbsSurface(decoded_surface) = &decoded_model.objects[1].geometry
+        else {
+            panic!("signed rational surface must round-trip as NURBS")
+        };
+        assert_surface_near(decoded_surface, &surface, 2.0e-12);
+        fs::remove_file(path).unwrap();
+    }
+
     fn assert_brep_near(actual: &Brep, expected: &Brep) {
         const EPSILON: f64 = 2.0e-12;
         assert_eq!(actual.vertices().len(), expected.vertices().len());
