@@ -227,6 +227,11 @@ enum InteractiveCommand {
     SrfSeam {
         direction: Option<InteractiveIsocurveDirection>,
     },
+    ExtendSrf {
+        distance: f64,
+        smooth: bool,
+        merge: bool,
+    },
     SubCrv {
         start: Option<Point3>,
         copy: bool,
@@ -333,6 +338,7 @@ impl InteractiveCommand {
             Self::InsertControlPoint { .. } => "InsertControlPoint",
             Self::CrvSeam => "CrvSeam",
             Self::SrfSeam { .. } => "SrfSeam",
+            Self::ExtendSrf { .. } => "ExtendSrf",
             Self::SubCrv { .. } => "SubCrv",
             Self::SplitCurve => "Split",
             Self::Move { .. } => "Move",
@@ -579,6 +585,9 @@ impl InteractiveCommand {
             Self::SrfSeam { .. } => {
                 "SrfSeam: pick a new seam location on the selected closed surface (Esc to cancel)"
             }
+            Self::ExtendSrf { .. } => {
+                "ExtendSrf: pick a natural edge on the selected surface (Esc to cancel)"
+            }
             Self::SubCrv { start: None, .. } => {
                 "SubCrv: pick the subcurve start on the selected curve (Esc to cancel)"
             }
@@ -769,6 +778,7 @@ impl InteractiveCommand {
             | Self::InsertControlPoint { .. }
             | Self::CrvSeam
             | Self::SrfSeam { .. }
+            | Self::ExtendSrf { .. }
             | Self::SubCrv { start: None, .. }
             | Self::SplitCurve
             | Self::Move { start: None }
@@ -2046,6 +2056,68 @@ impl VibocerosApp {
                 direction,
                 midpoint,
             }
+        } else if normalized == "extendsrf" {
+            let mut distance = None;
+            let mut smooth = true;
+            let mut merge = true;
+            let mut type_seen = false;
+            let mut merge_seen = false;
+            let mut index = 0;
+            while index < arguments.len() {
+                let argument = arguments[index];
+                let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=')
+                {
+                    (name, value, 1)
+                } else {
+                    let Some(value) = arguments.get(index + 1) else {
+                        return false;
+                    };
+                    (argument, *value, 2)
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Distance") && distance.is_none() {
+                    let Ok(parsed) = value.parse::<f64>() else {
+                        return false;
+                    };
+                    if !parsed.is_finite() || parsed == 0.0 {
+                        return false;
+                    }
+                    distance = Some(parsed);
+                } else if name.eq_ignore_ascii_case("Type") && !type_seen {
+                    smooth = if value.eq_ignore_ascii_case("Smooth") {
+                        true
+                    } else if value.eq_ignore_ascii_case("Line") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    type_seen = true;
+                } else if name.eq_ignore_ascii_case("Merge") && !merge_seen {
+                    merge = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    merge_seen = true;
+                } else {
+                    return false;
+                }
+                index += consumed;
+            }
+            let Some(distance) = distance else {
+                return false;
+            };
+            if !merge && distance < 0.0 {
+                return false;
+            }
+            InteractiveCommand::ExtendSrf {
+                distance,
+                smooth,
+                merge,
+            }
         } else if normalized == "srfseam" {
             let mut direction = None;
             for option in arguments {
@@ -2375,6 +2447,7 @@ impl VibocerosApp {
                 | InteractiveCommand::InsertControlPoint { .. }
                 | InteractiveCommand::CrvSeam
                 | InteractiveCommand::SrfSeam { .. }
+                | InteractiveCommand::ExtendSrf { .. }
                 | InteractiveCommand::SubCrv { .. }
                 | InteractiveCommand::SplitCurve
                 | InteractiveCommand::Revolve { .. }
@@ -3587,6 +3660,19 @@ impl VibocerosApp {
                     format!(" Direction={}", direction.option_value())
                 });
                 self.execute_command(&format!("SrfSeam {}{direction}", format_model_point(point)));
+            }
+            InteractiveCommand::ExtendSrf {
+                distance,
+                smooth,
+                merge,
+            } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "ExtendSrf {} Distance={distance} Type={} Merge={}",
+                    format_model_point(point),
+                    if smooth { "Smooth" } else { "Line" },
+                    if merge { "Yes" } else { "No" },
+                ));
             }
             InteractiveCommand::SubCrv { start: None, copy } => {
                 let command = InteractiveCommand::SubCrv {
@@ -5192,7 +5278,7 @@ fn point_is_near_axis(
 mod tests {
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
-    use viboceros_geometry::{MeshFace, NurbsCurve, TriangleMesh};
+    use viboceros_geometry::{MeshFace, NurbsCurve, SurfaceExtensionEdge, TriangleMesh};
 
     fn test_app() -> VibocerosApp {
         VibocerosApp {
@@ -7141,6 +7227,59 @@ mod tests {
 
         app.document.clear_selection();
         assert!(app.try_start_interactive_command("SrfSeam"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_extend_surface_uses_a_boundary_pick_and_its_path_parameter() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,0 10,0,0 20,10,0 0,10,0");
+        let source_id = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source_id, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        let Geometry::NurbsSurface(source) = app.document.object(source_id).unwrap().geometry()
+        else {
+            panic!("SrfPt must create an exact NURBS surface")
+        };
+        let source = source.clone();
+        let v = source.parameter_at_v(0.25).unwrap();
+        let pick = source.evaluate(*source.domain_u().end(), v).unwrap();
+        let expected = source
+            .try_shrunk_by_length(
+                SurfaceExtensionEdge::East,
+                2.0,
+                Some(v),
+                app.document.tolerance(),
+            )
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("ExtendSrf Distance=-2 Type=Line Merge=Yes"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::ExtendSrf {
+                distance: -2.0,
+                smooth: false,
+                merge: true,
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("natural edge"));
+        app.accept_drafting_point(pick);
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(
+            app.document.object(source_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(expected)
+        );
+        assert!(app.document.is_selected(source_id));
+        assert_eq!(app.document.undo_label(), Some("ExtendSrf"));
+        assert!(!app.try_start_interactive_command("ExtendSrf Edge=East Distance=2"));
+        assert!(!app.try_start_interactive_command("ExtendSrf Distance=2 Type=Natural"));
+        assert!(!app.try_start_interactive_command("ExtendSrf Distance=-2 Merge=No"));
+
+        app.document.clear_selection();
+        assert!(app.try_start_interactive_command("ExtendSrf Distance=2"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
     }

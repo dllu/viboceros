@@ -193,6 +193,7 @@ ExtendSrf Edge=East Distance=3 Type=Smooth Merge=Yes
 ExtendSrf Edge=West Distance=2 Type=Line Merge=Yes
 ExtendSrf Edge=East Distance=-2 At=0.5
 ExtendSrf Edge=East Distance=2 Type=Smooth Merge=No
+ExtendSrf Distance=-2 Type=Smooth Merge=Yes
 Reparameterize -4 6
 Reparameterize Automatic
 Dir SwapUV
@@ -804,13 +805,16 @@ distances use Rhino's homogeneous-control-curve RMS scaling, including
 rational weights and non-clamped ends. Negative distances trim inward by true
 arc length along an on-surface isocurve, use the selected edge's parameter
 midpoint by default, and restore the original surface domain; `At=value`
-chooses the edge parameter explicitly. `Direction=U|V Domain=start,end`
-exposes the corresponding analytic-domain extension. `Type=Smooth`
-analytically extrapolates the edge span, while `Type=Line` joins an exact
-degree-matched straight tangent span. `Merge=No` retains the source and creates
-the extension as a separate patch with matching attributes and group
-membership. Tensor structure, identity, attributes, groups, selection, and
-undo are preserved; viewport edge picking remains future work.
+chooses the edge parameter explicitly. A model point in place of `Edge=` picks
+the closest non-singular open natural boundary and supplies that path parameter
+for shrinking. In the UI, enter `ExtendSrf Distance=value` with any type and
+merge options to pick this boundary in a viewport. `Direction=U|V
+Domain=start,end` exposes the corresponding analytic-domain extension.
+`Type=Smooth` analytically extrapolates the edge span, while `Type=Line` joins
+an exact degree-matched straight tangent span. `Merge=No` retains the source
+and creates the extension as a separate patch with matching attributes and
+group membership. Tensor structure, identity, attributes, groups, selection,
+and undo are preserved.
 `SubCrv start_point end_point` replaces one selected curve with the exact
 directed portion between the closest curve locations; omit both points for two
 viewport picks, or use `Parameter=start,end` for exact parameters. Reversing
