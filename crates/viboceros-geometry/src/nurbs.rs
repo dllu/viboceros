@@ -1424,6 +1424,63 @@ impl NurbsCurve {
         self.try_remove_selected_knot(parameter, knot_index)
     }
 
+    /// Collapses qualifying interior multiple-knot groups in descending
+    /// parameter order, matching Rhino's `RemoveMultiKnot` command.
+    ///
+    /// By default only multiplicities strictly between one and the degree are
+    /// reduced to one. With `remove_fully_multiple_knots`, degree-multiple
+    /// kinks are also eligible when their one-sided tangent angle is strictly
+    /// below `maximum_kink_angle_radians`; the same strict angle test applies
+    /// to the smooth groups. Degree-one knots are removed completely. Periodic
+    /// curves are rejected.
+    pub fn try_remove_multiple_knots(
+        &self,
+        remove_fully_multiple_knots: bool,
+        maximum_kink_angle_radians: Real,
+    ) -> Result<(Self, usize), GeometryError> {
+        if !maximum_kink_angle_radians.is_finite()
+            || !(0.0..=std::f64::consts::PI).contains(&maximum_kink_angle_radians)
+        {
+            return Err(GeometryError::InvalidKnotRemovalAngle);
+        }
+        if self.is_periodic() {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported { direction: "curve" });
+        }
+
+        let mut removals = Vec::new();
+        for (knot, multiplicity) in self.interior_knot_groups() {
+            let eligible = if remove_fully_multiple_knots {
+                let is_multiple = multiplicity > 1 || self.degree == 1;
+                if !is_multiple || multiplicity > self.degree {
+                    false
+                } else {
+                    let kink_angle = if multiplicity < self.degree {
+                        0.0
+                    } else {
+                        self.kink_angle_at(knot)?
+                    };
+                    kink_angle < maximum_kink_angle_radians
+                }
+            } else {
+                multiplicity > 1 && multiplicity < self.degree
+            };
+            if eligible {
+                let removal_count = if self.degree == 1 {
+                    multiplicity
+                } else {
+                    multiplicity - 1
+                };
+                removals.push((knot, removal_count));
+            }
+        }
+
+        let removed = removals.iter().map(|(_, count)| *count).sum();
+        if removed == 0 {
+            return Ok((self.clone(), 0));
+        }
+        Ok((self.try_remove_multiple_knot_groups(&removals)?, removed))
+    }
+
     pub(crate) fn try_remove_knot_near_parameter_with_periodic_topology(
         &self,
         parameter: Real,
@@ -1462,6 +1519,67 @@ impl NurbsCurve {
             knots,
             GeometryError::KnotRemovalSolveFailed,
         )
+    }
+
+    pub(crate) fn interior_knot_groups(&self) -> Vec<(Real, usize)> {
+        let domain = self.domain();
+        let mut groups = Vec::new();
+        let mut index = 0;
+        while index < self.knots.len() {
+            let knot = self.knots[index];
+            let after = self.knots.partition_point(|candidate| *candidate <= knot);
+            if knot > *domain.start() && knot < *domain.end() {
+                groups.push((knot, after - index));
+            }
+            index = after;
+        }
+        groups
+    }
+
+    pub(crate) fn kink_angle_at(&self, knot: Real) -> Result<Real, GeometryError> {
+        let (left, right) = self.try_split(knot)?;
+        let incoming = match left.derivative_at(knot)?.normalized_nonzero() {
+            Ok(tangent) => tangent,
+            Err(GeometryError::Degenerate { .. }) => return Ok(std::f64::consts::PI),
+            Err(error) => return Err(error),
+        };
+        let outgoing = match right.derivative_at(knot)?.normalized_nonzero() {
+            Ok(tangent) => tangent,
+            Err(GeometryError::Degenerate { .. }) => return Ok(std::f64::consts::PI),
+            Err(error) => return Err(error),
+        };
+        let cosine = incoming
+            .as_vector()
+            .dot(outgoing.as_vector())?
+            .clamp(-1.0, 1.0);
+        Ok(cosine.acos())
+    }
+
+    pub(crate) fn try_remove_multiple_knot_groups(
+        &self,
+        removals: &[(Real, usize)],
+    ) -> Result<Self, GeometryError> {
+        if removals.is_empty() {
+            return Ok(self.clone());
+        }
+        let mut result = self.clamped_to_active_domain()?;
+        for (knot, removal_count) in removals.iter().rev() {
+            let first = result.knots.partition_point(|candidate| *candidate < *knot);
+            let after = result
+                .knots
+                .partition_point(|candidate| *candidate <= *knot);
+            if *removal_count == 0 || after - first < *removal_count {
+                return Err(GeometryError::KnotRemovalSolveFailed);
+            }
+            let mut knots = result.knots.clone();
+            knots.drain(after - removal_count..after);
+            result = result.interpolate_homogeneous_in_basis(
+                result.degree,
+                knots,
+                GeometryError::KnotRemovalSolveFailed,
+            )?;
+        }
+        Ok(result)
     }
 
     /// Inserts `parameter` until its full-knot-vector multiplicity is at least
@@ -2291,7 +2409,7 @@ fn periodic_greville_parameters(
     Ok(parameters)
 }
 
-fn stable_knot_mean(knots: &[Real]) -> Result<Real, GeometryError> {
+pub(crate) fn stable_knot_mean(knots: &[Real]) -> Result<Real, GeometryError> {
     let divisor = knots.len() as Real;
     let direct = knots.iter().sum::<Real>() / divisor;
     if direct.is_finite() {
@@ -4207,6 +4325,128 @@ mod tests {
         assert_eq!(removed.knots(), &[10.0, 10.0, 10.0, 14.0, 14.0, 14.0]);
         assert_point_near(removed.evaluate(10.0).unwrap(), endpoints[0]);
         assert_point_near(removed.evaluate(14.0).unwrap(), endpoints[1]);
+    }
+
+    #[test]
+    fn multiple_knot_removal_matches_rhino_group_order_and_kink_filter() {
+        let source = NurbsCurve::try_new(
+            3,
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 3.0, 1.0],
+                [3.0, -2.0, 2.0],
+                [5.0, 4.0, -1.0],
+                [7.0, 0.0, 1.0],
+                [9.0, -3.0, 2.0],
+                [11.0, 5.0, -2.0],
+                [13.0, 1.0, 0.0],
+                [15.0, -1.0, 3.0],
+                [18.0, 2.0, 1.0],
+            ]
+            .into_iter()
+            .map(|point| Point3::try_from(point).unwrap())
+            .collect(),
+            vec![
+                0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 5.0, 5.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0,
+            ],
+        )
+        .unwrap();
+
+        let (ordinary, removed) = source.try_remove_multiple_knots(false, 0.0).unwrap();
+        assert_eq!(removed, 1);
+        assert_eq!(
+            ordinary.knots(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 5.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0
+            ]
+        );
+        assert_point_near(
+            ordinary.control_points()[1].point(),
+            Point3::try_new(1.2511378848728234, 1.2599732262382861, 1.627844712182061).unwrap(),
+        );
+
+        let (none, removed) = source.try_remove_multiple_knots(true, 0.0).unwrap();
+        assert_eq!((none, removed), (source.clone(), 0));
+
+        let (below_kink, removed) = source
+            .try_remove_multiple_knots(true, 130.0_f64.to_radians())
+            .unwrap();
+        assert_eq!(removed, 1);
+        assert_eq!(below_kink.knots(), ordinary.knots());
+
+        let (all, removed) = source
+            .try_remove_multiple_knots(true, 135.0_f64.to_radians())
+            .unwrap();
+        assert_eq!(removed, 3);
+        assert_eq!(
+            all.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0]
+        );
+        assert_point_near(
+            all.control_points()[1].point(),
+            Point3::try_new(1.277439372269475, 0.7925502880770412, 1.80206788629584).unwrap(),
+        );
+
+        assert_eq!(
+            source.try_remove_multiple_knots(true, -1.0),
+            Err(GeometryError::InvalidKnotRemovalAngle)
+        );
+        assert_eq!(
+            source.try_remove_multiple_knots(true, Real::NAN),
+            Err(GeometryError::InvalidKnotRemovalAngle)
+        );
+
+        let non_clamped = NurbsCurve::try_new(
+            3,
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 3.0, 1.0],
+                [3.0, -2.0, 2.0],
+                [6.0, 4.0, -1.0],
+                [8.0, 0.0, 1.0],
+                [11.0, 2.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| Point3::try_from(point).unwrap())
+            .collect(),
+            vec![0.0, 1.0, 2.0, 3.0, 4.0, 4.0, 6.0, 7.0, 8.0, 9.0],
+        )
+        .unwrap();
+        let endpoints = [
+            non_clamped.evaluate(3.0).unwrap(),
+            non_clamped.evaluate(6.0).unwrap(),
+        ];
+        let (non_clamped, removed) = non_clamped.try_remove_multiple_knots(false, 0.0).unwrap();
+        assert_eq!(removed, 1);
+        assert_eq!(non_clamped.domain(), 3.0..=6.0);
+        assert_eq!(
+            non_clamped.knots(),
+            &[3.0, 3.0, 3.0, 3.0, 4.0, 6.0, 6.0, 6.0, 6.0]
+        );
+        assert_point_near(non_clamped.evaluate(3.0).unwrap(), endpoints[0]);
+        assert_point_near(non_clamped.evaluate(6.0).unwrap(), endpoints[1]);
+
+        let linear = NurbsCurve::try_new(
+            1,
+            [
+                [0.0, 0.0, 0.0],
+                [2.0, 3.0, 0.0],
+                [5.0, -1.0, 1.0],
+                [9.0, 2.0, 0.0],
+                [12.0, 0.0, 2.0],
+            ]
+            .into_iter()
+            .map(|point| Point3::try_from(point).unwrap())
+            .collect(),
+            vec![0.0, 0.0, 2.0, 4.0, 6.0, 8.0, 8.0],
+        )
+        .unwrap();
+        let (linear, removed) = linear
+            .try_remove_multiple_knots(true, std::f64::consts::PI)
+            .unwrap();
+        assert_eq!(removed, 3);
+        assert_eq!(linear.knots(), &[0.0, 0.0, 8.0, 8.0]);
+        assert_eq!(linear.control_points().len(), 2);
     }
 
     #[test]

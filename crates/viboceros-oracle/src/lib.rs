@@ -563,6 +563,14 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         parameter: f64,
     },
+    CurveRemoveMultiKnotGeometry {
+        id: String,
+        curve: NurbsCurveDefinition,
+        #[serde(default)]
+        remove_fully_multiple_knots: bool,
+        #[serde(default = "default_kink_angle_degrees")]
+        maximum_kink_angle_degrees: f64,
+    },
     CurveMakeNonPeriodicGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -629,6 +637,20 @@ pub enum Operation {
         knots_v: Vec<f64>,
         direction: SurfaceKnotAxis,
         parameter: f64,
+    },
+    SurfaceRemoveMultiKnotGeometry {
+        id: String,
+        degree_u: usize,
+        degree_v: usize,
+        control_point_count_u: usize,
+        control_point_count_v: usize,
+        control_points: Vec<ControlPoint>,
+        knots_u: Vec<f64>,
+        knots_v: Vec<f64>,
+        #[serde(default)]
+        remove_fully_multiple_knots: bool,
+        #[serde(default = "default_kink_angle_degrees")]
+        maximum_kink_angle_degrees: f64,
     },
     SurfaceMakeNonPeriodicGeometry {
         id: String,
@@ -931,12 +953,14 @@ impl Operation {
             | Self::CurveMakePeriodicGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
+            | Self::CurveRemoveMultiKnotGeometry { id, .. }
             | Self::CurveMakeNonPeriodicGeometry { id, .. }
             | Self::SurfaceMakeUniformGeometry { id, .. }
             | Self::SurfaceChangeDegreeGeometry { id, .. }
             | Self::SurfaceMakePeriodicGeometry { id, .. }
             | Self::SurfaceInsertKnotGeometry { id, .. }
             | Self::SurfaceRemoveKnotGeometry { id, .. }
+            | Self::SurfaceRemoveMultiKnotGeometry { id, .. }
             | Self::SurfaceMakeNonPeriodicGeometry { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
@@ -2779,6 +2803,21 @@ fn execute(
             })?;
             (rebuilt_curve_definition_value(&curve)?, elapsed)
         }
+        Operation::CurveRemoveMultiKnotGeometry {
+            curve,
+            remove_fully_multiple_knots,
+            maximum_kink_angle_degrees,
+            ..
+        } => {
+            let source = nurbs_curve_from_definition(curve)?;
+            let ((curve, _), elapsed) = measure(iterations, || {
+                source.try_remove_multiple_knots(
+                    black_box(*remove_fully_multiple_knots),
+                    black_box(maximum_kink_angle_degrees.to_radians()),
+                )
+            })?;
+            (rebuilt_curve_definition_value(&curve)?, elapsed)
+        }
         Operation::CurveMakeNonPeriodicGeometry { curve, .. } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure(iterations, || source.try_make_non_periodic())?;
@@ -2922,6 +2961,36 @@ fn execute(
             let (surface, elapsed) = measure(iterations, || match direction {
                 SurfaceKnotAxis::U => source.try_remove_knot_u_near(black_box(*parameter)),
                 SurfaceKnotAxis::V => source.try_remove_knot_v_near(black_box(*parameter)),
+            })?;
+            (uniform_surface_definition_value(&surface), elapsed)
+        }
+        Operation::SurfaceRemoveMultiKnotGeometry {
+            degree_u,
+            degree_v,
+            control_point_count_u,
+            control_point_count_v,
+            control_points,
+            knots_u,
+            knots_v,
+            remove_fully_multiple_knots,
+            maximum_kink_angle_degrees,
+            ..
+        } => {
+            let source = NurbsSurface::try_new_rational(
+                *degree_u,
+                *degree_v,
+                *control_point_count_u,
+                *control_point_count_v,
+                weighted_points(control_points)?,
+                knots_u.clone(),
+                knots_v.clone(),
+            )?;
+            let ((surface, _), elapsed) = measure(iterations, || {
+                source.try_remove_multiple_knots(
+                    SurfaceKnotDirection::Both,
+                    black_box(*remove_fully_multiple_knots),
+                    black_box(maximum_kink_angle_degrees.to_radians()),
+                )
             })?;
             (uniform_surface_definition_value(&surface), elapsed)
         }
@@ -6377,6 +6446,10 @@ const fn default_true() -> bool {
     true
 }
 
+const fn default_kink_angle_degrees() -> f64 {
+    1.0
+}
+
 const fn unit_weight() -> f64 {
     1.0
 }
@@ -8354,6 +8427,73 @@ mod tests {
             surface["knots_v"],
             json!([-2.0, -2.0, -2.0, 1.0, 6.0, 6.0, 6.0])
         );
+    }
+
+    #[test]
+    fn captures_curve_and_surface_multiple_knot_removal() {
+        let curve_controls = [
+            [0.0, 0.0, 0.0],
+            [1.0, 3.0, 1.0],
+            [3.0, -2.0, 2.0],
+            [6.0, 4.0, -1.0],
+            [8.0, 0.0, 1.0],
+            [11.0, 2.0, 0.0],
+        ];
+        let curve = NurbsCurveDefinition {
+            degree: 3,
+            control_points: curve_controls
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0],
+            domain: None,
+        };
+        let surface_controls = [0.0, 4.0]
+            .into_iter()
+            .flat_map(|offset| {
+                curve_controls.into_iter().map(move |mut point| {
+                    point[2] += offset;
+                    ControlPoint { point, weight: 1.0 }
+                })
+            })
+            .collect();
+        let response = run_request(&request(vec![
+            Operation::CurveRemoveMultiKnotGeometry {
+                id: "remove-multiple-curve".to_owned(),
+                curve,
+                remove_fully_multiple_knots: false,
+                maximum_kink_angle_degrees: 1.0,
+            },
+            Operation::SurfaceRemoveMultiKnotGeometry {
+                id: "remove-multiple-surface".to_owned(),
+                degree_u: 3,
+                degree_v: 1,
+                control_point_count_u: 6,
+                control_point_count_v: 2,
+                control_points: surface_controls,
+                knots_u: vec![0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0],
+                knots_v: vec![0.0, 0.0, 4.0, 4.0],
+                remove_fully_multiple_knots: false,
+                maximum_kink_angle_degrees: 1.0,
+            },
+        ]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 3);
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 5);
+        assert_eq!(
+            curve["knots"],
+            json!([0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0])
+        );
+
+        let surface = &response.results[1].value;
+        assert_eq!(surface["control_count"], json!([5, 2]));
+        assert_eq!(
+            surface["knots_u"],
+            json!([0.0, 0.0, 0.0, 0.0, 0.5, 1.0, 1.0, 1.0, 1.0])
+        );
+        assert_eq!(surface["knots_v"], json!([0.0, 0.0, 4.0, 4.0]));
     }
 
     #[test]

@@ -5684,6 +5684,51 @@ def _execute(operation, iterations, tolerance):
         finally:
             curve.Dispose()
 
+    if kind == "curve_remove_multi_knot_geometry":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        remove_fully = bool(operation.get("remove_fully_multiple_knots", False))
+        max_kink_angle = _finite(
+            operation.get("maximum_kink_angle_degrees", 1.0),
+            "maximum kink angle",
+        )
+
+        def remove_multi_knot_command():
+            object_id = System.Guid.Empty
+            try:
+                document.Objects.UnselectAll()
+                object_id = document.Objects.AddCurve(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveMultiKnot source curve")
+                command = "_-RemoveMultiKnot _RemoveFullyMultipleKnots=_%s" % (
+                    "Yes" if remove_fully else "No"
+                )
+                if remove_fully:
+                    command += " _MaxKinkAngle=%.17g" % max_kink_angle
+                command += " _SelID %s _Enter" % str(object_id)
+                Rhino.RhinoApp.RunScript(command, False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveMultiKnot removed the source object")
+                result = rhino_object.Geometry.ToNurbsCurve()
+                if result is None:
+                    raise ValueError("RemoveMultiKnot returned no NURBS curve")
+                try:
+                    definition = _nurbs_curve_definition(result)
+                    definition["closed"] = bool(result.IsClosed)
+                    definition["periodic"] = bool(result.IsPeriodic)
+                    return definition
+                finally:
+                    result.Dispose()
+            finally:
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+
+        try:
+            return _measure(iterations, remove_multi_knot_command)
+        finally:
+            source.Dispose()
+
     if kind == "surface_make_uniform_geometry":
         degree_u = int(operation["degree_u"])
         degree_v = int(operation["degree_v"])
@@ -5867,6 +5912,76 @@ def _execute(operation, iterations, tolerance):
                 surface.Dispose()
 
         return _measure(iterations, remove_surface_knot)
+
+    if kind == "surface_remove_multi_knot_geometry":
+        degree_u = int(operation["degree_u"])
+        degree_v = int(operation["degree_v"])
+        count_u = int(operation["control_point_count_u"])
+        count_v = int(operation["control_point_count_v"])
+        remove_fully = bool(operation.get("remove_fully_multiple_knots", False))
+        max_kink_angle = _finite(
+            operation.get("maximum_kink_angle_degrees", 1.0),
+            "maximum kink angle",
+        )
+        source = Rhino.Geometry.NurbsSurface.Create(
+            3, True, degree_u + 1, degree_v + 1, count_u, count_v
+        )
+        if source is None:
+            raise ValueError("could not allocate RemoveMultiKnot source surface")
+        try:
+            _set_surface_controls(source, operation["control_points"], count_u, count_v)
+            _set_knots(source.KnotsU, operation["knots_u"], "surface U knot")
+            _set_knots(source.KnotsV, operation["knots_v"], "surface V knot")
+            if not source.IsValid:
+                raise ValueError("RemoveMultiKnot source surface is invalid")
+        except Exception:
+            source.Dispose()
+            raise
+
+        def remove_surface_multi_knots():
+            document = Rhino.RhinoDoc.ActiveDoc
+            object_id = System.Guid.Empty
+            result = None
+            try:
+                document.Objects.UnselectAll()
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                object_id = document.Objects.AddSurface(source)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add RemoveMultiKnot source surface")
+                command = "_-RemoveMultiKnot _RemoveFullyMultipleKnots=_%s" % (
+                    "Yes" if remove_fully else "No"
+                )
+                if remove_fully:
+                    command += " _MaxKinkAngle=%.17g" % max_kink_angle
+                command += " _SelID %s _Enter" % str(object_id)
+                Rhino.RhinoApp.RunScript(command, False)
+                rhino_object = document.Objects.FindId(object_id)
+                if rhino_object is None:
+                    raise ValueError("RemoveMultiKnot removed the source surface")
+                geometry = rhino_object.Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1:
+                        raise ValueError("RemoveMultiKnot returned a polysurface")
+                    result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                else:
+                    result = geometry.ToNurbsSurface()
+                if result is None:
+                    raise ValueError("RemoveMultiKnot returned no NURBS surface")
+                definition = _nurbs_surface_definition(result)
+                definition["periodic_u"] = bool(result.IsPeriodic(0))
+                definition["periodic_v"] = bool(result.IsPeriodic(1))
+                return definition
+            finally:
+                if result is not None:
+                    result.Dispose()
+                if object_id != System.Guid.Empty:
+                    document.Objects.Delete(object_id, True)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+
+        try:
+            return _measure(iterations, remove_surface_multi_knots)
+        finally:
+            source.Dispose()
 
     if kind == "curve_change_degree_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])

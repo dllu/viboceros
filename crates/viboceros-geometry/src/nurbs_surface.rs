@@ -4,7 +4,7 @@ use crate::integration::integrate_adaptive;
 use crate::nurbs::{
     clamped_uniform_knots, control_polygon_range, curve_coordinates_coincident,
     curve_points_coincident, de_boor, knot_vector_is_periodic, project_homogeneous,
-    stable_divided_difference, uniform_knots_like, validate_direction,
+    stable_divided_difference, stable_knot_mean, uniform_knots_like, validate_direction,
 };
 use crate::{
     AffineTransform3, BoundingBox3, Frame3, GeometryError, MAX_CURVE_DIVISION_POINTS, MeshFace,
@@ -1582,6 +1582,161 @@ impl NurbsSurface {
         })
     }
 
+    /// Collapses qualifying multiple knots in the selected parameter
+    /// direction(s), using the same descending-knot interpolation order as
+    /// [`NurbsCurve::try_remove_multiple_knots`].
+    ///
+    /// Fully multiple creases are filtered by the greatest one-sided tangent
+    /// angle sampled at each start, midpoint, and end of every knot span in
+    /// the other direction. This is the OpenNURBS surface-continuity sampling
+    /// rule used by Rhino. Degree-one knots are removed completely. Selected
+    /// periodic directions are rejected.
+    pub fn try_remove_multiple_knots(
+        &self,
+        direction: SurfaceKnotDirection,
+        remove_fully_multiple_knots: bool,
+        maximum_kink_angle_radians: Real,
+    ) -> Result<(Self, usize), GeometryError> {
+        if !maximum_kink_angle_radians.is_finite()
+            || !(0.0..=std::f64::consts::PI).contains(&maximum_kink_angle_radians)
+        {
+            return Err(GeometryError::InvalidKnotRemovalAngle);
+        }
+        if direction.includes_u() && self.is_periodic_u() {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported {
+                direction: "surface U direction",
+            });
+        }
+        if direction.includes_v() && self.is_periodic_v() {
+            return Err(GeometryError::PeriodicKnotRemovalUnsupported {
+                direction: "surface V direction",
+            });
+        }
+
+        let mut result = self.clone();
+        let mut removed = 0;
+        if direction.includes_u() {
+            let removals = result.multiple_knot_removals(
+                SurfaceKnotDirection::U,
+                remove_fully_multiple_knots,
+                maximum_kink_angle_radians,
+            )?;
+            removed += removals.iter().map(|(_, count)| *count).sum::<usize>();
+            if !removals.is_empty() {
+                result = result.map_u_control_curves(|curve| {
+                    curve.try_remove_multiple_knot_groups(&removals)
+                })?;
+            }
+        }
+        if direction.includes_v() {
+            let removals = result.multiple_knot_removals(
+                SurfaceKnotDirection::V,
+                remove_fully_multiple_knots,
+                maximum_kink_angle_radians,
+            )?;
+            removed += removals.iter().map(|(_, count)| *count).sum::<usize>();
+            if !removals.is_empty() {
+                result = result.map_v_control_curves(|curve| {
+                    curve.try_remove_multiple_knot_groups(&removals)
+                })?;
+            }
+        }
+        Ok((result, removed))
+    }
+
+    fn multiple_knot_removals(
+        &self,
+        direction: SurfaceKnotDirection,
+        remove_fully_multiple_knots: bool,
+        maximum_kink_angle_radians: Real,
+    ) -> Result<Vec<(Real, usize)>, GeometryError> {
+        let (degree, structural_curve) = match direction {
+            SurfaceKnotDirection::U => (
+                self.degree_u,
+                NurbsCurve::try_new_rational(
+                    self.degree_u,
+                    self.control_points[..self.control_point_count_u].to_vec(),
+                    self.knots_u.clone(),
+                )?,
+            ),
+            SurfaceKnotDirection::V => (
+                self.degree_v,
+                NurbsCurve::try_new_rational(
+                    self.degree_v,
+                    (0..self.control_point_count_v)
+                        .map(|v| self.control_points[self.control_index(0, v)])
+                        .collect(),
+                    self.knots_v.clone(),
+                )?,
+            ),
+            SurfaceKnotDirection::Both => {
+                unreachable!("multiple-knot removals inspect one surface direction at a time")
+            }
+        };
+
+        let mut removals = Vec::new();
+        for (knot, multiplicity) in structural_curve.interior_knot_groups() {
+            let eligible = if remove_fully_multiple_knots {
+                let is_multiple = multiplicity > 1 || degree == 1;
+                if !is_multiple || multiplicity > degree {
+                    false
+                } else {
+                    let kink_angle = if multiplicity < degree {
+                        0.0
+                    } else {
+                        self.maximum_kink_angle_at(direction, knot)?
+                    };
+                    kink_angle < maximum_kink_angle_radians
+                }
+            } else {
+                multiplicity > 1 && multiplicity < degree
+            };
+            if eligible {
+                removals.push((
+                    knot,
+                    if degree == 1 {
+                        multiplicity
+                    } else {
+                        multiplicity - 1
+                    },
+                ));
+            }
+        }
+        Ok(removals)
+    }
+
+    fn maximum_kink_angle_at(
+        &self,
+        direction: SurfaceKnotDirection,
+        knot: Real,
+    ) -> Result<Real, GeometryError> {
+        let parameters = match direction {
+            SurfaceKnotDirection::U => surface_continuity_sample_parameters(
+                self.degree_v,
+                self.control_point_count_v,
+                &self.knots_v,
+            )?,
+            SurfaceKnotDirection::V => surface_continuity_sample_parameters(
+                self.degree_u,
+                self.control_point_count_u,
+                &self.knots_u,
+            )?,
+            SurfaceKnotDirection::Both => {
+                unreachable!("kink angles inspect one surface direction at a time")
+            }
+        };
+        let mut maximum: Real = 0.0;
+        for parameter in parameters {
+            let isocurve = match direction {
+                SurfaceKnotDirection::U => self.isocurve_u(parameter)?,
+                SurfaceKnotDirection::V => self.isocurve_v(parameter)?,
+                SurfaceKnotDirection::Both => unreachable!(),
+            };
+            maximum = maximum.max(isocurve.kink_angle_at(knot)?);
+        }
+        Ok(maximum)
+    }
+
     /// Matches the high-dimensional non-rational curve that OpenNURBS uses
     /// internally for surface U insertion. Rational controls are compared in
     /// their stored homogeneous form, including their weights.
@@ -2917,6 +3072,19 @@ impl NurbsSurface {
         }
         Ok(parameters)
     }
+}
+
+fn surface_continuity_sample_parameters(
+    degree: usize,
+    control_point_count: usize,
+    knots: &[Real],
+) -> Result<Vec<Real>, GeometryError> {
+    let mut parameters = vec![knots[degree]];
+    for index in degree..control_point_count {
+        parameters.push(stable_knot_mean(&[knots[index], knots[index + 1]])?);
+        parameters.push(knots[index + 1]);
+    }
+    Ok(parameters)
 }
 
 fn surface_wire_parameters(
@@ -5706,6 +5874,146 @@ mod tests {
             Err(GeometryError::PeriodicKnotRemovalUnsupported {
                 direction: "surface U direction"
             })
+        );
+    }
+
+    #[test]
+    fn multiple_knot_removal_matches_rhino_surface_order_and_crease_samples() {
+        let profile = NurbsCurve::try_new(
+            3,
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 3.0, 1.0],
+                [3.0, -2.0, 2.0],
+                [5.0, 4.0, -1.0],
+                [7.0, 0.0, 1.0],
+                [9.0, -3.0, 2.0],
+                [11.0, 5.0, -2.0],
+                [13.0, 1.0, 0.0],
+                [15.0, -1.0, 3.0],
+                [18.0, 2.0, 1.0],
+            ]
+            .into_iter()
+            .map(|point| Point3::try_from(point).unwrap())
+            .collect(),
+            vec![
+                0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 5.0, 5.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0,
+            ],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_extruded_curve(
+            &profile,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 4.0).unwrap(),
+        )
+        .unwrap();
+
+        let (ordinary, removed) = surface
+            .try_remove_multiple_knots(SurfaceKnotDirection::Both, false, 0.0)
+            .unwrap();
+        assert_eq!(removed, 1);
+        assert_eq!(
+            (
+                ordinary.control_point_count_u(),
+                ordinary.control_point_count_v()
+            ),
+            (9, 2)
+        );
+        assert_eq!(
+            ordinary.knots_u(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 5.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0
+            ]
+        );
+        assert_point_near(
+            ordinary.control_point(1, 0).unwrap().point(),
+            point(1.2511378848728234, 1.2599732262382861, 1.627844712182061),
+        );
+        assert_point_near(
+            ordinary.control_point(1, 1).unwrap().point(),
+            point(1.2511378848728234, 1.2599732262382861, 5.627844712182061),
+        );
+
+        let (below_crease, removed) = surface
+            .try_remove_multiple_knots(SurfaceKnotDirection::U, true, 130.0_f64.to_radians())
+            .unwrap();
+        assert_eq!((below_crease, removed), (ordinary, 1));
+        let (all, removed) = surface
+            .try_remove_multiple_knots(SurfaceKnotDirection::U, true, 135.0_f64.to_radians())
+            .unwrap();
+        assert_eq!(removed, 3);
+        assert_eq!(
+            (all.control_point_count_u(), all.control_point_count_v()),
+            (7, 2)
+        );
+        assert_eq!(
+            all.knots_u(),
+            &[0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0]
+        );
+        assert_point_near(
+            all.control_point(1, 0).unwrap().point(),
+            point(1.277439372269475, 0.7925502880770412, 1.80206788629584),
+        );
+
+        let varying_crease = NurbsSurface::try_new(
+            1,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(1.0, 0.0, 0.0),
+                point(1.984807753012208, 0.17364817766693033, 0.0),
+                point(0.0, 0.0, 1.0),
+                point(1.0, 0.0, 1.0),
+                point(0.8263518223330697, 0.984807753012208, 1.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let (unchanged, removed) = varying_crease
+            .try_remove_multiple_knots(SurfaceKnotDirection::U, true, 50.0_f64.to_radians())
+            .unwrap();
+        assert_eq!((unchanged, removed), (varying_crease.clone(), 0));
+        let (linearized, removed) = varying_crease
+            .try_remove_multiple_knots(SurfaceKnotDirection::U, true, 101.0_f64.to_radians())
+            .unwrap();
+        assert_eq!(removed, 1);
+        assert_eq!(
+            (
+                linearized.control_point_count_u(),
+                linearized.control_point_count_v()
+            ),
+            (2, 2)
+        );
+        assert_eq!(linearized.knots_u(), &[0.0, 0.0, 2.0, 2.0]);
+
+        let knots = vec![0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 1.0, 1.0, 1.0, 1.0];
+        let tensor = NurbsSurface::try_new(
+            3,
+            3,
+            6,
+            6,
+            (0..6)
+                .flat_map(|v| {
+                    (0..6).map(move |u| point(u as Real, v as Real, (u * v) as Real * 0.1))
+                })
+                .collect(),
+            knots.clone(),
+            knots,
+        )
+        .unwrap();
+        let (tensor, removed) = tensor
+            .try_remove_multiple_knots(SurfaceKnotDirection::Both, false, 0.0)
+            .unwrap();
+        assert_eq!(removed, 2);
+        assert_eq!(
+            (
+                tensor.control_point_count_u(),
+                tensor.control_point_count_v()
+            ),
+            (5, 5)
         );
     }
 

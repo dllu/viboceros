@@ -93,6 +93,9 @@ pub enum GeometryError {
     #[error("the NURBS knot-removal interpolation system could not be solved reliably")]
     KnotRemovalSolveFailed,
 
+    #[error("maximum NURBS knot-removal kink angle must be finite and lie in [0, pi]")]
+    InvalidKnotRemovalAngle,
+
     #[error("knot removal is not supported for a periodic NURBS {direction}")]
     PeriodicKnotRemovalUnsupported { direction: &'static str },
 

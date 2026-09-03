@@ -136,6 +136,9 @@ impl CommandRegistry {
             .register(RemoveKnotCommand)
             .expect("unique built-in command");
         registry
+            .register(RemoveMultiKnotCommand)
+            .expect("unique built-in command");
+        registry
             .register(SrfPtCommand)
             .expect("unique built-in command");
         registry
@@ -2712,6 +2715,102 @@ fn parse_remove_knot_options(arguments: &[&str]) -> Result<RemoveKnotOptions, Co
     Ok(RemoveKnotOptions {
         location,
         direction,
+    })
+}
+
+const REMOVE_MULTI_KNOT_USAGE: &str =
+    "RemoveMultiKnot [RemoveFullyMultipleKnots=Yes|No] [MaxKinkAngle=0..180]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct RemoveMultiKnotOptions {
+    remove_fully_multiple_knots: bool,
+    maximum_kink_angle_radians: Real,
+}
+
+struct RemoveMultiKnotCommand;
+
+impl Command for RemoveMultiKnotCommand {
+    fn name(&self) -> &'static str {
+        "RemoveMultiKnot"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_remove_multi_knot_options(arguments)?;
+        let mut replacements = Vec::new();
+        let mut curve_count = 0;
+        let mut surface_count = 0;
+        let mut knot_count = 0;
+        for object in document.selected_objects() {
+            let (geometry, removed) = match object.geometry() {
+                Geometry::NurbsSurface(surface) => {
+                    let (surface, removed) = surface.try_remove_multiple_knots(
+                        SurfaceKnotDirection::Both,
+                        options.remove_fully_multiple_knots,
+                        options.maximum_kink_angle_radians,
+                    )?;
+                    (Geometry::NurbsSurface(surface), removed)
+                }
+                geometry => {
+                    let Some(curve) = geometry.nurbs_curve_representation()? else {
+                        continue;
+                    };
+                    let (curve, removed) = curve.try_remove_multiple_knots(
+                        options.remove_fully_multiple_knots,
+                        options.maximum_kink_angle_radians,
+                    )?;
+                    (Geometry::NurbsCurve(curve), removed)
+                }
+            };
+            if removed == 0 {
+                continue;
+            }
+            match &geometry {
+                Geometry::NurbsCurve(_) => curve_count += 1,
+                Geometry::NurbsSurface(_) => surface_count += 1,
+                _ => unreachable!("RemoveMultiKnot outputs NURBS geometry"),
+            }
+            knot_count += removed;
+            replacements.push((object.id(), geometry));
+        }
+        if replacements.is_empty() {
+            return Err(CommandError::NoMultipleKnotsRemoved);
+        }
+
+        let object_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Removed {knot_count} multiple knot(s) from {object_count} object(s) ({curve_count} curve(s), {surface_count} NURBS surface(s))"
+        ))
+    }
+}
+
+fn parse_remove_multi_knot_options(
+    arguments: &[&str],
+) -> Result<RemoveMultiKnotOptions, CommandError> {
+    let mut remove_fully_multiple_knots = false;
+    let mut maximum_kink_angle_degrees = 1.0;
+    let mut remove_fully_seen = false;
+    let mut maximum_angle_seen = false;
+    let mut index = 0;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, REMOVE_MULTI_KNOT_USAGE)?;
+        if option_name_eq(name, "RemoveFullyMultipleKnots") && !remove_fully_seen {
+            remove_fully_multiple_knots =
+                parse_yes_no(value).ok_or(CommandError::Usage(REMOVE_MULTI_KNOT_USAGE))?;
+            remove_fully_seen = true;
+        } else if option_name_eq(name, "MaxKinkAngle") && !maximum_angle_seen {
+            maximum_kink_angle_degrees = parse_finite_real(value)?;
+            maximum_angle_seen = true;
+        } else {
+            return Err(CommandError::Usage(REMOVE_MULTI_KNOT_USAGE));
+        }
+        index += consumed;
+    }
+    if !(0.0..=180.0).contains(&maximum_kink_angle_degrees) {
+        return Err(GeometryError::InvalidKnotRemovalAngle.into());
+    }
+    Ok(RemoveMultiKnotOptions {
+        remove_fully_multiple_knots,
+        maximum_kink_angle_radians: maximum_kink_angle_degrees.to_radians(),
     })
 }
 
@@ -17671,6 +17770,9 @@ pub enum CommandError {
     #[error("RemoveKnot on a curve requires one scalar parameter, not a u,v pair")]
     RemoveKnotCurveRequiresParameter,
 
+    #[error("no qualifying multiple knots were removed from the selected curves or surfaces")]
+    NoMultipleKnotsRemoved,
+
     #[error("Join requires at least two selected lines or polylines")]
     NotEnoughCurvesToJoin,
 
@@ -18104,6 +18206,31 @@ mod tests {
         .unwrap()
     }
 
+    fn multiple_knot_curve() -> NurbsCurve {
+        NurbsCurve::try_new(
+            3,
+            [
+                [0.0, 0.0, 0.0],
+                [1.0, 3.0, 1.0],
+                [3.0, -2.0, 2.0],
+                [5.0, 4.0, -1.0],
+                [7.0, 0.0, 1.0],
+                [9.0, -3.0, 2.0],
+                [11.0, 5.0, -2.0],
+                [13.0, 1.0, 0.0],
+                [15.0, -1.0, 3.0],
+                [18.0, 2.0, 1.0],
+            ]
+            .into_iter()
+            .map(|point| Point3::try_from(point).unwrap())
+            .collect(),
+            vec![
+                0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 5.0, 5.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0,
+            ],
+        )
+        .unwrap()
+    }
+
     fn periodic_cubic_curve() -> NurbsCurve {
         NurbsCurve::try_new(
             3,
@@ -18200,7 +18327,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveKnot, RemoveMultiKnot, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -28803,6 +28930,174 @@ mod tests {
                 GeometryError::PeriodicKnotRemovalUnsupported { .. }
             ))
         ));
+    }
+
+    #[test]
+    fn remove_multi_knot_updates_selected_curves_and_surfaces_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let layer = document
+            .add_layer("Multiple knots", ColorRgb::new(71, 109, 151))
+            .unwrap();
+        let source_curve = multiple_knot_curve();
+        let source_surface = NurbsSurface::try_extruded_curve(
+            &source_curve,
+            Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 4.0).unwrap(),
+        )
+        .unwrap();
+        let curve_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsCurve(source_curve.clone()),
+                ObjectAttributes::on_layer(layer).with_name("stacked curve"),
+            )
+            .unwrap();
+        let surface_id = document
+            .add_geometry_with_attributes(
+                Geometry::NurbsSurface(source_surface.clone()),
+                ObjectAttributes::on_layer(layer).with_name("stacked surface"),
+            )
+            .unwrap();
+        let point_id = document
+            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
+            .unwrap();
+        document
+            .select_objects([curve_id, surface_id, point_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "RemoveMultiKnot").unwrap(),
+            "Removed 2 multiple knot(s) from 2 object(s) (1 curve(s), 1 NURBS surface(s))"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(curve_id).unwrap().geometry() else {
+            panic!("RemoveMultiKnot must retain NURBS curve geometry")
+        };
+        assert_eq!(curve.control_points().len(), 9);
+        assert_eq!(
+            curve.knots(),
+            &[
+                0.0, 0.0, 0.0, 0.0, 2.0, 5.0, 5.0, 5.0, 7.0, 10.0, 10.0, 10.0, 10.0
+            ]
+        );
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("RemoveMultiKnot must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 2);
+        assert_eq!(
+            document.object(curve_id).unwrap().attributes().name(),
+            Some("stacked curve")
+        );
+        assert_eq!(
+            document.object(surface_id).unwrap().attributes().name(),
+            Some("stacked surface")
+        );
+        assert_eq!(document.undo_label(), Some("RemoveMultiKnot"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source_curve.clone())
+        );
+        assert_eq!(
+            document.object(surface_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(source_surface.clone())
+        );
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "_RemoveMultiKnot _RemoveFullyMultipleKnots=_Yes _MaxKinkAngle=135",
+                )
+                .unwrap(),
+            "Removed 6 multiple knot(s) from 2 object(s) (1 curve(s), 1 NURBS surface(s))"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(curve_id).unwrap().geometry() else {
+            panic!("RemoveMultiKnot must retain NURBS curve geometry")
+        };
+        assert_eq!(curve.control_points().len(), 7);
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("RemoveMultiKnot must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.control_point_count_u(), 7);
+    }
+
+    #[test]
+    fn remove_multi_knot_rejects_invalid_and_ineligible_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveMultiKnot"),
+            Err(CommandError::NoMultipleKnotsRemoved)
+        ));
+
+        let source = multiple_knot_curve();
+        let curve_id = document
+            .add_geometry(Geometry::NurbsCurve(source.clone()))
+            .unwrap();
+        document
+            .select_objects([curve_id], SelectionMode::Replace)
+            .unwrap();
+        let history = document.undo_label().map(str::to_owned);
+        for command in [
+            "RemoveMultiKnot RemoveFullyMultipleKnots=Maybe",
+            "RemoveMultiKnot RemoveFullyMultipleKnots=No RemoveFullyMultipleKnots=Yes",
+            "RemoveMultiKnot MaxKinkAngle=-1",
+            "RemoveMultiKnot MaxKinkAngle=181",
+            "RemoveMultiKnot MaxKinkAngle=NaN",
+            "RemoveMultiKnot MaxKinkAngle=1 MaxKinkAngle=2",
+            "RemoveMultiKnot Extra=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, command).is_err(),
+                "{command}"
+            );
+            assert_eq!(
+                document.object(curve_id).unwrap().geometry(),
+                &Geometry::NurbsCurve(source.clone()),
+                "{command}"
+            );
+            assert_eq!(document.undo_label(), history.as_deref(), "{command}");
+        }
+
+        let simple = NurbsCurve::try_clamped_uniform(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 0.0, 0.0).unwrap(),
+            ],
+        )
+        .unwrap();
+        let simple_id = document.add_geometry(Geometry::NurbsCurve(simple)).unwrap();
+        document
+            .select_objects([simple_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveMultiKnot"),
+            Err(CommandError::NoMultipleKnotsRemoved)
+        ));
+
+        let periodic_id = document
+            .add_geometry(Geometry::NurbsCurve(periodic_cubic_curve()))
+            .unwrap();
+        document
+            .select_objects([curve_id, periodic_id], SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "RemoveMultiKnot"),
+            Err(CommandError::Geometry(
+                GeometryError::PeriodicKnotRemovalUnsupported { .. }
+            ))
+        ));
+        assert_eq!(
+            document.object(curve_id).unwrap().geometry(),
+            &Geometry::NurbsCurve(source)
+        );
+        assert_eq!(document.undo_label(), history.as_deref());
     }
 
     #[test]

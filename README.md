@@ -45,6 +45,7 @@ MakePeriodic Smooth=Yes DeleteInput=Yes
 MakeNonPeriodic
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 RemoveKnot 0.52,3.1 Direction=V
+RemoveMultiKnot RemoveFullyMultipleKnots=Yes MaxKinkAngle=5
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
@@ -315,6 +316,17 @@ control net. Remaining homogeneous controls are interpolated at Greville
 abscissae; rational weights, object identity, attributes, selection, and undo
 are preserved. Periodic directions are rejected, while non-clamped directions
 are first clamped without changing their active domain.
+`RemoveMultiKnot RemoveFullyMultipleKnots=Yes|No MaxKinkAngle=0..180`
+reduces qualifying stacked knots on every selected curve and untrimmed NURBS
+surface. By default, only non-full multiple knots are collapsed to simple
+knots. Enabling full removal also merges kinks or surface creases whose tangent
+angle is strictly below `MaxKinkAngle` in degrees (default 1 degree),
+and merges eligible degree-one spans into a single linear span. Surface U and V
+directions are both processed using Rhino/OpenNURBS continuity samples.
+Rational weights, object identity, attributes, selection, and one-step undo
+are preserved; periodic directions are rejected atomically. Non-clamped inputs
+are first clamped to their existing active domains so the output knot vectors
+remain valid.
 `Polygon`
 defaults to four sides, or accepts a side count such as `Polygon 6`. With
 objects selected, enter `Move` or `Copy`
@@ -1003,6 +1015,9 @@ tools/rhino_oracle/run_headless.sh compare \
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/remove_knot.json \
   --absolute-epsilon 2e-11 --relative-epsilon 2e-12
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/remove_multi_knot.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/make_non_periodic.json
