@@ -787,6 +787,9 @@ impl VibocerosApp {
         creation_context
             .egui_ctx
             .set_visuals(egui::Visuals::light());
+        if let Some(render_state) = &creation_context.wgpu_render_state {
+            crate::viewport_gpu::install(render_state);
+        }
         let mut command_log = VecDeque::new();
         command_log.push_back("Viboceros ready — enter Help for commands.".to_owned());
         Self {
@@ -4257,14 +4260,24 @@ impl VibocerosApp {
                             }),
                     );
                     if self.command_focus_requested {
-                        response.request_focus();
+                        request_command_focus_at_end(
+                            ui.ctx(),
+                            command_input_id,
+                            &response,
+                            &self.command_input,
+                        );
                         self.command_focus_requested = false;
                     }
                     if response.lost_focus()
                         && ui.input(|input| input.key_pressed(egui::Key::Enter))
                     {
                         self.run_command();
-                        response.request_focus();
+                        request_command_focus_at_end(
+                            ui.ctx(),
+                            command_input_id,
+                            &response,
+                            &self.command_input,
+                        );
                     }
                     if tab
                         && let Some(completion) =
@@ -4273,7 +4286,12 @@ impl VibocerosApp {
                         self.command_input.clear();
                         self.command_input.push_str(completion);
                         self.command_input.push(' ');
-                        response.request_focus();
+                        request_command_focus_at_end(
+                            ui.ctx(),
+                            command_input_id,
+                            &response,
+                            &self.command_input,
+                        );
                     }
                 });
                 let completions = command_completions(&self.commands, &self.command_input);
@@ -4296,6 +4314,21 @@ impl VibocerosApp {
                 }
             });
     }
+}
+
+fn request_command_focus_at_end(
+    context: &egui::Context,
+    id: egui::Id,
+    response: &egui::Response,
+    text: &str,
+) {
+    response.request_focus();
+    let mut state = egui::TextEdit::load_state(context, id).unwrap_or_default();
+    let cursor = egui::text::CCursor::new(text.chars().count());
+    state
+        .cursor
+        .set_char_range(Some(egui::text::CCursorRange::one(cursor)));
+    egui::TextEdit::store_state(context, id, state);
 }
 
 fn command_completions(commands: &CommandRegistry, input: &str) -> Vec<&'static str> {
@@ -4380,6 +4413,7 @@ impl eframe::App for VibocerosApp {
                                     document,
                                     drafting,
                                     curve_points,
+                                    index,
                                     index == active_viewport,
                                 );
                             },
@@ -4493,6 +4527,29 @@ mod tests {
             .drop_without_applying_deltas();
     }
 
+    fn type_to_command_frame(
+        context: &egui::Context,
+        app: &mut VibocerosApp,
+        events: Vec<egui::Event>,
+    ) {
+        context
+            .run_ui(
+                egui::RawInput {
+                    screen_rect: Some(egui::Rect::from_min_size(
+                        egui::Pos2::ZERO,
+                        egui::Vec2::new(800.0, 600.0),
+                    )),
+                    events,
+                    ..egui::RawInput::default()
+                },
+                |ui| {
+                    app.capture_global_command_typing(ui);
+                    app.show_command_line(ui);
+                },
+            )
+            .drop_without_applying_deltas();
+    }
+
     fn rectangular_annulus_mesh(tolerance: Tolerance) -> TriangleMesh {
         TriangleMesh::try_new_faces(
             vec![
@@ -4580,6 +4637,21 @@ mod tests {
         command_line_frame(&context, &mut app, Vec::new());
         assert!(!app.command_focus_requested);
         assert!(context.egui_wants_keyboard_input());
+    }
+
+    #[test]
+    fn first_type_to_command_character_stays_at_the_start() {
+        let context = egui::Context::default();
+        let mut app = test_app();
+
+        type_to_command_frame(&context, &mut app, vec![egui::Event::Text("L".to_owned())]);
+        type_to_command_frame(
+            &context,
+            &mut app,
+            vec![egui::Event::Text("ine".to_owned())],
+        );
+
+        assert_eq!(app.command_input, "Line");
     }
 
     #[test]

@@ -1,12 +1,14 @@
 mod app;
 mod sidebar;
 mod viewport;
+mod viewport_gpu;
 
 use eframe::egui;
 
 fn main() -> eframe::Result {
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Wgpu,
+        depth_buffer: 32,
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([1_200.0, 800.0])
             .with_min_inner_size([760.0, 480.0]),
