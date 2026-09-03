@@ -5883,7 +5883,7 @@ def _execute(operation, iterations, tolerance):
         if style_name not in ("natural", "line"):
             source.Dispose()
             raise ValueError("invalid curve extension style")
-        if join_name not in ("merge", "no"):
+        if join_name not in ("merge", "yes", "no"):
             source.Dispose()
             raise ValueError("invalid curve extension join mode")
 
@@ -5923,7 +5923,11 @@ def _execute(operation, iterations, tolerance):
                     selections.append(crossing_selection(source.PointAtEnd, radius))
                 command = "_-Extend _Type=_%s _Join=_%s %.17g %s _Enter" % (
                     "Natural" if style_name == "natural" else "Line",
-                    "Merge" if join_name == "merge" else "No",
+                    (
+                        "Merge"
+                        if join_name == "merge"
+                        else ("Yes" if join_name == "yes" else "No")
+                    ),
                     length,
                     " ".join(selections),
                 )

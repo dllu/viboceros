@@ -103,6 +103,90 @@
       "length": 2,
       "style": "line",
       "join": "merge"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-line-yes-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "line",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-line-yes-both",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "both",
+      "length": 2,
+      "style": "line",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "quadratic-natural-yes-end",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [1, 2, 0]},
+          {"point": [3, 1, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "natural",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "line-line-yes-end",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [10, 0, 0]}
+        ],
+        "knots": [0, 0, 1, 1]
+      },
+      "side": "end",
+      "length": 2,
+      "style": "line",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_command",
+      "id": "polyline-line-yes-end",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 0, 0]},
+          {"point": [2, 3, 0]}
+        ],
+        "knots": [0, 0, 2, 5, 5]
+      },
+      "side": "end",
+      "length": 1.5,
+      "style": "line",
+      "join": "yes"
     }
   ]
 }

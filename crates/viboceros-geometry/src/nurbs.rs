@@ -2510,6 +2510,113 @@ impl NurbsCurve {
         )
     }
 
+    /// Joins tangent-line extensions while retaining explicit segment
+    /// boundaries, matching Rhino's `Join=Yes` command behavior.
+    pub fn try_joined_linearly_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if self.degree != 1 {
+            return self.try_extended_linearly_by_length(side, length, tolerance);
+        }
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let spans = self.spans().collect::<Vec<_>>();
+        let mut points = Vec::with_capacity(
+            spans.len()
+                + 1
+                + usize::from(matches!(
+                    side,
+                    CurveExtensionSide::Start | CurveExtensionSide::Both
+                ))
+                + usize::from(matches!(
+                    side,
+                    CurveExtensionSide::End | CurveExtensionSide::Both
+                )),
+        );
+        let domain = self.domain();
+        if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+            let parameter = *domain.start();
+            let endpoint = self.evaluate(parameter)?;
+            let tangent = self.derivative_at(parameter)?.normalized(tolerance)?;
+            points.push(endpoint.translated(tangent.as_vector().scaled(-length)?)?);
+        }
+        for (start, _) in &spans {
+            points.push(self.evaluate(*start)?);
+        }
+        let end_parameter = *domain.end();
+        let endpoint = self.evaluate(end_parameter)?;
+        points.push(endpoint);
+        if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            let tangent = self.derivative_at(end_parameter)?.normalized(tolerance)?;
+            points.push(endpoint.translated(tangent.as_vector().scaled(length)?)?);
+        }
+
+        let segment_count = points.len() - 1;
+        let mut knots = Vec::with_capacity(points.len() + 2);
+        knots.push(0.0);
+        knots.extend((0..=segment_count).map(|index| index as Real));
+        knots.push(segment_count as Real);
+        Self::try_new(1, points, knots)
+    }
+
+    /// Joins natural extension pieces to the unchanged source with explicit
+    /// full-multiplicity seams, matching Rhino's `Join=Yes` curve result.
+    pub fn try_joined_naturally_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if self.degree == 1 {
+            return self.try_joined_linearly_by_length(side, length, tolerance);
+        }
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+
+        let domain = self.domain();
+        let start_extension =
+            if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+                let parameter = self.extension_parameter_by_length(true, length, tolerance)?;
+                Some(self.extension_segment(true, parameter)?)
+            } else {
+                None
+            };
+        let end_extension = if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            let parameter = self.extension_parameter_by_length(false, length, tolerance)?;
+            Some(self.extension_segment(false, parameter)?)
+        } else {
+            None
+        };
+        let mut source = self.clone();
+        if start_extension.is_some() {
+            source = source.clamped_at_start(*domain.start())?;
+        }
+        if end_extension.is_some() {
+            source = source.clamped_at_end(*domain.end())?;
+        }
+        let mut result = if let Some(extension) = start_extension {
+            extension.try_append_clamped(&source)?
+        } else {
+            source
+        };
+        if let Some(extension) = end_extension {
+            result = result.try_append_clamped(&extension)?;
+        }
+        Ok(result)
+    }
+
     /// Creates independent degree-one tangent-line extensions without
     /// changing this curve. Each output uses Rhino command geometry's unit
     /// domain, and `Both` returns the start extension followed by the end
@@ -7128,6 +7235,78 @@ mod tests {
     }
 
     #[test]
+    fn joined_linear_extension_uses_unit_polyline_spans() {
+        let polyline = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 2.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let joined = polyline
+            .try_joined_linearly_by_length(CurveExtensionSide::Both, 1.5, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert_eq!(joined.degree(), 1);
+        assert_eq!(joined.domain(), 0.0..=4.0);
+        assert_eq!(joined.knots(), &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]);
+        assert_eq!(
+            joined
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                Point3::try_new(-1.5, 0.0, 0.0).unwrap(),
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.5, 0.0).unwrap(),
+            ]
+        );
+    }
+
+    #[test]
+    fn joined_natural_extension_retains_source_with_a_full_seam() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let joined = curve
+            .try_joined_naturally_by_length(CurveExtensionSide::End, 2.0, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert_eq!(joined.degree(), 2);
+        assert_eq!(joined.knot_multiplicity(1.0).unwrap(), 2);
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                joined
+                    .try_trimmed(1.0..=*joined.domain().end())
+                    .unwrap()
+                    .length(Tolerance::DEFAULT)
+                    .unwrap(),
+                2.0,
+            )
+        );
+        for sample in 0..=32 {
+            let parameter = sample as Real / 32.0;
+            assert_point_near(
+                joined.evaluate(parameter).unwrap(),
+                curve.evaluate(parameter).unwrap(),
+            );
+        }
+    }
+
+    #[test]
     fn separate_linear_extensions_are_unit_domain_tangent_lines() {
         let curve = NurbsCurve::try_new(
             2,
@@ -7261,6 +7440,15 @@ mod tests {
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
         assert_eq!(
+            closed.try_joined_linearly_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed
+                .try_joined_naturally_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
             closed.try_separate_linear_extensions_by_length(
                 CurveExtensionSide::End,
                 1.0,
@@ -7291,6 +7479,22 @@ mod tests {
             );
             assert_eq!(
                 curve.try_merged_linearly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_joined_linearly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_joined_naturally_by_length(
                     CurveExtensionSide::End,
                     length,
                     Tolerance::DEFAULT,

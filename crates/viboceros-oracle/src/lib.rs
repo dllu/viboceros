@@ -1010,6 +1010,7 @@ pub enum CurveCommandExtensionStyle {
 #[serde(rename_all = "snake_case")]
 pub enum CurveCommandExtensionJoin {
     Merge,
+    Yes,
     No,
 }
 
@@ -6755,6 +6756,7 @@ fn curve_extend_command(
     };
     let join_name = match join {
         CurveCommandExtensionJoin::Merge => "Merge",
+        CurveCommandExtensionJoin::Yes => "Yes",
         CurveCommandExtensionJoin::No => "No",
     };
     registry.execute(
@@ -6804,6 +6806,13 @@ fn curve_extend_command(
         (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::Merge) => source
             .try_extended_by_length(black_box(side.geometry()), black_box(length), tolerance)
             .map(|_| 1),
+        (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::Yes) => source
+            .try_joined_naturally_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            )
+            .map(|_| 1),
         (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::No) => source
             .try_separate_natural_extensions_by_length(
                 black_box(side.geometry()),
@@ -6813,6 +6822,9 @@ fn curve_extend_command(
             .map(|curves| curves.len()),
         (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::Merge) => source
             .try_merged_linearly_by_length(black_box(side.geometry()), black_box(length), tolerance)
+            .map(|_| 1),
+        (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::Yes) => source
+            .try_joined_linearly_by_length(black_box(side.geometry()), black_box(length), tolerance)
             .map(|_| 1),
         (CurveCommandExtensionStyle::Line, CurveCommandExtensionJoin::No) => source
             .try_separate_linear_extensions_by_length(

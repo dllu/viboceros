@@ -11432,7 +11432,7 @@ fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOpti
     ))
 }
 
-const EXTEND_CURVE_USAGE: &str = "Extend Length=value [Side=Start|End|Both] [Type=Natural|Line] [Join=Merge|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
+const EXTEND_CURVE_USAGE: &str = "Extend Length=value [Side=Start|End|Both] [Type=Natural|Line] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum ExtendCurveTarget {
@@ -11452,6 +11452,7 @@ enum ExtendCurveStyle {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum ExtendCurveJoin {
     Merge,
+    Yes,
     No,
 }
 
@@ -11520,31 +11521,56 @@ impl Command for ExtendCurveCommand {
                 if extension_count == 1 { "" } else { "s" },
             ));
         }
-        let (curve, description) = match (target, style) {
-            (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Natural) => (
-                curve.try_extended_by_length(side, length, document.tolerance())?,
+        let (curve, description) = match (target, style, join) {
+            (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Natural, join) => (
+                match join {
+                    ExtendCurveJoin::Merge => {
+                        curve.try_extended_by_length(side, length, document.tolerance())?
+                    }
+                    ExtendCurveJoin::Yes => {
+                        curve.try_joined_naturally_by_length(side, length, document.tolerance())?
+                    }
+                    ExtendCurveJoin::No => {
+                        unreachable!("Join=No returns before source replacement")
+                    }
+                },
                 format!("{side:?} by length {length}"),
             ),
-            (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Line) => (
-                curve.try_merged_linearly_by_length(side, length, document.tolerance())?,
+            (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Line, join) => (
+                match join {
+                    ExtendCurveJoin::Merge => {
+                        curve.try_merged_linearly_by_length(side, length, document.tolerance())?
+                    }
+                    ExtendCurveJoin::Yes => {
+                        curve.try_joined_linearly_by_length(side, length, document.tolerance())?
+                    }
+                    ExtendCurveJoin::No => {
+                        unreachable!("Join=No returns before source replacement")
+                    }
+                },
                 format!("{side:?} by length {length}"),
             ),
-            (ExtendCurveTarget::Domain([start, end]), ExtendCurveStyle::Natural) => (
+            (ExtendCurveTarget::Domain([start, end]), ExtendCurveStyle::Natural, _) => (
                 curve.try_extended_to(start..=end)?,
                 format!("to include domain {start}..{end}"),
             ),
-            (ExtendCurveTarget::Domain(_), ExtendCurveStyle::Line) => {
+            (ExtendCurveTarget::Domain(_), ExtendCurveStyle::Line, _) => {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
             }
         };
         document.replace_object_geometries([(id, Geometry::NurbsCurve(curve))])?;
         document.clear_selection();
         Ok(format!(
-            "{} extended the selected curve {description}, merging the extension",
+            "{} extended the selected curve {description}, {} the extension",
             match style {
                 ExtendCurveStyle::Natural => "Naturally",
                 ExtendCurveStyle::Line => "Linearly",
-            }
+            },
+            match join {
+                ExtendCurveJoin::Merge => "merging",
+                ExtendCurveJoin::Yes => "joining",
+                ExtendCurveJoin::No => unreachable!("Join=No returns before source replacement"),
+            },
         ))
     }
 }
@@ -11605,6 +11631,8 @@ fn parse_extend_curve_target(
         } else if option_name_eq(name, "Join") && !join_seen {
             join = if option_name_eq(value, "Merge") {
                 ExtendCurveJoin::Merge
+            } else if option_name_eq(value, "Yes") {
+                ExtendCurveJoin::Yes
             } else if option_name_eq(value, "No") {
                 ExtendCurveJoin::No
             } else {
@@ -24132,6 +24160,9 @@ mod tests {
         let expected_line = source
             .try_extended_by_length(CurveExtensionSide::Both, 2.0, document.tolerance())
             .unwrap();
+        let expected_joined = source
+            .try_joined_linearly_by_length(CurveExtensionSide::Both, 2.0, document.tolerance())
+            .unwrap();
 
         assert_eq!(
             registry
@@ -24176,6 +24207,22 @@ mod tests {
         );
         let object = document.object(id).unwrap();
         assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_line));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(!document.is_selected(id));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Extend Length=2 Side=Both Type=Line Join=Yes"
+                )
+                .unwrap(),
+            "Linearly extended the selected curve Both by length 2, joining the extension"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_joined));
         assert_eq!(object.attributes(), before.attributes());
         assert!(!document.is_selected(id));
     }
@@ -24289,6 +24336,36 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![source_id]
         );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        let expected_joined = source
+            .try_joined_naturally_by_length(CurveExtensionSide::End, 2.0, document.tolerance())
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Extend Length=2 Side=End Type=Natural Join=Yes"
+                )
+                .unwrap(),
+            "Naturally extended the selected curve End by length 2, joining the extension"
+        );
+        assert_eq!(document.objects().count(), 1);
+        let object = document.object(source_id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_joined));
+        assert_eq!(object.attributes(), source_before.attributes());
+        assert!(!document.is_selected(source_id));
+        assert_eq!(
+            document
+                .group_by_name("OnlyTheSource")
+                .unwrap()
+                .members()
+                .collect::<Vec<_>>(),
+            vec![source_id]
+        );
     }
 
     #[test]
@@ -24345,10 +24422,11 @@ mod tests {
             "Extend Domain=0,1 Side=End",
             "Extend Domain=0,1 Type=Line",
             "Extend Domain=0,1 Join=No",
+            "Extend Domain=0,1 Join=Yes",
             "Extend Length=1 Side=Middle",
             "Extend Length=1 Side=End Side=Start",
             "Extend Length=1 Type=Smooth",
-            "Extend Length=1 Join=Yes",
+            "Extend Length=1 Join=Maybe",
         ] {
             assert!(matches!(
                 registry.execute(&mut document, command),
