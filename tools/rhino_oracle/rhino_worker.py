@@ -5057,6 +5057,76 @@ def _execute(operation, iterations, tolerance):
 
         return _measure(iterations, create_mesh_truncated_cone)
 
+    if kind == "paraboloid":
+        document = Rhino.RhinoDoc.ActiveDoc
+        plane = Rhino.Geometry.Plane(
+            _point(operation["origin"]),
+            _vector(operation["x_axis"]),
+            _vector(operation["y_axis"]),
+        )
+        transform = Rhino.Geometry.Transform.PlaneToPlane(
+            Rhino.Geometry.Plane.WorldXY, plane
+        )
+        radius = _finite(operation["radius"], "paraboloid radius")
+        height = _finite(operation["height"], "paraboloid height")
+        if not radius > 0.0 or not height > 0.0:
+            raise ValueError("paraboloid dimensions must be positive")
+        focal_distance = 0.25 * radius * (radius / height)
+        if math.isnan(focal_distance) or math.isinf(focal_distance):
+            raise ValueError("paraboloid focal distance must be finite")
+        solid = bool(operation["solid"])
+        command = (
+            "_-Paraboloid _Vertex _MarkFocus=_No _Solid=_%s "
+            "0,0,0 0,0,%.17g %.17g,0,0"
+            % ("Yes" if solid else "No", focal_distance, radius)
+        )
+
+        def create_paraboloid():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            brep = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "paraboloid macro %r returned %r and created %d objects; "
+                        "history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    brep = geometry.DuplicateBrep()
+                elif hasattr(geometry, "ToBrep"):
+                    brep = geometry.ToBrep()
+                if brep is None:
+                    raise ValueError(
+                        "paraboloid did not create B-rep-compatible geometry"
+                    )
+                if not brep.Transform(transform):
+                    raise ValueError("could not orient paraboloid")
+                expected_faces = 2 if solid else 1
+                if brep.Faces.Count != expected_faces:
+                    raise ValueError(
+                        "paraboloid macro %r created %d faces, expected %d"
+                        % (command, brep.Faces.Count, expected_faces)
+                    )
+                return {
+                    "brep": _mesh_to_nurb_brep_value(brep),
+                    "surfaces": [
+                        _nurbs_surface_definition(face.UnderlyingSurface())
+                        for face in brep.Faces
+                    ],
+                }
+            finally:
+                if brep is not None:
+                    brep.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_paraboloid)
+
     if kind == "pyramid" or kind == "truncated_pyramid":
         document = Rhino.RhinoDoc.ActiveDoc
         plane = Rhino.Geometry.Plane(

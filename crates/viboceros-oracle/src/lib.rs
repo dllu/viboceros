@@ -424,6 +424,15 @@ pub enum Operation {
         height: f64,
         solid: bool,
     },
+    Paraboloid {
+        id: String,
+        origin: [f64; 3],
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+        radius: f64,
+        height: f64,
+        solid: bool,
+    },
     Pyramid {
         id: String,
         origin: [f64; 3],
@@ -601,6 +610,7 @@ impl Operation {
             | Self::MeshCone { id, .. }
             | Self::MeshTruncatedCone { id, .. }
             | Self::TruncatedCone { id, .. }
+            | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
             | Self::Tube { id, .. }
@@ -1984,6 +1994,40 @@ fn execute(
                 }
             })?;
             (value, elapsed)
+        }
+        Operation::Paraboloid {
+            origin,
+            x_axis,
+            y_axis,
+            radius,
+            height,
+            solid,
+            ..
+        } => {
+            let frame = Frame3::try_from_directions(
+                point(*origin)?,
+                Vector3::try_from(*x_axis)?,
+                Vector3::try_from(*y_axis)?,
+                tolerance,
+            )?;
+            let (brep, elapsed) = measure(iterations, || {
+                Brep::try_paraboloid(
+                    frame,
+                    black_box(*radius),
+                    black_box(*height),
+                    black_box(*solid),
+                    tolerance,
+                )
+            })?;
+            (
+                json!({
+                    "brep": mesh_to_nurb_brep_value(&brep)?,
+                    "surfaces": brep.faces().iter().map(|face| {
+                        nurbs_surface_definition_value(face.surface())
+                    }).collect::<Vec<_>>(),
+                }),
+                elapsed,
+            )
         }
         Operation::Pyramid {
             origin,
@@ -6440,6 +6484,79 @@ mod tests {
                 .map(|trim| trim["type"].as_str().unwrap())
                 .collect::<Vec<_>>(),
             vec!["Mated", "Seam", "Mated", "Seam"]
+        );
+    }
+
+    #[test]
+    fn captures_exact_paraboloid_surface_and_topology_for_oracle_comparison() {
+        let response = run_request(&request(vec![
+            Operation::Paraboloid {
+                id: "open-paraboloid".to_owned(),
+                origin: [0.0, 0.0, 0.0],
+                x_axis: [1.0, 0.0, 0.0],
+                y_axis: [0.0, 1.0, 0.0],
+                radius: 2.0,
+                height: 1.0,
+                solid: false,
+            },
+            Operation::Paraboloid {
+                id: "solid-paraboloid".to_owned(),
+                origin: [1.0, 2.0, 3.0],
+                x_axis: [0.0, 1.0, 0.0],
+                y_axis: [-1.0, 0.0, 0.0],
+                radius: 3.0,
+                height: 2.25,
+                solid: true,
+            },
+        ]))
+        .unwrap();
+
+        let open = &response.results[0].value;
+        let meridian_length = 2.0_f64.sqrt() + 1.0_f64.asinh();
+        assert_eq!(open["brep"]["vertex_count"], 2);
+        assert_eq!(open["brep"]["edge_count"], 2);
+        assert_eq!(open["brep"]["is_solid"], false);
+        assert_eq!(open["surfaces"].as_array().unwrap().len(), 1);
+        assert_eq!(open["surfaces"][0]["degree"], json!([2, 2]));
+        assert_eq!(open["surfaces"][0]["control_count"], json!([9, 3]));
+        assert_eq!(
+            open["surfaces"][0]["domain_v"],
+            json!([0.0, meridian_length])
+        );
+        assert_eq!(
+            open["surfaces"][0]["control_points"][9]["point"],
+            json!([1.0, 0.0, 0.0])
+        );
+        assert_eq!(
+            open["surfaces"][0]["control_points"][18]["point"],
+            json!([2.0, 0.0, 1.0])
+        );
+        assert_eq!(
+            open["brep"]["faces"][0]["loops"][0]["trims"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|trim| trim["type"].as_str().unwrap())
+                .collect::<Vec<_>>(),
+            vec!["Singular", "Seam", "Boundary", "Seam"]
+        );
+
+        let solid = &response.results[1].value;
+        assert_eq!(solid["brep"]["vertex_count"], 2);
+        assert_eq!(solid["brep"]["edge_count"], 2);
+        assert_eq!(solid["brep"]["is_solid"], true);
+        assert_eq!(solid["brep"]["faces"].as_array().unwrap().len(), 2);
+        assert_eq!(solid["surfaces"].as_array().unwrap().len(), 2);
+        assert_eq!(solid["surfaces"][1]["degree"], json!([1, 1]));
+        assert_eq!(solid["surfaces"][1]["domain_u"], json!([-3.0, 3.0]));
+        assert_eq!(solid["surfaces"][1]["domain_v"], json!([-3.0, 3.0]));
+        assert_eq!(
+            solid["brep"]["faces"][0]["loops"][0]["trims"][2]["type"],
+            "Mated"
+        );
+        assert_eq!(
+            solid["brep"]["faces"][1]["loops"][0]["trims"][0]["reversed"],
+            true
         );
     }
 

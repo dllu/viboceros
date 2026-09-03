@@ -1,0 +1,56 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "paraboloid",
+      "id": "open-world",
+      "origin": [0, 0, 0],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 2,
+      "height": 1,
+      "solid": false
+    },
+    {
+      "op": "paraboloid",
+      "id": "solid-offset",
+      "origin": [1, -2, 3],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, 1, 0],
+      "radius": 3,
+      "height": 2.25,
+      "solid": true
+    },
+    {
+      "op": "paraboloid",
+      "id": "open-oblique",
+      "origin": [7, 11, 13],
+      "x_axis": [0, 1, 0],
+      "y_axis": [0, 0, 1],
+      "radius": 4,
+      "height": 2,
+      "solid": false
+    },
+    {
+      "op": "paraboloid",
+      "id": "solid-steep",
+      "origin": [-5, 2, 9],
+      "x_axis": [0, 0, 1],
+      "y_axis": [1, 0, 0],
+      "radius": 2,
+      "height": 4,
+      "solid": true
+    },
+    {
+      "op": "paraboloid",
+      "id": "solid-shallow",
+      "origin": [3, 4, -2],
+      "x_axis": [1, 0, 0],
+      "y_axis": [0, -1, 0],
+      "radius": 5,
+      "height": 0.25,
+      "solid": true
+    }
+  ]
+}

@@ -58,6 +58,7 @@ Sphere 0,0,0 5
 Ellipsoid 0,0,0 5 3 2
 Cylinder 0,0,0 5 10 Solid=Yes
 Cone 0,0,0 5 10 Solid=Yes
+Paraboloid Vertex 0,0,0 0,0,1 4,0,0 MarkFocus=Yes Solid=Yes
 TruncatedCone 0,0,0 5 10 2.5 Solid=Yes
 Pyramid 5 0,0,0 5 10 Solid=Yes
 TruncatedPyramid 5 0,0,0 5 10 2.5 Solid=Yes
@@ -476,6 +477,13 @@ a closed B-rep; `Solid=No` retains the single open wall surface.
 and `Axis=` conventions. It produces Rhino/OpenNURBS' exact 9-by-2 rational
 wall with a weighted collapsed apex. `Solid=Yes` adds an exact polar-disk base
 and shared rim/seam topology as a closed B-rep; `Solid=No` leaves the wall open.
+`Paraboloid` supports Rhino's `Focus focus direction-point end-point` and
+`Vertex vertex focus end-point` constructions; `Focus` is the default. The
+vertex form projects the end point perpendicular to the focus axis and derives
+the height from that radius. Both produce Rhino's exact 9-by-3 rational
+quadratic wall with an arc-length meridian domain and singular/shared seam
+topology. `Solid=Yes` adds the exact planar rim cap, while `MarkFocus=Yes` adds
+a point object at the focus in the same undo step.
 `TruncatedCone` creates an exact rational frustum from base and end radii. Its
 linear V domain is the physical slant length, matching Rhino; negative heights
 reverse the construction direction while preserving the base seam. `Solid=Yes`

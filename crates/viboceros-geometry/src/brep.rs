@@ -1465,6 +1465,77 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
+    /// Constructs Rhino's exact finite paraboloid B-rep.
+    ///
+    /// The frame origin is the vertex, frame Z is the opening direction, and
+    /// frame X reaches the circular-rim seam. The wall has one singular apex
+    /// trim, two uses of one meridian seam edge, and a reversed-domain rim
+    /// edge. `solid` adds Rhino's affine one-edge planar cap without changing
+    /// the wall topology.
+    pub fn try_paraboloid(
+        vertex_frame: Frame3,
+        radius: Real,
+        height: Real,
+        solid: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let wall = NurbsSurface::try_paraboloid(vertex_frame, radius, height)?;
+        let domain_u = wall.domain_u();
+        let domain_v = wall.domain_v();
+        let vertex = vertex_frame.origin();
+        let rim_seam = wall.evaluate(*domain_u.start(), *domain_v.end())?;
+        let vertices = vec![
+            BrepVertex::try_new(vertex, 0.0)?,
+            BrepVertex::try_new(rim_seam, 0.0)?,
+        ];
+        let edges = vec![
+            BrepEdge::try_new([0, 1], surface_v_control_curve(&wall, 0)?, 0.0)?,
+            BrepEdge::try_new(
+                [1, 1],
+                surface_u_control_curve(&wall, wall.control_point_count_v() - 1)?.reversed()?,
+                0.0,
+            )?,
+        ];
+        let wall_loop = rectangular_surface_loop(
+            &wall,
+            [
+                RectangularTrimSpec::singular(0),
+                RectangularTrimSpec::edge([0, 1], 0, false, BrepTrimType::Seam),
+                RectangularTrimSpec::edge(
+                    [1, 1],
+                    1,
+                    false,
+                    if solid {
+                        BrepTrimType::Mated
+                    } else {
+                        BrepTrimType::Boundary
+                    },
+                ),
+                RectangularTrimSpec::edge([1, 0], 0, true, BrepTrimType::Seam),
+            ],
+        )?;
+        let mut faces = vec![BrepFace::try_new(wall, false, vec![wall_loop])?];
+        if solid {
+            let cap_frame = frame_at_height(vertex_frame, height, tolerance)?;
+            let cap = planar_cap_surface(
+                cap_frame,
+                Vector3::try_new(0.0, 0.0, 0.0)?,
+                [[-radius, radius], [-radius, radius]],
+            )?;
+            let cap_loop = single_edge_loop(
+                1,
+                1,
+                BrepLoopType::Outer,
+                circular_parameter_curve(radius)?,
+                true,
+                BrepTrimType::Mated,
+                [0.0, 0.0],
+            )?;
+            faces.push(BrepFace::try_new(cap, false, vec![cap_loop])?);
+        }
+        Self::try_new(vertices, edges, faces, tolerance)
+    }
+
     /// Constructs an exact capped straight extrusion of a closed planar curve.
     ///
     /// The source curve and its rational data are retained by both rim edges
@@ -6442,6 +6513,80 @@ mod tests {
         assert!(Brep::try_cone(frame, 0.0, 1.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cone(frame, 1.0, 0.0, Tolerance::DEFAULT).is_err());
         assert!(Brep::try_cone(frame, 1.0, Real::NAN, Tolerance::DEFAULT).is_err());
+    }
+
+    #[test]
+    fn exact_paraboloid_matches_rhino_singular_seam_and_cap_topology() {
+        let frame = Frame3::try_from_directions(
+            point(1.0, 2.0, 3.0),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let radius: Real = 2.0;
+        let height: Real = 4.0;
+        let meridian_length = height.hypot(0.5 * radius)
+            + 0.5 * radius * (height / (0.5 * radius)).asinh() / (height / (0.5 * radius));
+
+        let open = Brep::try_paraboloid(frame, radius, height, false, Tolerance::DEFAULT).unwrap();
+        assert_eq!(open.vertices().len(), 2);
+        assert_eq!(open.edges().len(), 2);
+        assert_eq!(open.faces().len(), 1);
+        assert!(open.is_manifold());
+        assert!(!open.is_closed());
+        assert!(!open.is_solid());
+        assert_eq!(open.vertices()[0].point(), point(1.0, 2.0, 3.0));
+        assert_eq!(open.vertices()[1].point(), point(1.0, 4.0, 7.0));
+        assert_eq!(open.edges()[0].vertices(), [0, 1]);
+        assert_eq!(open.edges()[0].curve().domain(), 0.0..=meridian_length);
+        assert_eq!(open.edges()[1].vertices(), [1, 1]);
+        assert_eq!(
+            open.edges()[1].curve().domain(),
+            -std::f64::consts::TAU..=0.0
+        );
+        assert_eq!(open.edge_use_count(0), Some(2));
+        assert_eq!(open.edge_use_count(1), Some(1));
+        assert_eq!(
+            open.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| trim.trim_type())
+                .collect::<Vec<_>>(),
+            vec![
+                BrepTrimType::Singular,
+                BrepTrimType::Seam,
+                BrepTrimType::Boundary,
+                BrepTrimType::Seam,
+            ]
+        );
+
+        let solid = Brep::try_paraboloid(frame, radius, height, true, Tolerance::DEFAULT).unwrap();
+        assert_eq!(solid.vertices().len(), 2);
+        assert_eq!(solid.edges().len(), 2);
+        assert_eq!(solid.faces().len(), 2);
+        assert!(solid.is_manifold());
+        assert!(solid.is_closed());
+        assert!(solid.is_solid());
+        assert_eq!(solid.edge_use_count(0), Some(2));
+        assert_eq!(solid.edge_use_count(1), Some(2));
+        assert!(solid.faces().iter().all(|face| !face.is_reversed()));
+        assert_eq!(
+            solid.faces()[0].loops()[0].trims()[2].trim_type(),
+            BrepTrimType::Mated
+        );
+        let cap_trim = &solid.faces()[1].loops()[0].trims()[0];
+        assert_eq!(cap_trim.trim_type(), BrepTrimType::Mated);
+        assert!(cap_trim.is_reversed_3d());
+        assert_eq!(solid.faces()[1].surface().domain_u(), -radius..=radius);
+        assert_eq!(solid.faces()[1].surface().domain_v(), -radius..=radius);
+        let expected_volume = 0.5 * std::f64::consts::PI * radius * radius * height;
+        assert!(
+            (solid.signed_volume(Tolerance::DEFAULT).unwrap() - expected_volume).abs() < 1.0e-10
+        );
+
+        assert!(Brep::try_paraboloid(frame, 0.0, height, false, Tolerance::DEFAULT).is_err());
+        assert!(Brep::try_paraboloid(frame, radius, 0.0, true, Tolerance::DEFAULT).is_err());
     }
 
     #[test]

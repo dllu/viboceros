@@ -158,6 +158,9 @@ impl CommandRegistry {
             .register(ConeCommand)
             .expect("unique built-in command");
         registry
+            .register(ParaboloidCommand)
+            .expect("unique built-in command");
+        registry
             .register(TruncatedConeCommand)
             .expect("unique built-in command");
         registry
@@ -2523,6 +2526,7 @@ const MESH_TRUNCATED_CONE_USAGE: &str = "MeshTruncatedCone base-center base-radi
 pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
+const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const TRUNCATED_PYRAMID_USAGE: &str = "TruncatedPyramid sides base-center base-radius height top-radius | TruncatedPyramid sides base-center point-on-base height top-radius [Axis=x,y,z] [Solid=Yes|No]";
@@ -2585,6 +2589,22 @@ struct TruncatedConeCommandOptions {
     height: Real,
     end_radius: Real,
     axis: Vector3,
+    solid: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ParaboloidConstruction {
+    Focus,
+    Vertex,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct ParaboloidCommandOptions {
+    construction: ParaboloidConstruction,
+    first: Point3,
+    second: Point3,
+    end: Point3,
+    mark_focus: bool,
     solid: bool,
 }
 
@@ -2974,6 +2994,50 @@ fn parse_truncated_cone_options(
         height: positionals.height,
         end_radius: positionals.end_radius,
         axis,
+        solid,
+    })
+}
+
+fn parse_paraboloid_options(arguments: &[&str]) -> Result<ParaboloidCommandOptions, CommandError> {
+    let (construction, positional_start) = match arguments
+        .first()
+        .map(|value| value.trim_start_matches('_').to_ascii_lowercase())
+    {
+        Some(value) if value == "focus" => (ParaboloidConstruction::Focus, 1),
+        Some(value) if value == "vertex" => (ParaboloidConstruction::Vertex, 1),
+        _ => (ParaboloidConstruction::Focus, 0),
+    };
+    let (first, first_consumed) = parse_point(&arguments[positional_start..])?;
+    let second_start = positional_start + first_consumed;
+    let (second, second_consumed) = parse_point(&arguments[second_start..])?;
+    let end_start = second_start + second_consumed;
+    let (end, end_consumed) = parse_point(&arguments[end_start..])?;
+    let option_start = end_start + end_consumed;
+    let mut mark_focus = false;
+    let mut solid = false;
+    let mut mark_focus_seen = false;
+    let mut solid_seen = false;
+    for argument in &arguments[option_start..] {
+        let Some((name, value)) = argument.split_once('=') else {
+            return Err(CommandError::Usage(PARABOLOID_USAGE));
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "MarkFocus") && !mark_focus_seen {
+            mark_focus = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLOID_USAGE))?;
+            mark_focus_seen = true;
+        } else if option_name_eq(name, "Solid") && !solid_seen {
+            solid = parse_yes_no(value).ok_or(CommandError::Usage(PARABOLOID_USAGE))?;
+            solid_seen = true;
+        } else {
+            return Err(CommandError::Usage(PARABOLOID_USAGE));
+        }
+    }
+    Ok(ParaboloidCommandOptions {
+        construction,
+        first,
+        second,
+        end,
+        mark_focus,
         solid,
     })
 }
@@ -4053,6 +4117,100 @@ impl Command for ConeCommand {
                 options.height
             ))
         }
+    }
+}
+
+fn paraboloid_frame_and_dimensions(
+    options: ParaboloidCommandOptions,
+    tolerance: Tolerance,
+) -> Result<(Frame3, Real, Real, Point3, Real), CommandError> {
+    let (vertex, focus, axis, focal_distance, end_offset) = match options.construction {
+        ParaboloidConstruction::Focus => {
+            let focus = options.first;
+            let axis = focus.vector_to(options.second)?.normalized(tolerance)?;
+            let focus_to_end = focus.vector_to(options.end)?;
+            let axial_coordinate = focus_to_end.dot(axis.as_vector())?;
+            let axial = axis.as_vector().scaled(axial_coordinate)?;
+            let radial = Vector3::try_new(
+                focus_to_end.x() - axial.x(),
+                focus_to_end.y() - axial.y(),
+                focus_to_end.z() - axial.z(),
+            )?;
+            let radius = radial.length()?;
+            let half_sum = 0.5 * axial_coordinate.hypot(radius) + 0.5 * axial_coordinate.abs();
+            let (focal_distance, height) = if axial_coordinate >= 0.0 {
+                (0.25 * radius * (radius / half_sum), half_sum)
+            } else {
+                (half_sum, 0.25 * radius * (radius / half_sum))
+            };
+            let vertex = focus.translated(axis.as_vector().scaled(-focal_distance)?)?;
+            return Ok((
+                Frame3::try_from_x_and_normal(vertex, radial, axis.as_vector(), tolerance)?,
+                radius,
+                height,
+                focus,
+                focal_distance,
+            ));
+        }
+        ParaboloidConstruction::Vertex => {
+            let vertex = options.first;
+            let vertex_to_focus = vertex.vector_to(options.second)?;
+            let axis = vertex_to_focus.normalized(tolerance)?;
+            let focal_distance = vertex_to_focus.length()?;
+            (
+                vertex,
+                options.second,
+                axis,
+                focal_distance,
+                vertex.vector_to(options.end)?,
+            )
+        }
+    };
+
+    let axial_coordinate = end_offset.dot(axis.as_vector())?;
+    let axial = axis.as_vector().scaled(axial_coordinate)?;
+    let radial = Vector3::try_new(
+        end_offset.x() - axial.x(),
+        end_offset.y() - axial.y(),
+        end_offset.z() - axial.z(),
+    )?;
+    let radius = radial.length()?;
+    let height = 0.25 * radius * (radius / focal_distance);
+    Ok((
+        Frame3::try_from_x_and_normal(vertex, radial, axis.as_vector(), tolerance)?,
+        radius,
+        height,
+        focus,
+        focal_distance,
+    ))
+}
+
+struct ParaboloidCommand;
+
+impl Command for ParaboloidCommand {
+    fn name(&self) -> &'static str {
+        "Paraboloid"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_paraboloid_options(arguments)?;
+        let (frame, radius, height, focus, focal_distance) =
+            paraboloid_frame_and_dimensions(options, document.tolerance())?;
+        let paraboloid =
+            Brep::try_paraboloid(frame, radius, height, options.solid, document.tolerance())?;
+        let focus_id = if options.mark_focus {
+            Some(document.add_geometry(Geometry::Point(focus))?)
+        } else {
+            None
+        };
+        let id = document.add_geometry(Geometry::Brep(paraboloid))?;
+        let focus_suffix = focus_id
+            .map(|focus_id| format!(" and focus point {focus_id}"))
+            .unwrap_or_default();
+        Ok(format!(
+            "Added {} B-rep paraboloid {id}{focus_suffix} (radius {radius:.6}, height {height:.6}, focus distance {focal_distance:.6})",
+            if options.solid { "closed" } else { "open" },
+        ))
     }
 }
 
@@ -14957,7 +15115,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -16171,6 +16329,84 @@ mod tests {
         }
         assert_eq!(document.objects().len(), 1);
         assert_eq!(document.undo_label(), Some("TruncatedPyramid"));
+    }
+
+    #[test]
+    fn paraboloid_supports_focus_vertex_marker_and_exact_solid_forms() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let result = registry
+            .execute(&mut document, "Paraboloid 0,0,1 0,0,2 2,0,4")
+            .unwrap();
+        assert!(result.contains("open B-rep paraboloid"));
+        let Geometry::Brep(open) = document.objects().next().unwrap().geometry() else {
+            panic!("Paraboloid's default Focus form must create a B-rep")
+        };
+        assert_eq!(open.faces().len(), 1);
+        assert!(!open.is_solid());
+        let focal_distance = (13.0_f64.sqrt() - 3.0) * 0.5;
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(open.vertices()[0].point().z(), 1.0 - focal_distance)
+        );
+        assert!(
+            open.vertices()[1]
+                .point()
+                .distance_to(Point3::try_new(2.0, 0.0, 4.0).unwrap())
+                .unwrap()
+                < 1.0e-14
+        );
+        assert_eq!(document.undo_label(), Some("Paraboloid"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        let result = registry
+            .execute(
+                &mut document,
+                "Paraboloid Vertex 1,2,3 2,2,3 2,5,8 MarkFocus=Yes Solid=Yes",
+            )
+            .unwrap();
+        assert!(result.contains("closed B-rep paraboloid"));
+        assert!(result.contains("focus point"));
+        let mut objects = document.objects();
+        let Geometry::Point(marked_focus) = objects.next().unwrap().geometry() else {
+            panic!("MarkFocus=Yes must add the focus before the paraboloid")
+        };
+        assert_eq!(*marked_focus, Point3::try_new(2.0, 2.0, 3.0).unwrap());
+        let Geometry::Brep(solid) = objects.next().unwrap().geometry() else {
+            panic!("Solid=Yes must add a capped paraboloid B-rep")
+        };
+        assert_eq!(solid.faces().len(), 2);
+        assert!(solid.is_solid());
+        assert!(
+            solid.vertices()[1]
+                .point()
+                .distance_to(Point3::try_new(9.5, 5.0, 8.0).unwrap())
+                .unwrap()
+                < 1.0e-14
+        );
+        drop(objects);
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().len(), 0);
+
+        for invalid in [
+            "Paraboloid",
+            "Paraboloid Focus 0,0,0 0,0,0 1,0,0",
+            "Paraboloid Focus 0,0,0 0,0,1 0,0,2",
+            "Paraboloid Vertex 0,0,0 0,0,0 1,0,0",
+            "Paraboloid Vertex 0,0,0 0,0,1 0,0,2",
+            "Paraboloid Vertex 0,0,0 0,0,1 nan,0,0",
+            "Paraboloid Vertex 0,0,0 0,0,1 2,0,0 MarkFocus=Maybe",
+            "Paraboloid Vertex 0,0,0 0,0,1 2,0,0 Solid=Yes Solid=No",
+            "Paraboloid Vertex 0,0,0 0,0,1 2,0,0 Axis=0,0,1",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.undo_label(), None);
     }
 
     #[test]

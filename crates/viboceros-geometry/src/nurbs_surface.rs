@@ -745,6 +745,116 @@ impl NurbsSurface {
         )
     }
 
+    /// Constructs Rhino's exact open NURBS paraboloid surface.
+    ///
+    /// The frame origin is the vertex, frame Z is the opening direction, and
+    /// frame X reaches the surface seam at the circular rim. U is the
+    /// four-span rational quadratic circle on `[0, 2π]`. V is a single
+    /// quadratic Bezier parabola whose domain is its exact meridian arc
+    /// length, matching the NURBS form produced by Rhino's `Paraboloid`
+    /// command.
+    pub fn try_paraboloid(
+        vertex_frame: Frame3,
+        radius: Real,
+        height: Real,
+    ) -> Result<Self, GeometryError> {
+        require_finite([radius, height], "paraboloid dimensions")?;
+        if radius <= 0.0 || height <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "paraboloid",
+            });
+        }
+
+        let circle_coordinates: [[Real; 2]; 9] = [
+            [1.0, 0.0],
+            [1.0, 1.0],
+            [0.0, 1.0],
+            [-1.0, 1.0],
+            [-1.0, 0.0],
+            [-1.0, -1.0],
+            [0.0, -1.0],
+            [1.0, -1.0],
+            [1.0, 0.0],
+        ];
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle_weights: [Real; 9] = [
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+            diagonal_weight,
+            1.0,
+        ];
+        let origin = vertex_frame.origin().to_array();
+        let x_axis = vertex_frame.x_axis().as_vector().to_array();
+        let y_axis = vertex_frame.y_axis().as_vector().to_array();
+        let z_axis = vertex_frame.z_axis().as_vector().to_array();
+        let mut controls = Vec::with_capacity(27);
+        for (ring_radius, ring_height) in [(0.0, 0.0), (0.5 * radius, 0.0), (radius, height)] {
+            for ([x, y], weight) in circle_coordinates.into_iter().zip(circle_weights) {
+                let point = Point3::try_from(std::array::from_fn(|coordinate| {
+                    let radial_coordinate = x.mul_add(x_axis[coordinate], y * y_axis[coordinate]);
+                    ring_radius.mul_add(
+                        radial_coordinate,
+                        ring_height.mul_add(z_axis[coordinate], origin[coordinate]),
+                    )
+                }))?;
+                controls.push(WeightedPoint3::try_new(point, weight)?);
+            }
+        }
+
+        // Integral from r=0 to r=radius of
+        // sqrt(1 + (2*height*r/radius^2)^2) dr. This arrangement remains
+        // well behaved for both shallow and steep finite paraboloids.
+        let half_radius = 0.5 * radius;
+        let slope = height / half_radius;
+        let shallow_term = if slope == 0.0 {
+            half_radius
+        } else if slope.is_infinite() {
+            0.0
+        } else {
+            half_radius * slope.asinh() / slope
+        };
+        let meridian_length = height.hypot(half_radius) + shallow_term;
+        require_finite([meridian_length], "paraboloid meridian length")?;
+
+        let half_pi = std::f64::consts::FRAC_PI_2;
+        let pi = std::f64::consts::PI;
+        let tau = std::f64::consts::TAU;
+        Self::try_new_rational(
+            2,
+            2,
+            9,
+            3,
+            controls,
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                half_pi,
+                half_pi,
+                pi,
+                pi,
+                3.0 * half_pi,
+                3.0 * half_pi,
+                tau,
+                tau,
+                tau,
+            ],
+            vec![
+                0.0,
+                0.0,
+                0.0,
+                meridian_length,
+                meridian_length,
+                meridian_length,
+            ],
+        )
+    }
+
     /// Constructs the exact rational quadratic NURBS form of a ring torus.
     ///
     /// Both directions have four quadratic spans and nine controls. Matching
@@ -3874,6 +3984,58 @@ mod tests {
         assert!(NurbsSurface::try_cone(frame, 0.0, 1.0).is_err());
         assert!(NurbsSurface::try_cone(frame, 1.0, 0.0).is_err());
         assert!(NurbsSurface::try_cone(frame, 1.0, Real::INFINITY).is_err());
+    }
+
+    #[test]
+    fn exact_paraboloid_matches_rhino_meridian_domain_and_tensor_layout() {
+        let vertex = point(1.0, 2.0, 3.0);
+        let frame = Frame3::try_from_directions(
+            vertex,
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Vector3::try_new(-1.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_paraboloid(frame, 2.0, 1.0).unwrap();
+        let meridian_length = 2.0_f64.sqrt() + 1.0_f64.asinh();
+
+        assert_eq!(surface.degree_u(), 2);
+        assert_eq!(surface.degree_v(), 2);
+        assert_eq!(surface.control_point_count_u(), 9);
+        assert_eq!(surface.control_point_count_v(), 3);
+        assert_eq!(surface.domain_u(), 0.0..=std::f64::consts::TAU);
+        assert_eq!(surface.domain_v(), 0.0..=meridian_length);
+        assert_eq!(surface.control_point(0, 0).unwrap().point(), vertex);
+        assert_eq!(
+            surface.control_point(0, 1).unwrap().point(),
+            point(1.0, 3.0, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 1).unwrap().point(),
+            point(0.0, 3.0, 3.0)
+        );
+        assert_eq!(
+            surface.control_point(0, 2).unwrap().point(),
+            point(1.0, 4.0, 4.0)
+        );
+        assert_eq!(
+            surface.control_point(1, 1).unwrap().weight(),
+            std::f64::consts::FRAC_1_SQRT_2
+        );
+
+        for index in 0..=8 {
+            let fraction = index as Real / 8.0;
+            let evaluated = surface.evaluate(0.0, meridian_length * fraction).unwrap();
+            let expected = point(1.0, 2.0 + 2.0 * fraction, 3.0 + fraction * fraction);
+            assert!(
+                evaluated.distance_to(expected).unwrap() < 2.0e-15,
+                "fraction {fraction}: {evaluated:?} != {expected:?}"
+            );
+        }
+
+        assert!(NurbsSurface::try_paraboloid(frame, 0.0, 1.0).is_err());
+        assert!(NurbsSurface::try_paraboloid(frame, 1.0, 0.0).is_err());
+        assert!(NurbsSurface::try_paraboloid(frame, 1.0, Real::INFINITY).is_err());
     }
 
     #[test]
