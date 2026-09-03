@@ -118,6 +118,9 @@ impl CommandRegistry {
             .register(MakeUniformCommand)
             .expect("unique built-in command");
         registry
+            .register(MakeUniformUvCommand)
+            .expect("unique built-in command");
+        registry
             .register(MakeNonPeriodicCommand)
             .expect("unique built-in command");
         registry
@@ -1941,7 +1944,8 @@ fn parse_rebuild_curve_options(arguments: &[&str]) -> Result<RebuildCurveOptions
     })
 }
 
-const MAKE_UNIFORM_USAGE: &str = "MakeUniform [Direction=U|V|Both]";
+const MAKE_UNIFORM_USAGE: &str = "MakeUniform";
+const MAKE_UNIFORM_UV_USAGE: &str = "MakeUniformUV [Direction=U|V]";
 
 struct MakeUniformCommand;
 
@@ -1951,7 +1955,7 @@ impl Command for MakeUniformCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let direction = parse_make_uniform_direction(arguments)?;
+        require_consumed(arguments, 0, MAKE_UNIFORM_USAGE)?;
         let mut replacements = Vec::new();
         let mut curve_count = 0;
         let mut surface_count = 0;
@@ -1959,7 +1963,7 @@ impl Command for MakeUniformCommand {
             let geometry = match object.geometry() {
                 Geometry::NurbsSurface(surface) => {
                     surface_count += 1;
-                    Geometry::NurbsSurface(surface.try_make_uniform(direction)?)
+                    Geometry::NurbsSurface(surface.try_make_uniform(SurfaceKnotDirection::Both)?)
                 }
                 geometry => {
                     let Some(curve) = geometry.nurbs_curve_representation()? else {
@@ -1977,34 +1981,67 @@ impl Command for MakeUniformCommand {
 
         let object_count = document.replace_object_geometries(replacements)?;
         Ok(format!(
-            "Made {object_count} object(s) uniform without changing control points ({curve_count} curve(s), {surface_count} NURBS surface(s), surface direction {})",
+            "Made {object_count} object(s) uniform without changing control points ({curve_count} curve(s), {surface_count} NURBS surface(s))"
+        ))
+    }
+}
+
+struct MakeUniformUvCommand;
+
+impl Command for MakeUniformUvCommand {
+    fn name(&self) -> &'static str {
+        "MakeUniformUV"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let direction = parse_make_uniform_uv_direction(arguments)?;
+        let replacements = document
+            .selected_objects()
+            .filter_map(|object| {
+                let Geometry::NurbsSurface(surface) = object.geometry() else {
+                    return None;
+                };
+                Some(
+                    surface
+                        .try_make_uniform(direction)
+                        .map(|surface| (object.id(), Geometry::NurbsSurface(surface))),
+                )
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if replacements.is_empty() {
+            return Err(CommandError::NoMakeUniformUvSurfaces);
+        }
+
+        let surface_count = document.replace_object_geometries(replacements)?;
+        Ok(format!(
+            "Made {surface_count} NURBS surface(s) uniform in the {} direction without changing control points",
             match direction {
                 SurfaceKnotDirection::U => "U",
                 SurfaceKnotDirection::V => "V",
-                SurfaceKnotDirection::Both => "U/V",
+                SurfaceKnotDirection::Both => unreachable!("MakeUniformUV accepts only U or V"),
             }
         ))
     }
 }
 
-fn parse_make_uniform_direction(arguments: &[&str]) -> Result<SurfaceKnotDirection, CommandError> {
-    let mut direction = SurfaceKnotDirection::Both;
+fn parse_make_uniform_uv_direction(
+    arguments: &[&str],
+) -> Result<SurfaceKnotDirection, CommandError> {
+    let mut direction = SurfaceKnotDirection::U;
     let mut direction_seen = false;
     let mut index = 0;
     while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, MAKE_UNIFORM_USAGE)?;
+        let (name, value, consumed) = orient_option(arguments, index, MAKE_UNIFORM_UV_USAGE)?;
         if !option_name_eq(name, "Direction") || direction_seen {
-            return Err(CommandError::Usage(MAKE_UNIFORM_USAGE));
+            return Err(CommandError::Usage(MAKE_UNIFORM_UV_USAGE));
         }
         let value = value.trim_start_matches(['_', '-']);
         direction = if value.eq_ignore_ascii_case("U") {
             SurfaceKnotDirection::U
         } else if value.eq_ignore_ascii_case("V") {
             SurfaceKnotDirection::V
-        } else if value.eq_ignore_ascii_case("Both") {
-            SurfaceKnotDirection::Both
         } else {
-            return Err(CommandError::Usage(MAKE_UNIFORM_USAGE));
+            return Err(CommandError::Usage(MAKE_UNIFORM_UV_USAGE));
         };
         direction_seen = true;
         index += consumed;
@@ -17261,6 +17298,9 @@ pub enum CommandError {
     #[error("MakeUniform requires at least one selected curve or untrimmed NURBS surface")]
     NoMakeUniformObjects,
 
+    #[error("MakeUniformUV requires at least one selected untrimmed NURBS surface")]
+    NoMakeUniformUvSurfaces,
+
     #[error("MakeNonPeriodic requires at least one selected periodic NURBS curve or surface")]
     NoPeriodicObjects,
 
@@ -17804,7 +17844,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakeUniform, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -27291,7 +27331,7 @@ mod tests {
 
         assert_eq!(
             registry.execute(&mut document, "MakeUniform").unwrap(),
-            "Made 1 object(s) uniform without changing control points (1 curve(s), 0 NURBS surface(s), surface direction U/V)"
+            "Made 1 object(s) uniform without changing control points (1 curve(s), 0 NURBS surface(s))"
         );
         assert_eq!(document.objects().len(), 2);
         let object = document.object(source_id).unwrap();
@@ -27327,6 +27367,10 @@ mod tests {
             registry.execute(&mut document, "MakeUniform"),
             Err(CommandError::NoMakeUniformObjects)
         ));
+        assert!(matches!(
+            registry.execute(&mut document, "MakeUniformUV"),
+            Err(CommandError::NoMakeUniformUvSurfaces)
+        ));
 
         let line_id = document
             .add_geometry(Geometry::Line(
@@ -27343,10 +27387,12 @@ mod tests {
             .unwrap();
         let before = document.object(line_id).unwrap().geometry().clone();
         let history = document.undo_label().map(str::to_owned);
-        assert!(matches!(
-            registry.execute(&mut document, "MakeUniform extra"),
-            Err(CommandError::Usage(MAKE_UNIFORM_USAGE))
-        ));
+        for command in ["MakeUniform extra", "MakeUniform Direction=U"] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(MAKE_UNIFORM_USAGE))
+            ));
+        }
         assert_eq!(document.object(line_id).unwrap().geometry(), &before);
         assert_eq!(document.undo_label(), history.as_deref());
 
@@ -27358,7 +27404,7 @@ mod tests {
     }
 
     #[test]
-    fn make_uniform_changes_requested_surface_direction_in_place() {
+    fn make_uniform_uv_defaults_to_u_and_changes_the_surface_in_place() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let layer = document
@@ -27376,21 +27422,20 @@ mod tests {
             .unwrap();
 
         assert_eq!(
-            registry
-                .execute(&mut document, "MakeUniform Direction _U")
-                .unwrap(),
-            "Made 1 object(s) uniform without changing control points (0 curve(s), 1 NURBS surface(s), surface direction U)"
+            registry.execute(&mut document, "MakeUniformUV").unwrap(),
+            "Made 1 NURBS surface(s) uniform in the U direction without changing control points"
         );
         let object = document.object(source_id).unwrap();
         assert_eq!(object.attributes().layer_id(), layer);
         assert_eq!(object.attributes().name(), Some("weighted surface"));
         assert!(document.is_selected(source_id));
         let Geometry::NurbsSurface(surface) = object.geometry() else {
-            panic!("MakeUniform must retain NURBS surface geometry")
+            panic!("MakeUniformUV must retain NURBS surface geometry")
         };
         assert_eq!(surface.control_points(), source.control_points());
         assert_eq!(surface.knots_u(), &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]);
         assert_eq!(surface.knots_v(), source.knots_v());
+        assert_eq!(document.undo_label(), Some("MakeUniformUV"));
 
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(
@@ -27400,7 +27445,52 @@ mod tests {
     }
 
     #[test]
-    fn make_uniform_rejects_invalid_surface_directions_atomically() {
+    fn make_uniform_uv_accepts_v_direction() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = rational_multi_span_surface();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(source.clone()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "MakeUniformUV Direction _V")
+            .unwrap();
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("MakeUniformUV must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.knots_u(), source.knots_u());
+        assert_eq!(surface.knots_v(), &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]);
+    }
+
+    #[test]
+    fn make_uniform_uniformizes_both_surface_directions() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = rational_multi_span_surface();
+        let surface_id = document
+            .add_geometry(Geometry::NurbsSurface(source.clone()))
+            .unwrap();
+        document
+            .select_objects([surface_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry.execute(&mut document, "MakeUniform").unwrap();
+        let Geometry::NurbsSurface(surface) = document.object(surface_id).unwrap().geometry()
+        else {
+            panic!("MakeUniform must retain NURBS surface geometry")
+        };
+        assert_eq!(surface.control_points(), source.control_points());
+        assert_eq!(surface.knots_u(), &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]);
+        assert_eq!(surface.knots_v(), &[0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]);
+    }
+
+    #[test]
+    fn make_uniform_uv_rejects_invalid_surface_directions_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let surface_id = document
@@ -27413,14 +27503,15 @@ mod tests {
         let history = document.undo_label().map(str::to_owned);
 
         for command in [
-            "MakeUniform Direction=Other",
-            "MakeUniform Direction=U Direction=V",
-            "MakeUniform Other=Both",
+            "MakeUniformUV Direction=Other",
+            "MakeUniformUV Direction=Both",
+            "MakeUniformUV Direction=U Direction=V",
+            "MakeUniformUV Other=U",
         ] {
             assert!(
                 matches!(
                     registry.execute(&mut document, command),
-                    Err(CommandError::Usage(MAKE_UNIFORM_USAGE))
+                    Err(CommandError::Usage(MAKE_UNIFORM_UV_USAGE))
                 ),
                 "{command}"
             );

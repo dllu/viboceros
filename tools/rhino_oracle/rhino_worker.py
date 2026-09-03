@@ -5669,6 +5669,15 @@ def _execute(operation, iterations, tolerance):
         if direction_name not in directions:
             raise ValueError("surface uniform direction must be u, v, or both")
         direction = directions[direction_name]
+        command_name = operation.get("rhino_command")
+        if command_name not in (None, "make_uniform", "make_uniform_uv"):
+            raise ValueError(
+                "surface uniform Rhino command must be make_uniform or make_uniform_uv"
+            )
+        if command_name == "make_uniform" and direction_name != "both":
+            raise ValueError("Rhino MakeUniform always changes both surface directions")
+        if command_name == "make_uniform_uv" and direction_name == "both":
+            raise ValueError("Rhino MakeUniformUV command direction must be u or v")
 
         def make_uniform_surface():
             surface = Rhino.Geometry.NurbsSurface.Create(
@@ -5688,12 +5697,57 @@ def _execute(operation, iterations, tolerance):
                 )
                 if not surface.IsValid:
                     raise ValueError("NURBS surface is invalid")
-                if not surface.MakeUniform(direction):
-                    raise ValueError("Rhino surface uniformization failed")
-                definition = _nurbs_surface_definition(surface)
-                definition["periodic_u"] = bool(surface.IsPeriodic(0))
-                definition["periodic_v"] = bool(surface.IsPeriodic(1))
-                return definition
+                if command_name is None:
+                    if not surface.MakeUniform(direction):
+                        raise ValueError("Rhino surface uniformization failed")
+                    definition = _nurbs_surface_definition(surface)
+                    definition["periodic_u"] = bool(surface.IsPeriodic(0))
+                    definition["periodic_v"] = bool(surface.IsPeriodic(1))
+                    return definition
+
+                document = Rhino.RhinoDoc.ActiveDoc
+                object_id = System.Guid.Empty
+                result = None
+                try:
+                    document.Objects.UnselectAll()
+                    object_id = document.Objects.AddSurface(surface)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add surface to Rhino")
+                    if not document.Objects.Select(object_id):
+                        raise ValueError("could not select surface")
+                    if command_name == "make_uniform":
+                        command = "_-MakeUniform _All _Enter"
+                    else:
+                        command = "_-MakeUniformUV _Direction=_%s _All _Enter" % (
+                            direction_name.capitalize()
+                        )
+                    Rhino.RhinoApp.RunScript(command, False)
+                    rhino_object = document.Objects.FindId(object_id)
+                    if rhino_object is None:
+                        raise ValueError("surface uniform command removed the object")
+                    geometry = rhino_object.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Brep):
+                        if geometry.Faces.Count != 1:
+                            history = Rhino.RhinoApp.CommandHistoryWindowText
+                            raise ValueError(
+                                "surface uniform command made a %d-face polysurface; "
+                                "history tail: %s"
+                                % (geometry.Faces.Count, history[-3000:])
+                            )
+                        result = geometry.Faces[0].UnderlyingSurface().ToNurbsSurface()
+                    else:
+                        result = geometry.ToNurbsSurface()
+                    if result is None:
+                        raise ValueError("surface uniform command returned no NURBS surface")
+                    definition = _nurbs_surface_definition(result)
+                    definition["periodic_u"] = bool(result.IsPeriodic(0))
+                    definition["periodic_v"] = bool(result.IsPeriodic(1))
+                    return definition
+                finally:
+                    if result is not None:
+                        result.Dispose()
+                    if object_id != System.Guid.Empty:
+                        document.Objects.Delete(object_id, True)
             finally:
                 surface.Dispose()
 

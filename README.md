@@ -38,7 +38,8 @@ CurveThroughPolyline Degree=5 CurveType=ControlPoint DeleteInput=No
 TweenCurves Number=3 MatchMethod=SamplePoints SampleNumber=100 OutputLayer=CurrentLayer
 FitCrv Degree=3 Tolerance=0.001 AngleTolerance=1 DeleteInput=No OutputLayer=CurrentLayer
 Rebuild PointCount=10 Degree=3 PreserveTangents=No DeleteInput=Yes OutputLayer=InputObject
-MakeUniform Direction=Both
+MakeUniform
+MakeUniformUV Direction=U
 MakeNonPeriodic
 InsertKnot 0.52,3.1 Multiplicity=2 Direction=Both Symmetrical=No
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
@@ -266,9 +267,10 @@ not yet represented.
 with the same degree, control locations, and rational weights but
 Rhino-compatible unit-spaced knots. Start and end clamping are retained
 independently, periodic topology stays periodic, and supported analytic curves
-are first converted to their exact NURBS form. `Direction=U|V|Both` selects
-the changed surface directions and defaults to both; changing knot spacing can
-change the object shape.
+are first converted to their exact NURBS form. Both surface directions are
+changed. `MakeUniformUV Direction=U|V` performs the same operation on selected
+untrimmed NURBS surfaces in one direction only and defaults to U. Changing knot
+spacing can change the object shape.
 `MakeNonPeriodic` converts every selected periodic NURBS curve or surface to
 the equivalent clamped form in place. It preserves the active domains,
 parameterization, shape, object identity, attributes, and selection; surfaces
@@ -956,6 +958,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_make_uniform.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/make_uniform_commands.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_insert_knot.json

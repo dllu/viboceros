@@ -1,0 +1,57 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "surface_make_uniform_geometry",
+      "id": "make-uniform-both",
+      "degree_u": 1,
+      "degree_v": 1,
+      "control_point_count_u": 3,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 0]}, {"point": [5, 0, 0]},
+        {"point": [0, 3, 0]}, {"point": [2, 3, 0]}, {"point": [5, 3, 0]},
+        {"point": [0, 6, 0]}, {"point": [2, 6, 0]}, {"point": [5, 6, 0]}
+      ],
+      "knots_u": [0, 0, 5, 20, 20],
+      "knots_v": [0, 0, 7, 11, 11],
+      "direction": "both",
+      "rhino_command": "make_uniform"
+    },
+    {
+      "op": "surface_make_uniform_geometry",
+      "id": "make-uniform-uv-u",
+      "degree_u": 1,
+      "degree_v": 1,
+      "control_point_count_u": 3,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 0]}, {"point": [5, 0, 0]},
+        {"point": [0, 3, 0]}, {"point": [2, 3, 0]}, {"point": [5, 3, 0]},
+        {"point": [0, 6, 0]}, {"point": [2, 6, 0]}, {"point": [5, 6, 0]}
+      ],
+      "knots_u": [0, 0, 5, 20, 20],
+      "knots_v": [0, 0, 7, 11, 11],
+      "direction": "u",
+      "rhino_command": "make_uniform_uv"
+    },
+    {
+      "op": "surface_make_uniform_geometry",
+      "id": "make-uniform-uv-v",
+      "degree_u": 1,
+      "degree_v": 1,
+      "control_point_count_u": 3,
+      "control_point_count_v": 3,
+      "control_points": [
+        {"point": [0, 0, 0]}, {"point": [2, 0, 0]}, {"point": [5, 0, 0]},
+        {"point": [0, 3, 0]}, {"point": [2, 3, 0]}, {"point": [5, 3, 0]},
+        {"point": [0, 6, 0]}, {"point": [2, 6, 0]}, {"point": [5, 6, 0]}
+      ],
+      "knots_u": [0, 0, 5, 20, 20],
+      "knots_v": [0, 0, 7, 11, 11],
+      "direction": "v",
+      "rhino_command": "make_uniform_uv"
+    }
+  ]
+}
