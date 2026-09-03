@@ -133,6 +133,252 @@ impl NurbsCurve {
         Self::try_new(2, controls, vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0])
     }
 
+    /// Constructs Rhino's quadratic parabola segment from its vertex and two
+    /// endpoints. The vertex may lie outside the returned segment; the curve
+    /// direction always runs from `start` to `end`.
+    pub fn try_parabola_from_vertex(
+        vertex: Point3,
+        start: Point3,
+        end: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let vertex_to_start = vertex.vector_to(start)?;
+        let vertex_to_end = vertex.vector_to(end)?;
+        let start_length = vertex_to_start.length()?;
+        let end_length = vertex_to_end.length()?;
+        if start_length <= tolerance.absolute() || end_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+
+        // Scaling both vectors by the same value leaves the vertex equation
+        // unchanged and avoids overflowing its squared coefficients.
+        let scale = start_length.max(end_length);
+        let scaled_start = vector_divided_by(vertex_to_start, scale)?;
+        let scaled_end = vector_divided_by(vertex_to_end, scale)?;
+        let start_squared = scaled_start.dot(scaled_start)?;
+        let mixed = scaled_start.dot(scaled_end)?;
+        let end_squared = scaled_end.dot(scaled_end)?;
+        if start_squared == 0.0 || end_squared == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+
+        // For q = P0 - 2 P1 + P2, imposing P(t) = vertex and
+        // P'(t) dot q = 0 gives this scalar equation. Its endpoint signs
+        // bracket the parameter belonging to the supplied vertex.
+        let equation = |parameter: Real| {
+            let complement = 1.0 - parameter;
+            let left = -start_squared * complement * complement * complement;
+            let middle = mixed * (2.0 * parameter - 1.0) * parameter * complement;
+            let right = end_squared * parameter * parameter * parameter;
+            left + middle + right
+        };
+        let mut lower = 0.0;
+        let mut upper = 1.0;
+        let mut parameter = 0.5;
+        for _ in 0..128 {
+            parameter = 0.5 * lower + 0.5 * upper;
+            let value = equation(parameter);
+            if value == 0.0 || parameter == lower || parameter == upper {
+                break;
+            }
+            if value < 0.0 {
+                lower = parameter;
+            } else {
+                upper = parameter;
+            }
+        }
+        if !(0.0..1.0).contains(&parameter) {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+
+        let complement = 1.0 - parameter;
+        let quadratic = Vector3::try_new(
+            vertex_to_start.x() / parameter + vertex_to_end.x() / complement,
+            vertex_to_start.y() / parameter + vertex_to_end.y() / complement,
+            vertex_to_start.z() / parameter + vertex_to_end.z() / complement,
+        )?;
+        quadratic_parabola_from_second_difference(start, end, quadratic, tolerance)
+    }
+
+    /// Constructs Rhino's quadratic parabola segment from a focus and two
+    /// endpoints. Of the two possible axes, this matches Rhino by selecting
+    /// the valid solution with the smaller positive focal distance.
+    pub fn try_parabola_from_focus(
+        focus: Point3,
+        start: Point3,
+        end: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let focus_to_start = focus.vector_to(start)?;
+        let focus_to_end = focus.vector_to(end)?;
+        let chord = start.vector_to(end)?;
+        let start_distance = focus_to_start.length()?;
+        let end_distance = focus_to_end.length()?;
+        let chord_length = chord.length()?;
+        if start_distance <= tolerance.absolute()
+            || end_distance <= tolerance.absolute()
+            || chord_length <= tolerance.absolute()
+        {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+
+        let chord_direction = chord.normalized(tolerance)?;
+        let start_along_chord = focus_to_start.dot(chord_direction.as_vector())?;
+        let normal_component = subtract_scaled_vector(
+            focus_to_start,
+            chord_direction.as_vector(),
+            start_along_chord,
+        )?;
+        let normal_direction = normal_component.normalized(tolerance)?;
+        let alpha = ((end_distance - start_distance) / chord_length).clamp(-1.0, 1.0);
+        let beta = ((1.0 - alpha).max(0.0) * (1.0 + alpha).max(0.0)).sqrt();
+
+        let mut selected: Option<(Vector3, Real)> = None;
+        for side in [-1.0, 1.0] {
+            let axis = Vector3::try_new(
+                alpha.mul_add(chord_direction.x(), side * beta * normal_direction.x()),
+                alpha.mul_add(chord_direction.y(), side * beta * normal_direction.y()),
+                alpha.mul_add(chord_direction.z(), side * beta * normal_direction.z()),
+            )?
+            .normalized_nonzero()?
+            .as_vector();
+            let axial = focus_to_start.dot(axis)?;
+            let radial = subtract_scaled_vector(focus_to_start, axis, axial)?;
+            let radial_length = radial.length()?;
+            let focal_distance = if axial >= 0.0 {
+                let denominator = start_distance + axial;
+                if denominator <= 0.0 {
+                    0.0
+                } else {
+                    0.5 * radial_length * (radial_length / denominator)
+                }
+            } else {
+                0.5 * (start_distance - axial)
+            };
+            if focal_distance.is_finite()
+                && focal_distance > tolerance.absolute()
+                && selected.is_none_or(|(_, best)| focal_distance < best)
+            {
+                selected = Some((axis, focal_distance));
+            }
+        }
+        let Some((axis, focal_distance)) = selected else {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        };
+
+        let chord_axial = chord.dot(axis)?;
+        let radial_chord = subtract_scaled_vector(chord, axis, chord_axial)?;
+        let radial_length = radial_chord.length()?;
+        if radial_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+        let quadratic_length = 0.25 * radial_length * (radial_length / focal_distance);
+        let quadratic = axis.scaled(quadratic_length)?;
+        quadratic_parabola_from_second_difference(start, end, quadratic, tolerance)
+    }
+
+    /// Constructs a quadratic parabola through an interior point with the
+    /// supplied opening direction. `through` must project strictly between
+    /// the projected endpoints along that direction.
+    pub fn try_parabola_through_point(
+        start: Point3,
+        through: Point3,
+        end: Point3,
+        opening_direction: Vector3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let axis = opening_direction.normalized(tolerance)?.as_vector();
+        let chord = start.vector_to(end)?;
+        let to_through = start.vector_to(through)?;
+        let chord_axial = chord.dot(axis)?;
+        let through_axial = to_through.dot(axis)?;
+        let projected_chord = subtract_scaled_vector(chord, axis, chord_axial)?;
+        let projected_through = subtract_scaled_vector(to_through, axis, through_axial)?;
+        let projected_length = projected_chord.length()?;
+        if projected_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+        let projected_direction = projected_chord.normalized_nonzero()?;
+        let parameter = projected_through.dot(projected_direction.as_vector())? / projected_length;
+        if !(0.0..1.0).contains(&parameter) {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+
+        let projected_residual =
+            subtract_scaled_vector(projected_through, projected_chord, parameter)?;
+        let residual_length = projected_residual.length()?;
+        let input_scale = projected_length.max(projected_through.length()?);
+        let residual_limit = tolerance.absolute().max(tolerance.relative() * input_scale);
+        if residual_length > residual_limit {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+
+        let axial_residual = (-parameter).mul_add(chord_axial, through_axial);
+        let denominator = parameter * (1.0 - parameter);
+        let quadratic_length = -axial_residual / denominator;
+        if !quadratic_length.is_finite() || quadratic_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "three-point parabola",
+            });
+        }
+        let quadratic = axis.scaled(quadratic_length)?;
+        quadratic_parabola_from_second_difference(start, end, quadratic, tolerance)
+    }
+
+    /// Returns the focus of a non-degenerate, single-span, non-rational
+    /// quadratic parabola.
+    pub fn try_parabola_focus(&self, tolerance: Tolerance) -> Result<Point3, GeometryError> {
+        if self.degree != 2 || self.control_points.len() != 3 || self.rational {
+            return Err(GeometryError::Degenerate {
+                context: "quadratic parabola",
+            });
+        }
+        let first = self.control_points[0].point;
+        let middle = self.control_points[1].point;
+        let last = self.control_points[2].point;
+        let middle_to_first = middle.vector_to(first)?;
+        let middle_to_last = middle.vector_to(last)?;
+        let quadratic = add_vectors(middle_to_first, middle_to_last)?;
+        let quadratic_length = quadratic.length()?;
+        let axis = quadratic.normalized(tolerance)?.as_vector();
+        let linear = first.vector_to(middle)?.scaled(2.0)?;
+        let axial_linear = linear.dot(axis)?;
+        let tangent = subtract_scaled_vector(linear, axis, axial_linear)?;
+        let tangent_length = tangent.length()?;
+        if tangent_length <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "quadratic parabola",
+            });
+        }
+        let focal_distance = 0.25 * tangent_length * (tangent_length / quadratic_length);
+        if !focal_distance.is_finite() || focal_distance <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "quadratic parabola",
+            });
+        }
+        let vertex_parameter = -0.5 * axial_linear / quadratic_length;
+        let vertex = quadratic_power_point(first, linear, quadratic, vertex_parameter)?;
+        vertex.translated(axis.scaled(focal_distance)?)
+    }
+
     /// Constructs an open, clamped, uniformly spaced non-rational curve.
     pub fn try_clamped_uniform(
         degree: usize,
@@ -914,6 +1160,85 @@ impl NurbsCurve {
     }
 }
 
+fn vector_divided_by(vector: Vector3, divisor: Real) -> Result<Vector3, GeometryError> {
+    require_finite([divisor], "vector divisor")?;
+    if divisor == 0.0 {
+        return Err(GeometryError::Degenerate { context: "vector" });
+    }
+    Vector3::try_new(
+        vector.x() / divisor,
+        vector.y() / divisor,
+        vector.z() / divisor,
+    )
+}
+
+fn add_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryError> {
+    Vector3::try_new(
+        left.x() + right.x(),
+        left.y() + right.y(),
+        left.z() + right.z(),
+    )
+}
+
+fn subtract_scaled_vector(
+    vector: Vector3,
+    direction: Vector3,
+    scale: Real,
+) -> Result<Vector3, GeometryError> {
+    require_finite([scale], "vector projection")?;
+    Vector3::try_new(
+        (-scale).mul_add(direction.x(), vector.x()),
+        (-scale).mul_add(direction.y(), vector.y()),
+        (-scale).mul_add(direction.z(), vector.z()),
+    )
+}
+
+fn quadratic_power_point(
+    origin: Point3,
+    linear: Vector3,
+    quadratic: Vector3,
+    parameter: Real,
+) -> Result<Point3, GeometryError> {
+    require_finite([parameter], "quadratic parabola parameter")?;
+    let squared = parameter * parameter;
+    Point3::try_new(
+        quadratic
+            .x()
+            .mul_add(squared, linear.x().mul_add(parameter, origin.x())),
+        quadratic
+            .y()
+            .mul_add(squared, linear.y().mul_add(parameter, origin.y())),
+        quadratic
+            .z()
+            .mul_add(squared, linear.z().mul_add(parameter, origin.z())),
+    )
+}
+
+fn quadratic_parabola_from_second_difference(
+    start: Point3,
+    end: Point3,
+    quadratic: Vector3,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    let midpoint = Point3::try_new(
+        0.5 * start.x() + 0.5 * end.x(),
+        0.5 * start.y() + 0.5 * end.y(),
+        0.5 * start.z() + 0.5 * end.z(),
+    )?;
+    let middle = Point3::try_new(
+        (-0.5_f64).mul_add(quadratic.x(), midpoint.x()),
+        (-0.5_f64).mul_add(quadratic.y(), midpoint.y()),
+        (-0.5_f64).mul_add(quadratic.z(), midpoint.z()),
+    )?;
+    let curve = NurbsCurve::try_new(
+        2,
+        vec![start, middle, end],
+        vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+    )?;
+    curve.try_parabola_focus(tolerance)?;
+    Ok(curve)
+}
+
 fn control_polygon_length(control_points: &[Point3]) -> Result<Real, GeometryError> {
     let mut sum = 0.0;
     let mut correction = 0.0;
@@ -1569,6 +1894,169 @@ mod tests {
             NurbsCurve::try_parabola(frame, f64::INFINITY, 1.0, false),
             Err(GeometryError::NonFinite { .. })
         ));
+    }
+
+    #[test]
+    fn three_point_vertex_parabola_matches_rhino_and_reverses_exactly() {
+        let vertex = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let start = Point3::try_new(-2.0, 5.0, 7.0).unwrap();
+        let end = Point3::try_new(8.0, 4.0, 6.0).unwrap();
+        let curve =
+            NurbsCurve::try_parabola_from_vertex(vertex, start, end, Tolerance::DEFAULT).unwrap();
+        assert_eq!(curve.degree(), 2);
+        assert!(!curve.is_rational());
+        assert_eq!(curve.domain(), 0.0..=1.0);
+        assert_eq!(curve.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 1.0]);
+        assert_eq!(curve.control_points()[0].point(), start);
+        assert_point_near(
+            curve.control_points()[1].point(),
+            Point3::try_new(
+                -0.011_269_980_002_004_854,
+                -0.655_652_364_729_298_2,
+                -0.676_681_758_332_815_5,
+            )
+            .unwrap(),
+        );
+        assert_eq!(curve.control_points()[2].point(), end);
+        assert_point_near(curve.evaluate(0.448_996_842_378_081_96).unwrap(), vertex);
+
+        let reversed =
+            NurbsCurve::try_parabola_from_vertex(vertex, end, start, Tolerance::DEFAULT).unwrap();
+        for (actual, expected) in reversed
+            .control_points()
+            .iter()
+            .zip(curve.control_points().iter().rev())
+        {
+            assert_point_near(actual.point(), expected.point());
+        }
+    }
+
+    #[test]
+    fn three_point_focus_parabola_matches_rhino_and_recovers_focus() {
+        let focus = Point3::try_new(1.0, 2.0, 3.0).unwrap();
+        let start = Point3::try_new(-2.0, 5.0, 7.0).unwrap();
+        let end = Point3::try_new(8.0, 4.0, 6.0).unwrap();
+        let curve =
+            NurbsCurve::try_parabola_from_focus(focus, start, end, Tolerance::DEFAULT).unwrap();
+        assert_eq!(curve.control_points()[0].point(), start);
+        assert_point_near(
+            curve.control_points()[1].point(),
+            Point3::try_new(
+                -0.856_025_073_925_939_4,
+                -1.808_620_322_768_226_7,
+                -2.287_962_111_716_675_3,
+            )
+            .unwrap(),
+        );
+        assert_eq!(curve.control_points()[2].point(), end);
+        assert_point_near(curve.try_parabola_focus(Tolerance::DEFAULT).unwrap(), focus);
+
+        let reversed =
+            NurbsCurve::try_parabola_from_focus(focus, end, start, Tolerance::DEFAULT).unwrap();
+        for (actual, expected) in reversed
+            .control_points()
+            .iter()
+            .zip(curve.control_points().iter().rev())
+        {
+            assert_point_near(actual.point(), expected.point());
+        }
+
+        let asymmetric = NurbsCurve::try_parabola_from_focus(
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Point3::try_new(-1.0, 0.0, 0.25).unwrap(),
+            Point3::try_new(3.0, 0.0, 2.25).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_point_near(
+            asymmetric.control_points()[1].point(),
+            Point3::try_new(-1.0, 0.0, 2.75).unwrap(),
+        );
+    }
+
+    #[test]
+    fn through_point_parabola_honors_the_opening_direction() {
+        let start = Point3::try_new(-1.0, 0.0, 0.25).unwrap();
+        let through = Point3::try_new(1.0, 0.0, 0.25).unwrap();
+        let end = Point3::try_new(3.0, 0.0, 2.25).unwrap();
+        let vertical = NurbsCurve::try_parabola_through_point(
+            start,
+            through,
+            end,
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_point_near(
+            vertical.control_points()[1].point(),
+            Point3::try_new(1.0, 0.0, -0.75).unwrap(),
+        );
+        assert_point_near(vertical.evaluate(0.5).unwrap(), through);
+        assert_point_near(
+            vertical.try_parabola_focus(Tolerance::DEFAULT).unwrap(),
+            Point3::try_new(0.0, 0.0, 1.0).unwrap(),
+        );
+
+        let oblique = NurbsCurve::try_parabola_through_point(
+            start,
+            through,
+            end,
+            Vector3::try_new(-1.0, 0.0, 0.75).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_point_near(
+            oblique.control_points()[1].point(),
+            Point3::try_new(2.904_761_904_761_904_7, 0.0, -0.178_571_428_571_428_66).unwrap(),
+        );
+        assert_point_near(oblique.evaluate(0.3).unwrap(), through);
+    }
+
+    #[test]
+    fn three_point_parabola_rejects_degenerate_constraints() {
+        let origin = Point3::try_new(0.0, 0.0, 0.0).unwrap();
+        let x = Point3::try_new(1.0, 0.0, 0.0).unwrap();
+        let negative_x = Point3::try_new(-1.0, 0.0, 0.0).unwrap();
+        assert!(
+            NurbsCurve::try_parabola_from_vertex(origin, origin, x, Tolerance::DEFAULT).is_err()
+        );
+        assert!(
+            NurbsCurve::try_parabola_from_vertex(origin, negative_x, x, Tolerance::DEFAULT)
+                .is_err()
+        );
+        assert!(
+            NurbsCurve::try_parabola_from_focus(origin, negative_x, x, Tolerance::DEFAULT).is_err()
+        );
+        assert!(
+            NurbsCurve::try_parabola_through_point(
+                origin,
+                x,
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Vector3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
+        assert!(
+            NurbsCurve::try_parabola_through_point(
+                origin,
+                Point3::try_new(1.0, 1.0, -1.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
+        assert!(
+            NurbsCurve::try_parabola_through_point(
+                origin,
+                Point3::try_new(3.0, 0.0, -1.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
     }
 
     #[test]

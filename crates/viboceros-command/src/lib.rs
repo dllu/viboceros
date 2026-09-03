@@ -161,6 +161,9 @@ impl CommandRegistry {
             .register(ParabolaCommand)
             .expect("unique built-in command");
         registry
+            .register(ParabolaThreePointCommand)
+            .expect("unique built-in command");
+        registry
             .register(ParaboloidCommand)
             .expect("unique built-in command");
         registry
@@ -2530,6 +2533,7 @@ pub const DEFAULT_MESH_CYLINDER_FACE_COUNT: usize = 10;
 const MESH_CYLINDER_USAGE: &str = "MeshCylinder center radius height | MeshCylinder center point-on-base height [Axis=x,y,z] [BothSides=Yes|No] [Solid=Yes|No] [VerticalFaces=positive-integer] [AroundFaces=integer-at-least-3] [CapFaceStyle=Tri|Quad]";
 const CONE_USAGE: &str = "Cone base-center radius height | Cone base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
 const PARABOLA_USAGE: &str = "Parabola [Focus] focus direction-point end-point | Parabola Vertex vertex focus end-point [Half=Yes|No] [MarkFocus=Yes|No]";
+const PARABOLA_THREE_POINT_USAGE: &str = "Parabola3Pt first-point second-point third-point [direction-point] [Mode=Focus|ThroughPoint|Vertex] [PickOrder=Default|EndsFirst|EndsLast] [MarkFocus=Yes|No]";
 const PARABOLOID_USAGE: &str = "Paraboloid [Focus] focus direction-point end-point | Paraboloid Vertex vertex focus end-point [MarkFocus=Yes|No] [Solid=Yes|No]";
 const TRUNCATED_CONE_USAGE: &str = "TruncatedCone base-center base-radius height end-radius | TruncatedCone base-center point-on-base height end-radius [Axis=x,y,z] [Solid=Yes|No]";
 const PYRAMID_USAGE: &str = "Pyramid sides base-center radius height | Pyramid sides base-center point-on-base height [Axis=x,y,z] [Solid=Yes|No]";
@@ -2615,6 +2619,30 @@ struct ParabolicPositionals {
 struct ParabolaCommandOptions {
     positionals: ParabolicPositionals,
     half: bool,
+    mark_focus: bool,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ParabolaThreePointMode {
+    Focus,
+    ThroughPoint,
+    Vertex,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ParabolaThreePointPickOrder {
+    Default,
+    EndsFirst,
+    EndsLast,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct ParabolaThreePointOptions {
+    mode: ParabolaThreePointMode,
+    start: Point3,
+    special: Point3,
+    end: Point3,
+    direction_point: Option<Point3>,
     mark_focus: bool,
 }
 
@@ -3071,6 +3099,83 @@ fn parse_parabola_options(arguments: &[&str]) -> Result<ParabolaCommandOptions, 
     Ok(ParabolaCommandOptions {
         positionals,
         half,
+        mark_focus,
+    })
+}
+
+fn parse_parabola_three_point_options(
+    arguments: &[&str],
+) -> Result<ParabolaThreePointOptions, CommandError> {
+    let mut mode = ParabolaThreePointMode::ThroughPoint;
+    let mut pick_order = ParabolaThreePointPickOrder::Default;
+    let mut mark_focus = false;
+    let mut mode_seen = false;
+    let mut pick_order_seen = false;
+    let mut mark_focus_seen = false;
+    let mut positionals = Vec::new();
+
+    for argument in arguments {
+        let Some((name, value)) = argument.split_once('=') else {
+            positionals.push(*argument);
+            continue;
+        };
+        let value = value.trim_start_matches('_');
+        if option_name_eq(name, "Mode") && !mode_seen {
+            mode = if value.eq_ignore_ascii_case("Focus") {
+                ParabolaThreePointMode::Focus
+            } else if value.eq_ignore_ascii_case("ThroughPoint") {
+                ParabolaThreePointMode::ThroughPoint
+            } else if value.eq_ignore_ascii_case("Vertex") {
+                ParabolaThreePointMode::Vertex
+            } else {
+                return Err(CommandError::Usage(PARABOLA_THREE_POINT_USAGE));
+            };
+            mode_seen = true;
+        } else if option_name_eq(name, "PickOrder") && !pick_order_seen {
+            pick_order = if value.eq_ignore_ascii_case("Default") {
+                ParabolaThreePointPickOrder::Default
+            } else if value.eq_ignore_ascii_case("EndsFirst") {
+                ParabolaThreePointPickOrder::EndsFirst
+            } else if value.eq_ignore_ascii_case("EndsLast") {
+                ParabolaThreePointPickOrder::EndsLast
+            } else {
+                return Err(CommandError::Usage(PARABOLA_THREE_POINT_USAGE));
+            };
+            pick_order_seen = true;
+        } else if option_name_eq(name, "MarkFocus") && !mark_focus_seen {
+            mark_focus =
+                parse_yes_no(value).ok_or(CommandError::Usage(PARABOLA_THREE_POINT_USAGE))?;
+            mark_focus_seen = true;
+        } else {
+            return Err(CommandError::Usage(PARABOLA_THREE_POINT_USAGE));
+        }
+    }
+
+    let (first, first_consumed) = parse_point(&positionals)?;
+    let (second, second_consumed) = parse_point(&positionals[first_consumed..])?;
+    let third_start = first_consumed + second_consumed;
+    let (third, third_consumed) = parse_point(&positionals[third_start..])?;
+    let mut consumed = third_start + third_consumed;
+    let direction_point = if mode == ParabolaThreePointMode::ThroughPoint {
+        let (point, point_consumed) = parse_point(&positionals[consumed..])?;
+        consumed += point_consumed;
+        Some(point)
+    } else {
+        None
+    };
+    require_consumed(&positionals, consumed, PARABOLA_THREE_POINT_USAGE)?;
+
+    let (start, special, end) = match pick_order {
+        ParabolaThreePointPickOrder::Default => (first, second, third),
+        ParabolaThreePointPickOrder::EndsFirst => (first, third, second),
+        ParabolaThreePointPickOrder::EndsLast => (second, first, third),
+    };
+    Ok(ParabolaThreePointOptions {
+        mode,
+        start,
+        special,
+        end,
+        direction_point,
         mark_focus,
     })
 }
@@ -4270,6 +4375,59 @@ impl Command for ParabolaCommand {
         Ok(format!(
             "Added {} NURBS parabola {id}{focus_suffix} (radius {radius:.6}, height {height:.6}, focus distance {focal_distance:.6})",
             if options.half { "half" } else { "full" },
+        ))
+    }
+}
+
+struct ParabolaThreePointCommand;
+
+impl Command for ParabolaThreePointCommand {
+    fn name(&self) -> &'static str {
+        "Parabola3Pt"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_parabola_three_point_options(arguments)?;
+        let tolerance = document.tolerance();
+        let curve = match options.mode {
+            ParabolaThreePointMode::Focus => NurbsCurve::try_parabola_from_focus(
+                options.special,
+                options.start,
+                options.end,
+                tolerance,
+            )?,
+            ParabolaThreePointMode::ThroughPoint => {
+                let direction_point = options
+                    .direction_point
+                    .expect("through-point options include a direction point");
+                NurbsCurve::try_parabola_through_point(
+                    options.start,
+                    options.special,
+                    options.end,
+                    options.special.vector_to(direction_point)?,
+                    tolerance,
+                )?
+            }
+            ParabolaThreePointMode::Vertex => NurbsCurve::try_parabola_from_vertex(
+                options.special,
+                options.start,
+                options.end,
+                tolerance,
+            )?,
+        };
+        let focus = curve.try_parabola_focus(tolerance)?;
+        let focus_id = if options.mark_focus {
+            Some(document.add_geometry(Geometry::Point(focus))?)
+        } else {
+            None
+        };
+        let id = document.add_geometry(Geometry::NurbsCurve(curve))?;
+        let focus_suffix = focus_id
+            .map(|focus_id| format!(" and focus point {focus_id}"))
+            .unwrap_or_default();
+        Ok(format!(
+            "Added three-point NURBS parabola {id}{focus_suffix} (focus {})",
+            format_point(focus)
         ))
     }
 }
@@ -15204,7 +15362,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvStart, CullUnusedMeshVertices, Curve, Cylinder, Delete, DeleteFaces, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, Flip, Group, Hide, HideSwap, Import3dm, ImportStep, ImportStl, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rectangle, Redo, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, SplitDisjointMesh, SplitMeshEdge, SrfPt, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -16503,6 +16661,112 @@ mod tests {
             "Parabola Vertex 0,0,0 0,0,1 2,0,0 Half=Yes Half=No",
             "Parabola Vertex 0,0,0 0,0,1 2,0,0 MarkFocus=Yes MarkFocus=No",
             "Parabola Vertex 0,0,0 0,0,1 2,0,0 Solid=Yes",
+        ] {
+            assert!(
+                registry.execute(&mut document, invalid).is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(document.objects().len(), 0);
+        assert_eq!(document.undo_label(), None);
+    }
+
+    #[test]
+    fn parabola_three_point_supports_all_modes_pick_orders_and_focus_marker() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+
+        let result = registry
+            .execute(
+                &mut document,
+                "Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,1.25 MarkFocus=Yes",
+            )
+            .unwrap();
+        assert!(result.contains("three-point NURBS parabola"));
+        assert!(result.contains("focus point"));
+        let mut objects = document.objects();
+        let Geometry::Point(focus) = objects.next().unwrap().geometry() else {
+            panic!("MarkFocus=Yes must add the focus first")
+        };
+        assert!(
+            focus
+                .distance_to(Point3::try_new(0.0, 0.0, 1.0).unwrap())
+                .unwrap()
+                < 1.0e-12
+        );
+        let Geometry::NurbsCurve(curve) = objects.next().unwrap().geometry() else {
+            panic!("the default ThroughPoint mode must add a NURBS curve")
+        };
+        assert_eq!(curve.degree(), 2);
+        assert_eq!(curve.domain(), 0.0..=1.0);
+        assert!(
+            curve.control_points()[1]
+                .point()
+                .distance_to(Point3::try_new(1.0, 0.0, -0.75).unwrap())
+                .unwrap()
+                < 1.0e-12
+        );
+        drop(objects);
+        assert_eq!(document.undo_label(), Some("Parabola3Pt"));
+        registry.execute(&mut document, "Undo").unwrap();
+
+        registry
+            .execute(
+                &mut document,
+                "Parabola3Pt Mode=Focus PickOrder=EndsFirst -1,0,0.25 3,0,2.25 0,0,1",
+            )
+            .unwrap();
+        let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+            panic!("Focus mode must add a NURBS curve")
+        };
+        assert!(
+            curve.control_points()[1]
+                .point()
+                .distance_to(Point3::try_new(-1.0, 0.0, 2.75).unwrap())
+                .unwrap()
+                < 1.0e-12
+        );
+        registry.execute(&mut document, "Undo").unwrap();
+
+        let vertex_forms = [
+            "Parabola3Pt -1,0,0.25 0,0,0 3,0,2.25 Mode=Vertex",
+            "Parabola3Pt -1,0,0.25 3,0,2.25 0,0,0 Mode=Vertex PickOrder=EndsFirst",
+            "Parabola3Pt 0,0,0 -1,0,0.25 3,0,2.25 Mode=Vertex PickOrder=EndsLast",
+        ];
+        for command in vertex_forms {
+            registry.execute(&mut document, command).unwrap();
+            let Geometry::NurbsCurve(curve) = document.objects().next().unwrap().geometry() else {
+                panic!("Vertex mode must add a NURBS curve")
+            };
+            assert_eq!(
+                curve.control_points()[0].point(),
+                Point3::try_new(-1.0, 0.0, 0.25).unwrap()
+            );
+            assert!(
+                curve.control_points()[1]
+                    .point()
+                    .distance_to(Point3::try_new(1.0, 0.0, -0.75).unwrap())
+                    .unwrap()
+                    < 1.0e-12
+            );
+            assert_eq!(
+                curve.control_points()[2].point(),
+                Point3::try_new(3.0, 0.0, 2.25).unwrap()
+            );
+            registry.execute(&mut document, "Undo").unwrap();
+        }
+
+        for invalid in [
+            "Parabola3Pt",
+            "Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25",
+            "Parabola3Pt -1,0,0.25 1,0,0.25 3,0,2.25 1,0,0.25",
+            "Parabola3Pt 0,0,0 -1,0,0 1,0,0 Mode=Vertex",
+            "Parabola3Pt -1,0,0 1,0,0 0,0,0 Mode=Focus PickOrder=EndsFirst",
+            "Parabola3Pt 0,0,0 1,0,0 2,0,0 3,0,0 Mode=Vertex",
+            "Parabola3Pt 0,0,0 1,0,0 2,0,0 Mode=Unknown",
+            "Parabola3Pt 0,0,0 1,0,0 2,0,0 Mode=Vertex PickOrder=Middle",
+            "Parabola3Pt 0,0,0 1,0,0 2,0,0 Mode=Vertex Mode=Focus",
+            "Parabola3Pt 0,0,0 1,0,0 2,0,0 Mode=Vertex MarkFocus=Yes MarkFocus=No",
         ] {
             assert!(
                 registry.execute(&mut document, invalid).is_err(),

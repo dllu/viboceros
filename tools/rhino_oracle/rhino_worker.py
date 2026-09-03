@@ -65,6 +65,11 @@ def _xyz(value):
     return [float(value.X), float(value.Y), float(value.Z)]
 
 
+def _command_point(coordinates):
+    point = _point(coordinates)
+    return "%.17g,%.17g,%.17g" % (point.X, point.Y, point.Z)
+
+
 def _xy(value):
     return [float(value.X), float(value.Y)]
 
@@ -5134,6 +5139,69 @@ def _execute(operation, iterations, tolerance):
                     document.Objects.Delete(obj.Id, True)
 
         return _measure(iterations, create_parabola)
+
+    if kind == "parabola_three_point":
+        document = Rhino.RhinoDoc.ActiveDoc
+        mode = str(operation["mode"])
+        mode_option = {
+            "focus": "Focus",
+            "through_point": "ThroughPoint",
+            "vertex": "Vertex",
+        }.get(mode)
+        if mode_option is None:
+            raise ValueError("unknown three-point parabola mode: %s" % mode)
+        start = _point(operation["start"])
+        special = _point(operation["special"])
+        end = _point(operation["end"])
+        command = (
+            "_-Parabola3Pt _Mode=_%s _PickOrder=_EndsFirst _MarkFocus=_No "
+            "%s %s %s"
+            % (
+                mode_option,
+                _command_point(_xyz(start)),
+                _command_point(_xyz(end)),
+                _command_point(_xyz(special)),
+            )
+        )
+        if mode == "through_point":
+            direction = _vector(operation.get("opening_direction"))
+            _unit(
+                Rhino.Geometry.Vector3d(direction),
+                tolerance["absolute"],
+                "three-point parabola opening direction",
+            )
+            direction_point = special + direction
+            command += " " + _command_point(_xyz(direction_point))
+
+        def create_parabola_three_point():
+            before = set(obj.Id for obj in document.Objects)
+            document.Objects.UnselectAll()
+            succeeded = Rhino.RhinoApp.RunScript(command, False)
+            created = [obj for obj in document.Objects if obj.Id not in before]
+            curve = None
+            try:
+                if len(created) != 1:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "three-point parabola macro %r returned %r and created "
+                        "%d objects; history tail: %s"
+                        % (command, succeeded, len(created), history[-3000:])
+                    )
+                geometry = created[0].Geometry
+                if isinstance(geometry, Rhino.Geometry.Curve):
+                    curve = geometry.DuplicateCurve()
+                if curve is None:
+                    raise ValueError(
+                        "three-point parabola did not create curve geometry"
+                    )
+                return _nurbs_curve_definition(curve)
+            finally:
+                if curve is not None:
+                    curve.Dispose()
+                for obj in created:
+                    document.Objects.Delete(obj.Id, True)
+
+        return _measure(iterations, create_parabola_three_point)
 
     if kind == "paraboloid":
         document = Rhino.RhinoDoc.ActiveDoc

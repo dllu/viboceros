@@ -433,6 +433,15 @@ pub enum Operation {
         height: f64,
         half: bool,
     },
+    ParabolaThreePoint {
+        id: String,
+        mode: ParabolaThreePointMode,
+        start: [f64; 3],
+        special: [f64; 3],
+        end: [f64; 3],
+        #[serde(default)]
+        opening_direction: Option<[f64; 3]>,
+    },
     Paraboloid {
         id: String,
         origin: [f64; 3],
@@ -554,6 +563,14 @@ pub enum Operation {
     },
 }
 
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+#[serde(rename_all = "snake_case")]
+pub enum ParabolaThreePointMode {
+    Focus,
+    ThroughPoint,
+    Vertex,
+}
+
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
@@ -620,6 +637,7 @@ impl Operation {
             | Self::MeshTruncatedCone { id, .. }
             | Self::TruncatedCone { id, .. }
             | Self::Parabola { id, .. }
+            | Self::ParabolaThreePoint { id, .. }
             | Self::Paraboloid { id, .. }
             | Self::Pyramid { id, .. }
             | Self::TruncatedPyramid { id, .. }
@@ -2027,6 +2045,46 @@ fn execute(
                     black_box(*height),
                     black_box(*half),
                 )
+            })?;
+            (nurbs_curve_definition_value(&curve), elapsed)
+        }
+        Operation::ParabolaThreePoint {
+            mode,
+            start,
+            special,
+            end,
+            opening_direction,
+            ..
+        } => {
+            let start = point(*start)?;
+            let special = point(*special)?;
+            let end = point(*end)?;
+            let opening_direction = opening_direction.map(Vector3::try_from).transpose()?;
+            let (curve, elapsed) = measure(iterations, || match mode {
+                ParabolaThreePointMode::Focus => NurbsCurve::try_parabola_from_focus(
+                    black_box(special),
+                    black_box(start),
+                    black_box(end),
+                    tolerance,
+                ),
+                ParabolaThreePointMode::ThroughPoint => {
+                    let direction = opening_direction.ok_or(GeometryError::Degenerate {
+                        context: "three-point parabola opening direction",
+                    })?;
+                    NurbsCurve::try_parabola_through_point(
+                        black_box(start),
+                        black_box(special),
+                        black_box(end),
+                        black_box(direction),
+                        tolerance,
+                    )
+                }
+                ParabolaThreePointMode::Vertex => NurbsCurve::try_parabola_from_vertex(
+                    black_box(special),
+                    black_box(start),
+                    black_box(end),
+                    tolerance,
+                ),
             })?;
             (nurbs_curve_definition_value(&curve), elapsed)
         }
@@ -6580,6 +6638,60 @@ mod tests {
                 {"point": [1.0, 4.0, 4.0], "weight": 1.0},
             ])
         );
+    }
+
+    #[test]
+    fn captures_all_three_point_parabola_modes_for_oracle_comparison() {
+        let start = [-1.0, 0.0, 0.25];
+        let end = [3.0, 0.0, 2.25];
+        let response = run_request(&request(vec![
+            Operation::ParabolaThreePoint {
+                id: "vertex".to_owned(),
+                mode: ParabolaThreePointMode::Vertex,
+                start,
+                special: [0.0, 0.0, 0.0],
+                end,
+                opening_direction: None,
+            },
+            Operation::ParabolaThreePoint {
+                id: "focus".to_owned(),
+                mode: ParabolaThreePointMode::Focus,
+                start,
+                special: [0.0, 0.0, 1.0],
+                end,
+                opening_direction: None,
+            },
+            Operation::ParabolaThreePoint {
+                id: "through-point".to_owned(),
+                mode: ParabolaThreePointMode::ThroughPoint,
+                start,
+                special: [1.0, 0.0, 0.25],
+                end,
+                opening_direction: Some([0.0, 0.0, 1.0]),
+            },
+        ]))
+        .unwrap();
+
+        for result in &response.results {
+            assert_eq!(result.value["degree"], 2);
+            assert_eq!(result.value["domain"], json!([0.0, 1.0]));
+            assert_eq!(result.value["knots"], json!([0.0, 0.0, 0.0, 1.0, 1.0, 1.0]));
+        }
+        for (result, expected) in
+            response
+                .results
+                .iter()
+                .zip([[1.0, 0.0, -0.75], [-1.0, 0.0, 2.75], [1.0, 0.0, -0.75]])
+        {
+            for (coordinate, expected) in result.value["control_points"][1]["point"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(expected)
+            {
+                assert!((coordinate.as_f64().unwrap() - expected).abs() < 1.0e-12);
+            }
+        }
     }
 
     #[test]
