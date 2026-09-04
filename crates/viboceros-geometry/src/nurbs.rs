@@ -1790,6 +1790,9 @@ impl NurbsCurve {
                 {
                     continue;
                 }
+                if curve_nodes_are_certifiably_disjoint(&first, &second, distance_tolerance)? {
+                    continue;
+                }
                 let overlap =
                     curve_span_overlap(&first.curve, &second.curve, distance_tolerance, tolerance)?;
                 if let Some(overlap) = overlap {
@@ -5653,6 +5656,48 @@ fn bounding_boxes_overlap(first: BoundingBox3, second: BoundingBox3, padding: Re
         first_min[axis] <= second_max[axis] + padding
             && second_min[axis] <= first_max[axis] + padding
     })
+}
+
+/// Uses a small, bounded subdivision tree to prove that two positive-weight
+/// rational spans cannot meet. This is deliberately only an early-out: any
+/// branch whose refined control hulls still overlap is left to the complete
+/// intersection and tangency machinery.
+fn curve_nodes_are_certifiably_disjoint(
+    first: &CurveIntersectionNode,
+    second: &CurveIntersectionNode,
+    padding: Real,
+) -> Result<bool, GeometryError> {
+    const MAX_ADDITIONAL_DEPTH: u8 = 4;
+
+    if !first.convex_hull_bounds || !second.convex_hull_bounds {
+        return Ok(false);
+    }
+    let maximum_combined_depth = first
+        .depth
+        .saturating_add(second.depth)
+        .saturating_add(MAX_ADDITIONAL_DEPTH);
+    let mut stack = vec![(first.clone(), second.clone())];
+    while let Some((first, second)) = stack.pop() {
+        if !bounding_boxes_overlap(first.bounds, second.bounds, padding)
+            || !curve_control_hulls_overlap_on_local_axes(&first.curve, &second.curve, padding)?
+        {
+            continue;
+        }
+        if first.depth.saturating_add(second.depth) >= maximum_combined_depth {
+            return Ok(false);
+        }
+
+        if first.spatial_size()? >= second.spatial_size()? {
+            let [left, right] = first.split()?;
+            stack.push((right, second.clone()));
+            stack.push((left, second));
+        } else {
+            let [left, right] = second.split()?;
+            stack.push((first.clone(), right));
+            stack.push((first, left));
+        }
+    }
+    Ok(true)
 }
 
 fn curve_control_hulls_overlap_on_local_axes(
@@ -9601,6 +9646,42 @@ mod tests {
         assert_point_near(intersections[0].point(), contact);
         assert!((intersections[0].first_parameter() - parameter).abs() < 1.0e-11);
         assert!(intersections[0].second_parameter().abs() < 1.0e-11);
+    }
+
+    #[test]
+    fn curve_intersection_certifies_nested_rational_arcs_are_disjoint() {
+        let quarter_circle = |radius: Real| {
+            NurbsCurve::try_new_rational(
+                2,
+                vec![
+                    WeightedPoint3::try_new(point(5.0 + radius, 5.0), 1.0).unwrap(),
+                    WeightedPoint3::try_new(point(5.0 + radius, 5.0 + radius), 0.5_f64.sqrt())
+                        .unwrap(),
+                    WeightedPoint3::try_new(point(5.0, 5.0 + radius), 1.0).unwrap(),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap()
+        };
+        let outer = quarter_circle(3.0);
+        let inner = quarter_circle(1.5);
+        let outer_node = CurveIntersectionNode::try_new(outer.clone(), 0).unwrap();
+        let inner_node = CurveIntersectionNode::try_new(inner.clone(), 0).unwrap();
+
+        assert!(
+            curve_nodes_are_certifiably_disjoint(
+                &outer_node,
+                &inner_node,
+                Tolerance::DEFAULT.absolute(),
+            )
+            .unwrap()
+        );
+        assert!(
+            outer
+                .intersections_with_curve(&inner, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]
