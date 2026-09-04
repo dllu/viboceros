@@ -39,8 +39,8 @@ selector for a one-pick viewport workflow.
 `DupFaceBorder` duplicates the exact non-seam border of the nearest selected
 surface or B-rep face, or accepts ordered zero-based `Faces=0,2`/`Faces=All`
 selectors. Omit the selector for a one-pick viewport workflow. Linear edge
-chains become one closed polyline; curved multi-edge chains retain exact NURBS
-segments in a group until polycurves are available. Holes and disconnected
+chains become one closed polyline; curved multi-edge chains currently retain exact NURBS
+segments in a group. Converting these border outputs to polycurves is pending. Holes and disconnected
 borders remain separate, singular and seam trims are omitted, and fresh
 selected results default to the current layer (`OutputLayer=Input` is also
 supported).
@@ -53,6 +53,8 @@ untrimmed NURBS surface control nets. Periodic control windows align to the
 active domain, closed seams remain explicit, and singular surface sides become
 triangles without artificial quad diagonals. Results default to the current
 layer; `OutputLayer=Input` and `TargetObject` use each source object's layer.
+Polycurves produce one connected polygon through the original segment controls,
+sharing duplicated junction controls without elevating segment degrees.
 
 ## Arrays, joining, exploding, and measurement
 
@@ -62,12 +64,13 @@ settings can follow the count. `Array 3 2` picks two top-view corners for a
 rectangular array. A third count adds Z levels and requires `ZDistance=...`;
 `Mode=Fill` treats the picked rectangle as the outside array span. `Join`
 connects unambiguous line/polyline endpoint chains within the document
-tolerance. `Explode` turns polylines into line segments, frees point-cloud
+tolerance. `Explode` turns polylines into line segments and polycurves into exact
+NURBS segments in their composite parameter intervals, frees point-cloud
 members as points, duplicates polysurface faces as exact trimmed B-reps, and
 splits meshes at disconnected or unwelded edges. Parts are emitted in Rhino's
 reverse component order, inherit attributes, and replace their source in every
 existing group. `Length` measures
-analytic, polyline, and NURBS curves with controlled accuracy; `Area` measures
+analytic, polyline, polycurve, and NURBS curves with controlled accuracy; `Area` measures
 circles, ellipses, closed planar polylines, exact NURBS surfaces, B-reps, and
 meshes. Full-domain NURBS faces are integrated per knot-span rectangle, while
 planar trimmed B-rep faces use their exact boundary integrals, including inner

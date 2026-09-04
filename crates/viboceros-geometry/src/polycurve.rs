@@ -3,8 +3,8 @@
 use std::ops::RangeInclusive;
 
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Real, Tolerance, Vector3,
-    nurbs::curve_points_coincident, require_finite,
+    AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Polyline3, Real, Tolerance,
+    Vector3, nurbs::curve_points_coincident, require_finite,
 };
 
 #[cfg(test)]
@@ -37,6 +37,19 @@ pub struct PolyCurve3 {
 }
 
 impl PolyCurve3 {
+    /// One connected control polygon through the original segment controls,
+    /// removing duplicated junction controls without elevating degrees.
+    pub fn control_polygon(&self, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
+        let mut points = Vec::new();
+        for segment in &self.segments {
+            let polygon = segment.control_polygon(tolerance)?;
+            let vertices = polygon.vertices();
+            let skip = usize::from(points.last() == vertices.first());
+            points.extend_from_slice(&vertices[skip..]);
+        }
+        Polyline3::try_new(points, tolerance)
+    }
+
     /// Appends segments in the supplied order. The first natural domain starts
     /// the composite, and each later segment contributes its natural span.
     pub fn try_new(segments: Vec<NurbsCurve>) -> Result<Self, GeometryError> {
@@ -66,6 +79,11 @@ impl PolyCurve3 {
         for (index, segment) in segments.iter().enumerate() {
             check_interval(parameters[index], parameters[index + 1])?;
             check_interval(*segment.domain().start(), *segment.domain().end())?;
+            if segments.len() > 1 && segment.is_closed()? {
+                return Err(invalid(
+                    "closed segments are only valid in a single-segment polycurve",
+                ));
+            }
             if index > 0 {
                 let previous = &segments[index - 1];
                 if !curve_points_coincident(

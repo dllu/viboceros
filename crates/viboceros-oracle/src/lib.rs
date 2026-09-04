@@ -37,6 +37,7 @@ mod mass_properties;
 pub use mass_properties::{MassBoundary, TrimmedMassFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
+mod polycurve_document;
 
 pub const PROTOCOL_VERSION: u32 = 1;
 const MAX_ITERATIONS: u32 = 1_000_000;
@@ -78,6 +79,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PolycurveDocument {
+        id: String,
+        #[serde(flatten)]
+        fixture: PolyCurveFixture,
+    },
     PolycurveGeometry {
         id: String,
         #[serde(flatten)]
@@ -1274,6 +1280,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
             | Self::DocumentObjectStateCycle { id, .. }
             | Self::DocumentObjectSwapCycle { id }
@@ -1549,6 +1556,9 @@ fn execute(
     let (value, elapsed_ns) = match operation {
         Operation::PolycurveGeometry { fixture, .. } => {
             polycurve::run(fixture, iterations, tolerance)?
+        }
+        Operation::PolycurveDocument { fixture, .. } => {
+            polycurve_document::run(fixture, iterations, tolerance)?
         }
         Operation::TrimmedSurfaceMassProperties { fixture, .. } => {
             mass_properties::run(fixture, iterations, tolerance)?

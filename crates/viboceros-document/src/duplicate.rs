@@ -1,4 +1,4 @@
-use viboceros_geometry::{GeometryError, MeshFace, NurbsCurve, Point3, Tolerance};
+use viboceros_geometry::{GeometryError, MeshFace, NurbsCurve, Point3, PolyCurve3, Tolerance};
 
 use super::Geometry;
 
@@ -10,7 +10,8 @@ impl Geometry {
     /// Compares geometry by Rhino-compatible shape value while ignoring
     /// object attributes.
     ///
-    /// Curve direction is ignored, but the natural seam of a closed
+    /// Open-curve direction is ignored. Closed polycurves retain segment
+    /// direction and order; the natural seam of a closed
     /// piecewise-linear or NURBS curve remains significant, matching Rhino's
     /// duplicate-object selection. Points and meshes compare stored values;
     /// point-cloud locations and supported curves use OpenNURBS' scale-aware
@@ -35,6 +36,12 @@ impl Geometry {
         }
         if let (Self::Brep(left), Self::Brep(right)) = (self, other) {
             return Ok(left == right);
+        }
+        if let (Self::PolyCurve(left), Self::PolyCurve(right)) = (self, other) {
+            return Ok(polycurve_values_equal(left, right)
+                || (!left.is_closed()?
+                    && !right.is_closed()?
+                    && polycurve_values_equal(left, &right.reversed()?)));
         }
         if let (Some(left), Some(right)) = (circle_components(self)?, circle_components(other)?) {
             let distance_tolerance =
@@ -74,6 +81,7 @@ impl Geometry {
                 DuplicateGeometryFamily::PiecewiseLinear
             }
             Self::NurbsCurve(_) => DuplicateGeometryFamily::NurbsCurve,
+            Self::PolyCurve(_) => DuplicateGeometryFamily::PolyCurve,
             Self::NurbsSurface(_) => DuplicateGeometryFamily::NurbsSurface,
             Self::Brep(_) => DuplicateGeometryFamily::Brep,
             Self::Mesh(_) => DuplicateGeometryFamily::Mesh,
@@ -135,6 +143,7 @@ impl Geometry {
                     DuplicateGeometryKey::NurbsCurve(canonical_nurbs_curve_key(curve))
                 }
             }
+            Self::PolyCurve(_) => DuplicateGeometryKey::PolyCurve,
             Self::NurbsSurface(surface) => DuplicateGeometryKey::NurbsSurface {
                 degree_u: surface.degree_u(),
                 degree_v: surface.degree_v(),
@@ -151,6 +160,22 @@ impl Geometry {
             },
         })
     }
+}
+
+// The outer domain is irrelevant, but relative segment intervals are part of
+// Rhino's composite geometry value. Closed curves retain segment direction and
+// order; the caller also checks whole-chain reversal for open composites.
+fn polycurve_values_equal(left: &PolyCurve3, right: &PolyCurve3) -> bool {
+    left.segments().len() == right.segments().len()
+        && normalized_parameter_values(left.parameters())
+            .iter()
+            .zip(normalized_parameter_values(right.parameters()))
+            .all(|(left, right)| (*left - right).abs() <= GEOMETRY_EQUALITY_SQRT_EPSILON)
+        && left
+            .segments()
+            .iter()
+            .zip(right.segments())
+            .all(|(left, right)| directed_nurbs_curve_key(left) == directed_nurbs_curve_key(right))
 }
 
 fn points_equal_with_fixed_zero_policy(left: Point3, right: Point3) -> bool {
@@ -176,6 +201,7 @@ pub(super) enum DuplicateGeometryFamily {
     Arc,
     Ellipse,
     NurbsCurve,
+    PolyCurve,
     NurbsSurface,
     Brep,
     Mesh,
@@ -201,6 +227,7 @@ enum DuplicateGeometryKey {
         axes: [(u64, [u64; 3]); 2],
     },
     NurbsCurve(NurbsCurveDuplicateKey),
+    PolyCurve,
     NurbsSurface {
         degree_u: usize,
         degree_v: usize,
@@ -319,12 +346,16 @@ fn nurbs_piecewise_linear_vertices(curve: &NurbsCurve) -> Option<Vec<Point3>> {
         .then_some(vertices)
 }
 
-fn canonical_nurbs_curve_key(curve: &NurbsCurve) -> NurbsCurveDuplicateKey {
-    let forward = NurbsCurveDuplicateKey {
+fn directed_nurbs_curve_key(curve: &NurbsCurve) -> NurbsCurveDuplicateKey {
+    NurbsCurveDuplicateKey {
         degree: curve.degree(),
         controls: normalized_control_keys(curve.control_points()),
         knots: normalized_parameter_keys(curve.knots()),
-    };
+    }
+}
+
+fn canonical_nurbs_curve_key(curve: &NurbsCurve) -> NurbsCurveDuplicateKey {
+    let forward = directed_nurbs_curve_key(curve);
     let mut reversed_controls = curve.control_points().to_vec();
     reversed_controls.reverse();
     let mut reversed_knots = normalized_parameter_values(curve.knots());

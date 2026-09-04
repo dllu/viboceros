@@ -50,7 +50,7 @@ struct BridgeObject {
   std::vector<double> knots_u;
   std::vector<double> knots_v;
   std::vector<uint32_t> indices;
-  std::vector<uint8_t> brep_data;
+  std::vector<uint8_t> geometry_data;
   std::vector<int32_t> group_indices;
 };
 
@@ -89,6 +89,9 @@ bool finite_coordinates(const double* values, size_t count) {
 
 constexpr uint8_t kBrepMagic[8] = {'V', 'I', 'B', 'O', 'B', 'R', 'P', 0};
 constexpr uint32_t kBrepVersion = 1;
+constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
+constexpr uint32_t kPolyCurveVersion = 1;
+constexpr size_t kMaxPolyCurveSegments = 65536;
 constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 
 class ByteWriter {
@@ -359,6 +362,33 @@ bool write_nurbs_curve(const ON_Curve& source, int dimension,
   return true;
 }
 
+bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
+  // Flatten a private copy: never alter geometry owned by the source model.
+  ON_PolyCurve curve(source);
+  curve.RemoveNesting();
+  if (!curve.IsValid() || curve.Count() <= 0 ||
+      static_cast<size_t>(curve.Count()) > kMaxPolyCurveSegments) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POLYCURVE;
+  ByteWriter writer(output.geometry_data);
+  writer.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic));
+  writer.U32(kPolyCurveVersion);
+  writer.U64(static_cast<uint64_t>(curve.Count()));
+  writer.Double(curve.Domain()[0]);
+  for (int index = 0; index < curve.Count(); ++index) {
+    writer.Double(curve.SegmentDomain(index)[1]);
+  }
+  for (int index = 0; index < curve.Count(); ++index) {
+    const ON_Curve* segment = curve.SegmentCurve(index);
+    if (segment == nullptr || ON_PolyCurve::Cast(segment) != nullptr ||
+        !write_nurbs_curve(*segment, 3, writer)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
   ON_NurbsSurface surface;
   if (source.GetNurbForm(surface) <= 0 || !surface.IsValid() ||
@@ -410,7 +440,7 @@ bool append_brep(const ON_Brep& source, BridgeObject& output) {
   }
 
   output.object_type = VIBO_OBJECT_BREP;
-  ByteWriter writer(output.brep_data);
+  ByteWriter writer(output.geometry_data);
   writer.Bytes(kBrepMagic, sizeof(kBrepMagic));
   writer.U32(kBrepVersion);
   writer.U64(static_cast<uint64_t>(brep.m_V.Count()));
@@ -907,6 +937,51 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
   return brep.release();
 }
 
+ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
+                           std::string& error) {
+  if (bytes == nullptr || count == 0) {
+    error = "polycurve payload is empty";
+    return nullptr;
+  }
+  ByteReader reader(bytes, count);
+  uint32_t version = 0;
+  size_t segment_count = 0;
+  if (!reader.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic)) ||
+      !reader.U32(version) || version != kPolyCurveVersion ||
+      !reader.Count(segment_count) || segment_count == 0 ||
+      segment_count > kMaxPolyCurveSegments ||
+      segment_count + 1 > reader.Remaining() / sizeof(double)) {
+    error = "polycurve header is malformed";
+    return nullptr;
+  }
+  std::vector<double> parameters(segment_count + 1);
+  for (size_t index = 0; index <= segment_count; ++index) {
+    if (!reader.Double(parameters[index]) || !std::isfinite(parameters[index]) ||
+        (index > 0 && !(parameters[index - 1] < parameters[index]))) {
+      error = "polycurve parameters are invalid";
+      return nullptr;
+    }
+  }
+  auto curve = std::make_unique<ON_PolyCurve>();
+  for (size_t index = 0; index < segment_count; ++index) {
+    auto segment = read_nurbs_curve(reader, 3, error);
+    if (!segment) {
+      return nullptr;
+    }
+    if (!curve->Append(segment.get())) {
+      error = "cannot append polycurve segment";
+      return nullptr;
+    }
+    segment.release();  // Ownership transfers only after a successful append.
+  }
+  if (!reader.Finished() || !curve->SetParameterization(parameters.data()) ||
+      !curve->IsValid()) {
+    error = "polycurve is invalid in OpenNURBS";
+    return nullptr;
+  }
+  return curve.release();
+}
+
 ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
   if (!finite_coordinates(source.coordinates, source.coordinate_count) ||
       !finite_coordinates(source.knots_u, source.knot_u_count) ||
@@ -1063,17 +1138,21 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       }
       return surface;
     }
-    case VIBO_OBJECT_BREP: {
+    case VIBO_OBJECT_BREP:
+    case VIBO_OBJECT_POLYCURVE: {
       if (source.degree_u != 0 || source.degree_v != 0 ||
           source.control_point_count_u != 0 ||
           source.control_point_count_v != 0 || source.coordinate_count != 0 ||
           source.knot_u_count != 0 || source.knot_v_count != 0 ||
-          source.index_count != 0 || source.brep_data_count == 0 ||
-          source.brep_data == nullptr) {
-        error = "B-rep object payload is inconsistent";
+          source.index_count != 0 || source.geometry_data_count == 0 ||
+          source.geometry_data == nullptr) {
+        error = "structured geometry payload is inconsistent";
         return nullptr;
       }
-      return brep_for(source.brep_data, source.brep_data_count, error);
+      if (source.object_type == VIBO_OBJECT_POLYCURVE) {
+        return polycurve_for(source.geometry_data, source.geometry_data_count, error);
+      }
+      return brep_for(source.geometry_data, source.geometry_data_count, error);
     }
     case VIBO_OBJECT_TRIANGLE_MESH: {
       if (source.coordinate_count == 0 || source.coordinate_count % 3 != 0 ||
@@ -1253,6 +1332,8 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         supported = append_brep(*brep, object);
       } else if (const ON_Mesh* mesh = ON_Mesh::Cast(geometry)) {
         supported = append_mesh(*mesh, object);
+      } else if (const ON_PolyCurve* curve = ON_PolyCurve::Cast(geometry)) {
+        supported = append_polycurve(*curve, object);
       } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
         supported = append_nurbs(*curve, object);
       } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {
@@ -1335,11 +1416,11 @@ extern "C" size_t vibo_3dm_unsupported_object_count(
 extern "C" int32_t vibo_3dm_object(
     const ViboThreeDmModel* model, size_t index, ViboObjectInfo* info,
     const double** coordinates, const double** knots_u, const double** knots_v,
-    const uint32_t** indices, const uint8_t** brep_data,
+    const uint32_t** indices, const uint8_t** geometry_data,
     const int32_t** group_indices) {
   if (model == nullptr || index >= model->objects.size() || info == nullptr ||
       coordinates == nullptr || knots_u == nullptr || knots_v == nullptr ||
-      indices == nullptr || brep_data == nullptr || group_indices == nullptr) {
+      indices == nullptr || geometry_data == nullptr || group_indices == nullptr) {
     return 0;
   }
   const BridgeObject& object = model->objects[index];
@@ -1361,14 +1442,14 @@ extern "C" int32_t vibo_3dm_object(
            object.knots_u.size(),
            object.knots_v.size(),
            object.indices.size(),
-           object.brep_data.size(),
+           object.geometry_data.size(),
            object.group_indices.size()};
   *coordinates = object.coordinates.empty() ? nullptr : object.coordinates.data();
   *knots_u = object.knots_u.empty() ? nullptr : object.knots_u.data();
   *knots_v = object.knots_v.empty() ? nullptr : object.knots_v.data();
   *indices = object.indices.empty() ? nullptr : object.indices.data();
-  *brep_data =
-      object.brep_data.empty() ? nullptr : object.brep_data.data();
+  *geometry_data =
+      object.geometry_data.empty() ? nullptr : object.geometry_data.data();
   *group_indices =
       object.group_indices.empty() ? nullptr : object.group_indices.data();
   return 1;

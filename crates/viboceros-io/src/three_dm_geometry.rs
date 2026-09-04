@@ -1,27 +1,63 @@
 use viboceros_geometry::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
-    GeometryError, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3, SurfaceIso, Tolerance,
-    WeightedPoint2, WeightedPoint3,
+    GeometryError, MAX_POLYCURVE_SEGMENTS, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3,
+    PolyCurve3, SurfaceIso, Tolerance, WeightedPoint2, WeightedPoint3,
 };
 
 const MAGIC: &[u8; 8] = b"VIBOBRP\0";
+const POLYCURVE_MAGIC: &[u8; 8] = b"VIBOPLY\0";
 const VERSION: u32 = 1;
 const NO_EDGE: u64 = u64::MAX;
 
 #[derive(Debug)]
-pub(crate) enum BrepCodecError {
+pub(crate) enum GeometryCodecError {
     Malformed,
     SizeOverflow,
     Geometry(GeometryError),
 }
 
-impl From<GeometryError> for BrepCodecError {
+impl From<GeometryError> for GeometryCodecError {
     fn from(error: GeometryError) -> Self {
         Self::Geometry(error)
     }
 }
 
-pub(crate) fn encode(brep: &Brep) -> Result<Vec<u8>, BrepCodecError> {
+pub(crate) fn encode_polycurve(curve: &PolyCurve3) -> Result<Vec<u8>, GeometryCodecError> {
+    let mut writer = Writer::default();
+    writer.bytes.extend_from_slice(POLYCURVE_MAGIC);
+    writer.u32(VERSION);
+    writer.len(curve.segments().len())?;
+    for parameter in curve.parameters() {
+        writer.f64(*parameter);
+    }
+    for segment in curve.segments() {
+        writer.curve3(segment)?;
+    }
+    Ok(writer.bytes)
+}
+
+pub(crate) fn decode_polycurve(bytes: &[u8]) -> Result<PolyCurve3, GeometryCodecError> {
+    let mut reader = Reader { bytes, position: 0 };
+    if reader.take(POLYCURVE_MAGIC.len())? != POLYCURVE_MAGIC || reader.u32()? != VERSION {
+        return Err(GeometryCodecError::Malformed);
+    }
+    let count = reader.len()?;
+    if count == 0 || count > MAX_POLYCURVE_SEGMENTS {
+        return Err(GeometryCodecError::Malformed);
+    }
+    let parameters = (0..=count)
+        .map(|_| reader.f64())
+        .collect::<Result<Vec<_>, _>>()?;
+    let segments = (0..count)
+        .map(|_| reader.curve3())
+        .collect::<Result<Vec<_>, _>>()?;
+    if reader.position != bytes.len() {
+        return Err(GeometryCodecError::Malformed);
+    }
+    Ok(PolyCurve3::try_with_segment_domains(segments, parameters)?)
+}
+
+pub(crate) fn encode_brep(brep: &Brep) -> Result<Vec<u8>, GeometryCodecError> {
     let mut writer = Writer::default();
     writer.bytes.extend_from_slice(MAGIC);
     writer.u32(VERSION);
@@ -53,7 +89,9 @@ pub(crate) fn encode(brep: &Brep) -> Result<Vec<u8>, BrepCodecError> {
                 writer.index(trim.vertices()[0])?;
                 writer.index(trim.vertices()[1])?;
                 writer.u64(match trim.edge() {
-                    Some(edge) => u64::try_from(edge).map_err(|_| BrepCodecError::SizeOverflow)?,
+                    Some(edge) => {
+                        u64::try_from(edge).map_err(|_| GeometryCodecError::SizeOverflow)?
+                    }
                     None => NO_EDGE,
                 });
                 writer.boolean(trim.is_reversed_3d());
@@ -82,10 +120,10 @@ pub(crate) fn encode(brep: &Brep) -> Result<Vec<u8>, BrepCodecError> {
     Ok(writer.bytes)
 }
 
-pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCodecError> {
+pub(crate) fn decode_brep(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, GeometryCodecError> {
     let mut reader = Reader { bytes, position: 0 };
     if reader.take(MAGIC.len())? != MAGIC || reader.u32()? != VERSION {
-        return Err(BrepCodecError::Malformed);
+        return Err(GeometryCodecError::Malformed);
     }
     let vertex_count = reader.len()?;
     let edge_count = reader.len()?;
@@ -112,7 +150,7 @@ pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCod
             let loop_type = match reader.u8()? {
                 1 => BrepLoopType::Outer,
                 2 => BrepLoopType::Inner,
-                _ => return Err(BrepCodecError::Malformed),
+                _ => return Err(GeometryCodecError::Malformed),
             };
             let trim_count = reader.len()?;
             let mut trims = Vec::with_capacity(trim_count);
@@ -121,7 +159,7 @@ pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCod
                 let edge = match reader.u64()? {
                     NO_EDGE => None,
                     index => {
-                        Some(usize::try_from(index).map_err(|_| BrepCodecError::SizeOverflow)?)
+                        Some(usize::try_from(index).map_err(|_| GeometryCodecError::SizeOverflow)?)
                     }
                 };
                 let reversed_3d = reader.boolean()?;
@@ -130,7 +168,7 @@ pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCod
                     2 => BrepTrimType::Mated,
                     3 => BrepTrimType::Seam,
                     4 => BrepTrimType::Singular,
-                    _ => return Err(BrepCodecError::Malformed),
+                    _ => return Err(GeometryCodecError::Malformed),
                 };
                 let iso = match reader.u8()? {
                     0 => SurfaceIso::NotIso,
@@ -140,7 +178,7 @@ pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCod
                     4 => SurfaceIso::South,
                     5 => SurfaceIso::East,
                     6 => SurfaceIso::North,
-                    _ => return Err(BrepCodecError::Malformed),
+                    _ => return Err(GeometryCodecError::Malformed),
                 };
                 let trim_tolerance = [reader.f64()?, reader.f64()?];
                 let curve = reader.curve2()?;
@@ -159,7 +197,7 @@ pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCod
         faces.push(BrepFace::try_new(surface, reversed, loops)?);
     }
     if reader.position != bytes.len() {
-        return Err(BrepCodecError::Malformed);
+        return Err(GeometryCodecError::Malformed);
     }
     Ok(Brep::try_new(vertices, edges, faces, tolerance)?)
 }
@@ -190,12 +228,12 @@ impl Writer {
         self.u64(value.to_bits());
     }
 
-    fn len(&mut self, value: usize) -> Result<(), BrepCodecError> {
-        self.u64(u64::try_from(value).map_err(|_| BrepCodecError::SizeOverflow)?);
+    fn len(&mut self, value: usize) -> Result<(), GeometryCodecError> {
+        self.u64(u64::try_from(value).map_err(|_| GeometryCodecError::SizeOverflow)?);
         Ok(())
     }
 
-    fn index(&mut self, value: usize) -> Result<(), BrepCodecError> {
+    fn index(&mut self, value: usize) -> Result<(), GeometryCodecError> {
         self.len(value)
     }
 
@@ -205,8 +243,8 @@ impl Writer {
         }
     }
 
-    fn curve3(&mut self, curve: &NurbsCurve) -> Result<(), BrepCodecError> {
-        self.u32(u32::try_from(curve.degree()).map_err(|_| BrepCodecError::SizeOverflow)?);
+    fn curve3(&mut self, curve: &NurbsCurve) -> Result<(), GeometryCodecError> {
+        self.u32(u32::try_from(curve.degree()).map_err(|_| GeometryCodecError::SizeOverflow)?);
         self.len(curve.control_points().len())?;
         self.len(curve.knots().len())?;
         for control in curve.control_points() {
@@ -219,8 +257,8 @@ impl Writer {
         Ok(())
     }
 
-    fn curve2(&mut self, curve: &NurbsCurve2) -> Result<(), BrepCodecError> {
-        self.u32(u32::try_from(curve.degree()).map_err(|_| BrepCodecError::SizeOverflow)?);
+    fn curve2(&mut self, curve: &NurbsCurve2) -> Result<(), GeometryCodecError> {
+        self.u32(u32::try_from(curve.degree()).map_err(|_| GeometryCodecError::SizeOverflow)?);
         self.len(curve.control_points().len())?;
         self.len(curve.knots().len())?;
         for control in curve.control_points() {
@@ -234,9 +272,9 @@ impl Writer {
         Ok(())
     }
 
-    fn surface(&mut self, surface: &NurbsSurface) -> Result<(), BrepCodecError> {
-        self.u32(u32::try_from(surface.degree_u()).map_err(|_| BrepCodecError::SizeOverflow)?);
-        self.u32(u32::try_from(surface.degree_v()).map_err(|_| BrepCodecError::SizeOverflow)?);
+    fn surface(&mut self, surface: &NurbsSurface) -> Result<(), GeometryCodecError> {
+        self.u32(u32::try_from(surface.degree_u()).map_err(|_| GeometryCodecError::SizeOverflow)?);
+        self.u32(u32::try_from(surface.degree_v()).map_err(|_| GeometryCodecError::SizeOverflow)?);
         self.len(surface.control_point_count_u())?;
         self.len(surface.control_point_count_v())?;
         self.len(surface.knots_u().len())?;
@@ -261,69 +299,90 @@ struct Reader<'a> {
 }
 
 impl Reader<'_> {
-    fn take(&mut self, count: usize) -> Result<&[u8], BrepCodecError> {
+    fn take(&mut self, count: usize) -> Result<&[u8], GeometryCodecError> {
         let end = self
             .position
             .checked_add(count)
             .filter(|end| *end <= self.bytes.len())
-            .ok_or(BrepCodecError::Malformed)?;
+            .ok_or(GeometryCodecError::Malformed)?;
         let values = &self.bytes[self.position..end];
         self.position = end;
         Ok(values)
     }
 
-    fn u8(&mut self) -> Result<u8, BrepCodecError> {
+    fn u8(&mut self) -> Result<u8, GeometryCodecError> {
         Ok(self.take(1)?[0])
     }
 
-    fn boolean(&mut self) -> Result<bool, BrepCodecError> {
+    fn boolean(&mut self) -> Result<bool, GeometryCodecError> {
         match self.u8()? {
             0 => Ok(false),
             1 => Ok(true),
-            _ => Err(BrepCodecError::Malformed),
+            _ => Err(GeometryCodecError::Malformed),
         }
     }
 
-    fn u32(&mut self) -> Result<u32, BrepCodecError> {
+    fn u32(&mut self) -> Result<u32, GeometryCodecError> {
         Ok(u32::from_le_bytes(
             self.take(4)?
                 .try_into()
-                .map_err(|_| BrepCodecError::Malformed)?,
+                .map_err(|_| GeometryCodecError::Malformed)?,
         ))
     }
 
-    fn u64(&mut self) -> Result<u64, BrepCodecError> {
+    fn u64(&mut self) -> Result<u64, GeometryCodecError> {
         Ok(u64::from_le_bytes(
             self.take(8)?
                 .try_into()
-                .map_err(|_| BrepCodecError::Malformed)?,
+                .map_err(|_| GeometryCodecError::Malformed)?,
         ))
     }
 
-    fn f64(&mut self) -> Result<f64, BrepCodecError> {
+    fn f64(&mut self) -> Result<f64, GeometryCodecError> {
         Ok(f64::from_bits(self.u64()?))
     }
 
-    fn len(&mut self) -> Result<usize, BrepCodecError> {
-        let count = usize::try_from(self.u64()?).map_err(|_| BrepCodecError::SizeOverflow)?;
+    fn len(&mut self) -> Result<usize, GeometryCodecError> {
+        let count = usize::try_from(self.u64()?).map_err(|_| GeometryCodecError::SizeOverflow)?;
         if count > self.bytes.len().saturating_sub(self.position) {
-            return Err(BrepCodecError::Malformed);
+            return Err(GeometryCodecError::Malformed);
         }
         Ok(count)
     }
 
-    fn index(&mut self) -> Result<usize, BrepCodecError> {
-        usize::try_from(self.u64()?).map_err(|_| BrepCodecError::SizeOverflow)
+    fn index(&mut self) -> Result<usize, GeometryCodecError> {
+        usize::try_from(self.u64()?).map_err(|_| GeometryCodecError::SizeOverflow)
     }
 
-    fn point3(&mut self) -> Result<Point3, BrepCodecError> {
+    fn point3(&mut self) -> Result<Point3, GeometryCodecError> {
         Ok(Point3::try_new(self.f64()?, self.f64()?, self.f64()?)?)
     }
 
-    fn curve3(&mut self) -> Result<NurbsCurve, BrepCodecError> {
-        let degree = usize::try_from(self.u32()?).map_err(|_| BrepCodecError::SizeOverflow)?;
+    fn require_f64s(&self, count: usize) -> Result<(), GeometryCodecError> {
+        if count > (self.bytes.len() - self.position) / size_of::<f64>() {
+            return Err(GeometryCodecError::Malformed);
+        }
+        Ok(())
+    }
+
+    fn require_control_payload(
+        &self,
+        controls: usize,
+        dimension: usize,
+        knots: usize,
+    ) -> Result<(), GeometryCodecError> {
+        let count = controls
+            .checked_mul(dimension + 1)
+            .and_then(|count| count.checked_add(knots))
+            .ok_or(GeometryCodecError::SizeOverflow)?;
+        self.require_f64s(count)
+    }
+
+    fn curve3(&mut self) -> Result<NurbsCurve, GeometryCodecError> {
+        let degree = usize::try_from(self.u32()?).map_err(|_| GeometryCodecError::SizeOverflow)?;
         let control_count = self.len()?;
         let knot_count = self.len()?;
+        self.require_control_payload(control_count, 3, knot_count)?;
         let mut controls = Vec::with_capacity(control_count);
         for _ in 0..control_count {
             controls.push(WeightedPoint3::try_new(self.point3()?, self.f64()?)?);
@@ -335,10 +394,11 @@ impl Reader<'_> {
         Ok(NurbsCurve::try_new_rational(degree, controls, knots)?)
     }
 
-    fn curve2(&mut self) -> Result<NurbsCurve2, BrepCodecError> {
-        let degree = usize::try_from(self.u32()?).map_err(|_| BrepCodecError::SizeOverflow)?;
+    fn curve2(&mut self) -> Result<NurbsCurve2, GeometryCodecError> {
+        let degree = usize::try_from(self.u32()?).map_err(|_| GeometryCodecError::SizeOverflow)?;
         let control_count = self.len()?;
         let knot_count = self.len()?;
+        self.require_control_payload(control_count, 2, knot_count)?;
         let mut controls = Vec::with_capacity(control_count);
         for _ in 0..control_count {
             controls.push(WeightedPoint2::try_new(
@@ -353,19 +413,22 @@ impl Reader<'_> {
         Ok(NurbsCurve2::try_new_rational(degree, controls, knots)?)
     }
 
-    fn surface(&mut self) -> Result<NurbsSurface, BrepCodecError> {
-        let degree_u = usize::try_from(self.u32()?).map_err(|_| BrepCodecError::SizeOverflow)?;
-        let degree_v = usize::try_from(self.u32()?).map_err(|_| BrepCodecError::SizeOverflow)?;
+    fn surface(&mut self) -> Result<NurbsSurface, GeometryCodecError> {
+        let degree_u =
+            usize::try_from(self.u32()?).map_err(|_| GeometryCodecError::SizeOverflow)?;
+        let degree_v =
+            usize::try_from(self.u32()?).map_err(|_| GeometryCodecError::SizeOverflow)?;
         let count_u = self.len()?;
         let count_v = self.len()?;
         let knot_count_u = self.len()?;
         let knot_count_v = self.len()?;
         let control_count = count_u
             .checked_mul(count_v)
-            .ok_or(BrepCodecError::SizeOverflow)?;
-        if control_count > self.bytes.len().saturating_sub(self.position) {
-            return Err(BrepCodecError::Malformed);
-        }
+            .ok_or(GeometryCodecError::SizeOverflow)?;
+        let knot_count = knot_count_u
+            .checked_add(knot_count_v)
+            .ok_or(GeometryCodecError::SizeOverflow)?;
+        self.require_control_payload(control_count, 3, knot_count)?;
         let mut controls = Vec::with_capacity(control_count);
         for _ in 0..control_count {
             controls.push(WeightedPoint3::try_new(self.point3()?, self.f64()?)?);
@@ -388,6 +451,41 @@ impl Reader<'_> {
 mod tests {
     use super::*;
     use viboceros_geometry::{Frame3, Vector3};
+
+    #[test]
+    fn polycurve_codec_preserves_local_domains_and_rejects_malformed_data() {
+        let line = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            ],
+            vec![4.0, 4.0, 9.0, 9.0],
+        )
+        .unwrap();
+        let curve = PolyCurve3::try_with_segment_domains(vec![line], vec![-3.0, 7.0]).unwrap();
+        let bytes = encode_polycurve(&curve).unwrap();
+        assert_eq!(decode_polycurve(&bytes).unwrap(), curve);
+        for count in 0..bytes.len() {
+            assert!(
+                decode_polycurve(&bytes[..count]).is_err(),
+                "truncation at {count}"
+            );
+        }
+        let mut invalid = bytes.clone();
+        invalid.push(0);
+        assert!(decode_polycurve(&invalid).is_err());
+        for (range, value) in [
+            (12..20, 0_u64.to_le_bytes()),
+            (12..20, u64::MAX.to_le_bytes()),
+            (20..28, f64::NAN.to_le_bytes()),
+            (28..36, (-3.0_f64).to_le_bytes()),
+        ] {
+            let mut invalid = bytes.clone();
+            invalid[range].copy_from_slice(&value);
+            assert!(decode_polycurve(&invalid).is_err());
+        }
+    }
 
     #[test]
     fn versioned_payload_round_trips_exact_solid_topology() {
@@ -421,8 +519,8 @@ mod tests {
             Brep::try_cone(frame, 2.5, -4.0, Tolerance::DEFAULT).unwrap(),
             rectangular_trim,
         ] {
-            let payload = encode(&brep).unwrap();
-            assert_eq!(decode(&payload, Tolerance::DEFAULT).unwrap(), brep);
+            let payload = encode_brep(&brep).unwrap();
+            assert_eq!(decode_brep(&payload, Tolerance::DEFAULT).unwrap(), brep);
         }
     }
 
@@ -435,15 +533,15 @@ mod tests {
         )
         .unwrap();
         let brep = Brep::try_cone(frame, 1.0, 2.0, Tolerance::DEFAULT).unwrap();
-        let mut payload = encode(&brep).unwrap();
+        let mut payload = encode_brep(&brep).unwrap();
         payload.push(0);
         assert!(matches!(
-            decode(&payload, Tolerance::DEFAULT),
-            Err(BrepCodecError::Malformed)
+            decode_brep(&payload, Tolerance::DEFAULT),
+            Err(GeometryCodecError::Malformed)
         ));
         assert!(matches!(
-            decode(&payload[..12], Tolerance::DEFAULT),
-            Err(BrepCodecError::Malformed)
+            decode_brep(&payload[..12], Tolerance::DEFAULT),
+            Err(GeometryCodecError::Malformed)
         ));
     }
 }

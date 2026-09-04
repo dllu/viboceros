@@ -710,6 +710,15 @@ impl Viewport {
                     (1, self.polyline_pick_distance(pointer, rect, polyline))
                 }
                 Geometry::NurbsCurve(curve) => (1, self.nurbs_pick_distance(pointer, rect, curve)),
+                Geometry::PolyCurve(curve) => (
+                    1,
+                    curve
+                        .segments()
+                        .iter()
+                        .fold(f32::INFINITY, |distance, segment| {
+                            distance.min(self.nurbs_pick_distance(pointer, rect, segment))
+                        }),
+                ),
                 Geometry::NurbsSurface(surface) => (
                     2,
                     self.nurbs_surface_pick_distance(
@@ -821,6 +830,11 @@ impl Viewport {
             }
             Geometry::NurbsCurve(curve) => {
                 self.add_projected_nurbs_curve(&mut projected, viewport_rect, curve);
+            }
+            Geometry::PolyCurve(curve) => {
+                for segment in curve.segments() {
+                    self.add_projected_nurbs_curve(&mut projected, viewport_rect, segment);
+                }
             }
             Geometry::NurbsSurface(surface) => {
                 if self.display_mode != DisplayMode::Wireframe
@@ -1295,6 +1309,11 @@ impl Viewport {
                 }
                 Geometry::NurbsCurve(curve) => {
                     self.add_gpu_nurbs_curve(&mut scene, rect, curve, width, color);
+                }
+                Geometry::PolyCurve(curve) => {
+                    for segment in curve.segments() {
+                        self.add_gpu_nurbs_curve(&mut scene, rect, segment, width, color);
+                    }
                 }
                 Geometry::NurbsSurface(surface) => {
                     self.add_gpu_nurbs_surface(
@@ -2497,6 +2516,36 @@ mod tests {
                 near_gpu_depth < far_gpu_depth,
                 "{kind:?}: near={near_gpu_depth}, far={far_gpu_depth}"
             );
+        }
+    }
+
+    #[test]
+    fn polycurve_picking_follows_curved_segments_without_a_closing_chord() {
+        let viewport = Viewport::default();
+        let rect = Rect::from_min_size(Pos2::ZERO, Vec2::new(800.0, 600.0));
+        let curve = viboceros_geometry::PolyCurve3::try_new(vec![
+            NurbsCurve::try_clamped_uniform(
+                2,
+                vec![
+                    point(-4.0, 0.0, 0.0),
+                    point(0.0, 6.0, 0.0),
+                    point(4.0, 0.0, 0.0),
+                ],
+            )
+            .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(4.0, 0.0, 0.0), point(4.0, -3.0, 0.0)])
+                .unwrap(),
+        ])
+        .unwrap();
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::PolyCurve(curve)).unwrap();
+        for location in [point(0.0, 3.0, 0.0), point(4.0, -1.5, 0.0)] {
+            let pointer = viewport.project(location, rect).unwrap();
+            assert_eq!(viewport.pick_object(pointer, rect, &document), Some(id));
+        }
+        for location in [point(0.0, 0.0, 0.0), point(0.0, -1.5, 0.0)] {
+            let pointer = viewport.project(location, rect).unwrap();
+            assert_eq!(viewport.pick_object(pointer, rect, &document), None);
         }
     }
 

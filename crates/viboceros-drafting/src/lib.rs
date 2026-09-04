@@ -381,6 +381,23 @@ fn nearest_object_snap_with_metric(
                     }
                 }
             }
+            Geometry::PolyCurve(curve) => {
+                for segment in curve.segments() {
+                    let domain = segment.domain();
+                    for parameter in [*domain.start(), *domain.end()] {
+                        if let Ok(point) = segment.evaluate(parameter) {
+                            consider_candidate(
+                                &mut best,
+                                cursor,
+                                capture_radius,
+                                object.id(),
+                                ObjectSnapKind::End,
+                                point,
+                            );
+                        }
+                    }
+                }
+            }
             Geometry::NurbsSurface(surface) => {
                 let domain_u = surface.domain_u();
                 let domain_v = surface.domain_v();
@@ -624,6 +641,47 @@ mod tests {
         assert_eq!(snap.object_id(), cloud_id);
         assert_eq!(snap.point(), point(0.0, 4.0, 10.0));
         assert!(snap.distance() < 0.1);
+    }
+
+    #[test]
+    fn polycurve_segment_junctions_snap_to_the_composite_object() {
+        let segments = vec![
+            NurbsCurve::try_clamped_uniform(
+                2,
+                vec![
+                    point(0.0, 0.0, 0.0),
+                    point(1.0, 2.0, 0.0),
+                    point(3.0, 0.0, 0.0),
+                ],
+            )
+            .unwrap(),
+            NurbsCurve::try_clamped_uniform(1, vec![point(3.0, 0.0, 0.0), point(4.0, 3.0, 0.0)])
+                .unwrap(),
+        ];
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::PolyCurve(
+                viboceros_geometry::PolyCurve3::try_new(segments).unwrap(),
+            ))
+            .unwrap();
+        for target in [
+            point(0.0, 0.0, 0.0),
+            point(3.0, 0.0, 0.0),
+            point(4.0, 3.0, 0.0),
+        ] {
+            let snap = nearest_object_snap(&document, target, 0.1)
+                .unwrap()
+                .unwrap();
+            assert_eq!(snap.object_id(), id);
+            assert_eq!(snap.kind(), ObjectSnapKind::End);
+            assert_eq!(snap.point(), target);
+        }
+        document.set_objects_visibility([id], false).unwrap();
+        assert!(
+            nearest_object_snap(&document, point(3.0, 0.0, 0.0), 0.1)
+                .unwrap()
+                .is_none()
+        );
     }
 
     #[test]

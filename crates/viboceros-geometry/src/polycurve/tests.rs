@@ -46,6 +46,52 @@ fn vector_near(a: Vector3, b: Vector3) {
 }
 
 #[test]
+fn control_polygon_preserves_mixed_degrees_and_closes_the_seam() {
+    let source = example();
+    let expected = [
+        point(-2.0, 0.0),
+        point(0.0, 0.0),
+        point(1.0, 0.0),
+        point(1.0, 1.0),
+        point(1.0, 2.0),
+    ];
+    assert_eq!(
+        source
+            .control_polygon(Tolerance::DEFAULT)
+            .unwrap()
+            .vertices(),
+        &expected
+    );
+    let mut segments = source.segments().to_vec();
+    segments.push(line([1.0, 2.0], [-2.0, 0.0], 0.0..=1.0));
+    let closed = PolyCurve3::try_new(segments).unwrap();
+    let polygon = closed.control_polygon(Tolerance::DEFAULT).unwrap();
+    assert!(polygon.is_closed());
+    assert_eq!(&polygon.vertices()[..5], &expected);
+    assert_eq!(polygon.vertices().len(), 6);
+}
+
+#[test]
+fn closed_segments_are_only_valid_as_the_entire_composite() {
+    let closed = NurbsCurve::try_clamped_uniform(
+        2,
+        vec![
+            point(0.0, 0.0),
+            point(1.0, 2.0),
+            point(2.0, -1.0),
+            point(0.0, 0.0),
+        ],
+    )
+    .unwrap();
+    assert!(closed.is_closed().unwrap());
+    assert!(PolyCurve3::try_new(vec![closed.clone()]).is_ok());
+    assert!(matches!(
+        PolyCurve3::try_new(vec![closed, line([0.0, 0.0], [2.0, 0.0], 0.0..=1.0)]),
+        Err(GeometryError::InvalidPolyCurve { .. })
+    ));
+}
+
+#[test]
 fn retains_each_segment_and_maps_independent_domains() {
     let curve = example();
     assert_eq!(curve.parameters(), &[-3.0, -1.0, 3.0, 4.0]);

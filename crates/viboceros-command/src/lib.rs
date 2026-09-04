@@ -4101,7 +4101,8 @@ impl Command for DuplicateBorderCommand {
                 | Geometry::Arc(_)
                 | Geometry::Ellipse(_)
                 | Geometry::Polyline(_)
-                | Geometry::NurbsCurve(_) => {
+                | Geometry::NurbsCurve(_)
+                | Geometry::PolyCurve(_) => {
                     return Err(CommandError::UnsupportedDuplicateBorderGeometry);
                 }
             };
@@ -8520,6 +8521,7 @@ fn geometry_curve_ref(geometry: &Geometry) -> Option<CurveRef<'_>> {
         Geometry::Ellipse(ellipse) => Some(CurveRef::Ellipse(ellipse)),
         Geometry::Polyline(polyline) => Some(CurveRef::Polyline(polyline)),
         Geometry::NurbsCurve(curve) => Some(CurveRef::NurbsCurve(curve)),
+        Geometry::PolyCurve(curve) => Some(CurveRef::PolyCurve(curve)),
         _ => None,
     }
 }
@@ -8839,7 +8841,15 @@ impl Command for ExtractControlPolygonCommand {
             .try_reserve(selected.len())
             .map_err(|_| too_many_span_outputs("ExtractControlPolygon"))?;
         for (geometry, input_layer) in &selected {
+            let layer = match output_layer {
+                ExtractControlPolygonOutputLayer::Current => current_layer,
+                ExtractControlPolygonOutputLayer::Input
+                | ExtractControlPolygonOutputLayer::TargetObject => *input_layer,
+            };
             let geometry = match geometry {
+                Geometry::PolyCurve(curve) => Some(Geometry::Polyline(
+                    curve.control_polygon(document.tolerance())?,
+                )),
                 Geometry::NurbsSurface(surface) => surface
                     .control_polygon_mesh(document.tolerance())?
                     .map(Geometry::Mesh),
@@ -8871,11 +8881,6 @@ impl Command for ExtractControlPolygonCommand {
             if staged.len() == MAX_SPAN_OUTPUT_OBJECTS {
                 return Err(too_many_span_outputs("ExtractControlPolygon"));
             }
-            let layer = match output_layer {
-                ExtractControlPolygonOutputLayer::Current => current_layer,
-                ExtractControlPolygonOutputLayer::Input
-                | ExtractControlPolygonOutputLayer::TargetObject => *input_layer,
-            };
             staged.push((geometry, layer));
         }
         if staged.is_empty() {
@@ -9558,7 +9563,8 @@ impl Command for DuplicateEdgeCommand {
                     | Geometry::Arc(_)
                     | Geometry::Ellipse(_)
                     | Geometry::Polyline(_)
-                    | Geometry::NurbsCurve(_) => {
+                    | Geometry::NurbsCurve(_)
+                    | Geometry::PolyCurve(_) => {
                         return Err(CommandError::UnsupportedDuplicateEdgeGeometry);
                     }
                 };
@@ -9780,6 +9786,7 @@ impl Command for DuplicateMeshEdgeCommand {
                 | Geometry::Ellipse(_)
                 | Geometry::Polyline(_)
                 | Geometry::NurbsCurve(_)
+                | Geometry::PolyCurve(_)
                 | Geometry::NurbsSurface(_)
                 | Geometry::Brep(_) => Err(CommandError::UnsupportedDuplicateMeshEdgeGeometry),
             })
@@ -10512,7 +10519,8 @@ impl Command for ExtractWireframeCommand {
                 | Geometry::Arc(_)
                 | Geometry::Ellipse(_)
                 | Geometry::Polyline(_)
-                | Geometry::NurbsCurve(_) => {
+                | Geometry::NurbsCurve(_)
+                | Geometry::PolyCurve(_) => {
                     return Err(CommandError::UnsupportedExtractWireframeGeometry);
                 }
             };
@@ -11041,6 +11049,10 @@ impl Command for CloseCrvCommand {
                     continue;
                 }
                 Geometry::NurbsCurve(curve) if curve.is_closed()? => {
+                    unchanged += 1;
+                    continue;
+                }
+                Geometry::PolyCurve(curve) if curve.is_closed()? => {
                     unchanged += 1;
                     continue;
                 }
@@ -14763,6 +14775,7 @@ fn flipped_geometry(
         Geometry::Ellipse(ellipse) => Some(Geometry::Ellipse(ellipse.reversed())),
         Geometry::Polyline(polyline) => Some(Geometry::Polyline(polyline.reversed())),
         Geometry::NurbsCurve(curve) => Some(Geometry::NurbsCurve(curve.reversed()?)),
+        Geometry::PolyCurve(curve) => Some(Geometry::PolyCurve(curve.reversed()?)),
         Geometry::Mesh(mesh) => Some(Geometry::Mesh(mesh.reversed())),
         _ => None,
     })
@@ -17800,6 +17813,7 @@ struct ExplodeCommand;
 
 enum ExplodedParts {
     Lines(Vec<LineSegment>),
+    Curves(Vec<NurbsCurve>),
     Points(Vec<Point3>),
     Surfaces(Vec<Brep>),
     Meshes(Vec<TriangleMesh>),
@@ -17809,6 +17823,7 @@ impl ExplodedParts {
     fn output_count(&self) -> usize {
         match self {
             Self::Lines(parts) => parts.len(),
+            Self::Curves(parts) => parts.len(),
             Self::Points(parts) => parts.len(),
             Self::Surfaces(parts) => parts.len(),
             Self::Meshes(parts) => parts.len(),
@@ -17822,6 +17837,7 @@ impl ExplodedParts {
     fn into_geometries(self) -> Vec<Geometry> {
         match self {
             Self::Lines(parts) => parts.into_iter().map(Geometry::Line).collect(),
+            Self::Curves(parts) => parts.into_iter().map(Geometry::NurbsCurve).collect(),
             Self::Points(parts) => parts.into_iter().map(Geometry::Point).collect(),
             Self::Surfaces(parts) => parts.into_iter().map(Geometry::Brep).collect(),
             Self::Meshes(parts) => parts.into_iter().map(Geometry::Mesh).collect(),
@@ -17857,6 +17873,18 @@ impl Command for ExplodeCommand {
         let mut output_count = 0_usize;
         for (id, geometry, attributes) in &selected {
             let parts = match geometry {
+                Geometry::PolyCurve(curve) => {
+                    let mut parts = curve
+                        .segments()
+                        .iter()
+                        .enumerate()
+                        .map(|(index, segment)| {
+                            segment.try_reparameterized(curve.segment_domain(index)?)
+                        })
+                        .collect::<Result<Vec<_>, GeometryError>>()?;
+                    parts.reverse();
+                    Some(ExplodedParts::Curves(parts))
+                }
                 Geometry::Polyline(polyline) => {
                     let mut parts = polyline.segments().collect::<Vec<_>>();
                     parts.reverse();
@@ -17912,6 +17940,17 @@ impl Command for ExplodeCommand {
             .iter()
             .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Points(_)))
             .count();
+        let polycurve_count = exploded
+            .iter()
+            .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Curves(_)))
+            .count();
+        let curve_count = exploded
+            .iter()
+            .map(|(_, parts, _)| match parts {
+                ExplodedParts::Curves(curves) => curves.len(),
+                _ => 0,
+            })
+            .sum::<usize>();
         let polysurface_count = exploded
             .iter()
             .filter(|(_, parts, _)| matches!(parts, ExplodedParts::Surfaces(_)))
@@ -17925,6 +17964,7 @@ impl Command for ExplodeCommand {
             .map(|(_, parts, _)| match parts {
                 ExplodedParts::Lines(lines) => lines.len(),
                 ExplodedParts::Points(_)
+                | ExplodedParts::Curves(_)
                 | ExplodedParts::Surfaces(_)
                 | ExplodedParts::Meshes(_) => 0,
             })
@@ -17932,9 +17972,10 @@ impl Command for ExplodeCommand {
         let point_count = exploded
             .iter()
             .map(|(_, parts, _)| match parts {
-                ExplodedParts::Lines(_) | ExplodedParts::Surfaces(_) | ExplodedParts::Meshes(_) => {
-                    0
-                }
+                ExplodedParts::Lines(_)
+                | ExplodedParts::Curves(_)
+                | ExplodedParts::Surfaces(_)
+                | ExplodedParts::Meshes(_) => 0,
                 ExplodedParts::Points(points) => points.len(),
             })
             .sum::<usize>();
@@ -17942,16 +17983,20 @@ impl Command for ExplodeCommand {
             .iter()
             .map(|(_, parts, _)| match parts {
                 ExplodedParts::Surfaces(surfaces) => surfaces.len(),
-                ExplodedParts::Lines(_) | ExplodedParts::Points(_) | ExplodedParts::Meshes(_) => 0,
+                ExplodedParts::Lines(_)
+                | ExplodedParts::Curves(_)
+                | ExplodedParts::Points(_)
+                | ExplodedParts::Meshes(_) => 0,
             })
             .sum::<usize>();
         let mesh_part_count = exploded
             .iter()
             .map(|(_, parts, _)| match parts {
                 ExplodedParts::Meshes(meshes) => meshes.len(),
-                ExplodedParts::Lines(_) | ExplodedParts::Points(_) | ExplodedParts::Surfaces(_) => {
-                    0
-                }
+                ExplodedParts::Lines(_)
+                | ExplodedParts::Curves(_)
+                | ExplodedParts::Points(_)
+                | ExplodedParts::Surfaces(_) => 0,
             })
             .sum::<usize>();
         let source_groups = exploded
@@ -17992,6 +18037,11 @@ impl Command for ExplodeCommand {
         )?;
         let unchanged_count = selected.len() - exploded_ids.len();
         let mut summaries = Vec::new();
+        if polycurve_count > 0 {
+            summaries.push(format!(
+                "{polycurve_count} polycurve(s) into {curve_count} curve(s)"
+            ));
+        }
         if polyline_count > 0 {
             summaries.push(format!(
                 "{polyline_count} polyline(s) into {line_count} line(s)"
@@ -21270,6 +21320,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError>
         Geometry::Ellipse(ellipse) => ThreeDmGeometry::NurbsCurve(ellipse.to_nurbs()?),
         Geometry::Polyline(polyline) => ThreeDmGeometry::NurbsCurve(polyline.to_nurbs()?),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
+        Geometry::PolyCurve(curve) => ThreeDmGeometry::PolyCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
         Geometry::Brep(brep) => ThreeDmGeometry::Brep(brep.clone()),
         Geometry::Mesh(mesh) => ThreeDmGeometry::Mesh(mesh.clone()),
@@ -21283,6 +21334,7 @@ fn document_geometry_from_3dm(geometry: ThreeDmGeometry, tolerance: Tolerance) -
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
         ThreeDmGeometry::NurbsCurve(curve) => exported_polyline(&curve, tolerance)
             .map_or_else(|| Geometry::NurbsCurve(curve), Geometry::Polyline),
+        ThreeDmGeometry::PolyCurve(curve) => Geometry::PolyCurve(curve),
         ThreeDmGeometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface),
         ThreeDmGeometry::Brep(brep) => Geometry::Brep(brep),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
@@ -22172,6 +22224,9 @@ pub enum CommandError {
     #[error(transparent)]
     Document(#[from] DocumentError),
 }
+
+#[cfg(test)]
+mod polycurve_tests;
 
 #[cfg(test)]
 mod tests {

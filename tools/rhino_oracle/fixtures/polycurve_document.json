@@ -1,0 +1,862 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-10,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "polycurve_document",
+      "id": "mixed-natural",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        }
+      ]
+    },
+    {
+      "op": "polycurve_document",
+      "id": "mixed-rescaled",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        }
+      ],
+      "domain": [
+        -12,
+        16
+      ]
+    },
+    {
+      "op": "polycurve_document",
+      "id": "mixed-reversed",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        }
+      ],
+      "reversed": true
+    },
+    {
+      "op": "polycurve_document",
+      "id": "closed-mixed",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "polycurve_document",
+      "id": "spatial-cubic",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        },
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                5,
+                1
+              ],
+              "weight": 0.7
+            },
+            {
+              "point": [
+                -2,
+                4,
+                -2
+              ],
+              "weight": 1.4
+            },
+            {
+              "point": [
+                3,
+                3,
+                2
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -2,
+            -2,
+            -2,
+            -2,
+            -1,
+            -1,
+            -1,
+            -1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "polycurve_document",
+      "id": "multiple-knot-spans",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        },
+        {
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                3,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                4,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                5,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                6,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                5,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -6,
+            -6,
+            -6,
+            -6,
+            -5,
+            -3,
+            -2,
+            -2,
+            -2,
+            -2
+          ]
+        }
+      ]
+    },
+    {
+      "op": "polycurve_document",
+      "id": "closed-reversed",
+      "segments": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -3,
+            -3,
+            -1,
+            -1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -10,
+            -10,
+            -10,
+            -6,
+            -6,
+            -6
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            20,
+            20,
+            21,
+            21
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "reversed": true
+    }
+  ]
+}

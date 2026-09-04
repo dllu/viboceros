@@ -49,6 +49,9 @@ It preserves and compares segment definitions and domains, then tests reversal,
 trimming, splitting, length-based reparameterization, derivatives, and division.
 The `curve_division_contract.json` fixture checks open/closed division endpoint
 rules separately, including the `include_ends=false` case.
+`polycurve_document.json` exercises actual extraction and explode commands,
+duplicate comparison, and 3DM round-trip segment definitions; the native side also
+checks undo. See [polycurve documentation](polycurves.md) for compatibility boundaries.
 
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):

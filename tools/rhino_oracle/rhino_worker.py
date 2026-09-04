@@ -416,6 +416,87 @@ def _surface_split_trim_value(curve, surface, sample_geometry):
     }
 
 
+def _polycurve_document_record(curve):
+    document = Rhino.RhinoDoc.ActiveDoc
+
+    def object_ids():
+        settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+        settings.NormalObjects = True
+        settings.LockedObjects = True
+        settings.HiddenObjects = True
+        return set(obj.Id for obj in document.Objects.GetObjectList(settings))
+
+    def outputs(command, describe):
+        document.Objects.UnselectAll()
+        before = object_ids()
+        source_id = document.Objects.AddCurve(curve)
+        if source_id == System.Guid.Empty:
+            raise ValueError("could not add polycurve command source")
+        try:
+            script = "_-%s _SelID %s _Enter" % (command, source_id)
+            if not Rhino.RhinoApp.RunScript(script, False):
+                raise ValueError("polycurve command failed: " + command)
+            return [describe(document.Objects.FindId(object_id).Geometry)
+                    for object_id in object_ids() - before - set([source_id])]
+        finally:
+            document.Objects.UnselectAll()
+            for object_id in object_ids() - before:
+                document.Objects.Delete(object_id, True)
+
+    points = outputs("ExtractPt _Output=Points _OutputLayer=Current", lambda geometry: _xyz(geometry.Location))
+
+    def polygon(geometry):
+        success, polyline = geometry.TryGetPolyline()
+        if not success:
+            raise ValueError("control polygon output is not a polyline")
+        return [_xyz(point) for point in polyline]
+
+    polygons = outputs("ExtractControlPolygon _OutputLayer=Current", polygon)
+    exploded = outputs("Explode", _nurbs_curve_definition)
+    exploded.sort(key=lambda item: item["domain"][0])
+    model = Rhino.FileIO.File3dm()
+    decoded = None
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "polycurve-%s.3dm" % System.Guid.NewGuid())
+    reversed_curve = curve.DuplicateCurve()
+    reparameterized = curve.DuplicateCurve()
+    try:
+        if model.Layers.AddDefaultLayer("Default", System.Drawing.Color.Black) < 0:
+            raise ValueError("could not add polycurve 3DM layer")
+        model.Objects.AddCurve(curve)
+        if not model.Write(path, 8):
+            raise ValueError("could not write polycurve 3DM")
+        decoded = Rhino.FileIO.File3dm.Read(path)
+        if decoded is None:
+            raise ValueError("could not read polycurve 3DM")
+        objects = list(decoded.Objects)
+        if len(objects) != 1 or not isinstance(objects[0].Geometry, Rhino.Geometry.PolyCurve):
+            raise ValueError("3DM polycurve type was lost")
+        result = objects[0].Geometry
+        segments = []
+        for index in range(result.SegmentCount):
+            segment = result.SegmentCurve(index).DuplicateCurve()
+            try:
+                segment.Domain = result.SegmentDomain(index)
+                segments.append(_nurbs_curve_definition(segment))
+            finally:
+                segment.Dispose()
+        if not reversed_curve.Reverse():
+            raise ValueError("could not reverse polycurve")
+        reparameterized.Domain = Rhino.Geometry.Interval(0.0, 1.0)
+        return {"extract_points": sorted(points), "control_polygons": sorted(polygons),
+                "exploded": exploded, "round_trip_segments": segments,
+                "reversed_duplicate": bool(Rhino.Geometry.GeometryBase.GeometryEquals(curve, reversed_curve)),
+                "reparameterized_duplicate": bool(Rhino.Geometry.GeometryBase.GeometryEquals(curve, reparameterized))}
+    finally:
+        reversed_curve.Dispose()
+        reparameterized.Dispose()
+        if decoded is not None:
+            decoded.Dispose()
+        model.Dispose()
+        if os.path.exists(path):
+            os.remove(path)
+
+
 def _polycurve_geometry(operation, iterations, tolerance):
     source = Rhino.Geometry.PolyCurve()
     try:
@@ -430,6 +511,8 @@ def _polycurve_geometry(operation, iterations, tolerance):
             raise ValueError("invalid polycurve fixture")
 
         def record(curve):
+            if operation["op"] == "polycurve_document":
+                return _polycurve_document_record(curve)
             count = curve.SegmentCount if isinstance(curve, Rhino.Geometry.PolyCurve) else 1
             domains = [curve.SegmentDomain(i) for i in range(count)] if isinstance(curve, Rhino.Geometry.PolyCurve) else [curve.Domain]
             parameters = [float(curve.Domain.ParameterAt(float(i) / 32.0)) for i in range(33)]
@@ -496,6 +579,8 @@ def _polycurve_geometry(operation, iterations, tolerance):
                     owned.extend(curves)
                 else:
                     curves = [curve]
+                if operation["op"] == "polycurve_document":
+                    return record(curve)
                 return {"curves": [record(c) for c in curves]}
             finally:
                 for curve in reversed(owned):
@@ -856,7 +941,7 @@ def _mesh_unweld_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
-    if kind == "polycurve_geometry":
+    if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":
         return _trimmed_surface_mass_properties(operation, iterations, tolerance)

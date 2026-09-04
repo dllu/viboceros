@@ -4,7 +4,7 @@
 
 Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
-curves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable
+curves, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable
 rational NURBS B-reps. Mesh faces retain their arity in 3DM round trips. B-rep
 interchange retains shared vertices and edges, exact edge and
 parameter-space trim curves, face surfaces and orientation, outer and inner
@@ -17,6 +17,17 @@ Circles, arcs, ellipses, and polylines are exported without approximation as
 rational NURBS curves; canonical degree-one curves return as editable
 polylines. Unsupported object types and specialized B-rep trim forms are
 counted and reported during import.
+
+Polycurves remain composite objects with independent segment degrees, controls,
+weights, knots, and parameter intervals. Nested source composites are flattened
+on a private copy. Analytic segments become exact rational NURBS loci; this can
+change their interior parameterization (for example, angle versus rational arc
+parameter), not their shape. The bridge shares a versioned, validated binary codec
+for B-reps and polycurves, checks payload sizes before allocation, and rejects
+malformed or trailing data. It does not fit curves or average endpoints.
+An independently generated Rhino 8 nested line/arc reference is retained in
+`crates/viboceros-io/tests/fixtures/`, with its generator and provenance documented
+alongside it. Tests check the analytic locus and subsequent round trip.
 
 Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly

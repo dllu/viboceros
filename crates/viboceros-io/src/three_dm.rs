@@ -7,10 +7,10 @@ use std::slice;
 use thiserror::Error;
 use viboceros_geometry::{
     Brep, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    Tolerance, TriangleMesh, WeightedPoint3,
+    PolyCurve3, Tolerance, TriangleMesh, WeightedPoint3,
 };
 
-use crate::three_dm_brep::{self, BrepCodecError};
+use crate::three_dm_geometry::{self, GeometryCodecError};
 
 const ERROR_CAPACITY: usize = 4096;
 const OBJECT_POINT: c_int = 1;
@@ -20,6 +20,7 @@ const OBJECT_TRIANGLE_MESH: c_int = 4;
 const OBJECT_NURBS_SURFACE: c_int = 5;
 const OBJECT_POINT_CLOUD: c_int = 6;
 const OBJECT_BREP: c_int = 7;
+const OBJECT_POLYCURVE: c_int = 8;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -49,6 +50,7 @@ pub enum ThreeDmGeometry {
     PointCloud(PointCloud3),
     Line(LineSegment),
     NurbsCurve(NurbsCurve),
+    PolyCurve(PolyCurve3),
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
@@ -242,8 +244,8 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
             knot_v_count: payload.knots_v.len(),
             indices: pointer_or_null(&payload.indices),
             index_count: payload.indices.len(),
-            brep_data: pointer_or_null(&payload.brep_data),
-            brep_data_count: payload.brep_data.len(),
+            geometry_data: pointer_or_null(&payload.geometry_data),
+            geometry_data_count: payload.geometry_data.len(),
             group_indices: pointer_or_null(&object.group_indices),
             group_index_count: object.group_indices.len(),
         })
@@ -375,7 +377,7 @@ fn decode_object(
     let mut knots_u = std::ptr::null();
     let mut knots_v = std::ptr::null();
     let mut indices = std::ptr::null();
-    let mut brep_data = std::ptr::null();
+    let mut geometry_data = std::ptr::null();
     let mut group_indices = std::ptr::null();
     // SAFETY: output pointers are valid, the model is live, and index is in range.
     let success = unsafe {
@@ -387,7 +389,7 @@ fn decode_object(
             &mut knots_u,
             &mut knots_v,
             &mut indices,
-            &mut brep_data,
+            &mut geometry_data,
             &mut group_indices,
         )
     };
@@ -398,7 +400,7 @@ fn decode_object(
     let knots_u = ffi_slice(handle, knots_u, info.knot_u_count)?;
     let knots_v = ffi_slice(handle, knots_v, info.knot_v_count)?;
     let indices = ffi_slice(handle, indices, info.index_count)?;
-    let brep_data = ffi_slice(handle, brep_data, info.brep_data_count)?;
+    let geometry_data = ffi_slice(handle, geometry_data, info.geometry_data_count)?;
     let group_indices = ffi_slice(handle, group_indices, info.group_index_count)?
         .iter()
         .map(|source_index| {
@@ -441,7 +443,7 @@ fn decode_object(
                 && knots_u.is_empty()
                 && knots_v.is_empty()
                 && indices.is_empty()
-                && brep_data.is_empty() =>
+                && geometry_data.is_empty() =>
         {
             ThreeDmGeometry::Point(point(coordinates)?)
         }
@@ -450,7 +452,7 @@ fn decode_object(
                 && knots_u.is_empty()
                 && knots_v.is_empty()
                 && indices.is_empty()
-                && brep_data.is_empty() =>
+                && geometry_data.is_empty() =>
         {
             ThreeDmGeometry::Line(LineSegment::try_new(
                 point(&coordinates[..3])?,
@@ -468,7 +470,7 @@ fn decode_object(
                 && knots_u.is_empty()
                 && knots_v.is_empty()
                 && indices.is_empty()
-                && brep_data.is_empty() =>
+                && geometry_data.is_empty() =>
         {
             ThreeDmGeometry::PointCloud(PointCloud3::try_new(
                 coordinates
@@ -491,7 +493,7 @@ fn decode_object(
                         .saturating_add(1)
                 && knots_v.is_empty()
                 && indices.is_empty()
-                && brep_data.is_empty() =>
+                && geometry_data.is_empty() =>
         {
             let control_points = coordinates
                 .chunks_exact(4)
@@ -526,7 +528,7 @@ fn decode_object(
                         .saturating_add(info.degree_v as usize)
                         .saturating_add(1)
                 && indices.is_empty()
-                && brep_data.is_empty() =>
+                && geometry_data.is_empty() =>
         {
             let control_points = coordinates
                 .chunks_exact(4)
@@ -549,7 +551,7 @@ fn decode_object(
                 && indices.len() % 4 == 0
                 && knots_u.is_empty()
                 && knots_v.is_empty()
-                && brep_data.is_empty() =>
+                && geometry_data.is_empty() =>
         {
             let vertices = coordinates
                 .chunks_exact(3)
@@ -567,7 +569,7 @@ fn decode_object(
                 .collect();
             ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(vertices, faces, tolerance)?)
         }
-        OBJECT_BREP
+        OBJECT_BREP | OBJECT_POLYCURVE
             if info.degree_u == 0
                 && info.degree_v == 0
                 && info.control_point_count_u == 0
@@ -576,13 +578,20 @@ fn decode_object(
                 && knots_u.is_empty()
                 && knots_v.is_empty()
                 && indices.is_empty()
-                && !brep_data.is_empty() =>
+                && !geometry_data.is_empty() =>
         {
-            match three_dm_brep::decode(brep_data, tolerance) {
-                Ok(brep) => ThreeDmGeometry::Brep(brep),
-                Err(BrepCodecError::Geometry(error)) => return Err(error.into()),
-                Err(BrepCodecError::Malformed | BrepCodecError::SizeOverflow) => {
-                    return Err(ThreeDmError::MalformedBridge("invalid B-rep payload"));
+            let decoded = if info.object_type == OBJECT_BREP {
+                three_dm_geometry::decode_brep(geometry_data, tolerance).map(ThreeDmGeometry::Brep)
+            } else {
+                three_dm_geometry::decode_polycurve(geometry_data).map(ThreeDmGeometry::PolyCurve)
+            };
+            match decoded {
+                Ok(geometry) => geometry,
+                Err(GeometryCodecError::Geometry(error)) => return Err(error.into()),
+                Err(GeometryCodecError::Malformed | GeometryCodecError::SizeOverflow) => {
+                    return Err(ThreeDmError::MalformedBridge(
+                        "invalid structured geometry payload",
+                    ));
                 }
             }
         }
@@ -668,7 +677,7 @@ struct ObjectPayload {
     knots_u: Vec<c_double>,
     knots_v: Vec<c_double>,
     indices: Vec<u32>,
-    brep_data: Vec<u8>,
+    geometry_data: Vec<u8>,
 }
 
 impl ObjectPayload {
@@ -684,7 +693,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                brep_data: Vec::new(),
+                geometry_data: Vec::new(),
             },
             ThreeDmGeometry::Line(line) => Self {
                 object_type: OBJECT_LINE,
@@ -701,7 +710,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                brep_data: Vec::new(),
+                geometry_data: Vec::new(),
             },
             ThreeDmGeometry::PointCloud(cloud) => Self {
                 object_type: OBJECT_POINT_CLOUD,
@@ -717,7 +726,7 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                brep_data: Vec::new(),
+                geometry_data: Vec::new(),
             },
             ThreeDmGeometry::NurbsCurve(curve) => Self {
                 object_type: OBJECT_NURBS_CURVE,
@@ -739,7 +748,7 @@ impl ObjectPayload {
                 knots_u: curve.knots().to_vec(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                brep_data: Vec::new(),
+                geometry_data: Vec::new(),
             },
             ThreeDmGeometry::NurbsSurface(surface) => Self {
                 object_type: OBJECT_NURBS_SURFACE,
@@ -761,7 +770,7 @@ impl ObjectPayload {
                 knots_u: surface.knots_u().to_vec(),
                 knots_v: surface.knots_v().to_vec(),
                 indices: Vec::new(),
-                brep_data: Vec::new(),
+                geometry_data: Vec::new(),
             },
             ThreeDmGeometry::Brep(brep) => Self {
                 object_type: OBJECT_BREP,
@@ -773,10 +782,35 @@ impl ObjectPayload {
                 knots_u: Vec::new(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
-                brep_data: three_dm_brep::encode(brep).map_err(|error| match error {
-                    BrepCodecError::Geometry(error) => ThreeDmError::Geometry(error),
-                    BrepCodecError::Malformed | BrepCodecError::SizeOverflow => {
-                        ThreeDmError::InvalidModel("B-rep payload exceeds 64-bit limits".to_owned())
+                geometry_data: three_dm_geometry::encode_brep(brep).map_err(
+                    |error| match error {
+                        GeometryCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                        GeometryCodecError::Malformed | GeometryCodecError::SizeOverflow => {
+                            ThreeDmError::InvalidModel(
+                                "B-rep payload exceeds 64-bit limits".to_owned(),
+                            )
+                        }
+                    },
+                )?,
+            },
+            ThreeDmGeometry::PolyCurve(curve) => Self {
+                object_type: OBJECT_POLYCURVE,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: three_dm_geometry::encode_polycurve(curve).map_err(|error| {
+                    match error {
+                        GeometryCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                        GeometryCodecError::Malformed | GeometryCodecError::SizeOverflow => {
+                            ThreeDmError::InvalidModel(
+                                "polycurve payload exceeds 64-bit limits".to_owned(),
+                            )
+                        }
                     }
                 })?,
             },
@@ -801,7 +835,7 @@ impl ObjectPayload {
                         MeshFace::Quad(indices) => indices,
                     })
                     .collect(),
-                brep_data: Vec::new(),
+                geometry_data: Vec::new(),
             },
         })
     }
@@ -904,7 +938,7 @@ mod ffi {
         pub knot_u_count: usize,
         pub knot_v_count: usize,
         pub index_count: usize,
-        pub brep_data_count: usize,
+        pub geometry_data_count: usize,
         pub group_index_count: usize,
     }
 
@@ -947,8 +981,8 @@ mod ffi {
         pub knot_v_count: usize,
         pub indices: *const u32,
         pub index_count: usize,
-        pub brep_data: *const u8,
-        pub brep_data_count: usize,
+        pub geometry_data: *const u8,
+        pub geometry_data_count: usize,
         pub group_indices: *const usize,
         pub group_index_count: usize,
     }
@@ -990,7 +1024,7 @@ mod ffi {
             knots_u: *mut *const c_double,
             knots_v: *mut *const c_double,
             indices: *mut *const u32,
-            brep_data: *mut *const u8,
+            geometry_data: *mut *const u8,
             group_indices: *mut *const i32,
         ) -> c_int;
         pub fn vibo_3dm_write(
@@ -1221,6 +1255,137 @@ mod tests {
                 ThreeDmObject::new(ThreeDmGeometry::Brep(rectangular_trim_brep), 0),
             ],
         )
+    }
+
+    #[test]
+    fn imports_rhino_nested_analytic_polycurve_without_fitting() {
+        let path = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests/fixtures/rhino8_nested_polycurve.3dm");
+        let model = read_3dm_file(path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(model.unsupported_object_count(), 0);
+        assert_eq!(model.objects.len(), 1);
+        assert_eq!(
+            model.objects[0].name.as_deref(),
+            Some("nested line-arc-line")
+        );
+        assert_eq!(model.layers[model.objects[0].layer_index].name, "Reference");
+        let ThreeDmGeometry::PolyCurve(curve) = &model.objects[0].geometry else {
+            panic!("nested source lost its composite type")
+        };
+        assert_eq!(curve.segments().len(), 3);
+        assert_eq!(curve.domain(), -7.0..=13.0);
+        assert!(
+            (curve.length(Tolerance::DEFAULT).unwrap() - 4.0 - std::f64::consts::FRAC_PI_2).abs()
+                < 2e-12
+        );
+        let expected_ends = [
+            [[-2.0, 0.0, 0.0], [0.0, 0.0, 0.0]],
+            [[0.0, 0.0, 0.0], [1.0, 1.0, 0.0]],
+            [[1.0, 1.0, 0.0], [1.0, 3.0, 0.0]],
+        ];
+        for (segment, expected) in curve.segments().iter().zip(expected_ends) {
+            for (t, expected) in [*segment.domain().start(), *segment.domain().end()]
+                .into_iter()
+                .zip(expected)
+            {
+                assert!(
+                    segment
+                        .evaluate(t)
+                        .unwrap()
+                        .distance_to(Point3::try_from(expected).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
+        let arc = &curve.segments()[1];
+        assert_eq!(arc.degree(), 2);
+        assert_eq!(arc.control_points().len(), 3);
+        assert!(
+            (arc.control_points()[1].weight() / arc.control_points()[0].weight() - 0.5_f64.sqrt())
+                .abs()
+                < 2e-12
+        );
+        let center = Point3::try_new(0.0, 1.0, 0.0).unwrap();
+        for i in 0..=100 {
+            let point = arc
+                .evaluate(arc.parameter_at(i as f64 / 100.0).unwrap())
+                .unwrap();
+            assert!((point.distance_to(center).unwrap() - 1.0).abs() < 2e-12);
+            assert!(point.x() >= -2e-12 && point.y() <= 1.0 + 2e-12);
+        }
+        let output = temporary_path("rhino-polycurve-roundtrip.3dm");
+        write_3dm_file(&output, &model).unwrap();
+        let round_trip = read_3dm_file(&output, Tolerance::DEFAULT).unwrap();
+        let ThreeDmGeometry::PolyCurve(decoded) = &round_trip.objects[0].geometry else {
+            panic!("round-trip lost polycurve")
+        };
+        assert_eq!(curve.parameters(), decoded.parameters());
+        for (expected, actual) in curve.segments().iter().zip(decoded.segments()) {
+            assert_curve_near(actual, expected, 2e-12);
+        }
+        fs::remove_file(output).unwrap();
+    }
+
+    #[test]
+    fn polycurve_round_trip_preserves_segments_domains_and_attributes() {
+        let path = temporary_path("polycurve.3dm");
+        let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let first = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 0.0), 2.0_f64.sqrt()).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), 2.0).unwrap(),
+            ],
+            vec![-5.0, -5.0, -5.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+        let last = NurbsCurve::try_new_rational(
+            1,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 1.0), -3.0).unwrap(),
+                WeightedPoint3::try_new(point(2.0, 3.0), -4.0).unwrap(),
+            ],
+            vec![11.0, 11.0, 12.0, 12.0],
+        )
+        .unwrap();
+        let curve =
+            PolyCurve3::try_with_segment_domains(vec![first, last], vec![-10.0, -9.0, 30.0])
+                .unwrap();
+        let mut model = sample_model();
+        let source = ThreeDmObject {
+            geometry: ThreeDmGeometry::PolyCurve(curve.clone()),
+            ..model.objects[2].clone()
+        };
+        model.objects = vec![source.clone()];
+        write_3dm_file(&path, &model).unwrap();
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.unsupported_object_count(), 0);
+        assert_eq!(decoded.objects.len(), 1);
+        let mut decoded_object = decoded.objects[0].clone();
+        let ThreeDmGeometry::PolyCurve(actual) = &decoded_object.geometry else {
+            panic!("polycurve type was lost")
+        };
+        assert_eq!(actual.parameters(), curve.parameters());
+        assert_eq!(actual.segments().len(), 2);
+        for (actual, expected) in actual.segments().iter().zip(curve.segments()) {
+            assert_curve_near(actual, expected, 2e-12);
+        }
+        for i in 0..=100 {
+            let t = curve.parameter_at(i as f64 / 100.0).unwrap();
+            assert!(
+                actual
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(curve.evaluate(t).unwrap())
+                    .unwrap()
+                    < 2e-12
+            );
+        }
+        decoded_object.geometry = source.geometry.clone();
+        assert_eq!(decoded_object, source);
+        fs::remove_file(path).unwrap();
     }
 
     #[test]

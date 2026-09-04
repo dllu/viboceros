@@ -11,8 +11,23 @@ The kernel supports evaluation and first/second derivatives, explicit left/right
 segment choice at junctions, length, trimming, splitting, reversal, affine transforms,
 flattened concatenation, and exact conversion to a single piecewise NURBS curve.
 `CurveRef::PolyCurve` enables shared arc-length sampling, planarity checks, curvature,
-and curve-rebuilding/fitting algorithms. Document objects, viewport handling, 3DM
-polycurve interchange, and mixed-curve `Join`/`CloseCrv` integration are still pending.
+and curve-rebuilding/fitting algorithms. Document objects preserve segments through
+affine transforms and nonlinear morphs. Viewports draw and pick each segment; endpoint
+snaps include interior junctions. 3DM interchange retains the composite object type.
+Mixed-curve `Join` and closure of open curved objects remain to be implemented.
+
+`Length`, `Divide`, curve selection, `Flip`, and `ToNURBS` accept polycurves.
+`ExtractPt` shares exactly duplicated junction grips; `ExtractControlPolygon` creates
+one connected polygon through the original segment controls without degree elevation.
+`Explode` returns exact NURBS segments in composite parameter intervals, preserving
+attributes, group membership, and undo. Closed polycurves are unchanged by `CloseCrv`.
+
+Duplicate comparison retains segment structure and relative parameter intervals.
+Affine changes to the overall domain are ignored; length-based redistribution can
+change the geometry value even though the locus is unchanged. Open composites compare
+in either direction; tested closed composites retain segment order and direction.
+Cross-representation equivalence with a polyline or a single merged NURBS is not
+implemented for this type.
 
 ## Parameterization and numerical policy
 
@@ -37,7 +52,8 @@ a constant-speed parameterization of a curved segment.
 The constructor uses the kernel's fixed curve-coincidence predicate, not document
 model tolerance. Bridging or editing larger gaps belongs to a joining operation.
 Composites allow up to 65,536 segments; NURBS conversion allows at most one million
-output controls. Conversion elevates degrees and uses full-order junction knots,
+output controls. A closed segment may only be the entire composite, matching
+OpenNURBS validity rules. Conversion elevates degrees and uses full-order junction knots,
 preserving independent homogeneous scales without dividing adjacent weights. Its
 control structure need not be Rhino's minimal merged NURBS structure.
 
@@ -75,3 +91,12 @@ tools/rhino_oracle/run_headless.sh compare \
 The 14 polycurve cases passed against Rhino 8. Most maximum differences were
 around `1e-12`; length-based domain redistribution differed by up to `9.68e-9`.
 The native redistribution is independently checked against analytic segment lengths.
+
+`polycurve_document.json` additionally checks actual Rhino extraction/explode
+commands, duplicate comparison, and 3DM round-trip segment definitions. Native probes
+verify command undo. These timings include command dispatch, file I/O, and validation;
+they are not measurements of kernel-only performance.
+
+All seven document cases passed against Rhino 8 at absolute `1e-8`, relative `1e-10`.
+Six cases matched numerically exactly; the length-redistributed case retained the
+same maximum `9.68e-9` parameter difference noted above.

@@ -1,0 +1,194 @@
+//! Document geometry and representation-preserving operations.
+
+use std::f64::consts::TAU;
+
+use viboceros_geometry::{
+    AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, Ellipse3, GeometryError,
+    LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, PolyCurve3, Polyline3,
+    Tolerance, TriangleMesh,
+};
+
+#[cfg(test)]
+mod tests;
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum Geometry {
+    Point(Point3),
+    PointCloud(PointCloud3),
+    Line(LineSegment),
+    Circle(Circle3),
+    Arc(CircularArc3),
+    Ellipse(Ellipse3),
+    Polyline(Polyline3),
+    NurbsCurve(NurbsCurve),
+    PolyCurve(PolyCurve3),
+    NurbsSurface(NurbsSurface),
+    Brep(Brep),
+    Mesh(TriangleMesh),
+}
+
+impl Geometry {
+    pub fn bounds(&self) -> BoundingBox3 {
+        match self {
+            Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
+            Self::PointCloud(cloud) => cloud.bounds(),
+            Self::Line(line) => BoundingBox3::from_points([line.start(), line.end()]).unwrap(),
+            Self::Circle(circle) => circle.bounds(),
+            Self::Arc(arc) => arc.bounds(),
+            Self::Ellipse(ellipse) => ellipse.bounds(),
+            Self::Polyline(polyline) => polyline.bounds(),
+            Self::NurbsCurve(curve) => curve.control_point_bounds(),
+            Self::PolyCurve(curve) => curve.control_point_bounds(),
+            Self::NurbsSurface(surface) => surface.control_point_bounds(),
+            Self::Brep(brep) => brep.bounds(),
+            Self::Mesh(mesh) => mesh.bounds(),
+        }
+    }
+
+    /// Returns exact NURBS geometry for a supported non-NURBS curve.
+    ///
+    /// The returned domains match Rhino 8: lines and polylines use chord
+    /// length, circles and arcs use arc length, and ellipses use radians.
+    /// Polycurves retain their parameter intervals; the merged control
+    /// structure need not be Rhino's minimal representation.
+    /// Existing NURBS geometry and non-curve objects return `None`.
+    pub fn converted_to_nurbs_curve(&self) -> Result<Option<NurbsCurve>, GeometryError> {
+        Ok(match self {
+            Self::Line(line) => Some(line.to_nurbs()?),
+            Self::Circle(circle) => Some(
+                circle
+                    .to_nurbs()?
+                    .try_reparameterized(0.0..=circle.length()?)?,
+            ),
+            Self::Arc(arc) => Some(arc.to_nurbs()?.try_reparameterized(0.0..=arc.length()?)?),
+            Self::Ellipse(ellipse) => Some(ellipse.to_nurbs()?.try_reparameterized(0.0..=TAU)?),
+            Self::Polyline(polyline) => Some(polyline.to_nurbs()?),
+            Self::PolyCurve(curve) => Some(curve.to_nurbs()?),
+            Self::Point(_)
+            | Self::PointCloud(_)
+            | Self::NurbsCurve(_)
+            | Self::NurbsSurface(_)
+            | Self::Brep(_)
+            | Self::Mesh(_) => None,
+        })
+    }
+
+    /// Returns an exact NURBS representation for every supported curve,
+    /// cloning an object that is already a NURBS curve.
+    pub fn nurbs_curve_representation(&self) -> Result<Option<NurbsCurve>, GeometryError> {
+        match self {
+            Self::NurbsCurve(curve) => Ok(Some(curve.clone())),
+            _ => self.converted_to_nurbs_curve(),
+        }
+    }
+
+    pub fn transformed(
+        &self,
+        transform: AffineTransform3,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Ok(match self {
+            Self::Point(point) => Self::Point(transform.transform_point(*point)?),
+            Self::PointCloud(cloud) => Self::PointCloud(cloud.transformed(transform)?),
+            Self::Line(line) => Self::Line(line.transformed(transform, tolerance)?),
+            Self::Circle(circle) => match circle.transformed_similarity(transform, tolerance)? {
+                Some(circle) => Self::Circle(circle),
+                None => Self::NurbsCurve(circle.to_nurbs()?.transformed(transform)?),
+            },
+            Self::Arc(arc) => match arc.transformed_similarity(transform, tolerance)? {
+                Some(arc) => Self::Arc(arc),
+                None => Self::NurbsCurve(arc.to_nurbs()?.transformed(transform)?),
+            },
+            Self::Ellipse(ellipse) => {
+                match ellipse.transformed_orthogonal(transform, tolerance)? {
+                    Some(ellipse) => Self::Ellipse(ellipse),
+                    None => Self::NurbsCurve(ellipse.to_nurbs()?.transformed(transform)?),
+                }
+            }
+            Self::Polyline(polyline) => Self::Polyline(polyline.transformed(transform, tolerance)?),
+            Self::NurbsCurve(curve) => Self::NurbsCurve(curve.transformed(transform)?),
+            Self::PolyCurve(curve) => Self::PolyCurve(curve.transformed(transform)?),
+            Self::NurbsSurface(surface) => Self::NurbsSurface(surface.transformed(transform)?),
+            Self::Brep(brep) => Self::Brep(brep.transformed(transform, tolerance)?),
+            Self::Mesh(mesh) => Self::Mesh(mesh.transformed(transform, tolerance)?),
+        })
+    }
+
+    /// Applies a non-affine point morph while retaining the richest geometry
+    /// representation supported by the kernel. Linear primitives become
+    /// cubic NURBS curves so their interiors follow the morph.
+    pub fn morphed(
+        &self,
+        morph: &(impl PointMorph + ?Sized),
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Ok(match self {
+            Self::Point(point) => Self::Point(morph.morph_point(*point)?),
+            Self::PointCloud(cloud) => Self::PointCloud(morph.morph_point_cloud(cloud)?),
+            Self::Line(line) => Self::NurbsCurve(morph.morph_line(*line)?),
+            Self::Circle(circle) => {
+                Self::NurbsCurve(morph.morph_nurbs_curve(&circle.to_nurbs()?, tolerance)?)
+            }
+            Self::Arc(arc) => {
+                Self::NurbsCurve(morph.morph_nurbs_curve(&arc.to_nurbs()?, tolerance)?)
+            }
+            Self::Ellipse(ellipse) => {
+                Self::NurbsCurve(morph.morph_nurbs_curve(&ellipse.to_nurbs()?, tolerance)?)
+            }
+            Self::Polyline(polyline) => Self::NurbsCurve(morph.morph_polyline(polyline)?),
+            Self::NurbsCurve(curve) => Self::NurbsCurve(morph.morph_nurbs_curve(curve, tolerance)?),
+            Self::PolyCurve(curve) => Self::PolyCurve(PolyCurve3::try_with_segment_domains(
+                curve
+                    .segments()
+                    .iter()
+                    .map(|segment| morph.morph_nurbs_curve(segment, tolerance))
+                    .collect::<Result<_, _>>()?,
+                curve.parameters().to_vec(),
+            )?),
+            Self::NurbsSurface(surface) => Self::NurbsSurface(morph.morph_nurbs_surface(surface)?),
+            Self::Brep(_) => return Err(GeometryError::UnsupportedBrepMorph),
+            Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
+        })
+    }
+
+    /// Returns the defining locations duplicated by Rhino's `ExtractPt`
+    /// command. Point objects produce no new points; closed curve seams and
+    /// periodic NURBS controls follow Rhino's unique-grip ordering.
+    pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+        Ok(match self {
+            Self::Point(_) => Vec::new(),
+            Self::PointCloud(cloud) => cloud.points().to_vec(),
+            Self::Line(line) => vec![line.start(), line.end()],
+            Self::Circle(circle) => circle.to_nurbs()?.extract_point_locations()?,
+            Self::Arc(arc) => arc.to_nurbs()?.extract_point_locations()?,
+            Self::Ellipse(ellipse) => ellipse.to_nurbs()?.extract_point_locations()?,
+            Self::Polyline(polyline) => {
+                let mut points = polyline.vertices().to_vec();
+                if polyline.is_closed() {
+                    points.pop();
+                }
+                points
+            }
+            Self::NurbsCurve(curve) => curve.extract_point_locations()?,
+            Self::PolyCurve(curve) => {
+                let mut points = Vec::new();
+                for segment in curve.segments() {
+                    let locations = segment.extract_point_locations()?;
+                    let skip = usize::from(points.last() == locations.first());
+                    points.extend_from_slice(&locations[skip..]);
+                }
+                if curve.is_closed()? && points.first() == points.last() {
+                    points.pop();
+                }
+                points
+            }
+            Self::NurbsSurface(surface) => surface.extract_point_locations(),
+            Self::Brep(brep) => brep
+                .vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect(),
+            Self::Mesh(mesh) => mesh.vertices().to_vec(),
+        })
+    }
+}

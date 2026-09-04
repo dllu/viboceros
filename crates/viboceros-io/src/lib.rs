@@ -3,7 +3,7 @@
 mod step;
 mod stl;
 mod three_dm;
-mod three_dm_brep;
+mod three_dm_geometry;
 
 pub use step::{
     StepError, StepImport, StepImportReport, StepObject, read_step, read_step_file, write_step,

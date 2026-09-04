@@ -121,8 +121,10 @@ requested segment length; add `MarkEnds` to include open-curve endpoints.
 ends of every selected curve. `CloseCrv` currently closes selected polylines:
 nearby ends are made identical, while wider gaps gain a straight segment unless
 `CloseWideGapsWithLine=No` is set. Lines that cannot form a valid three-segment
-loop remain unchanged. Open arcs and NURBS curves will be enabled once the
-document integrates the [exact polycurve kernel](../polycurves.md).
+loop remain unchanged. Already-closed polycurves are also unchanged. Closing
+open arcs, NURBS curves, and polycurves remains unsupported; the integrated
+[exact polycurve representation](../polycurves.md) provides the required composite
+output type, but endpoint editing and tolerance-aware joining still need implementation.
 
 `CrvSeam point` relocates exactly one selected closed curve's start/end seam to
 the closest curve location; omit the point to pick that location in a viewport,
