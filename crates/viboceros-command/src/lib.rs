@@ -25,12 +25,12 @@ use viboceros_geometry::{
     MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
     MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfaceBrepIntersectionEvent, SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph,
-    SurfaceSurfaceIntersectionEvent, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    brep_brep_intersection_events, curve_brep_intersection_events,
-    curve_surface_intersection_events, join_polylines, sort_and_cull_points,
-    surface_brep_intersection_events, surface_surface_intersection_events,
+    NurbsCurve, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
+    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
+    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, brep_brep_intersection_events,
+    curve_brep_intersection_events, curve_surface_intersection_events, join_polylines,
+    sort_and_cull_points, surface_brep_intersection_events, surface_surface_intersection_events,
     transformed_curve_brep_intersection_events, try_catenary, try_curve_through_points,
     try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
@@ -12979,12 +12979,34 @@ enum CuttingSplitSource {
 enum CompleteSurfaceCut {
     ConstantU(Real),
     ConstantV(Real),
-    WestEast { west_v: Real, east_v: Real },
-    SouthNorth { south_u: Real, north_u: Real },
-    SouthEast { south_u: Real, east_v: Real },
-    EastNorth { east_v: Real, north_u: Real },
-    NorthWest { north_u: Real, west_v: Real },
-    WestSouth { west_v: Real, south_u: Real },
+    WestEast {
+        west_v: Real,
+        east_v: Real,
+    },
+    SouthNorth {
+        south_u: Real,
+        north_u: Real,
+    },
+    SouthEast {
+        south_u: Real,
+        east_v: Real,
+    },
+    EastNorth {
+        east_v: Real,
+        north_u: Real,
+    },
+    NorthWest {
+        north_u: Real,
+        west_v: Real,
+    },
+    WestSouth {
+        west_v: Real,
+        south_u: Real,
+    },
+    Corner {
+        corner: RectangularSurfaceCorner,
+        destination: [Real; 2],
+    },
 }
 
 fn selected_curve_cutter_inputs(
@@ -13189,7 +13211,8 @@ fn split_rectangular_surface_with_cutters(
             | CompleteSurfaceCut::SouthEast { .. }
             | CompleteSurfaceCut::EastNorth { .. }
             | CompleteSurfaceCut::NorthWest { .. }
-            | CompleteSurfaceCut::WestSouth { .. } => {
+            | CompleteSurfaceCut::WestSouth { .. }
+            | CompleteSurfaceCut::Corner { .. } => {
                 if nonisoparametric_cut.is_some() {
                     return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
                 }
@@ -13270,6 +13293,21 @@ fn split_rectangular_surface_with_cutters(
                     document.tolerance(),
                 )?
             }
+            CompleteSurfaceCut::Corner {
+                corner,
+                destination,
+            } => Brep::try_split_rectangular_surface_face_from_corner(
+                surface.clone(),
+                bounds[0][0]..=bounds[0][1],
+                bounds[1][0]..=bounds[1][1],
+                RectangularSurfaceCornerCut::new(
+                    corner,
+                    Point2::try_new(destination[0], destination[1])?,
+                ),
+                curve,
+                reversed,
+                document.tolerance(),
+            )?,
             CompleteSurfaceCut::ConstantU(_) | CompleteSurfaceCut::ConstantV(_) => {
                 unreachable!("constant-parameter cuts are collected separately")
             }
@@ -13601,6 +13639,70 @@ fn classify_complete_surface_cut(
             return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
         }
         return Ok(Some((cut, clipped_curve()?)));
+    }
+
+    let corner_at = |parameter: [Real; 2]| {
+        if near(parameter[0], bounds[0][0], epsilon_u)
+            && near(parameter[1], bounds[1][0], epsilon_v)
+        {
+            Some(RectangularSurfaceCorner::SouthWest)
+        } else if near(parameter[0], bounds[0][1], epsilon_u)
+            && near(parameter[1], bounds[1][0], epsilon_v)
+        {
+            Some(RectangularSurfaceCorner::SouthEast)
+        } else if near(parameter[0], bounds[0][1], epsilon_u)
+            && near(parameter[1], bounds[1][1], epsilon_v)
+        {
+            Some(RectangularSurfaceCorner::NorthEast)
+        } else if near(parameter[0], bounds[0][0], epsilon_u)
+            && near(parameter[1], bounds[1][1], epsilon_v)
+        {
+            Some(RectangularSurfaceCorner::NorthWest)
+        } else {
+            None
+        }
+    };
+    let valid_corner_destination = |corner, parameter| match corner {
+        RectangularSurfaceCorner::SouthWest => {
+            on_east(parameter)
+                || on_north(parameter)
+                || corner_at(parameter) == Some(RectangularSurfaceCorner::NorthEast)
+        }
+        RectangularSurfaceCorner::SouthEast => {
+            on_north(parameter)
+                || on_west(parameter)
+                || corner_at(parameter) == Some(RectangularSurfaceCorner::NorthWest)
+        }
+        RectangularSurfaceCorner::NorthEast => {
+            on_west(parameter)
+                || on_south(parameter)
+                || corner_at(parameter) == Some(RectangularSurfaceCorner::SouthWest)
+        }
+        RectangularSurfaceCorner::NorthWest => {
+            on_south(parameter)
+                || on_east(parameter)
+                || corner_at(parameter) == Some(RectangularSurfaceCorner::SouthEast)
+        }
+    };
+    let corner_cut = corner_at(first)
+        .filter(|corner| valid_corner_destination(*corner, last))
+        .map(|corner| (corner, last))
+        .or_else(|| {
+            corner_at(last)
+                .filter(|corner| valid_corner_destination(*corner, first))
+                .map(|corner| (corner, first))
+        });
+    if let Some((corner, destination)) = corner_cut {
+        if !parameters_form_segment {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+        return Ok(Some((
+            CompleteSurfaceCut::Corner {
+                corner,
+                destination,
+            },
+            clipped_curve()?,
+        )));
     }
 
     let boundary_mask = |parameter: [Real; 2]| {
@@ -21748,7 +21850,7 @@ mod tests {
         .unwrap()
     }
 
-    fn adjacent_side_cutting_surface(start: [Real; 2], end: [Real; 2]) -> NurbsSurface {
+    fn straight_cutting_surface(start: [Real; 2], end: [Real; 2]) -> NurbsSurface {
         let length = (end[0] - start[0]).hypot(end[1] - start[1]);
         NurbsSurface::try_bilinear([
             Point3::try_new(start[0], start[1], -5.0).unwrap(),
@@ -28445,7 +28547,7 @@ mod tests {
                 .add_geometry(Geometry::NurbsSurface(source.clone()))
                 .unwrap();
             let cutter_id = document
-                .add_geometry(Geometry::NurbsSurface(adjacent_side_cutting_surface(
+                .add_geometry(Geometry::NurbsSurface(straight_cutting_surface(
                     endpoints[0],
                     endpoints[1],
                 )))
@@ -28596,6 +28698,69 @@ mod tests {
     }
 
     #[test]
+    fn cutting_object_split_supports_all_straight_corner_surface_cuts() {
+        let registry = CommandRegistry::with_builtins();
+        for (endpoints, expected_vertex_counts) in [
+            ([[0.0, 0.0], [10.0, 7.0]], [3, 4]),
+            ([[0.0, 0.0], [6.0, 10.0]], [3, 4]),
+            ([[10.0, 0.0], [4.0, 10.0]], [4, 3]),
+            ([[10.0, 0.0], [0.0, 6.0]], [3, 4]),
+            ([[10.0, 10.0], [0.0, 3.0]], [4, 3]),
+            ([[10.0, 10.0], [4.0, 0.0]], [4, 3]),
+            ([[0.0, 10.0], [6.0, 0.0]], [3, 4]),
+            ([[0.0, 10.0], [10.0, 4.0]], [4, 3]),
+            ([[0.0, 0.0], [10.0, 10.0]], [3, 3]),
+            ([[10.0, 0.0], [0.0, 10.0]], [3, 3]),
+        ] {
+            let mut document = Document::default();
+            let source = planar_intersection_surface();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(source.clone()))
+                .unwrap();
+            let cutter_id = document
+                .add_geometry(Geometry::NurbsSurface(straight_cutting_surface(
+                    endpoints[0],
+                    endpoints[1],
+                )))
+                .unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(&mut document, "Split CuttingObjects=5,5,0")
+                    .unwrap(),
+                "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut area = 0.0;
+            for (object, expected_vertex_count) in outputs.iter().zip(expected_vertex_counts) {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("corner cutting Split must create B-rep faces")
+                };
+                assert_eq!(brep.vertices().len(), expected_vertex_count);
+                assert_eq!(brep.edges().len(), expected_vertex_count);
+                assert_eq!(brep.faces()[0].surface(), &source);
+                assert_eq!(
+                    brep.faces()[0].loops()[0]
+                        .trims()
+                        .iter()
+                        .filter(|trim| { trim.iso() == viboceros_geometry::SurfaceIso::NotIso })
+                        .count(),
+                    1
+                );
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(2, document.tolerance()).unwrap();
+            }
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
     fn cutting_object_split_handles_no_hit_and_rejects_invalid_sources_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -28700,7 +28865,7 @@ mod tests {
             .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
             .unwrap();
         registry
-            .execute(&mut unsupported, "Line 0,0,0 10,10,0")
+            .execute(&mut unsupported, "Curve Degree=2 0,0,0 5,7,0 10,10,0")
             .unwrap();
         let ids = unsupported
             .objects()

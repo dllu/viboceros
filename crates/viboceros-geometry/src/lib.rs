@@ -38,7 +38,7 @@ mod vector;
 pub use bounds::BoundingBox3;
 pub use brep::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
-    SurfaceIso,
+    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceIso,
 };
 pub use catenary::{
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, CatenarySolution,

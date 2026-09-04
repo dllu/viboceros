@@ -130,6 +130,43 @@ pub enum SurfaceIso {
     West,
 }
 
+/// One corner of a rectangular surface trim in increasing U/V coordinates.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum RectangularSurfaceCorner {
+    SouthWest,
+    SouthEast,
+    NorthEast,
+    NorthWest,
+}
+
+/// Endpoint description for a straight rectangular-face cut that starts at a
+/// trim corner and ends on another boundary.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct RectangularSurfaceCornerCut {
+    corner: RectangularSurfaceCorner,
+    destination: Point2,
+}
+
+impl RectangularSurfaceCornerCut {
+    #[inline]
+    pub const fn new(corner: RectangularSurfaceCorner, destination: Point2) -> Self {
+        Self {
+            corner,
+            destination,
+        }
+    }
+
+    #[inline]
+    pub const fn corner(self) -> RectangularSurfaceCorner {
+        self.corner
+    }
+
+    #[inline]
+    pub const fn destination(self) -> Point2 {
+        self.destination
+    }
+}
+
 /// One face-local use of a shared 3D edge, paired with its exact 2D p-curve.
 #[derive(Clone, Debug, PartialEq)]
 pub struct BrepTrim {
@@ -1358,6 +1395,54 @@ impl Brep {
             tolerance,
         )?;
         Ok([corner, remainder])
+    }
+
+    /// Splits a rectangular surface region along one exact curve from a trim
+    /// corner to either the opposite corner or the interior of a nonincident
+    /// side. Existing corner topology is reused rather than duplicated, and
+    /// the two independent triangle/quad results retain Rhino's vertex, edge,
+    /// and trim ordering.
+    pub fn try_split_rectangular_surface_face_from_corner(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        cut: RectangularSurfaceCornerCut,
+        cut_curve: NurbsCurve,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<[Self; 2], GeometryError> {
+        surface.try_trimmed(u.clone(), v.clone())?;
+        let bounds = [[*u.start(), *u.end()], [*v.start(), *v.end()]];
+        let (kind, destination) =
+            classify_rectangular_corner_cut(cut.corner(), cut.destination(), bounds, tolerance)?;
+        let [cut_start, cut_end] = rectangular_corner_cut_parameters(kind, destination, bounds)?;
+        let cut_curve = orient_surface_split_curve(
+            &cut_curve,
+            surface.evaluate(cut_start.x(), cut_start.y())?,
+            surface.evaluate(cut_end.x(), cut_end.y())?,
+            tolerance,
+        )?;
+        let [first, second] = rectangular_corner_cut_face_specs(kind);
+        Ok([
+            try_rectangular_corner_cut_face(
+                surface.clone(),
+                reversed,
+                bounds,
+                destination,
+                &cut_curve,
+                first,
+                tolerance,
+            )?,
+            try_rectangular_corner_cut_face(
+                surface,
+                reversed,
+                bounds,
+                destination,
+                &cut_curve,
+                second,
+                tolerance,
+            )?,
+        ])
     }
 
     /// Converts every polygon of a mesh into one degree-one NURBS face.
@@ -4150,6 +4235,504 @@ fn rectangular_surface_boundary_iso(
     ]
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RectangularBoundarySide {
+    South,
+    East,
+    North,
+    West,
+}
+
+impl RectangularBoundarySide {
+    const fn index(self) -> usize {
+        match self {
+            Self::South => 0,
+            Self::East => 1,
+            Self::North => 2,
+            Self::West => 3,
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RectangularCornerCutKind {
+    SouthWestToEast,
+    SouthWestToNorth,
+    SouthEastToNorth,
+    SouthEastToWest,
+    NorthEastToWest,
+    NorthEastToSouth,
+    NorthWestToSouth,
+    NorthWestToEast,
+    SouthWestToNorthEast,
+    SouthEastToNorthWest,
+}
+
+#[derive(Clone, Copy)]
+enum RectangularCornerCutDestination {
+    Side(RectangularBoundarySide),
+    Corner(RectangularSurfaceCorner),
+}
+
+#[derive(Clone, Copy)]
+enum CornerCutVertex {
+    SouthWest,
+    SouthEast,
+    NorthEast,
+    NorthWest,
+    Destination,
+}
+
+#[derive(Clone, Copy)]
+enum CornerCutEdgeKind {
+    Boundary(RectangularBoundarySide),
+    Cut,
+}
+
+#[derive(Clone, Copy)]
+struct CornerCutEdgeSpec {
+    vertices: [usize; 2],
+    kind: CornerCutEdgeKind,
+}
+
+struct CornerCutFaceSpec {
+    vertices: Vec<CornerCutVertex>,
+    edges: Vec<CornerCutEdgeSpec>,
+    loop_edges: Vec<(usize, bool)>,
+}
+
+fn classify_rectangular_corner_cut(
+    corner: RectangularSurfaceCorner,
+    destination: Point2,
+    bounds: [[Real; 2]; 2],
+    tolerance: Tolerance,
+) -> Result<(RectangularCornerCutKind, Point2), GeometryError> {
+    let epsilon = [
+        trim_parameter_epsilon(bounds[0], tolerance),
+        trim_parameter_epsilon(bounds[1], tolerance),
+    ];
+    let near = |left: Real, right: Real, epsilon: Real| (left - right).abs() <= epsilon;
+    let west = near(destination.x(), bounds[0][0], epsilon[0]);
+    let east = near(destination.x(), bounds[0][1], epsilon[0]);
+    let south = near(destination.y(), bounds[1][0], epsilon[1]);
+    let north = near(destination.y(), bounds[1][1], epsilon[1]);
+    let interior_u =
+        destination.x() > bounds[0][0] + epsilon[0] && destination.x() < bounds[0][1] - epsilon[0];
+    let interior_v =
+        destination.y() > bounds[1][0] + epsilon[1] && destination.y() < bounds[1][1] - epsilon[1];
+    let (destination_kind, snapped) = if west && south {
+        (
+            RectangularCornerCutDestination::Corner(RectangularSurfaceCorner::SouthWest),
+            Point2::try_new(bounds[0][0], bounds[1][0])?,
+        )
+    } else if east && south {
+        (
+            RectangularCornerCutDestination::Corner(RectangularSurfaceCorner::SouthEast),
+            Point2::try_new(bounds[0][1], bounds[1][0])?,
+        )
+    } else if east && north {
+        (
+            RectangularCornerCutDestination::Corner(RectangularSurfaceCorner::NorthEast),
+            Point2::try_new(bounds[0][1], bounds[1][1])?,
+        )
+    } else if west && north {
+        (
+            RectangularCornerCutDestination::Corner(RectangularSurfaceCorner::NorthWest),
+            Point2::try_new(bounds[0][0], bounds[1][1])?,
+        )
+    } else if south && interior_u {
+        (
+            RectangularCornerCutDestination::Side(RectangularBoundarySide::South),
+            Point2::try_new(
+                destination.x().clamp(bounds[0][0], bounds[0][1]),
+                bounds[1][0],
+            )?,
+        )
+    } else if east && interior_v {
+        (
+            RectangularCornerCutDestination::Side(RectangularBoundarySide::East),
+            Point2::try_new(
+                bounds[0][1],
+                destination.y().clamp(bounds[1][0], bounds[1][1]),
+            )?,
+        )
+    } else if north && interior_u {
+        (
+            RectangularCornerCutDestination::Side(RectangularBoundarySide::North),
+            Point2::try_new(
+                destination.x().clamp(bounds[0][0], bounds[0][1]),
+                bounds[1][1],
+            )?,
+        )
+    } else if west && interior_v {
+        (
+            RectangularCornerCutDestination::Side(RectangularBoundarySide::West),
+            Point2::try_new(
+                bounds[0][0],
+                destination.y().clamp(bounds[1][0], bounds[1][1]),
+            )?,
+        )
+    } else {
+        return Err(GeometryError::InvalidBrepTopology {
+            context: "a corner surface split must end on another trim boundary",
+        });
+    };
+
+    use RectangularBoundarySide::{East, North, South, West};
+    use RectangularCornerCutDestination::{Corner, Side};
+    use RectangularSurfaceCorner::{NorthEast, NorthWest, SouthEast, SouthWest};
+    let kind = match (corner, destination_kind) {
+        (SouthWest, Side(East)) => RectangularCornerCutKind::SouthWestToEast,
+        (SouthWest, Side(North)) => RectangularCornerCutKind::SouthWestToNorth,
+        (SouthEast, Side(North)) => RectangularCornerCutKind::SouthEastToNorth,
+        (SouthEast, Side(West)) => RectangularCornerCutKind::SouthEastToWest,
+        (NorthEast, Side(West)) => RectangularCornerCutKind::NorthEastToWest,
+        (NorthEast, Side(South)) => RectangularCornerCutKind::NorthEastToSouth,
+        (NorthWest, Side(South)) => RectangularCornerCutKind::NorthWestToSouth,
+        (NorthWest, Side(East)) => RectangularCornerCutKind::NorthWestToEast,
+        (SouthWest, Corner(NorthEast)) | (NorthEast, Corner(SouthWest)) => {
+            RectangularCornerCutKind::SouthWestToNorthEast
+        }
+        (SouthEast, Corner(NorthWest)) | (NorthWest, Corner(SouthEast)) => {
+            RectangularCornerCutKind::SouthEastToNorthWest
+        }
+        _ => {
+            return Err(GeometryError::InvalidBrepTopology {
+                context: "a corner surface split must reach a nonincident side or opposite corner",
+            });
+        }
+    };
+    Ok((kind, snapped))
+}
+
+fn rectangular_surface_corner_parameter(
+    corner: RectangularSurfaceCorner,
+    bounds: [[Real; 2]; 2],
+) -> Result<Point2, GeometryError> {
+    match corner {
+        RectangularSurfaceCorner::SouthWest => Point2::try_new(bounds[0][0], bounds[1][0]),
+        RectangularSurfaceCorner::SouthEast => Point2::try_new(bounds[0][1], bounds[1][0]),
+        RectangularSurfaceCorner::NorthEast => Point2::try_new(bounds[0][1], bounds[1][1]),
+        RectangularSurfaceCorner::NorthWest => Point2::try_new(bounds[0][0], bounds[1][1]),
+    }
+}
+
+fn rectangular_corner_cut_parameters(
+    kind: RectangularCornerCutKind,
+    destination: Point2,
+    bounds: [[Real; 2]; 2],
+) -> Result<[Point2; 2], GeometryError> {
+    use RectangularCornerCutKind::{
+        NorthEastToSouth, NorthEastToWest, NorthWestToEast, NorthWestToSouth, SouthEastToNorth,
+        SouthEastToNorthWest, SouthEastToWest, SouthWestToEast, SouthWestToNorth,
+        SouthWestToNorthEast,
+    };
+    let start = match kind {
+        SouthWestToEast | SouthWestToNorth | SouthWestToNorthEast => {
+            RectangularSurfaceCorner::SouthWest
+        }
+        SouthEastToNorth | SouthEastToWest | SouthEastToNorthWest => {
+            RectangularSurfaceCorner::SouthEast
+        }
+        NorthEastToWest | NorthEastToSouth => RectangularSurfaceCorner::NorthEast,
+        NorthWestToSouth | NorthWestToEast => RectangularSurfaceCorner::NorthWest,
+    };
+    let end = match kind {
+        SouthWestToNorthEast => {
+            rectangular_surface_corner_parameter(RectangularSurfaceCorner::NorthEast, bounds)?
+        }
+        SouthEastToNorthWest => {
+            rectangular_surface_corner_parameter(RectangularSurfaceCorner::NorthWest, bounds)?
+        }
+        _ => destination,
+    };
+    Ok([rectangular_surface_corner_parameter(start, bounds)?, end])
+}
+
+fn rectangular_corner_cut_face_specs(kind: RectangularCornerCutKind) -> [CornerCutFaceSpec; 2] {
+    use CornerCutEdgeKind::Cut;
+    use CornerCutVertex::{
+        Destination as D, NorthEast as Ne, NorthWest as Nw, SouthEast as Se, SouthWest as Sw,
+    };
+    use RectangularBoundarySide::{East as E, North as N, South as S, West as W};
+    use RectangularCornerCutKind::{
+        NorthEastToSouth, NorthEastToWest, NorthWestToEast, NorthWestToSouth, SouthEastToNorth,
+        SouthEastToNorthWest, SouthEastToWest, SouthWestToEast, SouthWestToNorth,
+        SouthWestToNorthEast,
+    };
+    let boundary = |vertices, side| CornerCutEdgeSpec {
+        vertices,
+        kind: CornerCutEdgeKind::Boundary(side),
+    };
+    let cut = |vertices| CornerCutEdgeSpec {
+        vertices,
+        kind: Cut,
+    };
+    let face = |vertices: &[CornerCutVertex],
+                edges: &[CornerCutEdgeSpec],
+                loop_edges: &[(usize, bool)]| CornerCutFaceSpec {
+        vertices: vertices.to_vec(),
+        edges: edges.to_vec(),
+        loop_edges: loop_edges.to_vec(),
+    };
+
+    match kind {
+        SouthWestToEast => [
+            face(
+                &[Sw, Se, D],
+                &[boundary([0, 1], S), boundary([1, 2], E), cut([0, 2])],
+                &[(0, false), (1, false), (2, true)],
+            ),
+            face(
+                &[Sw, Ne, Nw, D],
+                &[
+                    boundary([1, 2], N),
+                    boundary([2, 0], W),
+                    cut([0, 3]),
+                    boundary([3, 1], E),
+                ],
+                &[(2, false), (3, false), (0, false), (1, false)],
+            ),
+        ],
+        SouthWestToNorth => [
+            face(
+                &[Sw, Nw, D],
+                &[boundary([1, 0], W), cut([0, 2]), boundary([2, 1], N)],
+                &[(1, false), (2, false), (0, false)],
+            ),
+            face(
+                &[Sw, Se, Ne, D],
+                &[
+                    boundary([0, 1], S),
+                    boundary([1, 2], E),
+                    boundary([2, 3], N),
+                    cut([0, 3]),
+                ],
+                &[(0, false), (1, false), (2, false), (3, true)],
+            ),
+        ],
+        SouthEastToNorth => [
+            face(
+                &[Sw, Se, Nw, D],
+                &[
+                    boundary([0, 1], S),
+                    boundary([2, 0], W),
+                    cut([1, 3]),
+                    boundary([3, 2], N),
+                ],
+                &[(2, false), (3, false), (1, false), (0, false)],
+            ),
+            face(
+                &[Se, Ne, D],
+                &[boundary([0, 1], E), boundary([1, 2], N), cut([0, 2])],
+                &[(0, false), (1, false), (2, true)],
+            ),
+        ],
+        SouthEastToWest => [
+            face(
+                &[Sw, Se, D],
+                &[boundary([0, 1], S), cut([1, 2]), boundary([2, 0], W)],
+                &[(1, false), (2, false), (0, false)],
+            ),
+            face(
+                &[Se, Ne, Nw, D],
+                &[
+                    boundary([0, 1], E),
+                    boundary([1, 2], N),
+                    boundary([2, 3], W),
+                    cut([0, 3]),
+                ],
+                &[(0, false), (1, false), (2, false), (3, true)],
+            ),
+        ],
+        NorthEastToWest => [
+            face(
+                &[Sw, Se, Ne, D],
+                &[
+                    boundary([0, 1], S),
+                    boundary([1, 2], E),
+                    cut([2, 3]),
+                    boundary([3, 0], W),
+                ],
+                &[(2, false), (3, false), (0, false), (1, false)],
+            ),
+            face(
+                &[Ne, Nw, D],
+                &[boundary([0, 1], N), boundary([1, 2], W), cut([0, 2])],
+                &[(0, false), (1, false), (2, true)],
+            ),
+        ],
+        NorthEastToSouth => [
+            face(
+                &[Sw, Ne, Nw, D],
+                &[
+                    boundary([0, 3], S),
+                    boundary([1, 2], N),
+                    boundary([2, 0], W),
+                    cut([1, 3]),
+                ],
+                &[(1, false), (2, false), (0, false), (3, true)],
+            ),
+            face(
+                &[Se, Ne, D],
+                &[boundary([0, 1], E), cut([1, 2]), boundary([2, 0], S)],
+                &[(1, false), (2, false), (0, false)],
+            ),
+        ],
+        NorthWestToSouth => [
+            face(
+                &[Sw, Nw, D],
+                &[boundary([0, 2], S), boundary([1, 0], W), cut([1, 2])],
+                &[(1, false), (0, false), (2, true)],
+            ),
+            face(
+                &[Se, Ne, Nw, D],
+                &[
+                    boundary([0, 1], E),
+                    boundary([1, 2], N),
+                    cut([2, 3]),
+                    boundary([3, 0], S),
+                ],
+                &[(2, false), (3, false), (0, false), (1, false)],
+            ),
+        ],
+        NorthWestToEast => [
+            face(
+                &[Sw, Se, Nw, D],
+                &[
+                    boundary([0, 1], S),
+                    boundary([1, 3], E),
+                    boundary([2, 0], W),
+                    cut([2, 3]),
+                ],
+                &[(2, false), (0, false), (1, false), (3, true)],
+            ),
+            face(
+                &[Ne, Nw, D],
+                &[boundary([0, 1], N), cut([1, 2]), boundary([2, 0], E)],
+                &[(1, false), (2, false), (0, false)],
+            ),
+        ],
+        SouthWestToNorthEast => [
+            face(
+                &[Sw, Se, Ne],
+                &[boundary([0, 1], S), boundary([1, 2], E), cut([0, 2])],
+                &[(0, false), (1, false), (2, true)],
+            ),
+            face(
+                &[Sw, Ne, Nw],
+                &[boundary([1, 2], N), boundary([2, 0], W), cut([0, 1])],
+                &[(2, false), (0, false), (1, false)],
+            ),
+        ],
+        SouthEastToNorthWest => [
+            face(
+                &[Se, Ne, Nw],
+                &[boundary([0, 1], E), boundary([1, 2], N), cut([0, 2])],
+                &[(0, false), (1, false), (2, true)],
+            ),
+            face(
+                &[Sw, Se, Nw],
+                &[boundary([0, 1], S), boundary([2, 0], W), cut([1, 2])],
+                &[(2, false), (1, false), (0, false)],
+            ),
+        ],
+    }
+}
+
+fn try_rectangular_corner_cut_face(
+    surface: NurbsSurface,
+    reversed: bool,
+    bounds: [[Real; 2]; 2],
+    destination: Point2,
+    cut_curve: &NurbsCurve,
+    spec: CornerCutFaceSpec,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    let boundary_iso = rectangular_surface_boundary_iso(&surface, bounds);
+    let vertex_parameters = spec
+        .vertices
+        .iter()
+        .map(|vertex| match vertex {
+            CornerCutVertex::SouthWest => {
+                rectangular_surface_corner_parameter(RectangularSurfaceCorner::SouthWest, bounds)
+            }
+            CornerCutVertex::SouthEast => {
+                rectangular_surface_corner_parameter(RectangularSurfaceCorner::SouthEast, bounds)
+            }
+            CornerCutVertex::NorthEast => {
+                rectangular_surface_corner_parameter(RectangularSurfaceCorner::NorthEast, bounds)
+            }
+            CornerCutVertex::NorthWest => {
+                rectangular_surface_corner_parameter(RectangularSurfaceCorner::NorthWest, bounds)
+            }
+            CornerCutVertex::Destination => Ok(destination),
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let edge_specs = spec
+        .edges
+        .iter()
+        .map(|edge| {
+            let curve = match edge.kind {
+                CornerCutEdgeKind::Boundary(side) => rectangular_surface_boundary_segment(
+                    &surface,
+                    side,
+                    vertex_parameters[edge.vertices[0]],
+                    vertex_parameters[edge.vertices[1]],
+                )?,
+                CornerCutEdgeKind::Cut => cut_curve.clone(),
+            };
+            Ok((edge.vertices, curve))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let loop_specs = spec
+        .loop_edges
+        .into_iter()
+        .map(|(edge, reversed)| {
+            let iso = match spec.edges[edge].kind {
+                CornerCutEdgeKind::Boundary(side) => boundary_iso[side.index()],
+                CornerCutEdgeKind::Cut => SurfaceIso::NotIso,
+            };
+            (edge, reversed, iso)
+        })
+        .collect::<Vec<_>>();
+    try_surface_cutting_face(
+        surface,
+        reversed,
+        vertex_parameters,
+        edge_specs,
+        loop_specs,
+        tolerance,
+    )
+}
+
+fn rectangular_surface_boundary_segment(
+    surface: &NurbsSurface,
+    side: RectangularBoundarySide,
+    start: Point2,
+    end: Point2,
+) -> Result<NurbsCurve, GeometryError> {
+    let (curve, forward) = match side {
+        RectangularBoundarySide::South | RectangularBoundarySide::North => {
+            let parameter = start.y();
+            let interval = start.x().min(end.x())..=start.x().max(end.x());
+            (
+                surface.isocurve_u(parameter)?.try_trimmed(interval)?,
+                start.x() < end.x(),
+            )
+        }
+        RectangularBoundarySide::East | RectangularBoundarySide::West => {
+            let parameter = start.x();
+            let interval = start.y().min(end.y())..=start.y().max(end.y());
+            (
+                surface.isocurve_v(parameter)?.try_trimmed(interval)?,
+                start.y() < end.y(),
+            )
+        }
+    };
+    if forward { Ok(curve) } else { curve.reversed() }
+}
+
 fn orient_surface_split_curve(
     curve: &NurbsCurve,
     start: Point3,
@@ -4170,18 +4753,15 @@ fn orient_surface_split_curve(
     })
 }
 
-fn try_surface_cutting_face<
-    const VERTEX_COUNT: usize,
-    const EDGE_COUNT: usize,
-    const TRIM_COUNT: usize,
->(
+fn try_surface_cutting_face(
     surface: NurbsSurface,
     reversed: bool,
-    vertex_parameters: [Point2; VERTEX_COUNT],
-    edge_specs: [([usize; 2], NurbsCurve); EDGE_COUNT],
-    loop_specs: [(usize, bool, SurfaceIso); TRIM_COUNT],
+    vertex_parameters: impl AsRef<[Point2]>,
+    edge_specs: impl IntoIterator<Item = ([usize; 2], NurbsCurve)>,
+    loop_specs: impl IntoIterator<Item = (usize, bool, SurfaceIso)>,
     tolerance: Tolerance,
 ) -> Result<Brep, GeometryError> {
+    let vertex_parameters = vertex_parameters.as_ref();
     let vertices = vertex_parameters
         .iter()
         .map(|parameter| BrepVertex::try_new(surface.evaluate(parameter.x(), parameter.y())?, 0.0))
@@ -7135,6 +7715,187 @@ mod tests {
             }
             assert!(Tolerance::DEFAULT.approx_eq(total_area, 100.0));
         }
+    }
+
+    #[test]
+    fn rectangular_surface_corner_splits_match_rhino_topology() {
+        use RectangularSurfaceCorner::{NorthEast, NorthWest, SouthEast, SouthWest};
+
+        let cases = [
+            (
+                SouthWest,
+                [10.0, 7.0],
+                [
+                    vec![[0, 1], [1, 2], [0, 2]],
+                    vec![[1, 2], [2, 0], [0, 3], [3, 1]],
+                ],
+                [true, false],
+            ),
+            (
+                SouthWest,
+                [6.0, 10.0],
+                [
+                    vec![[1, 0], [0, 2], [2, 1]],
+                    vec![[0, 1], [1, 2], [2, 3], [0, 3]],
+                ],
+                [false, true],
+            ),
+            (
+                SouthEast,
+                [4.0, 10.0],
+                [
+                    vec![[0, 1], [2, 0], [1, 3], [3, 2]],
+                    vec![[0, 1], [1, 2], [0, 2]],
+                ],
+                [false, true],
+            ),
+            (
+                SouthEast,
+                [0.0, 6.0],
+                [
+                    vec![[0, 1], [1, 2], [2, 0]],
+                    vec![[0, 1], [1, 2], [2, 3], [0, 3]],
+                ],
+                [false, true],
+            ),
+            (
+                NorthEast,
+                [0.0, 3.0],
+                [
+                    vec![[0, 1], [1, 2], [2, 3], [3, 0]],
+                    vec![[0, 1], [1, 2], [0, 2]],
+                ],
+                [false, true],
+            ),
+            (
+                NorthEast,
+                [4.0, 0.0],
+                [
+                    vec![[0, 3], [1, 2], [2, 0], [1, 3]],
+                    vec![[0, 1], [1, 2], [2, 0]],
+                ],
+                [true, false],
+            ),
+            (
+                NorthWest,
+                [6.0, 0.0],
+                [
+                    vec![[0, 2], [1, 0], [1, 2]],
+                    vec![[0, 1], [1, 2], [2, 3], [3, 0]],
+                ],
+                [true, false],
+            ),
+            (
+                NorthWest,
+                [10.0, 4.0],
+                [
+                    vec![[0, 1], [1, 3], [2, 0], [2, 3]],
+                    vec![[0, 1], [1, 2], [2, 0]],
+                ],
+                [true, false],
+            ),
+            (
+                SouthWest,
+                [10.0, 10.0],
+                [vec![[0, 1], [1, 2], [0, 2]], vec![[1, 2], [2, 0], [0, 1]]],
+                [true, false],
+            ),
+            (
+                SouthEast,
+                [0.0, 10.0],
+                [vec![[0, 1], [1, 2], [0, 2]], vec![[0, 1], [2, 0], [1, 2]]],
+                [true, false],
+            ),
+        ];
+
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        for (corner, destination, expected_edges, expected_cut_reversals) in cases {
+            let start = match corner {
+                SouthWest => [0.0, 0.0],
+                SouthEast => [10.0, 0.0],
+                NorthEast => [10.0, 10.0],
+                NorthWest => [0.0, 10.0],
+            };
+            let endpoints = [
+                surface.evaluate(start[0], start[1]).unwrap(),
+                surface.evaluate(destination[0], destination[1]).unwrap(),
+            ];
+            let length = endpoints[0].distance_to(endpoints[1]).unwrap();
+            let curve =
+                NurbsCurve::try_new(1, endpoints.to_vec(), vec![0.0, 0.0, length, length]).unwrap();
+            let pieces = Brep::try_split_rectangular_surface_face_from_corner(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                RectangularSurfaceCornerCut::new(
+                    corner,
+                    Point2::try_new(destination[0], destination[1]).unwrap(),
+                ),
+                curve,
+                true,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            let mut total_area = 0.0;
+            for ((piece, expected_edges), expected_cut_reversal) in pieces
+                .iter()
+                .zip(expected_edges)
+                .zip(expected_cut_reversals)
+            {
+                assert!(piece.faces()[0].is_reversed());
+                assert_eq!(piece.faces()[0].surface(), &surface);
+                assert_eq!(
+                    piece
+                        .edges()
+                        .iter()
+                        .map(BrepEdge::vertices)
+                        .collect::<Vec<_>>(),
+                    expected_edges
+                );
+                let cut = piece.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == SurfaceIso::NotIso)
+                    .unwrap();
+                assert_eq!(cut.is_reversed_3d(), expected_cut_reversal);
+                assert_eq!(
+                    piece.faces()[0]
+                        .rectangular_trim_bounds(Tolerance::DEFAULT)
+                        .unwrap(),
+                    None
+                );
+                total_area += piece.area(Tolerance::DEFAULT).unwrap();
+                piece.tessellate(2, Tolerance::DEFAULT).unwrap();
+            }
+            assert!(Tolerance::DEFAULT.approx_eq(total_area, 100.0));
+        }
+
+        let boundary_curve = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(5.0, 0.0, 0.0)],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        assert!(matches!(
+            Brep::try_split_rectangular_surface_face_from_corner(
+                surface,
+                0.0..=10.0,
+                0.0..=10.0,
+                RectangularSurfaceCornerCut::new(SouthWest, Point2::try_new(5.0, 0.0).unwrap(),),
+                boundary_curve,
+                false,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::InvalidBrepTopology { .. })
+        ));
     }
 
     #[test]
