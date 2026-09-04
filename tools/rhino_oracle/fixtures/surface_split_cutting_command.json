@@ -1072,6 +1072,78 @@
     },
     {
       "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-surface-with-nonmonotone-cubic-cutter",
+      "source_pick": [1.0, 5.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "pretrim": {
+        "point": [4.0, 6.0, 0.0],
+        "direction": "both",
+        "piece": 0
+      },
+      "cutters": [
+        {
+          "degree": 3,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 1.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [6.0, 4.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-surface-with-multiple-interval-cutter",
+      "source_pick": [2.0, 3.5, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "pretrim": {
+        "point": [4.0, 6.0, 0.0],
+        "direction": "both",
+        "piece": 0
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [0.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 3.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
       "id": "split-planar-surface-with-shared-corner-cutters",
       "source_pick": [8.0, 1.0, 0.0],
       "surface": {

@@ -5601,9 +5601,25 @@ fn rotate_surface_cut_cycle(
             ) && surface_cut_halfedge_nodes(edge, *halfedge)[1] == lower_left
         })
     } else {
-        cycle.iter().position(|halfedge| {
-            surface_cut_halfedge_nodes(&edges[*halfedge / 2], *halfedge)[0] == lower_left
-        })
+        cycle
+            .iter()
+            .position(|halfedge| {
+                surface_cut_halfedge_nodes(&edges[*halfedge / 2], *halfedge)[0] == lower_left
+            })
+            .map(|index| {
+                let halfedge = cycle[index];
+                // Rhino starts after a lower boundary cutter when that
+                // boundary is traversed opposite to its source direction.
+                if matches!(
+                    edges[halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut { .. }
+                ) && !halfedge.is_multiple_of(2)
+                {
+                    (index + 1) % cycle.len()
+                } else {
+                    index
+                }
+            })
     }
     .unwrap_or(0);
     cycle.rotate_left(anchor);
