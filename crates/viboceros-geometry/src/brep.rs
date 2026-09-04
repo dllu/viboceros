@@ -5304,6 +5304,7 @@ fn try_rectangular_surface_cut_arrangement(
     if cuts.is_empty() {
         return invalid("a surface cutting arrangement requires a distinct curve");
     }
+    let closed = cuts.iter().map(|cut| cut.closed).collect::<Vec<_>>();
 
     let corner_parameters = [
         Point2::try_new(bounds[0][0], bounds[1][0])?,
@@ -5539,7 +5540,46 @@ fn try_rectangular_surface_cut_arrangement(
                     coincidences: Vec::new(),
                 },
                 tolerance,
+                &closed,
             )?;
+        }
+    }
+
+    // Rhino uses the open curve as the representative of an open/closed
+    // overlap. If the closed curve was supplied first, its local vertex order
+    // advances from the node following the replaced edge rather than from the
+    // original closed seam.
+    if closed[0]
+        && let Some(overlap_end) = edges.iter().find_map(|edge| {
+            let SurfaceCutArrangementEdgeKind::Cut { source, .. } = edge.kind else {
+                return None;
+            };
+            if closed[source] {
+                return None;
+            }
+            edge.coincidences
+                .iter()
+                .find(|coincidence| coincidence.source == 0)
+                .map(|coincidence| edge.nodes[usize::from(coincidence.same_direction)])
+        })
+    {
+        let mut first_nodes = cuts[0]
+            .breaks
+            .iter()
+            .map(|split| split.node)
+            .collect::<Vec<_>>();
+        first_nodes.sort_by_key(|node| node_rank[*node]);
+        first_nodes.dedup();
+        if let Some(start) = first_nodes.iter().position(|node| *node == overlap_end) {
+            first_nodes.rotate_left(start);
+            let mut ranks = first_nodes
+                .iter()
+                .map(|node| node_rank[*node])
+                .collect::<Vec<_>>();
+            ranks.sort_unstable();
+            for (node, rank) in first_nodes.into_iter().zip(ranks) {
+                node_rank[node] = rank;
+            }
         }
     }
 
@@ -5649,7 +5689,6 @@ fn try_rectangular_surface_cut_arrangement(
         return Err(GeometryError::TooManySurfaceWires);
     }
     let first_closed = cuts.iter().position(|cut| cut.closed);
-    let closed = cuts.iter().map(|cut| cut.closed).collect::<Vec<_>>();
     let mut first_source_nodes = vec![false; nodes.len()];
     let mut first_overlap_nodes = vec![false; nodes.len()];
     let mut first_opposite_overlap_nodes = vec![false; nodes.len()];
@@ -6004,14 +6043,20 @@ fn push_unique_surface_cut_arrangement_edge(
     edges: &mut Vec<SurfaceCutArrangementEdge>,
     edge: SurfaceCutArrangementEdge,
     tolerance: Tolerance,
+    closed_sources: &[bool],
 ) -> Result<(), GeometryError> {
     let SurfaceCutArrangementEdgeKind::Cut { source, .. } = edge.kind else {
         return push_surface_cut_arrangement_edge(edges, edge);
     };
     for existing in edges.iter_mut() {
-        if !matches!(existing.kind, SurfaceCutArrangementEdgeKind::Cut { .. })
-            || !(existing.nodes == edge.nodes || existing.nodes == [edge.nodes[1], edge.nodes[0]])
-        {
+        let SurfaceCutArrangementEdgeKind::Cut {
+            source: existing_source,
+            ..
+        } = existing.kind
+        else {
+            continue;
+        };
+        if !(existing.nodes == edge.nodes || existing.nodes == [edge.nodes[1], edge.nodes[0]]) {
             continue;
         }
         for event in edge
@@ -6022,12 +6067,28 @@ fn push_unique_surface_cut_arrangement_edge(
                 continue;
             };
             if surface_cut_overlap_covers_curves(&edge.spatial, &existing.spatial, overlap) {
-                existing
-                    .coincidences
-                    .push(SurfaceCutArrangementCoincidence {
-                        source,
-                        same_direction: existing.nodes == edge.nodes,
+                let same_direction = existing.nodes == edge.nodes;
+                if closed_sources[existing_source] && !closed_sources[source] {
+                    let mut coincidences = std::mem::take(&mut existing.coincidences);
+                    if !same_direction {
+                        for coincidence in &mut coincidences {
+                            coincidence.same_direction = !coincidence.same_direction;
+                        }
+                    }
+                    coincidences.push(SurfaceCutArrangementCoincidence {
+                        source: existing_source,
+                        same_direction,
                     });
+                    *existing = edge;
+                    existing.coincidences = coincidences;
+                } else {
+                    existing
+                        .coincidences
+                        .push(SurfaceCutArrangementCoincidence {
+                            source,
+                            same_direction,
+                        });
+                }
                 return Ok(());
             }
         }
@@ -6386,7 +6447,7 @@ fn rotate_surface_cut_overlap_outer_cycle(
                 };
                 (edge.coincidences.is_empty()
                     && touches_overlap(edge)
-                    && (opposite_direction || source == 0))
+                    && (source == 0 || opposite_direction && !source_info.closed[source]))
                     .then_some((segment, source, index))
             })
             .min()
@@ -6419,11 +6480,9 @@ fn rotate_surface_cut_overlap_outer_cycle(
                 let SurfaceCutArrangementEdgeKind::Cut { source, segment } = edge.kind else {
                     return None;
                 };
-                (touches_overlap(edge) && (opposite_direction || source == 0)).then_some((
-                    segment,
-                    source,
-                    (index + 1) % cycle.len(),
-                ))
+                (touches_overlap(edge)
+                    && (source == 0 || opposite_direction && !source_info.closed[source]))
+                    .then_some((segment, source, (index + 1) % cycle.len()))
             })
             .min()
     {
@@ -6458,11 +6517,9 @@ fn rotate_surface_cut_overlap_outer_cycle(
         if edge.coincidences.is_empty() || halfedge.is_multiple_of(2) {
             continue;
         }
-        for coincidence in edge
-            .coincidences
-            .iter()
-            .filter(|coincidence| coincidence.same_direction)
-        {
+        for coincidence in edge.coincidences.iter().filter(|coincidence| {
+            coincidence.same_direction && !source_info.closed[coincidence.source]
+        }) {
             if !edge_touches_boundary(edge) || segment == 0 {
                 cycle.rotate_left(shared_index);
                 return true;
@@ -6519,11 +6576,9 @@ fn rotate_surface_cut_overlap_outer_cycle(
                 continue;
             }
             let forward = halfedge.is_multiple_of(2);
-            for coincidence in edge
-                .coincidences
-                .iter()
-                .filter(|coincidence| forward == coincidence.same_direction)
-            {
+            for coincidence in edge.coincidences.iter().filter(|coincidence| {
+                forward == coincidence.same_direction && !source_info.closed[coincidence.source]
+            }) {
                 for (index, &candidate) in cycle.iter().enumerate() {
                     if !candidate.is_multiple_of(2) {
                         continue;
@@ -6547,6 +6602,118 @@ fn rotate_surface_cut_overlap_outer_cycle(
             cycle.rotate_left(anchor);
             return true;
         }
+    }
+    false
+}
+
+fn rotate_surface_cut_open_closed_overlap_outer_cycle(
+    cycle: &mut [usize],
+    edges: &[SurfaceCutArrangementEdge],
+    source_info: &SurfaceCutArrangementSourceInfo,
+) -> bool {
+    // The open representative belongs to both adjacent faces, while the
+    // closed source's remaining edges occur only on its own side. Rhino keeps
+    // the representative seam on the other side and advances around the
+    // closed loop on the enclosed side.
+    let Some(closed_source) = source_info.first_closed else {
+        return false;
+    };
+    let shared = cycle.iter().enumerate().find_map(|(index, halfedge)| {
+        let edge = &edges[*halfedge / 2];
+        let SurfaceCutArrangementEdgeKind::Cut { source, .. } = edge.kind else {
+            return None;
+        };
+        (!source_info.closed[source]
+            && edge
+                .coincidences
+                .iter()
+                .any(|coincidence| coincidence.source == closed_source))
+        .then_some((index, *halfedge))
+    });
+    let Some((shared_index, shared_halfedge)) = shared else {
+        return false;
+    };
+
+    if closed_source == 0 {
+        let has_closed_edge = cycle.iter().any(|halfedge| {
+            matches!(
+                edges[*halfedge / 2].kind,
+                SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+            )
+        });
+        if let Some((_, anchor)) = cycle
+            .iter()
+            .enumerate()
+            .filter_map(|(index, halfedge)| {
+                if !halfedge.is_multiple_of(2) {
+                    return None;
+                }
+                match edges[*halfedge / 2].kind {
+                    SurfaceCutArrangementEdgeKind::Cut { source: 0, segment } => {
+                        Some((segment, index))
+                    }
+                    _ => None,
+                }
+            })
+            .min()
+        {
+            cycle.rotate_left(anchor);
+        } else if !has_closed_edge && shared_halfedge.is_multiple_of(2) {
+            cycle.rotate_left((shared_index + 1) % cycle.len());
+        } else {
+            cycle.rotate_left(shared_index);
+        }
+        return true;
+    }
+
+    let forward_anchor = cycle
+        .iter()
+        .enumerate()
+        .filter_map(|(index, halfedge)| {
+            if !halfedge.is_multiple_of(2) {
+                return None;
+            }
+            match edges[*halfedge / 2].kind {
+                SurfaceCutArrangementEdgeKind::Cut { source, segment }
+                    if source == closed_source =>
+                {
+                    Some((segment, index))
+                }
+                _ => None,
+            }
+        })
+        .max();
+    if let Some((_, anchor)) = forward_anchor {
+        cycle.rotate_left(anchor);
+        return true;
+    }
+    // Reversed closed loops retain the segment immediately before their
+    // ordinary maximum-segment seam.
+    let maximum_reverse_segment = cycle.iter().filter_map(|halfedge| {
+        if halfedge.is_multiple_of(2) {
+            return None;
+        }
+        match edges[*halfedge / 2].kind {
+            SurfaceCutArrangementEdgeKind::Cut { source, segment } if source == closed_source => {
+                Some(segment)
+            }
+            _ => None,
+        }
+    });
+    if let Some(target_segment) = maximum_reverse_segment
+        .max()
+        .map(|segment| segment.saturating_sub(1))
+        && let Some(anchor) = cycle.iter().position(|halfedge| {
+            !halfedge.is_multiple_of(2)
+                && matches!(
+                    edges[*halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut { source, segment }
+                        if source == closed_source && segment == target_segment
+                )
+        })
+    {
+        cycle.rotate_left(anchor);
+        return true;
     }
     false
 }
@@ -6589,6 +6756,23 @@ fn rotate_surface_cut_outer_cycle(
         }
     }
 
+    if !closed_sources[0]
+        && rotate_surface_cut_overlap_outer_cycle(
+            cycle,
+            edges,
+            nodes,
+            bounds,
+            tolerance,
+            source_info,
+        )
+    {
+        return Ok(());
+    }
+
+    if rotate_surface_cut_open_closed_overlap_outer_cycle(cycle, edges, source_info) {
+        return Ok(());
+    }
+
     if let Some(first_closed_source) = first_closed_source
         // Intersecting loops start at the last forward segment from a later
         // cutter. At a one-point contact, a complete self-edge remains and
@@ -6616,19 +6800,6 @@ fn rotate_surface_cut_outer_cycle(
             .max_by_key(|(source, segment, _)| (*source, *segment))
     {
         cycle.rotate_left(anchor);
-        return Ok(());
-    }
-
-    if first_closed_source.is_none()
-        && rotate_surface_cut_overlap_outer_cycle(
-            cycle,
-            edges,
-            nodes,
-            bounds,
-            tolerance,
-            source_info,
-        )
-    {
         return Ok(());
     }
 
@@ -10595,6 +10766,83 @@ mod tests {
                 .collect::<Vec<_>>();
             edge_counts.sort_unstable();
             assert_eq!(edge_counts, vec![3, 3, 6, 6]);
+        }
+
+        let polygon = NurbsCurve::try_new(
+            1,
+            vec![
+                point(3.0, 3.0, 0.0),
+                point(7.0, 3.0, 0.0),
+                point(7.0, 7.0, 0.0),
+                point(3.0, 7.0, 0.0),
+                point(3.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let horizontal = line([0.0, 3.0], [10.0, 3.0]);
+        for cutters in [
+            vec![polygon.clone(), horizontal.clone()],
+            vec![horizontal.clone(), polygon.clone()],
+            vec![polygon.reversed().unwrap(), horizontal.reversed().unwrap()],
+            vec![horizontal.reversed().unwrap(), polygon.reversed().unwrap()],
+        ] {
+            let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                cutters,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_pieces(&pieces, 3);
+            let mut edge_counts = pieces
+                .iter()
+                .map(|piece| piece.edges().len())
+                .collect::<Vec<_>>();
+            edge_counts.sort_unstable();
+            assert_eq!(edge_counts, vec![4, 6, 8]);
+        }
+
+        let left = NurbsCurve::try_new(
+            1,
+            vec![
+                point(2.0, 3.0, 0.0),
+                point(5.0, 3.0, 0.0),
+                point(5.0, 7.0, 0.0),
+                point(2.0, 7.0, 0.0),
+                point(2.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let right = NurbsCurve::try_new(
+            1,
+            vec![
+                point(5.0, 3.0, 0.0),
+                point(8.0, 3.0, 0.0),
+                point(8.0, 7.0, 0.0),
+                point(5.0, 7.0, 0.0),
+                point(5.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        for cutters in [
+            vec![left.clone(), right.clone()],
+            vec![right.clone(), left.clone()],
+        ] {
+            let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                cutters,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_pieces(&pieces, 3);
         }
 
         let crossing = Brep::try_split_rectangular_surface_face_with_curves(

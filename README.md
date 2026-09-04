@@ -917,9 +917,10 @@ while degree-multiple kinks split into Rhino-compatible edges; self-crossing
 loops are rejected. Boundary-to-boundary cutters may likewise touch a smooth
 circle or polygon vertex without falsely crossing or opening the closed region.
 Two open cutters may meet tangentially; regions pinched together only at that
-contact remain distinct Rhino-compatible faces. Partially coincident open
-cutters are subdivided at both overlap boundaries and share one topological
-edge instead of creating zero-area faces.
+contact remain distinct Rhino-compatible faces. Partially coincident cutters
+are subdivided at both overlap boundaries and share one topological edge instead
+of creating zero-area faces; open curves provide the canonical edge when they
+overlap closed loops.
 Straight and curved intersections against an already-trimmed rectangular
 B-rep are partitioned at exact intersections with its four visible UV
 boundaries. Globally nonmonotone cutters may enter the face repeatedly; every
@@ -944,8 +945,9 @@ tangent rational circles, plus mixed polygon/circle tangencies in both traversal
 directions, open/closed tangent contacts in both cutter orders, and open/open
 tangent contacts with pinched lobes, plus shared-start and shared-middle cutter
 segments in swapped and reversed traversal orders, including an exact shared
-quadratic span. It compares UV trim degree, controls, weights, knots, and domains
-as well as vertices, edge domains, trim order,
+quadratic span, open/closed shared edges, and adjacent closed polygons. It
+compares UV trim degree, controls, weights, knots, and domains as well as
+vertices, edge domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point

@@ -2659,6 +2659,209 @@
     },
     {
       "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-polygon-edge-overlapping-line",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-line-overlapping-polygon-edge",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-reversed-polygon-edge-overlapping-reversed-line",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [10.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [0.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-reversed-line-overlapping-reversed-polygon-edge",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [10.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [0.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-adjacent-closed-polygons-sharing-edge",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [2.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [5.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
       "id": "split-planar-surface-with-shared-quadratic-start-span",
       "source_pick": [1.0, 1.0, 0.0],
       "surface": {
