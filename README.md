@@ -890,13 +890,14 @@ may be combined with each other and with isoparametric cuts. Their planar UV
 arrangement splits every cutter at transverse crossings, reuses shared corner
 and intersection nodes, and emits every bounded cell with Rhino-compatible
 vertex, edge, and trim ordering. Straight parameter paths work on arbitrary
-rectangular NURBS faces; curved NURBS paths are accepted when each retained
-in-face control polygon advances strictly in at least one UV direction, and
-are pulled back exactly on affine and genuinely warped non-rational bilinear
-faces. Warped patches use their
-independent bilinear twist direction as an exact affine left inverse, preserving
-degree, controls, rational weights, knots, and domain in every validated
-polygonal trim. General nonplanar trims are constrained-triangulated in UV with
+rectangular NURBS faces. On affine and genuinely warped non-rational bilinear
+faces, supported NURBS paths are pulled back exactly, so even geometrically
+straight multi-span or higher-degree cutters retain their degree, controls,
+rational weights, knots, and domain instead of being simplified to a line.
+Curved paths are accepted when each retained in-face control polygon advances
+strictly in at least one UV direction. Warped patches use their independent
+bilinear twist direction as an exact affine left inverse. General nonplanar
+trims are constrained-triangulated in UV with
 interior knot-span grid samples, so denser display settings refine both their
 boundaries and surface interiors. Adjacent-side cuts produce Rhino's
 triangle-and-pentagon topology in all four orientations.
@@ -947,9 +948,11 @@ multi-closed arrangements, single- and multi-span curved paths,
 straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
 sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter
-arrangements, including internally and externally touching closed polygons and
-tangent rational circles, plus mixed polygon/circle tangencies in both traversal
-directions, open/closed tangent contacts in both cutter orders, and open/open
+arrangements, including collinear degree-one and degree-two multi-span paths,
+degree-two paths with kinked linear spans, internally and externally touching
+closed polygons, and tangent rational circles, plus mixed polygon/circle
+tangencies in both traversal directions, open/closed tangent contacts in both
+cutter orders, and open/open
 tangent contacts with pinched lobes, plus shared-start and shared-middle cutter
 segments in swapped and reversed traversal orders, including an exact shared
 quadratic span, open/closed shared edges, and adjacent closed polygons. It also

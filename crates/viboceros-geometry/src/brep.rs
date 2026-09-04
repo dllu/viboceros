@@ -7671,11 +7671,16 @@ fn surface_split_parameter_curve(
             *curve_domain.end(),
         ],
     )?;
-    if parameter_curve_matches_spatial_curve(surface, &line, curve, tolerance)? {
+    let line_matches = parameter_curve_matches_spatial_curve(surface, &line, curve, tolerance)?;
+    if curve.degree() == 1 && curve.control_points().len() == 2 && line_matches {
         return Ok(line);
     }
 
-    let parameter_curve = surface.try_pullback_bilinear_curve(curve, tolerance)?;
+    let parameter_curve = match surface.try_pullback_bilinear_curve(curve, tolerance) {
+        Ok(parameter_curve) => parameter_curve,
+        Err(_) if line_matches => return Ok(line),
+        Err(error) => return Err(error),
+    };
     let parameter_tolerance = [
         trim_parameter_epsilon(
             [*surface.domain_u().start(), *surface.domain_u().end()],
@@ -10789,6 +10794,109 @@ mod tests {
             west.area(Tolerance::DEFAULT).unwrap() + east.area(Tolerance::DEFAULT).unwrap(),
             100.0,
         ));
+    }
+
+    #[test]
+    fn rectangular_surface_splits_preserve_structured_straight_pcurves() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        let split_and_forward_trim = |curve: NurbsCurve| {
+            let [_, north] = Brep::try_split_rectangular_surface_face_west_east(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                [2.0, 6.0],
+                curve,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            north.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .find(|trim| trim.iso() == SurfaceIso::NotIso)
+                .unwrap()
+                .curve()
+                .clone()
+        };
+
+        let linear = split_and_forward_trim(
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 2.0, 0.0),
+                    point(5.0, 4.0, 0.0),
+                    point(10.0, 6.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(linear.degree(), 1);
+        assert_eq!(linear.control_points().len(), 3);
+        assert_eq!(linear.knots(), &[0.0, 0.0, 1.0, 2.0, 2.0]);
+
+        let quadratic = split_and_forward_trim(
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 2.0, 0.0),
+                    point(2.5, 3.0, 0.0),
+                    point(5.0, 4.0, 0.0),
+                    point(7.5, 5.0, 0.0),
+                    point(10.0, 6.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(quadratic.degree(), 2);
+        assert_eq!(quadratic.control_points().len(), 5);
+        assert_eq!(quadratic.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0]);
+
+        let kinked = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(2.5, 4.0, 0.0),
+                point(5.0, 6.0, 0.0),
+                point(7.5, 4.0, 0.0),
+                point(10.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+            surface,
+            0.0..=10.0,
+            0.0..=10.0,
+            [kinked],
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(pieces.len(), 2);
+        for piece in pieces {
+            let pcurves = piece.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .filter(|trim| trim.iso() == SurfaceIso::NotIso)
+                .map(BrepTrim::curve)
+                .collect::<Vec<_>>();
+            assert_eq!(pcurves.len(), 2);
+            assert!(
+                pcurves
+                    .iter()
+                    .all(|curve| curve.degree() == 2 && curve.control_points().len() == 3)
+            );
+        }
     }
 
     #[test]
