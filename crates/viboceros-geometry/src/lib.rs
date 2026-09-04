@@ -78,8 +78,9 @@ pub use mesh::{
 };
 pub use morph::{PointMorph, SurfacePointMorph};
 pub use nurbs::{
-    ControlPointCurveClosure, CurveCurveIntersection, CurveExtensionBoundary, CurveExtensionSide,
-    CurveExtensionStyle, NurbsCurve, WeightedPoint3,
+    ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
+    CurveCurveOverlap, CurveExtensionBoundary, CurveExtensionSide, CurveExtensionStyle, NurbsCurve,
+    WeightedPoint3,
 };
 pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceKnotDirection};
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};

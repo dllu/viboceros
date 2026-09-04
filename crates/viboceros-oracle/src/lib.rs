@@ -11,7 +11,8 @@ use serde_json::{Value, json};
 use thiserror::Error;
 use viboceros_command::{CommandError, CommandRegistry};
 use viboceros_document::{
-    ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectId, SelectionMode,
+    ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectColorSource,
+    ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
@@ -613,6 +614,10 @@ pub enum Operation {
         id: String,
         curve: NurbsCurveDefinition,
         parameters: Vec<f64>,
+    },
+    CurveIntersectCommand {
+        id: String,
+        curves: Vec<NurbsCurveDefinition>,
     },
     CurveTrimCommand {
         id: String,
@@ -1257,6 +1262,7 @@ impl Operation {
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
+            | Self::CurveIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
@@ -3219,6 +3225,9 @@ fn execute(
                 ),
                 elapsed,
             )
+        }
+        Operation::CurveIntersectCommand { curves, .. } => {
+            curve_intersect_command(iterations, curves, tolerance)?
         }
         Operation::CurveTrimCommand {
             curve,
@@ -7203,6 +7212,124 @@ fn curve_extend_boundary_command(
     Ok((value, elapsed_ns))
 }
 
+fn curve_intersect_command(
+    iterations: u32,
+    definitions: &[NurbsCurveDefinition],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let curves = definitions
+        .iter()
+        .map(nurbs_curve_from_definition)
+        .collect::<Result<Vec<_>, _>>()?;
+    let run = || -> Result<_, ProbeError> {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::new(tolerance);
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Viboceros Intersect Source")
+            .with_object_color(ColorRgb::new(12, 34, 56));
+        let mut input_ids = Vec::with_capacity(curves.len());
+        for curve in &curves {
+            input_ids.push(document.add_geometry_with_attributes(
+                Geometry::NurbsCurve(curve.clone()),
+                attributes.clone(),
+            )?);
+        }
+        let group_id = document.add_group(
+            Some("Viboceros Intersect Group".to_owned()),
+            input_ids.iter().copied(),
+        )?;
+        document.select_objects_direct(input_ids.iter().copied(), SelectionMode::Replace)?;
+        registry.execute(&mut document, "Intersect")?;
+        Ok((document, input_ids, group_id))
+    };
+
+    let (document, input_ids, group_id) = run()?;
+    let input_set = input_ids.iter().copied().collect::<BTreeSet<_>>();
+    let source_group = document
+        .group(group_id)
+        .expect("the Intersect source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .filter(|object| !input_set.contains(&object.id()))
+        .map(|object| {
+            let (kind, location, geometry) = match object.geometry() {
+                Geometry::Point(point) => (
+                    1_u8,
+                    point.to_array(),
+                    json!({
+                        "kind": "point",
+                        "point": point.to_array(),
+                    }),
+                ),
+                Geometry::NurbsCurve(curve) => (
+                    0_u8,
+                    curve.control_points()[0].point().to_array(),
+                    json!({
+                        "kind": "curve",
+                        "curve": nurbs_curve_definition_value(curve),
+                    }),
+                ),
+                _ => {
+                    return Err(ProbeError::FixtureInvariant(
+                        "Intersect produced unsupported geometry",
+                    ));
+                }
+            };
+            let mut record = geometry
+                .as_object()
+                .expect("intersection record starts as an object")
+                .clone();
+            record.insert(
+                "blank_name".to_owned(),
+                Value::Bool(object.attributes().name().is_none()),
+            );
+            record.insert(
+                "color_from_layer".to_owned(),
+                Value::Bool(object.attributes().color_source() == ObjectColorSource::Layer),
+            );
+            record.insert(
+                "in_source_group".to_owned(),
+                Value::Bool(source_group.contains(&object.id())),
+            );
+            record.insert(
+                "on_current_layer".to_owned(),
+                Value::Bool(object.attributes().layer_id() == document.current_layer_id()),
+            );
+            record.insert(
+                "selected".to_owned(),
+                Value::Bool(document.is_selected(object.id())),
+            );
+            Ok((kind, location, Value::Object(record)))
+        })
+        .collect::<Result<Vec<_>, ProbeError>>()?;
+    records.sort_by(|(left_kind, left_point, _), (right_kind, right_point, _)| {
+        left_kind
+            .cmp(right_kind)
+            .then_with(|| compare_point(left_point, right_point))
+    });
+    let value = json!({
+        "command_succeeded": true,
+        "input_selected": input_ids
+            .iter()
+            .map(|id| document.is_selected(*id))
+            .collect::<Vec<_>>(),
+        "objects": records
+            .into_iter()
+            .map(|(_, _, value)| value)
+            .collect::<Vec<_>>(),
+    });
+
+    let started = Instant::now();
+    for _ in 0..iterations {
+        black_box(run()?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 fn curve_trim_command(
     iterations: u32,
     definition: &NurbsCurveDefinition,
@@ -9907,6 +10034,48 @@ mod tests {
         assert_eq!(pieces[1]["domain"], json!([0.2, 0.5]));
         assert_eq!(pieces[2]["domain"], json!([0.5, 0.8]));
         assert_eq!(pieces[3]["domain"], json!([0.8, 1.0]));
+    }
+
+    #[test]
+    fn captures_curve_intersect_command_behavior() {
+        let line = |start, end, knots| NurbsCurveDefinition {
+            degree: 1,
+            control_points: [start, end]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots,
+            domain: None,
+        };
+        let response = run_request(&request(vec![Operation::CurveIntersectCommand {
+            id: "intersect-lines".to_owned(),
+            curves: vec![
+                line(
+                    [0.0, 0.0, 0.0],
+                    [10.0, 0.0, 0.0],
+                    vec![0.0, 0.0, 10.0, 10.0],
+                ),
+                line(
+                    [3.0, -5.0, 0.0],
+                    [3.0, 5.0, 0.0],
+                    vec![0.0, 0.0, 10.0, 10.0],
+                ),
+            ],
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["input_selected"], json!([false, false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 1);
+        assert_eq!(objects[0]["kind"], "point");
+        assert_eq!(objects[0]["point"], json!([3.0, 0.0, 0.0]));
+        assert_eq!(objects[0]["blank_name"], true);
+        assert_eq!(objects[0]["color_from_layer"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["on_current_layer"], true);
+        assert_eq!(objects[0]["selected"], true);
     }
 
     #[test]

@@ -1,0 +1,247 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-crossing-lines",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, -5.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-quadratic-tangent",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 8.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 4.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 4.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-circle-twice",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [5.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 5.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [0.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [-5.0, 5.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [-5.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [-5.0, -5.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [0.0, -5.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, -5.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [5.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [-8.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 16.0, 16.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-collinear-overlap",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-partial-overlap",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [5.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [15.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [20.0, 20.0, 30.0, 30.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-reversed-contained-overlap",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [7.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [-2.0, -2.0, 2.0, 2.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-identical-different-domains",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [20.0, 20.0, 30.0, 30.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-endpoint-contact",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 5.0, 5.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [5.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [5.0, 5.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-no-hit",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 2.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "curve_intersect_command",
+      "id": "intersect-three-curves-at-one-point",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [5.0, -5.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0.0, -5.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    }
+  ]
+}

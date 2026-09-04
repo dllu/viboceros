@@ -109,6 +109,51 @@ impl CurveCurveIntersection {
     }
 }
 
+/// A finite interval shared by two NURBS curves.
+///
+/// `start` and `end` are ordered by the first curve's parameter. The matching
+/// parameters on the second curve can decrease when the curves traverse the
+/// overlap in opposite directions.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurveCurveOverlap {
+    start: CurveCurveIntersection,
+    end: CurveCurveIntersection,
+}
+
+impl CurveCurveOverlap {
+    /// First overlap boundary, ordered by the first curve's parameter.
+    #[inline]
+    pub const fn start(self) -> CurveCurveIntersection {
+        self.start
+    }
+
+    /// Second overlap boundary, ordered by the first curve's parameter.
+    #[inline]
+    pub const fn end(self) -> CurveCurveIntersection {
+        self.end
+    }
+
+    /// Increasing parameter interval occupied on the first curve.
+    #[inline]
+    pub fn first_interval(self) -> RangeInclusive<Real> {
+        self.start.first_parameter..=self.end.first_parameter
+    }
+
+    /// Increasing parameter interval occupied on the second curve.
+    #[inline]
+    pub fn second_interval(self) -> RangeInclusive<Real> {
+        self.start.second_parameter.min(self.end.second_parameter)
+            ..=self.start.second_parameter.max(self.end.second_parameter)
+    }
+}
+
+/// A finite point contact or shared interval between two NURBS curves.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum CurveCurveIntersectionEvent {
+    Point(CurveCurveIntersection),
+    Overlap(CurveCurveOverlap),
+}
+
 #[derive(Clone, Debug)]
 struct CurveIntersectionNode {
     curve: NurbsCurve,
@@ -1494,6 +1539,42 @@ impl NurbsCurve {
         other: &Self,
         tolerance: Tolerance,
     ) -> Result<Vec<CurveCurveIntersection>, GeometryError> {
+        let distance_tolerance = curve_pair_distance_tolerance(self, other, tolerance);
+        let mut intersections = Vec::new();
+        for event in self.intersection_events_with_curve(other, tolerance)? {
+            match event {
+                CurveCurveIntersectionEvent::Point(intersection) => {
+                    push_unique_curve_intersection(
+                        &mut intersections,
+                        intersection,
+                        distance_tolerance,
+                    );
+                }
+                CurveCurveIntersectionEvent::Overlap(overlap) => {
+                    for intersection in [overlap.start, overlap.end] {
+                        push_unique_curve_intersection(
+                            &mut intersections,
+                            intersection,
+                            distance_tolerance,
+                        );
+                    }
+                }
+            }
+        }
+        intersections.sort_by(compare_curve_intersections);
+        Ok(intersections)
+    }
+
+    /// Finds distinct point contacts and finite shared intervals with another
+    /// NURBS curve.
+    ///
+    /// Events are ordered by this curve's parameter. An overlap is returned
+    /// once rather than also contributing point events at its boundaries.
+    pub fn intersection_events_with_curve(
+        &self,
+        other: &Self,
+        tolerance: Tolerance,
+    ) -> Result<Vec<CurveCurveIntersectionEvent>, GeometryError> {
         const MAX_NODE_PAIRS: usize = 500_000;
         const MAX_DEPTH: u8 = 56;
 
@@ -1512,6 +1593,7 @@ impl NurbsCurve {
         let tangent_probe_size = (distance_tolerance * coordinate_scale).sqrt() * 2.0;
         let mut stack = Vec::new();
         let mut intersections = Vec::new();
+        let mut overlaps = Vec::new();
         for first_span in self.spans() {
             let first =
                 CurveIntersectionNode::try_new(self.try_trimmed(first_span.0..=first_span.1)?, 0)?;
@@ -1531,13 +1613,11 @@ impl NurbsCurve {
                 {
                     continue;
                 }
-                let overlap = curve_span_overlap_intersections(
-                    &first.curve,
-                    &second.curve,
-                    distance_tolerance,
-                    tolerance,
-                )?;
-                if overlap.is_empty() {
+                let overlap =
+                    curve_span_overlap(&first.curve, &second.curve, distance_tolerance, tolerance)?;
+                if let Some(overlap) = overlap {
+                    push_unique_curve_overlap(&mut overlaps, overlap, distance_tolerance);
+                } else {
                     let tangencies = initial_curve_curve_intersections(
                         self,
                         other,
@@ -1583,14 +1663,6 @@ impl NurbsCurve {
                                 )?,
                             ));
                         }
-                    }
-                } else {
-                    for intersection in overlap {
-                        push_unique_curve_intersection(
-                            &mut intersections,
-                            intersection,
-                            distance_tolerance,
-                        );
                     }
                 }
             }
@@ -1693,12 +1765,29 @@ impl NurbsCurve {
                 return Err(GeometryError::CurveIntersectionDidNotConverge);
             }
         }
-        intersections.sort_by(|left, right| {
-            left.first_parameter
-                .total_cmp(&right.first_parameter)
-                .then_with(|| left.second_parameter.total_cmp(&right.second_parameter))
+        overlaps.sort_by(compare_curve_overlaps);
+        let overlaps = merge_adjacent_curve_overlaps(overlaps, distance_tolerance);
+        intersections.retain(|intersection| {
+            !overlaps
+                .iter()
+                .any(|overlap| curve_overlap_contains_intersection(*overlap, *intersection))
         });
-        Ok(intersections)
+        intersections.sort_by(compare_curve_intersections);
+
+        let mut events = intersections
+            .into_iter()
+            .map(CurveCurveIntersectionEvent::Point)
+            .chain(
+                overlaps
+                    .into_iter()
+                    .map(CurveCurveIntersectionEvent::Overlap),
+            )
+            .collect::<Vec<_>>();
+        events.sort_by(|left, right| {
+            curve_intersection_event_parameter(*left)
+                .total_cmp(&curve_intersection_event_parameter(*right))
+        });
+        Ok(events)
     }
 
     /// Computes arc length span by span with adaptive Gauss-Kronrod
@@ -5117,56 +5206,85 @@ fn interpolate_parameter(start: Real, end: Real, fraction: Real) -> Real {
     }
 }
 
-fn curve_span_overlap_intersections(
+fn curve_span_overlap(
     first: &NurbsCurve,
     second: &NurbsCurve,
     distance_tolerance: Real,
     tolerance: Tolerance,
-) -> Result<Vec<CurveCurveIntersection>, GeometryError> {
-    let first_on_second = curve_span_lies_on_curve(first, second, distance_tolerance, tolerance)?;
-    let second_on_first = curve_span_lies_on_curve(second, first, distance_tolerance, tolerance)?;
-    if !first_on_second && !second_on_first {
-        return Ok(Vec::new());
+) -> Result<Option<CurveCurveOverlap>, GeometryError> {
+    let mut boundaries = Vec::with_capacity(4);
+    let first_domain = first.domain();
+    for first_parameter in [*first_domain.start(), *first_domain.end()] {
+        let first_point = first.evaluate(first_parameter)?;
+        let second_parameter = second.closest_parameter(first_point, tolerance)?;
+        let second_point = second.evaluate(second_parameter)?;
+        if first_point.distance_to(second_point)? <= distance_tolerance {
+            push_unique_curve_intersection(
+                &mut boundaries,
+                CurveCurveIntersection {
+                    first_parameter,
+                    second_parameter,
+                    point: midpoint_between_points(first_point, second_point)?,
+                },
+                distance_tolerance,
+            );
+        }
     }
+    let second_domain = second.domain();
+    for second_parameter in [*second_domain.start(), *second_domain.end()] {
+        let second_point = second.evaluate(second_parameter)?;
+        let first_parameter = first.closest_parameter(second_point, tolerance)?;
+        let first_point = first.evaluate(first_parameter)?;
+        if first_point.distance_to(second_point)? <= distance_tolerance {
+            push_unique_curve_intersection(
+                &mut boundaries,
+                CurveCurveIntersection {
+                    first_parameter,
+                    second_parameter,
+                    point: midpoint_between_points(first_point, second_point)?,
+                },
+                distance_tolerance,
+            );
+        }
+    }
+    boundaries.sort_by(compare_curve_intersections);
 
-    let mut intersections = Vec::with_capacity(4);
-    if first_on_second {
-        let domain = first.domain();
-        for first_parameter in [*domain.start(), *domain.end()] {
-            let first_point = first.evaluate(first_parameter)?;
-            let second_parameter = second.closest_parameter(first_point, tolerance)?;
-            let second_point = second.evaluate(second_parameter)?;
-            let point = midpoint_between_points(first_point, second_point)?;
-            push_unique_curve_intersection(
-                &mut intersections,
-                CurveCurveIntersection {
-                    first_parameter,
-                    second_parameter,
-                    point,
-                },
+    let mut best = None;
+    for start_index in 0..boundaries.len() {
+        for &end in &boundaries[start_index + 1..] {
+            let start = boundaries[start_index];
+            if intersection_parameter_near(start.first_parameter, end.first_parameter)
+                || intersection_parameter_near(start.second_parameter, end.second_parameter)
+            {
+                continue;
+            }
+            let first_piece = first.try_trimmed(start.first_parameter..=end.first_parameter)?;
+            let second_start = start.second_parameter.min(end.second_parameter);
+            let second_end = start.second_parameter.max(end.second_parameter);
+            let second_piece = second.try_trimmed(second_start..=second_end)?;
+            if !curve_span_lies_on_curve(
+                &first_piece,
+                &second_piece,
                 distance_tolerance,
-            );
+                tolerance,
+            )? || !curve_span_lies_on_curve(
+                &second_piece,
+                &first_piece,
+                distance_tolerance,
+                tolerance,
+            )? {
+                continue;
+            }
+            let candidate = CurveCurveOverlap { start, end };
+            if best.is_none_or(|existing: CurveCurveOverlap| {
+                end.first_parameter - start.first_parameter
+                    > existing.end.first_parameter - existing.start.first_parameter
+            }) {
+                best = Some(candidate);
+            }
         }
     }
-    if second_on_first {
-        let domain = second.domain();
-        for second_parameter in [*domain.start(), *domain.end()] {
-            let second_point = second.evaluate(second_parameter)?;
-            let first_parameter = first.closest_parameter(second_point, tolerance)?;
-            let first_point = first.evaluate(first_parameter)?;
-            let point = midpoint_between_points(first_point, second_point)?;
-            push_unique_curve_intersection(
-                &mut intersections,
-                CurveCurveIntersection {
-                    first_parameter,
-                    second_parameter,
-                    point,
-                },
-                distance_tolerance,
-            );
-        }
-    }
-    Ok(intersections)
+    Ok(best)
 }
 
 fn curve_span_lies_on_curve(
@@ -5207,19 +5325,120 @@ fn midpoint_between_points(left: Point3, right: Point3) -> Result<Point3, Geomet
     )
 }
 
+fn curve_pair_distance_tolerance(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Real {
+    let coordinate_scale = first
+        .control_points
+        .iter()
+        .chain(&second.control_points)
+        .flat_map(|control| control.point.to_array())
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale)
+}
+
+fn compare_curve_intersections(
+    left: &CurveCurveIntersection,
+    right: &CurveCurveIntersection,
+) -> std::cmp::Ordering {
+    left.first_parameter
+        .total_cmp(&right.first_parameter)
+        .then_with(|| left.second_parameter.total_cmp(&right.second_parameter))
+}
+
+fn compare_curve_overlaps(
+    left: &CurveCurveOverlap,
+    right: &CurveCurveOverlap,
+) -> std::cmp::Ordering {
+    compare_curve_intersections(&left.start, &right.start)
+        .then_with(|| compare_curve_intersections(&left.end, &right.end))
+}
+
+fn curve_intersection_event_parameter(event: CurveCurveIntersectionEvent) -> Real {
+    match event {
+        CurveCurveIntersectionEvent::Point(intersection) => intersection.first_parameter,
+        CurveCurveIntersectionEvent::Overlap(overlap) => overlap.start.first_parameter,
+    }
+}
+
+fn push_unique_curve_overlap(
+    overlaps: &mut Vec<CurveCurveOverlap>,
+    overlap: CurveCurveOverlap,
+    distance_tolerance: Real,
+) {
+    let duplicate = overlaps.iter().any(|existing| {
+        curve_intersections_match(existing.start, overlap.start, distance_tolerance)
+            && curve_intersections_match(existing.end, overlap.end, distance_tolerance)
+    });
+    if !duplicate {
+        overlaps.push(overlap);
+    }
+}
+
+fn merge_adjacent_curve_overlaps(
+    overlaps: Vec<CurveCurveOverlap>,
+    distance_tolerance: Real,
+) -> Vec<CurveCurveOverlap> {
+    let mut merged: Vec<CurveCurveOverlap> = Vec::with_capacity(overlaps.len());
+    for overlap in overlaps {
+        if let Some(previous) = merged.last_mut()
+            && curve_intersections_match(previous.end, overlap.start, distance_tolerance)
+        {
+            previous.end = overlap.end;
+            continue;
+        }
+        merged.push(overlap);
+    }
+    merged
+}
+
+fn curve_overlap_contains_intersection(
+    overlap: CurveCurveOverlap,
+    intersection: CurveCurveIntersection,
+) -> bool {
+    parameter_inside_intersection_interval(
+        intersection.first_parameter,
+        overlap.start.first_parameter,
+        overlap.end.first_parameter,
+    ) && parameter_inside_intersection_interval(
+        intersection.second_parameter,
+        overlap.start.second_parameter,
+        overlap.end.second_parameter,
+    )
+}
+
+fn parameter_inside_intersection_interval(value: Real, start: Real, end: Real) -> bool {
+    let minimum = start.min(end);
+    let maximum = start.max(end);
+    (value >= minimum || intersection_parameter_near(value, minimum))
+        && (value <= maximum || intersection_parameter_near(value, maximum))
+}
+
+fn curve_intersections_match(
+    left: CurveCurveIntersection,
+    right: CurveCurveIntersection,
+    distance_tolerance: Real,
+) -> bool {
+    left.point
+        .distance_to(right.point)
+        .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+        && intersection_parameter_near(left.first_parameter, right.first_parameter)
+        && intersection_parameter_near(left.second_parameter, right.second_parameter)
+}
+
 fn push_unique_curve_intersection(
     intersections: &mut Vec<CurveCurveIntersection>,
     intersection: CurveCurveIntersection,
     distance_tolerance: Real,
 ) {
-    if !intersections.iter().any(|existing| {
-        existing
-            .point
-            .distance_to(intersection.point)
-            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
-            && intersection_parameter_near(existing.first_parameter, intersection.first_parameter)
-            && intersection_parameter_near(existing.second_parameter, intersection.second_parameter)
-    }) {
+    if !intersections
+        .iter()
+        .any(|existing| curve_intersections_match(*existing, intersection, distance_tolerance))
+    {
         intersections.push(intersection);
     }
 }
@@ -9093,6 +9312,82 @@ mod tests {
         assert!(Tolerance::DEFAULT.approx_eq(intersections[1].first_parameter(), 15.0));
         assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter(), -2.0));
         assert!(Tolerance::DEFAULT.approx_eq(intersections[1].second_parameter(), 3.0));
+    }
+
+    #[test]
+    fn curve_intersection_events_preserve_partial_overlap_intervals() {
+        let first = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(10.0, 0.0)],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let second = NurbsCurve::try_new(
+            1,
+            vec![point(5.0, 0.0), point(15.0, 0.0)],
+            vec![20.0, 20.0, 30.0, 30.0],
+        )
+        .unwrap();
+
+        let events = first
+            .intersection_events_with_curve(&second, Tolerance::DEFAULT)
+            .unwrap();
+        let [CurveCurveIntersectionEvent::Overlap(overlap)] = events.as_slice() else {
+            panic!("expected one overlap event, got {events:#?}")
+        };
+        assert_eq!(overlap.first_interval(), 5.0..=10.0);
+        assert_eq!(overlap.second_interval(), 20.0..=25.0);
+        assert_point_near(overlap.start().point(), point(5.0, 0.0));
+        assert_point_near(overlap.end().point(), point(10.0, 0.0));
+    }
+
+    #[test]
+    fn curve_intersection_events_merge_adjacent_overlap_spans() {
+        let first = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(5.0, 0.0), point(10.0, 0.0)],
+            vec![0.0, 0.0, 5.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let second = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(5.0, 0.0), point(10.0, 0.0)],
+            vec![20.0, 20.0, 25.0, 30.0, 30.0],
+        )
+        .unwrap();
+
+        let events = first
+            .intersection_events_with_curve(&second, Tolerance::DEFAULT)
+            .unwrap();
+        let [CurveCurveIntersectionEvent::Overlap(overlap)] = events.as_slice() else {
+            panic!("expected one merged overlap event, got {events:#?}")
+        };
+        assert_eq!(overlap.first_interval(), 0.0..=10.0);
+        assert_eq!(overlap.second_interval(), 20.0..=30.0);
+    }
+
+    #[test]
+    fn curve_intersection_events_keep_a_collinear_endpoint_as_a_point() {
+        let first = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(5.0, 0.0)],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let second = NurbsCurve::try_new(
+            1,
+            vec![point(5.0, 0.0), point(10.0, 0.0)],
+            vec![5.0, 5.0, 10.0, 10.0],
+        )
+        .unwrap();
+
+        let events = first
+            .intersection_events_with_curve(&second, Tolerance::DEFAULT)
+            .unwrap();
+        let [CurveCurveIntersectionEvent::Point(intersection)] = events.as_slice() else {
+            panic!("expected one endpoint event, got {events:#?}")
+        };
+        assert_point_near(intersection.point(), point(5.0, 0.0));
     }
 
     #[test]

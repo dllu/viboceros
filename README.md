@@ -187,6 +187,7 @@ CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
+Intersect
 Trim 5,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
 Extend Length=2 Side=Both Type=Line Join=Merge
@@ -873,6 +874,15 @@ piece retains the source identity; every piece retains its attributes and group
 membership, becomes selected, and participates in one undo step. This is the
 curve `Point` path; cutting-object and surface splitting remain future
 extensions.
+`Intersect` compares every pair of selected curve-compatible objects. Isolated
+and tangent contacts create current-layer point objects; a finite shared
+interval creates an exact NURBS subcurve with the later curve's orientation and
+parameterization, matching Rhino. Pairwise duplicates are intentionally
+retained when three or more curves meet at one location. Inputs remain in the
+document and are deselected, outputs are selected, and all output creation is
+one undo step. A no-hit run still clears the input selection but creates no undo
+record. Curve/curve intersections are implemented; surface and B-rep
+intersection curves remain future extensions.
 `Trim point` treats the selected curve nearest the point as the target and all
 other selected curves as cutters; omit the point in the UI to pick the interval
 to remove in a viewport. Only the nearest cutting intersection on either side
@@ -1225,6 +1235,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_split.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_intersect_command.json \
+  --absolute-epsilon 1e-9 --relative-epsilon 1e-11
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_trim_command.json \

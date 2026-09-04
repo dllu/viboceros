@@ -6310,6 +6310,103 @@ def _execute(operation, iterations, tolerance):
         finally:
             source.Dispose()
 
+    if kind == "curve_intersect_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        curves = [
+            _nurbs_curve_from_definition(definition)
+            for definition in operation["curves"]
+        ]
+
+        def intersect_curves_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                for curve in curves:
+                    object_id = document.Objects.AddCurve(curve, attributes)
+                    if object_id == System.Guid.Empty:
+                        raise ValueError("could not add Intersect command input curve")
+                    input_ids.append(object_id)
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Intersect command input curves")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = ("point", float(location.X), float(location.Y), float(location.Z))
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_curves_command)
+        finally:
+            for curve in curves:
+                curve.Dispose()
+
     if kind == "curve_trim_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])
