@@ -630,6 +630,11 @@ pub enum Operation {
         box_min: [f64; 3],
         box_max: [f64; 3],
     },
+    SurfaceSurfaceIntersectCommand {
+        id: String,
+        first: NurbsSurfaceDefinition,
+        second: NurbsSurfaceDefinition,
+    },
     CurveTrimCommand {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1276,6 +1281,7 @@ impl Operation {
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
+            | Self::SurfaceSurfaceIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
@@ -3251,6 +3257,9 @@ fn execute(
             box_max,
             ..
         } => curve_brep_intersect_command(iterations, curve, *box_min, *box_max, tolerance)?,
+        Operation::SurfaceSurfaceIntersectCommand { first, second, .. } => {
+            surface_surface_intersect_command(iterations, first, second, tolerance)?
+        }
         Operation::CurveTrimCommand {
             curve,
             cutters,
@@ -7280,6 +7289,19 @@ fn curve_brep_intersect_command(
     intersect_command(iterations, &inputs, tolerance)
 }
 
+fn surface_surface_intersect_command(
+    iterations: u32,
+    first: &NurbsSurfaceDefinition,
+    second: &NurbsSurfaceDefinition,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let inputs = [
+        Geometry::NurbsSurface(nurbs_surface_from_definition(first)?),
+        Geometry::NurbsSurface(nurbs_surface_from_definition(second)?),
+    ];
+    intersect_command(iterations, &inputs, tolerance)
+}
+
 fn intersect_command(
     iterations: u32,
     inputs: &[Geometry],
@@ -10236,6 +10258,70 @@ mod tests {
                 .all(|object| object["on_current_layer"] == true)
         );
         assert!(objects.iter().all(|object| object["selected"] == true));
+    }
+
+    #[test]
+    fn captures_surface_surface_intersect_command_behavior() {
+        let surface = |points: [[f64; 3]; 4], knots_u, knots_v| NurbsSurfaceDefinition {
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: points
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots_u,
+            knots_v,
+            domain_u: None,
+            domain_v: None,
+        };
+        let response = run_request(&request(vec![Operation::SurfaceSurfaceIntersectCommand {
+            id: "intersect-surface-surface".to_owned(),
+            first: surface(
+                [
+                    [0.0, 0.0, 0.0],
+                    [10.0, 0.0, 0.0],
+                    [0.0, 10.0, 0.0],
+                    [10.0, 10.0, 0.0],
+                ],
+                vec![0.0, 0.0, 10.0, 10.0],
+                vec![0.0, 0.0, 10.0, 10.0],
+            ),
+            second: surface(
+                [
+                    [-5.0, 5.0, -5.0],
+                    [15.0, 5.0, -5.0],
+                    [-5.0, 5.0, 5.0],
+                    [15.0, 5.0, 5.0],
+                ],
+                vec![-5.0, -5.0, 15.0, 15.0],
+                vec![-5.0, -5.0, 5.0, 5.0],
+            ),
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["input_selected"], json!([false, false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 1);
+        assert_eq!(objects[0]["kind"], "curve");
+        assert_eq!(objects[0]["curve"]["degree"], 1);
+        assert_eq!(objects[0]["curve"]["domain"], json!([0.0, 10.0]));
+        assert_eq!(
+            objects[0]["curve"]["control_points"][0]["point"],
+            json!([0.0, 5.0, 0.0])
+        );
+        assert_eq!(
+            objects[0]["curve"]["control_points"][1]["point"],
+            json!([10.0, 5.0, 0.0])
+        );
+        assert_eq!(objects[0]["blank_name"], true);
+        assert_eq!(objects[0]["color_from_layer"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["on_current_layer"], true);
+        assert_eq!(objects[0]["selected"], true);
     }
 
     #[test]

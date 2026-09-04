@@ -87,6 +87,9 @@ pub enum GeometryError {
     #[error("curve intersection refinement did not converge")]
     CurveIntersectionDidNotConverge,
 
+    #[error("surface/surface intersection does not yet support {context}")]
+    UnsupportedSurfaceSurfaceIntersection { context: &'static str },
+
     #[error("a NURBS surface extension interval must be finite, increasing, and extend its domain")]
     InvalidSurfaceExtensionInterval,
 

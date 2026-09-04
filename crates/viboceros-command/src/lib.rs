@@ -26,10 +26,11 @@ use viboceros_geometry::{
     MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
     MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
     Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceExtensionEdge,
-    SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
-    curve_brep_intersection_events, curve_surface_intersection_events, join_polylines,
-    sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
-    try_tween_nurbs_curves,
+    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, curve_brep_intersection_events,
+    curve_surface_intersection_events, join_polylines, sort_and_cull_points,
+    surface_surface_intersection_events, try_catenary, try_curve_through_points, try_fit_curve,
+    try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -12598,8 +12599,20 @@ impl Command for IntersectCommand {
                             })
                             .collect::<Result<Vec<_>, GeometryError>>()?
                     }
-                    (IntersectInput::Surface(_), IntersectInput::Surface(_))
-                    | (IntersectInput::Surface(_), IntersectInput::Brep(_))
+                    (IntersectInput::Surface(first), IntersectInput::Surface(second)) => {
+                        surface_surface_intersection_events(first, second, document.tolerance())?
+                            .into_iter()
+                            .map(|event| match event {
+                                SurfaceSurfaceIntersectionEvent::Point(point) => {
+                                    Geometry::Point(point)
+                                }
+                                SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                                    Geometry::NurbsCurve(curve)
+                                }
+                            })
+                            .collect()
+                    }
+                    (IntersectInput::Surface(_), IntersectInput::Brep(_))
                     | (IntersectInput::Brep(_), IntersectInput::Surface(_))
                     | (IntersectInput::Brep(_), IntersectInput::Brep(_)) => {
                         return Err(CommandError::UnsupportedIntersectObjectPair);
@@ -19923,7 +19936,7 @@ pub enum CommandError {
     #[error("Intersect requires at least two selected objects, got {actual}")]
     IntersectRequiresAtLeastTwoObjects { actual: usize },
 
-    #[error("Intersect does not yet support pairs without at least one curve")]
+    #[error("Intersect does not yet support surface/B-rep or B-rep/B-rep pairs")]
     UnsupportedIntersectObjectPair,
 
     #[error("Intersect supports at most {maximum} selected object pairs")]
@@ -20377,6 +20390,16 @@ mod tests {
             Point3::try_new(10.0, 0.0, 0.0).unwrap(),
             Point3::try_new(10.0, 10.0, 0.0).unwrap(),
             Point3::try_new(0.0, 10.0, 0.0).unwrap(),
+        ])
+        .unwrap()
+    }
+
+    fn vertical_intersection_surface(x_start: Real, x_end: Real) -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            Point3::try_new(x_start, 5.0, -5.0).unwrap(),
+            Point3::try_new(x_end, 5.0, -5.0).unwrap(),
+            Point3::try_new(x_end, 5.0, 5.0).unwrap(),
+            Point3::try_new(x_start, 5.0, 5.0).unwrap(),
         ])
         .unwrap()
     }
@@ -26354,7 +26377,7 @@ mod tests {
     }
 
     #[test]
-    fn intersect_rejects_pairs_without_a_curve_atomically() {
+    fn intersect_supports_transverse_planar_surface_pairs() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let input_ids = [
@@ -26362,7 +26385,48 @@ mod tests {
                 .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
                 .unwrap(),
             document
+                .add_geometry(Geometry::NurbsSurface(vertical_intersection_surface(
+                    -5.0, 15.0,
+                )))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        let Geometry::NurbsCurve(curve) = document.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("transverse planar surfaces must create an exact line")
+        };
+        assert_eq!(curve.domain(), 0.0..=10.0);
+        assert!(
+            curve
+                .evaluate(0.0)
+                .unwrap()
+                .is_near(Point3::try_new(0.0, 5.0, 0.0).unwrap(), Tolerance::DEFAULT)
+        );
+        assert!(
+            curve
+                .evaluate(10.0)
+                .unwrap()
+                .is_near(Point3::try_new(10.0, 5.0, 0.0).unwrap(), Tolerance::DEFAULT)
+        );
+    }
+
+    #[test]
+    fn intersect_rejects_unsupported_surface_pairs_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let input_ids = [
+            document
                 .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::Brep(intersection_box()))
                 .unwrap(),
         ];
         document

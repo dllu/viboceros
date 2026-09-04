@@ -2,7 +2,7 @@ use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::{
     BoundingBox3, Brep, BrepFace, GeometryError, NurbsCurve, NurbsSurface, Plane, Point3, Real,
-    Tolerance,
+    Tolerance, UnitVector3, intersect_three_planes,
 };
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
@@ -136,6 +136,15 @@ pub enum CurveBrepIntersectionEvent {
     Point(CurveBrepIntersection),
     /// A finite interval of the source curve on the B-rep boundary.
     Overlap(CurveBrepOverlap),
+}
+
+/// A point or curve shared by two finite NURBS surfaces.
+#[derive(Clone, Debug, PartialEq)]
+pub enum SurfaceSurfaceIntersectionEvent {
+    /// An isolated contact between the finite surface regions.
+    Point(Point3),
+    /// A finite intersection-curve component.
+    Curve(NurbsCurve),
 }
 
 #[derive(Clone, Debug)]
@@ -435,6 +444,224 @@ pub fn curve_brep_intersection_events(
         curve_brep_event_parameter(*left).total_cmp(&curve_brep_event_parameter(*right))
     });
     Ok(events)
+}
+
+/// Intersects two finite NURBS surfaces.
+///
+/// The current exact path handles transverse planar surfaces, including
+/// multiple clipped components and isolated boundary contacts. Parallel
+/// disjoint planes return no events. Non-planar and coincident planar inputs
+/// are reported explicitly until their curve and area-overlap paths are
+/// implemented.
+pub fn surface_surface_intersection_events(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let first_plane =
+        first
+            .plane(tolerance)?
+            .ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "non-planar surfaces",
+            })?;
+    let second_plane =
+        second
+            .plane(tolerance)?
+            .ok_or(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "non-planar surfaces",
+            })?;
+    let distance_tolerance = surface_surface_distance_tolerance(first, second, tolerance);
+    let direction_vector = first_plane
+        .normal()
+        .as_vector()
+        .cross(second_plane.normal().as_vector())?;
+    if direction_vector.length()? <= tolerance.angular() {
+        if first_plane.signed_distance_to(second_plane.origin())?.abs() > distance_tolerance * 2.0 {
+            return Ok(Vec::new());
+        }
+        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "coincident planar surfaces",
+        });
+    }
+    if !weights_have_common_sign(first.control_points().iter().map(|point| point.weight()))
+        || !weights_have_common_sign(second.control_points().iter().map(|point| point.weight()))
+    {
+        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+            context: "mixed-sign rational weights",
+        });
+    }
+    if !bounding_boxes_overlap(
+        first.control_point_bounds(),
+        second.control_point_bounds(),
+        distance_tolerance * 2.0,
+    ) {
+        return Ok(Vec::new());
+    }
+
+    let direction = direction_vector.normalized_nonzero()?;
+    let origin = intersect_three_planes(
+        [
+            first_plane,
+            second_plane,
+            Plane::new(Point3::try_new(0.0, 0.0, 0.0)?, direction),
+        ],
+        tolerance,
+    )?;
+    let first_range = surface_projection_range(first, origin, direction)?;
+    let second_range = surface_projection_range(second, origin, direction)?;
+    if first_range[0] > second_range[1] + distance_tolerance * 2.0
+        || second_range[0] > first_range[1] + distance_tolerance * 2.0
+    {
+        return Ok(Vec::new());
+    }
+    let line_start = first_range[0].min(second_range[0]);
+    let line_end = first_range[1].max(second_range[1]);
+    if line_end <= line_start {
+        return Ok(Vec::new());
+    }
+    let line = unit_speed_line(origin, direction, line_start, line_end)?;
+    let first_intervals =
+        curve_surface_event_intervals(curve_surface_intersection_events(&line, first, tolerance)?);
+    let second_intervals =
+        curve_surface_event_intervals(curve_surface_intersection_events(&line, second, tolerance)?);
+    let parameter_scale = line_start.abs().max(line_end.abs()).max(1.0);
+    let parameter_tolerance =
+        (distance_tolerance * 2.0).max(Real::EPSILON * parameter_scale * 256.0);
+    let intervals =
+        intersect_parameter_interval_sets(&first_intervals, &second_intervals, parameter_tolerance);
+
+    intervals
+        .into_iter()
+        .map(|interval| {
+            if interval[1] - interval[0] <= parameter_tolerance {
+                let parameter = finite_midpoint(interval[0], interval[1]);
+                Ok(SurfaceSurfaceIntersectionEvent::Point(point_on_line(
+                    origin, direction, parameter,
+                )?))
+            } else {
+                let start = point_on_line(origin, direction, interval[0])?;
+                let end = point_on_line(origin, direction, interval[1])?;
+                let length = interval[1] - interval[0];
+                Ok(SurfaceSurfaceIntersectionEvent::Curve(NurbsCurve::try_new(
+                    1,
+                    vec![start, end],
+                    vec![0.0, 0.0, length, length],
+                )?))
+            }
+        })
+        .collect()
+}
+
+fn surface_projection_range(
+    surface: &NurbsSurface,
+    origin: Point3,
+    direction: UnitVector3,
+) -> Result<[Real; 2], GeometryError> {
+    let mut minimum = Real::INFINITY;
+    let mut maximum = Real::NEG_INFINITY;
+    for control in surface.control_points() {
+        let parameter = origin
+            .vector_to(control.point())?
+            .dot(direction.as_vector())?;
+        minimum = minimum.min(parameter);
+        maximum = maximum.max(parameter);
+    }
+    crate::require_finite([minimum, maximum], "planar surface intersection projection")?;
+    Ok([minimum, maximum])
+}
+
+fn unit_speed_line(
+    origin: Point3,
+    direction: UnitVector3,
+    start: Real,
+    end: Real,
+) -> Result<NurbsCurve, GeometryError> {
+    NurbsCurve::try_new(
+        1,
+        vec![
+            point_on_line(origin, direction, start)?,
+            point_on_line(origin, direction, end)?,
+        ],
+        vec![start, start, end, end],
+    )
+}
+
+fn point_on_line(
+    origin: Point3,
+    direction: UnitVector3,
+    parameter: Real,
+) -> Result<Point3, GeometryError> {
+    origin.translated(direction.as_vector().scaled(parameter)?)
+}
+
+fn curve_surface_event_intervals(events: Vec<CurveSurfaceIntersectionEvent>) -> Vec<[Real; 2]> {
+    events
+        .into_iter()
+        .map(|event| match event {
+            CurveSurfaceIntersectionEvent::Point(intersection) => {
+                [intersection.curve_parameter, intersection.curve_parameter]
+            }
+            CurveSurfaceIntersectionEvent::Overlap(overlap) => {
+                [overlap.start.curve_parameter, overlap.end.curve_parameter]
+            }
+        })
+        .collect()
+}
+
+fn intersect_parameter_interval_sets(
+    first: &[[Real; 2]],
+    second: &[[Real; 2]],
+    tolerance: Real,
+) -> Vec<[Real; 2]> {
+    let mut result: Vec<[Real; 2]> = Vec::new();
+    let mut first_index = 0;
+    let mut second_index = 0;
+    while first_index < first.len() && second_index < second.len() {
+        let first_interval = first[first_index];
+        let second_interval = second[second_index];
+        let mut start = first_interval[0].max(second_interval[0]);
+        let mut end = first_interval[1].min(second_interval[1]);
+        if start <= end + tolerance {
+            if end < start {
+                let contact = finite_midpoint(start, end);
+                start = contact;
+                end = contact;
+            }
+            if let Some(previous) = result.last_mut()
+                && start <= previous[1] + tolerance
+            {
+                previous[1] = previous[1].max(end);
+            } else {
+                result.push([start, end]);
+            }
+        }
+
+        if first_interval[1] < second_interval[1] - tolerance {
+            first_index += 1;
+        } else if second_interval[1] < first_interval[1] - tolerance {
+            second_index += 1;
+        } else {
+            first_index += 1;
+            second_index += 1;
+        }
+    }
+    result
+}
+
+fn surface_surface_distance_tolerance(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Real {
+    let coordinate_scale = first
+        .control_points()
+        .iter()
+        .chain(second.control_points())
+        .flat_map(|control| control.point().to_array())
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale)
 }
 
 fn curve_surface_point_intersections(
@@ -1861,6 +2088,140 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    fn horizontal_surface(z: Real) -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            point(0.0, 0.0, z),
+            point(10.0, 0.0, z),
+            point(10.0, 10.0, z),
+            point(0.0, 10.0, z),
+        ])
+        .unwrap()
+    }
+
+    fn vertical_surface(x_start: Real, x_end: Real) -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            point(x_start, 5.0, -5.0),
+            point(x_end, 5.0, -5.0),
+            point(x_end, 5.0, 5.0),
+            point(x_start, 5.0, 5.0),
+        ])
+        .unwrap()
+    }
+
+    #[test]
+    fn intersects_transverse_planar_surfaces_with_oriented_exact_lines() {
+        let horizontal = horizontal_surface(0.0);
+        let vertical = vertical_surface(-5.0, 15.0);
+        let events =
+            surface_surface_intersection_events(&horizontal, &vertical, Tolerance::DEFAULT)
+                .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(curve)] = events.as_slice() else {
+            panic!("expected one surface/surface intersection line, got {events:#?}")
+        };
+        assert_eq!(curve.degree(), 1);
+        assert_eq!(curve.domain(), 0.0..=10.0);
+        assert!(
+            curve
+                .evaluate(0.0)
+                .unwrap()
+                .is_near(point(0.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+        assert!(
+            curve
+                .evaluate(10.0)
+                .unwrap()
+                .is_near(point(10.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+
+        let reversed =
+            surface_surface_intersection_events(&vertical, &horizontal, Tolerance::DEFAULT)
+                .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(curve)] = reversed.as_slice() else {
+            panic!("expected one reversed surface/surface line, got {reversed:#?}")
+        };
+        assert!(
+            curve
+                .evaluate(0.0)
+                .unwrap()
+                .is_near(point(10.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+        assert!(
+            curve
+                .evaluate(10.0)
+                .unwrap()
+                .is_near(point(0.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+    }
+
+    #[test]
+    fn clips_planar_surface_intersections_and_retains_endpoint_contacts() {
+        let horizontal = horizontal_surface(0.0);
+        let partial = surface_surface_intersection_events(
+            &horizontal,
+            &vertical_surface(2.0, 8.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(curve)] = partial.as_slice() else {
+            panic!("expected one clipped surface/surface line, got {partial:#?}")
+        };
+        assert_eq!(curve.domain(), 0.0..=6.0);
+        assert!(
+            curve
+                .evaluate(0.0)
+                .unwrap()
+                .is_near(point(2.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+        assert!(
+            curve
+                .evaluate(6.0)
+                .unwrap()
+                .is_near(point(8.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+
+        let endpoint = surface_surface_intersection_events(
+            &horizontal,
+            &vertical_surface(10.0, 20.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Point(contact)] = endpoint.as_slice() else {
+            panic!("expected one endpoint surface contact, got {endpoint:#?}")
+        };
+        assert!(contact.is_near(point(10.0, 5.0, 0.0), Tolerance::DEFAULT));
+
+        assert!(
+            surface_surface_intersection_events(
+                &horizontal,
+                &vertical_surface(10.0 + 1.0e-8, 20.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty(),
+            "a gap wider than model tolerance must remain a near miss"
+        );
+    }
+
+    #[test]
+    fn distinguishes_disjoint_and_coincident_planar_surfaces() {
+        let horizontal = horizontal_surface(0.0);
+        assert!(
+            surface_surface_intersection_events(
+                &horizontal,
+                &horizontal_surface(1.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+        assert_eq!(
+            surface_surface_intersection_events(&horizontal, &horizontal, Tolerance::DEFAULT,),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "coincident planar surfaces",
+            })
+        );
     }
 
     fn box_brep() -> Brep {
