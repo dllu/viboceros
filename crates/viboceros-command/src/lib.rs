@@ -11432,7 +11432,7 @@ fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOpti
     ))
 }
 
-const EXTEND_CURVE_USAGE: &str = "Extend Length=value [Side=Start|End|Both] [Type=Natural|Line] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
+const EXTEND_CURVE_USAGE: &str = "Extend Length=value [Side=Start|End|Both] [Type=Natural|Line|Smooth] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum ExtendCurveTarget {
@@ -11447,6 +11447,7 @@ enum ExtendCurveTarget {
 enum ExtendCurveStyle {
     Natural,
     Line,
+    Smooth,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -11488,11 +11489,12 @@ impl Command for ExtendCurveCommand {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
             };
             let extensions = match style {
-                ExtendCurveStyle::Natural => curve.try_separate_natural_extensions_by_length(
-                    side,
-                    length,
-                    document.tolerance(),
-                )?,
+                ExtendCurveStyle::Natural | ExtendCurveStyle::Smooth => curve
+                    .try_separate_natural_extensions_by_length(
+                        side,
+                        length,
+                        document.tolerance(),
+                    )?,
                 ExtendCurveStyle::Line => curve.try_separate_linear_extensions_by_length(
                     side,
                     length,
@@ -11517,12 +11519,17 @@ impl Command for ExtendCurveCommand {
                 match style {
                     ExtendCurveStyle::Natural => "natural",
                     ExtendCurveStyle::Line => "linear",
+                    ExtendCurveStyle::Smooth => "smooth",
                 },
                 if extension_count == 1 { "" } else { "s" },
             ));
         }
         let (curve, description) = match (target, style, join) {
-            (ExtendCurveTarget::Length { length, side }, ExtendCurveStyle::Natural, join) => (
+            (
+                ExtendCurveTarget::Length { length, side },
+                ExtendCurveStyle::Natural | ExtendCurveStyle::Smooth,
+                join,
+            ) => (
                 match join {
                     ExtendCurveJoin::Merge => {
                         curve.try_extended_by_length(side, length, document.tolerance())?
@@ -11554,7 +11561,11 @@ impl Command for ExtendCurveCommand {
                 curve.try_extended_to(start..=end)?,
                 format!("to include domain {start}..{end}"),
             ),
-            (ExtendCurveTarget::Domain(_), ExtendCurveStyle::Line, _) => {
+            (
+                ExtendCurveTarget::Domain(_),
+                ExtendCurveStyle::Line | ExtendCurveStyle::Smooth,
+                _,
+            ) => {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
             }
         };
@@ -11565,6 +11576,7 @@ impl Command for ExtendCurveCommand {
             match style {
                 ExtendCurveStyle::Natural => "Naturally",
                 ExtendCurveStyle::Line => "Linearly",
+                ExtendCurveStyle::Smooth => "Smoothly",
             },
             match join {
                 ExtendCurveJoin::Merge => "merging",
@@ -11624,6 +11636,8 @@ fn parse_extend_curve_target(
                 ExtendCurveStyle::Natural
             } else if option_name_eq(value, "Line") {
                 ExtendCurveStyle::Line
+            } else if option_name_eq(value, "Smooth") {
+                ExtendCurveStyle::Smooth
             } else {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
             };
@@ -24157,6 +24171,7 @@ mod tests {
         let expected = source
             .try_extended_by_length(CurveExtensionSide::Both, 2.0, document.tolerance())
             .unwrap();
+        let expected_smooth = expected.clone();
         let expected_line = source
             .try_extended_by_length(CurveExtensionSide::Both, 2.0, document.tolerance())
             .unwrap();
@@ -24193,6 +24208,22 @@ mod tests {
             document.object(id).unwrap().geometry(),
             &Geometry::NurbsCurve(expected)
         );
+
+        registry.execute(&mut document, "Undo").unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Extend Length=2 Side=Both Type=Smooth Join=Merge"
+                )
+                .unwrap(),
+            "Smoothly extended the selected curve Both by length 2, merging the extension"
+        );
+        let object = document.object(id).unwrap();
+        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected_smooth));
+        assert_eq!(object.attributes(), before.attributes());
+        assert!(!document.is_selected(id));
 
         registry.execute(&mut document, "Undo").unwrap();
         document.select_object(id, SelectionMode::Replace).unwrap();
@@ -24425,7 +24456,7 @@ mod tests {
             "Extend Domain=0,1 Join=Yes",
             "Extend Length=1 Side=Middle",
             "Extend Length=1 Side=End Side=Start",
-            "Extend Length=1 Type=Smooth",
+            "Extend Length=1 Type=Arc",
             "Extend Length=1 Join=Maybe",
         ] {
             assert!(matches!(

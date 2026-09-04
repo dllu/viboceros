@@ -1004,6 +1004,7 @@ pub enum CurveLengthExtensionStyle {
 pub enum CurveCommandExtensionStyle {
     Natural,
     Line,
+    Smooth,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
@@ -6753,6 +6754,7 @@ fn curve_extend_command(
     let style_name = match style {
         CurveCommandExtensionStyle::Natural => "Natural",
         CurveCommandExtensionStyle::Line => "Line",
+        CurveCommandExtensionStyle::Smooth => "Smooth",
     };
     let join_name = match join {
         CurveCommandExtensionJoin::Merge => "Merge",
@@ -6803,17 +6805,26 @@ fn curve_extend_command(
     });
 
     let (_, elapsed_ns) = measure(iterations, || match (style, join) {
-        (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::Merge) => source
+        (
+            CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
+            CurveCommandExtensionJoin::Merge,
+        ) => source
             .try_extended_by_length(black_box(side.geometry()), black_box(length), tolerance)
             .map(|_| 1),
-        (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::Yes) => source
+        (
+            CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
+            CurveCommandExtensionJoin::Yes,
+        ) => source
             .try_joined_naturally_by_length(
                 black_box(side.geometry()),
                 black_box(length),
                 tolerance,
             )
             .map(|_| 1),
-        (CurveCommandExtensionStyle::Natural, CurveCommandExtensionJoin::No) => source
+        (
+            CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
+            CurveCommandExtensionJoin::No,
+        ) => source
             .try_separate_natural_extensions_by_length(
                 black_box(side.geometry()),
                 black_box(length),

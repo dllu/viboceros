@@ -189,6 +189,7 @@ SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
 Extend Length=2 Side=Both Type=Line Join=Merge
+Extend Length=2 Side=Both Type=Smooth Join=Merge
 Extend Length=2 Side=Both Type=Line Join=Yes
 Extend Length=2 Side=Both Type=Line Join=No
 ExtendSrf Direction=U Domain=-1,2 Type=Smooth Merge=Yes
@@ -797,18 +798,23 @@ preserved.
 `Extend Length=value Side=Start|End|Both` extends one selected open curve;
 `Both` adds the full requested model-space length independently at each end.
 `Type=Natural` applies Rhino-compatible natural NURBS extrapolation, while
-`Type=Line` uses Rhino's straight tangent extension. With `Join=Merge`, line
-and polyline ends merge into their terminal span, higher-degree straight curves
-collapse to one line, and other curves retain Rhino's exact degree-matched
-span, knot, and rational-weight rules. `Join=Yes` retains an explicit segment
-boundary, including Rhino's unit-span polyline parameterization and exact
-full-multiplicity free-form seam. `Join=No` leaves the source untouched and
-creates one or two standalone extension curves with copied attributes but
-without copying source group membership. Rhino's post-command deselection and
-undo behavior are retained. `Extend Domain=start,end` exposes the exact natural
-analytic-domain operation. Arc and explicit smooth styles and boundary objects
-remain future work. Analytic curves and polylines are promoted to exact NURBS
-form as needed while identity is preserved.
+`Type=Smooth` explicitly requests Rhino's curvature-continuous free-form
+extension; `Type=Natural` selects the source end's natural line, arc, or smooth
+continuation. `Type=Line` uses Rhino's straight tangent extension. With
+`Join=Merge`, line and polyline ends merge into their terminal span,
+higher-degree straight curves collapse to one line, and other curves retain
+Rhino's exact degree-matched span, knot, and rational-weight rules. `Join=Yes`
+retains an explicit segment boundary, including Rhino's unit-span polyline
+parameterization and exact full-multiplicity free-form seam. `Join=No` leaves
+the source untouched and creates one or two standalone extension curves with
+copied attributes but without copying source group membership. Rhino's
+post-command deselection and undo behavior are retained. `Extend
+Domain=start,end` exposes the exact natural analytic-domain operation. Arc
+style and boundary objects remain future work. Analytic curves and polylines
+are promoted to exact NURBS form as needed while identity is preserved. The
+permanent actual-command fixture covers all join modes for explicit Smooth;
+its `2e-8` threshold contains Rhino's approximately `1.2e-8` cubic length-solver
+variation while Viboceros resolves that case to machine precision.
 `ExtendSrf Edge=West|South|East|North Distance=value` performs Rhino's
 physical-distance operation on one selected untrimmed NURBS surface. Positive
 distances use Rhino's homogeneous-control-curve RMS scaling, including
@@ -1160,7 +1166,7 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_extend_command.json \
-  --absolute-epsilon 5e-9 --relative-epsilon 1e-11
+  --absolute-epsilon 2e-8 --relative-epsilon 1e-11
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_shrink.json \
