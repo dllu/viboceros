@@ -5624,6 +5624,7 @@ fn try_rectangular_surface_cut_arrangement(
             bounds,
             parameter_tolerance,
             first_closed_source,
+            &closed_sources,
         )?;
         let parent =
             surface_cut_hole_parent(&edges, &outer_cycles, &cycle, bounds, parameter_tolerance)?
@@ -6080,6 +6081,29 @@ fn rotate_surface_cut_outer_cycle(
         }
     }
 
+    if let Some(first_closed_source) = first_closed_source
+        && let Some((_, _, anchor)) = cycle
+            .iter()
+            .enumerate()
+            .filter_map(|(index, halfedge)| {
+                if !halfedge.is_multiple_of(2) {
+                    return None;
+                }
+                let SurfaceCutArrangementEdgeKind::Cut { source, segment } =
+                    edges[*halfedge / 2].kind
+                else {
+                    return None;
+                };
+                (source != first_closed_source
+                    && closed_sources.get(source).copied().unwrap_or(false))
+                .then_some((source, segment, index))
+            })
+            .max_by_key(|(source, segment, _)| (*source, *segment))
+    {
+        cycle.rotate_left(anchor);
+        return Ok(());
+    }
+
     let closed_source = cycle
         .iter()
         .filter_map(|halfedge| match edges[*halfedge / 2].kind {
@@ -6166,6 +6190,7 @@ fn rotate_surface_cut_hole_cycle(
     bounds: [[Real; 2]; 2],
     tolerance: [Real; 2],
     first_closed_source: Option<usize>,
+    closed_sources: &[bool],
 ) -> Result<(), GeometryError> {
     if let Some((source, maximum_segment)) = surface_cut_cycle_single_source(edges, cycle)
         && let Some(first_closed_source) = first_closed_source
@@ -6185,6 +6210,26 @@ fn rotate_surface_cut_hole_cycle(
                     } if edge_source == source && segment == target_segment
                 )
         }) {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+    }
+    for (source, &closed) in closed_sources.iter().enumerate() {
+        if !closed {
+            continue;
+        }
+        let seam_node = edges.iter().find_map(|edge| match edge.kind {
+            SurfaceCutArrangementEdgeKind::Cut {
+                source: edge_source,
+                segment: 0,
+            } if edge_source == source => Some(edge.nodes[0]),
+            _ => None,
+        });
+        if let Some(seam_node) = seam_node
+            && let Some(anchor) = cycle.iter().position(|halfedge| {
+                surface_cut_halfedge_nodes(&edges[*halfedge / 2], *halfedge)[0] == seam_node
+            })
+        {
             cycle.rotate_left(anchor);
             return Ok(());
         }
@@ -9880,6 +9925,11 @@ mod tests {
             vec![polygon(3.0, 7.0, 3.0, 7.0), line([0.0, 5.0], [10.0, 5.0])],
             &[4, 4, 8, 8],
             &[1, 1, 1, 1],
+        );
+        assert_case(
+            vec![polygon(2.0, 6.0, 2.0, 7.0), polygon(4.0, 8.0, 4.0, 9.0)],
+            &[4, 6, 6, 12],
+            &[1, 1, 1, 2],
         );
         assert_case(
             vec![circle([2.5, 2.5], 1.0), circle([7.5, 7.5], 1.0)],
