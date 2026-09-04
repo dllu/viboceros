@@ -187,6 +187,7 @@ CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
+Trim 5,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
 Extend Length=2 Side=Both Type=Line Join=Merge
 Extend Length=2 Side=Both Type=Smooth Join=Merge
@@ -872,6 +873,20 @@ piece retains the source identity; every piece retains its attributes and group
 membership, becomes selected, and participates in one undo step. This is the
 curve `Point` path; cutting-object and surface splitting remain future
 extensions.
+`Trim point` treats the selected curve nearest the point as the target and all
+other selected curves as cutters; omit the point in the UI to pick the interval
+to remove in a viewport. Only the nearest cutting intersection on either side
+of the pick bounds the removed interval, so unused intersections do not split
+the retained geometry. `ApparentIntersections=Yes` is the Rhino-compatible
+default and projects orthogonally along world Z unless `ViewNormal=x,y,z` is
+supplied; the UI passes the active view direction (an orthogonal approximation
+in the perspective viewport). Use `ApparentIntersections=No` for actual 3D
+curve intersections. End trims and closed-curve trims retain the source
+identity. Removing a middle interval creates two new exact NURBS objects and
+deletes the source, matching Rhino; both pieces inherit its attributes and
+groups. Results replace the cutter selection and the complete edit is one undo
+step. Curve cutters are implemented; surface, B-rep, and mesh cutters remain
+future extensions.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input
@@ -1210,6 +1225,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_split.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_trim_command.json \
+  --absolute-epsilon 1e-9 --relative-epsilon 1e-11
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

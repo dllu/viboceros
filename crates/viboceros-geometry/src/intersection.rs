@@ -406,7 +406,7 @@ fn curve_surface_overlap_boundaries(
 ) -> Result<Option<Vec<CurveSurfaceIntersection>>, GeometryError> {
     let mut boundary_hits = Vec::new();
     for edge in surface.natural_edge_curves()? {
-        for hit in curve.curve_intersections(&edge, tolerance)? {
+        for hit in curve.intersections_with_curve(&edge, tolerance)? {
             let curve_point = curve.evaluate(hit.first_parameter)?;
             let (u, v) = surface.closest_parameters(curve_point, tolerance)?;
             let surface_point = surface.evaluate(u, v)?;

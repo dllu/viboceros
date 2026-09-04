@@ -77,11 +77,36 @@ struct CurveBoundaryExtensionTargets {
     end: Option<CurveBoundaryExtensionTarget>,
 }
 
-#[derive(Clone, Copy, Debug)]
-pub(crate) struct CurveCurveIntersection {
+/// A point where two finite NURBS curves meet within the requested tolerance.
+///
+/// Collinear overlaps are represented by one record at each overlap endpoint.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurveCurveIntersection {
     pub(crate) first_parameter: Real,
     pub(crate) second_parameter: Real,
     pub(crate) point: Point3,
+}
+
+impl CurveCurveIntersection {
+    /// Parameter on the curve on which [`NurbsCurve::intersections_with_curve`]
+    /// was invoked.
+    #[inline]
+    pub const fn first_parameter(self) -> Real {
+        self.first_parameter
+    }
+
+    /// Parameter on the curve passed to
+    /// [`NurbsCurve::intersections_with_curve`].
+    #[inline]
+    pub const fn second_parameter(self) -> Real {
+        self.second_parameter
+    }
+
+    /// Midpoint of the two refined curve evaluations.
+    #[inline]
+    pub const fn point(self) -> Point3 {
+        self.point
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -1460,7 +1485,11 @@ impl NurbsCurve {
         Ok((parameter, distance))
     }
 
-    pub(crate) fn curve_intersections(
+    /// Finds finite intersections with another NURBS curve.
+    ///
+    /// Results are ordered by this curve's parameter, then the other curve's
+    /// parameter. Collinear overlaps contribute their two boundary points.
+    pub fn intersections_with_curve(
         &self,
         other: &Self,
         tolerance: Tolerance,
@@ -1480,6 +1509,7 @@ impl NurbsCurve {
         let refinement_tolerance =
             (distance_tolerance * 1.0e-4).max(Real::EPSILON * coordinate_scale * 64.0);
         let leaf_size = distance_tolerance * 2.0;
+        let tangent_probe_size = (distance_tolerance * coordinate_scale).sqrt() * 2.0;
         let mut stack = Vec::new();
         let mut intersections = Vec::new();
         for first_span in self.spans() {
@@ -1492,7 +1522,12 @@ impl NurbsCurve {
                 )?;
                 if first.convex_hull_bounds
                     && second.convex_hull_bounds
-                    && !bounding_boxes_overlap(first.bounds, second.bounds, distance_tolerance)
+                    && (!bounding_boxes_overlap(first.bounds, second.bounds, distance_tolerance)
+                        || !curve_control_hulls_overlap_on_local_axes(
+                            &first.curve,
+                            &second.curve,
+                            distance_tolerance,
+                        )?)
                 {
                     continue;
                 }
@@ -1503,7 +1538,52 @@ impl NurbsCurve {
                     tolerance,
                 )?;
                 if overlap.is_empty() {
-                    stack.push((first.clone(), second));
+                    let tangencies = initial_curve_curve_intersections(
+                        self,
+                        other,
+                        &second.curve,
+                        [first_span.0, first_span.1],
+                        [second_span.0, second_span.1],
+                        refinement_tolerance,
+                        distance_tolerance,
+                        tolerance,
+                    )?;
+                    for &intersection in &tangencies {
+                        push_unique_curve_intersection(
+                            &mut intersections,
+                            intersection,
+                            distance_tolerance,
+                        );
+                    }
+                    let first_parameters = partition_curve_span_at(
+                        first_span.0,
+                        first_span.1,
+                        tangencies
+                            .iter()
+                            .map(|intersection| intersection.first_parameter),
+                    );
+                    let second_parameters = partition_curve_span_at(
+                        second_span.0,
+                        second_span.1,
+                        tangencies
+                            .iter()
+                            .map(|intersection| intersection.second_parameter),
+                    );
+                    for first_interval in first_parameters.windows(2) {
+                        let first_piece = CurveIntersectionNode::try_new(
+                            self.try_trimmed(first_interval[0]..=first_interval[1])?,
+                            0,
+                        )?;
+                        for second_interval in second_parameters.windows(2) {
+                            stack.push((
+                                first_piece.clone(),
+                                CurveIntersectionNode::try_new(
+                                    other.try_trimmed(second_interval[0]..=second_interval[1])?,
+                                    0,
+                                )?,
+                            ));
+                        }
+                    }
                 } else {
                     for intersection in overlap {
                         push_unique_curve_intersection(
@@ -1524,7 +1604,12 @@ impl NurbsCurve {
             }
             if first.convex_hull_bounds
                 && second.convex_hull_bounds
-                && !bounding_boxes_overlap(first.bounds, second.bounds, distance_tolerance)
+                && (!bounding_boxes_overlap(first.bounds, second.bounds, distance_tolerance)
+                    || !curve_control_hulls_overlap_on_local_axes(
+                        &first.curve,
+                        &second.curve,
+                        distance_tolerance,
+                    )?)
             {
                 continue;
             }
@@ -1536,7 +1621,11 @@ impl NurbsCurve {
                 && first_size <= leaf_size
                 && second_size <= leaf_size)
                 || (first.depth >= MAX_DEPTH && second.depth >= MAX_DEPTH);
-            if leaf {
+            let tangent_probe = first.convex_hull_bounds
+                && second.convex_hull_bounds
+                && first_size <= tangent_probe_size
+                && second_size <= tangent_probe_size;
+            if leaf || tangent_probe {
                 let first_domain = first.curve.domain();
                 let second_domain = second.curve.domain();
                 let (first_fraction, second_fraction) = closest_segment_fractions(
@@ -1555,7 +1644,7 @@ impl NurbsCurve {
                     *second_domain.end(),
                     second_fraction,
                 );
-                if let Some(intersection) = refine_curve_curve_intersection(
+                let mut intersection = refine_curve_curve_intersection(
                     self,
                     other,
                     first_seed,
@@ -1563,26 +1652,29 @@ impl NurbsCurve {
                     [*first_domain.start(), *first_domain.end()],
                     [*second_domain.start(), *second_domain.end()],
                     refinement_tolerance,
-                )? && !intersections
-                    .iter()
-                    .any(|existing: &CurveCurveIntersection| {
-                        existing
-                            .point
-                            .distance_to(intersection.point)
-                            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
-                            && parameter_near(
-                                existing.first_parameter,
-                                intersection.first_parameter,
-                            )
-                            && parameter_near(
-                                existing.second_parameter,
-                                intersection.second_parameter,
-                            )
-                    })
-                {
-                    intersections.push(intersection);
+                )?;
+                if intersection.is_none() && tangent_probe {
+                    intersection = refine_tangent_curve_curve_intersection(
+                        self,
+                        other,
+                        &second.curve,
+                        [*first_domain.start(), *first_domain.end()],
+                        [*second_domain.start(), *second_domain.end()],
+                        refinement_tolerance,
+                        tolerance,
+                    )?;
                 }
-                continue;
+                if let Some(intersection) = intersection {
+                    push_unique_curve_intersection(
+                        &mut intersections,
+                        intersection,
+                        distance_tolerance,
+                    );
+                    continue;
+                }
+                if leaf {
+                    continue;
+                }
             }
 
             let split_first = !first.convex_hull_bounds
@@ -2972,7 +3064,7 @@ impl NurbsCurve {
         for boundary in boundaries {
             let intersections = match boundary {
                 CurveExtensionBoundary::Curve(curve) => {
-                    self.curve_intersections(curve, tolerance)?
+                    self.intersections_with_curve(curve, tolerance)?
                 }
                 CurveExtensionBoundary::Surface(surface) => {
                     curve_surface_intersections(self, surface, tolerance)?
@@ -2987,7 +3079,8 @@ impl NurbsCurve {
                 CurveExtensionBoundary::Brep(brep) => {
                     let mut intersections = Vec::new();
                     for edge in brep.edges() {
-                        intersections.extend(self.curve_intersections(edge.curve(), tolerance)?);
+                        intersections
+                            .extend(self.intersections_with_curve(edge.curve(), tolerance)?);
                     }
                     for face in brep.faces() {
                         for intersection in
@@ -5124,8 +5217,8 @@ fn push_unique_curve_intersection(
             .point
             .distance_to(intersection.point)
             .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
-            && parameter_near(existing.first_parameter, intersection.first_parameter)
-            && parameter_near(existing.second_parameter, intersection.second_parameter)
+            && intersection_parameter_near(existing.first_parameter, intersection.first_parameter)
+            && intersection_parameter_near(existing.second_parameter, intersection.second_parameter)
     }) {
         intersections.push(intersection);
     }
@@ -5134,6 +5227,25 @@ fn push_unique_curve_intersection(
 fn parameter_near(left: Real, right: Real) -> bool {
     let scale = left.abs().max(right.abs()).max(1.0);
     (left - right).abs() <= Real::EPSILON * scale * 256.0
+}
+
+fn intersection_parameter_near(left: Real, right: Real) -> bool {
+    let scale = left.abs().max(right.abs()).max(1.0);
+    (left - right).abs() <= Real::EPSILON.sqrt() * scale * 8.0
+}
+
+fn partition_curve_span_at(
+    start: Real,
+    end: Real,
+    additions: impl IntoIterator<Item = Real>,
+) -> Vec<Real> {
+    let mut parameters = vec![start, end];
+    for addition in additions {
+        parameters.push(addition.clamp(start, end));
+    }
+    parameters.sort_by(Real::total_cmp);
+    parameters.dedup_by(|left, right| parameter_near(*left, *right));
+    parameters
 }
 
 fn bounding_boxes_overlap(first: BoundingBox3, second: BoundingBox3, padding: Real) -> bool {
@@ -5145,6 +5257,76 @@ fn bounding_boxes_overlap(first: BoundingBox3, second: BoundingBox3, padding: Re
         first_min[axis] <= second_max[axis] + padding
             && second_min[axis] <= first_max[axis] + padding
     })
+}
+
+fn curve_control_hulls_overlap_on_local_axes(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    padding: Real,
+) -> Result<bool, GeometryError> {
+    let first_domain = first.domain();
+    let second_domain = second.domain();
+    let first_parameter = finite_midpoint(*first_domain.start(), *first_domain.end());
+    let second_parameter = finite_midpoint(*second_domain.start(), *second_domain.end());
+    let (first_point, first_tangent, first_second) =
+        first.evaluate_with_second_derivative(first_parameter)?;
+    let (second_point, second_tangent, second_second) =
+        second.evaluate_with_second_derivative(second_parameter)?;
+    let residual = first_point.vector_to(second_point)?;
+    let mut axes = vec![
+        residual,
+        first_tangent,
+        second_tangent,
+        first_tangent.cross(second_tangent)?,
+    ];
+    for (tangent, second_derivative) in [
+        (first_tangent, first_second),
+        (second_tangent, second_second),
+    ] {
+        let Ok(unit_tangent) = tangent.normalized_nonzero() else {
+            continue;
+        };
+        let unit_tangent = unit_tangent.as_vector();
+        for vector in [second_derivative, residual] {
+            let along = vector.dot(unit_tangent)?;
+            let tangent_part = unit_tangent.scaled(along)?;
+            axes.push(Vector3::try_new(
+                vector.x() - tangent_part.x(),
+                vector.y() - tangent_part.y(),
+                vector.z() - tangent_part.z(),
+            )?);
+        }
+    }
+
+    let origin = first.control_points()[0].point();
+    for axis in axes {
+        let Ok(axis) = axis.normalized_nonzero() else {
+            continue;
+        };
+        let first_projection = curve_control_projection_bounds(first, origin, axis.as_vector())?;
+        let second_projection = curve_control_projection_bounds(second, origin, axis.as_vector())?;
+        if first_projection[0] > second_projection[1] + padding
+            || second_projection[0] > first_projection[1] + padding
+        {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn curve_control_projection_bounds(
+    curve: &NurbsCurve,
+    origin: Point3,
+    axis: Vector3,
+) -> Result<[Real; 2], GeometryError> {
+    let mut minimum = Real::INFINITY;
+    let mut maximum = Real::NEG_INFINITY;
+    for control in curve.control_points() {
+        let projection = origin.vector_to(control.point())?.dot(axis)?;
+        minimum = minimum.min(projection);
+        maximum = maximum.max(projection);
+    }
+    Ok([minimum, maximum])
 }
 
 fn closest_segment_fractions(
@@ -5279,6 +5461,306 @@ fn refine_curve_curve_intersection(
         second_parameter,
         point,
     }))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn initial_curve_curve_intersections(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    search_second: &NurbsCurve,
+    first_domain: [Real; 2],
+    second_domain: [Real; 2],
+    refinement_tolerance: Real,
+    distance_tolerance: Real,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveCurveIntersection>, GeometryError> {
+    const MIN_SAMPLE_INTERVALS: usize = 16;
+    const MAX_SAMPLE_INTERVALS: usize = 256;
+    let sample_intervals = first
+        .degree()
+        .checked_add(1)
+        .and_then(|first_degree| {
+            second
+                .degree()
+                .checked_add(1)
+                .and_then(|second_degree| first_degree.checked_mul(second_degree))
+        })
+        .and_then(|product| product.checked_mul(4))
+        .unwrap_or(MAX_SAMPLE_INTERVALS)
+        .clamp(MIN_SAMPLE_INTERVALS, MAX_SAMPLE_INTERVALS);
+    let closest_tolerance = Tolerance::try_new(
+        refinement_tolerance,
+        Real::EPSILON * 16.0,
+        tolerance.angular(),
+    )?;
+    let mut samples = Vec::with_capacity(sample_intervals + 1);
+    for index in 0..=sample_intervals {
+        let fraction = index as Real / sample_intervals as Real;
+        let parameter = interpolate_parameter(first_domain[0], first_domain[1], fraction);
+        let point = first.evaluate(parameter)?;
+        let second_parameter = search_second.closest_parameter(point, closest_tolerance)?;
+        let distance = point.distance_to(second.evaluate(second_parameter)?)?;
+        samples.push((parameter, distance));
+    }
+
+    let mut intersections = Vec::new();
+    if let Some(intersection) = refine_tangent_curve_curve_intersection(
+        first,
+        second,
+        search_second,
+        first_domain,
+        second_domain,
+        refinement_tolerance,
+        tolerance,
+    )? {
+        push_unique_curve_intersection(&mut intersections, intersection, distance_tolerance);
+    }
+    for index in 1..sample_intervals {
+        if samples[index].1 > samples[index - 1].1 || samples[index].1 > samples[index + 1].1 {
+            continue;
+        }
+        if let Some(intersection) = refine_tangent_curve_curve_intersection(
+            first,
+            second,
+            search_second,
+            [samples[index - 1].0, samples[index + 1].0],
+            second_domain,
+            refinement_tolerance,
+            tolerance,
+        )? {
+            push_unique_curve_intersection(&mut intersections, intersection, distance_tolerance);
+        }
+    }
+    Ok(intersections)
+}
+
+fn refine_tangent_curve_curve_intersection(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    search_second: &NurbsCurve,
+    first_domain: [Real; 2],
+    second_domain: [Real; 2],
+    refinement_tolerance: Real,
+    tolerance: Tolerance,
+) -> Result<Option<CurveCurveIntersection>, GeometryError> {
+    const GOLDEN_FRACTION: Real = 0.618_033_988_749_894_9;
+    let closest_tolerance = Tolerance::try_new(
+        refinement_tolerance,
+        Real::EPSILON * 16.0,
+        tolerance.angular(),
+    )?;
+    let closest_at = |first_parameter| {
+        let first_point = first.evaluate(first_parameter)?;
+        let second_parameter = search_second.closest_parameter(first_point, closest_tolerance)?;
+        let second_point = second.evaluate(second_parameter)?;
+        let distance = first_point.distance_to(second_point)?;
+        let point = Point3::try_new(
+            finite_midpoint(first_point.x(), second_point.x()),
+            finite_midpoint(first_point.y(), second_point.y()),
+            finite_midpoint(first_point.z(), second_point.z()),
+        )?;
+        Ok::<_, GeometryError>((
+            CurveCurveIntersection {
+                first_parameter,
+                second_parameter,
+                point,
+            },
+            distance,
+        ))
+    };
+
+    let mut left = first_domain[0];
+    let mut right = first_domain[1];
+    let mut inner_left = right - GOLDEN_FRACTION * (right - left);
+    let mut inner_right = left + GOLDEN_FRACTION * (right - left);
+    let mut left_hit = closest_at(inner_left)?;
+    let mut right_hit = closest_at(inner_right)?;
+    let mut best = closest_at(left)?;
+    for candidate in [closest_at(right)?, left_hit, right_hit] {
+        if candidate.1 < best.1 {
+            best = candidate;
+        }
+    }
+
+    for _ in 0..80 {
+        let parameter_scale = left.abs().max(right.abs()).max(1.0);
+        if right - left <= Real::EPSILON * parameter_scale * 64.0 {
+            break;
+        }
+        if left_hit.1 <= right_hit.1 {
+            right = inner_right;
+            inner_right = inner_left;
+            right_hit = left_hit;
+            inner_left = right - GOLDEN_FRACTION * (right - left);
+            left_hit = closest_at(inner_left)?;
+            if left_hit.1 < best.1 {
+                best = left_hit;
+            }
+        } else {
+            left = inner_left;
+            inner_left = inner_right;
+            left_hit = right_hit;
+            inner_right = left + GOLDEN_FRACTION * (right - left);
+            right_hit = closest_at(inner_right)?;
+            if right_hit.1 < best.1 {
+                best = right_hit;
+            }
+        }
+    }
+
+    let acceptance = refinement_tolerance * 4.0;
+    if best.1 > acceptance {
+        return Ok(None);
+    }
+    if let Some(refined) = refine_curve_curve_tangency(
+        first,
+        second,
+        search_second,
+        best.0,
+        first_domain,
+        closest_tolerance,
+    )? && refined.1 <= acceptance
+    {
+        best = refined;
+    }
+    if let Some(refined) = refine_curve_curve_intersection(
+        first,
+        second,
+        best.0.first_parameter,
+        best.0.second_parameter,
+        first_domain,
+        second_domain,
+        refinement_tolerance,
+    )? {
+        return Ok(Some(refined));
+    }
+    Ok(Some(best.0))
+}
+
+fn refine_curve_curve_tangency(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    search_second: &NurbsCurve,
+    mut current: CurveCurveIntersection,
+    first_domain: [Real; 2],
+    tolerance: Tolerance,
+) -> Result<Option<(CurveCurveIntersection, Real)>, GeometryError> {
+    let (_, first_derivative) = first.evaluate_with_derivative(current.first_parameter)?;
+    let (_, second_derivative) = second.evaluate_with_derivative(current.second_parameter)?;
+    let cross = first_derivative.cross(second_derivative)?;
+    let Ok(axis) = cross.normalized_nonzero() else {
+        let distance = first
+            .evaluate(current.first_parameter)?
+            .distance_to(second.evaluate(current.second_parameter)?)?;
+        return Ok(Some((current, distance)));
+    };
+    let axis = axis.as_vector();
+    let (sample, mut current_value, mut current_distance) = curve_curve_tangency_sample(
+        first,
+        second,
+        search_second,
+        current.first_parameter,
+        axis,
+        tolerance,
+    )?;
+    current = sample;
+
+    for _ in 0..16 {
+        if current_value.abs() <= Real::EPSILON * 512.0 {
+            break;
+        }
+        let parameter_scale = current
+            .first_parameter
+            .abs()
+            .max((first_domain[1] - first_domain[0]).abs())
+            .max(1.0);
+        let difference_step = Real::EPSILON.sqrt() * parameter_scale * 8.0;
+        let lower = (current.first_parameter - difference_step).max(first_domain[0]);
+        let upper = (current.first_parameter + difference_step).min(first_domain[1]);
+        if lower == upper {
+            break;
+        }
+        let (_, lower_value, _) =
+            curve_curve_tangency_sample(first, second, search_second, lower, axis, tolerance)?;
+        let (_, upper_value, _) =
+            curve_curve_tangency_sample(first, second, search_second, upper, axis, tolerance)?;
+        let derivative = (upper_value - lower_value) / (upper - lower);
+        if !derivative.is_finite() || derivative == 0.0 {
+            break;
+        }
+        let delta = (-current_value / derivative).clamp(
+            -(first_domain[1] - first_domain[0]) * 0.25,
+            (first_domain[1] - first_domain[0]) * 0.25,
+        );
+        if !delta.is_finite() || delta == 0.0 {
+            break;
+        }
+
+        let mut factor: Real = 1.0;
+        let mut accepted = None;
+        for _ in 0..20 {
+            let parameter = factor
+                .mul_add(delta, current.first_parameter)
+                .clamp(first_domain[0], first_domain[1]);
+            if parameter == current.first_parameter {
+                break;
+            }
+            let candidate = curve_curve_tangency_sample(
+                first,
+                second,
+                search_second,
+                parameter,
+                axis,
+                tolerance,
+            )?;
+            if candidate.1.abs() < current_value.abs() {
+                accepted = Some(candidate);
+                break;
+            }
+            factor *= 0.5;
+        }
+        let Some((next, next_value, next_distance)) = accepted else {
+            break;
+        };
+        current = next;
+        current_value = next_value;
+        current_distance = next_distance;
+    }
+    Ok(Some((current, current_distance)))
+}
+
+fn curve_curve_tangency_sample(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    search_second: &NurbsCurve,
+    first_parameter: Real,
+    axis: Vector3,
+    tolerance: Tolerance,
+) -> Result<(CurveCurveIntersection, Real, Real), GeometryError> {
+    let (first_point, first_derivative) = first.evaluate_with_derivative(first_parameter)?;
+    let second_parameter = search_second.closest_parameter(first_point, tolerance)?;
+    let (second_point, second_derivative) = second.evaluate_with_derivative(second_parameter)?;
+    let first_tangent = first_derivative.normalized_nonzero()?;
+    let second_tangent = second_derivative.normalized_nonzero()?;
+    let tangency = first_tangent
+        .as_vector()
+        .cross(second_tangent.as_vector())?
+        .dot(axis)?;
+    let distance = first_point.distance_to(second_point)?;
+    let point = Point3::try_new(
+        finite_midpoint(first_point.x(), second_point.x()),
+        finite_midpoint(first_point.y(), second_point.y()),
+        finite_midpoint(first_point.z(), second_point.z()),
+    )?;
+    Ok((
+        CurveCurveIntersection {
+            first_parameter,
+            second_parameter,
+            point,
+        },
+        tangency,
+        distance,
+    ))
 }
 
 fn validate_structure(
@@ -8490,12 +8972,101 @@ mod tests {
         )
         .unwrap();
         let intersections = horizontal
-            .curve_intersections(&vertical, Tolerance::DEFAULT)
+            .intersections_with_curve(&vertical, Tolerance::DEFAULT)
             .unwrap();
         assert_eq!(intersections.len(), 1);
-        assert_point_near(intersections[0].point, point(3.0, 1.0));
-        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter, 5.0));
-        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter, 0.0));
+        assert_point_near(intersections[0].point(), point(3.0, 1.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter(), 5.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter(), 0.0));
+    }
+
+    #[test]
+    fn curve_intersection_finds_an_interior_tangent_contact() {
+        let parabola = NurbsCurve::try_new(
+            2,
+            vec![point(0.0, 0.0), point(5.0, 8.0), point(10.0, 0.0)],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let tangent = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 4.0), point(10.0, 4.0)],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let intersections = parabola
+            .intersections_with_curve(&tangent, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(intersections.len(), 1, "{intersections:#?}");
+        assert_point_near(intersections[0].point(), point(5.0, 4.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter(), 0.5));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter(), 5.0));
+    }
+
+    #[test]
+    fn curve_intersection_refines_an_off_center_rational_tangency() {
+        let arc = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), 0.5_f64.sqrt()).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let parameter = 0.3;
+        let (contact, derivative) = arc.evaluate_with_derivative(parameter).unwrap();
+        let tangent = derivative.normalized_nonzero().unwrap();
+        let offset = tangent.as_vector().scaled(3.0).unwrap();
+        let line = NurbsCurve::try_new(
+            1,
+            vec![
+                contact.translated(offset.scaled(-1.0).unwrap()).unwrap(),
+                contact.translated(offset).unwrap(),
+            ],
+            vec![-3.0, -3.0, 3.0, 3.0],
+        )
+        .unwrap();
+
+        let intersections = arc
+            .intersections_with_curve(&line, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(intersections.len(), 1, "{intersections:#?}");
+        assert_point_near(intersections[0].point(), contact);
+        assert!((intersections[0].first_parameter() - parameter).abs() < 1.0e-11);
+        assert!(intersections[0].second_parameter().abs() < 1.0e-11);
+    }
+
+    #[test]
+    fn curve_intersection_finds_two_tangencies_in_one_span_pair() {
+        let double_contact = NurbsCurve::try_new(
+            4,
+            vec![
+                point(0.0, 0.441),
+                point(0.25, -0.609),
+                point(0.5, 0.707_666_666_666_666_7),
+                point(0.75, -0.609),
+                point(1.0, 0.441),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let line = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(1.0, 0.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+
+        let intersections = double_contact
+            .intersections_with_curve(&line, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(intersections.len(), 2, "{intersections:#?}");
+        assert!((intersections[0].first_parameter() - 0.3).abs() < 1.0e-10);
+        assert!((intersections[1].first_parameter() - 0.7).abs() < 1.0e-10);
+        assert_point_near(intersections[0].point(), point(0.3, 0.0));
+        assert_point_near(intersections[1].point(), point(0.7, 0.0));
     }
 
     #[test]
@@ -8513,15 +9084,15 @@ mod tests {
         )
         .unwrap();
         let intersections = long
-            .curve_intersections(&short, Tolerance::DEFAULT)
+            .intersections_with_curve(&short, Tolerance::DEFAULT)
             .unwrap();
         assert_eq!(intersections.len(), 2, "{intersections:#?}");
-        assert_point_near(intersections[0].point, point(10.0, 0.0));
-        assert_point_near(intersections[1].point, point(15.0, 0.0));
-        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter, 10.0));
-        assert!(Tolerance::DEFAULT.approx_eq(intersections[1].first_parameter, 15.0));
-        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter, -2.0));
-        assert!(Tolerance::DEFAULT.approx_eq(intersections[1].second_parameter, 3.0));
+        assert_point_near(intersections[0].point(), point(10.0, 0.0));
+        assert_point_near(intersections[1].point(), point(15.0, 0.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter(), 10.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[1].first_parameter(), 15.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter(), -2.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[1].second_parameter(), 3.0));
     }
 
     #[test]

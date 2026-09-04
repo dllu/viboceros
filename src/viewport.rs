@@ -11,7 +11,7 @@ use viboceros_drafting::{
 };
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real,
-    Tolerance, TriangleMesh,
+    Tolerance, TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -258,6 +258,20 @@ impl Viewport {
             selection_drag_start: None,
         }
     }
+
+    pub(crate) fn apparent_intersection_normal(&self) -> Vector3 {
+        let direction = match self.kind {
+            ViewKind::Top => [0.0, 0.0, 1.0],
+            ViewKind::Front => [0.0, 1.0, 0.0],
+            ViewKind::Right => [1.0, 0.0, 0.0],
+            ViewKind::Perspective => {
+                let (_, _, forward) = self.perspective_basis();
+                [forward.x, forward.y, forward.z]
+            }
+        };
+        Vector3::try_from(direction).expect("viewport directions are finite")
+    }
+
     pub fn show(
         &mut self,
         ui: &mut egui::Ui,

@@ -277,6 +277,7 @@ enum InteractiveCommand {
         copy: bool,
     },
     SplitCurve,
+    TrimCurve,
     Move {
         start: Option<Point3>,
     },
@@ -382,6 +383,7 @@ impl InteractiveCommand {
             Self::ExtendSrf { .. } => "ExtendSrf",
             Self::SubCrv { .. } => "SubCrv",
             Self::SplitCurve => "Split",
+            Self::TrimCurve => "Trim",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
@@ -641,6 +643,9 @@ impl InteractiveCommand {
             Self::SplitCurve => {
                 "Split: pick curve split locations; press Enter to finish (Esc to cancel)"
             }
+            Self::TrimCurve => {
+                "Trim: pick the interval to remove from one selected curve; the other selected curves are cutters (Esc to cancel)"
+            }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"
             }
@@ -826,6 +831,7 @@ impl InteractiveCommand {
             | Self::ExtendSrf { .. }
             | Self::SubCrv { start: None, .. }
             | Self::SplitCurve
+            | Self::TrimCurve
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
@@ -2475,6 +2481,7 @@ impl VibocerosApp {
                 "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
+                "trim" => InteractiveCommand::TrimCurve,
                 "move" | "m" => InteractiveCommand::Move { start: None },
                 "copy" => InteractiveCommand::Copy { start: None },
                 "scale" => InteractiveCommand::Scale {
@@ -2545,6 +2552,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtendSrf { .. }
                 | InteractiveCommand::SubCrv { .. }
                 | InteractiveCommand::SplitCurve
+                | InteractiveCommand::TrimCurve
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
         {
@@ -3807,6 +3815,19 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
                 self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::TrimCurve => {
+                let normal = self.viewports[self.active_viewport]
+                    .apparent_intersection_normal()
+                    .to_array();
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Trim {} ApparentIntersections=Yes ViewNormal={},{},{}",
+                    format_model_point(point),
+                    normal[0],
+                    normal[1],
+                    normal[2],
+                ));
             }
             InteractiveCommand::Move { start: None } => {
                 self.active_command = Some(InteractiveCommand::Move { start: Some(point) });
@@ -7569,6 +7590,46 @@ mod tests {
 
         app.document.clear_selection();
         assert!(app.try_start_interactive_command("Split"));
+        assert_eq!(app.active_command, None);
+        assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_trim_removes_the_picked_interval_in_one_click() {
+        let mut app = test_app();
+        app.execute_command("Line 0,0 10,0");
+        app.execute_command("Line 3,-5 3,5");
+        app.execute_command("Line 7,-5 7,5");
+        app.execute_command("SelAll");
+
+        assert!(app.try_start_interactive_command("Trim"));
+        assert_eq!(app.active_command, Some(InteractiveCommand::TrimCurve));
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("interval to remove")
+        );
+        app.accept_drafting_point(point(5.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().count(), 4);
+        assert_eq!(app.document.selected_object_count(), 2);
+        let mut domains = app
+            .document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                _ => panic!("interactive Trim must create exact NURBS pieces"),
+            })
+            .collect::<Vec<_>>();
+        domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        assert_eq!(domains, vec![0.0..=3.0, 7.0..=10.0]);
+        assert_eq!(app.document.undo_label(), Some("Trim"));
+        assert!(!app.try_start_interactive_command("Trim 5,0"));
+
+        app.document.clear_selection();
+        assert!(app.try_start_interactive_command("Trim"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
     }

@@ -39,6 +39,7 @@ const SURFACE_EXPORT_SAMPLES_PER_SPAN: usize = 16;
 const MAX_EXTRACTED_POINTS: usize = 1_000_000;
 const MAX_ARRAY_OBJECTS: usize = 1_000_000;
 const MAX_SPAN_OUTPUT_OBJECTS: usize = 1_000_000;
+const MAX_CURVE_TRIM_INTERSECTIONS: usize = 1_000_000;
 pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 
 pub trait Command: Send + Sync {
@@ -425,6 +426,9 @@ impl CommandRegistry {
             .expect("unique built-in command");
         registry
             .register(SplitCurveCommand)
+            .expect("unique built-in command");
+        registry
+            .register(TrimCurveCommand)
             .expect("unique built-in command");
         registry
             .register(DirectionCommand)
@@ -12486,6 +12490,233 @@ fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, 
     Ok(CurveSplitLocation::Points(points))
 }
 
+const TRIM_CURVE_USAGE: &str = "Trim point [ApparentIntersections=Yes|No] [ViewNormal=x,y,z]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct TrimCurveOptions {
+    pick: Point3,
+    apparent_intersections: bool,
+    view_normal: Vector3,
+}
+
+struct TrimCurveCommand;
+
+impl Command for TrimCurveCommand {
+    fn name(&self) -> &'static str {
+        "Trim"
+    }
+
+    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        let options = parse_trim_curve_options(arguments)?;
+
+        let candidates = document
+            .selected_objects()
+            .filter_map(|object| {
+                object
+                    .geometry()
+                    .nurbs_curve_representation()
+                    .transpose()
+                    .map(|curve| curve.map(|curve| (object.id(), curve)))
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if candidates.len() < 2 {
+            return Err(CommandError::TrimRequiresAtLeastTwoCurves {
+                actual: candidates.len(),
+            });
+        }
+
+        let (intersection_curves, intersection_pick) = if options.apparent_intersections {
+            let origin = Point3::try_new(0.0, 0.0, 0.0)?;
+            let normal = options.view_normal.normalized(document.tolerance())?;
+            let projection = AffineTransform3::try_planar_projection(Plane::new(origin, normal))?;
+            (
+                candidates
+                    .iter()
+                    .map(|(_, curve)| curve.transformed(projection))
+                    .collect::<Result<Vec<_>, _>>()?,
+                projection.transform_point(options.pick)?,
+            )
+        } else {
+            (
+                candidates.iter().map(|(_, curve)| curve.clone()).collect(),
+                options.pick,
+            )
+        };
+
+        let mut picked = None;
+        for (index, curve) in intersection_curves.iter().enumerate() {
+            let parameter = curve.closest_parameter(intersection_pick, document.tolerance())?;
+            let distance = curve.evaluate(parameter)?.distance_to(intersection_pick)?;
+            if picked.is_none_or(|(_, _, nearest_distance)| distance < nearest_distance) {
+                picked = Some((index, parameter, distance));
+            }
+        }
+        let (source_index, picked_parameter, _) =
+            picked.expect("at least two Trim candidates were required");
+        let (source_id, source) = &candidates[source_index];
+        let intersection_source = &intersection_curves[source_index];
+
+        let domain = source.domain();
+        let domain_start = *domain.start();
+        let domain_end = *domain.end();
+        let start_point = intersection_source.evaluate(domain_start)?;
+        let end_point = intersection_source.evaluate(domain_end)?;
+        let mut intersections = Vec::new();
+        for (index, cutter) in intersection_curves.iter().enumerate() {
+            if index == source_index {
+                continue;
+            }
+            for intersection in
+                intersection_source.intersections_with_curve(cutter, document.tolerance())?
+            {
+                let parameter = intersection.first_parameter();
+                let point = intersection.point();
+                if !trim_intersections_near(
+                    (parameter, point),
+                    (domain_start, start_point),
+                    document.tolerance(),
+                ) && !trim_intersections_near(
+                    (parameter, point),
+                    (domain_end, end_point),
+                    document.tolerance(),
+                ) {
+                    if intersections.len() == MAX_CURVE_TRIM_INTERSECTIONS {
+                        return Err(CommandError::TooManyTrimIntersections {
+                            maximum: MAX_CURVE_TRIM_INTERSECTIONS,
+                        });
+                    }
+                    intersections.push((parameter, point));
+                }
+            }
+        }
+        intersections.sort_by(|left, right| left.0.total_cmp(&right.0));
+        intersections
+            .dedup_by(|left, right| trim_intersections_near(*left, *right, document.tolerance()));
+        let parameters = intersections
+            .into_iter()
+            .map(|(parameter, _)| parameter)
+            .collect::<Vec<_>>();
+
+        let closed = source.is_closed()?;
+        if parameters.is_empty() || (closed && parameters.len() < 2) {
+            document.select_objects_direct([*source_id], SelectionMode::Replace)?;
+            return Ok("No bounded curve interval was available to trim".to_owned());
+        }
+        let next_index = parameters.partition_point(|parameter| *parameter <= picked_parameter);
+        let kept = if closed {
+            let previous = parameters[(next_index + parameters.len() - 1) % parameters.len()];
+            let next = parameters[next_index % parameters.len()];
+            vec![source.try_subcurve(next, previous)?]
+        } else {
+            let mut kept = Vec::with_capacity(2);
+            if let Some(previous) = next_index.checked_sub(1).map(|index| parameters[index]) {
+                kept.push(source.try_trimmed(domain_start..=previous)?);
+            }
+            if let Some(next) = parameters.get(next_index).copied() {
+                kept.push(source.try_trimmed(next..=domain_end)?);
+            }
+            kept
+        };
+        debug_assert!(
+            !kept.is_empty(),
+            "a bounded trim retains at least one piece"
+        );
+
+        let source_object = document
+            .object(*source_id)
+            .expect("selected Trim source belongs to the document");
+        let attributes = source_object.attributes().clone();
+        let group_ids = document
+            .groups()
+            .filter(|group| group.members().any(|member| member == *source_id))
+            .map(|group| group.id())
+            .collect::<Vec<_>>();
+
+        let output_ids = if let [piece] = kept.as_slice() {
+            document
+                .replace_object_geometries([(*source_id, Geometry::NurbsCurve(piece.clone()))])?;
+            vec![*source_id]
+        } else {
+            let mut output_ids = Vec::with_capacity(kept.len());
+            for piece in kept {
+                output_ids.push(document.add_geometry_with_attributes(
+                    Geometry::NurbsCurve(piece),
+                    attributes.clone(),
+                )?);
+            }
+            for group_id in group_ids {
+                document.add_group_members(group_id, output_ids.iter().copied())?;
+            }
+            document.delete_object(*source_id)?;
+            output_ids
+        };
+        let output_count = output_ids.len();
+        document.select_objects_direct(output_ids, SelectionMode::Replace)?;
+        Ok(format!(
+            "Trimmed one curve interval and retained {output_count} exact NURBS piece(s)"
+        ))
+    }
+}
+
+fn parse_trim_curve_options(arguments: &[&str]) -> Result<TrimCurveOptions, CommandError> {
+    let (pick, consumed) = parse_point(arguments).map_err(|error| match error {
+        CommandError::Usage(_) => CommandError::Usage(TRIM_CURVE_USAGE),
+        error => error,
+    })?;
+    let mut options = TrimCurveOptions {
+        pick,
+        apparent_intersections: true,
+        view_normal: Vector3::try_new(0.0, 0.0, 1.0).expect("the world Z direction is finite"),
+    };
+    let mut seen = BTreeSet::new();
+    let mut index = consumed;
+    while index < arguments.len() {
+        let (name, value, option_consumed) = orient_option(arguments, index, TRIM_CURVE_USAGE)?;
+        let name = name.trim_start_matches(['_', '-']).to_ascii_lowercase();
+        if !seen.insert(name.clone()) {
+            return Err(CommandError::Usage(TRIM_CURVE_USAGE));
+        }
+        match name.as_str() {
+            "apparentintersections" | "apparent" => {
+                options.apparent_intersections =
+                    parse_yes_no(value).ok_or(CommandError::Usage(TRIM_CURVE_USAGE))?;
+            }
+            "viewnormal" => {
+                options.view_normal = Vector3::try_from(
+                    parse_single_option_point(value, TRIM_CURVE_USAGE)?.to_array(),
+                )?;
+            }
+            _ => return Err(CommandError::Usage(TRIM_CURVE_USAGE)),
+        }
+        index += option_consumed;
+    }
+    Ok(options)
+}
+
+fn trim_intersections_near(
+    left: (Real, Point3),
+    right: (Real, Point3),
+    tolerance: Tolerance,
+) -> bool {
+    let parameter_scale = left.0.abs().max(right.0.abs()).max(1.0);
+    if (left.0 - right.0).abs() > Real::EPSILON.sqrt() * parameter_scale * 8.0 {
+        return false;
+    }
+    let coordinate_scale = left
+        .1
+        .to_array()
+        .into_iter()
+        .chain(right.1.to_array())
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    left.1.distance_to(right.1).is_ok_and(|distance| {
+        distance
+            <= tolerance
+                .absolute()
+                .max(tolerance.relative() * coordinate_scale)
+                * 2.0
+    })
+}
+
 const DIRECTION_USAGE: &str =
     "Dir Flip|UReverse|VReverse|SwapUV (or Mode=FlipNormal|FlipU|FlipV|SwapUV)";
 
@@ -19535,6 +19766,12 @@ pub enum CommandError {
     #[error("Split currently requires exactly one selected curve, got {actual}")]
     SplitRequiresOneCurve { actual: usize },
 
+    #[error("Trim requires at least two selected curves, got {actual}")]
+    TrimRequiresAtLeastTwoCurves { actual: usize },
+
+    #[error("Trim supports at most {maximum} cutting intersections")]
+    TooManyTrimIntersections { maximum: usize },
+
     #[error(
         "InsertKnot requires exactly one selected curve or untrimmed NURBS surface, got {actual}"
     )]
@@ -20119,7 +20356,7 @@ mod tests {
         let mut document = Document::default();
         assert_eq!(
             registry.execute(&mut document, "Help").unwrap(),
-            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
+            "Commands: Arc, Area, Array, ArrayCrv, ArrayLinear, ArrayPolar, ArraySrf, BoundingBox, Box, Catenary, ChangeDegree, ChangeLayer, Circle, Clear, CloseCrv, CollapseMeshEdge, CombineIdenticalMeshVertices, Cone, Conic, ControlPointCurve, ConvertToBeziers, ConvertToSingleSpans, Copy, CopyToLayer, CrvEnd, CrvSeam, CrvStart, CullUnusedMeshVertices, Curve, CurveThroughPolyline, CurveThroughPt, Cylinder, Delete, DeleteFaces, Dir, Divide, DupBorder, DupEdge, DupFaceBorder, DupMeshEdge, DupMeshHoleBoundary, Ellipse, Ellipsoid, Explode, Export3dm, ExportStep, ExportStl, Extend, ExtendSrf, ExtractControlPolygon, ExtractDuplicateMeshFaces, ExtractIsocurve, ExtractMeshEdges, ExtractMeshFaces, ExtractNonManifoldMeshEdges, ExtractPt, ExtractSrf, ExtractWireframe, ExtrudeCrv, ExtrudeCrvAlongCrv, ExtrudeCrvToPoint, FillMeshHole, FillMeshHoles, FitCrv, Flip, Group, Helix, Hide, HideSwap, Hyperbola, Import3dm, ImportStep, ImportStl, InsertControlPoint, InsertKnot, InterpCrv, Invert, Isolate, IsolateLock, Join, Layer, Length, Line, Lock, LockSwap, MakeNonPeriodic, MakePeriodic, MakeUniform, MakeUniformUV, Mesh, MeshBox, MeshCone, MeshCylinder, MeshEllipsoid, MeshPlane, MeshSphere, MeshToNURB, MeshTorus, MeshTruncatedCone, Mirror, Move, Orient, Orient3Pt, OrientOnSrf, Parabola, Parabola3Pt, Paraboloid, PlanarSrf, Point, Polygon, Polyline, ProjectToCPlane, Pyramid, Rebuild, Rectangle, Redo, RemoveControlPoint, RemoveKnot, RemoveMultiKnot, Reparameterize, Revolve, Rotate, Rotate3D, Scale, Scale1D, Scale2D, ScaleNU, SelAll, SelClosedCrv, SelClosedMesh, SelClosedPolysrf, SelColor, SelCrv, SelDup, SelDupAll, SelGroup, SelLast, SelLayer, SelLine, SelMesh, SelName, SelNone, SelOpenCrv, SelOpenMesh, SelOpenPolysrf, SelPlanarCrv, SelPolyline, SelPolysrf, SelPrev, SelPt, SelPtCloud, SelShortCrv, SelSrf, SetObjectColor, SetObjectName, Shear, Show, Sphere, Spiral, Split, SplitDisjointMesh, SplitMeshEdge, SrfPt, SrfSeam, SubCrv, SwapMeshEdge, ToNURBS, Torus, TriangulateMesh, Trim, TruncatedCone, TruncatedPyramid, Tube, TweenCurves, Undo, Ungroup, UnifyMeshNormals, Unisolate, UnisolateLock, Unlock, Unweld, UnweldEdge, UnweldVertex, Volume, Weld, WeldEdge, WeldVertices"
         );
     }
 
@@ -25687,6 +25924,241 @@ mod tests {
             ))
         ));
         assert_eq!(document.object(first).unwrap(), &before[0]);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+
+    #[test]
+    fn trim_removes_a_middle_interval_and_replaces_the_source_with_grouped_pieces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName TrimSource")
+            .unwrap();
+        registry.execute(&mut document, "Group Trimmed").unwrap();
+        let source = document.object(source_id).unwrap().clone();
+        registry.execute(&mut document, "Line 3,-5 3,5").unwrap();
+        registry.execute(&mut document, "Line 7,-5 7,5").unwrap();
+        let cutter_ids = document
+            .objects()
+            .filter(|object| object.id() != source_id)
+            .map(|object| object.id())
+            .collect::<BTreeSet<_>>();
+        document
+            .select_objects_direct(
+                std::iter::once(source_id).chain(cutter_ids.iter().copied()),
+                SelectionMode::Replace,
+            )
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Trim 5,0").unwrap(),
+            "Trimmed one curve interval and retained 2 exact NURBS piece(s)"
+        );
+        assert!(document.object(source_id).is_none());
+        let outputs = document
+            .objects()
+            .filter(|object| !cutter_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let mut domains = outputs
+            .iter()
+            .map(|object| {
+                assert_eq!(object.attributes(), source.attributes());
+                assert!(document.is_selected(object.id()));
+                let Geometry::NurbsCurve(curve) = object.geometry() else {
+                    panic!("Trim must create exact NURBS pieces")
+                };
+                curve.domain()
+            })
+            .collect::<Vec<_>>();
+        domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        assert_eq!(domains, vec![0.0..=3.0, 7.0..=10.0]);
+        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(
+            document
+                .group_by_name("Trimmed")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            outputs.iter().map(|object| object.id()).collect()
+        );
+        assert_eq!(document.undo_label(), Some("Trim"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 3);
+        assert_eq!(document.object(source_id).unwrap(), &source);
+        assert_eq!(
+            document
+                .group_by_name("Trimmed")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            BTreeSet::from([source_id])
+        );
+    }
+
+    #[test]
+    fn trim_of_an_end_retains_identity_and_ignores_other_cuts_in_the_kept_interval() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        registry.execute(&mut document, "Line 3,-5 3,5").unwrap();
+        registry.execute(&mut document, "Line 7,-5 7,5").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Trim 1,0").unwrap(),
+            "Trimmed one curve interval and retained 1 exact NURBS piece(s)"
+        );
+        let Geometry::NurbsCurve(curve) = document.object(source_id).unwrap().geometry() else {
+            panic!("Trim must convert its result to exact NURBS geometry")
+        };
+        assert_eq!(curve.domain(), 3.0..=10.0);
+        assert_eq!(document.objects().count(), 3);
+        assert_eq!(document.selected_object_count(), 1);
+        assert!(document.is_selected(source_id));
+    }
+
+    #[test]
+    fn trim_removes_the_picked_arc_of_a_closed_curve() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Circle 0,0 5").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        registry.execute(&mut document, "Line 0,-8 0,8").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+
+        registry.execute(&mut document, "Trim 5,0").unwrap();
+        let Geometry::NurbsCurve(curve) = document.object(source_id).unwrap().geometry() else {
+            panic!("closed-curve Trim must create exact NURBS geometry")
+        };
+        assert!(curve.evaluate(*curve.domain().start()).unwrap().is_near(
+            Point3::try_new(0.0, 5.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(curve.evaluate(*curve.domain().end()).unwrap().is_near(
+            Point3::try_new(0.0, -5.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(!curve.is_closed().unwrap());
+        assert_eq!(document.selected_object_count(), 1);
+    }
+
+    #[test]
+    fn trim_without_a_bounded_interval_is_a_non_destructive_success() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        registry.execute(&mut document, "Line 20,-5 20,5").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let source_id = ids[0];
+        let before = document.object(source_id).unwrap().clone();
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Trim 5,0").unwrap(),
+            "No bounded curve interval was available to trim"
+        );
+        assert_eq!(document.object(source_id).unwrap(), &before);
+        assert_eq!(document.selected_object_count(), 1);
+        assert!(document.is_selected(source_id));
+    }
+
+    #[test]
+    fn trim_uses_view_projected_intersections_by_default_and_can_disable_them() {
+        let registry = CommandRegistry::with_builtins();
+        let trim_document = || {
+            let mut document = Document::default();
+            registry
+                .execute(&mut document, "Line 0,0,0 10,0,0")
+                .unwrap();
+            registry
+                .execute(&mut document, "Line 5,-5,1 5,5,1")
+                .unwrap();
+            let ids = document
+                .objects()
+                .map(|object| object.id())
+                .collect::<Vec<_>>();
+            document
+                .select_objects_direct(ids, SelectionMode::Replace)
+                .unwrap();
+            document
+        };
+
+        let mut apparent = trim_document();
+        let source_id = apparent.objects().next().unwrap().id();
+        registry.execute(&mut apparent, "Trim 2,0,0").unwrap();
+        let Geometry::NurbsCurve(curve) = apparent.object(source_id).unwrap().geometry() else {
+            panic!("apparent Trim must create exact NURBS geometry")
+        };
+        assert_eq!(curve.domain(), 5.0..=10.0);
+
+        let mut actual = trim_document();
+        let source_id = actual.objects().next().unwrap().id();
+        let before = actual.object(source_id).unwrap().clone();
+        assert_eq!(
+            registry
+                .execute(&mut actual, "Trim 2,0,0 ApparentIntersections=No")
+                .unwrap(),
+            "No bounded curve interval was available to trim"
+        );
+        assert_eq!(actual.object(source_id).unwrap(), &before);
+    }
+
+    #[test]
+    fn trim_rejects_invalid_or_underspecified_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Trim",
+            "Trim 1,2 extra",
+            "Trim 1,2 ApparentIntersections=Maybe",
+            "Trim 1,2 ViewNormal=0,0,1 ViewNormal=0,1,0",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(TRIM_CURVE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "Trim 0,0"),
+            Err(CommandError::TrimRequiresAtLeastTwoCurves { actual: 0 })
+        ));
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(source_id).unwrap().clone();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Trim 5,0"),
+            Err(CommandError::TrimRequiresAtLeastTwoCurves { actual: 1 })
+        ));
+        assert_eq!(document.object(source_id).unwrap(), &before);
         assert_eq!(document.undo_label(), history.as_deref());
     }
 

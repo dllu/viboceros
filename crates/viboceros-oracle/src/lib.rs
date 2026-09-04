@@ -614,6 +614,16 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         parameters: Vec<f64>,
     },
+    CurveTrimCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        cutters: Vec<NurbsCurveDefinition>,
+        pick: [f64; 3],
+        #[serde(default = "default_true")]
+        apparent_intersections: bool,
+        #[serde(default = "default_view_normal")]
+        view_normal: [f64; 3],
+    },
     CurveInsertControlPointGeometry {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1247,6 +1257,7 @@ impl Operation {
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
+            | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
             | Self::CurveRemoveKnotGeometry { id, .. }
@@ -3209,6 +3220,22 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::CurveTrimCommand {
+            curve,
+            cutters,
+            pick,
+            apparent_intersections,
+            view_normal,
+            ..
+        } => curve_trim_command(
+            iterations,
+            curve,
+            cutters,
+            *pick,
+            *apparent_intersections,
+            *view_normal,
+            tolerance,
+        )?,
         Operation::CurveInsertControlPointGeometry {
             curve,
             parameter,
@@ -7176,6 +7203,98 @@ fn curve_extend_boundary_command(
     Ok((value, elapsed_ns))
 }
 
+fn curve_trim_command(
+    iterations: u32,
+    definition: &NurbsCurveDefinition,
+    cutter_definitions: &[NurbsCurveDefinition],
+    pick: [f64; 3],
+    apparent_intersections: bool,
+    view_normal: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let source = nurbs_curve_from_definition(definition)?;
+    let cutters = cutter_definitions
+        .iter()
+        .map(nurbs_curve_from_definition)
+        .collect::<Result<Vec<_>, _>>()?;
+    let run = || -> Result<_, ProbeError> {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::new(tolerance);
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Viboceros Trim Source")
+            .with_object_color(ColorRgb::new(12, 34, 56));
+        let source_id = document.add_geometry_with_attributes(
+            Geometry::NurbsCurve(source.clone()),
+            attributes.clone(),
+        )?;
+        let group_id = document.add_group(Some("Viboceros Trim Group".to_owned()), [source_id])?;
+        let mut cutter_ids = Vec::with_capacity(cutters.len());
+        for cutter in &cutters {
+            cutter_ids.push(document.add_geometry(Geometry::NurbsCurve(cutter.clone()))?);
+        }
+        document.select_objects_direct(
+            std::iter::once(source_id).chain(cutter_ids.iter().copied()),
+            SelectionMode::Replace,
+        )?;
+        registry.execute(
+            &mut document,
+            &format!(
+                "Trim {},{},{} ApparentIntersections={} ViewNormal={},{},{}",
+                pick[0],
+                pick[1],
+                pick[2],
+                if apparent_intersections { "Yes" } else { "No" },
+                view_normal[0],
+                view_normal[1],
+                view_normal[2],
+            ),
+        )?;
+        Ok((document, source_id, cutter_ids, group_id, attributes))
+    };
+
+    let (document, source_id, cutter_ids, group_id, attributes) = run()?;
+    let source_group_members = document
+        .group(group_id)
+        .expect("the Trim source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let cutters = cutter_ids.into_iter().collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .filter(|object| !cutters.contains(&object.id()))
+        .map(|object| {
+            let curve = object
+                .geometry()
+                .nurbs_curve_representation()?
+                .expect("the Trim command produces only curve result objects");
+            let first_point = curve.control_points()[0].point().to_array();
+            Ok((
+                first_point,
+                json!({
+                    "attributes_match_source": object.attributes() == &attributes,
+                    "curve": nurbs_curve_definition_value(&curve),
+                    "in_source_group": source_group_members.contains(&object.id()),
+                    "original_id": object.id() == source_id,
+                    "selected": document.is_selected(object.id()),
+                }),
+            ))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    records.sort_by(|(left, _), (right, _)| compare_point(left, right));
+    let value = json!({
+        "command_succeeded": true,
+        "objects": records.into_iter().map(|(_, value)| value).collect::<Vec<_>>(),
+    });
+
+    let started = Instant::now();
+    for _ in 0..iterations {
+        black_box(run()?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 fn uniform_surface_definition_value(surface: &NurbsSurface) -> Value {
     let mut value = nurbs_surface_definition_value(surface);
     let object = value
@@ -7509,6 +7628,10 @@ const fn default_iterations() -> u32 {
 
 const fn default_true() -> bool {
     true
+}
+
+const fn default_view_normal() -> [f64; 3] {
+    [0.0, 0.0, 1.0]
 }
 
 const fn default_kink_angle_degrees() -> f64 {
@@ -9784,6 +9907,54 @@ mod tests {
         assert_eq!(pieces[1]["domain"], json!([0.2, 0.5]));
         assert_eq!(pieces[2]["domain"], json!([0.5, 0.8]));
         assert_eq!(pieces[3]["domain"], json!([0.8, 1.0]));
+    }
+
+    #[test]
+    fn captures_curve_trim_command_behavior() {
+        let line = |start, end, knots| NurbsCurveDefinition {
+            degree: 1,
+            control_points: [start, end]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots,
+            domain: None,
+        };
+        let response = run_request(&request(vec![Operation::CurveTrimCommand {
+            id: "trim-line-middle".to_owned(),
+            curve: line(
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                vec![0.0, 0.0, 10.0, 10.0],
+            ),
+            cutters: vec![
+                line(
+                    [3.0, -5.0, 0.0],
+                    [3.0, 5.0, 0.0],
+                    vec![0.0, 0.0, 10.0, 10.0],
+                ),
+                line(
+                    [7.0, -5.0, 0.0],
+                    [7.0, 5.0, 0.0],
+                    vec![0.0, 0.0, 10.0, 10.0],
+                ),
+            ],
+            pick: [5.0, 0.0, 0.0],
+            apparent_intersections: true,
+            view_normal: [0.0, 0.0, 1.0],
+        }]))
+        .unwrap();
+
+        let objects = response.results[0].value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 2);
+        assert_eq!(objects[0]["curve"]["domain"], json!([0.0, 3.0]));
+        assert_eq!(objects[1]["curve"]["domain"], json!([7.0, 10.0]));
+        for object in objects {
+            assert_eq!(object["attributes_match_source"], true);
+            assert_eq!(object["in_source_group"], true);
+            assert_eq!(object["original_id"], false);
+            assert_eq!(object["selected"], true);
+        }
     }
 
     #[test]
