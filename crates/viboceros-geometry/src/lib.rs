@@ -67,6 +67,10 @@ pub use interpolation::{
     CurveInterpolationOptions, CurveKnotSpacing, InterpolatedCurveClosure,
     MAX_CURVE_INTERPOLATION_POINTS,
 };
+pub use intersection::{
+    CurveSurfaceIntersection, CurveSurfaceIntersectionEvent, CurveSurfaceOverlap,
+    curve_surface_intersection_events, curve_surface_intersections,
+};
 pub use line::LineSegment;
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,

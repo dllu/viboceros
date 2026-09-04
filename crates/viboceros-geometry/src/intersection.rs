@@ -1,17 +1,83 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
-use crate::{BoundingBox3, GeometryError, NurbsCurve, NurbsSurface, Point3, Real, Tolerance};
+use crate::{
+    BoundingBox3, GeometryError, NurbsCurve, NurbsSurface, Plane, Point3, Real, Tolerance,
+};
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
 const MAX_CURVE_SURFACE_DEPTH: u8 = 56;
+const MAX_CURVE_PLANE_ROOT_DEPTH: usize = 64;
 
-#[derive(Clone, Copy, Debug)]
-pub(crate) struct CurveSurfaceIntersection {
+/// A point where a finite NURBS curve meets a finite NURBS surface.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurveSurfaceIntersection {
     pub(crate) curve_parameter: Real,
     pub(crate) u: Real,
     pub(crate) v: Real,
     pub(crate) point: Point3,
     distance: Real,
+}
+
+impl CurveSurfaceIntersection {
+    /// Parameter on the intersected curve.
+    #[inline]
+    pub const fn curve_parameter(self) -> Real {
+        self.curve_parameter
+    }
+
+    /// Parameter in the surface's first direction.
+    #[inline]
+    pub const fn u(self) -> Real {
+        self.u
+    }
+
+    /// Parameter in the surface's second direction.
+    #[inline]
+    pub const fn v(self) -> Real {
+        self.v
+    }
+
+    /// Midpoint of the refined curve and surface evaluations.
+    #[inline]
+    pub const fn point(self) -> Point3 {
+        self.point
+    }
+}
+
+/// A finite curve interval that lies on a NURBS surface.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub struct CurveSurfaceOverlap {
+    start: CurveSurfaceIntersection,
+    end: CurveSurfaceIntersection,
+}
+
+impl CurveSurfaceOverlap {
+    /// Boundary at the lower curve parameter.
+    #[inline]
+    pub const fn start(self) -> CurveSurfaceIntersection {
+        self.start
+    }
+
+    /// Boundary at the higher curve parameter.
+    #[inline]
+    pub const fn end(self) -> CurveSurfaceIntersection {
+        self.end
+    }
+
+    /// Increasing source-curve parameter interval occupied by the overlap.
+    #[inline]
+    pub fn curve_interval(self) -> std::ops::RangeInclusive<Real> {
+        self.start.curve_parameter..=self.end.curve_parameter
+    }
+}
+
+/// A point contact or finite curve interval shared with a NURBS surface.
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum CurveSurfaceIntersectionEvent {
+    /// An isolated curve/surface contact.
+    Point(CurveSurfaceIntersection),
+    /// A finite interval of the source curve that lies on the surface.
+    Overlap(CurveSurfaceOverlap),
 }
 
 #[derive(Clone, Debug)]
@@ -163,11 +229,96 @@ impl SurfaceNode {
     }
 }
 
-pub(crate) fn curve_surface_intersections(
+/// Finds curve/surface contacts, representing shared curve intervals by their
+/// two boundary points.
+pub fn curve_surface_intersections(
     curve: &NurbsCurve,
     surface: &NurbsSurface,
     tolerance: Tolerance,
 ) -> Result<Vec<CurveSurfaceIntersection>, GeometryError> {
+    let mut intersections = Vec::new();
+    for event in curve_surface_intersection_events(curve, surface, tolerance)? {
+        match event {
+            CurveSurfaceIntersectionEvent::Point(intersection) => {
+                push_unique_curve_surface_intersection(&mut intersections, intersection, tolerance);
+            }
+            CurveSurfaceIntersectionEvent::Overlap(overlap) => {
+                for intersection in [overlap.start, overlap.end] {
+                    push_unique_curve_surface_intersection(
+                        &mut intersections,
+                        intersection,
+                        tolerance,
+                    );
+                }
+            }
+        }
+    }
+    intersections.sort_by(compare_curve_surface_intersections);
+    Ok(intersections)
+}
+
+/// Finds isolated contacts and finite source-curve intervals shared with a
+/// NURBS surface.
+pub fn curve_surface_intersection_events(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveSurfaceIntersectionEvent>, GeometryError> {
+    let distance_tolerance = curve_surface_distance_tolerance(curve, surface, tolerance);
+    let overlaps = curve_surface_overlaps(curve, surface, tolerance, distance_tolerance)?;
+    let curve_domain = curve.domain();
+    let mut intersections = if overlaps.is_empty() {
+        curve_surface_point_intersections(curve, surface, tolerance)?
+    } else {
+        let mut gap_start = *curve_domain.start();
+        let mut intersections = Vec::new();
+        for overlap in &overlaps {
+            if !intersection_parameter_near(gap_start, overlap.start.curve_parameter) {
+                let gap = curve.try_trimmed(gap_start..=overlap.start.curve_parameter)?;
+                intersections.extend(curve_surface_point_intersections(&gap, surface, tolerance)?);
+            }
+            gap_start = overlap.end.curve_parameter;
+        }
+        if !intersection_parameter_near(gap_start, *curve_domain.end()) {
+            let gap = curve.try_trimmed(gap_start..=*curve_domain.end())?;
+            intersections.extend(curve_surface_point_intersections(&gap, surface, tolerance)?);
+        }
+        intersections
+    };
+    intersections.retain(|intersection| {
+        !overlaps.iter().any(|overlap| {
+            parameter_inside_interval(
+                intersection.curve_parameter,
+                overlap.start.curve_parameter,
+                overlap.end.curve_parameter,
+            )
+        })
+    });
+    intersections.sort_by(compare_curve_surface_intersections);
+
+    let mut events = intersections
+        .into_iter()
+        .map(CurveSurfaceIntersectionEvent::Point)
+        .chain(
+            overlaps
+                .into_iter()
+                .map(CurveSurfaceIntersectionEvent::Overlap),
+        )
+        .collect::<Vec<_>>();
+    events.sort_by(|left, right| {
+        curve_surface_event_parameter(*left).total_cmp(&curve_surface_event_parameter(*right))
+    });
+    Ok(events)
+}
+
+fn curve_surface_point_intersections(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveSurfaceIntersection>, GeometryError> {
+    if let Some(plane) = surface.plane(tolerance)? {
+        return curve_planar_surface_point_intersections(curve, surface, plane, tolerance);
+    }
     let coordinate_scale = curve
         .control_points()
         .iter()
@@ -182,12 +333,6 @@ pub(crate) fn curve_surface_intersections(
     let leaf_size = distance_tolerance * 2.0;
     let tangent_probe_size = (distance_tolerance * coordinate_scale).sqrt() * 2.0;
 
-    if let Some(intersections) =
-        curve_surface_overlap_boundaries(curve, surface, tolerance, distance_tolerance)?
-    {
-        return Ok(intersections);
-    }
-
     let InitialCurveSurfaceNodes {
         mut intersections,
         mut stack,
@@ -199,7 +344,6 @@ pub(crate) fn curve_surface_intersections(
         distance_tolerance,
         tangent_probe_size,
     )?;
-
     let mut processed = 0_usize;
     while let Some((curve_node, surface_node)) = stack.pop() {
         processed += 1;
@@ -304,6 +448,239 @@ pub(crate) fn curve_surface_intersections(
     Ok(intersections)
 }
 
+fn curve_planar_surface_point_intersections(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    plane: Plane,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveSurfaceIntersection>, GeometryError> {
+    let distance_tolerance = curve_surface_distance_tolerance(curve, surface, tolerance);
+    let (mut parameters, _) = curve_plane_root_parameters(curve, plane)?;
+    parameters.extend(curve_surface_boundary_parameters(
+        curve,
+        surface,
+        tolerance,
+        distance_tolerance,
+    )?);
+    parameters.sort_by(Real::total_cmp);
+    parameters.dedup_by(|left, right| intersection_parameter_near(*left, *right));
+
+    let mut intersections = Vec::new();
+    for parameter in parameters {
+        let intersection =
+            curve_surface_intersection_at_parameter(curve, surface, parameter, tolerance)?;
+        if intersection.distance <= distance_tolerance * 2.0 {
+            push_unique_curve_surface_intersection_with_distance(
+                &mut intersections,
+                intersection,
+                distance_tolerance,
+            );
+        }
+    }
+    intersections.sort_by(compare_curve_surface_intersections);
+    Ok(intersections)
+}
+
+fn curve_plane_root_parameters(
+    curve: &NurbsCurve,
+    plane: Plane,
+) -> Result<(Vec<Real>, bool), GeometryError> {
+    let mut parameters = Vec::new();
+    let mut processed = 0_usize;
+    let mut has_coplanar_span = false;
+    for span in curve.spans() {
+        let piece = curve.try_trimmed(span.0..=span.1)?;
+        let coefficients = piece
+            .control_points()
+            .iter()
+            .map(|control| {
+                let coefficient = plane.signed_distance_to(control.point())? * control.weight();
+                crate::require_finite([coefficient], "curve/plane intersection polynomial")?;
+                Ok(coefficient)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        if coefficients.iter().all(|coefficient| *coefficient == 0.0) {
+            has_coplanar_span = true;
+        } else {
+            collect_curve_plane_roots(
+                &coefficients,
+                [span.0, span.1],
+                0,
+                true,
+                true,
+                &mut parameters,
+                &mut processed,
+            )?;
+        }
+    }
+    parameters.sort_by(Real::total_cmp);
+    parameters.dedup_by(|left, right| intersection_parameter_near(*left, *right));
+    Ok((parameters, has_coplanar_span))
+}
+
+fn collect_curve_plane_roots(
+    coefficients: &[Real],
+    parameter: [Real; 2],
+    depth: usize,
+    include_start: bool,
+    include_end: bool,
+    roots: &mut Vec<Real>,
+    processed: &mut usize,
+) -> Result<(), GeometryError> {
+    *processed = processed.saturating_add(1);
+    if *processed > MAX_CURVE_SURFACE_NODE_PAIRS {
+        return Err(GeometryError::CurveIntersectionDidNotConverge);
+    }
+    if include_start && coefficients[0] == 0.0 {
+        roots.push(parameter[0]);
+    }
+    if include_end && coefficients[coefficients.len() - 1] == 0.0 {
+        roots.push(parameter[1]);
+    }
+    if curve_plane_bernstein_sign_changes(coefficients) == 0 {
+        return Ok(());
+    }
+    let middle = finite_midpoint(parameter[0], parameter[1]);
+    if depth >= MAX_CURVE_PLANE_ROOT_DEPTH || middle <= parameter[0] || middle >= parameter[1] {
+        roots.push(middle);
+        return Ok(());
+    }
+    let (left, right) = subdivide_curve_plane_bernstein_half(coefficients);
+    collect_curve_plane_roots(
+        &left,
+        [parameter[0], middle],
+        depth + 1,
+        include_start,
+        true,
+        roots,
+        processed,
+    )?;
+    collect_curve_plane_roots(
+        &right,
+        [middle, parameter[1]],
+        depth + 1,
+        false,
+        include_end,
+        roots,
+        processed,
+    )?;
+    Ok(())
+}
+
+fn subdivide_curve_plane_bernstein_half(coefficients: &[Real]) -> (Vec<Real>, Vec<Real>) {
+    let degree = coefficients.len() - 1;
+    let mut work = coefficients.to_vec();
+    let mut left = Vec::with_capacity(coefficients.len());
+    let mut right = Vec::with_capacity(coefficients.len());
+    left.push(work[0]);
+    right.push(work[degree]);
+    for level in 1..=degree {
+        for index in 0..=degree - level {
+            work[index] = finite_midpoint(work[index], work[index + 1]);
+        }
+        left.push(work[0]);
+        right.push(work[degree - level]);
+    }
+    right.reverse();
+    (left, right)
+}
+
+fn curve_plane_bernstein_sign_changes(coefficients: &[Real]) -> usize {
+    let mut previous = 0_i8;
+    let mut changes = 0;
+    for coefficient in coefficients {
+        let sign = if *coefficient < 0.0 {
+            -1
+        } else if *coefficient > 0.0 {
+            1
+        } else {
+            continue;
+        };
+        if previous != 0 && sign != previous {
+            changes += 1;
+        }
+        previous = sign;
+    }
+    changes
+}
+
+fn curve_surface_boundary_parameters(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    let plane = surface.plane(tolerance)?;
+    let mut parameters = Vec::new();
+    for edge in surface.natural_edge_curves()? {
+        let linear_parameters = if let Some(plane) = plane
+            && edge.is_linear_at_zero_tolerance()?
+        {
+            curve_linear_edge_contact_parameters(
+                curve,
+                &edge,
+                plane,
+                tolerance,
+                distance_tolerance,
+            )?
+        } else {
+            None
+        };
+        if let Some(linear_parameters) = linear_parameters {
+            parameters.extend(linear_parameters);
+        } else {
+            parameters.extend(
+                curve
+                    .intersections_with_curve(&edge, tolerance)?
+                    .into_iter()
+                    .map(|intersection| intersection.first_parameter()),
+            );
+        }
+    }
+    parameters.sort_by(Real::total_cmp);
+    parameters.dedup_by(|left, right| intersection_parameter_near(*left, *right));
+    Ok(parameters)
+}
+
+fn curve_linear_edge_contact_parameters(
+    curve: &NurbsCurve,
+    edge: &NurbsCurve,
+    surface_plane: Plane,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<Vec<Real>>, GeometryError> {
+    let edge_domain = edge.domain();
+    let start = edge.evaluate(*edge_domain.start())?;
+    let end = edge.evaluate(*edge_domain.end())?;
+    let direction = start.vector_to(end)?;
+    let Ok(direction) = direction.normalized_nonzero() else {
+        let parameter = curve.closest_parameter(start, tolerance)?;
+        let is_contact = curve.evaluate(parameter)?.distance_to(start)? <= distance_tolerance * 2.0;
+        return Ok(Some(is_contact.then_some(parameter).into_iter().collect()));
+    };
+    let perpendicular = direction
+        .as_vector()
+        .cross(surface_plane.normal().as_vector())?;
+    let Ok(normal) = perpendicular.normalized_nonzero() else {
+        return Ok(None);
+    };
+    let edge_plane = Plane::new(start, normal);
+    let (roots, has_collinear_span) = curve_plane_root_parameters(curve, edge_plane)?;
+    if has_collinear_span {
+        return Ok(None);
+    }
+
+    let mut parameters = Vec::new();
+    for parameter in roots {
+        let point = curve.evaluate(parameter)?;
+        let edge_parameter = edge.closest_parameter(point, tolerance)?;
+        if point.distance_to(edge.evaluate(edge_parameter)?)? <= distance_tolerance * 2.0 {
+            parameters.push(parameter);
+        }
+    }
+    Ok(Some(parameters))
+}
+
 fn initial_curve_surface_nodes(
     curve: &NurbsCurve,
     surface: &NurbsSurface,
@@ -398,91 +775,75 @@ fn partition_span(start: Real, end: Real, addition: Option<Real>) -> Vec<Real> {
     parameters
 }
 
-fn curve_surface_overlap_boundaries(
+fn curve_surface_overlaps(
     curve: &NurbsCurve,
     surface: &NurbsSurface,
     tolerance: Tolerance,
     distance_tolerance: Real,
-) -> Result<Option<Vec<CurveSurfaceIntersection>>, GeometryError> {
+) -> Result<Vec<CurveSurfaceOverlap>, GeometryError> {
     let mut boundary_hits = Vec::new();
-    for edge in surface.natural_edge_curves()? {
-        for hit in curve.intersections_with_curve(&edge, tolerance)? {
-            let curve_point = curve.evaluate(hit.first_parameter)?;
-            let (u, v) = surface.closest_parameters(curve_point, tolerance)?;
-            let surface_point = surface.evaluate(u, v)?;
-            let intersection = CurveSurfaceIntersection {
-                curve_parameter: hit.first_parameter,
-                u,
-                v,
-                point: Point3::try_new(
-                    finite_midpoint(curve_point.x(), surface_point.x()),
-                    finite_midpoint(curve_point.y(), surface_point.y()),
-                    finite_midpoint(curve_point.z(), surface_point.z()),
-                )?,
-                distance: curve_point.distance_to(surface_point)?,
-            };
-            if !boundary_hits
-                .iter()
-                .any(|existing: &CurveSurfaceIntersection| {
-                    existing
-                        .point
-                        .distance_to(intersection.point)
-                        .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
-                        && parameter_near(existing.curve_parameter, intersection.curve_parameter)
-                })
-            {
-                boundary_hits.push(intersection);
-            }
-        }
+    for parameter in
+        curve_surface_boundary_parameters(curve, surface, tolerance, distance_tolerance)?
+    {
+        let intersection =
+            curve_surface_intersection_at_parameter(curve, surface, parameter, tolerance)?;
+        push_unique_curve_surface_intersection_with_distance(
+            &mut boundary_hits,
+            intersection,
+            distance_tolerance,
+        );
     }
-    if boundary_hits.is_empty() {
-        return Ok(None);
-    }
-    boundary_hits.sort_by(|left, right| left.curve_parameter.total_cmp(&right.curve_parameter));
+    boundary_hits.sort_by(compare_curve_surface_intersections);
 
     let curve_domain = curve.domain();
     let mut breakpoints = Vec::with_capacity(boundary_hits.len() + 2);
-    breakpoints.push((*curve_domain.start(), None));
-    breakpoints.extend(
-        boundary_hits
-            .iter()
-            .enumerate()
-            .map(|(index, hit)| (hit.curve_parameter, Some(index))),
-    );
-    breakpoints.push((*curve_domain.end(), None));
-    breakpoints.sort_by(|left, right| left.0.total_cmp(&right.0));
+    breakpoints.push(*curve_domain.start());
+    breakpoints.extend(boundary_hits.iter().map(|hit| hit.curve_parameter));
+    breakpoints.push(*curve_domain.end());
+    breakpoints.sort_by(Real::total_cmp);
+    breakpoints.dedup_by(|left, right| intersection_parameter_near(*left, *right));
 
-    let mut overlaps_boundary = vec![false; boundary_hits.len()];
+    let mut overlaps: Vec<CurveSurfaceOverlap> = Vec::new();
     for interval in breakpoints.windows(2) {
-        let parameter_scale = interval[0].0.abs().max(interval[1].0.abs()).max(1.0);
-        if interval[1].0 - interval[0].0 <= Real::EPSILON * parameter_scale * 256.0 {
+        let parameter_scale = interval[0].abs().max(interval[1].abs()).max(1.0);
+        if interval[1] - interval[0] <= Real::EPSILON * parameter_scale * 256.0 {
             continue;
         }
         if curve_interval_lies_on_surface(
             curve,
             surface,
-            [interval[0].0, interval[1].0],
+            [interval[0], interval[1]],
             tolerance,
             distance_tolerance,
         )? {
-            if let Some(index) = interval[0].1 {
-                overlaps_boundary[index] = true;
-            }
-            if let Some(index) = interval[1].1 {
-                overlaps_boundary[index] = true;
+            let overlap = CurveSurfaceOverlap {
+                start: curve_surface_intersection_at_parameter(
+                    curve,
+                    surface,
+                    interval[0],
+                    tolerance,
+                )?,
+                end: curve_surface_intersection_at_parameter(
+                    curve,
+                    surface,
+                    interval[1],
+                    tolerance,
+                )?,
+            };
+            if let Some(previous) = overlaps.last_mut()
+                && curve_surface_intersections_match(
+                    previous.end,
+                    overlap.start,
+                    distance_tolerance,
+                )
+            {
+                previous.end = overlap.end;
+            } else {
+                overlaps.push(overlap);
             }
         }
     }
-    if !overlaps_boundary.iter().any(|overlaps| *overlaps) {
-        return Ok(None);
-    }
-    Ok(Some(
-        boundary_hits
-            .into_iter()
-            .zip(overlaps_boundary)
-            .filter_map(|(hit, overlaps)| overlaps.then_some(hit))
-            .collect(),
-    ))
+    Ok(overlaps)
 }
 
 fn curve_interval_lies_on_surface(
@@ -518,6 +879,115 @@ fn curve_interval_lies_on_surface(
         }
     }
     Ok(true)
+}
+
+fn curve_surface_distance_tolerance(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    tolerance: Tolerance,
+) -> Real {
+    let coordinate_scale = curve
+        .control_points()
+        .iter()
+        .chain(surface.control_points())
+        .flat_map(|control| control.point().to_array())
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale)
+}
+
+fn curve_surface_intersection_at_parameter(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    curve_parameter: Real,
+    tolerance: Tolerance,
+) -> Result<CurveSurfaceIntersection, GeometryError> {
+    let curve_point = curve.evaluate(curve_parameter)?;
+    let (u, v) = surface.closest_parameters(curve_point, tolerance)?;
+    let surface_point = surface.evaluate(u, v)?;
+    Ok(CurveSurfaceIntersection {
+        curve_parameter,
+        u,
+        v,
+        point: Point3::try_new(
+            finite_midpoint(curve_point.x(), surface_point.x()),
+            finite_midpoint(curve_point.y(), surface_point.y()),
+            finite_midpoint(curve_point.z(), surface_point.z()),
+        )?,
+        distance: curve_point.distance_to(surface_point)?,
+    })
+}
+
+fn compare_curve_surface_intersections(
+    left: &CurveSurfaceIntersection,
+    right: &CurveSurfaceIntersection,
+) -> std::cmp::Ordering {
+    left.curve_parameter
+        .total_cmp(&right.curve_parameter)
+        .then_with(|| left.u.total_cmp(&right.u))
+        .then_with(|| left.v.total_cmp(&right.v))
+}
+
+fn curve_surface_event_parameter(event: CurveSurfaceIntersectionEvent) -> Real {
+    match event {
+        CurveSurfaceIntersectionEvent::Point(intersection) => intersection.curve_parameter,
+        CurveSurfaceIntersectionEvent::Overlap(overlap) => overlap.start.curve_parameter,
+    }
+}
+
+fn push_unique_curve_surface_intersection(
+    intersections: &mut Vec<CurveSurfaceIntersection>,
+    intersection: CurveSurfaceIntersection,
+    tolerance: Tolerance,
+) {
+    let coordinate_scale = intersection
+        .point
+        .to_array()
+        .into_iter()
+        .chain(
+            intersections
+                .iter()
+                .flat_map(|existing| existing.point.to_array()),
+        )
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    let distance_tolerance = tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale);
+    push_unique_curve_surface_intersection_with_distance(
+        intersections,
+        intersection,
+        distance_tolerance,
+    );
+}
+
+fn push_unique_curve_surface_intersection_with_distance(
+    intersections: &mut Vec<CurveSurfaceIntersection>,
+    intersection: CurveSurfaceIntersection,
+    distance_tolerance: Real,
+) {
+    if !intersections.iter().any(|existing| {
+        curve_surface_intersections_match(*existing, intersection, distance_tolerance)
+    }) {
+        intersections.push(intersection);
+    }
+}
+
+fn curve_surface_intersections_match(
+    left: CurveSurfaceIntersection,
+    right: CurveSurfaceIntersection,
+    distance_tolerance: Real,
+) -> bool {
+    intersection_parameter_near(left.curve_parameter, right.curve_parameter)
+        && left
+            .point
+            .distance_to(right.point)
+            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+}
+
+fn parameter_inside_interval(value: Real, start: Real, end: Real) -> bool {
+    (value >= start || intersection_parameter_near(value, start))
+        && (value <= end || intersection_parameter_near(value, end))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -1071,6 +1541,11 @@ fn parameter_near(left: Real, right: Real) -> bool {
     (left - right).abs() <= Real::EPSILON * scale * 256.0
 }
 
+fn intersection_parameter_near(left: Real, right: Real) -> bool {
+    let scale = left.abs().max(right.abs()).max(1.0);
+    (left - right).abs() <= Real::EPSILON.sqrt() * scale * 8.0
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1125,6 +1600,145 @@ mod tests {
         assert_eq!(intersections.len(), 2, "{intersections:#?}");
         assert!((intersections[0].curve_parameter - 10.0).abs() < 1.0e-10);
         assert!((intersections[1].curve_parameter - 15.0).abs() < 1.0e-10);
+
+        let events =
+            curve_surface_intersection_events(&curve, &surface, Tolerance::DEFAULT).unwrap();
+        let [CurveSurfaceIntersectionEvent::Overlap(overlap)] = events.as_slice() else {
+            panic!("expected one curve/surface overlap, got {events:#?}")
+        };
+        assert_eq!(overlap.curve_interval(), 10.0..=15.0);
+    }
+
+    #[test]
+    fn returns_a_full_overlap_for_a_curve_inside_a_surface() {
+        let curve = NurbsCurve::try_new(
+            1,
+            vec![point(2.0, 5.0, 0.0), point(8.0, 5.0, 0.0)],
+            vec![-2.0, -2.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap();
+
+        let events =
+            curve_surface_intersection_events(&curve, &surface, Tolerance::DEFAULT).unwrap();
+        let [CurveSurfaceIntersectionEvent::Overlap(overlap)] = events.as_slice() else {
+            panic!("expected one full curve/surface overlap, got {events:#?}")
+        };
+        assert_eq!(overlap.curve_interval(), -2.0..=4.0);
+        assert_eq!(overlap.start().point(), point(2.0, 5.0, 0.0));
+        assert_eq!(overlap.end().point(), point(8.0, 5.0, 0.0));
+    }
+
+    #[test]
+    fn combines_a_coplanar_overlap_with_a_later_transverse_hit() {
+        let curve = NurbsCurve::try_new(
+            1,
+            vec![
+                point(-5.0, 5.0, 0.0),
+                point(15.0, 5.0, 0.0),
+                point(5.0, 5.0, 5.0),
+                point(5.0, 5.0, -5.0),
+            ],
+            vec![0.0, 0.0, 20.0, 30.0, 40.0, 40.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap();
+
+        let events =
+            curve_surface_intersection_events(&curve, &surface, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 2, "{events:#?}");
+        let CurveSurfaceIntersectionEvent::Overlap(overlap) = events[0] else {
+            panic!("the first event must be the coplanar overlap")
+        };
+        assert!((overlap.start().curve_parameter() - 5.0).abs() < 1.0e-10);
+        assert!((overlap.end().curve_parameter() - 15.0).abs() < 1.0e-10);
+        let CurveSurfaceIntersectionEvent::Point(intersection) = events[1] else {
+            panic!("the second event must be the transverse contact")
+        };
+        assert!((intersection.curve_parameter() - 35.0).abs() < 1.0e-10);
+        assert!(
+            intersection
+                .point()
+                .is_near(point(5.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+    }
+
+    #[test]
+    fn detects_a_quadratic_tangent_to_a_planar_surface() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 5.0, 1.0),
+                point(5.0, 5.0, -1.0),
+                point(10.0, 5.0, 1.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap();
+
+        let events =
+            curve_surface_intersection_events(&curve, &surface, Tolerance::DEFAULT).unwrap();
+        let [CurveSurfaceIntersectionEvent::Point(intersection)] = events.as_slice() else {
+            panic!("expected one tangent curve/surface point, got {events:#?}")
+        };
+        assert!((intersection.curve_parameter() - 0.5).abs() < 1.0e-10);
+        assert!(
+            intersection
+                .point()
+                .is_near(point(5.0, 5.0, 0.0), Tolerance::DEFAULT)
+        );
+    }
+
+    #[test]
+    fn detects_an_isolated_coplanar_tangent_to_a_surface_edge() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, -1.0, 0.0),
+                point(5.0, 1.0, 0.0),
+                point(10.0, -1.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap();
+
+        let events =
+            curve_surface_intersection_events(&curve, &surface, Tolerance::DEFAULT).unwrap();
+        let [CurveSurfaceIntersectionEvent::Point(intersection)] = events.as_slice() else {
+            panic!("expected one coplanar edge tangent, got {events:#?}")
+        };
+        assert!((intersection.curve_parameter() - 0.5).abs() < 1.0e-10);
+        assert!(
+            intersection
+                .point()
+                .is_near(point(5.0, 0.0, 0.0), Tolerance::DEFAULT)
+        );
     }
 
     #[test]

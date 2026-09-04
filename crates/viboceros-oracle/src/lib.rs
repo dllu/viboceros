@@ -619,6 +619,11 @@ pub enum Operation {
         id: String,
         curves: Vec<NurbsCurveDefinition>,
     },
+    CurveSurfaceIntersectCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        surface: NurbsSurfaceDefinition,
+    },
     CurveTrimCommand {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1263,6 +1268,7 @@ impl Operation {
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
             | Self::CurveIntersectCommand { id, .. }
+            | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
@@ -3228,6 +3234,9 @@ fn execute(
         }
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
+        }
+        Operation::CurveSurfaceIntersectCommand { curve, surface, .. } => {
+            curve_surface_intersect_command(iterations, curve, surface, tolerance)?
         }
         Operation::CurveTrimCommand {
             curve,
@@ -7217,22 +7226,42 @@ fn curve_intersect_command(
     definitions: &[NurbsCurveDefinition],
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    let curves = definitions
+    let inputs = definitions
         .iter()
         .map(nurbs_curve_from_definition)
+        .map(|curve| curve.map(Geometry::NurbsCurve))
         .collect::<Result<Vec<_>, _>>()?;
+    intersect_command(iterations, &inputs, tolerance)
+}
+
+fn curve_surface_intersect_command(
+    iterations: u32,
+    curve_definition: &NurbsCurveDefinition,
+    surface_definition: &NurbsSurfaceDefinition,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let inputs = [
+        Geometry::NurbsCurve(nurbs_curve_from_definition(curve_definition)?),
+        Geometry::NurbsSurface(nurbs_surface_from_definition(surface_definition)?),
+    ];
+    intersect_command(iterations, &inputs, tolerance)
+}
+
+fn intersect_command(
+    iterations: u32,
+    inputs: &[Geometry],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
     let run = || -> Result<_, ProbeError> {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::new(tolerance);
         let attributes = ObjectAttributes::on_layer(document.current_layer_id())
             .with_name("Viboceros Intersect Source")
             .with_object_color(ColorRgb::new(12, 34, 56));
-        let mut input_ids = Vec::with_capacity(curves.len());
-        for curve in &curves {
-            input_ids.push(document.add_geometry_with_attributes(
-                Geometry::NurbsCurve(curve.clone()),
-                attributes.clone(),
-            )?);
+        let mut input_ids = Vec::with_capacity(inputs.len());
+        for geometry in inputs {
+            input_ids
+                .push(document.add_geometry_with_attributes(geometry.clone(), attributes.clone())?);
         }
         let group_id = document.add_group(
             Some("Viboceros Intersect Group".to_owned()),
@@ -10071,6 +10100,57 @@ mod tests {
         assert_eq!(objects.len(), 1);
         assert_eq!(objects[0]["kind"], "point");
         assert_eq!(objects[0]["point"], json!([3.0, 0.0, 0.0]));
+        assert_eq!(objects[0]["blank_name"], true);
+        assert_eq!(objects[0]["color_from_layer"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["on_current_layer"], true);
+        assert_eq!(objects[0]["selected"], true);
+    }
+
+    #[test]
+    fn captures_curve_surface_intersect_command_behavior() {
+        let curve = NurbsCurveDefinition {
+            degree: 1,
+            control_points: [[5.0, 5.0, -5.0], [5.0, 5.0, 5.0]]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![0.0, 0.0, 10.0, 10.0],
+            domain: None,
+        };
+        let surface = NurbsSurfaceDefinition {
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                [0.0, 10.0, 0.0],
+                [10.0, 10.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 10.0, 10.0],
+            knots_v: vec![0.0, 0.0, 10.0, 10.0],
+            domain_u: None,
+            domain_v: None,
+        };
+        let response = run_request(&request(vec![Operation::CurveSurfaceIntersectCommand {
+            id: "intersect-curve-surface".to_owned(),
+            curve,
+            surface,
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["input_selected"], json!([false, false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 1);
+        assert_eq!(objects[0]["kind"], "point");
+        assert_eq!(objects[0]["point"], json!([5.0, 5.0, 0.0]));
         assert_eq!(objects[0]["blank_name"], true);
         assert_eq!(objects[0]["color_from_layer"], true);
         assert_eq!(objects[0]["in_source_group"], false);
