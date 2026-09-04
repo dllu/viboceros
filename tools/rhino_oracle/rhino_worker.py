@@ -7137,6 +7137,116 @@ def _execute(operation, iterations, tolerance):
             for cutter in cutters:
                 cutter.Dispose()
 
+    if kind == "surface_split_isocurve_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_surface_from_definition(operation["surface"])
+        direction = str(operation["direction"]).lower()
+        if direction not in ("u", "v", "both"):
+            source.Dispose()
+            raise ValueError("surface Split direction must be u, v, or both")
+        shrink = bool(operation.get("shrink", True))
+        point = _command_point(operation["point"])
+
+        def split_surface_isocurve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Split Surface Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddSurface(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Split command source surface")
+                group_index = document.Groups.Add(
+                    "Viboceros Split Surface Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Split command source surface")
+                document.Objects.Select(source_id)
+                command = "_-Split _Isocurve _Direction=_%s _Shrink=_%s %s _Enter" % (
+                    direction.upper() if direction != "both" else "Both",
+                    "Yes" if shrink else "No",
+                    point,
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = []
+                for item in document.Objects:
+                    if item.Id in original_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Surface):
+                        surface_geometry = geometry
+                    elif (
+                        isinstance(geometry, Rhino.Geometry.Brep)
+                        and geometry.Faces.Count == 1
+                    ):
+                        surface_geometry = geometry.Faces[0].UnderlyingSurface()
+                    else:
+                        continue
+                    definition = _nurbs_surface_definition(surface_geometry)
+                    objects.append((item, definition))
+                expected_count = 4 if direction == "both" else 2
+                if len(objects) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "surface Split macro %r returned %r and left %d surface objects; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(objects),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                records = []
+                for item, definition in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Split Surface Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                        "surface": definition,
+                    })
+                records.sort(key=lambda record: (
+                    record["surface"]["domain_u"][0],
+                    record["surface"]["domain_v"][0],
+                    record["surface"]["domain_u"][1],
+                    record["surface"]["domain_v"][1],
+                ))
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, split_surface_isocurve_command)
+        finally:
+            source.Dispose()
+
     if kind == "curve_trim_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])

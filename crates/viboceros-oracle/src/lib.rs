@@ -621,6 +621,14 @@ pub enum Operation {
         cutters: Vec<CurveExtensionBoundaryDefinition>,
         source_pick: [f64; 3],
     },
+    SurfaceSplitIsocurveCommand {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        point: [f64; 3],
+        direction: SurfaceUniformDirection,
+        #[serde(default = "default_true")]
+        shrink: bool,
+    },
     CurveIntersectCommand {
         id: String,
         curves: Vec<NurbsCurveDefinition>,
@@ -1308,6 +1316,7 @@ impl Operation {
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
             | Self::CurveSplitCommand { id, .. }
+            | Self::SurfaceSplitIsocurveCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
@@ -3283,6 +3292,15 @@ fn execute(
             source_pick,
             ..
         } => curve_split_command(iterations, curve, cutters, *source_pick, tolerance)?,
+        Operation::SurfaceSplitIsocurveCommand {
+            surface,
+            point,
+            direction,
+            shrink,
+            ..
+        } => surface_split_isocurve_command(
+            iterations, surface, *point, *direction, *shrink, tolerance,
+        )?,
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
         }
@@ -7693,6 +7711,101 @@ fn curve_split_command(
     Ok((value, elapsed_ns))
 }
 
+fn surface_split_isocurve_command(
+    iterations: u32,
+    definition: &NurbsSurfaceDefinition,
+    point: [f64; 3],
+    direction: SurfaceUniformDirection,
+    shrink: bool,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let source = nurbs_surface_from_definition(definition)?;
+    let run = || -> Result<_, ProbeError> {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::new(tolerance);
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Viboceros Split Surface Source")
+            .with_object_color(ColorRgb::new(12, 34, 56));
+        let source_id = document.add_geometry_with_attributes(
+            Geometry::NurbsSurface(source.clone()),
+            attributes.clone(),
+        )?;
+        let group_id = document.add_group(
+            Some("Viboceros Split Surface Group".to_owned()),
+            [source_id],
+        )?;
+        document.select_object(source_id, SelectionMode::Replace)?;
+        let direction = match direction {
+            SurfaceUniformDirection::U => "U",
+            SurfaceUniformDirection::V => "V",
+            SurfaceUniformDirection::Both => "Both",
+        };
+        registry.execute(
+            &mut document,
+            &format!(
+                "Split Isocurve={},{},{} Direction={direction} Shrink={}",
+                point[0],
+                point[1],
+                point[2],
+                if shrink { "Yes" } else { "No" },
+            ),
+        )?;
+        Ok((document, source_id, group_id, attributes))
+    };
+
+    let (document, source_id, group_id, attributes) = run()?;
+    let source_group_members = document
+        .group(group_id)
+        .expect("the surface Split source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .map(|object| {
+            let Geometry::NurbsSurface(surface) = object.geometry() else {
+                return Err(ProbeError::FixtureInvariant(
+                    "isocurve Split produced non-surface geometry",
+                ));
+            };
+            let domain_key = [
+                *surface.domain_u().start(),
+                *surface.domain_v().start(),
+                *surface.domain_u().end(),
+                *surface.domain_v().end(),
+            ];
+            Ok((
+                domain_key,
+                json!({
+                    "attributes_match_source": object.attributes() == &attributes,
+                    "in_source_group": source_group_members.contains(&object.id()),
+                    "original_id": object.id() == source_id,
+                    "selected": document.is_selected(object.id()),
+                    "surface": nurbs_surface_definition_value(surface),
+                }),
+            ))
+        })
+        .collect::<Result<Vec<_>, ProbeError>>()?;
+    records.sort_by(|(left, _), (right, _)| {
+        left.iter()
+            .zip(right)
+            .map(|(left, right)| left.total_cmp(right))
+            .find(|ordering| !ordering.is_eq())
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    let value = json!({
+        "command_succeeded": true,
+        "objects": records.into_iter().map(|(_, value)| value).collect::<Vec<_>>(),
+    });
+
+    let started = Instant::now();
+    for _ in 0..iterations {
+        black_box(run()?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 fn curve_trim_command(
     iterations: u32,
     definition: &NurbsCurveDefinition,
@@ -10836,6 +10949,56 @@ mod tests {
         assert_eq!(objects.len(), 3);
         for (object, expected_domain) in objects.iter().zip([[0.0, 3.0], [3.0, 7.0], [7.0, 10.0]]) {
             assert_eq!(object["curve"]["domain"], json!(expected_domain));
+            assert_eq!(object["attributes_match_source"], true);
+            assert_eq!(object["in_source_group"], true);
+            assert_eq!(object["original_id"], false);
+            assert_eq!(object["selected"], true);
+        }
+    }
+
+    #[test]
+    fn captures_surface_isocurve_split_command_behavior() {
+        let surface = NurbsSurfaceDefinition {
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                [0.0, 10.0, 0.0],
+                [10.0, 10.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            domain_u: None,
+            domain_v: None,
+        };
+        let response = run_request(&request(vec![Operation::SurfaceSplitIsocurveCommand {
+            id: "split-surface-both-directions".to_owned(),
+            surface,
+            point: [4.0, 6.0, 0.0],
+            direction: SurfaceUniformDirection::Both,
+            shrink: true,
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 4);
+        let expected_domains = [
+            ([0.0, 0.4], [0.0, 0.6]),
+            ([0.0, 0.4], [0.6, 1.0]),
+            ([0.4, 1.0], [0.0, 0.6]),
+            ([0.4, 1.0], [0.6, 1.0]),
+        ];
+        for (object, (domain_u, domain_v)) in objects.iter().zip(expected_domains) {
+            assert_eq!(object["surface"]["domain_u"], json!(domain_u));
+            assert_eq!(object["surface"]["domain_v"], json!(domain_v));
             assert_eq!(object["attributes_match_source"], true);
             assert_eq!(object["in_source_group"], true);
             assert_eq!(object["original_id"], false);

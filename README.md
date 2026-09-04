@@ -188,6 +188,7 @@ SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
 Split CuttingObjects=1,0,0
+Split Isocurve=4,6,0 Direction=Both Shrink=Yes
 Intersect
 Trim 5,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
@@ -882,8 +883,15 @@ locations. Rhino-compatible cutting-object output replaces the source with
 fresh, grouped, attribute-preserving selected pieces and leaves cutters
 unchanged and deselected. The permanent command fixture covers curve, surface,
 solid box, holed planar-face, and view-aligned non-intersecting cutters to
-floating-point roundoff. Splitting surfaces or B-reps as targets remains a
-future extension.
+floating-point roundoff. `Split Isocurve=point Direction=U|V|Both Shrink=Yes`
+splits exactly one selected untrimmed NURBS surface at the closest surface
+location; omit the point after `Split Isocurve` for one viewport pick. The
+direction names the isocurve itself, so a U isocurve divides the V parameter
+domain and vice versa. The source is replaced by two or four fresh exact NURBS
+patches with matching attributes and group membership, selected together in
+one undo step. The permanent U/V/Both Rhino fixture agrees to within `2e-15`.
+`Shrink=No`, general surface cutting-object splits, and B-rep targets remain
+future extensions rather than silently changing trim semantics.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS
@@ -1260,6 +1268,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_split_command.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_split_isocurve_command.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_intersect_command.json \

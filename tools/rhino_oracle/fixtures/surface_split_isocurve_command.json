@@ -1,0 +1,80 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "surface_split_isocurve_command",
+      "id": "split-surface-u-isocurve",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0],
+        "domain_u": [2.0, 12.0],
+        "domain_v": [-3.0, 7.0]
+      },
+      "point": [4.0, 6.0, 0.0],
+      "direction": "u",
+      "shrink": true
+    },
+    {
+      "op": "surface_split_isocurve_command",
+      "id": "split-surface-v-isocurve",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0],
+        "domain_u": [2.0, 12.0],
+        "domain_v": [-3.0, 7.0]
+      },
+      "point": [4.0, 6.0, 0.0],
+      "direction": "v",
+      "shrink": true
+    },
+    {
+      "op": "surface_split_isocurve_command",
+      "id": "split-surface-both-isocurves",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0],
+        "domain_u": [2.0, 12.0],
+        "domain_v": [-3.0, 7.0]
+      },
+      "point": [4.0, 6.0, 0.0],
+      "direction": "both",
+      "shrink": true
+    }
+  ]
+}

@@ -12386,13 +12386,21 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
     Ok(SubcurveOptions { location, copy })
 }
 
-const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...] | Split CuttingObjects=source_point";
+const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...] | Split CuttingObjects=source_point | Split Isocurve=point [Direction=U|V|Both] [Shrink=Yes]";
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+struct SurfaceIsocurveSplitOptions {
+    point: Point3,
+    direction: SurfaceKnotDirection,
+    shrink: bool,
+}
 
 #[derive(Clone, Debug, PartialEq)]
 enum CurveSplitLocation {
     Parameters(Vec<Real>),
     Points(Vec<Point3>),
     CuttingObjects(Point3),
+    Isocurve(SurfaceIsocurveSplitOptions),
 }
 
 struct SplitCurveCommand;
@@ -12406,6 +12414,9 @@ impl Command for SplitCurveCommand {
         let location = parse_curve_split_location(arguments)?;
         if let CurveSplitLocation::CuttingObjects(source_pick) = location {
             return split_curve_with_selected_cutters(document, source_pick);
+        }
+        if let CurveSplitLocation::Isocurve(options) = location {
+            return split_surface_at_isocurve(document, options);
         }
         let mut candidates = document
             .selected_objects()
@@ -12433,6 +12444,9 @@ impl Command for SplitCurveCommand {
                 .collect::<Result<Vec<_>, _>>()?,
             CurveSplitLocation::CuttingObjects(_) => {
                 unreachable!("cutting-object Split is handled before single-curve validation")
+            }
+            CurveSplitLocation::Isocurve(_) => {
+                unreachable!("isocurve Split is handled before single-curve validation")
             }
         };
         split_curve_at_parameters(
@@ -12507,6 +12521,9 @@ fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, 
         return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
     };
     let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
+    if option_name_eq(first_name, "Isocurve") {
+        return parse_surface_isocurve_split_options(arguments);
+    }
     if option_name_eq(first_name, "CuttingObjects") {
         let (name, value, consumed) = orient_option(arguments, 0, SPLIT_CURVE_USAGE)?;
         if !option_name_eq(name, "CuttingObjects") || consumed != arguments.len() {
@@ -12547,6 +12564,125 @@ fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, 
         index += consumed;
     }
     Ok(CurveSplitLocation::Points(points))
+}
+
+fn parse_surface_isocurve_split_options(
+    arguments: &[&str],
+) -> Result<CurveSplitLocation, CommandError> {
+    let (name, value, consumed) = orient_option(arguments, 0, SPLIT_CURVE_USAGE)?;
+    if !option_name_eq(name, "Isocurve") {
+        return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+    }
+    let point =
+        parse_single_option_point(value, SPLIT_CURVE_USAGE).map_err(|error| match error {
+            CommandError::Usage(_) => CommandError::Usage(SPLIT_CURVE_USAGE),
+            error => error,
+        })?;
+    let mut direction = SurfaceKnotDirection::U;
+    let mut shrink = true;
+    let mut direction_seen = false;
+    let mut shrink_seen = false;
+    let mut index = consumed;
+    while index < arguments.len() {
+        let (name, value, consumed) = orient_option(arguments, index, SPLIT_CURVE_USAGE)?;
+        if option_name_eq(name, "Direction") && !direction_seen {
+            let value = value.trim_start_matches(['_', '-']);
+            direction = if value.eq_ignore_ascii_case("U") {
+                SurfaceKnotDirection::U
+            } else if value.eq_ignore_ascii_case("V") {
+                SurfaceKnotDirection::V
+            } else if value.eq_ignore_ascii_case("Both") {
+                SurfaceKnotDirection::Both
+            } else {
+                return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+            };
+            direction_seen = true;
+        } else if option_name_eq(name, "Shrink") && !shrink_seen {
+            shrink = parse_yes_no(value).ok_or(CommandError::Usage(SPLIT_CURVE_USAGE))?;
+            shrink_seen = true;
+        } else {
+            return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+        }
+        index += consumed;
+    }
+    Ok(CurveSplitLocation::Isocurve(SurfaceIsocurveSplitOptions {
+        point,
+        direction,
+        shrink,
+    }))
+}
+
+fn split_surface_at_isocurve(
+    document: &mut Document,
+    options: SurfaceIsocurveSplitOptions,
+) -> Result<String, CommandError> {
+    if !options.shrink {
+        return Err(CommandError::UnshrunkSurfaceIsocurveSplitUnsupported);
+    }
+    let mut candidates = document
+        .selected_objects()
+        .filter_map(|object| match object.geometry() {
+            Geometry::NurbsSurface(surface) => Some((object.id(), surface.clone())),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
+    if candidates.len() != 1 || document.selected_object_count() != 1 {
+        return Err(CommandError::SplitIsocurveRequiresOneSurface {
+            actual: candidates.len(),
+        });
+    }
+    let (source_id, surface) = candidates
+        .pop()
+        .expect("one selected isocurve Split surface was required");
+    let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
+    // Rhino names an isocurve by the parameter that varies along it: a U
+    // isocurve is constant in V, and therefore splits the V parameter domain.
+    let pieces = match options.direction {
+        SurfaceKnotDirection::U => {
+            let (south, north) = surface.try_split_v(v)?;
+            vec![south, north]
+        }
+        SurfaceKnotDirection::V => {
+            let (west, east) = surface.try_split_u(u)?;
+            vec![west, east]
+        }
+        SurfaceKnotDirection::Both => {
+            let (west, east) = surface.try_split_u(u)?;
+            let (southwest, northwest) = west.try_split_v(v)?;
+            let (southeast, northeast) = east.try_split_v(v)?;
+            vec![southwest, northwest, southeast, northeast]
+        }
+    };
+    let source = document
+        .object(source_id)
+        .expect("the selected isocurve Split surface belongs to the document");
+    let attributes = source.attributes().clone();
+    let group_ids = document
+        .groups()
+        .filter(|group| group.members().any(|member| member == source_id))
+        .map(|group| group.id())
+        .collect::<Vec<_>>();
+    let mut output_ids = Vec::with_capacity(pieces.len());
+    for piece in pieces {
+        output_ids.push(
+            document
+                .add_geometry_with_attributes(Geometry::NurbsSurface(piece), attributes.clone())?,
+        );
+    }
+    for group_id in group_ids {
+        document.add_group_members(group_id, output_ids.iter().copied())?;
+    }
+    document.delete_object(source_id)?;
+    let output_count = output_ids.len();
+    document.select_objects_direct(output_ids, SelectionMode::Replace)?;
+    let direction = match options.direction {
+        SurfaceKnotDirection::U => "U",
+        SurfaceKnotDirection::V => "V",
+        SurfaceKnotDirection::Both => "U and V",
+    };
+    Ok(format!(
+        "Split the selected surface along {direction} isocurves into {output_count} exact NURBS surface(s)"
+    ))
 }
 
 struct IntersectCommand;
@@ -20238,6 +20374,12 @@ pub enum CommandError {
     #[error("cutting-object Split requires at least one selected curve to use as the source")]
     SplitRequiresCurveSource,
 
+    #[error("isocurve Split requires exactly one selected untrimmed NURBS surface, got {actual}")]
+    SplitIsocurveRequiresOneSurface { actual: usize },
+
+    #[error("isocurve Split with Shrink=No is not yet supported")]
+    UnshrunkSurfaceIsocurveSplitUnsupported,
+
     #[error(
         "Intersect currently supports selected curves, untrimmed NURBS surfaces, and B-reps only"
     )]
@@ -26579,6 +26721,181 @@ mod tests {
             assert!((*actual.end() - expected[1]).abs() < 1.0e-12);
         }
         assert!(brep_document.object(cutter_id).is_some());
+    }
+
+    #[test]
+    fn split_surface_at_isocurve_preserves_exact_pieces_and_document_metadata() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New SplitSurfaces")
+            .unwrap();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName SplitSurfaceSource")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group SplitSurfacePieces")
+            .unwrap();
+        let source = document.object(source_id).unwrap().clone();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split Isocurve=4,6,0 Direction=U Shrink=Yes",)
+                .unwrap(),
+            "Split the selected surface along U isocurves into 2 exact NURBS surface(s)"
+        );
+        assert!(document.object(source_id).is_none());
+        let outputs = document.objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for object in &outputs {
+            assert_eq!(object.attributes(), source.attributes());
+            assert!(document.is_selected(object.id()));
+        }
+        let domains = outputs
+            .iter()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => (surface.domain_u(), surface.domain_v()),
+                geometry => panic!("isocurve Split created unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            domains,
+            vec![(0.0..=1.0, 0.0..=0.6), (0.0..=1.0, 0.6..=1.0)]
+        );
+        assert_eq!(
+            document
+                .group_by_name("SplitSurfacePieces")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            outputs.iter().map(|object| object.id()).collect()
+        );
+        assert_eq!(document.undo_label(), Some("Split"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.objects().count(), 1);
+        assert_eq!(document.object(source_id).unwrap(), &source);
+    }
+
+    #[test]
+    fn split_surface_at_isocurve_supports_v_and_both_directions() {
+        let registry = CommandRegistry::with_builtins();
+        let split = |direction| {
+            let mut document = Document::default();
+            let id = document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap();
+            document.select_object(id, SelectionMode::Replace).unwrap();
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Split Isocurve 4,6,0 Direction={direction}"),
+                )
+                .unwrap();
+            document
+        };
+
+        let v = split("V");
+        let v_domains = v
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => (surface.domain_u(), surface.domain_v()),
+                geometry => panic!("V isocurve Split created unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(
+            v_domains,
+            vec![(0.0..=0.4, 0.0..=1.0), (0.4..=1.0, 0.0..=1.0)]
+        );
+
+        let both = split("Both");
+        let mut both_domains = both
+            .objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsSurface(surface) => [
+                    *surface.domain_u().start(),
+                    *surface.domain_u().end(),
+                    *surface.domain_v().start(),
+                    *surface.domain_v().end(),
+                ],
+                geometry => {
+                    panic!("two-direction isocurve Split created unexpected geometry {geometry:?}")
+                }
+            })
+            .collect::<Vec<_>>();
+        both_domains.sort_by(|left, right| {
+            left.iter()
+                .zip(right)
+                .find_map(|(left, right)| {
+                    let ordering = left.total_cmp(right);
+                    ordering.ne(&std::cmp::Ordering::Equal).then_some(ordering)
+                })
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
+        assert_eq!(
+            both_domains,
+            vec![
+                [0.0, 0.4, 0.0, 0.6],
+                [0.0, 0.4, 0.6, 1.0],
+                [0.4, 1.0, 0.0, 0.6],
+                [0.4, 1.0, 0.6, 1.0],
+            ]
+        );
+        assert_eq!(both.selected_object_count(), 4);
+    }
+
+    #[test]
+    fn split_surface_at_isocurve_rejects_invalid_requests_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Split Isocurve",
+            "Split Isocurve=1,2,3 Direction=W",
+            "Split Isocurve=1,2,3 Direction=U Direction=V",
+            "Split Isocurve=1,2,3 Shrink=Maybe",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(SPLIT_CURVE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "Split Isocurve=1,2,3"),
+            Err(CommandError::SplitIsocurveRequiresOneSurface { actual: 0 })
+        ));
+
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        let before = document.object(source_id).unwrap().clone();
+        let history = document.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut document, "Split Isocurve=4,6,0 Direction=U Shrink=No"),
+            Err(CommandError::UnshrunkSurfaceIsocurveSplitUnsupported)
+        ));
+        assert_eq!(document.object(source_id).unwrap(), &before);
+        assert_eq!(document.undo_label(), history.as_deref());
+
+        registry.execute(&mut document, "Line 0,0 1,1").unwrap();
+        registry.execute(&mut document, "SelAll").unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "Split Isocurve=4,6,0"),
+            Err(CommandError::SplitIsocurveRequiresOneSurface { actual: 1 })
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
     }
 
     #[test]

@@ -278,6 +278,10 @@ enum InteractiveCommand {
     },
     SplitCurve,
     SplitCurveWithCutters,
+    SplitSurfaceIsocurve {
+        direction: InteractiveIsocurveDirection,
+        shrink: bool,
+    },
     TrimCurve,
     Move {
         start: Option<Point3>,
@@ -383,7 +387,9 @@ impl InteractiveCommand {
             Self::Extend { .. } => "Extend",
             Self::ExtendSrf { .. } => "ExtendSrf",
             Self::SubCrv { .. } => "SubCrv",
-            Self::SplitCurve | Self::SplitCurveWithCutters => "Split",
+            Self::SplitCurve | Self::SplitCurveWithCutters | Self::SplitSurfaceIsocurve { .. } => {
+                "Split"
+            }
             Self::TrimCurve => "Trim",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -647,6 +653,9 @@ impl InteractiveCommand {
             Self::SplitCurveWithCutters => {
                 "Split: pick the selected source curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
             }
+            Self::SplitSurfaceIsocurve { .. } => {
+                "Split: pick an isocurve location on the selected surface (Esc to cancel)"
+            }
             Self::TrimCurve => {
                 "Trim: pick the interval to remove from one selected curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
             }
@@ -836,6 +845,7 @@ impl InteractiveCommand {
             | Self::SubCrv { start: None, .. }
             | Self::SplitCurve
             | Self::SplitCurveWithCutters
+            | Self::SplitSurfaceIsocurve { .. }
             | Self::TrimCurve
             | Self::Move { start: None }
             | Self::Copy { start: None }
@@ -2277,6 +2287,48 @@ impl VibocerosApp {
             )
         {
             InteractiveCommand::SplitCurveWithCutters
+        } else if normalized == "split"
+            && arguments.first().is_some_and(|option| {
+                option
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("Isocurve")
+            })
+        {
+            let mut direction = InteractiveIsocurveDirection::U;
+            let mut shrink = true;
+            let mut direction_seen = false;
+            let mut shrink_seen = false;
+            for option in &arguments[1..] {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Direction") && !direction_seen {
+                    direction = if value.eq_ignore_ascii_case("U") {
+                        InteractiveIsocurveDirection::U
+                    } else if value.eq_ignore_ascii_case("V") {
+                        InteractiveIsocurveDirection::V
+                    } else if value.eq_ignore_ascii_case("Both") {
+                        InteractiveIsocurveDirection::Both
+                    } else {
+                        return false;
+                    };
+                    direction_seen = true;
+                } else if name.eq_ignore_ascii_case("Shrink") && !shrink_seen {
+                    shrink = if value.eq_ignore_ascii_case("Yes") {
+                        true
+                    } else if value.eq_ignore_ascii_case("No") {
+                        false
+                    } else {
+                        return false;
+                    };
+                    shrink_seen = true;
+                } else {
+                    return false;
+                }
+            }
+            InteractiveCommand::SplitSurfaceIsocurve { direction, shrink }
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
             let mut ignore_trims = false;
@@ -2568,6 +2620,7 @@ impl VibocerosApp {
                 | InteractiveCommand::SubCrv { .. }
                 | InteractiveCommand::SplitCurve
                 | InteractiveCommand::SplitCurveWithCutters
+                | InteractiveCommand::SplitSurfaceIsocurve { .. }
                 | InteractiveCommand::TrimCurve
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
@@ -3837,6 +3890,15 @@ impl VibocerosApp {
                 self.execute_command(&format!(
                     "Split CuttingObjects={}",
                     format_model_point(point)
+                ));
+            }
+            InteractiveCommand::SplitSurfaceIsocurve { direction, shrink } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Split Isocurve={} Direction={} Shrink={}",
+                    format_model_point(point),
+                    direction.option_value(),
+                    if shrink { "Yes" } else { "No" },
                 ));
             }
             InteractiveCommand::TrimCurve => {
@@ -7668,6 +7730,60 @@ mod tests {
                 .back()
                 .unwrap()
                 .contains("no objects")
+        );
+    }
+
+    #[test]
+    fn interactive_surface_isocurve_split_uses_one_location_pick() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
+        let source_id = app.document.objects().next().unwrap().id();
+        app.document
+            .select_object(source_id, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("Split _Isocurve Direction=_Both Shrink=_Yes"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SplitSurfaceIsocurve {
+                direction: InteractiveIsocurveDirection::Both,
+                shrink: true,
+            })
+        );
+        assert!(app.command_log.back().unwrap().contains("selected surface"));
+        app.accept_drafting_point(point(1.5, 2.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.object(source_id).is_none());
+        assert_eq!(app.document.objects().count(), 4);
+        assert_eq!(app.document.selected_object_count(), 4);
+        assert!(app.document.objects().all(|object| {
+            app.document.is_selected(object.id())
+                && matches!(object.geometry(), Geometry::NurbsSurface(_))
+        }));
+        assert_eq!(app.document.undo_label(), Some("Split"));
+        assert!(!app.try_start_interactive_command("Split Isocurve=1,2,0"));
+        assert!(!app.try_start_interactive_command("Split Isocurve Direction=U Direction=V"));
+
+        let mut unsupported = test_app();
+        unsupported.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
+        let unsupported_source = unsupported.document.objects().next().unwrap().id();
+        unsupported
+            .document
+            .select_object(
+                unsupported_source,
+                viboceros_document::SelectionMode::Replace,
+            )
+            .unwrap();
+        assert!(unsupported.try_start_interactive_command("Split Isocurve Shrink=No"));
+        unsupported.accept_drafting_point(point(1.5, 2.0, 0.0));
+        assert!(unsupported.document.object(unsupported_source).is_some());
+        assert!(
+            unsupported
+                .command_log
+                .back()
+                .unwrap()
+                .contains("Shrink=No")
         );
     }
 
