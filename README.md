@@ -884,17 +884,19 @@ every complete constant-U or constant-V intersection, with duplicate cuts
 culled and multiple directions forming an exact UV grid. Its fresh single-face
 B-rep results retain the complete underlying surface, the source face
 orientation, attributes, and group membership. Partial isocurves do not divide
-the target. One exact straight non-isoparametric intersection joining opposite
-rectangle sides is also supported; it retains the cutter curve as a shared edge
-and produces two validated polygonally trimmed faces. Multiple or adjacent-side
-non-isoparametric cuts are reported as unsupported instead of being
+the target. One exact straight non-isoparametric intersection joining any two
+distinct rectangle sides is also supported; it retains the cutter curve as a
+matching boundary edge in both validated polygonally trimmed faces. Adjacent-side
+cuts produce Rhino's triangle-and-pentagon topology in all four orientations.
+Multiple non-isoparametric cuts are reported as unsupported instead of being
 approximated. Rhino-compatible cutting-object output replaces the source with
 fresh selected pieces and leaves cutters unchanged and deselected. The curve
 fixture covers curve, surface, solid box, holed planar-face, and view-aligned
 non-intersecting cutters. The topology-aware surface fixture covers both
-isoparametric and both opposite-side diagonal directions through vertices, edge
-domains, trim order, metadata, grouping, and selection to within `1.1e-14` of
-Rhino. Current surface/surface intersection support is planar. `Split Isocurve=point
+isoparametric directions, both opposite-side diagonal directions, and all four
+adjacent-side directions through vertices, edge domains, trim order, metadata,
+grouping, and selection to within `1.1e-14` of Rhino. Current surface/surface
+intersection support is planar. `Split Isocurve=point
 Direction=U|V|Both Shrink=Yes`
 splits exactly one selected untrimmed NURBS surface at the closest surface
 location; omit the point after `Split Isocurve` for one viewport pick. The
@@ -910,8 +912,9 @@ discarding the underlying surface. Closed directions reuse seam edges and
 collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
 and directions, face orientation, and geometry to within `2e-15`.
-General non-isoparametric cutting-object surface arrangements and nonrectangular
-or multi-face B-rep sources remain future extensions.
+Curved or multiple non-isoparametric cutting-object surface arrangements,
+corner-ending cuts, and nonrectangular or multi-face B-rep sources remain future
+extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS

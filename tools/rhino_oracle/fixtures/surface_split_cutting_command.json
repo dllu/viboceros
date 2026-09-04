@@ -146,6 +146,146 @@
           "knots_v": [0.0, 0.0, 10.0, 10.0]
         }
       ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-south-east-cutter",
+      "source_pick": [5.0, 5.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            { "point": [2.0, 0.0, -5.0], "weight": 1.0 },
+            { "point": [10.0, 7.0, -5.0], "weight": 1.0 },
+            { "point": [2.0, 0.0, 5.0], "weight": 1.0 },
+            { "point": [10.0, 7.0, 5.0], "weight": 1.0 }
+          ],
+          "knots_u": [0.0, 0.0, 10.63014581273465, 10.63014581273465],
+          "knots_v": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-east-north-cutter",
+      "source_pick": [5.0, 5.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            { "point": [10.0, 2.0, -5.0], "weight": 1.0 },
+            { "point": [7.0, 10.0, -5.0], "weight": 1.0 },
+            { "point": [10.0, 2.0, 5.0], "weight": 1.0 },
+            { "point": [7.0, 10.0, 5.0], "weight": 1.0 }
+          ],
+          "knots_u": [0.0, 0.0, 8.54400374531753, 8.54400374531753],
+          "knots_v": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-north-west-cutter",
+      "source_pick": [5.0, 5.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            { "point": [8.0, 10.0, -5.0], "weight": 1.0 },
+            { "point": [0.0, 3.0, -5.0], "weight": 1.0 },
+            { "point": [8.0, 10.0, 5.0], "weight": 1.0 },
+            { "point": [0.0, 3.0, 5.0], "weight": 1.0 }
+          ],
+          "knots_u": [0.0, 0.0, 10.63014581273465, 10.63014581273465],
+          "knots_v": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-west-south-cutter",
+      "source_pick": [5.0, 5.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            { "point": [0.0, 8.0, -5.0], "weight": 1.0 },
+            { "point": [3.0, 0.0, -5.0], "weight": 1.0 },
+            { "point": [0.0, 8.0, 5.0], "weight": 1.0 },
+            { "point": [3.0, 0.0, 5.0], "weight": 1.0 }
+          ],
+          "knots_u": [0.0, 0.0, 8.54400374531753, 8.54400374531753],
+          "knots_v": [0.0, 0.0, 10.0, 10.0]
+        }
+      ]
     }
   ]
 }
