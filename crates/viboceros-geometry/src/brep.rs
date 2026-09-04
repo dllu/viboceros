@@ -3980,8 +3980,14 @@ impl Brep {
         let (parameters, boundary_vertex_count, triangles) = if sampled_loops.len() == 1 {
             let mut parameters = sampled_loops.pop().expect("one sampled trim loop exists");
             let boundary_vertex_count = parameters.len();
-            let triangles = triangulate_simple_trim_polygon(&mut parameters)?
-                .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
+            let triangles = if let Some(triangles) =
+                triangulate_simple_trim_polygon(&mut parameters)?
+            {
+                triangles
+            } else {
+                triangulate_trim_region(&parameters, &[boundary_vertex_count])?
+                    .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?
+            };
             (parameters, boundary_vertex_count, triangles)
         } else {
             let loop_lengths = sampled_loops.iter().map(Vec::len).collect::<Vec<_>>();
@@ -8690,26 +8696,27 @@ fn triangulate_trim_region(
     let epsilon = 64.0 * Real::EPSILON;
     let outer = &normalized[loop_ranges[0].clone()];
 
-    let vertices = normalized
-        .iter()
-        .enumerate()
-        .map(|(source_index, point)| TrimTriangulationVertex {
-            position: TriangulationPoint2::new(point[0], point[1]),
-            source_index,
-        })
-        .collect::<Vec<_>>();
+    // A valid Rhino loop can revisit a point where otherwise-disjoint boundary
+    // branches touch. Spade requires one vertex per coordinate, so retain the
+    // first sampled occurrence as the triangulation representative.
+    let (vertices, representatives) = unique_trim_triangulation_vertices(&normalized, epsilon);
+    let unique_vertex_count = vertices.len();
     let mut triangulation =
         match ConstrainedDelaunayTriangulation::<TrimTriangulationVertex>::bulk_load(vertices) {
             Ok(triangulation) => triangulation,
             Err(_) => return Ok(None),
         };
-    if triangulation.num_vertices() != parameters.len() {
+    if triangulation.num_vertices() != unique_vertex_count {
         return Ok(None);
     }
-    let mut handles = vec![None; parameters.len()];
+    let mut representative_handles = vec![None; parameters.len()];
     for vertex in triangulation.vertices() {
-        handles[vertex.data().source_index] = Some(vertex.fix());
+        representative_handles[vertex.data().source_index] = Some(vertex.fix());
     }
+    let handles = representatives
+        .iter()
+        .map(|representative| representative_handles[*representative])
+        .collect::<Vec<_>>();
     for range in &loop_ranges {
         for index in range.clone() {
             let next = if index + 1 == range.end {
@@ -8802,6 +8809,46 @@ fn triangulate_trim_region(
         return Ok(None);
     }
     Ok(Some(triangles))
+}
+
+fn unique_trim_triangulation_vertices(
+    normalized: &[[Real; 2]],
+    epsilon: Real,
+) -> (Vec<TrimTriangulationVertex>, Vec<usize>) {
+    let cell = |coordinate: Real| (coordinate / epsilon).floor() as i64;
+    let mut buckets = BTreeMap::<[i64; 2], Vec<usize>>::new();
+    let mut vertices = Vec::with_capacity(normalized.len());
+    let mut representatives = Vec::with_capacity(normalized.len());
+    for (source_index, &point) in normalized.iter().enumerate() {
+        let point_cell = [cell(point[0]), cell(point[1])];
+        let mut representative = None;
+        'neighbors: for x_delta in -1_i64..=1 {
+            for y_delta in -1_i64..=1 {
+                let neighbor = [point_cell[0] + x_delta, point_cell[1] + y_delta];
+                let Some(candidates) = buckets.get(&neighbor) else {
+                    continue;
+                };
+                for &candidate in candidates {
+                    if (normalized[candidate][0] - point[0]).abs() <= epsilon
+                        && (normalized[candidate][1] - point[1]).abs() <= epsilon
+                    {
+                        representative = Some(candidate);
+                        break 'neighbors;
+                    }
+                }
+            }
+        }
+        let representative = representative.unwrap_or_else(|| {
+            buckets.entry(point_cell).or_default().push(source_index);
+            vertices.push(TrimTriangulationVertex {
+                position: TriangulationPoint2::new(point[0], point[1]),
+                source_index,
+            });
+            source_index
+        });
+        representatives.push(representative);
+    }
+    (vertices, representatives)
 }
 
 fn point_in_trim_bounds(point: [Real; 2], bounds: [[Real; 2]; 2], epsilon: Real) -> bool {
@@ -9943,6 +9990,28 @@ mod tests {
             vec![polygon(2.0, 6.0, 2.0, 7.0), polygon(4.0, 8.0, 4.0, 9.0)],
             &[4, 6, 6, 12],
             &[1, 1, 1, 2],
+        );
+        assert_case(
+            vec![polygon(1.0, 4.0, 1.0, 4.0), polygon(4.0, 7.0, 4.0, 7.0)],
+            &[4, 4, 12],
+            &[1, 1, 2],
+        );
+        let internally_touching = NurbsCurve::try_new(
+            1,
+            vec![
+                point(2.0, 5.0, 0.0),
+                point(5.0, 3.0, 0.0),
+                point(7.0, 5.0, 0.0),
+                point(5.0, 7.0, 0.0),
+                point(2.0, 5.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        assert_case(
+            vec![polygon(2.0, 8.0, 2.0, 8.0), internally_touching],
+            &[4, 9, 9],
+            &[1, 1, 2],
         );
         assert_case(
             vec![circle([2.5, 2.5], 1.0), circle([7.5, 7.5], 1.0)],
