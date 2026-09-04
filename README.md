@@ -889,15 +889,17 @@ location; omit the point after `Split Isocurve` for one viewport pick. The
 direction names the isocurve itself, so a U isocurve divides the V parameter
 domain and vice versa. The source is replaced by two or four fresh exact
 single-face B-reps with matching attributes and group membership, selected
-together in one undo step. `Shrink=Yes` clamps each underlying NURBS surface to
-its result domain; `Shrink=No` retains the complete original surface and stores
-the result as an exact rectangular UV trim. These nonplanar trims tessellate,
-pick, bound, measure exact area, and round-trip through 3DM without discarding
-the underlying surface. Closed directions reuse seam edges and collapsed poles
-use singular trims. The topology-aware planar, cylindrical, and spherical Rhino
-fixture agrees through vertices, edge domains, trim classes and directions,
-face orientation, and geometry to within `2e-15`. General surface
-cutting-object splits and B-rep targets remain future extensions.
+together in one undo step. Existing rectangular single-face B-reps can be
+split again with the same command. `Shrink=Yes` clamps each underlying NURBS
+surface to its result domain; `Shrink=No` retains the complete original surface
+and stores the result as an exact rectangular UV trim. These nonplanar trims
+tessellate, pick, bound, measure exact area, and round-trip through 3DM without
+discarding the underlying surface. Closed directions reuse seam edges and
+collapsed poles use singular trims. The topology-aware planar, cylindrical,
+and spherical Rhino fixture agrees through vertices, edge domains, trim classes
+and directions, face orientation, and geometry to within `2e-15`. General
+surface cutting-object splits and nonrectangular or multi-face B-rep targets
+remain future extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS

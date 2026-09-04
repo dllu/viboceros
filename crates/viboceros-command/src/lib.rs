@@ -12616,35 +12616,83 @@ fn split_surface_at_isocurve(
     document: &mut Document,
     options: SurfaceIsocurveSplitOptions,
 ) -> Result<String, CommandError> {
-    let mut candidates = document
-        .selected_objects()
-        .filter_map(|object| match object.geometry() {
-            Geometry::NurbsSurface(surface) => Some((object.id(), surface.clone())),
-            _ => None,
-        })
-        .collect::<Vec<_>>();
+    let mut candidates = Vec::new();
+    for object in document.selected_objects() {
+        match object.geometry() {
+            Geometry::NurbsSurface(surface) => {
+                let domain_u = surface.domain_u();
+                let domain_v = surface.domain_v();
+                candidates.push((
+                    object.id(),
+                    surface.clone(),
+                    [
+                        [*domain_u.start(), *domain_u.end()],
+                        [*domain_v.start(), *domain_v.end()],
+                    ],
+                    false,
+                    false,
+                ));
+            }
+            Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                let face = &brep.faces()[0];
+                if let Some(bounds) = face.rectangular_trim_bounds(document.tolerance())? {
+                    candidates.push((
+                        object.id(),
+                        face.surface().clone(),
+                        bounds,
+                        true,
+                        face.is_reversed(),
+                    ));
+                }
+            }
+            _ => {}
+        }
+    }
     if candidates.len() != 1 || document.selected_object_count() != 1 {
         return Err(CommandError::SplitIsocurveRequiresOneSurface {
             actual: candidates.len(),
         });
     }
-    let (source_id, surface) = candidates
+    let (source_id, surface, source_bounds, source_is_brep, source_reversed) = candidates
         .pop()
         .expect("one selected isocurve Split surface was required");
-    let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
+    let (mut u, mut v) = surface.closest_parameters(options.point, document.tolerance())?;
+    let parameter_tolerance = document.tolerance().absolute();
+    if source_is_brep
+        && (u < source_bounds[0][0] - parameter_tolerance
+            || u > source_bounds[0][1] + parameter_tolerance
+            || v < source_bounds[1][0] - parameter_tolerance
+            || v > source_bounds[1][1] + parameter_tolerance)
+    {
+        return Err(CommandError::SplitIsocurvePointOutsideFaceTrim);
+    }
+    u = u.clamp(source_bounds[0][0], source_bounds[0][1]);
+    v = v.clamp(source_bounds[1][0], source_bounds[1][1]);
+    let visible_surface = if source_bounds
+        == [
+            [*surface.domain_u().start(), *surface.domain_u().end()],
+            [*surface.domain_v().start(), *surface.domain_v().end()],
+        ] {
+        surface.clone()
+    } else {
+        surface.try_trimmed(
+            source_bounds[0][0]..=source_bounds[0][1],
+            source_bounds[1][0]..=source_bounds[1][1],
+        )?
+    };
     // Rhino names an isocurve by the parameter that varies along it: a U
     // isocurve is constant in V, and therefore splits the V parameter domain.
     let surface_pieces = match options.direction {
         SurfaceKnotDirection::U => {
-            let (south, north) = surface.try_split_v(v)?;
+            let (south, north) = visible_surface.try_split_v(v)?;
             vec![south, north]
         }
         SurfaceKnotDirection::V => {
-            let (west, east) = surface.try_split_u(u)?;
+            let (west, east) = visible_surface.try_split_u(u)?;
             vec![west, east]
         }
         SurfaceKnotDirection::Both => {
-            let (west, east) = surface.try_split_u(u)?;
+            let (west, east) = visible_surface.try_split_u(u)?;
             let (southwest, northwest) = west.try_split_v(v)?;
             let (southeast, northeast) = east.try_split_v(v)?;
             vec![southwest, northwest, southeast, northeast]
@@ -12653,34 +12701,47 @@ fn split_surface_at_isocurve(
     let pieces = if options.shrink {
         surface_pieces
             .into_iter()
-            .map(|surface| Brep::try_surface_face(surface, document.tolerance()))
+            .map(|surface| {
+                let domain_u = surface.domain_u();
+                let domain_v = surface.domain_v();
+                let bounds = [
+                    [*domain_u.start(), *domain_u.end()],
+                    [*domain_v.start(), *domain_v.end()],
+                ];
+                Brep::try_rectangular_surface_face_with_orientation(
+                    surface,
+                    bounds[0][0]..=bounds[0][1],
+                    bounds[1][0]..=bounds[1][1],
+                    source_reversed,
+                    document.tolerance(),
+                )
+            })
             .collect::<Result<Vec<_>, _>>()?
     } else {
-        let domain_u = surface.domain_u();
-        let domain_v = surface.domain_v();
         let rectangles = match options.direction {
             SurfaceKnotDirection::U => vec![
-                ([*domain_u.start(), *domain_u.end()], [*domain_v.start(), v]),
-                ([*domain_u.start(), *domain_u.end()], [v, *domain_v.end()]),
+                (source_bounds[0], [source_bounds[1][0], v]),
+                (source_bounds[0], [v, source_bounds[1][1]]),
             ],
             SurfaceKnotDirection::V => vec![
-                ([*domain_u.start(), u], [*domain_v.start(), *domain_v.end()]),
-                ([u, *domain_u.end()], [*domain_v.start(), *domain_v.end()]),
+                ([source_bounds[0][0], u], source_bounds[1]),
+                ([u, source_bounds[0][1]], source_bounds[1]),
             ],
             SurfaceKnotDirection::Both => vec![
-                ([*domain_u.start(), u], [*domain_v.start(), v]),
-                ([*domain_u.start(), u], [v, *domain_v.end()]),
-                ([u, *domain_u.end()], [*domain_v.start(), v]),
-                ([u, *domain_u.end()], [v, *domain_v.end()]),
+                ([source_bounds[0][0], u], [source_bounds[1][0], v]),
+                ([source_bounds[0][0], u], [v, source_bounds[1][1]]),
+                ([u, source_bounds[0][1]], [source_bounds[1][0], v]),
+                ([u, source_bounds[0][1]], [v, source_bounds[1][1]]),
             ],
         };
         rectangles
             .into_iter()
             .map(|(u, v)| {
-                Brep::try_rectangular_surface_face(
+                Brep::try_rectangular_surface_face_with_orientation(
                     surface.clone(),
                     u[0]..=u[1],
                     v[0]..=v[1],
+                    source_reversed,
                     document.tolerance(),
                 )
             })
@@ -20406,8 +20467,13 @@ pub enum CommandError {
     #[error("cutting-object Split requires at least one selected curve to use as the source")]
     SplitRequiresCurveSource,
 
-    #[error("isocurve Split requires exactly one selected untrimmed NURBS surface, got {actual}")]
+    #[error(
+        "isocurve Split requires exactly one selected NURBS surface or rectangular single-face B-rep, got {actual} supported target(s)"
+    )]
     SplitIsocurveRequiresOneSurface { actual: usize },
+
+    #[error("the isocurve Split point projects outside the selected face trim")]
+    SplitIsocurvePointOutsideFaceTrim,
 
     #[error(
         "Intersect currently supports selected curves, untrimmed NURBS surfaces, and B-reps only"
@@ -26944,6 +27010,102 @@ mod tests {
             assert!(document.is_selected(object.id()));
             brep.tessellate(2, document.tolerance()).unwrap();
         }
+    }
+
+    #[test]
+    fn split_surface_at_isocurve_resplits_rectangular_brep_faces() {
+        let registry = CommandRegistry::with_builtins();
+        let source_surface = planar_intersection_surface();
+        let expected_bounds = [
+            [[0.2, 0.4], [0.1, 0.6]],
+            [[0.2, 0.4], [0.6, 0.9]],
+            [[0.4, 0.8], [0.1, 0.6]],
+            [[0.4, 0.8], [0.6, 0.9]],
+        ];
+
+        for shrink in [false, true] {
+            let mut document = Document::default();
+            let source_id = document
+                .add_geometry(Geometry::Brep(
+                    Brep::try_rectangular_surface_face_with_orientation(
+                        source_surface.clone(),
+                        0.2..=0.8,
+                        0.1..=0.9,
+                        true,
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ))
+                .unwrap();
+            document
+                .select_object(source_id, SelectionMode::Replace)
+                .unwrap();
+
+            registry
+                .execute(
+                    &mut document,
+                    &format!(
+                        "Split Isocurve=4,6,0 Direction=Both Shrink={}",
+                        if shrink { "Yes" } else { "No" }
+                    ),
+                )
+                .unwrap();
+            assert!(document.object(source_id).is_none());
+            assert_eq!(document.objects().count(), 4);
+            for (object, expected) in document.objects().zip(expected_bounds) {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("re-splitting a rectangular face must create B-rep faces")
+                };
+                let face = &brep.faces()[0];
+                assert!(face.is_reversed());
+                assert_eq!(
+                    face.rectangular_trim_bounds(document.tolerance()).unwrap(),
+                    Some(expected)
+                );
+                if shrink {
+                    assert_eq!(
+                        [
+                            [
+                                *face.surface().domain_u().start(),
+                                *face.surface().domain_u().end()
+                            ],
+                            [
+                                *face.surface().domain_v().start(),
+                                *face.surface().domain_v().end()
+                            ],
+                        ],
+                        expected
+                    );
+                } else {
+                    assert_eq!(face.surface(), &source_surface);
+                }
+                assert!(document.is_selected(object.id()));
+            }
+        }
+
+        let mut outside = Document::default();
+        let source_id = outside
+            .add_geometry(Geometry::Brep(
+                Brep::try_rectangular_surface_face(
+                    source_surface,
+                    0.2..=0.8,
+                    0.1..=0.9,
+                    outside.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        outside
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        let before = outside.object(source_id).unwrap().clone();
+        let history = outside.undo_label().map(str::to_owned);
+        assert!(matches!(
+            registry.execute(&mut outside, "Split Isocurve=9,5,0 Direction=U Shrink=No"),
+            Err(CommandError::SplitIsocurvePointOutsideFaceTrim)
+        ));
+        assert_eq!(outside.object(source_id).unwrap(), &before);
+        assert_eq!(outside.undo_label(), history.as_deref());
     }
 
     #[test]

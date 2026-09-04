@@ -419,6 +419,18 @@ impl Brep {
         v: RangeInclusive<Real>,
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        Self::try_rectangular_surface_face_with_orientation(surface, u, v, false, tolerance)
+    }
+
+    /// Builds the same rectangular face while explicitly preserving its
+    /// orientation relative to the underlying surface.
+    pub fn try_rectangular_surface_face_with_orientation(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         require_finite(
             [*u.start(), *u.end(), *v.start(), *v.end()],
             "rectangular surface-face trim bounds",
@@ -573,7 +585,7 @@ impl Brep {
             .collect::<Result<Vec<_>, _>>()?;
         let face = BrepFace::try_new(
             surface,
-            false,
+            reversed,
             vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
         )?;
         Self::try_new(vertices, edges, vec![face], tolerance)

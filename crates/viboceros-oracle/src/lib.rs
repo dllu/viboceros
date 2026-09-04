@@ -624,6 +624,8 @@ pub enum Operation {
     SurfaceSplitIsocurveCommand {
         id: String,
         surface: NurbsSurfaceDefinition,
+        #[serde(default)]
+        pretrim: Option<SurfaceIsocurvePretrim>,
         point: [f64; 3],
         direction: SurfaceUniformDirection,
         #[serde(default = "default_true")]
@@ -1116,6 +1118,13 @@ pub enum SurfaceUniformDirection {
     U,
     V,
     Both,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
+pub struct SurfaceIsocurvePretrim {
+    pub point: [f64; 3],
+    pub direction: SurfaceUniformDirection,
+    pub piece: usize,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq)]
@@ -3294,12 +3303,19 @@ fn execute(
         } => curve_split_command(iterations, curve, cutters, *source_pick, tolerance)?,
         Operation::SurfaceSplitIsocurveCommand {
             surface,
+            pretrim,
             point,
             direction,
             shrink,
             ..
         } => surface_split_isocurve_command(
-            iterations, surface, *point, *direction, *shrink, tolerance,
+            iterations,
+            surface,
+            pretrim.as_ref(),
+            *point,
+            *direction,
+            *shrink,
+            tolerance,
         )?,
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
@@ -7714,6 +7730,7 @@ fn curve_split_command(
 fn surface_split_isocurve_command(
     iterations: u32,
     definition: &NurbsSurfaceDefinition,
+    pretrim: Option<&SurfaceIsocurvePretrim>,
     point: [f64; 3],
     direction: SurfaceUniformDirection,
     shrink: bool,
@@ -7726,7 +7743,7 @@ fn surface_split_isocurve_command(
         let attributes = ObjectAttributes::on_layer(document.current_layer_id())
             .with_name("Viboceros Split Surface Source")
             .with_object_color(ColorRgb::new(12, 34, 56));
-        let source_id = document.add_geometry_with_attributes(
+        let mut source_id = document.add_geometry_with_attributes(
             Geometry::NurbsSurface(source.clone()),
             attributes.clone(),
         )?;
@@ -7735,18 +7752,56 @@ fn surface_split_isocurve_command(
             [source_id],
         )?;
         document.select_object(source_id, SelectionMode::Replace)?;
-        let direction = match direction {
-            SurfaceUniformDirection::U => "U",
-            SurfaceUniformDirection::V => "V",
-            SurfaceUniformDirection::Both => "Both",
-        };
+        if let Some(pretrim) = pretrim {
+            registry.execute(
+                &mut document,
+                &format!(
+                    "Split Isocurve={},{},{} Direction={} Shrink=No",
+                    pretrim.point[0],
+                    pretrim.point[1],
+                    pretrim.point[2],
+                    surface_uniform_direction_name(pretrim.direction),
+                ),
+            )?;
+            let mut pieces = document
+                .objects()
+                .filter_map(|object| {
+                    let Geometry::Brep(brep) = object.geometry() else {
+                        return None;
+                    };
+                    let face = (brep.faces().len() == 1).then(|| &brep.faces()[0])?;
+                    let bounds = face.rectangular_trim_bounds(tolerance).ok().flatten()?;
+                    Some((
+                        [bounds[0][0], bounds[1][0], bounds[0][1], bounds[1][1]],
+                        object.id(),
+                    ))
+                })
+                .collect::<Vec<_>>();
+            pieces.sort_by(|(left, _), (right, _)| {
+                left.iter()
+                    .zip(right)
+                    .map(|(left, right)| left.total_cmp(right))
+                    .find(|ordering| !ordering.is_eq())
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            });
+            source_id = pieces.get(pretrim.piece).map(|(_, id)| *id).ok_or(
+                ProbeError::FixtureInvariant("surface Split pretrim piece index is out of range"),
+            )?;
+            for (_, piece_id) in pieces {
+                if piece_id != source_id {
+                    document.delete_object(piece_id)?;
+                }
+            }
+            document.select_object(source_id, SelectionMode::Replace)?;
+        }
         registry.execute(
             &mut document,
             &format!(
-                "Split Isocurve={},{},{} Direction={direction} Shrink={}",
+                "Split Isocurve={},{},{} Direction={} Shrink={}",
                 point[0],
                 point[1],
                 point[2],
+                surface_uniform_direction_name(direction),
                 if shrink { "Yes" } else { "No" },
             ),
         )?;
@@ -7837,6 +7892,14 @@ fn surface_split_isocurve_command(
     let elapsed_ns =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
     Ok((value, elapsed_ns))
+}
+
+const fn surface_uniform_direction_name(direction: SurfaceUniformDirection) -> &'static str {
+    match direction {
+        SurfaceUniformDirection::U => "U",
+        SurfaceUniformDirection::V => "V",
+        SurfaceUniformDirection::Both => "Both",
+    }
 }
 
 fn curve_trim_command(
@@ -11016,15 +11079,29 @@ mod tests {
             Operation::SurfaceSplitIsocurveCommand {
                 id: "split-surface-both-directions".to_owned(),
                 surface: surface.clone(),
+                pretrim: None,
                 point: [4.0, 6.0, 0.0],
                 direction: SurfaceUniformDirection::Both,
                 shrink: true,
             },
             Operation::SurfaceSplitIsocurveCommand {
                 id: "split-surface-without-shrinking".to_owned(),
-                surface,
+                surface: surface.clone(),
+                pretrim: None,
                 point: [4.0, 6.0, 0.0],
                 direction: SurfaceUniformDirection::Both,
+                shrink: false,
+            },
+            Operation::SurfaceSplitIsocurveCommand {
+                id: "resplit-rectangular-face".to_owned(),
+                surface,
+                pretrim: Some(SurfaceIsocurvePretrim {
+                    point: [4.0, 6.0, 0.0],
+                    direction: SurfaceUniformDirection::U,
+                    piece: 0,
+                }),
+                point: [4.0, 3.0, 0.0],
+                direction: SurfaceUniformDirection::V,
                 shrink: false,
             },
         ]))
@@ -11058,6 +11135,18 @@ mod tests {
                 object["trim_bounds"],
                 json!([domain_u[0], domain_u[1], domain_v[0], domain_v[1]])
             );
+            assert_eq!(object["object_kind"], "brep");
+        }
+
+        let resplit = response.results[2].value["objects"].as_array().unwrap();
+        assert_eq!(resplit.len(), 2);
+        for (object, trim_bounds) in resplit
+            .iter()
+            .zip([[0.0, 0.4, 0.0, 0.6], [0.4, 1.0, 0.0, 0.6]])
+        {
+            assert_eq!(object["surface"]["domain_u"], json!([0.0, 1.0]));
+            assert_eq!(object["surface"]["domain_v"], json!([0.0, 1.0]));
+            assert_eq!(object["trim_bounds"], json!(trim_bounds));
             assert_eq!(object["object_kind"], "brep");
         }
     }

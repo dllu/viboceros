@@ -7167,6 +7167,85 @@ def _execute(operation, iterations, tolerance):
                 if group_index < 0:
                     raise ValueError("could not group Split command source surface")
                 document.Objects.Select(source_id)
+                pretrim = operation.get("pretrim")
+                if pretrim is not None:
+                    pretrim_direction = str(pretrim["direction"]).lower()
+                    if pretrim_direction not in ("u", "v", "both"):
+                        raise ValueError(
+                            "surface Split pretrim direction must be u, v, or both"
+                        )
+                    pretrim_command = (
+                        "_-Split _Isocurve _Direction=_%s _Shrink=_No %s _Enter"
+                        % (
+                            pretrim_direction.upper()
+                            if pretrim_direction != "both"
+                            else "Both",
+                            _command_point(pretrim["point"]),
+                        )
+                    )
+                    pretrim_succeeded = Rhino.RhinoApp.RunScript(
+                        pretrim_command, False
+                    )
+                    pretrim_pieces = []
+                    for item in document.Objects:
+                        if item.Id in original_ids:
+                            continue
+                        geometry = item.Geometry
+                        if not (
+                            isinstance(geometry, Rhino.Geometry.Brep)
+                            and geometry.Faces.Count == 1
+                        ):
+                            continue
+                        face = geometry.Faces[0]
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend(
+                                [trim.PointAtStart, trim.PointAtEnd]
+                            )
+                        if not trim_points:
+                            continue
+                        bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
+                        pretrim_pieces.append((bounds, item.Id))
+                    pretrim_pieces.sort(
+                        key=lambda piece: (
+                            piece[0][0],
+                            piece[0][2],
+                            piece[0][1],
+                            piece[0][3],
+                        )
+                    )
+                    expected_pretrim_count = (
+                        4 if pretrim_direction == "both" else 2
+                    )
+                    piece_index = int(pretrim["piece"])
+                    if (
+                        not pretrim_succeeded
+                        or len(pretrim_pieces) != expected_pretrim_count
+                        or piece_index < 0
+                        or piece_index >= len(pretrim_pieces)
+                    ):
+                        raise ValueError(
+                            "surface Split pretrim macro %r returned %r and left %d "
+                            "rectangular pieces; expected %d with retained index %d"
+                            % (
+                                pretrim_command,
+                                pretrim_succeeded,
+                                len(pretrim_pieces),
+                                expected_pretrim_count,
+                                piece_index,
+                            )
+                        )
+                    source_id = pretrim_pieces[piece_index][1]
+                    for _bounds, piece_id in pretrim_pieces:
+                        if piece_id != source_id:
+                            document.Objects.Delete(piece_id, True)
+                    document.Objects.UnselectAll()
+                    document.Objects.Select(source_id)
                 command = "_-Split _Isocurve _Direction=_%s _Shrink=_%s %s _Enter" % (
                     direction.upper() if direction != "both" else "Both",
                     "Yes" if shrink else "No",

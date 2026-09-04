@@ -101,6 +101,34 @@
     },
     {
       "op": "surface_split_isocurve_command",
+      "id": "resplit-rectangular-face-v-isocurve",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0],
+        "domain_u": [2.0, 12.0],
+        "domain_v": [-3.0, 7.0]
+      },
+      "pretrim": {
+        "point": [4.0, 6.0, 0.0],
+        "direction": "u",
+        "piece": 0
+      },
+      "point": [4.0, 3.0, 0.0],
+      "direction": "v",
+      "shrink": false
+    },
+    {
+      "op": "surface_split_isocurve_command",
       "id": "split-cylinder-u-isocurve",
       "surface": {
         "degree_u": 2,

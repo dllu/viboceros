@@ -7779,6 +7779,16 @@ mod tests {
         assert!(unshrunk.document.objects().all(|object| {
             matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() == 1)
         }));
+
+        let face_id = unshrunk.document.objects().next().unwrap().id();
+        unshrunk
+            .document
+            .select_object(face_id, viboceros_document::SelectionMode::Replace)
+            .unwrap();
+        assert!(unshrunk.try_start_interactive_command("Split Isocurve Direction=V Shrink=No"));
+        unshrunk.accept_drafting_point(point(1.0, 1.0, 0.0));
+        assert!(unshrunk.document.object(face_id).is_none());
+        assert_eq!(unshrunk.document.objects().count(), 3);
     }
 
     #[test]
