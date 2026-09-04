@@ -1,0 +1,161 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_split_command",
+      "id": "split-line-with-curves",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+        ],
+        "knots": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [3.0, -5.0, 0.0], "weight": 1.0 },
+            { "point": [3.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [7.0, -5.0, 0.0], "weight": 1.0 },
+            { "point": [7.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        }
+      ],
+      "source_pick": [1.0, 0.0, 0.0]
+    },
+    {
+      "op": "curve_split_command",
+      "id": "split-line-with-surface",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+        ],
+        "knots": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              { "point": [3.0, -1.0, 0.0], "weight": 1.0 },
+              { "point": [7.0, -1.0, 0.0], "weight": 1.0 },
+              { "point": [3.0, 1.0, 0.0], "weight": 1.0 },
+              { "point": [7.0, 1.0, 0.0], "weight": 1.0 }
+            ],
+            "knots_u": [0.0, 0.0, 1.0, 1.0],
+            "knots_v": [0.0, 0.0, 1.0, 1.0]
+          }
+        }
+      ],
+      "source_pick": [1.0, 0.0, 0.0]
+    },
+    {
+      "op": "curve_split_command",
+      "id": "split-line-with-box",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+        ],
+        "knots": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "box": {
+            "x": [2.0, 8.0],
+            "y": [-1.0, 1.0],
+            "z": [-1.0, 1.0]
+          }
+        }
+      ],
+      "source_pick": [1.0, 0.0, 0.0]
+    },
+    {
+      "op": "curve_split_command",
+      "id": "split-line-with-holed-face",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+        ],
+        "knots": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "planar_face": {
+            "outer": {
+              "degree": 1,
+              "control_points": [
+                { "point": [2.0, -2.0, 0.0], "weight": 1.0 },
+                { "point": [8.0, -2.0, 0.0], "weight": 1.0 },
+                { "point": [8.0, 2.0, 0.0], "weight": 1.0 },
+                { "point": [2.0, 2.0, 0.0], "weight": 1.0 },
+                { "point": [2.0, -2.0, 0.0], "weight": 1.0 }
+              ],
+              "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+            },
+            "holes": [
+              {
+                "degree": 1,
+                "control_points": [
+                  { "point": [4.0, -1.0, 0.0], "weight": 1.0 },
+                  { "point": [6.0, -1.0, 0.0], "weight": 1.0 },
+                  { "point": [6.0, 1.0, 0.0], "weight": 1.0 },
+                  { "point": [4.0, 1.0, 0.0], "weight": 1.0 },
+                  { "point": [4.0, -1.0, 0.0], "weight": 1.0 }
+                ],
+                "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+              }
+            ]
+          }
+        }
+      ],
+      "source_pick": [1.0, 0.0, 0.0]
+    },
+    {
+      "op": "curve_split_command",
+      "id": "split-line-with-view-aligned-no-hit",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 }
+        ],
+        "knots": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [5.0, -5.0, 1.0], "weight": 1.0 },
+            { "point": [5.0, 5.0, 1.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 10.0, 10.0]
+        }
+      ],
+      "source_pick": [1.0, 0.0, 0.0]
+    }
+  ]
+}

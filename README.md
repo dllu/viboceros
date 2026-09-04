@@ -187,6 +187,7 @@ CrvSeam 4,1,0
 SrfSeam 5,0,0 Direction=U
 SubCrv 8,0,0 2,0,0 Copy=Yes
 Split 4,0,0 7,0,0
+Split CuttingObjects=1,0,0
 Intersect
 Trim 5,0,0
 Extend Length=5 Side=End Type=Natural Join=Merge
@@ -869,11 +870,19 @@ locations; omit the points to collect viewport picks and press Enter, or use
 `Split Parameter=value[,value...]` for exact parameters. Open-curve pieces
 remain in natural order. Closed curves produce cyclic pieces between the split
 locations, including Rhino's clamped full-loop result for a single location.
-Lines, analytic curves, polylines, and NURBS curves are supported. The first
-piece retains the source identity; every piece retains its attributes and group
-membership, becomes selected, and participates in one undo step. This is the
-curve `Point` path; cutting-object and surface splitting remain future
-extensions.
+Lines, analytic curves, polylines, and NURBS curves are supported. In these
+point/parameter modes the first piece retains the source identity; every piece
+retains its attributes and group membership, becomes selected, and participates
+in one undo step. `Split CuttingObjects=source_point` instead chooses the
+selected curve nearest that point as the target and uses every other selected
+curve, untrimmed NURBS surface, and B-rep as an actual 3D cutter. Finite surface
+overlaps and exact B-rep trim regions, including holes, supply all split
+locations. Rhino-compatible cutting-object output replaces the source with
+fresh, grouped, attribute-preserving selected pieces and leaves cutters
+unchanged and deselected. The permanent command fixture covers curve, surface,
+solid box, holed planar-face, and view-aligned non-intersecting cutters to
+floating-point roundoff. Splitting surfaces or B-reps as targets remains a
+future extension.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS
@@ -1247,6 +1256,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_split.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_split_command.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_intersect_command.json \

@@ -615,6 +615,12 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         parameters: Vec<f64>,
     },
+    CurveSplitCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        cutters: Vec<CurveExtensionBoundaryDefinition>,
+        source_pick: [f64; 3],
+    },
     CurveIntersectCommand {
         id: String,
         curves: Vec<NurbsCurveDefinition>,
@@ -1301,6 +1307,7 @@ impl Operation {
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
+            | Self::CurveSplitCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
@@ -3270,6 +3277,12 @@ fn execute(
                 elapsed,
             )
         }
+        Operation::CurveSplitCommand {
+            curve,
+            cutters,
+            source_pick,
+            ..
+        } => curve_split_command(iterations, curve, cutters, *source_pick, tolerance)?,
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
         }
@@ -6930,6 +6943,19 @@ fn curve_extension_boundary_from_definition(
     })
 }
 
+fn curve_cutter_geometry_from_definition(
+    definition: &CurveExtensionBoundaryDefinition,
+    tolerance: Tolerance,
+) -> Result<Geometry, GeometryError> {
+    Ok(
+        match curve_extension_boundary_from_definition(definition, tolerance)? {
+            CurveExtensionBoundary::Curve(curve) => Geometry::NurbsCurve(curve),
+            CurveExtensionBoundary::Surface(surface) => Geometry::NurbsSurface(surface),
+            CurveExtensionBoundary::Brep(brep) => Geometry::Brep(brep),
+        },
+    )
+}
+
 fn mesh_value(mesh: &TriangleMesh) -> Value {
     json!({
         "triangles": mesh.triangles(),
@@ -7583,6 +7609,90 @@ fn intersect_command_with_curve_serializer(
     Ok((value, elapsed_ns))
 }
 
+fn curve_split_command(
+    iterations: u32,
+    definition: &NurbsCurveDefinition,
+    cutter_definitions: &[CurveExtensionBoundaryDefinition],
+    source_pick: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let source = nurbs_curve_from_definition(definition)?;
+    let cutters = cutter_definitions
+        .iter()
+        .map(|definition| curve_cutter_geometry_from_definition(definition, tolerance))
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    let run = || -> Result<_, ProbeError> {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::new(tolerance);
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Viboceros Split Source")
+            .with_object_color(ColorRgb::new(12, 34, 56));
+        let source_id = document.add_geometry_with_attributes(
+            Geometry::NurbsCurve(source.clone()),
+            attributes.clone(),
+        )?;
+        let group_id = document.add_group(Some("Viboceros Split Group".to_owned()), [source_id])?;
+        let mut cutter_ids = Vec::with_capacity(cutters.len());
+        for cutter in &cutters {
+            cutter_ids.push(document.add_geometry(cutter.clone())?);
+        }
+        document.select_objects_direct(
+            std::iter::once(source_id).chain(cutter_ids.iter().copied()),
+            SelectionMode::Replace,
+        )?;
+        registry.execute(
+            &mut document,
+            &format!(
+                "Split CuttingObjects={},{},{}",
+                source_pick[0], source_pick[1], source_pick[2]
+            ),
+        )?;
+        Ok((document, source_id, cutter_ids, group_id, attributes))
+    };
+
+    let (document, source_id, cutter_ids, group_id, attributes) = run()?;
+    let source_group_members = document
+        .group(group_id)
+        .expect("the Split source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let cutters = cutter_ids.into_iter().collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .filter(|object| !cutters.contains(&object.id()))
+        .map(|object| {
+            let curve = object
+                .geometry()
+                .nurbs_curve_representation()?
+                .expect("the Split command produces only curve result objects");
+            let first_point = curve.control_points()[0].point().to_array();
+            Ok((
+                first_point,
+                json!({
+                    "attributes_match_source": object.attributes() == &attributes,
+                    "curve": nurbs_curve_definition_value(&curve),
+                    "in_source_group": source_group_members.contains(&object.id()),
+                    "original_id": object.id() == source_id,
+                    "selected": document.is_selected(object.id()),
+                }),
+            ))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    records.sort_by(|(left, _), (right, _)| compare_point(left, right));
+    let value = json!({
+        "command_succeeded": true,
+        "objects": records.into_iter().map(|(_, value)| value).collect::<Vec<_>>(),
+    });
+
+    let started = Instant::now();
+    for _ in 0..iterations {
+        black_box(run()?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 fn curve_trim_command(
     iterations: u32,
     definition: &NurbsCurveDefinition,
@@ -7595,15 +7705,7 @@ fn curve_trim_command(
     let source = nurbs_curve_from_definition(definition)?;
     let cutters = cutter_definitions
         .iter()
-        .map(|definition| -> Result<Geometry, GeometryError> {
-            Ok(
-                match curve_extension_boundary_from_definition(definition, tolerance)? {
-                    CurveExtensionBoundary::Curve(curve) => Geometry::NurbsCurve(curve),
-                    CurveExtensionBoundary::Surface(surface) => Geometry::NurbsSurface(surface),
-                    CurveExtensionBoundary::Brep(brep) => Geometry::Brep(brep),
-                },
-            )
-        })
+        .map(|definition| curve_cutter_geometry_from_definition(definition, tolerance))
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let run = || -> Result<_, ProbeError> {
         let registry = CommandRegistry::with_builtins();
@@ -10692,6 +10794,53 @@ mod tests {
         assert_eq!(objects[0]["in_source_group"], false);
         assert_eq!(objects[0]["on_current_layer"], true);
         assert_eq!(objects[0]["selected"], true);
+    }
+
+    #[test]
+    fn captures_curve_split_command_behavior() {
+        let line = |start, end, knots| NurbsCurveDefinition {
+            degree: 1,
+            control_points: [start, end]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots,
+            domain: None,
+        };
+        let response = run_request(&request(vec![Operation::CurveSplitCommand {
+            id: "split-line-with-cutters".to_owned(),
+            curve: line(
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                vec![0.0, 0.0, 10.0, 10.0],
+            ),
+            cutters: vec![
+                CurveExtensionBoundaryDefinition::Curve(line(
+                    [3.0, -5.0, 0.0],
+                    [3.0, 5.0, 0.0],
+                    vec![0.0, 0.0, 10.0, 10.0],
+                )),
+                CurveExtensionBoundaryDefinition::Curve(line(
+                    [7.0, -5.0, 0.0],
+                    [7.0, 5.0, 0.0],
+                    vec![0.0, 0.0, 10.0, 10.0],
+                )),
+            ],
+            source_pick: [5.0, 0.0, 0.0],
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 3);
+        for (object, expected_domain) in objects.iter().zip([[0.0, 3.0], [3.0, 7.0], [7.0, 10.0]]) {
+            assert_eq!(object["curve"]["domain"], json!(expected_domain));
+            assert_eq!(object["attributes_match_source"], true);
+            assert_eq!(object["in_source_group"], true);
+            assert_eq!(object["original_id"], false);
+            assert_eq!(object["selected"], true);
+        }
     }
 
     #[test]

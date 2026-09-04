@@ -12386,12 +12386,13 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
     Ok(SubcurveOptions { location, copy })
 }
 
-const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...]";
+const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...] | Split CuttingObjects=source_point";
 
 #[derive(Clone, Debug, PartialEq)]
 enum CurveSplitLocation {
     Parameters(Vec<Real>),
     Points(Vec<Point3>),
+    CuttingObjects(Point3),
 }
 
 struct SplitCurveCommand;
@@ -12403,6 +12404,9 @@ impl Command for SplitCurveCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let location = parse_curve_split_location(arguments)?;
+        if let CurveSplitLocation::CuttingObjects(source_pick) = location {
+            return split_curve_with_selected_cutters(document, source_pick);
+        }
         let mut candidates = document
             .selected_objects()
             .filter_map(|object| {
@@ -12427,42 +12431,75 @@ impl Command for SplitCurveCommand {
                 .into_iter()
                 .map(|point| curve.closest_parameter(point, document.tolerance()))
                 .collect::<Result<Vec<_>, _>>()?,
+            CurveSplitLocation::CuttingObjects(_) => {
+                unreachable!("cutting-object Split is handled before single-curve validation")
+            }
         };
-        if parameters.len() >= MAX_SPAN_OUTPUT_OBJECTS {
-            return Err(too_many_span_outputs("Split"));
-        }
-        let pieces = curve.try_split_at_parameters(&parameters)?;
-        let piece_count = pieces.len();
-        let source = document
-            .object(id)
-            .expect("selected split source belongs to the document");
-        let attributes = source.attributes().clone();
-        let group_ids = document
-            .groups()
-            .filter(|group| group.members().any(|member| member == id))
-            .map(|group| group.id())
-            .collect::<Vec<_>>();
-        let mut pieces = pieces.into_iter();
+        split_curve_at_parameters(
+            document,
+            id,
+            &curve,
+            parameters,
+            CurveSplitReplacement::RetainFirst,
+        )
+    }
+}
+
+#[derive(Clone, Copy)]
+enum CurveSplitReplacement {
+    RetainFirst,
+    ReplaceAll,
+}
+
+fn split_curve_at_parameters(
+    document: &mut Document,
+    id: ObjectId,
+    curve: &NurbsCurve,
+    parameters: Vec<Real>,
+    replacement: CurveSplitReplacement,
+) -> Result<String, CommandError> {
+    if parameters.len() >= MAX_SPAN_OUTPUT_OBJECTS {
+        return Err(too_many_span_outputs("Split"));
+    }
+    let pieces = curve.try_split_at_parameters(&parameters)?;
+    let piece_count = pieces.len();
+    let source = document
+        .object(id)
+        .expect("selected split source belongs to the document");
+    let attributes = source.attributes().clone();
+    let group_ids = document
+        .groups()
+        .filter(|group| group.members().any(|member| member == id))
+        .map(|group| group.id())
+        .collect::<Vec<_>>();
+    let mut output_ids = Vec::with_capacity(piece_count);
+    let mut added_ids = Vec::with_capacity(match replacement {
+        CurveSplitReplacement::RetainFirst => piece_count.saturating_sub(1),
+        CurveSplitReplacement::ReplaceAll => piece_count,
+    });
+    let mut pieces = pieces.into_iter();
+    if matches!(replacement, CurveSplitReplacement::RetainFirst) {
         let first = pieces.next().expect("a split produces at least one piece");
         document.replace_object_geometries([(id, Geometry::NurbsCurve(first))])?;
-        let mut output_ids = Vec::with_capacity(piece_count);
         output_ids.push(id);
-        let mut added_ids = Vec::with_capacity(piece_count.saturating_sub(1));
-        for piece in pieces {
-            let piece_id = document
-                .add_geometry_with_attributes(Geometry::NurbsCurve(piece), attributes.clone())?;
-            output_ids.push(piece_id);
-            added_ids.push(piece_id);
-        }
-        for group_id in group_ids {
-            document.add_group_members(group_id, added_ids.iter().copied())?;
-        }
-        document.select_objects_direct(output_ids, SelectionMode::Replace)?;
-        Ok(format!(
-            "Split the selected curve at {} location(s) into {piece_count} exact NURBS piece(s)",
-            parameters.len()
-        ))
     }
+    for piece in pieces {
+        let piece_id = document
+            .add_geometry_with_attributes(Geometry::NurbsCurve(piece), attributes.clone())?;
+        output_ids.push(piece_id);
+        added_ids.push(piece_id);
+    }
+    for group_id in group_ids {
+        document.add_group_members(group_id, added_ids.iter().copied())?;
+    }
+    if matches!(replacement, CurveSplitReplacement::ReplaceAll) {
+        document.delete_object(id)?;
+    }
+    document.select_objects_direct(output_ids, SelectionMode::Replace)?;
+    Ok(format!(
+        "Split the selected curve at {} location(s) into {piece_count} exact NURBS piece(s)",
+        parameters.len()
+    ))
 }
 
 fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, CommandError> {
@@ -12470,6 +12507,18 @@ fn parse_curve_split_location(arguments: &[&str]) -> Result<CurveSplitLocation, 
         return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
     };
     let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
+    if option_name_eq(first_name, "CuttingObjects") {
+        let (name, value, consumed) = orient_option(arguments, 0, SPLIT_CURVE_USAGE)?;
+        if !option_name_eq(name, "CuttingObjects") || consumed != arguments.len() {
+            return Err(CommandError::Usage(SPLIT_CURVE_USAGE));
+        }
+        return Ok(CurveSplitLocation::CuttingObjects(
+            parse_single_option_point(value, SPLIT_CURVE_USAGE).map_err(|error| match error {
+                CommandError::Usage(_) => CommandError::Usage(SPLIT_CURVE_USAGE),
+                error => error,
+            })?,
+        ));
+    }
     if option_name_eq(first_name, "Parameter") {
         let (name, value, consumed) = orient_option(arguments, 0, SPLIT_CURVE_USAGE)?;
         if !option_name_eq(name, "Parameter") || consumed != arguments.len() {
@@ -12682,10 +12731,98 @@ struct TrimCurveOptions {
 
 struct TrimCurveCommand;
 
-enum TrimCurveInput {
+enum CurveCutterInput {
     Curve(NurbsCurve),
     Surface(NurbsSurface),
     Brep(Brep),
+}
+
+fn selected_curve_cutter_inputs(
+    document: &Document,
+) -> Result<Vec<(ObjectId, CurveCutterInput)>, GeometryError> {
+    document
+        .selected_objects()
+        .filter_map(|object| {
+            let input = match object.geometry() {
+                Geometry::NurbsSurface(surface) => {
+                    Some(Ok(CurveCutterInput::Surface(surface.clone())))
+                }
+                Geometry::Brep(brep) => Some(Ok(CurveCutterInput::Brep(brep.clone()))),
+                geometry => geometry
+                    .nurbs_curve_representation()
+                    .transpose()
+                    .map(|curve| curve.map(CurveCutterInput::Curve)),
+            };
+            input.map(|input| input.map(|input| (object.id(), input)))
+        })
+        .collect()
+}
+
+fn split_curve_with_selected_cutters(
+    document: &mut Document,
+    source_pick: Point3,
+) -> Result<String, CommandError> {
+    let candidates = selected_curve_cutter_inputs(document)?;
+    if candidates.len() < 2 {
+        return Err(CommandError::SplitRequiresSourceAndCuttingObjects {
+            actual: candidates.len(),
+        });
+    }
+
+    let mut picked = None;
+    for (index, (_, input)) in candidates.iter().enumerate() {
+        let CurveCutterInput::Curve(curve) = input else {
+            continue;
+        };
+        let parameter = curve.closest_parameter(source_pick, document.tolerance())?;
+        let distance = curve.evaluate(parameter)?.distance_to(source_pick)?;
+        if picked
+            .as_ref()
+            .is_none_or(|(_, nearest_distance)| distance < *nearest_distance)
+        {
+            picked = Some((index, distance));
+        }
+    }
+    let Some((source_index, _)) = picked else {
+        return Err(CommandError::SplitRequiresCurveSource);
+    };
+    let (source_id, CurveCutterInput::Curve(source)) = &candidates[source_index] else {
+        unreachable!("only selected curves participate in Split source picking")
+    };
+
+    let mut intersections = Vec::new();
+    for (index, (_, cutter)) in candidates.iter().enumerate() {
+        if index == source_index {
+            continue;
+        }
+        append_curve_cutter_intersections(
+            &mut intersections,
+            CurveCutIntersectionContext {
+                source,
+                intersection_source: source,
+                projection: None,
+                tolerance: document.tolerance(),
+                limit: CurveCutIntersectionLimit::Split,
+            },
+            cutter,
+        )?;
+    }
+    intersections.sort_by(|left, right| left.0.total_cmp(&right.0));
+    let parameters = intersections
+        .into_iter()
+        .map(|(parameter, _)| parameter)
+        .collect::<Vec<_>>();
+    if parameters.is_empty() {
+        document.select_objects_direct([*source_id], SelectionMode::Replace)?;
+        return Ok("No cutting intersection was available to split the curve".to_owned());
+    }
+    split_curve_at_parameters(
+        document,
+        *source_id,
+        source,
+        parameters,
+        CurveSplitReplacement::ReplaceAll,
+    )
 }
 
 impl Command for TrimCurveCommand {
@@ -12696,22 +12833,7 @@ impl Command for TrimCurveCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let options = parse_trim_curve_options(arguments)?;
 
-        let candidates = document
-            .selected_objects()
-            .filter_map(|object| {
-                let input = match object.geometry() {
-                    Geometry::NurbsSurface(surface) => {
-                        Some(Ok(TrimCurveInput::Surface(surface.clone())))
-                    }
-                    Geometry::Brep(brep) => Some(Ok(TrimCurveInput::Brep(brep.clone()))),
-                    geometry => geometry
-                        .nurbs_curve_representation()
-                        .transpose()
-                        .map(|curve| curve.map(TrimCurveInput::Curve)),
-                };
-                input.map(|input| input.map(|input| (object.id(), input)))
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let candidates = selected_curve_cutter_inputs(document)?;
         if candidates.len() < 2 {
             return Err(CommandError::TrimRequiresSourceAndCuttingObjects {
                 actual: candidates.len(),
@@ -12729,7 +12851,7 @@ impl Command for TrimCurveCommand {
 
         let mut picked = None;
         for (index, (_, input)) in candidates.iter().enumerate() {
-            let TrimCurveInput::Curve(curve) = input else {
+            let CurveCutterInput::Curve(curve) = input else {
                 continue;
             };
             let intersection_curve = if let Some(projection) = projection {
@@ -12752,118 +12874,29 @@ impl Command for TrimCurveCommand {
         let Some((source_index, intersection_source, picked_parameter, _)) = picked else {
             return Err(CommandError::TrimRequiresCurveSource);
         };
-        let (source_id, TrimCurveInput::Curve(source)) = &candidates[source_index] else {
+        let (source_id, CurveCutterInput::Curve(source)) = &candidates[source_index] else {
             unreachable!("only selected curves participate in Trim source picking")
         };
 
         let domain = source.domain();
         let domain_start = *domain.start();
         let domain_end = *domain.end();
-        let start_point = source.evaluate(domain_start)?;
-        let end_point = source.evaluate(domain_end)?;
         let mut intersections = Vec::new();
         for (index, (_, cutter)) in candidates.iter().enumerate() {
             if index == source_index {
                 continue;
             }
-            match cutter {
-                TrimCurveInput::Curve(cutter) => {
-                    let intersection_cutter = if let Some(projection) = projection {
-                        cutter.transformed(projection)?
-                    } else {
-                        cutter.clone()
-                    };
-                    for intersection in intersection_source
-                        .intersections_with_curve(&intersection_cutter, document.tolerance())?
-                    {
-                        push_trim_curve_intersection(
-                            &mut intersections,
-                            source,
-                            intersection.first_parameter(),
-                            (domain_start, start_point),
-                            (domain_end, end_point),
-                            document.tolerance(),
-                        )?;
-                    }
-                }
-                TrimCurveInput::Surface(surface) => {
-                    let transformed_surface;
-                    let intersection_surface = if let Some(projection) = projection {
-                        transformed_surface = surface.transformed(projection)?;
-                        &transformed_surface
-                    } else {
-                        surface
-                    };
-                    for event in curve_surface_intersection_events(
-                        &intersection_source,
-                        intersection_surface,
-                        document.tolerance(),
-                    )? {
-                        match event {
-                            CurveSurfaceIntersectionEvent::Point(intersection) => {
-                                push_trim_curve_intersection(
-                                    &mut intersections,
-                                    source,
-                                    intersection.curve_parameter(),
-                                    (domain_start, start_point),
-                                    (domain_end, end_point),
-                                    document.tolerance(),
-                                )?;
-                            }
-                            CurveSurfaceIntersectionEvent::Overlap(overlap) => {
-                                for intersection in [overlap.start(), overlap.end()] {
-                                    push_trim_curve_intersection(
-                                        &mut intersections,
-                                        source,
-                                        intersection.curve_parameter(),
-                                        (domain_start, start_point),
-                                        (domain_end, end_point),
-                                        document.tolerance(),
-                                    )?;
-                                }
-                            }
-                        }
-                    }
-                }
-                TrimCurveInput::Brep(brep) => {
-                    let events = if let Some(projection) = projection {
-                        transformed_curve_brep_intersection_events(
-                            source,
-                            brep,
-                            projection,
-                            document.tolerance(),
-                        )?
-                    } else {
-                        curve_brep_intersection_events(source, brep, document.tolerance())?
-                    };
-                    for event in events {
-                        match event {
-                            CurveBrepIntersectionEvent::Point(intersection) => {
-                                push_trim_curve_intersection(
-                                    &mut intersections,
-                                    source,
-                                    intersection.curve_parameter(),
-                                    (domain_start, start_point),
-                                    (domain_end, end_point),
-                                    document.tolerance(),
-                                )?;
-                            }
-                            CurveBrepIntersectionEvent::Overlap(overlap) => {
-                                for intersection in [overlap.start(), overlap.end()] {
-                                    push_trim_curve_intersection(
-                                        &mut intersections,
-                                        source,
-                                        intersection.curve_parameter(),
-                                        (domain_start, start_point),
-                                        (domain_end, end_point),
-                                        document.tolerance(),
-                                    )?;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            append_curve_cutter_intersections(
+                &mut intersections,
+                CurveCutIntersectionContext {
+                    source,
+                    intersection_source: &intersection_source,
+                    projection,
+                    tolerance: document.tolerance(),
+                    limit: CurveCutIntersectionLimit::Trim,
+                },
+                cutter,
+            )?;
         }
         intersections.sort_by(|left, right| left.0.total_cmp(&right.0));
         let parameters = intersections
@@ -12932,14 +12965,134 @@ impl Command for TrimCurveCommand {
     }
 }
 
-fn push_trim_curve_intersection(
+#[derive(Clone, Copy)]
+enum CurveCutIntersectionLimit {
+    Split,
+    Trim,
+}
+
+#[derive(Clone, Copy)]
+struct CurveCutIntersectionContext<'a> {
+    source: &'a NurbsCurve,
+    intersection_source: &'a NurbsCurve,
+    projection: Option<AffineTransform3>,
+    tolerance: Tolerance,
+    limit: CurveCutIntersectionLimit,
+}
+
+fn append_curve_cutter_intersections(
+    intersections: &mut Vec<(Real, Point3)>,
+    context: CurveCutIntersectionContext<'_>,
+    cutter: &CurveCutterInput,
+) -> Result<(), CommandError> {
+    let CurveCutIntersectionContext {
+        source,
+        intersection_source,
+        projection,
+        tolerance,
+        limit,
+    } = context;
+    match cutter {
+        CurveCutterInput::Curve(cutter) => {
+            let intersection_cutter = if let Some(projection) = projection {
+                cutter.transformed(projection)?
+            } else {
+                cutter.clone()
+            };
+            for intersection in
+                intersection_source.intersections_with_curve(&intersection_cutter, tolerance)?
+            {
+                push_curve_cut_intersection(
+                    intersections,
+                    source,
+                    intersection.first_parameter(),
+                    tolerance,
+                    limit,
+                )?;
+            }
+        }
+        CurveCutterInput::Surface(surface) => {
+            let transformed_surface;
+            let intersection_surface = if let Some(projection) = projection {
+                transformed_surface = surface.transformed(projection)?;
+                &transformed_surface
+            } else {
+                surface
+            };
+            for event in curve_surface_intersection_events(
+                intersection_source,
+                intersection_surface,
+                tolerance,
+            )? {
+                match event {
+                    CurveSurfaceIntersectionEvent::Point(intersection) => {
+                        push_curve_cut_intersection(
+                            intersections,
+                            source,
+                            intersection.curve_parameter(),
+                            tolerance,
+                            limit,
+                        )?;
+                    }
+                    CurveSurfaceIntersectionEvent::Overlap(overlap) => {
+                        for intersection in [overlap.start(), overlap.end()] {
+                            push_curve_cut_intersection(
+                                intersections,
+                                source,
+                                intersection.curve_parameter(),
+                                tolerance,
+                                limit,
+                            )?;
+                        }
+                    }
+                }
+            }
+        }
+        CurveCutterInput::Brep(brep) => {
+            let events = if let Some(projection) = projection {
+                transformed_curve_brep_intersection_events(source, brep, projection, tolerance)?
+            } else {
+                curve_brep_intersection_events(source, brep, tolerance)?
+            };
+            for event in events {
+                match event {
+                    CurveBrepIntersectionEvent::Point(intersection) => {
+                        push_curve_cut_intersection(
+                            intersections,
+                            source,
+                            intersection.curve_parameter(),
+                            tolerance,
+                            limit,
+                        )?;
+                    }
+                    CurveBrepIntersectionEvent::Overlap(overlap) => {
+                        for intersection in [overlap.start(), overlap.end()] {
+                            push_curve_cut_intersection(
+                                intersections,
+                                source,
+                                intersection.curve_parameter(),
+                                tolerance,
+                                limit,
+                            )?;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn push_curve_cut_intersection(
     intersections: &mut Vec<(Real, Point3)>,
     source: &NurbsCurve,
     parameter: Real,
-    start: (Real, Point3),
-    end: (Real, Point3),
     tolerance: Tolerance,
+    limit: CurveCutIntersectionLimit,
 ) -> Result<(), CommandError> {
+    let domain = source.domain();
+    let start = (*domain.start(), source.evaluate(*domain.start())?);
+    let end = (*domain.end(), source.evaluate(*domain.end())?);
     let intersection = (parameter, source.evaluate(parameter)?);
     if trim_intersections_near(intersection, start, tolerance)
         || trim_intersections_near(intersection, end, tolerance)
@@ -12949,10 +13102,18 @@ fn push_trim_curve_intersection(
     {
         return Ok(());
     }
-    if intersections.len() == MAX_CURVE_TRIM_INTERSECTIONS {
-        return Err(CommandError::TooManyTrimIntersections {
-            maximum: MAX_CURVE_TRIM_INTERSECTIONS,
-        });
+    match limit {
+        CurveCutIntersectionLimit::Split
+            if intersections.len().saturating_add(1) >= MAX_SPAN_OUTPUT_OBJECTS =>
+        {
+            return Err(too_many_span_outputs("Split"));
+        }
+        CurveCutIntersectionLimit::Trim if intersections.len() == MAX_CURVE_TRIM_INTERSECTIONS => {
+            return Err(CommandError::TooManyTrimIntersections {
+                maximum: MAX_CURVE_TRIM_INTERSECTIONS,
+            });
+        }
+        CurveCutIntersectionLimit::Split | CurveCutIntersectionLimit::Trim => {}
     }
     intersections.push(intersection);
     Ok(())
@@ -20070,6 +20231,14 @@ pub enum CommandError {
     SplitRequiresOneCurve { actual: usize },
 
     #[error(
+        "cutting-object Split requires a selected source curve and at least one selected curve, surface, or B-rep cutter, got {actual} supported selected object(s)"
+    )]
+    SplitRequiresSourceAndCuttingObjects { actual: usize },
+
+    #[error("cutting-object Split requires at least one selected curve to use as the source")]
+    SplitRequiresCurveSource,
+
+    #[error(
         "Intersect currently supports selected curves, untrimmed NURBS surfaces, and B-reps only"
     )]
     UnsupportedIntersectGeometry,
@@ -26244,6 +26413,257 @@ mod tests {
             .collect::<Vec<_>>();
         assert_eq!(domains, vec![0.0..=2.0, 2.0..=5.0, 5.0..=8.0, 8.0..=10.0]);
         assert_eq!(document.selected_object_count(), 4);
+    }
+
+    #[test]
+    fn split_curve_uses_selected_curve_cutters_and_replaces_source_with_grouped_pieces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New CuttingSplit")
+            .unwrap();
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName SplitSource")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group SplitPieces")
+            .unwrap();
+        let source = document.object(source_id).unwrap().clone();
+        registry.execute(&mut document, "Line 3,-5 3,5").unwrap();
+        registry.execute(&mut document, "Line 7,-5 7,5").unwrap();
+        let cutter_ids = document
+            .objects()
+            .filter(|object| object.id() != source_id)
+            .map(|object| object.id())
+            .collect::<BTreeSet<_>>();
+        let cutters = cutter_ids
+            .iter()
+            .map(|id| (*id, document.object(*id).unwrap().clone()))
+            .collect::<Vec<_>>();
+        document
+            .select_objects_direct(
+                std::iter::once(source_id).chain(cutter_ids.iter().copied()),
+                SelectionMode::Replace,
+            )
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=5,0,0")
+                .unwrap(),
+            "Split the selected curve at 2 location(s) into 3 exact NURBS piece(s)"
+        );
+        for (id, cutter) in cutters {
+            assert_eq!(document.object(id).unwrap(), &cutter);
+            assert!(!document.is_selected(id));
+        }
+        let outputs = document
+            .objects()
+            .filter(|object| !cutter_ids.contains(&object.id()))
+            .collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 3);
+        assert!(document.object(source_id).is_none());
+        let domains = outputs
+            .iter()
+            .map(|object| {
+                assert_eq!(object.attributes(), source.attributes());
+                assert!(document.is_selected(object.id()));
+                let Geometry::NurbsCurve(curve) = object.geometry() else {
+                    panic!("cutting-object Split must create exact NURBS pieces")
+                };
+                curve.domain()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(domains, vec![0.0..=3.0, 3.0..=7.0, 7.0..=10.0]);
+        assert_eq!(
+            document
+                .group_by_name("SplitPieces")
+                .unwrap()
+                .members()
+                .collect::<BTreeSet<_>>(),
+            outputs.iter().map(|object| object.id()).collect()
+        );
+    }
+
+    #[test]
+    fn split_curve_uses_exact_surface_and_trimmed_brep_cutters() {
+        let registry = CommandRegistry::with_builtins();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+
+        let mut surface_document = Document::default();
+        registry
+            .execute(&mut surface_document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let source_id = surface_document.objects().next().unwrap().id();
+        let surface = NurbsSurface::try_bilinear([
+            point(3.0, -1.0, 0.0),
+            point(7.0, -1.0, 0.0),
+            point(7.0, 1.0, 0.0),
+            point(3.0, 1.0, 0.0),
+        ])
+        .unwrap();
+        let cutter_id = surface_document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        surface_document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut surface_document, "Split CuttingObjects 1,0,0")
+            .unwrap();
+        let surface_domains = surface_document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("surface Split selected unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(surface_domains, vec![0.0..=3.0, 3.0..=7.0, 7.0..=10.0]);
+        assert!(surface_document.object(cutter_id).is_some());
+
+        let closed_polyline = |points| {
+            Polyline3::try_new(points, Tolerance::DEFAULT)
+                .and_then(|polyline| polyline.to_nurbs())
+                .unwrap()
+        };
+        let outer = closed_polyline(vec![
+            point(2.0, -2.0, 0.0),
+            point(8.0, -2.0, 0.0),
+            point(8.0, 2.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(2.0, -2.0, 0.0),
+        ]);
+        let hole = closed_polyline(vec![
+            point(4.0, -1.0, 0.0),
+            point(6.0, -1.0, 0.0),
+            point(6.0, 1.0, 0.0),
+            point(4.0, 1.0, 0.0),
+            point(4.0, -1.0, 0.0),
+        ]);
+        let cutter = Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap();
+        let mut brep_document = Document::default();
+        registry
+            .execute(&mut brep_document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let source_id = brep_document.objects().next().unwrap().id();
+        let cutter_id = brep_document.add_geometry(Geometry::Brep(cutter)).unwrap();
+        brep_document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut brep_document, "Split CuttingObjects=1,0,0")
+                .unwrap(),
+            "Split the selected curve at 4 location(s) into 5 exact NURBS piece(s)"
+        );
+        let brep_domains = brep_document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("trimmed B-rep Split selected unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        for (actual, expected) in
+            brep_domains
+                .iter()
+                .zip([[0.0, 2.0], [2.0, 4.0], [4.0, 6.0], [6.0, 8.0], [8.0, 10.0]])
+        {
+            assert!((*actual.start() - expected[0]).abs() < 1.0e-12);
+            assert!((*actual.end() - expected[1]).abs() < 1.0e-12);
+        }
+        assert!(brep_document.object(cutter_id).is_some());
+    }
+
+    #[test]
+    fn cutting_object_split_handles_no_hit_and_rejects_invalid_sources_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        for command in [
+            "Split CuttingObjects",
+            "Split CuttingObjects=1,2,3 extra",
+            "Split CuttingObjects=1,2,3,4",
+        ] {
+            assert!(matches!(
+                registry.execute(&mut document, command),
+                Err(CommandError::Usage(SPLIT_CURVE_USAGE))
+            ));
+        }
+        assert!(matches!(
+            registry.execute(&mut document, "Split CuttingObjects=0,0,0"),
+            Err(CommandError::SplitRequiresSourceAndCuttingObjects { actual: 0 })
+        ));
+
+        registry.execute(&mut document, "Line 0,0 10,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Split CuttingObjects=5,0,0"),
+            Err(CommandError::SplitRequiresSourceAndCuttingObjects { actual: 1 })
+        ));
+
+        registry.execute(&mut document, "Line 0,2 10,2").unwrap();
+        let ids = document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        document
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=5,0,0")
+                .unwrap(),
+            "No cutting intersection was available to split the curve"
+        );
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert_eq!(
+            document.selected_object_ids().collect::<Vec<_>>(),
+            [source_id]
+        );
+
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let mut surfaces = Document::default();
+        for offset in [0.0, 2.0] {
+            let surface = NurbsSurface::try_bilinear([
+                point(0.0, 0.0, offset),
+                point(1.0, 0.0, offset),
+                point(1.0, 1.0, offset),
+                point(0.0, 1.0, offset),
+            ])
+            .unwrap();
+            surfaces
+                .add_geometry(Geometry::NurbsSurface(surface))
+                .unwrap();
+        }
+        let ids = surfaces
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        surfaces
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        let before = surfaces.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut surfaces, "Split CuttingObjects=0,0,0"),
+            Err(CommandError::SplitRequiresCurveSource)
+        ));
+        assert_eq!(
+            surfaces.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
     }
 
     #[test]

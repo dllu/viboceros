@@ -7027,6 +7027,116 @@ def _execute(operation, iterations, tolerance):
             first.Dispose()
             second.Dispose()
 
+    if kind == "curve_split_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        cutters = []
+        try:
+            for definition in operation["cutters"]:
+                cutters.append(
+                    _curve_extension_boundary_from_definition(definition, tolerance)
+                )
+        except Exception:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+            raise
+
+        def split_curve_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            cutter_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Split Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddCurve(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Split command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Split Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Split command source curve")
+                for cutter in cutters:
+                    if isinstance(cutter, Rhino.Geometry.Curve):
+                        cutter_id = document.Objects.AddCurve(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Surface):
+                        cutter_id = document.Objects.AddSurface(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Brep):
+                        cutter_id = document.Objects.AddBrep(cutter)
+                    else:
+                        raise ValueError("unsupported Split cutter geometry")
+                    if cutter_id == System.Guid.Empty:
+                        raise ValueError("could not add Split command cutter object")
+                    cutter_ids.append(cutter_id)
+                document.Objects.Select(source_id)
+                command = "_-Split %s _Enter" % " ".join(
+                    "_SelID %s" % str(cutter_id) for cutter_id in cutter_ids
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and item.Id not in cutter_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                if not objects:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "Split macro %r returned %r and left no result curves; history tail: %s"
+                        % (command, succeeded, history[-3000:])
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Split Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(item.Geometry),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: tuple(
+                        record["curve"]["control_points"][0]["point"]
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, split_curve_command)
+        finally:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+
     if kind == "curve_trim_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])
