@@ -15,14 +15,15 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, CurveExtensionSide, CurveKnotSpacing, CurveRef,
-    CurveThroughConstruction, CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment,
-    MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceExtensionEdge,
-    SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, WeightedPoint3, join_polylines, sort_and_cull_points, try_catenary,
-    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    CatenaryOutput, Circle3, CircularArc3, CurveExtensionSide, CurveExtensionStyle,
+    CurveKnotSpacing, CurveRef, CurveThroughConstruction, CurveTweenMatchMethod, Ellipse3, Frame3,
+    GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions,
+    MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    PointMorph, Polyline3, SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection,
+    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
+    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
+    try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -582,6 +583,20 @@ pub enum Operation {
         length: f64,
         style: CurveCommandExtensionStyle,
         join: CurveCommandExtensionJoin,
+    },
+    CurveExtendBoundaryCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        boundaries: Vec<NurbsCurveDefinition>,
+        side: CurveExtensionEnd,
+        style: CurveCommandExtensionStyle,
+        join: CurveCommandExtensionJoin,
+        /// Replaces distinct result knot values with uniformly spaced ranks.
+        /// Rhino's Arc-to-boundary solver leaks its temporary search extent
+        /// into otherwise equivalent parameter intervals, so locus and knot-
+        /// topology comparisons opt into this canonical representation.
+        #[serde(default)]
+        canonicalize_curve_parameters: bool,
     },
     CurveSubcurveGeometry {
         id: String,
@@ -1183,6 +1198,7 @@ impl Operation {
             | Self::CurveExtendGeometry { id, .. }
             | Self::CurveExtendLengthGeometry { id, .. }
             | Self::CurveExtendCommand { id, .. }
+            | Self::CurveExtendBoundaryCommand { id, .. }
             | Self::CurveSubcurveGeometry { id, .. }
             | Self::CurveSplitGeometry { id, .. }
             | Self::CurveMultiSplitGeometry { id, .. }
@@ -3088,6 +3104,26 @@ fn execute(
             join,
             ..
         } => curve_extend_command(iterations, curve, *side, *length, *style, *join, tolerance)?,
+        Operation::CurveExtendBoundaryCommand {
+            curve,
+            boundaries,
+            side,
+            style,
+            join,
+            canonicalize_curve_parameters,
+            ..
+        } => curve_extend_boundary_command(
+            iterations,
+            curve,
+            boundaries,
+            CurveBoundaryCommandOptions {
+                side: *side,
+                style: *style,
+                join: *join,
+                canonicalize_curve_parameters: *canonicalize_curve_parameters,
+            },
+            tolerance,
+        )?,
         Operation::CurveSubcurveGeometry {
             curve, start, end, ..
         } => {
@@ -6909,6 +6945,132 @@ fn curve_extend_command(
     Ok((value, elapsed_ns))
 }
 
+#[derive(Clone, Copy)]
+struct CurveBoundaryCommandOptions {
+    side: CurveExtensionEnd,
+    style: CurveCommandExtensionStyle,
+    join: CurveCommandExtensionJoin,
+    canonicalize_curve_parameters: bool,
+}
+
+fn curve_extend_boundary_command(
+    iterations: u32,
+    definition: &NurbsCurveDefinition,
+    boundary_definitions: &[NurbsCurveDefinition],
+    options: CurveBoundaryCommandOptions,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let CurveBoundaryCommandOptions {
+        side,
+        style,
+        join,
+        canonicalize_curve_parameters,
+    } = options;
+    let source = nurbs_curve_from_definition(definition)?;
+    let boundaries = boundary_definitions
+        .iter()
+        .map(nurbs_curve_from_definition)
+        .collect::<Result<Vec<_>, _>>()?;
+    let geometry_style = match style {
+        CurveCommandExtensionStyle::Natural => CurveExtensionStyle::Natural,
+        CurveCommandExtensionStyle::Arc => CurveExtensionStyle::Arc,
+        CurveCommandExtensionStyle::Line => CurveExtensionStyle::Line,
+        CurveCommandExtensionStyle::Smooth => CurveExtensionStyle::Smooth,
+    };
+    let extend = || -> Result<Vec<NurbsCurve>, GeometryError> {
+        Ok(match join {
+            CurveCommandExtensionJoin::Merge => vec![source.try_merged_to_curve_boundaries(
+                side.geometry(),
+                geometry_style,
+                &boundaries,
+                tolerance,
+            )?],
+            CurveCommandExtensionJoin::Yes => vec![source.try_joined_to_curve_boundaries(
+                side.geometry(),
+                geometry_style,
+                &boundaries,
+                tolerance,
+            )?],
+            CurveCommandExtensionJoin::No => source.try_separate_extensions_to_curve_boundaries(
+                side.geometry(),
+                geometry_style,
+                &boundaries,
+                tolerance,
+            )?,
+        })
+    };
+    let extensions = extend()?;
+    let mut document = Document::new(tolerance);
+    let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+        .with_name("Viboceros Extend Source")
+        .with_object_color(ColorRgb::new(12, 34, 56));
+    let source_id = document
+        .add_geometry_with_attributes(Geometry::NurbsCurve(source.clone()), attributes.clone())?;
+    let group_id = document.add_group(Some("Viboceros Extend Group".to_owned()), [source_id])?;
+    if join == CurveCommandExtensionJoin::No {
+        for extension in extensions {
+            document.add_geometry_with_attributes(
+                Geometry::NurbsCurve(extension),
+                attributes.clone(),
+            )?;
+        }
+    } else {
+        let extension = extensions
+            .into_iter()
+            .next()
+            .expect("a merged or joined boundary extension returns one curve");
+        document.replace_object_geometries([(source_id, Geometry::NurbsCurve(extension))])?;
+    }
+    document.clear_selection();
+
+    let source_group_members = document
+        .group(group_id)
+        .expect("the Extend source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .map(|object| {
+            let curve = object
+                .geometry()
+                .nurbs_curve_representation()?
+                .expect("the boundary Extend probe produces only curve objects");
+            let curve_value = if canonicalize_curve_parameters {
+                canonical_curve_definition_value(&curve)
+            } else {
+                nurbs_curve_definition_value(&curve)
+            };
+            let first_point = curve.control_points()[0].point().to_array();
+            Ok((
+                object.id() == source_id,
+                first_point,
+                json!({
+                    "attributes_match_source": object.attributes() == &attributes,
+                    "curve": curve_value,
+                    "in_source_group": source_group_members.contains(&object.id()),
+                    "original_id": object.id() == source_id,
+                    "selected": document.is_selected(object.id()),
+                }),
+            ))
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    records.sort_by(
+        |(left_original, left_point, _), (right_original, right_point, _)| {
+            left_original
+                .cmp(right_original)
+                .then_with(|| compare_point(left_point, right_point))
+        },
+    );
+    let value = json!({
+        "command_succeeded": true,
+        "objects": records.into_iter().map(|(_, _, value)| value).collect::<Vec<_>>(),
+    });
+    let (_, elapsed_ns) = measure(iterations, || {
+        black_box(extend()).map(|curves| curves.len())
+    })?;
+    Ok((value, elapsed_ns))
+}
+
 fn uniform_surface_definition_value(surface: &NurbsSurface) -> Value {
     let mut value = nurbs_surface_definition_value(surface);
     let object = value
@@ -6928,6 +7090,32 @@ fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
         "degree": curve.degree(),
         "domain": [*curve.domain().start(), *curve.domain().end()],
         "knots": curve.knots(),
+    })
+}
+
+fn canonical_curve_definition_value(curve: &NurbsCurve) -> Value {
+    let mut knot_rank = 0_usize;
+    let mut previous = None;
+    let ranks = curve
+        .knots()
+        .iter()
+        .map(|&knot| {
+            if previous.is_some_and(|value| value != knot) {
+                knot_rank += 1;
+            }
+            previous = Some(knot);
+            knot_rank
+        })
+        .collect::<Vec<_>>();
+    let final_rank = knot_rank.max(1) as f64;
+    json!({
+        "control_points": curve.control_points().iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": curve.degree(),
+        "domain": [0.0, 1.0],
+        "knots": ranks.into_iter().map(|rank| rank as f64 / final_rank).collect::<Vec<_>>(),
     })
 }
 
@@ -9393,6 +9581,48 @@ mod tests {
         assert_eq!(objects[1]["original_id"], true);
         assert_eq!(objects[1]["in_source_group"], true);
         assert_eq!(objects[1]["selected"], false);
+    }
+
+    #[test]
+    fn captures_curve_extension_to_a_selected_boundary() {
+        let line = |start, end, knots| NurbsCurveDefinition {
+            degree: 1,
+            control_points: [start, end]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots,
+            domain: None,
+        };
+        let response = run_request(&request(vec![Operation::CurveExtendBoundaryCommand {
+            id: "extend-line-to-boundary".to_owned(),
+            curve: line([0.0, 0.0, 0.0], [5.0, 0.0, 0.0], vec![0.0, 0.0, 5.0, 5.0]),
+            boundaries: vec![line(
+                [10.0, -5.0, 0.0],
+                [10.0, 5.0, 0.0],
+                vec![0.0, 0.0, 10.0, 10.0],
+            )],
+            side: CurveExtensionEnd::End,
+            style: CurveCommandExtensionStyle::Line,
+            join: CurveCommandExtensionJoin::No,
+            canonicalize_curve_parameters: false,
+        }]))
+        .unwrap();
+
+        let objects = response.results[0].value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 2);
+        assert_eq!(objects[0]["original_id"], false);
+        assert_eq!(objects[0]["attributes_match_source"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["curve"]["domain"], json!([0.0, 1.0]));
+        let end = objects[0]["curve"]["control_points"][1]["point"]
+            .as_array()
+            .unwrap();
+        assert!((end[0].as_f64().unwrap() - 10.0).abs() < 1.0e-12);
+        assert_eq!(end[1], 0.0);
+        assert_eq!(end[2], 0.0);
+        assert_eq!(objects[1]["original_id"], true);
+        assert_eq!(objects[1]["in_source_group"], true);
     }
 
     #[test]

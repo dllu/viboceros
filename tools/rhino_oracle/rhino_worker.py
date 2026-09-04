@@ -354,7 +354,7 @@ def _mesh_to_nurb_brep_value(brep):
     }
 
 
-def _nurbs_curve_definition(curve):
+def _nurbs_curve_definition(curve, canonicalize_parameters=False):
     nurbs = curve.ToNurbsCurve()
     if nurbs is None:
         raise ValueError("could not convert curve to NURBS form")
@@ -362,6 +362,19 @@ def _nurbs_curve_definition(curve):
         knots = [float(nurbs.Knots[0])]
         knots.extend(float(nurbs.Knots[index]) for index in range(nurbs.Knots.Count))
         knots.append(float(nurbs.Knots[nurbs.Knots.Count - 1]))
+        domain = [float(nurbs.Domain.T0), float(nurbs.Domain.T1)]
+        if canonicalize_parameters:
+            rank = 0
+            ranks = []
+            previous = None
+            for knot in knots:
+                if previous is not None and knot != previous:
+                    rank += 1
+                ranks.append(rank)
+                previous = knot
+            final_rank = float(max(rank, 1))
+            knots = [value / final_rank for value in ranks]
+            domain = [0.0, 1.0]
         return {
             "control_points": [
                 {
@@ -371,7 +384,7 @@ def _nurbs_curve_definition(curve):
                 for index in range(nurbs.Points.Count)
             ],
             "degree": int(nurbs.Degree),
-            "domain": [float(nurbs.Domain.T0), float(nurbs.Domain.T1)],
+            "domain": domain,
             "knots": knots,
         }
     finally:
@@ -6005,6 +6018,163 @@ def _execute(operation, iterations, tolerance):
             return _measure(iterations, extend_curve_command)
         finally:
             source.Dispose()
+
+    if kind == "curve_extend_boundary_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_curve_from_definition(operation["curve"])
+        boundaries = [
+            _nurbs_curve_from_definition(definition)
+            for definition in operation["boundaries"]
+        ]
+        side_name = str(operation["side"]).lower()
+        style_name = str(operation["style"]).lower()
+        join_name = str(operation["join"]).lower()
+        if not boundaries or side_name not in ("start", "end", "both"):
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise ValueError("invalid curve boundary extension side")
+        if style_name not in ("natural", "arc", "line", "smooth"):
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise ValueError("invalid curve boundary extension style")
+        if join_name not in ("merge", "yes", "no"):
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise ValueError("invalid curve boundary extension join mode")
+
+        def crossing_selection(point, radius):
+            return "_SelCrossing %.17g,%.17g %.17g,%.17g" % (
+                point.X - radius,
+                point.Y - radius,
+                point.X + radius,
+                point.Y + radius,
+            )
+
+        def extend_curve_to_boundaries_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            boundary_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Extend Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddCurve(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add Extend command source curve")
+                group_index = document.Groups.Add(
+                    "Viboceros Extend Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group Extend command source curve")
+                for boundary in boundaries:
+                    boundary_id = document.Objects.AddCurve(boundary)
+                    if boundary_id == System.Guid.Empty:
+                        raise ValueError("could not add Extend command boundary curve")
+                    boundary_ids.append(boundary_id)
+                    document.Objects.Select(boundary_id)
+                Rhino.RhinoApp.RunScript("_-SetView _World _Top _Zoom _Extents", False)
+                radius = max(1.0, float(source.GetBoundingBox(True).Diagonal.Length)) * 0.02
+                selections = []
+                if side_name in ("start", "both"):
+                    selections.append(crossing_selection(source.PointAtStart, radius))
+                if side_name in ("end", "both"):
+                    selections.append(crossing_selection(source.PointAtEnd, radius))
+                command = "_-Extend _Type=_%s _Join=_%s %s _Enter" % (
+                    (
+                        "Natural"
+                        if style_name == "natural"
+                        else (
+                            "Arc"
+                            if style_name == "arc"
+                            else ("Line" if style_name == "line" else "Smooth")
+                        )
+                    ),
+                    (
+                        "Merge"
+                        if join_name == "merge"
+                        else ("Yes" if join_name == "yes" else "No")
+                    ),
+                    " ".join(selections),
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                objects = [
+                    item
+                    for item in document.Objects
+                    if item.Id not in original_ids
+                    and item.Id not in boundary_ids
+                    and isinstance(item.Geometry, Rhino.Geometry.Curve)
+                ]
+                expected_count = 1 + (
+                    (2 if side_name == "both" else 1) if join_name == "no" else 0
+                )
+                if len(objects) != expected_count:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "boundary Extend macro %r returned %r and left %d result curves; "
+                        "expected %d; history tail: %s"
+                        % (
+                            command,
+                            succeeded,
+                            len(objects),
+                            expected_count,
+                            history[-3000:],
+                        )
+                    )
+                records = []
+                for item in objects:
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Extend Source"
+                            and int(item.Attributes.LayerIndex) == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "curve": _nurbs_curve_definition(
+                            item.Geometry,
+                            bool(operation.get("canonicalize_curve_parameters", False)),
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                records.sort(
+                    key=lambda record: (
+                        record["original_id"],
+                        tuple(record["curve"]["control_points"][0]["point"]),
+                    )
+                )
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, extend_curve_to_boundaries_command)
+        finally:
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
 
     if kind == "curve_subcurve_geometry":
         source = _nurbs_curve_from_definition(operation["curve"])

@@ -76,7 +76,9 @@ pub use mesh::{
     MeshTruncatedConeOptions, MeshUvSphereOptions, TriangleMesh,
 };
 pub use morph::{PointMorph, SurfacePointMorph};
-pub use nurbs::{ControlPointCurveClosure, CurveExtensionSide, NurbsCurve, WeightedPoint3};
+pub use nurbs::{
+    ControlPointCurveClosure, CurveExtensionSide, CurveExtensionStyle, NurbsCurve, WeightedPoint3,
+};
 pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceKnotDirection};
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};
 pub use plane::{Plane, intersect_three_planes};

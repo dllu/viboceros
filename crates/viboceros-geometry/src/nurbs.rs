@@ -32,6 +32,78 @@ pub enum CurveExtensionSide {
     Both,
 }
 
+/// Continuation geometry used when extending a curve.
+///
+/// `Natural` follows Rhino's command behavior: line-like curves continue as
+/// lines, exact circular curves retain their circle, and all other curves use
+/// smooth NURBS extrapolation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CurveExtensionStyle {
+    Natural,
+    Arc,
+    Line,
+    Smooth,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct CurveBoundaryExtensionTarget {
+    parameter: Real,
+    length: Real,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct CurveBoundaryExtensionTargets {
+    style: CurveExtensionStyle,
+    start: Option<CurveBoundaryExtensionTarget>,
+    end: Option<CurveBoundaryExtensionTarget>,
+}
+
+#[derive(Clone, Copy, Debug)]
+struct CurveCurveIntersection {
+    first_parameter: Real,
+    second_parameter: Real,
+    point: Point3,
+}
+
+#[derive(Clone, Debug)]
+struct CurveIntersectionNode {
+    curve: NurbsCurve,
+    bounds: BoundingBox3,
+    convex_hull_bounds: bool,
+    depth: u8,
+}
+
+impl CurveIntersectionNode {
+    fn try_new(curve: NurbsCurve, depth: u8) -> Result<Self, GeometryError> {
+        let first_positive = curve.control_points[0].weight.is_sign_positive();
+        let convex_hull_bounds = curve
+            .control_points
+            .iter()
+            .all(|control| control.weight.is_sign_positive() == first_positive);
+        let bounds = curve.control_point_bounds();
+        Ok(Self {
+            curve,
+            bounds,
+            convex_hull_bounds,
+            depth,
+        })
+    }
+
+    fn split(self) -> Result<[Self; 2], GeometryError> {
+        let domain = self.curve.domain();
+        let middle = finite_midpoint(*domain.start(), *domain.end());
+        let (left, right) = self.curve.try_split(middle)?;
+        Ok([
+            Self::try_new(left, self.depth + 1)?,
+            Self::try_new(right, self.depth + 1)?,
+        ])
+    }
+
+    fn spatial_size(&self) -> Result<Real, GeometryError> {
+        self.bounds.min().distance_to(self.bounds.max())
+    }
+}
+
 /// A Euclidean control point paired with a finite, nonzero rational weight.
 ///
 /// Negative weights are required for projective NURBS produced by Rhino
@@ -1369,6 +1441,135 @@ impl NurbsCurve {
         Ok((parameter, distance))
     }
 
+    fn curve_intersections(
+        &self,
+        other: &Self,
+        tolerance: Tolerance,
+    ) -> Result<Vec<CurveCurveIntersection>, GeometryError> {
+        const MAX_NODE_PAIRS: usize = 500_000;
+        const MAX_DEPTH: u8 = 56;
+
+        let coordinate_scale = self
+            .control_points
+            .iter()
+            .chain(&other.control_points)
+            .flat_map(|control| control.point.to_array())
+            .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+        let distance_tolerance = tolerance
+            .absolute()
+            .max(tolerance.relative() * coordinate_scale);
+        let refinement_tolerance =
+            (distance_tolerance * 1.0e-4).max(Real::EPSILON * coordinate_scale * 64.0);
+        let leaf_size = distance_tolerance * 2.0;
+        let mut stack = Vec::new();
+        for first_span in self.spans() {
+            let first =
+                CurveIntersectionNode::try_new(self.try_trimmed(first_span.0..=first_span.1)?, 0)?;
+            for second_span in other.spans() {
+                stack.push((
+                    first.clone(),
+                    CurveIntersectionNode::try_new(
+                        other.try_trimmed(second_span.0..=second_span.1)?,
+                        0,
+                    )?,
+                ));
+            }
+        }
+
+        let mut processed = 0_usize;
+        let mut intersections = Vec::new();
+        while let Some((first, second)) = stack.pop() {
+            processed += 1;
+            if processed > MAX_NODE_PAIRS {
+                return Err(GeometryError::CurveIntersectionDidNotConverge);
+            }
+            if first.convex_hull_bounds
+                && second.convex_hull_bounds
+                && !bounding_boxes_overlap(first.bounds, second.bounds, distance_tolerance)
+            {
+                continue;
+            }
+
+            let first_size = first.spatial_size()?;
+            let second_size = second.spatial_size()?;
+            let leaf = (first.convex_hull_bounds
+                && second.convex_hull_bounds
+                && first_size <= leaf_size
+                && second_size <= leaf_size)
+                || (first.depth >= MAX_DEPTH && second.depth >= MAX_DEPTH);
+            if leaf {
+                let first_domain = first.curve.domain();
+                let second_domain = second.curve.domain();
+                let (first_fraction, second_fraction) = closest_segment_fractions(
+                    first.curve.evaluate(*first_domain.start())?,
+                    first.curve.evaluate(*first_domain.end())?,
+                    second.curve.evaluate(*second_domain.start())?,
+                    second.curve.evaluate(*second_domain.end())?,
+                )?;
+                let first_seed = interpolate_parameter(
+                    *first_domain.start(),
+                    *first_domain.end(),
+                    first_fraction,
+                );
+                let second_seed = interpolate_parameter(
+                    *second_domain.start(),
+                    *second_domain.end(),
+                    second_fraction,
+                );
+                if let Some(intersection) = refine_curve_curve_intersection(
+                    self,
+                    other,
+                    first_seed,
+                    second_seed,
+                    [*first_domain.start(), *first_domain.end()],
+                    [*second_domain.start(), *second_domain.end()],
+                    refinement_tolerance,
+                )? && !intersections
+                    .iter()
+                    .any(|existing: &CurveCurveIntersection| {
+                        existing
+                            .point
+                            .distance_to(intersection.point)
+                            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+                            && parameter_near(
+                                existing.first_parameter,
+                                intersection.first_parameter,
+                            )
+                            && parameter_near(
+                                existing.second_parameter,
+                                intersection.second_parameter,
+                            )
+                    })
+                {
+                    intersections.push(intersection);
+                }
+                continue;
+            }
+
+            let split_first = !first.convex_hull_bounds
+                || (second.convex_hull_bounds
+                    && first.depth < MAX_DEPTH
+                    && (first_size >= second_size || second.depth >= MAX_DEPTH));
+            if split_first && first.depth < MAX_DEPTH {
+                let [left, right] = first.split()?;
+                stack.push((right, second.clone()));
+                stack.push((left, second));
+            } else if second.depth < MAX_DEPTH {
+                let [left, right] = second.split()?;
+                stack.push((first.clone(), right));
+                stack.push((first, left));
+            } else {
+                return Err(GeometryError::CurveIntersectionDidNotConverge);
+            }
+        }
+        intersections.sort_by(|left, right| {
+            left.first_parameter
+                .total_cmp(&right.first_parameter)
+                .then_with(|| left.second_parameter.total_cmp(&right.second_parameter))
+        });
+        Ok(intersections)
+    }
+
     /// Computes arc length span by span with adaptive Gauss-Kronrod
     /// integration of the exact first derivative.
     pub fn length(&self, tolerance: Tolerance) -> Result<Real, GeometryError> {
@@ -2390,6 +2591,359 @@ impl NurbsCurve {
             let first_knot = knots.len() - result.degree - 1;
             knots[first_knot..].fill(requested_end);
             result = Self::try_new_rational(result.degree, all_controls, knots)?;
+        }
+        Ok(result)
+    }
+
+    /// Extends the requested end or ends to the nearest intersections with
+    /// any supplied boundary curve and applies Rhino's `Join=Merge` cleanup.
+    pub fn try_merged_to_curve_boundaries(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[Self],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let targets = self.curve_boundary_extension_targets(side, style, boundaries, tolerance)?;
+        match targets.style {
+            CurveExtensionStyle::Smooth => self.smooth_boundary_extension(&targets, false),
+            CurveExtensionStyle::Line => self
+                .apply_boundary_extension_lengths(&targets, |curve, side, length| {
+                    curve.try_merged_linearly_by_length(side, length, tolerance)
+                }),
+            CurveExtensionStyle::Arc => {
+                self.apply_boundary_extension_lengths(&targets, |curve, side, length| {
+                    curve.try_merged_circularly_by_length(side, length, tolerance)
+                })
+            }
+            CurveExtensionStyle::Natural => {
+                unreachable!("boundary extension resolves Natural before constructing targets")
+            }
+        }
+    }
+
+    /// Extends the requested end or ends to boundary curves while retaining
+    /// an explicit segment boundary, matching Rhino's `Join=Yes` topology.
+    pub fn try_joined_to_curve_boundaries(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[Self],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let targets = self.curve_boundary_extension_targets(side, style, boundaries, tolerance)?;
+        match targets.style {
+            CurveExtensionStyle::Smooth => self.smooth_boundary_extension(&targets, true),
+            CurveExtensionStyle::Line => self
+                .apply_boundary_extension_lengths(&targets, |curve, side, length| {
+                    curve.try_joined_linearly_by_length(side, length, tolerance)
+                }),
+            CurveExtensionStyle::Arc => {
+                self.apply_boundary_extension_lengths(&targets, |curve, side, length| {
+                    curve.try_joined_circularly_by_length(side, length, tolerance)
+                })
+            }
+            CurveExtensionStyle::Natural => {
+                unreachable!("boundary extension resolves Natural before constructing targets")
+            }
+        }
+    }
+
+    /// Creates independent extension curves from the selected ends to the
+    /// nearest boundary hits without modifying this source curve.
+    pub fn try_separate_extensions_to_curve_boundaries(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[Self],
+        tolerance: Tolerance,
+    ) -> Result<Vec<Self>, GeometryError> {
+        let targets = self.curve_boundary_extension_targets(side, style, boundaries, tolerance)?;
+        let mut extensions = Vec::with_capacity(
+            usize::from(targets.start.is_some()) + usize::from(targets.end.is_some()),
+        );
+        for (target, extension_side) in [
+            (targets.start, CurveExtensionSide::Start),
+            (targets.end, CurveExtensionSide::End),
+        ] {
+            let Some(target) = target else {
+                continue;
+            };
+            let mut pieces = match targets.style {
+                CurveExtensionStyle::Smooth => {
+                    vec![self.extension_segment(
+                        extension_side == CurveExtensionSide::Start,
+                        target.parameter,
+                    )?]
+                }
+                CurveExtensionStyle::Line => self.try_separate_linear_extensions_by_length(
+                    extension_side,
+                    target.length,
+                    tolerance,
+                )?,
+                CurveExtensionStyle::Arc => self.try_separate_circular_extensions_by_length(
+                    extension_side,
+                    target.length,
+                    tolerance,
+                )?,
+                CurveExtensionStyle::Natural => {
+                    unreachable!("boundary extension resolves Natural before constructing targets")
+                }
+            };
+            debug_assert_eq!(pieces.len(), 1);
+            extensions.append(&mut pieces);
+        }
+        Ok(extensions)
+    }
+
+    fn curve_boundary_extension_targets(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[Self],
+        tolerance: Tolerance,
+    ) -> Result<CurveBoundaryExtensionTargets, GeometryError> {
+        if boundaries.is_empty() {
+            return Err(GeometryError::EmptyCurveExtensionBoundaries);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+        let style = match style {
+            CurveExtensionStyle::Natural
+                if self.degree == 1 || self.is_linear_at_zero_tolerance()? =>
+            {
+                CurveExtensionStyle::Line
+            }
+            CurveExtensionStyle::Natural
+                if self.try_canonical_circular_arc(tolerance)?.is_some() =>
+            {
+                CurveExtensionStyle::Arc
+            }
+            CurveExtensionStyle::Natural => CurveExtensionStyle::Smooth,
+            style => style,
+        };
+        let start = matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both)
+            .then(|| self.curve_boundary_extension_target(true, style, boundaries, tolerance))
+            .transpose()?
+            .flatten();
+        let end = matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both)
+            .then(|| self.curve_boundary_extension_target(false, style, boundaries, tolerance))
+            .transpose()?
+            .flatten();
+        if (matches!(side, CurveExtensionSide::Start) && start.is_none())
+            || (matches!(side, CurveExtensionSide::End) && end.is_none())
+            || (matches!(side, CurveExtensionSide::Both) && start.is_none() && end.is_none())
+        {
+            return Err(GeometryError::CurveExtensionBoundaryNotFound);
+        }
+        Ok(CurveBoundaryExtensionTargets { style, start, end })
+    }
+
+    fn curve_boundary_extension_target(
+        &self,
+        at_start: bool,
+        style: CurveExtensionStyle,
+        boundaries: &[Self],
+        tolerance: Tolerance,
+    ) -> Result<Option<CurveBoundaryExtensionTarget>, GeometryError> {
+        let domain = self.domain();
+        let endpoint_parameter = if at_start {
+            *domain.start()
+        } else {
+            *domain.end()
+        };
+        let endpoint = self.evaluate(endpoint_parameter)?;
+
+        if style == CurveExtensionStyle::Smooth {
+            let adjacent_span = if at_start {
+                self.spans()
+                    .next()
+                    .expect("a validated NURBS curve has an active span")
+                    .1
+                    - endpoint_parameter
+            } else {
+                endpoint_parameter
+                    - self
+                        .spans()
+                        .last()
+                        .expect("a validated NURBS curve has an active span")
+                        .0
+            };
+            let mut step = adjacent_span;
+            for _ in 0..40 {
+                let outer_parameter = if at_start {
+                    endpoint_parameter - step
+                } else {
+                    endpoint_parameter + step
+                };
+                if !outer_parameter.is_finite() || outer_parameter == endpoint_parameter {
+                    break;
+                }
+                let extension = self.extension_segment(at_start, outer_parameter)?;
+                if let Some(hit) = extension
+                    .nearest_boundary_intersection(boundaries, at_start, endpoint, tolerance)?
+                {
+                    let interval = if at_start {
+                        hit.first_parameter..=endpoint_parameter
+                    } else {
+                        endpoint_parameter..=hit.first_parameter
+                    };
+                    let length = extension.try_trimmed(interval)?.length(tolerance)?;
+                    if length > tolerance.absolute() {
+                        return Ok(Some(CurveBoundaryExtensionTarget {
+                            parameter: hit.first_parameter,
+                            length,
+                        }));
+                    }
+                }
+                step *= 2.0;
+            }
+            return Ok(None);
+        }
+
+        let maximum_boundary_distance = boundaries
+            .iter()
+            .flat_map(|boundary| boundary.control_points.iter())
+            .try_fold(0.0_f64, |maximum, control| {
+                Ok::<_, GeometryError>(maximum.max(endpoint.distance_to(control.point)?))
+            })?;
+        if !maximum_boundary_distance.is_finite() || maximum_boundary_distance == 0.0 {
+            return Ok(None);
+        }
+        let probe_length = if style == CurveExtensionStyle::Arc {
+            let curvature = CurveRef::NurbsCurve(self).curvature_vector(endpoint_parameter)?;
+            let magnitude = curvature.length()?;
+            if self.degree == 1 || magnitude == 0.0 {
+                maximum_boundary_distance * 2.0
+            } else {
+                std::f64::consts::TAU / magnitude
+            }
+        } else {
+            maximum_boundary_distance * 2.0
+        };
+        if !probe_length.is_finite() || probe_length <= tolerance.absolute() {
+            return Ok(None);
+        }
+        let extension = match style {
+            CurveExtensionStyle::Arc => {
+                self.circular_extension_piece(at_start, probe_length, tolerance, false)?
+            }
+            CurveExtensionStyle::Line => self
+                .try_separate_linear_extensions_by_length(
+                    if at_start {
+                        CurveExtensionSide::Start
+                    } else {
+                        CurveExtensionSide::End
+                    },
+                    probe_length,
+                    tolerance,
+                )?
+                .pop()
+                .expect("a one-sided linear extension creates one curve"),
+            CurveExtensionStyle::Natural | CurveExtensionStyle::Smooth => {
+                unreachable!("natural and smooth boundary targets are handled separately")
+            }
+        };
+        let Some(hit) =
+            extension.nearest_boundary_intersection(boundaries, at_start, endpoint, tolerance)?
+        else {
+            return Ok(None);
+        };
+        let interval = if at_start {
+            hit.first_parameter..=*extension.domain().end()
+        } else {
+            *extension.domain().start()..=hit.first_parameter
+        };
+        let length = extension.try_trimmed(interval)?.length(tolerance)?;
+        if length <= tolerance.absolute() {
+            return Ok(None);
+        }
+        Ok(Some(CurveBoundaryExtensionTarget {
+            parameter: hit.first_parameter,
+            length,
+        }))
+    }
+
+    fn nearest_boundary_intersection(
+        &self,
+        boundaries: &[Self],
+        at_start: bool,
+        source_endpoint: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Option<CurveCurveIntersection>, GeometryError> {
+        let mut nearest: Option<CurveCurveIntersection> = None;
+        for boundary in boundaries {
+            for intersection in self.curve_intersections(boundary, tolerance)? {
+                if intersection.point.distance_to(source_endpoint)? <= tolerance.absolute() {
+                    continue;
+                }
+                let is_nearer = nearest.is_none_or(|current| {
+                    if at_start {
+                        intersection.first_parameter > current.first_parameter
+                    } else {
+                        intersection.first_parameter < current.first_parameter
+                    }
+                });
+                if is_nearer {
+                    nearest = Some(intersection);
+                }
+            }
+        }
+        Ok(nearest)
+    }
+
+    fn smooth_boundary_extension(
+        &self,
+        targets: &CurveBoundaryExtensionTargets,
+        retain_seams: bool,
+    ) -> Result<Self, GeometryError> {
+        let domain = self.domain();
+        if !retain_seams {
+            return self.try_extended_to(
+                targets
+                    .start
+                    .map_or(*domain.start(), |target| target.parameter)
+                    ..=targets.end.map_or(*domain.end(), |target| target.parameter),
+            );
+        }
+        let start_extension = targets
+            .start
+            .map(|target| self.extension_segment(true, target.parameter))
+            .transpose()?;
+        let end_extension = targets
+            .end
+            .map(|target| self.extension_segment(false, target.parameter))
+            .transpose()?;
+        let mut source = self.clone();
+        if start_extension.is_some() {
+            source = source.clamped_at_start(*domain.start())?;
+        }
+        if end_extension.is_some() {
+            source = source.clamped_at_end(*domain.end())?;
+        }
+        let mut result = if let Some(extension) = start_extension {
+            extension.try_append_clamped(&source)?
+        } else {
+            source
+        };
+        if let Some(extension) = end_extension {
+            result = result.try_append_clamped(&extension)?;
+        }
+        Ok(result)
+    }
+
+    fn apply_boundary_extension_lengths(
+        &self,
+        targets: &CurveBoundaryExtensionTargets,
+        mut extend: impl FnMut(&Self, CurveExtensionSide, Real) -> Result<Self, GeometryError>,
+    ) -> Result<Self, GeometryError> {
+        let mut result = self.clone();
+        if let Some(target) = targets.start {
+            result = extend(&result, CurveExtensionSide::Start, target.length)?;
+        }
+        if let Some(target) = targets.end {
+            result = extend(&result, CurveExtensionSide::End, target.length)?;
         }
         Ok(result)
     }
@@ -4309,6 +4863,172 @@ fn interval_fraction_unbounded(
         });
     }
     Ok(alpha)
+}
+
+fn finite_midpoint(left: Real, right: Real) -> Real {
+    if left.is_sign_negative() == right.is_sign_negative() {
+        left + (right - left) * 0.5
+    } else {
+        left * 0.5 + right * 0.5
+    }
+}
+
+fn interpolate_parameter(start: Real, end: Real, fraction: Real) -> Real {
+    if start.is_sign_negative() == end.is_sign_negative() {
+        start + (end - start) * fraction
+    } else {
+        start * (1.0 - fraction) + end * fraction
+    }
+}
+
+fn parameter_near(left: Real, right: Real) -> bool {
+    let scale = left.abs().max(right.abs()).max(1.0);
+    (left - right).abs() <= Real::EPSILON * scale * 256.0
+}
+
+fn bounding_boxes_overlap(first: BoundingBox3, second: BoundingBox3, padding: Real) -> bool {
+    let first_min = first.min().to_array();
+    let first_max = first.max().to_array();
+    let second_min = second.min().to_array();
+    let second_max = second.max().to_array();
+    (0..3).all(|axis| {
+        first_min[axis] <= second_max[axis] + padding
+            && second_min[axis] <= first_max[axis] + padding
+    })
+}
+
+fn closest_segment_fractions(
+    first_start: Point3,
+    first_end: Point3,
+    second_start: Point3,
+    second_end: Point3,
+) -> Result<(Real, Real), GeometryError> {
+    let first_direction = first_start.vector_to(first_end)?;
+    let second_direction = second_start.vector_to(second_end)?;
+    let offset = second_start.vector_to(first_start)?;
+    let first_squared = first_direction.dot(first_direction)?;
+    let second_squared = second_direction.dot(second_direction)?;
+    let first_offset = first_direction.dot(offset)?;
+    let second_offset = second_direction.dot(offset)?;
+    let cross = first_direction.dot(second_direction)?;
+    let tiny = Real::MIN_POSITIVE;
+
+    if first_squared <= tiny && second_squared <= tiny {
+        return Ok((0.0, 0.0));
+    }
+    if first_squared <= tiny {
+        return Ok((0.0, (second_offset / second_squared).clamp(0.0, 1.0)));
+    }
+    if second_squared <= tiny {
+        return Ok(((-first_offset / first_squared).clamp(0.0, 1.0), 0.0));
+    }
+
+    let determinant = first_squared * second_squared - cross * cross;
+    let mut first = if determinant > Real::EPSILON * first_squared * second_squared * 32.0 {
+        ((cross * second_offset - first_offset * second_squared) / determinant).clamp(0.0, 1.0)
+    } else {
+        0.0
+    };
+    let mut second = (cross * first + second_offset) / second_squared;
+    if second < 0.0 {
+        second = 0.0;
+        first = (-first_offset / first_squared).clamp(0.0, 1.0);
+    } else if second > 1.0 {
+        second = 1.0;
+        first = ((cross - first_offset) / first_squared).clamp(0.0, 1.0);
+    }
+    Ok((first, second))
+}
+
+#[allow(clippy::too_many_arguments)]
+fn refine_curve_curve_intersection(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    mut first_parameter: Real,
+    mut second_parameter: Real,
+    first_domain: [Real; 2],
+    second_domain: [Real; 2],
+    distance_tolerance: Real,
+) -> Result<Option<CurveCurveIntersection>, GeometryError> {
+    let mut distance = first
+        .evaluate(first_parameter)?
+        .distance_to(second.evaluate(second_parameter)?)?;
+    for _ in 0..80 {
+        let (first_point, first_derivative) = first.evaluate_with_derivative(first_parameter)?;
+        let (second_point, second_derivative) =
+            second.evaluate_with_derivative(second_parameter)?;
+        let residual = second_point.vector_to(first_point)?;
+        let first_squared = first_derivative.dot(first_derivative)?;
+        let second_squared = second_derivative.dot(second_derivative)?;
+        let cross = first_derivative.dot(second_derivative)?;
+        let first_rhs = -first_derivative.dot(residual)?;
+        let second_rhs = second_derivative.dot(residual)?;
+        let determinant = first_squared * second_squared - cross * cross;
+        let threshold = Real::EPSILON * first_squared * second_squared * 64.0;
+        let (first_delta, second_delta) = if determinant.is_finite() && determinant > threshold {
+            (
+                (first_rhs * second_squared + cross * second_rhs) / determinant,
+                (first_squared * second_rhs + cross * first_rhs) / determinant,
+            )
+        } else if first_squared >= second_squared && first_squared > 0.0 {
+            (first_rhs / first_squared, 0.0)
+        } else if second_squared > 0.0 {
+            (0.0, second_rhs / second_squared)
+        } else {
+            break;
+        };
+        if !first_delta.is_finite() || !second_delta.is_finite() {
+            break;
+        }
+
+        let mut factor: Real = 1.0;
+        let mut accepted = None;
+        for _ in 0..28 {
+            let next_first = factor
+                .mul_add(first_delta, first_parameter)
+                .clamp(first_domain[0], first_domain[1]);
+            let next_second = factor
+                .mul_add(second_delta, second_parameter)
+                .clamp(second_domain[0], second_domain[1]);
+            if next_first == first_parameter && next_second == second_parameter {
+                break;
+            }
+            let next_distance = first
+                .evaluate(next_first)?
+                .distance_to(second.evaluate(next_second)?)?;
+            if next_distance <= distance {
+                accepted = Some((next_first, next_second, next_distance));
+                break;
+            }
+            factor *= 0.5;
+        }
+        let Some((next_first, next_second, next_distance)) = accepted else {
+            break;
+        };
+        let parameter_converged = parameter_near(first_parameter, next_first)
+            && parameter_near(second_parameter, next_second);
+        first_parameter = next_first;
+        second_parameter = next_second;
+        distance = next_distance;
+        if parameter_converged {
+            break;
+        }
+    }
+    let first_point = first.evaluate(first_parameter)?;
+    let second_point = second.evaluate(second_parameter)?;
+    if first_point.distance_to(second_point)? > distance_tolerance {
+        return Ok(None);
+    }
+    let point = Point3::try_new(
+        finite_midpoint(first_point.x(), second_point.x()),
+        finite_midpoint(first_point.y(), second_point.y()),
+        finite_midpoint(first_point.z(), second_point.z()),
+    )?;
+    Ok(Some(CurveCurveIntersection {
+        first_parameter,
+        second_parameter,
+        point,
+    }))
 }
 
 fn validate_structure(
@@ -7503,6 +8223,165 @@ mod tests {
                 curve.evaluate(parameter).unwrap(),
             );
         }
+    }
+
+    #[test]
+    fn curve_intersection_refines_transverse_nurbs_spans() {
+        let horizontal = NurbsCurve::try_new(
+            1,
+            vec![point(-2.0, 1.0), point(8.0, 1.0)],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        let vertical = NurbsCurve::try_new(
+            1,
+            vec![point(3.0, -4.0), point(3.0, 6.0)],
+            vec![-5.0, -5.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let intersections = horizontal
+            .curve_intersections(&vertical, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(intersections.len(), 1);
+        assert_point_near(intersections[0].point, point(3.0, 1.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter, 5.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter, 0.0));
+    }
+
+    #[test]
+    fn boundary_extension_uses_the_nearest_hit_beyond_each_line_end() {
+        let source = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(5.0, 0.0)],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let boundary = |x| {
+            NurbsCurve::try_new(
+                1,
+                vec![point(x, -5.0), point(x, 5.0)],
+                vec![0.0, 0.0, 10.0, 10.0],
+            )
+            .unwrap()
+        };
+        let extended = source
+            .try_merged_to_curve_boundaries(
+                CurveExtensionSide::Both,
+                CurveExtensionStyle::Line,
+                &[boundary(12.0), boundary(-3.0), boundary(8.0)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(extended.degree(), 1);
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain().start(), -3.0));
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain().end(), 8.0));
+        assert_point_near(
+            extended.evaluate(*extended.domain().start()).unwrap(),
+            point(-3.0, 0.0),
+        );
+        assert_point_near(
+            extended.evaluate(*extended.domain().end()).unwrap(),
+            point(8.0, 0.0),
+        );
+
+        assert_eq!(
+            source.try_merged_to_curve_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Line,
+                &[boundary(2.0)],
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionBoundaryNotFound)
+        );
+    }
+
+    #[test]
+    fn smooth_boundary_extension_matches_exact_nurbs_extrapolation() {
+        let source = NurbsCurve::try_new(
+            2,
+            vec![point(0.0, 0.0), point(2.0, 3.0), point(4.0, 0.0)],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let boundary = NurbsCurve::try_new(
+            1,
+            vec![point(7.0, -20.0), point(7.0, 20.0)],
+            vec![0.0, 0.0, 40.0, 40.0],
+        )
+        .unwrap();
+        let extended = source
+            .try_merged_to_curve_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Smooth,
+                &[boundary],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert!((*extended.domain().end() - 1.75).abs() <= 2.0e-12);
+        assert_point_near(extended.control_points()[2].point(), point(7.0, -7.875));
+    }
+
+    #[test]
+    fn circular_boundary_extension_hits_the_exact_osculating_arc() {
+        let source = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), std::f64::consts::FRAC_1_SQRT_2).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let boundary = NurbsCurve::try_new(
+            1,
+            vec![point(-0.5, -2.0), point(-0.5, 2.0)],
+            vec![0.0, 0.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let joined = source
+            .try_joined_to_curve_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Arc,
+                std::slice::from_ref(&boundary),
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(joined.degree(), 2);
+        assert_eq!(joined.knot_multiplicity(1.0).unwrap(), 2);
+        assert_point_near(
+            joined.evaluate(*joined.domain().end()).unwrap(),
+            point(-0.5, 3.0_f64.sqrt() * 0.5),
+        );
+        assert!(
+            (joined
+                .try_trimmed(1.0..=*joined.domain().end())
+                .unwrap()
+                .length(Tolerance::DEFAULT)
+                .unwrap()
+                - std::f64::consts::FRAC_PI_6)
+                .abs()
+                < 1.0e-11
+        );
+
+        let merged = source
+            .try_merged_to_curve_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Natural,
+                &[boundary],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert!(
+            merged
+                .try_canonical_circular_arc(Tolerance::DEFAULT)
+                .unwrap()
+                .is_some()
+        );
+        assert_point_near(
+            merged.evaluate(*merged.domain().end()).unwrap(),
+            point(-0.5, 3.0_f64.sqrt() * 0.5),
+        );
     }
 
     #[test]

@@ -10,22 +10,23 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
     CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveExtensionSide,
-    CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction,
-    CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN,
-    Ellipse3, Frame3, GeometryError, InterpolatedCurveClosure, LineSegment,
-    MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE,
-    MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT,
-    MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh,
-    UnitVector3, Vector3, join_polylines, sort_and_cull_points, try_catenary,
-    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    CurveExtensionStyle as GeometryCurveExtensionStyle, CurveInterpolationOptions,
+    CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction, CurveTweenMatchMethod,
+    DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
+    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
+    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE,
+    MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER,
+    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
+    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
+    MIN_POLYLINE_CATENARY_POINT_COUNT, MIN_SMOOTH_CATENARY_POINT_COUNT,
+    MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
+    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
+    try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -11432,10 +11433,11 @@ fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOpti
     ))
 }
 
-const EXTEND_CURVE_USAGE: &str = "Extend Length=value [Side=Start|End|Both] [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
+const EXTEND_CURVE_USAGE: &str = "Extend point [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Length=value [Side=Start|End|Both] [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 enum ExtendCurveTarget {
+    Boundary(Point3),
     Length {
         length: Real,
         side: CurveExtensionSide,
@@ -11477,6 +11479,9 @@ impl Command for ExtendCurveCommand {
                     .map(|curve| curve.map(|curve| (object.id(), curve)))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
+        if let ExtendCurveTarget::Boundary(point) = target {
+            return extend_curve_to_selected_boundaries(document, candidates, point, style, join);
+        }
         if candidates.len() != 1 {
             return Err(CommandError::ExtendRequiresOneCurve {
                 actual: candidates.len(),
@@ -11603,6 +11608,9 @@ impl Command for ExtendCurveCommand {
             ) => {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
             }
+            (ExtendCurveTarget::Boundary(_), _, _) => {
+                unreachable!("boundary extension returns before length/domain dispatch")
+            }
         };
         document.replace_object_geometries([(id, Geometry::NurbsCurve(curve))])?;
         document.clear_selection();
@@ -11623,41 +11631,159 @@ impl Command for ExtendCurveCommand {
     }
 }
 
+fn extend_curve_to_selected_boundaries(
+    document: &mut Document,
+    mut candidates: Vec<(ObjectId, NurbsCurve)>,
+    pick: Point3,
+    style: ExtendCurveStyle,
+    join: ExtendCurveJoin,
+) -> Result<String, CommandError> {
+    if candidates.len() < 2 {
+        return Err(CommandError::ExtendRequiresSourceAndBoundaryCurves {
+            actual: candidates.len(),
+        });
+    }
+    let mut best: Option<(Real, usize, CurveExtensionSide)> = None;
+    for (index, (_, curve)) in candidates.iter().enumerate() {
+        if curve.is_closed()? {
+            continue;
+        }
+        for (parameter, side) in [
+            (*curve.domain().start(), CurveExtensionSide::Start),
+            (*curve.domain().end(), CurveExtensionSide::End),
+        ] {
+            let distance = curve.evaluate(parameter)?.distance_to(pick)?;
+            if best.is_none_or(|(best_distance, best_index, best_side)| {
+                distance < best_distance
+                    || (distance == best_distance
+                        && (index, side == CurveExtensionSide::End)
+                            < (best_index, best_side == CurveExtensionSide::End))
+            }) {
+                best = Some((distance, index, side));
+            }
+        }
+    }
+    let Some((_, source_index, side)) = best else {
+        return Err(CommandError::NoOpenCurveToExtendToBoundary);
+    };
+    let (source_id, source) = candidates.remove(source_index);
+    let boundaries = candidates
+        .into_iter()
+        .map(|(_, boundary)| boundary)
+        .collect::<Vec<_>>();
+    let geometry_style = match style {
+        ExtendCurveStyle::Natural => GeometryCurveExtensionStyle::Natural,
+        ExtendCurveStyle::Arc => GeometryCurveExtensionStyle::Arc,
+        ExtendCurveStyle::Line => GeometryCurveExtensionStyle::Line,
+        ExtendCurveStyle::Smooth => GeometryCurveExtensionStyle::Smooth,
+    };
+    if join == ExtendCurveJoin::No {
+        let extensions = source.try_separate_extensions_to_curve_boundaries(
+            side,
+            geometry_style,
+            &boundaries,
+            document.tolerance(),
+        )?;
+        let extension_count = extensions.len();
+        let attributes = document
+            .object(source_id)
+            .expect("selected boundary-extension source belongs to the document")
+            .attributes()
+            .clone();
+        for extension in extensions {
+            document.add_geometry_with_attributes(
+                Geometry::NurbsCurve(extension),
+                attributes.clone(),
+            )?;
+        }
+        document.clear_selection();
+        return Ok(format!(
+            "Created {extension_count} separate {} curve extension{} from the selected {side:?} to the nearest boundary",
+            extend_curve_style_label(style),
+            if extension_count == 1 { "" } else { "s" },
+        ));
+    }
+    let extended = match join {
+        ExtendCurveJoin::Merge => source.try_merged_to_curve_boundaries(
+            side,
+            geometry_style,
+            &boundaries,
+            document.tolerance(),
+        )?,
+        ExtendCurveJoin::Yes => source.try_joined_to_curve_boundaries(
+            side,
+            geometry_style,
+            &boundaries,
+            document.tolerance(),
+        )?,
+        ExtendCurveJoin::No => unreachable!("Join=No returns after creating separate extensions"),
+    };
+    document.replace_object_geometries([(source_id, Geometry::NurbsCurve(extended))])?;
+    document.clear_selection();
+    Ok(format!(
+        "{} extended the selected curve {side:?} to the nearest boundary, {} the extension",
+        match style {
+            ExtendCurveStyle::Natural => "Naturally",
+            ExtendCurveStyle::Arc => "Circularly",
+            ExtendCurveStyle::Line => "Linearly",
+            ExtendCurveStyle::Smooth => "Smoothly",
+        },
+        match join {
+            ExtendCurveJoin::Merge => "merging",
+            ExtendCurveJoin::Yes => "joining",
+            ExtendCurveJoin::No => unreachable!("Join=No returns before source replacement"),
+        },
+    ))
+}
+
+const fn extend_curve_style_label(style: ExtendCurveStyle) -> &'static str {
+    match style {
+        ExtendCurveStyle::Natural => "natural",
+        ExtendCurveStyle::Arc => "arc",
+        ExtendCurveStyle::Line => "linear",
+        ExtendCurveStyle::Smooth => "smooth",
+    }
+}
+
 fn parse_extend_curve_target(
     arguments: &[&str],
 ) -> Result<(ExtendCurveTarget, ExtendCurveStyle, ExtendCurveJoin), CommandError> {
     if arguments.is_empty() {
         return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
     }
-    let (name, value, consumed) = orient_option(arguments, 0, EXTEND_CURVE_USAGE)?;
-    let mut target = if option_name_eq(name, "Length") {
-        ExtendCurveTarget::Length {
-            length: parse_finite_real(value)?,
-            side: CurveExtensionSide::End,
-        }
-    } else if option_name_eq(name, "Domain") {
-        let values = value.split(',').collect::<Vec<_>>();
-        if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
-            return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
-        }
-        ExtendCurveTarget::Domain([parse_finite_real(values[0])?, parse_finite_real(values[1])?])
-    } else {
-        return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
-    };
-
+    let mut length = None;
+    let mut domain = None;
+    let mut side = CurveExtensionSide::End;
+    let mut positional = Vec::new();
     let mut side_seen = false;
     let mut type_seen = false;
     let mut join_seen = false;
     let mut style = ExtendCurveStyle::Natural;
     let mut join = ExtendCurveJoin::Merge;
-    let mut index = consumed;
+    let mut index = 0;
     while index < arguments.len() {
+        let argument = arguments[index];
+        let option_name = argument.split_once('=').map_or(argument, |(name, _)| name);
+        let is_option = argument.contains('=')
+            || ["Length", "Domain", "Side", "Type", "Join"]
+                .into_iter()
+                .any(|name| option_name_eq(option_name, name));
+        if !is_option {
+            positional.push(argument);
+            index += 1;
+            continue;
+        }
         let (name, value, consumed) = orient_option(arguments, index, EXTEND_CURVE_USAGE)?;
-        if option_name_eq(name, "Side") && !side_seen {
-            let ExtendCurveTarget::Length { side, .. } = &mut target else {
+        if option_name_eq(name, "Length") && length.is_none() {
+            length = Some(parse_finite_real(value)?);
+        } else if option_name_eq(name, "Domain") && domain.is_none() {
+            let values = value.split(',').collect::<Vec<_>>();
+            if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
                 return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
-            };
-            *side = if option_name_eq(value, "Start") {
+            }
+            domain = Some([parse_finite_real(values[0])?, parse_finite_real(values[1])?]);
+        } else if option_name_eq(name, "Side") && !side_seen {
+            side = if option_name_eq(value, "Start") {
                 CurveExtensionSide::Start
             } else if option_name_eq(value, "End") {
                 CurveExtensionSide::End
@@ -11696,11 +11822,26 @@ fn parse_extend_curve_target(
         }
         index += consumed;
     }
-    if matches!(target, ExtendCurveTarget::Domain(_))
-        && (style != ExtendCurveStyle::Natural || join != ExtendCurveJoin::Merge)
-    {
-        return Err(CommandError::Usage(EXTEND_CURVE_USAGE));
-    }
+    let point = if positional.is_empty() {
+        None
+    } else {
+        let (point, consumed) = parse_point(&positional).map_err(|error| match error {
+            CommandError::Usage(_) => CommandError::Usage(EXTEND_CURVE_USAGE),
+            error => error,
+        })?;
+        require_consumed(&positional, consumed, EXTEND_CURVE_USAGE)?;
+        Some(point)
+    };
+    let target = match (point, length, domain, side_seen) {
+        (Some(point), None, None, false) => ExtendCurveTarget::Boundary(point),
+        (None, Some(length), None, _) => ExtendCurveTarget::Length { length, side },
+        (None, None, Some(domain), false)
+            if style == ExtendCurveStyle::Natural && join == ExtendCurveJoin::Merge =>
+        {
+            ExtendCurveTarget::Domain(domain)
+        }
+        _ => return Err(CommandError::Usage(EXTEND_CURVE_USAGE)),
+    };
     Ok((target, style, join))
 }
 
@@ -19351,6 +19492,14 @@ pub enum CommandError {
     #[error("Extend requires exactly one selected curve, got {actual}")]
     ExtendRequiresOneCurve { actual: usize },
 
+    #[error(
+        "boundary Extend requires a picked open source curve and at least one other selected boundary curve, got {actual} selected curves"
+    )]
+    ExtendRequiresSourceAndBoundaryCurves { actual: usize },
+
+    #[error("boundary Extend could not find an open selected source curve")]
+    NoOpenCurveToExtendToBoundary,
+
     #[error("ExtendSrf requires exactly one selected untrimmed NURBS surface, got {actual}")]
     ExtendSurfaceRequiresOneSurface { actual: usize },
 
@@ -24454,6 +24603,154 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![source_id]
         );
+    }
+
+    #[test]
+    fn extend_to_selected_curve_boundary_uses_the_picked_source_end() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 5,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        registry.execute(&mut document, "Line 10,-5 10,5").unwrap();
+        let boundary_id = document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap()
+            .id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName BoundaryExtendSource")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group BoundaryExtendGroup")
+            .unwrap();
+        document
+            .select_objects([source_id, boundary_id], SelectionMode::Replace)
+            .unwrap();
+        let source_before = document.object(source_id).unwrap().clone();
+        let boundary_before = document.object(boundary_id).unwrap().clone();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Extend 4.9,0 Type=Line Join=Merge",)
+                .unwrap(),
+            "Linearly extended the selected curve End to the nearest boundary, merging the extension"
+        );
+        let Geometry::NurbsCurve(extended) = document.object(source_id).unwrap().geometry() else {
+            panic!("boundary Extend must replace the source with exact NURBS geometry")
+        };
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(*extended.domain().start(), 0.0)
+        );
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(*extended.domain().end(), 10.0)
+        );
+        assert!(
+            extended
+                .evaluate(*extended.domain().end())
+                .unwrap()
+                .is_near(
+                    Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                    document.tolerance()
+                )
+        );
+        assert_eq!(
+            document.object(source_id).unwrap().attributes(),
+            source_before.attributes()
+        );
+        assert_eq!(document.object(boundary_id).unwrap(), &boundary_before);
+        assert!(
+            document
+                .group_by_name("BoundaryExtendGroup")
+                .unwrap()
+                .members()
+                .any(|member| member == source_id)
+        );
+        assert_eq!(document.selected_object_count(), 0);
+        assert_eq!(document.undo_label(), Some("Extend"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(source_id).unwrap(), &source_before);
+        assert_eq!(document.object(boundary_id).unwrap(), &boundary_before);
+        document
+            .select_objects([source_id, boundary_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry
+                .execute(&mut document, "Extend 5,0 Type=Line Join=No")
+                .unwrap(),
+            "Created 1 separate linear curve extension from the selected End to the nearest boundary"
+        );
+        assert_eq!(document.object(source_id).unwrap(), &source_before);
+        let extension = document
+            .objects()
+            .find(|object| object.id() != source_id && object.id() != boundary_id)
+            .unwrap();
+        assert_eq!(extension.attributes(), source_before.attributes());
+        assert!(
+            !document
+                .group_by_name("BoundaryExtendGroup")
+                .unwrap()
+                .members()
+                .any(|member| member == extension.id())
+        );
+        let Geometry::NurbsCurve(extension) = extension.geometry() else {
+            panic!("Join=No must create a NURBS extension curve")
+        };
+        assert!(extension.evaluate(0.0).unwrap().is_near(
+            Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+        assert!(extension.evaluate(1.0).unwrap().is_near(
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            document.tolerance()
+        ));
+    }
+
+    #[test]
+    fn boundary_extend_rejects_missing_or_unreachable_boundaries_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 5,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        assert!(matches!(
+            registry.execute(&mut document, "Extend 5,0"),
+            Err(CommandError::ExtendRequiresSourceAndBoundaryCurves { actual: 1 })
+        ));
+
+        registry.execute(&mut document, "Line 2,-5 2,5").unwrap();
+        let boundary_id = document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap()
+            .id();
+        document
+            .select_objects([source_id, boundary_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut document, "Extend 5,0 Type=Line"),
+            Err(CommandError::Geometry(
+                GeometryError::CurveExtensionBoundaryNotFound
+            ))
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert!(matches!(
+            registry.execute(&mut document, "Extend 5,0 Side=End"),
+            Err(CommandError::Usage(EXTEND_CURVE_USAGE))
+        ));
     }
 
     #[test]

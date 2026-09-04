@@ -1,0 +1,323 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-line-merge",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [10, -5, 0]}, {"point": [10, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-line-yes",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [10, -5, 0]}, {"point": [10, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-line-no",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [10, -5, 0]}, {"point": [10, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quadratic-end-smooth-merge",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 3, 0]},
+          {"point": [4, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [7, -20, 0]}, {"point": [7, 20, 0]}],
+          "knots": [0, 0, 40, 40]
+        }
+      ],
+      "side": "end",
+      "style": "smooth",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quarter-circle-end-arc-yes",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [1, 1, 0], "weight": 0.7071067811865476},
+          {"point": [0, 1, 0], "weight": 1}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [-0.5, -2, 0]}, {"point": [-0.5, 2, 0]}],
+          "knots": [0, 0, 4, 4]
+        }
+      ],
+      "side": "end",
+      "style": "arc",
+      "join": "yes",
+      "canonicalize_curve_parameters": true
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quarter-circle-end-arc-no",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [1, 1, 0], "weight": 0.7071067811865476},
+          {"point": [0, 1, 0], "weight": 1}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [-0.5, -2, 0]}, {"point": [-0.5, 2, 0]}],
+          "knots": [0, 0, 4, 4]
+        }
+      ],
+      "side": "end",
+      "style": "arc",
+      "join": "no",
+      "canonicalize_curve_parameters": true
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-both-natural-merge",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [-3, -5, 0]}, {"point": [-3, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        },
+        {
+          "degree": 1,
+          "control_points": [{"point": [10, -5, 0]}, {"point": [10, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        }
+      ],
+      "side": "both",
+      "style": "natural",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-both-line-no",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [-3, -5, 0]}, {"point": [-3, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        },
+        {
+          "degree": 1,
+          "control_points": [{"point": [10, -5, 0]}, {"point": [10, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        }
+      ],
+      "side": "both",
+      "style": "line",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-nearest-of-two",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [12, -5, 0]}, {"point": [12, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        },
+        {
+          "degree": 1,
+          "control_points": [{"point": [8, -5, 0]}, {"point": [8, 5, 0]}],
+          "knots": [0, 0, 10, 10]
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quadratic-end-line-yes",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 3, 0]},
+          {"point": [4, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [7, -20, 0]}, {"point": [7, 20, 0]}],
+          "knots": [0, 0, 40, 40]
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quadratic-end-smooth-yes",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 3, 0]},
+          {"point": [4, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [7, -20, 0]}, {"point": [7, 20, 0]}],
+          "knots": [0, 0, 40, 40]
+        }
+      ],
+      "side": "end",
+      "style": "smooth",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quadratic-end-smooth-no",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 3, 0]},
+          {"point": [4, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [7, -20, 0]}, {"point": [7, 20, 0]}],
+          "knots": [0, 0, 40, 40]
+        }
+      ],
+      "side": "end",
+      "style": "smooth",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quarter-circle-end-natural-merge",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [1, 1, 0], "weight": 0.7071067811865476},
+          {"point": [0, 1, 0], "weight": 1}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [-0.5, -2, 0]}, {"point": [-0.5, 2, 0]}],
+          "knots": [0, 0, 4, 4]
+        }
+      ],
+      "side": "end",
+      "style": "natural",
+      "join": "merge",
+      "canonicalize_curve_parameters": true
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quadratic-end-arc-yes",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 3, 0]},
+          {"point": [4, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "degree": 1,
+          "control_points": [{"point": [-20, -3, 0]}, {"point": [20, -3, 0]}],
+          "knots": [0, 0, 40, 40]
+        }
+      ],
+      "side": "end",
+      "style": "arc",
+      "join": "yes",
+      "canonicalize_curve_parameters": true
+    }
+  ]
+}

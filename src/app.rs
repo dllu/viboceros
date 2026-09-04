@@ -46,6 +46,21 @@ enum InteractiveControlPointDirection {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InteractiveCurveExtensionStyle {
+    Natural,
+    Arc,
+    Line,
+    Smooth,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum InteractiveCurveExtensionJoin {
+    Merge,
+    Yes,
+    No,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum InteractiveMeshSphereTopology {
     Uv {
         vertical_count: usize,
@@ -75,6 +90,27 @@ impl InteractiveControlPointDirection {
             Self::U => "U",
             Self::V => "V",
             Self::Both => "Both",
+        }
+    }
+}
+
+impl InteractiveCurveExtensionStyle {
+    const fn option_value(self) -> &'static str {
+        match self {
+            Self::Natural => "Natural",
+            Self::Arc => "Arc",
+            Self::Line => "Line",
+            Self::Smooth => "Smooth",
+        }
+    }
+}
+
+impl InteractiveCurveExtensionJoin {
+    const fn option_value(self) -> &'static str {
+        match self {
+            Self::Merge => "Merge",
+            Self::Yes => "Yes",
+            Self::No => "No",
         }
     }
 }
@@ -227,6 +263,10 @@ enum InteractiveCommand {
     SrfSeam {
         direction: Option<InteractiveIsocurveDirection>,
     },
+    Extend {
+        style: InteractiveCurveExtensionStyle,
+        join: InteractiveCurveExtensionJoin,
+    },
     ExtendSrf {
         distance: f64,
         smooth: bool,
@@ -338,6 +378,7 @@ impl InteractiveCommand {
             Self::InsertControlPoint { .. } => "InsertControlPoint",
             Self::CrvSeam => "CrvSeam",
             Self::SrfSeam { .. } => "SrfSeam",
+            Self::Extend { .. } => "Extend",
             Self::ExtendSrf { .. } => "ExtendSrf",
             Self::SubCrv { .. } => "SubCrv",
             Self::SplitCurve => "Split",
@@ -585,6 +626,9 @@ impl InteractiveCommand {
             Self::SrfSeam { .. } => {
                 "SrfSeam: pick a new seam location on the selected closed surface (Esc to cancel)"
             }
+            Self::Extend { .. } => {
+                "Extend: pick the source curve near the end to extend to the other selected boundary curves (Esc to cancel)"
+            }
             Self::ExtendSrf { .. } => {
                 "ExtendSrf: pick a natural edge on the selected surface (Esc to cancel)"
             }
@@ -778,6 +822,7 @@ impl InteractiveCommand {
             | Self::InsertControlPoint { .. }
             | Self::CrvSeam
             | Self::SrfSeam { .. }
+            | Self::Extend { .. }
             | Self::ExtendSrf { .. }
             | Self::SubCrv { start: None, .. }
             | Self::SplitCurve
@@ -2056,6 +2101,55 @@ impl VibocerosApp {
                 direction,
                 midpoint,
             }
+        } else if normalized == "extend" {
+            let mut style = InteractiveCurveExtensionStyle::Natural;
+            let mut join = InteractiveCurveExtensionJoin::Merge;
+            let mut type_seen = false;
+            let mut join_seen = false;
+            let mut index = 0;
+            while index < arguments.len() {
+                let argument = arguments[index];
+                let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=')
+                {
+                    (name, value, 1)
+                } else {
+                    let Some(value) = arguments.get(index + 1) else {
+                        return false;
+                    };
+                    (argument, *value, 2)
+                };
+                let name = name.trim_start_matches(['_', '-']);
+                let value = value.trim_start_matches('_');
+                if name.eq_ignore_ascii_case("Type") && !type_seen {
+                    style = if value.eq_ignore_ascii_case("Natural") {
+                        InteractiveCurveExtensionStyle::Natural
+                    } else if value.eq_ignore_ascii_case("Arc") {
+                        InteractiveCurveExtensionStyle::Arc
+                    } else if value.eq_ignore_ascii_case("Line") {
+                        InteractiveCurveExtensionStyle::Line
+                    } else if value.eq_ignore_ascii_case("Smooth") {
+                        InteractiveCurveExtensionStyle::Smooth
+                    } else {
+                        return false;
+                    };
+                    type_seen = true;
+                } else if name.eq_ignore_ascii_case("Join") && !join_seen {
+                    join = if value.eq_ignore_ascii_case("Merge") {
+                        InteractiveCurveExtensionJoin::Merge
+                    } else if value.eq_ignore_ascii_case("Yes") {
+                        InteractiveCurveExtensionJoin::Yes
+                    } else if value.eq_ignore_ascii_case("No") {
+                        InteractiveCurveExtensionJoin::No
+                    } else {
+                        return false;
+                    };
+                    join_seen = true;
+                } else {
+                    return false;
+                }
+                index += consumed;
+            }
+            InteractiveCommand::Extend { style, join }
         } else if normalized == "extendsrf" {
             let mut distance = None;
             let mut smooth = true;
@@ -2447,6 +2541,7 @@ impl VibocerosApp {
                 | InteractiveCommand::InsertControlPoint { .. }
                 | InteractiveCommand::CrvSeam
                 | InteractiveCommand::SrfSeam { .. }
+                | InteractiveCommand::Extend { .. }
                 | InteractiveCommand::ExtendSrf { .. }
                 | InteractiveCommand::SubCrv { .. }
                 | InteractiveCommand::SplitCurve
@@ -3660,6 +3755,15 @@ impl VibocerosApp {
                     format!(" Direction={}", direction.option_value())
                 });
                 self.execute_command(&format!("SrfSeam {}{direction}", format_model_point(point)));
+            }
+            InteractiveCommand::Extend { style, join } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Extend {} Type={} Join={}",
+                    format_model_point(point),
+                    style.option_value(),
+                    join.option_value(),
+                ));
             }
             InteractiveCommand::ExtendSrf {
                 distance,
@@ -7229,6 +7333,74 @@ mod tests {
         assert!(app.try_start_interactive_command("SrfSeam"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_extend_picks_a_source_end_among_selected_boundary_curves() {
+        let mut app = test_app();
+        app.execute_command("Line 0,0 5,0");
+        let source_id = app.document.objects().next().unwrap().id();
+        app.execute_command("Line 10,-5 10,5");
+        let boundary_id = app
+            .document
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap()
+            .id();
+        app.document
+            .select_objects(
+                [source_id, boundary_id],
+                viboceros_document::SelectionMode::Replace,
+            )
+            .unwrap();
+
+        assert!(app.try_start_interactive_command("Extend Type=Line Join=Merge"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Extend {
+                style: InteractiveCurveExtensionStyle::Line,
+                join: InteractiveCurveExtensionJoin::Merge,
+            })
+        );
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("source curve near the end")
+        );
+        app.accept_drafting_point(point(5.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        let Geometry::NurbsCurve(extended) = app.document.object(source_id).unwrap().geometry()
+        else {
+            panic!("interactive Extend must retain exact NURBS geometry")
+        };
+        assert!(
+            app.document
+                .tolerance()
+                .approx_eq(*extended.domain().end(), 10.0)
+        );
+        assert!(
+            extended
+                .evaluate(*extended.domain().end())
+                .unwrap()
+                .is_near(point(10.0, 0.0, 0.0), app.document.tolerance())
+        );
+        assert_eq!(
+            app.document.object(boundary_id).unwrap().geometry(),
+            &Geometry::Line(
+                viboceros_geometry::LineSegment::try_new(
+                    point(10.0, -5.0, 0.0),
+                    point(10.0, 5.0, 0.0),
+                    app.document.tolerance(),
+                )
+                .unwrap()
+            )
+        );
+        assert_eq!(app.document.selected_object_count(), 0);
+        assert_eq!(app.document.undo_label(), Some("Extend"));
+        assert!(!app.try_start_interactive_command("Extend Length=2"));
+        assert!(!app.try_start_interactive_command("Extend Type=Bezier"));
     }
 
     #[test]
