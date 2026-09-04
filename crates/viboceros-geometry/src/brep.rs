@@ -692,6 +692,237 @@ impl Brep {
         ])
     }
 
+    /// Splits a rectangular surface region along one exact curve running from
+    /// its west side to its east side. The supplied curve is oriented (or
+    /// reversed) from west to east and retained as the shared boundary of the
+    /// two independent result B-reps.
+    ///
+    /// The straight parameter-space trim is validated against the 3D curve,
+    /// so this constructor rejects surface parameterizations for which the
+    /// proposed p-curve would only be an approximation.
+    pub fn try_split_rectangular_surface_face_west_east(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        side_parameters: [Real; 2],
+        cut_curve: NurbsCurve,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<[Self; 2], GeometryError> {
+        require_finite(
+            side_parameters,
+            "rectangular west-east surface split parameters",
+        )?;
+        surface.try_trimmed(u.clone(), v.clone())?;
+        let [u_start, u_end] = [*u.start(), *u.end()];
+        let [v_start, v_end] = [*v.start(), *v.end()];
+        let [west_v, east_v] = side_parameters;
+        if west_v <= v_start || west_v >= v_end || east_v <= v_start || east_v >= v_end {
+            return Err(GeometryError::InvalidBrepTopology {
+                context: "a west-east surface split must end inside both opposite sides",
+            });
+        }
+        let west_cut = Point2::try_new(u_start, west_v)?;
+        let east_cut = Point2::try_new(u_end, east_v)?;
+        let cut_curve = orient_surface_split_curve(
+            &cut_curve,
+            surface.evaluate(u_start, west_v)?,
+            surface.evaluate(u_end, east_v)?,
+            tolerance,
+        )?;
+        let boundary_iso =
+            rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
+
+        let south = try_surface_cutting_quad_face(
+            surface.clone(),
+            reversed,
+            [
+                Point2::try_new(u_start, v_start)?,
+                Point2::try_new(u_end, v_start)?,
+                west_cut,
+                east_cut,
+            ],
+            [
+                (
+                    [0, 1],
+                    surface.isocurve_u(v_start)?.try_trimmed(u_start..=u_end)?,
+                ),
+                (
+                    [1, 3],
+                    surface.isocurve_v(u_end)?.try_trimmed(v_start..=east_v)?,
+                ),
+                ([2, 3], cut_curve.clone()),
+                (
+                    [2, 0],
+                    surface
+                        .isocurve_v(u_start)?
+                        .try_trimmed(v_start..=west_v)?
+                        .reversed()?,
+                ),
+            ],
+            [
+                (3, false, boundary_iso[3]),
+                (0, false, boundary_iso[0]),
+                (1, false, boundary_iso[1]),
+                (2, true, SurfaceIso::NotIso),
+            ],
+            tolerance,
+        )?;
+        let north = try_surface_cutting_quad_face(
+            surface.clone(),
+            reversed,
+            [
+                Point2::try_new(u_end, v_end)?,
+                Point2::try_new(u_start, v_end)?,
+                west_cut,
+                east_cut,
+            ],
+            [
+                (
+                    [0, 1],
+                    surface
+                        .isocurve_u(v_end)?
+                        .try_trimmed(u_start..=u_end)?
+                        .reversed()?,
+                ),
+                (
+                    [1, 2],
+                    surface
+                        .isocurve_v(u_start)?
+                        .try_trimmed(west_v..=v_end)?
+                        .reversed()?,
+                ),
+                ([2, 3], cut_curve),
+                (
+                    [3, 0],
+                    surface.isocurve_v(u_end)?.try_trimmed(east_v..=v_end)?,
+                ),
+            ],
+            [
+                (2, false, SurfaceIso::NotIso),
+                (3, false, boundary_iso[1]),
+                (0, false, boundary_iso[2]),
+                (1, false, boundary_iso[3]),
+            ],
+            tolerance,
+        )?;
+        Ok([south, north])
+    }
+
+    /// Splits a rectangular surface region along one exact curve running from
+    /// its south side to its north side. This is the transposed counterpart of
+    /// [`Self::try_split_rectangular_surface_face_west_east`].
+    pub fn try_split_rectangular_surface_face_south_north(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        side_parameters: [Real; 2],
+        cut_curve: NurbsCurve,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<[Self; 2], GeometryError> {
+        require_finite(
+            side_parameters,
+            "rectangular south-north surface split parameters",
+        )?;
+        surface.try_trimmed(u.clone(), v.clone())?;
+        let [u_start, u_end] = [*u.start(), *u.end()];
+        let [v_start, v_end] = [*v.start(), *v.end()];
+        let [south_u, north_u] = side_parameters;
+        if south_u <= u_start || south_u >= u_end || north_u <= u_start || north_u >= u_end {
+            return Err(GeometryError::InvalidBrepTopology {
+                context: "a south-north surface split must end inside both opposite sides",
+            });
+        }
+        let south_cut = Point2::try_new(south_u, v_start)?;
+        let north_cut = Point2::try_new(north_u, v_end)?;
+        let cut_curve = orient_surface_split_curve(
+            &cut_curve,
+            surface.evaluate(south_u, v_start)?,
+            surface.evaluate(north_u, v_end)?,
+            tolerance,
+        )?;
+        let boundary_iso =
+            rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
+
+        let west = try_surface_cutting_quad_face(
+            surface.clone(),
+            reversed,
+            [
+                Point2::try_new(u_start, v_start)?,
+                Point2::try_new(u_start, v_end)?,
+                south_cut,
+                north_cut,
+            ],
+            [
+                (
+                    [0, 2],
+                    surface
+                        .isocurve_u(v_start)?
+                        .try_trimmed(u_start..=south_u)?,
+                ),
+                (
+                    [1, 0],
+                    surface
+                        .isocurve_v(u_start)?
+                        .try_trimmed(v_start..=v_end)?
+                        .reversed()?,
+                ),
+                ([2, 3], cut_curve.clone()),
+                (
+                    [3, 1],
+                    surface
+                        .isocurve_u(v_end)?
+                        .try_trimmed(u_start..=north_u)?
+                        .reversed()?,
+                ),
+            ],
+            [
+                (2, false, SurfaceIso::NotIso),
+                (3, false, boundary_iso[2]),
+                (1, false, boundary_iso[3]),
+                (0, false, boundary_iso[0]),
+            ],
+            tolerance,
+        )?;
+        let east = try_surface_cutting_quad_face(
+            surface.clone(),
+            reversed,
+            [
+                Point2::try_new(u_end, v_start)?,
+                Point2::try_new(u_end, v_end)?,
+                south_cut,
+                north_cut,
+            ],
+            [
+                (
+                    [0, 1],
+                    surface.isocurve_v(u_end)?.try_trimmed(v_start..=v_end)?,
+                ),
+                (
+                    [1, 3],
+                    surface
+                        .isocurve_u(v_end)?
+                        .try_trimmed(north_u..=u_end)?
+                        .reversed()?,
+                ),
+                ([2, 3], cut_curve),
+                (
+                    [2, 0],
+                    surface.isocurve_u(v_start)?.try_trimmed(south_u..=u_end)?,
+                ),
+            ],
+            [
+                (3, false, boundary_iso[0]),
+                (0, false, boundary_iso[1]),
+                (1, false, boundary_iso[2]),
+                (2, true, SurfaceIso::NotIso),
+            ],
+            tolerance,
+        )?;
+        Ok([west, east])
+    }
+
     /// Converts every polygon of a mesh into one degree-one NURBS face.
     ///
     /// Exact-location mesh vertices and edges become shared B-rep topology.
@@ -3452,6 +3683,98 @@ fn reorder_cutting_split_rectangle(
     Brep::try_new(vertices, edges, vec![face], tolerance)
 }
 
+fn rectangular_surface_boundary_iso(
+    surface: &NurbsSurface,
+    bounds: [[Real; 2]; 2],
+) -> [SurfaceIso; 4] {
+    let domain_u = surface.domain_u();
+    let domain_v = surface.domain_v();
+    [
+        if bounds[1][0] == *domain_v.start() {
+            SurfaceIso::South
+        } else {
+            SurfaceIso::InteriorVConstant
+        },
+        if bounds[0][1] == *domain_u.end() {
+            SurfaceIso::East
+        } else {
+            SurfaceIso::InteriorUConstant
+        },
+        if bounds[1][1] == *domain_v.end() {
+            SurfaceIso::North
+        } else {
+            SurfaceIso::InteriorVConstant
+        },
+        if bounds[0][0] == *domain_u.start() {
+            SurfaceIso::West
+        } else {
+            SurfaceIso::InteriorUConstant
+        },
+    ]
+}
+
+fn orient_surface_split_curve(
+    curve: &NurbsCurve,
+    start: Point3,
+    end: Point3,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, GeometryError> {
+    let domain = curve.domain();
+    let curve_start = curve.evaluate(*domain.start())?;
+    let curve_end = curve.evaluate(*domain.end())?;
+    if curve_start.is_near(start, tolerance) && curve_end.is_near(end, tolerance) {
+        return Ok(curve.clone());
+    }
+    if curve_start.is_near(end, tolerance) && curve_end.is_near(start, tolerance) {
+        return curve.reversed();
+    }
+    Err(GeometryError::InvalidBrepTopology {
+        context: "a surface split curve must meet both requested boundary locations",
+    })
+}
+
+fn try_surface_cutting_quad_face(
+    surface: NurbsSurface,
+    reversed: bool,
+    vertex_parameters: [Point2; 4],
+    edge_specs: [([usize; 2], NurbsCurve); 4],
+    loop_specs: [(usize, bool, SurfaceIso); 4],
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    let vertices = vertex_parameters
+        .iter()
+        .map(|parameter| BrepVertex::try_new(surface.evaluate(parameter.x(), parameter.y())?, 0.0))
+        .collect::<Result<Vec<_>, _>>()?;
+    let edges = edge_specs
+        .into_iter()
+        .map(|(vertices, curve)| BrepEdge::try_new(vertices, curve, 0.0))
+        .collect::<Result<Vec<_>, _>>()?;
+    let trims = loop_specs
+        .into_iter()
+        .map(|(edge_index, reversed_3d, iso)| {
+            let trim_vertices = oriented_edge_vertices(&edges[edge_index], reversed_3d);
+            BrepTrim::try_new(
+                trim_vertices,
+                Some(edge_index),
+                reversed_3d,
+                NurbsCurve2::try_line(
+                    vertex_parameters[trim_vertices[0]],
+                    vertex_parameters[trim_vertices[1]],
+                )?,
+                BrepTrimType::Boundary,
+                iso,
+                [0.0, 0.0],
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let face = BrepFace::try_new(
+        surface,
+        reversed,
+        vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
+    )?;
+    Brep::try_new(vertices, edges, vec![face], tolerance)
+}
+
 fn ordered_pair(first: usize, second: usize) -> (usize, usize) {
     if first < second {
         (first, second)
@@ -6008,6 +6331,168 @@ mod tests {
                 (Some(1), false, SurfaceIso::West),
             ]
         );
+    }
+
+    #[test]
+    fn rectangular_surface_diagonal_splits_match_rhino_topology() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        let diagonal_length = 136.0_f64.sqrt();
+        let west_east_curve = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 2.0, 0.0), point(10.0, 8.0, 0.0)],
+            vec![0.0, 0.0, diagonal_length, diagonal_length],
+        )
+        .unwrap();
+        let [south, north] = Brep::try_split_rectangular_surface_face_west_east(
+            surface.clone(),
+            0.0..=10.0,
+            0.0..=10.0,
+            [2.0, 8.0],
+            west_east_curve,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            south
+                .vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(10.0, 8.0, 0.0),
+            ]
+        );
+        assert_eq!(
+            south
+                .edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 1], [1, 3], [2, 3], [2, 0]]
+        );
+        assert_eq!(south.edges()[2].curve().domain(), 0.0..=diagonal_length);
+        assert_eq!(
+            south.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(3), false, SurfaceIso::West),
+                (Some(0), false, SurfaceIso::South),
+                (Some(1), false, SurfaceIso::East),
+                (Some(2), true, SurfaceIso::NotIso),
+            ]
+        );
+        assert_eq!(
+            north
+                .vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(10.0, 10.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(0.0, 2.0, 0.0),
+                point(10.0, 8.0, 0.0),
+            ]
+        );
+        assert_eq!(
+            north.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(2), false, SurfaceIso::NotIso),
+                (Some(3), false, SurfaceIso::East),
+                (Some(0), false, SurfaceIso::North),
+                (Some(1), false, SurfaceIso::West),
+            ]
+        );
+
+        let south_north_curve = NurbsCurve::try_new(
+            1,
+            vec![point(2.0, 0.0, 0.0), point(8.0, 10.0, 0.0)],
+            vec![0.0, 0.0, diagonal_length, diagonal_length],
+        )
+        .unwrap();
+        let [west, east] = Brep::try_split_rectangular_surface_face_south_north(
+            surface,
+            0.0..=10.0,
+            0.0..=10.0,
+            [2.0, 8.0],
+            south_north_curve,
+            true,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(west.faces()[0].is_reversed());
+        assert!(east.faces()[0].is_reversed());
+        assert_eq!(
+            west.edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 2], [1, 0], [2, 3], [3, 1]]
+        );
+        assert_eq!(
+            west.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(2), false, SurfaceIso::NotIso),
+                (Some(3), false, SurfaceIso::North),
+                (Some(1), false, SurfaceIso::West),
+                (Some(0), false, SurfaceIso::South),
+            ]
+        );
+        assert_eq!(
+            east.edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 1], [1, 3], [2, 3], [2, 0]]
+        );
+        assert_eq!(
+            east.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(3), false, SurfaceIso::South),
+                (Some(0), false, SurfaceIso::East),
+                (Some(1), false, SurfaceIso::North),
+                (Some(2), true, SurfaceIso::NotIso),
+            ]
+        );
+
+        for brep in [&south, &north, &west, &east] {
+            brep.tessellate(2, Tolerance::DEFAULT).unwrap();
+        }
+        assert!(Tolerance::DEFAULT.approx_eq(
+            south.area(Tolerance::DEFAULT).unwrap() + north.area(Tolerance::DEFAULT).unwrap(),
+            100.0,
+        ));
+        assert!(Tolerance::DEFAULT.approx_eq(
+            west.area(Tolerance::DEFAULT).unwrap() + east.area(Tolerance::DEFAULT).unwrap(),
+            100.0,
+        ));
     }
 
     #[test]

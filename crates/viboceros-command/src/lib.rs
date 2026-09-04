@@ -12976,9 +12976,11 @@ enum CuttingSplitSource {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-enum CompleteSurfaceIsocurve {
+enum CompleteSurfaceCut {
     ConstantU(Real),
     ConstantV(Real),
+    WestEast { west_v: Real, east_v: Real },
+    SouthNorth { south_u: Real, north_u: Real },
 }
 
 fn selected_curve_cutter_inputs(
@@ -13164,28 +13166,71 @@ fn split_rectangular_surface_with_cutters(
     let epsilon_v = surface_split_parameter_epsilon(bounds[1], document.tolerance());
     let mut cuts_u = Vec::new();
     let mut cuts_v = Vec::new();
+    let mut opposite_side_cut = None;
     for curve in &curves {
-        let Some(isocurve) =
-            classify_complete_surface_isocurve(curve, surface, bounds, document.tolerance())?
+        let Some(cut) =
+            classify_complete_surface_cut(curve, surface, bounds, document.tolerance())?
         else {
             continue;
         };
-        match isocurve {
-            CompleteSurfaceIsocurve::ConstantU(parameter) => {
+        match cut {
+            CompleteSurfaceCut::ConstantU(parameter) => {
                 push_unique_surface_split_parameter(&mut cuts_u, parameter, bounds[0], epsilon_u);
             }
-            CompleteSurfaceIsocurve::ConstantV(parameter) => {
+            CompleteSurfaceCut::ConstantV(parameter) => {
                 push_unique_surface_split_parameter(&mut cuts_v, parameter, bounds[1], epsilon_v);
+            }
+            CompleteSurfaceCut::WestEast { .. } | CompleteSurfaceCut::SouthNorth { .. } => {
+                if opposite_side_cut.is_some() {
+                    return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+                }
+                opposite_side_cut = Some((cut, curve.clone()));
             }
         }
     }
     cuts_u.sort_by(Real::total_cmp);
     cuts_v.sort_by(Real::total_cmp);
+    if let Some((cut, curve)) = opposite_side_cut {
+        if !cuts_u.is_empty() || !cuts_v.is_empty() {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+        let pieces = match cut {
+            CompleteSurfaceCut::WestEast { west_v, east_v } => {
+                Brep::try_split_rectangular_surface_face_west_east(
+                    surface.clone(),
+                    bounds[0][0]..=bounds[0][1],
+                    bounds[1][0]..=bounds[1][1],
+                    [west_v, east_v],
+                    curve,
+                    reversed,
+                    document.tolerance(),
+                )?
+            }
+            CompleteSurfaceCut::SouthNorth { south_u, north_u } => {
+                Brep::try_split_rectangular_surface_face_south_north(
+                    surface.clone(),
+                    bounds[0][0]..=bounds[0][1],
+                    bounds[1][0]..=bounds[1][1],
+                    [south_u, north_u],
+                    curve,
+                    reversed,
+                    document.tolerance(),
+                )?
+            }
+            CompleteSurfaceCut::ConstantU(_) | CompleteSurfaceCut::ConstantV(_) => {
+                unreachable!("constant-parameter cuts are collected separately")
+            }
+        };
+        replace_surface_split_source(document, source_id, Vec::from(pieces))?;
+        return Ok(
+            "Split the selected surface along 1 complete opposite-boundary curve into 2 exact B-rep faces"
+                .to_owned(),
+        );
+    }
     if cuts_u.is_empty() && cuts_v.is_empty() {
         document.select_objects_direct([source_id], SelectionMode::Replace)?;
         return Ok(
-            "No complete isoparametric cutting intersection was available to split the surface"
-                .to_owned(),
+            "No complete cutting intersection was available to split the surface".to_owned(),
         );
     }
 
@@ -13295,17 +13340,18 @@ fn append_surface_split_curve(
     Ok(())
 }
 
-fn classify_complete_surface_isocurve(
+fn classify_complete_surface_cut(
     curve: &NurbsCurve,
     surface: &NurbsSurface,
     bounds: [[Real; 2]; 2],
     tolerance: Tolerance,
-) -> Result<Option<CompleteSurfaceIsocurve>, CommandError> {
+) -> Result<Option<CompleteSurfaceCut>, CommandError> {
     const SAMPLE_COUNT: usize = 9;
     let mut range_u = [Real::INFINITY, Real::NEG_INFINITY];
     let mut range_v = [Real::INFINITY, Real::NEG_INFINITY];
     let mut sum_u = 0.0;
     let mut sum_v = 0.0;
+    let mut samples = Vec::with_capacity(SAMPLE_COUNT);
     for index in 0..SAMPLE_COUNT {
         let normalized = index as Real / (SAMPLE_COUNT - 1) as Real;
         let point = curve.evaluate(curve.parameter_at(normalized)?)?;
@@ -13328,6 +13374,7 @@ fn classify_complete_surface_isocurve(
         range_v[1] = range_v[1].max(v);
         sum_u += u;
         sum_v += v;
+        samples.push([u, v]);
     }
 
     let epsilon_u = surface_split_parameter_epsilon(bounds[0], tolerance);
@@ -13337,19 +13384,97 @@ fn classify_complete_surface_isocurve(
     let covers_u = range_u[0] <= bounds[0][0] + epsilon_u && range_u[1] >= bounds[0][1] - epsilon_u;
     let covers_v = range_v[0] <= bounds[1][0] + epsilon_v && range_v[1] >= bounds[1][1] - epsilon_v;
     if constant_u && covers_v {
-        return Ok(Some(CompleteSurfaceIsocurve::ConstantU(
+        return Ok(Some(CompleteSurfaceCut::ConstantU(
             (sum_u / SAMPLE_COUNT as Real).clamp(bounds[0][0], bounds[0][1]),
         )));
     }
     if constant_v && covers_u {
-        return Ok(Some(CompleteSurfaceIsocurve::ConstantV(
+        return Ok(Some(CompleteSurfaceCut::ConstantV(
             (sum_v / SAMPLE_COUNT as Real).clamp(bounds[1][0], bounds[1][1]),
         )));
     }
     if constant_u || constant_v {
         return Ok(None);
     }
-    Err(CommandError::UnsupportedSurfaceCuttingIntersection)
+
+    let first = samples[0];
+    let last = samples[SAMPLE_COUNT - 1];
+    let near = |left: Real, right: Real, epsilon: Real| (left - right).abs() <= epsilon;
+    let west_east = if near(first[0], bounds[0][0], epsilon_u)
+        && near(last[0], bounds[0][1], epsilon_u)
+    {
+        Some([first[1], last[1]])
+    } else if near(last[0], bounds[0][0], epsilon_u) && near(first[0], bounds[0][1], epsilon_u) {
+        Some([last[1], first[1]])
+    } else {
+        None
+    };
+    if let Some([west_v, east_v]) = west_east
+        && west_v > bounds[1][0] + epsilon_v
+        && west_v < bounds[1][1] - epsilon_v
+        && east_v > bounds[1][0] + epsilon_v
+        && east_v < bounds[1][1] - epsilon_v
+    {
+        if !surface_cut_parameters_are_collinear(&samples, epsilon_u, epsilon_v) {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+        return Ok(Some(CompleteSurfaceCut::WestEast {
+            west_v: west_v.clamp(bounds[1][0], bounds[1][1]),
+            east_v: east_v.clamp(bounds[1][0], bounds[1][1]),
+        }));
+    }
+
+    let south_north = if near(first[1], bounds[1][0], epsilon_v)
+        && near(last[1], bounds[1][1], epsilon_v)
+    {
+        Some([first[0], last[0]])
+    } else if near(last[1], bounds[1][0], epsilon_v) && near(first[1], bounds[1][1], epsilon_v) {
+        Some([last[0], first[0]])
+    } else {
+        None
+    };
+    if let Some([south_u, north_u]) = south_north
+        && south_u > bounds[0][0] + epsilon_u
+        && south_u < bounds[0][1] - epsilon_u
+        && north_u > bounds[0][0] + epsilon_u
+        && north_u < bounds[0][1] - epsilon_u
+    {
+        if !surface_cut_parameters_are_collinear(&samples, epsilon_u, epsilon_v) {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+        return Ok(Some(CompleteSurfaceCut::SouthNorth {
+            south_u: south_u.clamp(bounds[0][0], bounds[0][1]),
+            north_u: north_u.clamp(bounds[0][0], bounds[0][1]),
+        }));
+    }
+
+    let boundary_mask = |parameter: [Real; 2]| {
+        u8::from(near(parameter[0], bounds[0][0], epsilon_u))
+            | (u8::from(near(parameter[0], bounds[0][1], epsilon_u)) << 1)
+            | (u8::from(near(parameter[1], bounds[1][0], epsilon_v)) << 2)
+            | (u8::from(near(parameter[1], bounds[1][1], epsilon_v)) << 3)
+    };
+    if boundary_mask(first) != 0 && boundary_mask(last) != 0 {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+    }
+    Ok(None)
+}
+
+fn surface_cut_parameters_are_collinear(
+    samples: &[[Real; 2]],
+    epsilon_u: Real,
+    epsilon_v: Real,
+) -> bool {
+    let first = samples[0];
+    let last = samples[samples.len() - 1];
+    let delta_u = last[0] - first[0];
+    let delta_v = last[1] - first[1];
+    let cross_tolerance =
+        (epsilon_u * delta_v.abs() + epsilon_v * delta_u.abs()).max(Real::EPSILON) * 8.0;
+    samples.iter().all(|sample| {
+        ((sample[0] - first[0]) * delta_v - (sample[1] - first[1]) * delta_u).abs()
+            <= cross_tolerance
+    })
 }
 
 fn surface_split_parameter_epsilon(bounds: [Real; 2], tolerance: Tolerance) -> Real {
@@ -20821,7 +20946,7 @@ pub enum CommandError {
     SplitRequiresCurveOrRectangularSurfaceSource,
 
     #[error(
-        "surface cutting-object Split currently requires every splitting intersection to be a complete isocurve"
+        "surface cutting-object Split currently supports complete isocurves or one exact straight cut between opposite trim sides"
     )]
     UnsupportedSurfaceCuttingIntersection,
 
@@ -21331,6 +21456,30 @@ mod tests {
             Point3::try_new(15.0, y, 5.0).unwrap(),
             Point3::try_new(-5.0, y, 5.0).unwrap(),
         ])
+        .unwrap()
+    }
+
+    fn west_east_diagonal_cutting_surface() -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 2.0, -5.0).unwrap(),
+            Point3::try_new(10.0, 8.0, -5.0).unwrap(),
+            Point3::try_new(10.0, 8.0, 5.0).unwrap(),
+            Point3::try_new(0.0, 2.0, 5.0).unwrap(),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=136.0_f64.sqrt(), 0.0..=10.0)
+        .unwrap()
+    }
+
+    fn south_north_diagonal_cutting_surface() -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            Point3::try_new(2.0, 0.0, -5.0).unwrap(),
+            Point3::try_new(8.0, 10.0, -5.0).unwrap(),
+            Point3::try_new(8.0, 10.0, 5.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 5.0).unwrap(),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=136.0_f64.sqrt(), 0.0..=10.0)
         .unwrap()
     }
 
@@ -27873,6 +28022,89 @@ mod tests {
     }
 
     #[test]
+    fn cutting_object_split_supports_straight_opposite_boundary_surface_cuts() {
+        let registry = CommandRegistry::with_builtins();
+        for (cutter, source_pick, expected_edges, expected_trim_reversals) in [
+            (
+                west_east_diagonal_cutting_surface(),
+                "5,1,0",
+                [
+                    vec![[0, 1], [1, 3], [2, 3], [2, 0]],
+                    vec![[0, 1], [1, 2], [2, 3], [3, 0]],
+                ],
+                [true, false],
+            ),
+            (
+                south_north_diagonal_cutting_surface(),
+                "1,5,0",
+                [
+                    vec![[0, 2], [1, 0], [2, 3], [3, 1]],
+                    vec![[0, 1], [1, 3], [2, 3], [2, 0]],
+                ],
+                [false, true],
+            ),
+        ] {
+            let mut document = Document::default();
+            let source = planar_intersection_surface();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(source.clone()))
+                .unwrap();
+            let cutter_id = document
+                .add_geometry(Geometry::NurbsSurface(cutter))
+                .unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("Split CuttingObjects={source_pick}"),
+                    )
+                    .unwrap(),
+                "Split the selected surface along 1 complete opposite-boundary curve into 2 exact B-rep faces"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut area = 0.0;
+            for ((object, expected_edges), expected_reversed_trim) in outputs
+                .iter()
+                .zip(expected_edges)
+                .zip(expected_trim_reversals)
+            {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("diagonal cutting Split must create B-rep faces")
+                };
+                let face = &brep.faces()[0];
+                assert_eq!(face.surface(), &source);
+                assert_eq!(
+                    face.rectangular_trim_bounds(document.tolerance()).unwrap(),
+                    None
+                );
+                let nonisoparametric = face.loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                    .unwrap();
+                assert_eq!(nonisoparametric.is_reversed_3d(), expected_reversed_trim);
+                assert_eq!(
+                    brep.edges()
+                        .iter()
+                        .map(|edge| edge.vertices())
+                        .collect::<Vec<_>>(),
+                    expected_edges
+                );
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(2, document.tolerance()).unwrap();
+            }
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
     fn cutting_object_split_handles_no_hit_and_rejects_invalid_sources_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -27951,7 +28183,7 @@ mod tests {
             registry
                 .execute(&mut surfaces, "Split CuttingObjects=0,0,0")
                 .unwrap(),
-            "No complete isoparametric cutting intersection was available to split the surface"
+            "No complete cutting intersection was available to split the surface"
         );
         assert_eq!(
             surfaces.objects().collect::<Vec<_>>(),

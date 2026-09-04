@@ -15,9 +15,9 @@ use viboceros_document::{
     ObjectId, SelectionMode,
 };
 use viboceros_geometry::{
-    AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, CurveExtensionBoundary, CurveExtensionSide,
-    CurveExtensionStyle, CurveKnotSpacing, CurveRef, CurveThroughConstruction,
+    AffineTransform3, Brep, BrepFace, BrepLoopType, BrepTrimType, CatenaryConstruction,
+    CatenaryCurve, CatenaryOutput, Circle3, CircularArc3, CurveExtensionBoundary,
+    CurveExtensionSide, CurveExtensionStyle, CurveKnotSpacing, CurveRef, CurveThroughConstruction,
     CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle,
     MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
@@ -7973,11 +7973,7 @@ fn surface_split_cutting_command(
                 ));
             }
             let face = &brep.faces()[0];
-            let trim_bounds =
-                face.rectangular_trim_bounds(tolerance)?
-                    .ok_or(ProbeError::FixtureInvariant(
-                        "surface cutting Split produced a non-rectangular face trim",
-                    ))?;
+            let trim_bounds = surface_face_outer_trim_bounds(face)?;
             let sort_key = [
                 trim_bounds[0][0],
                 trim_bounds[1][0],
@@ -8027,6 +8023,24 @@ fn surface_split_cutting_command(
     let elapsed_ns =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
     Ok((value, elapsed_ns))
+}
+
+fn surface_face_outer_trim_bounds(face: &BrepFace) -> Result<[[f64; 2]; 2], GeometryError> {
+    let mut bounds = [
+        [f64::INFINITY, f64::NEG_INFINITY],
+        [f64::INFINITY, f64::NEG_INFINITY],
+    ];
+    for trim in face.loops()[0].trims() {
+        let domain = trim.curve().domain();
+        for parameter in [*domain.start(), *domain.end()] {
+            let point = trim.curve().evaluate(parameter)?;
+            bounds[0][0] = bounds[0][0].min(point.x());
+            bounds[0][1] = bounds[0][1].max(point.x());
+            bounds[1][0] = bounds[1][0].min(point.y());
+            bounds[1][1] = bounds[1][1].max(point.y());
+        }
+    }
+    Ok(bounds)
 }
 
 const fn surface_uniform_direction_name(direction: SurfaceUniformDirection) -> &'static str {
