@@ -909,11 +909,11 @@ corner, and four when it joins the side's two corners.
 Simple closed cutters wholly inside the trim may be combined with one another
 and with boundary-to-boundary cuts. Disjoint loops become multiple holes,
 nested loops produce annular faces, and transverse cuts split both the closed
-interiors and their complements. Polygonal loops touching externally or
-internally at one vertex retain Rhino's welded loop topology and tessellate
-without opening the contact. Smooth closed NURBS remain one edge, while
-degree-multiple kinks split into Rhino-compatible edges; self-crossing loops
-are rejected.
+interiors and their complements. Polygonal loops and smooth rational circles
+touching externally or internally at one vertex retain Rhino's welded loop
+topology and tessellate without opening the contact. Smooth closed NURBS remain
+one edge, while degree-multiple kinks split into Rhino-compatible edges;
+self-crossing loops are rejected.
 Straight and curved intersections against an already-trimmed rectangular
 B-rep are partitioned at exact intersections with its four visible UV
 boundaries. Globally nonmonotone cutters may enter the face repeatedly; every
@@ -933,9 +933,9 @@ multi-closed arrangements, single- and multi-span curved paths,
 straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
 sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter
-arrangements, including internally and externally touching closed polygons. It
-compares UV trim degree, controls, weights, knots, and domains
-as well as vertices, edge domains, trim order,
+arrangements, including internally and externally touching closed polygons and
+tangent rational circles. It compares UV trim degree, controls, weights, knots,
+and domains as well as vertices, edge domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point

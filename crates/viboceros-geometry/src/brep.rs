@@ -1,4 +1,4 @@
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::{BTreeMap, BTreeSet, VecDeque};
 use std::ops::RangeInclusive;
 
 use spade::{
@@ -5233,6 +5233,13 @@ enum SurfaceCutArrangementEdgeKind {
     Cut { source: usize, segment: usize },
 }
 
+#[derive(Clone, Copy)]
+struct SurfaceCutHalfedgeDirection {
+    tangent: [Real; 2],
+    angle: Real,
+    bend: Real,
+}
+
 fn try_rectangular_surface_cut_arrangement(
     surface: NurbsSurface,
     bounds: [[Real; 2]; 2],
@@ -5534,8 +5541,8 @@ fn try_rectangular_surface_cut_arrangement(
         .len()
         .checked_mul(2)
         .ok_or(GeometryError::TooManySurfaceWires)?;
-    let halfedge_angles = (0..halfedge_count)
-        .map(|halfedge| surface_cut_halfedge_angle(&edges, halfedge))
+    let halfedge_directions = (0..halfedge_count)
+        .map(|halfedge| surface_cut_halfedge_direction(&edges, halfedge))
         .collect::<Result<Vec<_>, _>>()?;
     let mut outgoing = vec![Vec::<usize>::new(); nodes.len()];
     for (edge_index, edge) in edges.iter().enumerate() {
@@ -5544,11 +5551,7 @@ fn try_rectangular_surface_cut_arrangement(
     }
     let mut next = vec![usize::MAX; halfedge_count];
     for halfedges in &mut outgoing {
-        halfedges.sort_by(|left, right| {
-            halfedge_angles[*left]
-                .total_cmp(&halfedge_angles[*right])
-                .then_with(|| left.cmp(right))
-        });
+        sort_surface_cut_outgoing_halfedges(halfedges, &halfedge_directions, tolerance.angular());
         for (index, &outgoing_halfedge) in halfedges.iter().enumerate() {
             let clockwise = halfedges[(index + halfedges.len() - 1) % halfedges.len()];
             next[outgoing_halfedge ^ 1] = clockwise;
@@ -5910,10 +5913,12 @@ fn push_surface_cut_arrangement_edge(
     Ok(())
 }
 
-fn surface_cut_halfedge_angle(
+fn surface_cut_halfedge_direction(
     edges: &[SurfaceCutArrangementEdge],
     halfedge: usize,
-) -> Result<Real, GeometryError> {
+) -> Result<SurfaceCutHalfedgeDirection, GeometryError> {
+    const BEND_SAMPLE_FRACTION: Real = 1.0e-5;
+
     let edge = &edges[halfedge / 2];
     let reversed = !halfedge.is_multiple_of(2);
     let domain = edge.parameter.domain();
@@ -5928,6 +5933,8 @@ fn surface_cut_halfedge_angle(
     } else {
         derivative
     };
+    let mut tangent_length = tangent[0].hypot(tangent[1]);
+    let regular_endpoint_tangent = tangent_length.is_finite() && tangent_length > 0.0;
     if tangent[0] == 0.0 && tangent[1] == 0.0 {
         let start = edge.parameter.start_point()?;
         let end = edge.parameter.end_point()?;
@@ -5936,13 +5943,125 @@ fn surface_cut_halfedge_angle(
         } else {
             [end.x() - start.x(), end.y() - start.y()]
         };
+        tangent_length = tangent[0].hypot(tangent[1]);
     }
-    if tangent[0] == 0.0 && tangent[1] == 0.0 {
+    if !tangent_length.is_finite() || tangent_length == 0.0 {
         return invalid("a surface cutting arrangement edge has no endpoint tangent");
     }
+    tangent = tangent.map(|coordinate| coordinate / tangent_length);
     let angle = tangent[1].atan2(tangent[0]);
-    require_finite([angle], "surface cutting arrangement tangent angle")?;
-    Ok(angle)
+    let sample_span = if reversed {
+        edge.parameter.spans().last()
+    } else {
+        edge.parameter.spans().next()
+    }
+    .ok_or(GeometryError::InvalidBrepTopology {
+        context: "a surface cutting arrangement edge has no active parameter span",
+    })?;
+    let sample_parameter = normalized_span_parameter(
+        [sample_span.0, sample_span.1],
+        if reversed {
+            1.0 - BEND_SAMPLE_FRACTION
+        } else {
+            BEND_SAMPLE_FRACTION
+        },
+    )?;
+    let (_, sample_derivative) = edge.parameter.evaluate_with_derivative(sample_parameter)?;
+    let mut sample_tangent = if reversed {
+        [-sample_derivative[0], -sample_derivative[1]]
+    } else {
+        sample_derivative
+    };
+    let sample_speed = sample_tangent[0].hypot(sample_tangent[1]);
+    let bend = if regular_endpoint_tangent && sample_speed.is_finite() && sample_speed > 0.0 {
+        sample_tangent = sample_tangent.map(|coordinate| coordinate / sample_speed);
+        let arc_step = (sample_parameter - parameter).abs() * (tangent_length + sample_speed) * 0.5;
+        if arc_step.is_finite() && arc_step > 0.0 {
+            tangent[0].mul_add(sample_tangent[1], -tangent[1] * sample_tangent[0]) / arc_step
+        } else {
+            0.0
+        }
+    } else {
+        0.0
+    };
+    require_finite(
+        tangent.into_iter().chain([angle, bend]),
+        "surface cutting arrangement halfedge direction",
+    )?;
+    Ok(SurfaceCutHalfedgeDirection {
+        tangent,
+        angle,
+        bend,
+    })
+}
+
+fn sort_surface_cut_outgoing_halfedges(
+    halfedges: &mut [usize],
+    directions: &[SurfaceCutHalfedgeDirection],
+    angular_tolerance: Real,
+) {
+    halfedges.sort_by(|left, right| {
+        directions[*left]
+            .angle
+            .total_cmp(&directions[*right].angle)
+            .then_with(|| left.cmp(right))
+    });
+    if halfedges.len() < 2 {
+        return;
+    }
+
+    // Linearize the circular order across its largest empty angular interval.
+    // This keeps tangent directions straddling -pi/pi next to one another. A
+    // cyclic rotation does not change the clockwise successor relation below.
+    let mut largest_gap_after = 0_usize;
+    let mut largest_gap = Real::NEG_INFINITY;
+    for index in 0..halfedges.len() {
+        let angle = directions[halfedges[index]].angle;
+        let next_angle = directions[halfedges[(index + 1) % halfedges.len()]].angle;
+        let gap = if index + 1 == halfedges.len() {
+            next_angle + std::f64::consts::TAU - angle
+        } else {
+            next_angle - angle
+        };
+        if gap.total_cmp(&largest_gap).is_gt() {
+            largest_gap = gap;
+            largest_gap_after = index;
+        }
+    }
+    halfedges.rotate_left((largest_gap_after + 1) % halfedges.len());
+
+    // Curves with the same first-order direction are ordered by their signed
+    // bend, which is their infinitesimal angular order away from the vertex.
+    // Clustering before sorting keeps the comparison itself a total order.
+    let parallel_tolerance = angular_tolerance.clamp(Real::EPSILON * 256.0, 1.0e-7);
+    let mut group_start = 0_usize;
+    while group_start < halfedges.len() {
+        let first = directions[halfedges[group_start]];
+        let mut group_end = group_start + 1;
+        while group_end < halfedges.len() {
+            let candidate = directions[halfedges[group_end]];
+            let cross = first.tangent[0].mul_add(
+                candidate.tangent[1],
+                -first.tangent[1] * candidate.tangent[0],
+            );
+            let dot = first.tangent[0].mul_add(
+                candidate.tangent[0],
+                first.tangent[1] * candidate.tangent[1],
+            );
+            if dot <= 0.0 || cross.abs() > parallel_tolerance {
+                break;
+            }
+            group_end += 1;
+        }
+        halfedges[group_start..group_end].sort_by(|left, right| {
+            directions[*left]
+                .bend
+                .total_cmp(&directions[*right].bend)
+                .then_with(|| directions[*left].angle.total_cmp(&directions[*right].angle))
+                .then_with(|| left.cmp(right))
+        });
+        group_start = group_end;
+    }
 }
 
 fn sampled_surface_cut_cycle_signed_area(
@@ -8717,28 +8836,23 @@ fn triangulate_trim_region(
         .iter()
         .map(|representative| representative_handles[*representative])
         .collect::<Vec<_>>();
-    for range in &loop_ranges {
-        for index in range.clone() {
-            let next = if index + 1 == range.end {
-                range.start
-            } else {
-                index + 1
-            };
-            let before = triangulation.num_constraints();
-            let Some(from) = handles[index] else {
-                return Ok(None);
-            };
-            let Some(to) = handles[next] else {
-                return Ok(None);
-            };
-            if triangulation.try_add_constraint(from, to).is_empty()
-                || triangulation.num_constraints() != before + 1
-            {
-                return Ok(None);
-            }
+    let Some(constraints) =
+        trim_triangulation_constraints(&normalized, &loop_ranges, &representatives, epsilon)
+    else {
+        return Ok(None);
+    };
+    for [from_index, to_index] in &constraints {
+        let Some(from) = handles[*from_index] else {
+            return Ok(None);
+        };
+        let Some(to) = handles[*to_index] else {
+            return Ok(None);
+        };
+        if triangulation.try_add_constraint(from, to).is_empty() {
+            return Ok(None);
         }
     }
-    if triangulation.num_constraints() != boundary_vertex_count {
+    if triangulation.num_constraints() < constraints.len() {
         return Ok(None);
     }
 
@@ -8849,6 +8963,115 @@ fn unique_trim_triangulation_vertices(
         representatives.push(representative);
     }
     (vertices, representatives)
+}
+
+fn trim_triangulation_constraints(
+    normalized: &[[Real; 2]],
+    loop_ranges: &[std::ops::Range<usize>],
+    representatives: &[usize],
+    epsilon: Real,
+) -> Option<Vec<[usize; 2]>> {
+    const MAX_CONTACT_REFINEMENT_COMPARISONS: usize = 1_000_000;
+
+    let mut occurrence_counts = vec![0_usize; normalized.len()];
+    for &representative in representatives {
+        occurrence_counts[representative] += 1;
+    }
+    let mut neighbors = BTreeMap::<usize, Vec<usize>>::new();
+    for range in loop_ranges {
+        for index in range.clone() {
+            let contact = representatives[index];
+            if occurrence_counts[contact] < 2 {
+                continue;
+            }
+            let previous = if index == range.start {
+                range.end - 1
+            } else {
+                index - 1
+            };
+            let next = if index + 1 == range.end {
+                range.start
+            } else {
+                index + 1
+            };
+            neighbors
+                .entry(contact)
+                .or_default()
+                .extend([representatives[previous], representatives[next]]);
+        }
+    }
+    for candidates in neighbors.values_mut() {
+        candidates.sort_unstable();
+        candidates.dedup();
+    }
+
+    let mut constraints = Vec::new();
+    let mut seen = BTreeSet::<[usize; 2]>::new();
+    let mut comparison_count = 0_usize;
+    for range in loop_ranges {
+        for source_from in range.clone() {
+            let source_to = if source_from + 1 == range.end {
+                range.start
+            } else {
+                source_from + 1
+            };
+            let from = representatives[source_from];
+            let to = representatives[source_to];
+            if from == to {
+                return None;
+            }
+            let start = normalized[from];
+            let end = normalized[to];
+            let direction = [end[0] - start[0], end[1] - start[1]];
+            let squared_length = direction[0].mul_add(direction[0], direction[1] * direction[1]);
+            if !squared_length.is_finite() || squared_length == 0.0 {
+                return None;
+            }
+            let mut splits = vec![(0.0, from), (1.0, to)];
+            for contact in [from, to] {
+                let Some(candidates) = neighbors.get(&contact) else {
+                    continue;
+                };
+                for &candidate in candidates {
+                    comparison_count = comparison_count.checked_add(1)?;
+                    if comparison_count > MAX_CONTACT_REFINEMENT_COMPARISONS {
+                        return None;
+                    }
+                    if candidate == from || candidate == to {
+                        continue;
+                    }
+                    let point = normalized[candidate];
+                    let cross = polygon_cross(start, end, point);
+                    if !point_on_trim_segment(point, start, end, cross, epsilon) {
+                        continue;
+                    }
+                    let offset = [point[0] - start[0], point[1] - start[1]];
+                    let fraction =
+                        offset[0].mul_add(direction[0], offset[1] * direction[1]) / squared_length;
+                    if fraction > 0.0 && fraction < 1.0 {
+                        splits.push((fraction, candidate));
+                    }
+                }
+            }
+            splits.sort_by(|left, right| {
+                left.0
+                    .total_cmp(&right.0)
+                    .then_with(|| left.1.cmp(&right.1))
+            });
+            splits.dedup_by(|left, right| left.1 == right.1);
+            for pair in splits.windows(2) {
+                let [from, to] = [pair[0].1, pair[1].1];
+                if from == to {
+                    continue;
+                }
+                let key = [from.min(to), from.max(to)];
+                if seen.insert(key) {
+                    constraints.push([from, to]);
+                }
+            }
+        }
+    }
+    Some(constraints)
 }
 
 fn point_in_trim_bounds(point: [Real; 2], bounds: [[Real; 2]; 2], epsilon: Real) -> bool {
@@ -9871,6 +10094,34 @@ mod tests {
     }
 
     #[test]
+    fn surface_cut_halfedge_sort_orders_tangent_branches_by_bend_across_angle_seam() {
+        let directions = [
+            SurfaceCutHalfedgeDirection {
+                tangent: [1.0, 0.0],
+                angle: 0.0,
+                bend: 0.0,
+            },
+            SurfaceCutHalfedgeDirection {
+                tangent: [-1.0, 0.0],
+                angle: std::f64::consts::PI,
+                bend: 1.0,
+            },
+            SurfaceCutHalfedgeDirection {
+                tangent: [-1.0, -0.0],
+                angle: -std::f64::consts::PI,
+                bend: -1.0,
+            },
+        ];
+        let mut halfedges = [1, 0, 2];
+        sort_surface_cut_outgoing_halfedges(
+            &mut halfedges,
+            &directions,
+            Tolerance::DEFAULT.angular(),
+        );
+        assert_eq!(halfedges, [0, 2, 1]);
+    }
+
+    #[test]
     fn rectangular_surface_curve_arrangements_support_multiple_closed_regions() {
         let surface = NurbsSurface::try_bilinear([
             point(0.0, 0.0, 0.0),
@@ -10017,6 +10268,16 @@ mod tests {
             vec![circle([2.5, 2.5], 1.0), circle([7.5, 7.5], 1.0)],
             &[1, 1, 6],
             &[1, 1, 3],
+        );
+        assert_case(
+            vec![circle([3.5, 5.0], 1.5), circle([6.5, 5.0], 1.5)],
+            &[1, 2, 7],
+            &[1, 1, 2],
+        );
+        assert_case(
+            vec![circle([5.0, 5.0], 3.0), circle([6.5, 5.0], 1.5)],
+            &[1, 2, 5],
+            &[1, 1, 2],
         );
         let triple_nested = Brep::try_split_rectangular_surface_face_with_curves(
             surface,
