@@ -78,13 +78,13 @@ pub enum GeometryError {
     #[error("the requested natural curve extension length could not be reached")]
     CurveExtensionLengthDidNotConverge,
 
-    #[error("curve extension requires at least one boundary curve")]
+    #[error("curve extension requires at least one boundary object")]
     EmptyCurveExtensionBoundaries,
 
-    #[error("the requested curve end does not reach any boundary curve")]
+    #[error("the requested curve end does not reach any boundary object")]
     CurveExtensionBoundaryNotFound,
 
-    #[error("curve-curve intersection refinement did not converge")]
+    #[error("curve intersection refinement did not converge")]
     CurveIntersectionDidNotConverge,
 
     #[error("a NURBS surface extension interval must be finite, increasing, and extend its domain")]

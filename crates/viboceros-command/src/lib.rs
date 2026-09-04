@@ -9,7 +9,8 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveExtensionSide,
+    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure,
+    CurveExtensionBoundary as GeometryCurveExtensionBoundary, CurveExtensionSide,
     CurveExtensionStyle as GeometryCurveExtensionStyle, CurveInterpolationOptions,
     CurveKnotSpacing, CurveRef, CurveSample, CurveThroughConstruction, CurveTweenMatchMethod,
     DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
@@ -11469,6 +11470,28 @@ impl Command for ExtendCurveCommand {
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let (target, style, join) = parse_extend_curve_target(arguments)?;
+        if let ExtendCurveTarget::Boundary(point) = target {
+            let candidates = document
+                .selected_objects()
+                .filter_map(|object| {
+                    let boundary = match object.geometry() {
+                        Geometry::NurbsSurface(surface) => {
+                            Some(GeometryCurveExtensionBoundary::Surface(surface.clone()))
+                        }
+                        Geometry::Brep(brep) => {
+                            Some(GeometryCurveExtensionBoundary::Brep(brep.clone()))
+                        }
+                        geometry => match geometry.nurbs_curve_representation() {
+                            Ok(Some(curve)) => Some(GeometryCurveExtensionBoundary::Curve(curve)),
+                            Ok(None) => None,
+                            Err(error) => return Some(Err(error)),
+                        },
+                    };
+                    boundary.map(|boundary| Ok((object.id(), boundary)))
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?;
+            return extend_curve_to_selected_boundaries(document, candidates, point, style, join);
+        }
         let mut candidates = document
             .selected_objects()
             .filter_map(|object| {
@@ -11479,9 +11502,6 @@ impl Command for ExtendCurveCommand {
                     .map(|curve| curve.map(|curve| (object.id(), curve)))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
-        if let ExtendCurveTarget::Boundary(point) = target {
-            return extend_curve_to_selected_boundaries(document, candidates, point, style, join);
-        }
         if candidates.len() != 1 {
             return Err(CommandError::ExtendRequiresOneCurve {
                 actual: candidates.len(),
@@ -11633,18 +11653,21 @@ impl Command for ExtendCurveCommand {
 
 fn extend_curve_to_selected_boundaries(
     document: &mut Document,
-    mut candidates: Vec<(ObjectId, NurbsCurve)>,
+    mut candidates: Vec<(ObjectId, GeometryCurveExtensionBoundary)>,
     pick: Point3,
     style: ExtendCurveStyle,
     join: ExtendCurveJoin,
 ) -> Result<String, CommandError> {
     if candidates.len() < 2 {
-        return Err(CommandError::ExtendRequiresSourceAndBoundaryCurves {
+        return Err(CommandError::ExtendRequiresSourceAndBoundaryObjects {
             actual: candidates.len(),
         });
     }
     let mut best: Option<(Real, usize, CurveExtensionSide)> = None;
-    for (index, (_, curve)) in candidates.iter().enumerate() {
+    for (index, (_, boundary)) in candidates.iter().enumerate() {
+        let GeometryCurveExtensionBoundary::Curve(curve) = boundary else {
+            continue;
+        };
         if curve.is_closed()? {
             continue;
         }
@@ -11667,6 +11690,9 @@ fn extend_curve_to_selected_boundaries(
         return Err(CommandError::NoOpenCurveToExtendToBoundary);
     };
     let (source_id, source) = candidates.remove(source_index);
+    let GeometryCurveExtensionBoundary::Curve(source) = source else {
+        unreachable!("only curve candidates participate in source endpoint picking")
+    };
     let boundaries = candidates
         .into_iter()
         .map(|(_, boundary)| boundary)
@@ -11678,7 +11704,7 @@ fn extend_curve_to_selected_boundaries(
         ExtendCurveStyle::Smooth => GeometryCurveExtensionStyle::Smooth,
     };
     if join == ExtendCurveJoin::No {
-        let extensions = source.try_separate_extensions_to_curve_boundaries(
+        let extensions = source.try_separate_extensions_to_boundaries(
             side,
             geometry_style,
             &boundaries,
@@ -11704,13 +11730,13 @@ fn extend_curve_to_selected_boundaries(
         ));
     }
     let extended = match join {
-        ExtendCurveJoin::Merge => source.try_merged_to_curve_boundaries(
+        ExtendCurveJoin::Merge => source.try_merged_to_boundaries(
             side,
             geometry_style,
             &boundaries,
             document.tolerance(),
         )?,
-        ExtendCurveJoin::Yes => source.try_joined_to_curve_boundaries(
+        ExtendCurveJoin::Yes => source.try_joined_to_boundaries(
             side,
             geometry_style,
             &boundaries,
@@ -19493,9 +19519,9 @@ pub enum CommandError {
     ExtendRequiresOneCurve { actual: usize },
 
     #[error(
-        "boundary Extend requires a picked open source curve and at least one other selected boundary curve, got {actual} selected curves"
+        "boundary Extend requires a picked open source curve and at least one other selected curve, surface, or B-rep boundary, got {actual} supported selected objects"
     )]
-    ExtendRequiresSourceAndBoundaryCurves { actual: usize },
+    ExtendRequiresSourceAndBoundaryObjects { actual: usize },
 
     #[error("boundary Extend could not find an open selected source curve")]
     NoOpenCurveToExtendToBoundary,
@@ -24714,6 +24740,48 @@ mod tests {
     }
 
     #[test]
+    fn extend_to_selected_surface_boundary_preserves_the_boundary() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry.execute(&mut document, "Line 0,0 5,0").unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(10.0, -5.0, -5.0).unwrap(),
+            Point3::try_new(10.0, 5.0, -5.0).unwrap(),
+            Point3::try_new(10.0, 5.0, 5.0).unwrap(),
+            Point3::try_new(10.0, -5.0, 5.0).unwrap(),
+        ])
+        .unwrap();
+        let boundary_id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        document
+            .select_objects([source_id, boundary_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut document, "Extend 5,0 Type=Line Join=Merge")
+            .unwrap();
+        let Geometry::NurbsCurve(extended) = document.object(source_id).unwrap().geometry() else {
+            panic!("surface-boundary Extend must replace the source with a NURBS curve")
+        };
+        assert!(
+            extended
+                .evaluate(*extended.domain().end())
+                .unwrap()
+                .is_near(
+                    Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                    document.tolerance()
+                )
+        );
+        assert_eq!(
+            document.object(boundary_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(surface)
+        );
+        assert_eq!(document.selected_object_count(), 0);
+    }
+
+    #[test]
     fn boundary_extend_rejects_missing_or_unreachable_boundaries_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -24724,7 +24792,7 @@ mod tests {
             .unwrap();
         assert!(matches!(
             registry.execute(&mut document, "Extend 5,0"),
-            Err(CommandError::ExtendRequiresSourceAndBoundaryCurves { actual: 1 })
+            Err(CommandError::ExtendRequiresSourceAndBoundaryObjects { actual: 1 })
         ));
 
         registry.execute(&mut document, "Line 2,-5 2,5").unwrap();

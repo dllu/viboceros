@@ -18,6 +18,7 @@ mod error;
 mod frame;
 mod integration;
 mod interpolation;
+mod intersection;
 mod line;
 mod mesh;
 mod morph;
@@ -77,7 +78,8 @@ pub use mesh::{
 };
 pub use morph::{PointMorph, SurfacePointMorph};
 pub use nurbs::{
-    ControlPointCurveClosure, CurveExtensionSide, CurveExtensionStyle, NurbsCurve, WeightedPoint3,
+    ControlPointCurveClosure, CurveExtensionBoundary, CurveExtensionSide, CurveExtensionStyle,
+    NurbsCurve, WeightedPoint3,
 };
 pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceKnotDirection};
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};

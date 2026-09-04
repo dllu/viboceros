@@ -318,6 +318,319 @@
       "style": "arc",
       "join": "yes",
       "canonicalize_curve_parameters": true
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-surface-merge",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {"point": [10, -5, -5]},
+              {"point": [10, 5, -5]},
+              {"point": [10, -5, 5]},
+              {"point": [10, 5, 5]}
+            ],
+            "knots_u": [0, 0, 10, 10],
+            "knots_v": [0, 0, 10, 10]
+          }
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-coplanar-surface-merge",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {"point": [10, -5, 0]},
+              {"point": [15, -5, 0]},
+              {"point": [10, 5, 0]},
+              {"point": [15, 5, 0]}
+            ],
+            "knots_u": [0, 0, 5, 5],
+            "knots_v": [0, 0, 10, 10]
+          }
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "quadratic-end-surface-smooth-no",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {"point": [0, 0, 0]},
+          {"point": [2, 3, 0]},
+          {"point": [4, 0, 0]}
+        ],
+        "knots": [0, 0, 0, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {"point": [7, -20, -5]},
+              {"point": [7, 20, -5]},
+              {"point": [7, -20, 5]},
+              {"point": [7, 20, 5]}
+            ],
+            "knots_u": [0, 0, 40, 40],
+            "knots_v": [0, 0, 10, 10]
+          }
+        }
+      ],
+      "side": "end",
+      "style": "smooth",
+      "join": "no"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-end-brep-yes",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [5, 0, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {"box": {"x": [10, 12], "y": [-2, 2], "z": [-2, 2]}}
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "yes"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "radial-line-end-cylinder-surface-merge",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [0.5, 0, 0]}],
+        "knots": [0, 0, 0.5, 0.5]
+      },
+      "boundaries": [
+        {
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 1,
+            "control_point_count_u": 9,
+            "control_point_count_v": 2,
+            "control_points": [
+              {"point": [2, 0, -2], "weight": 1},
+              {"point": [2, 2, -2], "weight": 0.7071067811865476},
+              {"point": [0, 2, -2], "weight": 1},
+              {"point": [-2, 2, -2], "weight": 0.7071067811865476},
+              {"point": [-2, 0, -2], "weight": 1},
+              {"point": [-2, -2, -2], "weight": 0.7071067811865476},
+              {"point": [0, -2, -2], "weight": 1},
+              {"point": [2, -2, -2], "weight": 0.7071067811865476},
+              {"point": [2, 0, -2], "weight": 1},
+              {"point": [2, 0, 2], "weight": 1},
+              {"point": [2, 2, 2], "weight": 0.7071067811865476},
+              {"point": [0, 2, 2], "weight": 1},
+              {"point": [-2, 2, 2], "weight": 0.7071067811865476},
+              {"point": [-2, 0, 2], "weight": 1},
+              {"point": [-2, -2, 2], "weight": 0.7071067811865476},
+              {"point": [0, -2, 2], "weight": 1},
+              {"point": [2, -2, 2], "weight": 0.7071067811865476},
+              {"point": [2, 0, 2], "weight": 1}
+            ],
+            "knots_u": [
+              0, 0, 0,
+              1.5707963267948966, 1.5707963267948966,
+              3.141592653589793, 3.141592653589793,
+              4.71238898038469, 4.71238898038469,
+              6.283185307179586, 6.283185307179586, 6.283185307179586
+            ],
+            "knots_v": [-2, -2, 2, 2]
+          }
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "tangent-line-end-cylinder-surface-merge",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [-5, 2, 0]}, {"point": [-3, 2, 0]}],
+        "knots": [0, 0, 2, 2]
+      },
+      "boundaries": [
+        {
+          "surface": {
+            "degree_u": 2,
+            "degree_v": 1,
+            "control_point_count_u": 9,
+            "control_point_count_v": 2,
+            "control_points": [
+              {"point": [2, 0, -2], "weight": 1},
+              {"point": [2, 2, -2], "weight": 0.7071067811865476},
+              {"point": [0, 2, -2], "weight": 1},
+              {"point": [-2, 2, -2], "weight": 0.7071067811865476},
+              {"point": [-2, 0, -2], "weight": 1},
+              {"point": [-2, -2, -2], "weight": 0.7071067811865476},
+              {"point": [0, -2, -2], "weight": 1},
+              {"point": [2, -2, -2], "weight": 0.7071067811865476},
+              {"point": [2, 0, -2], "weight": 1},
+              {"point": [2, 0, 2], "weight": 1},
+              {"point": [2, 2, 2], "weight": 0.7071067811865476},
+              {"point": [0, 2, 2], "weight": 1},
+              {"point": [-2, 2, 2], "weight": 0.7071067811865476},
+              {"point": [-2, 0, 2], "weight": 1},
+              {"point": [-2, -2, 2], "weight": 0.7071067811865476},
+              {"point": [0, -2, 2], "weight": 1},
+              {"point": [2, -2, 2], "weight": 0.7071067811865476},
+              {"point": [2, 0, 2], "weight": 1}
+            ],
+            "knots_u": [
+              0, 0, 0,
+              1.5707963267948966, 1.5707963267948966,
+              3.141592653589793, 3.141592653589793,
+              4.71238898038469, 4.71238898038469,
+              6.283185307179586, 6.283185307179586, 6.283185307179586
+            ],
+            "knots_v": [-2, -2, 2, 2]
+          }
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-enters-coplanar-trimmed-brep",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 1, 0]}, {"point": [5, 1, 0]}],
+        "knots": [0, 0, 5, 5]
+      },
+      "boundaries": [
+        {
+          "planar_face": {
+            "outer": {
+              "degree": 1,
+              "control_points": [
+                {"point": [12, -3, 0]},
+                {"point": [15, 0, 0]},
+                {"point": [12, 3, 0]},
+                {"point": [9, 0, 0]},
+                {"point": [12, -3, 0]}
+              ],
+              "knots": [
+                0, 0,
+                4.242640687119285,
+                8.48528137423857,
+                12.727922061357855,
+                16.97056274847714,
+                16.97056274847714
+              ]
+            }
+          }
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
+    },
+    {
+      "op": "curve_extend_boundary_command",
+      "id": "line-skips-trimmed-brep-hole",
+      "curve": {
+        "degree": 1,
+        "control_points": [{"point": [0, 0, 0]}, {"point": [0.5, 0, 0]}],
+        "knots": [0, 0, 0.5, 0.5]
+      },
+      "boundaries": [
+        {
+          "planar_face": {
+            "outer": {
+              "degree": 1,
+              "control_points": [
+                {"point": [10, -3, -3]},
+                {"point": [10, 3, -3]},
+                {"point": [10, 3, 3]},
+                {"point": [10, -3, 3]},
+                {"point": [10, -3, -3]}
+              ],
+              "knots": [0, 0, 6, 12, 18, 24, 24]
+            },
+            "holes": [
+              {
+                "degree": 2,
+                "control_points": [
+                  {"point": [10, 1, 0], "weight": 1},
+                  {"point": [10, 1, 1], "weight": 0.7071067811865476},
+                  {"point": [10, 0, 1], "weight": 1},
+                  {"point": [10, -1, 1], "weight": 0.7071067811865476},
+                  {"point": [10, -1, 0], "weight": 1},
+                  {"point": [10, -1, -1], "weight": 0.7071067811865476},
+                  {"point": [10, 0, -1], "weight": 1},
+                  {"point": [10, 1, -1], "weight": 0.7071067811865476},
+                  {"point": [10, 1, 0], "weight": 1}
+                ],
+                "knots": [
+                  0, 0, 0,
+                  1.5707963267948966, 1.5707963267948966,
+                  3.141592653589793, 3.141592653589793,
+                  4.71238898038469, 4.71238898038469,
+                  6.283185307179586, 6.283185307179586, 6.283185307179586
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {"point": [12, -3, -3]},
+              {"point": [12, 3, -3]},
+              {"point": [12, -3, 3]},
+              {"point": [12, 3, 3]}
+            ],
+            "knots_u": [0, 0, 6, 6],
+            "knots_v": [0, 0, 6, 6]
+          }
+        }
+      ],
+      "side": "end",
+      "style": "line",
+      "join": "merge"
     }
   ]
 }

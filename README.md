@@ -816,23 +816,27 @@ extension curves with copied attributes but without copying source group
 membership. Rhino's post-command deselection and undo behavior are retained.
 `Extend point Type=Natural|Arc|Line|Smooth Join=Merge|Yes|No` extends one of
 the selected open curves to the nearest intersection with the other selected
-curve boundaries. The point chooses the closest source endpoint; in the UI,
-omit it and pick that endpoint in a viewport after preselecting the source and
-boundaries. Intersections already on the source are ignored, multiple
-boundaries resolve to the first forward hit, and the source identity,
-attributes, groups, undo state, and Rhino's separate-output behavior are
-preserved. Surface and Brep boundary objects are not yet supported.
+curve, surface, or trimmed B-rep boundaries. The point chooses the closest
+source endpoint; in the UI, omit it and pick that endpoint in a viewport after
+preselecting the source and boundaries. Exact span subdivision handles
+transverse and tangent curve-surface hits, while finite coplanar overlaps stop
+at their entry edge and B-rep trim holes are excluded. Intersections already
+on the source are ignored, multiple boundaries resolve to the first forward
+hit, and the source identity, attributes, groups, undo state, and Rhino's
+separate-output behavior are preserved.
 `Extend Domain=start,end` exposes exact analytic NURBS-domain extension.
 Analytic curves and polylines are promoted to exact NURBS form as needed while
 identity is preserved. The permanent length-command fixture covers all join
 modes for explicit Smooth; its `2e-8` threshold contains Rhino's approximately
 `1.2e-8` cubic length-solver variation while Viboceros resolves that case to
 machine precision. The boundary-command fixture covers every continuation
-style, all join modes, both-end extension, and nearest-boundary selection to
-`1e-10`. Arc cases compare a canonical knot parameterization because Rhino
-leaks its temporary boundary-search extent into geometrically equivalent
-segment domains. Arc geometry and commands otherwise agree to floating-point
-roundoff except for the same pre-existing Smooth length-solver variation.
+style, all join modes, both-end extension, nearest-boundary selection,
+standalone surfaces, solid and trimmed B-reps, curved and tangent surface hits,
+coplanar overlap, and trim holes to `1e-10`. Arc cases compare a canonical
+knot parameterization because Rhino leaks its temporary boundary-search extent
+into geometrically equivalent segment domains. Arc geometry and commands
+otherwise agree to floating-point roundoff except for the same pre-existing
+Smooth length-solver variation.
 `ExtendSrf Edge=West|South|East|North Distance=value` performs Rhino's
 physical-distance operation on one selected untrimmed NURBS surface. Positive
 distances use Rhino's homogeneous-control-curve RMS scaling, including

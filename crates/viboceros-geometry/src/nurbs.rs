@@ -3,8 +3,9 @@ use std::ops::RangeInclusive;
 use faer::{Mat, prelude::*};
 
 use crate::{
-    AffineTransform3, BoundingBox3, CircularArc3, Frame3, GeometryError, Point3, Polyline3, Real,
-    Tolerance, Vector3, integration::integrate_adaptive, require_finite,
+    AffineTransform3, BoundingBox3, Brep, CircularArc3, Frame3, GeometryError, NurbsSurface,
+    Point3, Polyline3, Real, Tolerance, Vector3, integration::integrate_adaptive,
+    intersection::curve_surface_intersections, require_finite,
 };
 use crate::{CurveRef, curve::ArcLengthSampler};
 
@@ -45,6 +46,24 @@ pub enum CurveExtensionStyle {
     Smooth,
 }
 
+/// Finite geometry that can stop a curve extension.
+#[derive(Clone, Debug, PartialEq)]
+pub enum CurveExtensionBoundary {
+    Curve(NurbsCurve),
+    Surface(NurbsSurface),
+    Brep(Brep),
+}
+
+impl CurveExtensionBoundary {
+    fn control_bounds(&self) -> BoundingBox3 {
+        match self {
+            Self::Curve(curve) => curve.control_point_bounds(),
+            Self::Surface(surface) => surface.control_point_bounds(),
+            Self::Brep(brep) => brep.bounds(),
+        }
+    }
+}
+
 #[derive(Clone, Copy, Debug)]
 struct CurveBoundaryExtensionTarget {
     parameter: Real,
@@ -59,10 +78,10 @@ struct CurveBoundaryExtensionTargets {
 }
 
 #[derive(Clone, Copy, Debug)]
-struct CurveCurveIntersection {
-    first_parameter: Real,
-    second_parameter: Real,
-    point: Point3,
+pub(crate) struct CurveCurveIntersection {
+    pub(crate) first_parameter: Real,
+    pub(crate) second_parameter: Real,
+    pub(crate) point: Point3,
 }
 
 #[derive(Clone, Debug)]
@@ -1441,7 +1460,7 @@ impl NurbsCurve {
         Ok((parameter, distance))
     }
 
-    fn curve_intersections(
+    pub(crate) fn curve_intersections(
         &self,
         other: &Self,
         tolerance: Tolerance,
@@ -1462,22 +1481,42 @@ impl NurbsCurve {
             (distance_tolerance * 1.0e-4).max(Real::EPSILON * coordinate_scale * 64.0);
         let leaf_size = distance_tolerance * 2.0;
         let mut stack = Vec::new();
+        let mut intersections = Vec::new();
         for first_span in self.spans() {
             let first =
                 CurveIntersectionNode::try_new(self.try_trimmed(first_span.0..=first_span.1)?, 0)?;
             for second_span in other.spans() {
-                stack.push((
-                    first.clone(),
-                    CurveIntersectionNode::try_new(
-                        other.try_trimmed(second_span.0..=second_span.1)?,
-                        0,
-                    )?,
-                ));
+                let second = CurveIntersectionNode::try_new(
+                    other.try_trimmed(second_span.0..=second_span.1)?,
+                    0,
+                )?;
+                if first.convex_hull_bounds
+                    && second.convex_hull_bounds
+                    && !bounding_boxes_overlap(first.bounds, second.bounds, distance_tolerance)
+                {
+                    continue;
+                }
+                let overlap = curve_span_overlap_intersections(
+                    &first.curve,
+                    &second.curve,
+                    distance_tolerance,
+                    tolerance,
+                )?;
+                if overlap.is_empty() {
+                    stack.push((first.clone(), second));
+                } else {
+                    for intersection in overlap {
+                        push_unique_curve_intersection(
+                            &mut intersections,
+                            intersection,
+                            distance_tolerance,
+                        );
+                    }
+                }
             }
         }
 
         let mut processed = 0_usize;
-        let mut intersections = Vec::new();
         while let Some((first, second)) = stack.pop() {
             processed += 1;
             if processed > MAX_NODE_PAIRS {
@@ -2604,6 +2643,23 @@ impl NurbsCurve {
         boundaries: &[Self],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        let boundaries = boundaries
+            .iter()
+            .cloned()
+            .map(CurveExtensionBoundary::Curve)
+            .collect::<Vec<_>>();
+        self.try_merged_to_boundaries(side, style, &boundaries, tolerance)
+    }
+
+    /// Extends to the nearest curve, surface, or trimmed B-rep intersection
+    /// and applies Rhino's `Join=Merge` cleanup.
+    pub fn try_merged_to_boundaries(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[CurveExtensionBoundary],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let targets = self.curve_boundary_extension_targets(side, style, boundaries, tolerance)?;
         match targets.style {
             CurveExtensionStyle::Smooth => self.smooth_boundary_extension(&targets, false),
@@ -2631,6 +2687,23 @@ impl NurbsCurve {
         boundaries: &[Self],
         tolerance: Tolerance,
     ) -> Result<Self, GeometryError> {
+        let boundaries = boundaries
+            .iter()
+            .cloned()
+            .map(CurveExtensionBoundary::Curve)
+            .collect::<Vec<_>>();
+        self.try_joined_to_boundaries(side, style, &boundaries, tolerance)
+    }
+
+    /// Extends to curve, surface, or trimmed B-rep boundaries while retaining
+    /// an explicit segment seam, matching Rhino's `Join=Yes` topology.
+    pub fn try_joined_to_boundaries(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[CurveExtensionBoundary],
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         let targets = self.curve_boundary_extension_targets(side, style, boundaries, tolerance)?;
         match targets.style {
             CurveExtensionStyle::Smooth => self.smooth_boundary_extension(&targets, true),
@@ -2656,6 +2729,23 @@ impl NurbsCurve {
         side: CurveExtensionSide,
         style: CurveExtensionStyle,
         boundaries: &[Self],
+        tolerance: Tolerance,
+    ) -> Result<Vec<Self>, GeometryError> {
+        let boundaries = boundaries
+            .iter()
+            .cloned()
+            .map(CurveExtensionBoundary::Curve)
+            .collect::<Vec<_>>();
+        self.try_separate_extensions_to_boundaries(side, style, &boundaries, tolerance)
+    }
+
+    /// Creates independent extension curves ending at the nearest curve,
+    /// surface, or trimmed B-rep boundary hits without modifying this source.
+    pub fn try_separate_extensions_to_boundaries(
+        &self,
+        side: CurveExtensionSide,
+        style: CurveExtensionStyle,
+        boundaries: &[CurveExtensionBoundary],
         tolerance: Tolerance,
     ) -> Result<Vec<Self>, GeometryError> {
         let targets = self.curve_boundary_extension_targets(side, style, boundaries, tolerance)?;
@@ -2700,7 +2790,7 @@ impl NurbsCurve {
         &self,
         side: CurveExtensionSide,
         style: CurveExtensionStyle,
-        boundaries: &[Self],
+        boundaries: &[CurveExtensionBoundary],
         tolerance: Tolerance,
     ) -> Result<CurveBoundaryExtensionTargets, GeometryError> {
         if boundaries.is_empty() {
@@ -2744,7 +2834,7 @@ impl NurbsCurve {
         &self,
         at_start: bool,
         style: CurveExtensionStyle,
-        boundaries: &[Self],
+        boundaries: &[CurveExtensionBoundary],
         tolerance: Tolerance,
     ) -> Result<Option<CurveBoundaryExtensionTarget>, GeometryError> {
         let domain = self.domain();
@@ -2802,12 +2892,18 @@ impl NurbsCurve {
             return Ok(None);
         }
 
-        let maximum_boundary_distance = boundaries
-            .iter()
-            .flat_map(|boundary| boundary.control_points.iter())
-            .try_fold(0.0_f64, |maximum, control| {
-                Ok::<_, GeometryError>(maximum.max(endpoint.distance_to(control.point)?))
-            })?;
+        let maximum_boundary_distance = boundaries.iter().try_fold(
+            0.0_f64,
+            |maximum, boundary| -> Result<Real, GeometryError> {
+                let bounds = boundary.control_bounds();
+                let farthest = Point3::try_new(
+                    farthest_coordinate(endpoint.x(), bounds.min().x(), bounds.max().x()),
+                    farthest_coordinate(endpoint.y(), bounds.min().y(), bounds.max().y()),
+                    farthest_coordinate(endpoint.z(), bounds.min().z(), bounds.max().z()),
+                )?;
+                Ok(maximum.max(endpoint.distance_to(farthest)?))
+            },
+        )?;
         if !maximum_boundary_distance.is_finite() || maximum_boundary_distance == 0.0 {
             return Ok(None);
         }
@@ -2867,14 +2963,53 @@ impl NurbsCurve {
 
     fn nearest_boundary_intersection(
         &self,
-        boundaries: &[Self],
+        boundaries: &[CurveExtensionBoundary],
         at_start: bool,
         source_endpoint: Point3,
         tolerance: Tolerance,
     ) -> Result<Option<CurveCurveIntersection>, GeometryError> {
         let mut nearest: Option<CurveCurveIntersection> = None;
         for boundary in boundaries {
-            for intersection in self.curve_intersections(boundary, tolerance)? {
+            let intersections = match boundary {
+                CurveExtensionBoundary::Curve(curve) => {
+                    self.curve_intersections(curve, tolerance)?
+                }
+                CurveExtensionBoundary::Surface(surface) => {
+                    curve_surface_intersections(self, surface, tolerance)?
+                        .into_iter()
+                        .map(|intersection| CurveCurveIntersection {
+                            first_parameter: intersection.curve_parameter,
+                            second_parameter: intersection.u,
+                            point: intersection.point,
+                        })
+                        .collect()
+                }
+                CurveExtensionBoundary::Brep(brep) => {
+                    let mut intersections = Vec::new();
+                    for edge in brep.edges() {
+                        intersections.extend(self.curve_intersections(edge.curve(), tolerance)?);
+                    }
+                    for face in brep.faces() {
+                        for intersection in
+                            curve_surface_intersections(self, face.surface(), tolerance)?
+                        {
+                            if face.contains_parameters(
+                                intersection.u,
+                                intersection.v,
+                                tolerance,
+                            )? {
+                                intersections.push(CurveCurveIntersection {
+                                    first_parameter: intersection.curve_parameter,
+                                    second_parameter: intersection.u,
+                                    point: intersection.point,
+                                });
+                            }
+                        }
+                    }
+                    intersections
+                }
+            };
+            for intersection in intersections {
                 if intersection.point.distance_to(source_endpoint)? <= tolerance.absolute() {
                     continue;
                 }
@@ -4873,11 +5008,126 @@ fn finite_midpoint(left: Real, right: Real) -> Real {
     }
 }
 
+fn farthest_coordinate(origin: Real, minimum: Real, maximum: Real) -> Real {
+    if (origin - minimum).abs() >= (maximum - origin).abs() {
+        minimum
+    } else {
+        maximum
+    }
+}
+
 fn interpolate_parameter(start: Real, end: Real, fraction: Real) -> Real {
     if start.is_sign_negative() == end.is_sign_negative() {
         start + (end - start) * fraction
     } else {
         start * (1.0 - fraction) + end * fraction
+    }
+}
+
+fn curve_span_overlap_intersections(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    distance_tolerance: Real,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveCurveIntersection>, GeometryError> {
+    let first_on_second = curve_span_lies_on_curve(first, second, distance_tolerance, tolerance)?;
+    let second_on_first = curve_span_lies_on_curve(second, first, distance_tolerance, tolerance)?;
+    if !first_on_second && !second_on_first {
+        return Ok(Vec::new());
+    }
+
+    let mut intersections = Vec::with_capacity(4);
+    if first_on_second {
+        let domain = first.domain();
+        for first_parameter in [*domain.start(), *domain.end()] {
+            let first_point = first.evaluate(first_parameter)?;
+            let second_parameter = second.closest_parameter(first_point, tolerance)?;
+            let second_point = second.evaluate(second_parameter)?;
+            let point = midpoint_between_points(first_point, second_point)?;
+            push_unique_curve_intersection(
+                &mut intersections,
+                CurveCurveIntersection {
+                    first_parameter,
+                    second_parameter,
+                    point,
+                },
+                distance_tolerance,
+            );
+        }
+    }
+    if second_on_first {
+        let domain = second.domain();
+        for second_parameter in [*domain.start(), *domain.end()] {
+            let second_point = second.evaluate(second_parameter)?;
+            let first_parameter = first.closest_parameter(second_point, tolerance)?;
+            let first_point = first.evaluate(first_parameter)?;
+            let point = midpoint_between_points(first_point, second_point)?;
+            push_unique_curve_intersection(
+                &mut intersections,
+                CurveCurveIntersection {
+                    first_parameter,
+                    second_parameter,
+                    point,
+                },
+                distance_tolerance,
+            );
+        }
+    }
+    Ok(intersections)
+}
+
+fn curve_span_lies_on_curve(
+    candidate: &NurbsCurve,
+    container: &NurbsCurve,
+    distance_tolerance: Real,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    const MAX_OVERLAP_CERTIFICATE_SAMPLES: usize = 4096;
+    let Some(intersection_bound) = candidate.degree().checked_mul(container.degree()) else {
+        return Ok(false);
+    };
+    // Two rational Bezier loci without a shared component have at most the
+    // product of their degrees in common. One more on-curve sample therefore
+    // distinguishes an overlap from a finite set of crossings.
+    let sample_intervals = intersection_bound.max(5);
+    if sample_intervals >= MAX_OVERLAP_CERTIFICATE_SAMPLES {
+        return Ok(false);
+    }
+    let domain = candidate.domain();
+    for sample in 0..=sample_intervals {
+        let fraction = sample as Real / sample_intervals as Real;
+        let parameter = interpolate_parameter(*domain.start(), *domain.end(), fraction);
+        let point = candidate.evaluate(parameter)?;
+        let container_parameter = container.closest_parameter(point, tolerance)?;
+        if point.distance_to(container.evaluate(container_parameter)?)? > distance_tolerance {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn midpoint_between_points(left: Point3, right: Point3) -> Result<Point3, GeometryError> {
+    Point3::try_new(
+        finite_midpoint(left.x(), right.x()),
+        finite_midpoint(left.y(), right.y()),
+        finite_midpoint(left.z(), right.z()),
+    )
+}
+
+fn push_unique_curve_intersection(
+    intersections: &mut Vec<CurveCurveIntersection>,
+    intersection: CurveCurveIntersection,
+    distance_tolerance: Real,
+) {
+    if !intersections.iter().any(|existing| {
+        existing
+            .point
+            .distance_to(intersection.point)
+            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+            && parameter_near(existing.first_parameter, intersection.first_parameter)
+            && parameter_near(existing.second_parameter, intersection.second_parameter)
+    }) {
+        intersections.push(intersection);
     }
 }
 
@@ -8249,6 +8499,32 @@ mod tests {
     }
 
     #[test]
+    fn curve_intersection_returns_collinear_overlap_endpoints() {
+        let long = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(20.0, 0.0)],
+            vec![0.0, 0.0, 20.0, 20.0],
+        )
+        .unwrap();
+        let short = NurbsCurve::try_new(
+            1,
+            vec![point(10.0, 0.0), point(15.0, 0.0)],
+            vec![-2.0, -2.0, 3.0, 3.0],
+        )
+        .unwrap();
+        let intersections = long
+            .curve_intersections(&short, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(intersections.len(), 2, "{intersections:#?}");
+        assert_point_near(intersections[0].point, point(10.0, 0.0));
+        assert_point_near(intersections[1].point, point(15.0, 0.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].first_parameter, 10.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[1].first_parameter, 15.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[0].second_parameter, -2.0));
+        assert!(Tolerance::DEFAULT.approx_eq(intersections[1].second_parameter, 3.0));
+    }
+
+    #[test]
     fn boundary_extension_uses_the_nearest_hit_beyond_each_line_end() {
         let source = NurbsCurve::try_new(
             1,
@@ -8292,6 +8568,172 @@ mod tests {
                 Tolerance::DEFAULT,
             ),
             Err(GeometryError::CurveExtensionBoundaryNotFound)
+        );
+    }
+
+    #[test]
+    fn boundary_extension_intersects_surfaces_and_trimmed_breps() {
+        let source = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(5.0, 0.0)],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(10.0, -5.0, -5.0).unwrap(),
+            Point3::try_new(10.0, 5.0, -5.0).unwrap(),
+            Point3::try_new(10.0, 5.0, 5.0).unwrap(),
+            Point3::try_new(10.0, -5.0, 5.0).unwrap(),
+        ])
+        .unwrap();
+        let extended = source
+            .try_merged_to_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Line,
+                &[CurveExtensionBoundary::Surface(surface)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_point_near(
+            extended.evaluate(*extended.domain().end()).unwrap(),
+            point(10.0, 0.0),
+        );
+
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let box_boundary = Brep::try_box(
+            frame,
+            [[12.0, 14.0], [-2.0, 2.0], [-2.0, 2.0]],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let extended = source
+            .try_merged_to_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Line,
+                &[CurveExtensionBoundary::Brep(box_boundary)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_point_near(
+            extended.evaluate(*extended.domain().end()).unwrap(),
+            point(12.0, 0.0),
+        );
+    }
+
+    #[test]
+    fn boundary_extension_respects_curvature_and_brep_trim_holes() {
+        let frame = Frame3::try_from_normal(
+            point(0.0, 0.0),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let cylinder = NurbsSurface::try_cylinder(frame, 2.0, -2.0, 2.0).unwrap();
+        let radial_source = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0), point(0.5, 0.0)],
+            vec![0.0, 0.0, 0.5, 0.5],
+        )
+        .unwrap();
+        let extended = radial_source
+            .try_merged_to_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Line,
+                &[CurveExtensionBoundary::Surface(cylinder)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_point_near(
+            extended.evaluate(*extended.domain().end()).unwrap(),
+            point(2.0, 0.0),
+        );
+
+        let outer = Polyline3::try_new(
+            vec![
+                Point3::try_new(10.0, -3.0, -3.0).unwrap(),
+                Point3::try_new(10.0, 3.0, -3.0).unwrap(),
+                Point3::try_new(10.0, 3.0, 3.0).unwrap(),
+                Point3::try_new(10.0, -3.0, 3.0).unwrap(),
+                Point3::try_new(10.0, -3.0, -3.0).unwrap(),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let hole = crate::Circle3::try_new(
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            1.0,
+            crate::UnitVector3::try_new(1.0, 0.0, 0.0, Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let holed_face =
+            Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap();
+        let farther_surface = NurbsSurface::try_bilinear([
+            Point3::try_new(12.0, -3.0, -3.0).unwrap(),
+            Point3::try_new(12.0, 3.0, -3.0).unwrap(),
+            Point3::try_new(12.0, 3.0, 3.0).unwrap(),
+            Point3::try_new(12.0, -3.0, 3.0).unwrap(),
+        ])
+        .unwrap();
+        let extended = radial_source
+            .try_merged_to_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Line,
+                &[
+                    CurveExtensionBoundary::Brep(holed_face),
+                    CurveExtensionBoundary::Surface(farther_surface),
+                ],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_point_near(
+            extended.evaluate(*extended.domain().end()).unwrap(),
+            point(12.0, 0.0),
+        );
+    }
+
+    #[test]
+    fn boundary_extension_enters_a_coplanar_trim_before_the_underlying_surface_edge() {
+        let source = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 1.0), point(5.0, 1.0)],
+            vec![0.0, 0.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let diamond = Polyline3::try_new(
+            vec![
+                point(12.0, -3.0),
+                point(15.0, 0.0),
+                point(12.0, 3.0),
+                point(9.0, 0.0),
+                point(12.0, -3.0),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let face = Brep::try_planar_face_with_holes(&diamond, &[], Tolerance::DEFAULT).unwrap();
+        let extended = source
+            .try_merged_to_boundaries(
+                CurveExtensionSide::End,
+                CurveExtensionStyle::Line,
+                &[CurveExtensionBoundary::Brep(face)],
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_point_near(
+            extended.evaluate(*extended.domain().end()).unwrap(),
+            point(10.0, 1.0),
         );
     }
 

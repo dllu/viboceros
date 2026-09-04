@@ -627,7 +627,7 @@ impl InteractiveCommand {
                 "SrfSeam: pick a new seam location on the selected closed surface (Esc to cancel)"
             }
             Self::Extend { .. } => {
-                "Extend: pick the source curve near the end to extend to the other selected boundary curves (Esc to cancel)"
+                "Extend: pick the source curve near the end to extend to the other selected curve, surface, or B-rep boundaries (Esc to cancel)"
             }
             Self::ExtendSrf { .. } => {
                 "ExtendSrf: pick a natural edge on the selected surface (Esc to cancel)"

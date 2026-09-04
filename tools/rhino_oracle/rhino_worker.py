@@ -412,6 +412,98 @@ def _nurbs_curve_from_definition(definition):
         raise
 
 
+def _nurbs_surface_from_definition(definition):
+    degree_u = int(definition["degree_u"])
+    degree_v = int(definition["degree_v"])
+    count_u = int(definition["control_point_count_u"])
+    count_v = int(definition["control_point_count_v"])
+    surface = Rhino.Geometry.NurbsSurface.Create(
+        3, True, degree_u + 1, degree_v + 1, count_u, count_v
+    )
+    if surface is None:
+        raise ValueError("could not allocate NURBS surface")
+    try:
+        _set_surface_controls(surface, definition["control_points"], count_u, count_v)
+        _set_knots(surface.KnotsU, definition["knots_u"], "surface U knot")
+        _set_knots(surface.KnotsV, definition["knots_v"], "surface V knot")
+        domain_u = definition.get("domain_u")
+        domain_v = definition.get("domain_v")
+        if (domain_u is None) != (domain_v is None):
+            raise ValueError("surface boundary requires both domains or neither")
+        if domain_u is not None:
+            set_u = surface.SetDomain(
+                0,
+                Rhino.Geometry.Interval(
+                    _finite(domain_u[0], "surface U domain"),
+                    _finite(domain_u[1], "surface U domain"),
+                ),
+            )
+            set_v = surface.SetDomain(
+                1,
+                Rhino.Geometry.Interval(
+                    _finite(domain_v[0], "surface V domain"),
+                    _finite(domain_v[1], "surface V domain"),
+                ),
+            )
+            if not set_u or not set_v:
+                raise ValueError("surface boundary domains are invalid")
+        if not surface.IsValid:
+            raise ValueError("NURBS surface boundary is invalid")
+        return surface
+    except Exception:
+        surface.Dispose()
+        raise
+
+
+def _curve_extension_boundary_from_definition(definition, tolerance):
+    surface_definition = definition.get("surface")
+    if surface_definition is not None:
+        return _nurbs_surface_from_definition(surface_definition)
+    planar_face_definition = definition.get("planar_face")
+    if planar_face_definition is not None:
+        curves = []
+        try:
+            curves.append(
+                _nurbs_curve_from_definition(planar_face_definition["outer"])
+            )
+            for hole in planar_face_definition.get("holes", []):
+                curves.append(_nurbs_curve_from_definition(hole))
+            breps = Rhino.Geometry.Brep.CreatePlanarBreps(
+                curves, tolerance["absolute"]
+            )
+            if breps is None or len(breps) != 1 or not breps[0].IsValid:
+                if breps is not None:
+                    for brep in breps:
+                        brep.Dispose()
+                raise ValueError("planar-face boundary is invalid")
+            return breps[0]
+        finally:
+            for curve in curves:
+                curve.Dispose()
+    box_definition = definition.get("box")
+    if box_definition is not None:
+        intervals = [
+            Rhino.Geometry.Interval(
+                _finite(box_definition[axis][0], "box boundary interval"),
+                _finite(box_definition[axis][1], "box boundary interval"),
+            )
+            for axis in ("x", "y", "z")
+        ]
+        box = Rhino.Geometry.Box(
+            Rhino.Geometry.Plane.WorldXY,
+            intervals[0],
+            intervals[1],
+            intervals[2],
+        )
+        brep = box.ToBrep()
+        if brep is None or not brep.IsValid:
+            if brep is not None:
+                brep.Dispose()
+            raise ValueError("box boundary is invalid")
+        return brep
+    return _nurbs_curve_from_definition(definition)
+
+
 def _nurbs_surface_definition(surface):
     nurbs = surface.ToNurbsSurface()
     if nurbs is None:
@@ -6022,10 +6114,17 @@ def _execute(operation, iterations, tolerance):
     if kind == "curve_extend_boundary_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])
-        boundaries = [
-            _nurbs_curve_from_definition(definition)
-            for definition in operation["boundaries"]
-        ]
+        boundaries = []
+        try:
+            for definition in operation["boundaries"]:
+                boundaries.append(
+                    _curve_extension_boundary_from_definition(definition, tolerance)
+                )
+        except Exception:
+            source.Dispose()
+            for boundary in boundaries:
+                boundary.Dispose()
+            raise
         side_name = str(operation["side"]).lower()
         style_name = str(operation["style"]).lower()
         join_name = str(operation["join"]).lower()
@@ -6074,7 +6173,14 @@ def _execute(operation, iterations, tolerance):
                 if group_index < 0:
                     raise ValueError("could not group Extend command source curve")
                 for boundary in boundaries:
-                    boundary_id = document.Objects.AddCurve(boundary)
+                    if isinstance(boundary, Rhino.Geometry.Curve):
+                        boundary_id = document.Objects.AddCurve(boundary)
+                    elif isinstance(boundary, Rhino.Geometry.Surface):
+                        boundary_id = document.Objects.AddSurface(boundary)
+                    elif isinstance(boundary, Rhino.Geometry.Brep):
+                        boundary_id = document.Objects.AddBrep(boundary)
+                    else:
+                        raise ValueError("unsupported Extend boundary geometry")
                     if boundary_id == System.Guid.Empty:
                         raise ValueError("could not add Extend command boundary curve")
                     boundary_ids.append(boundary_id)

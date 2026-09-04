@@ -15,15 +15,15 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, Brep, BrepLoopType, BrepTrimType, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, CurveExtensionSide, CurveExtensionStyle,
-    CurveKnotSpacing, CurveRef, CurveThroughConstruction, CurveTweenMatchMethod, Ellipse3, Frame3,
-    GeometryError, LineSegment, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
-    MeshEllipsoidOptions, MeshFace, MeshSubdivisionSphereOptions, MeshTorusOptions,
-    MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    PointMorph, Polyline3, SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection,
-    SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    join_polylines, sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve,
-    try_rebuild_curve, try_tween_nurbs_curves,
+    CatenaryOutput, Circle3, CircularArc3, CurveExtensionBoundary, CurveExtensionSide,
+    CurveExtensionStyle, CurveKnotSpacing, CurveRef, CurveThroughConstruction,
+    CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle,
+    MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
+    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
+    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceExtensionEdge,
+    SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
+    Vector3, WeightedPoint3, join_polylines, sort_and_cull_points, try_catenary,
+    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -587,7 +587,7 @@ pub enum Operation {
     CurveExtendBoundaryCommand {
         id: String,
         curve: NurbsCurveDefinition,
-        boundaries: Vec<NurbsCurveDefinition>,
+        boundaries: Vec<CurveExtensionBoundaryDefinition>,
         side: CurveExtensionEnd,
         style: CurveCommandExtensionStyle,
         join: CurveCommandExtensionJoin,
@@ -1111,6 +1111,51 @@ pub struct NurbsCurveDefinition {
     pub knots: Vec<f64>,
     #[serde(default)]
     pub domain: Option<[f64; 2]>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct NurbsSurfaceDefinition {
+    pub degree_u: usize,
+    pub degree_v: usize,
+    pub control_point_count_u: usize,
+    pub control_point_count_v: usize,
+    pub control_points: Vec<ControlPoint>,
+    pub knots_u: Vec<f64>,
+    pub knots_v: Vec<f64>,
+    #[serde(default)]
+    pub domain_u: Option<[f64; 2]>,
+    #[serde(default)]
+    pub domain_v: Option<[f64; 2]>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct AxisAlignedBoxBoundaryDefinition {
+    pub x: [f64; 2],
+    pub y: [f64; 2],
+    pub z: [f64; 2],
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+pub struct PlanarFaceBoundaryDefinition {
+    pub outer: NurbsCurveDefinition,
+    #[serde(default)]
+    pub holes: Vec<NurbsCurveDefinition>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum CurveExtensionBoundaryDefinition {
+    Surface {
+        surface: NurbsSurfaceDefinition,
+    },
+    PlanarFace {
+        planar_face: PlanarFaceBoundaryDefinition,
+    },
+    Box {
+        #[serde(rename = "box")]
+        box_boundary: AxisAlignedBoxBoundaryDefinition,
+    },
+    Curve(NurbsCurveDefinition),
 }
 
 impl Operation {
@@ -6690,6 +6735,66 @@ fn nurbs_curve_from_definition(
     }
 }
 
+fn nurbs_surface_from_definition(
+    definition: &NurbsSurfaceDefinition,
+) -> Result<NurbsSurface, GeometryError> {
+    let surface = NurbsSurface::try_new_rational(
+        definition.degree_u,
+        definition.degree_v,
+        definition.control_point_count_u,
+        definition.control_point_count_v,
+        weighted_points(&definition.control_points)?,
+        definition.knots_u.clone(),
+        definition.knots_v.clone(),
+    )?;
+    match (definition.domain_u, definition.domain_v) {
+        (Some(domain_u), Some(domain_v)) => {
+            surface.try_reparameterized(domain_u[0]..=domain_u[1], domain_v[0]..=domain_v[1])
+        }
+        (None, None) => Ok(surface),
+        _ => Err(GeometryError::InvalidControlNet {
+            context: "a surface boundary requires both parameter domains or neither",
+        }),
+    }
+}
+
+fn curve_extension_boundary_from_definition(
+    definition: &CurveExtensionBoundaryDefinition,
+    tolerance: Tolerance,
+) -> Result<CurveExtensionBoundary, GeometryError> {
+    Ok(match definition {
+        CurveExtensionBoundaryDefinition::Curve(definition) => {
+            CurveExtensionBoundary::Curve(nurbs_curve_from_definition(definition)?)
+        }
+        CurveExtensionBoundaryDefinition::Surface { surface } => {
+            CurveExtensionBoundary::Surface(nurbs_surface_from_definition(surface)?)
+        }
+        CurveExtensionBoundaryDefinition::PlanarFace { planar_face } => {
+            let outer = nurbs_curve_from_definition(&planar_face.outer)?;
+            let holes = planar_face
+                .holes
+                .iter()
+                .map(nurbs_curve_from_definition)
+                .collect::<Result<Vec<_>, _>>()?;
+            CurveExtensionBoundary::Brep(Brep::try_planar_face_with_holes(
+                &outer, &holes, tolerance,
+            )?)
+        }
+        CurveExtensionBoundaryDefinition::Box { box_boundary } => {
+            let frame = Frame3::try_from_normal(
+                Point3::try_new(0.0, 0.0, 0.0)?,
+                Vector3::try_new(0.0, 0.0, 1.0)?,
+                tolerance,
+            )?;
+            CurveExtensionBoundary::Brep(Brep::try_box(
+                frame,
+                [box_boundary.x, box_boundary.y, box_boundary.z],
+                tolerance,
+            )?)
+        }
+    })
+}
+
 fn mesh_value(mesh: &TriangleMesh) -> Value {
     json!({
         "triangles": mesh.triangles(),
@@ -6956,7 +7061,7 @@ struct CurveBoundaryCommandOptions {
 fn curve_extend_boundary_command(
     iterations: u32,
     definition: &NurbsCurveDefinition,
-    boundary_definitions: &[NurbsCurveDefinition],
+    boundary_definitions: &[CurveExtensionBoundaryDefinition],
     options: CurveBoundaryCommandOptions,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
@@ -6969,7 +7074,7 @@ fn curve_extend_boundary_command(
     let source = nurbs_curve_from_definition(definition)?;
     let boundaries = boundary_definitions
         .iter()
-        .map(nurbs_curve_from_definition)
+        .map(|definition| curve_extension_boundary_from_definition(definition, tolerance))
         .collect::<Result<Vec<_>, _>>()?;
     let geometry_style = match style {
         CurveCommandExtensionStyle::Natural => CurveExtensionStyle::Natural,
@@ -6979,19 +7084,19 @@ fn curve_extend_boundary_command(
     };
     let extend = || -> Result<Vec<NurbsCurve>, GeometryError> {
         Ok(match join {
-            CurveCommandExtensionJoin::Merge => vec![source.try_merged_to_curve_boundaries(
+            CurveCommandExtensionJoin::Merge => vec![source.try_merged_to_boundaries(
                 side.geometry(),
                 geometry_style,
                 &boundaries,
                 tolerance,
             )?],
-            CurveCommandExtensionJoin::Yes => vec![source.try_joined_to_curve_boundaries(
+            CurveCommandExtensionJoin::Yes => vec![source.try_joined_to_boundaries(
                 side.geometry(),
                 geometry_style,
                 &boundaries,
                 tolerance,
             )?],
-            CurveCommandExtensionJoin::No => source.try_separate_extensions_to_curve_boundaries(
+            CurveCommandExtensionJoin::No => source.try_separate_extensions_to_boundaries(
                 side.geometry(),
                 geometry_style,
                 &boundaries,
@@ -9597,11 +9702,11 @@ mod tests {
         let response = run_request(&request(vec![Operation::CurveExtendBoundaryCommand {
             id: "extend-line-to-boundary".to_owned(),
             curve: line([0.0, 0.0, 0.0], [5.0, 0.0, 0.0], vec![0.0, 0.0, 5.0, 5.0]),
-            boundaries: vec![line(
+            boundaries: vec![CurveExtensionBoundaryDefinition::Curve(line(
                 [10.0, -5.0, 0.0],
                 [10.0, 5.0, 0.0],
                 vec![0.0, 0.0, 10.0, 10.0],
-            )],
+            ))],
             side: CurveExtensionEnd::End,
             style: CurveCommandExtensionStyle::Line,
             join: CurveCommandExtensionJoin::No,
