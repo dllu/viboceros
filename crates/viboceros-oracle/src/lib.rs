@@ -35,6 +35,8 @@ use viboceros_io::{
 
 mod mass_properties;
 pub use mass_properties::{MassBoundary, TrimmedMassFixture};
+mod polycurve;
+pub use polycurve::PolyCurveFixture;
 
 pub const PROTOCOL_VERSION: u32 = 1;
 const MAX_ITERATIONS: u32 = 1_000_000;
@@ -76,6 +78,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PolycurveGeometry {
+        id: String,
+        #[serde(flatten)]
+        fixture: PolyCurveFixture,
+    },
     TrimmedSurfaceMassProperties {
         id: String,
         #[serde(flatten)]
@@ -213,7 +220,7 @@ pub enum Operation {
         control_points: Vec<ControlPoint>,
         knots: Vec<f64>,
         segment_count: usize,
-        include_start: bool,
+        include_ends: bool,
     },
     NurbsCurveReverse {
         id: String,
@@ -1266,7 +1273,8 @@ pub enum SurfaceSplitCutterDefinition {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::TrimmedSurfaceMassProperties { id, .. }
+            Self::PolycurveGeometry { id, .. }
+            | Self::TrimmedSurfaceMassProperties { id, .. }
             | Self::DocumentObjectStateCycle { id, .. }
             | Self::DocumentObjectSwapCycle { id }
             | Self::DocumentObjectIsolationCycle { id }
@@ -1539,6 +1547,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::PolycurveGeometry { fixture, .. } => {
+            polycurve::run(fixture, iterations, tolerance)?
+        }
         Operation::TrimmedSurfaceMassProperties { fixture, .. } => {
             mass_properties::run(fixture, iterations, tolerance)?
         }
@@ -1809,7 +1820,7 @@ fn execute(
             control_points,
             knots,
             segment_count,
-            include_start,
+            include_ends,
             ..
         } => {
             let curve = NurbsCurve::try_new_rational(
@@ -1820,7 +1831,7 @@ fn execute(
             let (points, elapsed) = measure(iterations, || {
                 CurveRef::NurbsCurve(black_box(&curve)).divide_by_count(
                     black_box(*segment_count),
-                    black_box(*include_start),
+                    black_box(*include_ends),
                     tolerance,
                 )
             })?;
@@ -8303,7 +8314,8 @@ fn surface_split_trim_value(
         tolerance.relative().min(1.0e-12),
         tolerance.angular(),
     )?;
-    let points = CurveRef::NurbsCurve(&lifted).divide_by_count(64, true, sampling_tolerance)?;
+    let points =
+        CurveRef::NurbsCurve(&lifted).sample_equal_length_points(64, true, sampling_tolerance)?;
     let surface_points = points
         .iter()
         .map(|point| surface.evaluate(point.x(), point.y()).map(Point3::to_array))
@@ -13780,7 +13792,7 @@ mod tests {
                 ],
                 knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
                 segment_count: 4,
-                include_start: true,
+                include_ends: true,
             },
             Operation::NurbsCurveReverse {
                 id: "reverse".to_owned(),

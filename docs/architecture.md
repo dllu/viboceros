@@ -31,7 +31,7 @@ undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
 and use a balanced XY spatial index for snapping and picking.
 
-Implementation is incomplete. Exact polycurves, general surface/surface
+Implementation is incomplete. Document-level polycurve integration, general surface/surface
 intersections, editable STEP B-reps,
 and much of Rhino's command set remain to be implemented. See the
 [command reference](commands/README.md) and [file-format documentation](file-formats.md)
@@ -40,6 +40,10 @@ for capability boundaries. Rhino Render is outside the project scope.
 B-rep area and volume live in `viboceros-geometry/src/brep/mass_properties/`
 and its parent module. [Trimmed-domain integration](mass-properties.md) uses
 exact NURBS boundaries and adaptive quadrature, including nonplanar faces and holes.
+
+The [polycurve kernel](polycurves.md) preserves independent exact segments and
+parameter maps. Its application and file-format integration is the next layer;
+the presence of the kernel type does not yet enable mixed-curve joining commands.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

@@ -29,6 +29,7 @@ mod plane;
 mod point;
 mod point2;
 mod point_cloud;
+mod polycurve;
 mod polyline;
 mod spiral;
 mod surface_pullback;
@@ -97,6 +98,7 @@ pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
 pub use point_cloud::PointCloud3;
 pub use point2::Point2;
+pub use polycurve::{CurveEvaluationSide, MAX_POLYCURVE_SEGMENTS, PolyCurve3};
 pub use polyline::{
     JoinedPolyline3, MAX_REGULAR_POLYGON_SIDES, Polyline3, PolylineClosure, join_polylines,
 };

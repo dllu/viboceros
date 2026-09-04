@@ -44,6 +44,12 @@ API builds the same input geometry as the native probe, avoiding changes to the
 input from a separate trim-fitting operation. Numerical API calls are timed;
 the native probe also checks `Area` and `Volume` command results and document state.
 
+The `polycurve.json` fixture exercises [exact piecewise curves](polycurves.md).
+It preserves and compares segment definitions and domains, then tests reversal,
+trimming, splitting, length-based reparameterization, derivatives, and division.
+The `curve_division_contract.json` fixture checks open/closed division endpoint
+rules separately, including the `include_ends=false` case.
+
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):
 

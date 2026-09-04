@@ -416,6 +416,95 @@ def _surface_split_trim_value(curve, surface, sample_geometry):
     }
 
 
+def _polycurve_geometry(operation, iterations, tolerance):
+    source = Rhino.Geometry.PolyCurve()
+    try:
+        for definition in operation["segments"]:
+            segment = _nurbs_curve_from_definition(definition)
+            try:
+                if not source.AppendSegment(segment):
+                    raise ValueError("could not append exact polycurve segment")
+            finally:
+                segment.Dispose()
+        if not source.IsValid:
+            raise ValueError("invalid polycurve fixture")
+
+        def record(curve):
+            count = curve.SegmentCount if isinstance(curve, Rhino.Geometry.PolyCurve) else 1
+            domains = [curve.SegmentDomain(i) for i in range(count)] if isinstance(curve, Rhino.Geometry.PolyCurve) else [curve.Domain]
+            parameters = [float(curve.Domain.ParameterAt(float(i) / 32.0)) for i in range(33)]
+            parameters.extend(float(domain.T0) for domain in domains)
+            parameters.append(float(curve.Domain.T1))
+            samples = []
+            for parameter in sorted(set(parameters)):
+                derivatives = curve.DerivativeAt(parameter, 2)
+                if derivatives is None or len(derivatives) != 3:
+                    raise ValueError("could not evaluate polycurve derivatives")
+                samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
+                                "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2])})
+            segments = []
+            for i, domain in enumerate(domains):
+                segment = curve.SegmentCurve(i).DuplicateCurve() if isinstance(curve, Rhino.Geometry.PolyCurve) else curve.DuplicateCurve()
+                try:
+                    segment.Domain = domain
+                    segments.append(_nurbs_curve_definition(segment))
+                finally:
+                    segment.Dispose()
+            divisions = curve.DivideByCount(17, True)
+            expected_count = 17 if curve.IsClosed else 18
+            if divisions is None or len(divisions) != expected_count:
+                raise ValueError("polycurve division returned an unexpected point count")
+            division_points = []
+            exact_nurbs = curve.ToNurbsCurve()
+            if exact_nurbs is None:
+                raise ValueError("could not convert polycurve for length inversion")
+            try:
+                for index in range(expected_count):
+                    # Check public division topology above. Use the exact NURBS
+                    # form for tolerance-bearing length inversion: the composite
+                    # API retains coarse internal segment-length inversions.
+                    success, parameter = exact_nurbs.NormalizedLengthParameter(float(index) / 17.0, tolerance["relative"] * 0.001)
+                    if not success:
+                        raise ValueError("could not divide polycurve at requested tolerance")
+                    division_points.append(_xyz(exact_nurbs.PointAt(parameter)))
+            finally:
+                exact_nurbs.Dispose()
+            return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+                    "segment_domains": [[float(d.T0), float(d.T1)] for d in domains],
+                    "segments": segments, "samples": samples, "closed": bool(curve.IsClosed),
+                    "length": float(curve.GetLength(tolerance["relative"])),
+                    "division_points": division_points,
+                    "division_count_without_ends": len(curve.DivideByCount(17, False))}
+
+        def compute():
+            owned = [source.DuplicateCurve()]
+            try:
+                curve = owned[0]
+                if operation.get("domain") is not None:
+                    curve.Domain = Rhino.Geometry.Interval(*operation["domain"])
+                if operation.get("reversed", False) and not curve.Reverse():
+                    raise ValueError("could not reverse polycurve")
+                if operation.get("trim") is not None:
+                    curve = curve.Trim(Rhino.Geometry.Interval(*operation["trim"]))
+                    if curve is None:
+                        raise ValueError("could not trim polycurve")
+                    owned.append(curve)
+                if operation.get("split") is not None:
+                    curves = curve.Split(float(operation["split"]))
+                    if curves is None or len(curves) != 2:
+                        raise ValueError("could not split polycurve")
+                    owned.extend(curves)
+                else:
+                    curves = [curve]
+                return {"curves": [record(c) for c in curves]}
+            finally:
+                for curve in reversed(owned):
+                    curve.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
+
+
 def _trimmed_surface_mass_properties(operation, iterations, tolerance):
     owned = []
     try:
@@ -767,6 +856,8 @@ def _mesh_unweld_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "polycurve_geometry":
+        return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":
         return _trimmed_surface_mass_properties(operation, iterations, tolerance)
     if kind == "mesh_weld_vertex":
@@ -4493,15 +4584,16 @@ def _execute(operation, iterations, tolerance):
         if not curve.IsValid:
             raise ValueError("NURBS curve is invalid")
         segment_count = int(operation["segment_count"])
-        include_start = bool(operation["include_start"])
-        first_index = 0 if include_start else 1
+        include_ends = bool(operation["include_ends"])
+        first_index = 0 if include_ends else 1
+        last_index = segment_count if include_ends and not curve.IsClosed else segment_count - 1
         fractions = System.Array[System.Double](
             [
                 float(index) / float(segment_count)
-                for index in iteration_range(first_index, segment_count + 1)
+                for index in iteration_range(first_index, last_index + 1)
             ]
         )
-        default_parameters = curve.DivideByCount(segment_count, include_start)
+        default_parameters = curve.DivideByCount(segment_count, include_ends)
         if default_parameters is None or len(default_parameters) != len(fractions):
             raise ValueError("NURBS curve division returned an unexpected point count")
 

@@ -8534,9 +8534,7 @@ fn command_division_points(
     let mut points = match specification {
         DivisionSpecification::Count(count) => {
             let mut points = curve.divide_by_count(count, true, tolerance)?;
-            if closed {
-                points.pop();
-            } else if !mark_ends {
+            if !closed && !mark_ends {
                 points.remove(0);
                 points.pop();
             }

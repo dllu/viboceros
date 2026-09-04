@@ -1,0 +1,134 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-10,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "nurbs_curve_divide",
+      "id": "open-with-ends",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [0, 0, 0]
+        },
+        {
+          "point": [8, 0, 0]
+        }
+      ],
+      "knots": [0, 0, 8, 8],
+      "segment_count": 4,
+      "include_ends": true
+    },
+    {
+      "op": "nurbs_curve_divide",
+      "id": "open-without-ends",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [0, 0, 0]
+        },
+        {
+          "point": [8, 0, 0]
+        }
+      ],
+      "knots": [0, 0, 8, 8],
+      "segment_count": 4,
+      "include_ends": false
+    },
+    {
+      "op": "nurbs_curve_divide",
+      "id": "closed-with-seam",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [0, 0, 0]
+        },
+        {
+          "point": [2, 0, 0]
+        },
+        {
+          "point": [2, 2, 0]
+        },
+        {
+          "point": [0, 2, 0]
+        },
+        {
+          "point": [0, 0, 0]
+        }
+      ],
+      "knots": [0, 0, 2, 4, 6, 8, 8],
+      "segment_count": 4,
+      "include_ends": true
+    },
+    {
+      "op": "nurbs_curve_divide",
+      "id": "closed-without-seam",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [0, 0, 0]
+        },
+        {
+          "point": [2, 0, 0]
+        },
+        {
+          "point": [2, 2, 0]
+        },
+        {
+          "point": [0, 2, 0]
+        },
+        {
+          "point": [0, 0, 0]
+        }
+      ],
+      "knots": [0, 0, 2, 4, 6, 8, 8],
+      "segment_count": 4,
+      "include_ends": false
+    },
+    {
+      "op": "nurbs_curve_divide",
+      "id": "single-open-without-ends",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [0, 0, 0]
+        },
+        {
+          "point": [8, 0, 0]
+        }
+      ],
+      "knots": [0, 0, 8, 8],
+      "segment_count": 1,
+      "include_ends": false
+    },
+    {
+      "op": "nurbs_curve_divide",
+      "id": "single-closed-with-seam",
+      "degree": 1,
+      "control_points": [
+        {
+          "point": [0, 0, 0]
+        },
+        {
+          "point": [2, 0, 0]
+        },
+        {
+          "point": [2, 2, 0]
+        },
+        {
+          "point": [0, 2, 0]
+        },
+        {
+          "point": [0, 0, 0]
+        }
+      ],
+      "knots": [0, 0, 2, 4, 6, 8, 8],
+      "segment_count": 1,
+      "include_ends": true
+    }
+  ]
+}

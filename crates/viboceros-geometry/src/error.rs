@@ -17,6 +17,9 @@ pub enum GeometryError {
     #[error("at least one point is required")]
     EmptyPointSet,
 
+    #[error("invalid polycurve: {context}")]
+    InvalidPolyCurve { context: &'static str },
+
     #[error("point-cloud search radius must be finite and non-negative")]
     InvalidPointCloudSearchRadius,
 

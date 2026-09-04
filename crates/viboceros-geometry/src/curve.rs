@@ -1,8 +1,8 @@
 use std::f64::consts::FRAC_PI_2;
 
 use crate::{
-    Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, Point3, Polyline3,
-    Real, Tolerance, UnitVector3, Vector3,
+    Circle3, CircularArc3, CurveEvaluationSide, Ellipse3, GeometryError, LineSegment, NurbsCurve,
+    Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
     integration::integrate_adaptive,
     nurbs::{CURVE_COINCIDENCE_ABSOLUTE, curve_points_coincident},
     require_finite,
@@ -54,6 +54,7 @@ pub enum CurveRef<'a> {
     Ellipse(&'a Ellipse3),
     Polyline(&'a Polyline3),
     NurbsCurve(&'a NurbsCurve),
+    PolyCurve(&'a PolyCurve3),
 }
 
 impl CurveRef<'_> {
@@ -70,6 +71,7 @@ impl CurveRef<'_> {
             Self::Ellipse(ellipse) => ellipse.length(tolerance),
             Self::Polyline(polyline) => polyline.length(),
             Self::NurbsCurve(curve) => curve.length(tolerance),
+            Self::PolyCurve(curve) => curve.length(tolerance),
         }
     }
 
@@ -80,6 +82,7 @@ impl CurveRef<'_> {
             Self::Line(_) | Self::Arc(_) => false,
             Self::Polyline(polyline) => polyline.is_closed(),
             Self::NurbsCurve(curve) => curve.is_closed()?,
+            Self::PolyCurve(curve) => curve.is_closed()?,
         })
     }
 
@@ -99,6 +102,20 @@ impl CurveRef<'_> {
                 tolerance,
             ),
             Self::NurbsCurve(curve) => curve.is_planar(tolerance),
+            Self::PolyCurve(curve) => {
+                let controls = curve
+                    .segments()
+                    .iter()
+                    .flat_map(|s| s.control_points())
+                    .map(|c| c.point())
+                    .collect::<Vec<_>>();
+                control_polygon_is_planar(
+                    controls.len(),
+                    |index| controls[index],
+                    curve.evaluate(*curve.domain().start())?,
+                    tolerance,
+                )
+            }
         }
     }
 
@@ -110,6 +127,7 @@ impl CurveRef<'_> {
             Self::Ellipse(ellipse) => ellipse.point_at_angle(0.0),
             Self::Polyline(polyline) => Ok(polyline.vertices()[0]),
             Self::NurbsCurve(curve) => curve.evaluate(*curve.domain().start()),
+            Self::PolyCurve(curve) => curve.evaluate(*curve.domain().start()),
         }
     }
 
@@ -124,16 +142,32 @@ impl CurveRef<'_> {
                 .last()
                 .expect("a validated polyline has vertices")),
             Self::NurbsCurve(curve) => curve.evaluate(*curve.domain().end()),
+            Self::PolyCurve(curve) => curve.evaluate(*curve.domain().end()),
         }
     }
 
     /// Divides the curve into `segment_count` equal arc-length segments.
     ///
-    /// The natural end is always returned. When `include_start` is true, the
-    /// natural start is returned as well. This mirrors RhinoCommon's
-    /// `Curve.DivideByCount` contract; a closed curve therefore returns its
-    /// seam twice when both ends are requested.
+    /// `include_ends` includes both open endpoints, or a single seam on a closed
+    /// curve. Otherwise only the `segment_count - 1` interior stations are
+    /// returned, matching RhinoCommon's DivideByCount.
     pub fn divide_by_count(
+        self,
+        segment_count: usize,
+        include_ends: bool,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Point3>, GeometryError> {
+        let mut points = self.sample_equal_length_points(segment_count, include_ends, tolerance)?;
+        if !include_ends || self.is_closed()? {
+            points.pop();
+        }
+        Ok(points)
+    }
+
+    /// Samples every interval boundary, including the end even for a closed
+    /// curve. Useful for algorithms needing an explicit repeated closure point;
+    /// user-facing division should use [`Self::divide_by_count`] instead.
+    pub fn sample_equal_length_points(
         self,
         segment_count: usize,
         include_start: bool,
@@ -143,7 +177,7 @@ impl CurveRef<'_> {
     }
 
     /// Uses RhinoCommon's fixed fractional length tolerance for the sampling
-    /// stage behind `TweenCurves`.
+    /// stage behind `TweenCurves`, retaining an explicit interpolation seam.
     pub(crate) fn divide_by_count_for_tween(
         self,
         segment_count: usize,
@@ -360,6 +394,7 @@ impl CurveRef<'_> {
                 }
             }
             Self::NurbsCurve(curve) => curve.evaluate(parameter)?,
+            Self::PolyCurve(curve) => curve.evaluate(parameter)?,
         };
         let derivative = match self {
             Self::Line(line) => line.start().vector_to(line.end())?,
@@ -386,6 +421,7 @@ impl CurveRef<'_> {
                 polyline.vertices()[index].vector_to(polyline.vertices()[index + 1])?
             }
             Self::NurbsCurve(curve) => curve.derivative_at(parameter)?,
+            Self::PolyCurve(curve) => curve.evaluate_with_derivative(parameter)?.1,
         };
         Ok(CurveSample {
             parameter,
@@ -425,6 +461,11 @@ impl CurveRef<'_> {
             }
             Self::NurbsCurve(curve) => {
                 let (_, first, second) = curve.evaluate_with_second_derivative(parameter)?;
+                curvature_from_derivatives(first, second)
+            }
+            Self::PolyCurve(curve) => {
+                let (_, first, second) =
+                    curve.evaluate_with_second_derivative(parameter, CurveEvaluationSide::Right)?;
                 curvature_from_derivatives(first, second)
             }
         }
@@ -1102,6 +1143,7 @@ impl<'a> ArcLengthSampler<'a> {
                 polyline.vertices()[index].distance_to(polyline.vertices()[index + 1])?
             }
             CurveRef::NurbsCurve(curve) => curve.derivative_at(parameter)?.length()?,
+            CurveRef::PolyCurve(curve) => curve.evaluate_with_derivative(parameter)?.1.length()?,
         };
         require_finite([speed], "curve parameter speed")?;
         Ok(speed)
@@ -1126,6 +1168,7 @@ impl<'a> ArcLengthSampler<'a> {
                 .point_at(fraction)
             }
             CurveRef::NurbsCurve(curve) => curve.evaluate(parameter),
+            CurveRef::PolyCurve(curve) => curve.evaluate(parameter),
         }
     }
 }
@@ -1176,6 +1219,23 @@ fn raw_spans(
                 Ok((start, end, length, true))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
+        CurveRef::PolyCurve(curve) => {
+            let mut spans = Vec::new();
+            for (index, segment) in curve.segments().iter().enumerate() {
+                for (start, end) in segment.spans() {
+                    let length = integrate_speed(start, end, tolerance, |parameter| {
+                        segment.derivative_at(parameter)?.length()
+                    })?;
+                    spans.push((
+                        curve.polycurve_parameter(index, start)?,
+                        curve.polycurve_parameter(index, end)?,
+                        length,
+                        true,
+                    ));
+                }
+            }
+            spans
+        }
     })
 }
 
@@ -1362,7 +1422,7 @@ mod tests {
             .unwrap();
         assert_eq!(
             points,
-            (1..=5)
+            (1..5)
                 .map(|index| point(index as Real * 2.0, 0.0, 0.0))
                 .collect::<Vec<_>>()
         );
@@ -1401,7 +1461,7 @@ mod tests {
     }
 
     #[test]
-    fn divides_closed_analytic_curves_without_losing_the_exact_seam() {
+    fn divides_closed_analytic_curves_without_repeating_the_seam() {
         let circle = Circle3::try_new(
             point(1.0, 2.0, 3.0),
             2.0,
@@ -1412,8 +1472,7 @@ mod tests {
         let points = CurveRef::Circle(&circle)
             .divide_by_count(4, true, Tolerance::DEFAULT)
             .unwrap();
-        assert_eq!(points.len(), 5);
-        assert_eq!(points[0], points[4]);
+        assert_eq!(points.len(), 4);
         assert_eq!(points[0], circle.quadrants().unwrap()[0]);
         for (actual, expected) in points[..4].iter().zip(circle.quadrants().unwrap()) {
             assert!(actual.is_near(expected, Tolerance::DEFAULT));
@@ -1431,13 +1490,23 @@ mod tests {
         let points = CurveRef::Ellipse(&ellipse)
             .divide_by_count(8, true, Tolerance::DEFAULT)
             .unwrap();
-        assert_eq!(points[0], points[8]);
+        assert_eq!(points.len(), 8);
         for quadrant in 0..4 {
             assert!(points[quadrant * 2].is_near(
                 ellipse.quadrants().unwrap()[quadrant],
                 Tolerance::try_new(1.0e-11, 1.0e-12, 1.0e-12).unwrap()
             ));
         }
+        let samples = CurveRef::Circle(&circle)
+            .sample_equal_length_points(4, true, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(samples.len(), 5);
+        assert_eq!(samples[0], samples[4]);
+        let without_start = CurveRef::Circle(&circle)
+            .divide_by_count(4, false, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(without_start.len(), 3);
+        assert_eq!(without_start, samples[1..4]);
     }
 
     #[test]
