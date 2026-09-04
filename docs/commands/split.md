@@ -86,6 +86,12 @@ boundaries. Globally nonmonotone cutters may enter the face repeatedly; every
 disjoint supported simple span is retained with its exact spatial NURBS degree,
 knots, weights, and subcurve domain. Rational clipped spans use Rhino's
 piecewise-Bezier knot multiplicities and normalized outer weights.
+For a non-affine surface, the p-curve may require an adaptive cubic fit.
+Independent pullbacks of a clipped spatial edge can differ slightly at its
+endpoints. The trim is clamped to the shared boundary locations when necessary,
+and the adjusted curve is checked in model space across both its own knot spans
+and the spatial edge's spans. Adjustments exceeding document tolerance fail.
+The underlying surface and spatial edge remain unchanged.
 Rhino-compatible cutting-object output replaces the source with fresh selected
 pieces and leaves cutters unchanged and deselected. The curve fixture covers
 curve, surface, solid box, holed planar-face, and view-aligned non-intersecting
@@ -114,7 +120,9 @@ genuinely curved degree-two open-cutter kinks in single- and multi-cutter
 arrangements, plus disjoint repeated overlaps in swapped, reversed, and mixed
 directions. It compares UV trim degree, controls, weights, knots, and domains as
 well as vertices, edge domains, trim order,
-metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
+metadata, grouping, and selection. The separate
+`surface_split_nonaffine_trimmed.json` fixture compares fitted trims geometrically
+at equal UV arc-length stations; see the [oracle documentation](../oracle.md).
 Current surface/surface intersection support is planar.
 
 ## Isocurve splits

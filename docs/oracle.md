@@ -4,14 +4,37 @@
 
 The versioned Python oracle API runs identical JSON geometry and document-state
 batches in a native release build of Viboceros and Rhino 8, recursively checks
-results, and reports per-operation timings. With Rhino installed through the
-configured Wine/FEX launcher, run the core fixture with:
+results, and reports per-operation timings.
+
+Each batch applies the request's absolute, relative, and angular tolerances to
+Rhino's active document and restores its previous settings on success or failure.
+This matters for command macros, which read document settings rather than an API
+tolerance argument. See [Rhino's document tolerance API](https://developer.rhino3d.com/api/rhinocommon/rhino.rhinodoc/modelabsolutetolerance).
+Older command comparisons made before this synchronization need revalidation.
+
+With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh
 python3 -m tools.rhino_oracle compare \
   tools/rhino_oracle/fixtures/core.json \
   --absolute-epsilon 2e-12 --relative-epsilon 1e-12
 ```
+
+For trimmed surfaces with non-affine parameterization:
+
+```sh
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_split_nonaffine_trimmed.json \
+  --absolute-epsilon 1e-9 --relative-epsilon 1e-10
+```
+
+That fixture sets `sample_trim_geometry=true`: each non-isoparametric trim is
+compared at 65 equal-arc-length stations in UV, including both endpoints, with
+both UV coordinates and surface-evaluated 3D positions recorded. This compares
+independently fitted curves whose knot counts and parameter speeds differ.
+Topology, edge domains, underlying surfaces, attributes, groups, and selection
+are still compared. The default retains complete trim control/knot comparisons.
+Sampling is bounded evidence of geometric agreement, not a continuous error proof.
 
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):

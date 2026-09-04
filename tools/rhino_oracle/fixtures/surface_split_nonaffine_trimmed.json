@@ -1,0 +1,84 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-nonaffine-surface-with-exact-curved-cutter",
+      "sample_trim_geometry": true,
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [8.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0]
+      },
+      "pretrim": {
+        "point": [5.95, 7.5, 0.0],
+        "direction": "both",
+        "piece": 0
+      },
+      "cutters": [
+        {
+          "degree": 3,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [3.2, 6.666666666666667, 0.0], "weight": 1.0 },
+            { "point": [5.466666666666667, 8.0, 0.0], "weight": 1.0 },
+            { "point": [8.8, 6.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-nonaffine-surface-with-adaptive-curved-cutter",
+      "sample_trim_geometry": true,
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [8.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0]
+      },
+      "pretrim": {
+        "point": [5.95, 7.5, 0.0],
+        "direction": "both",
+        "piece": 0
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 9.0, 0.0], "weight": 1.0 },
+            { "point": [8.8, 6.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [2.0, 2.0, 2.0, 5.0, 5.0, 5.0]
+        }
+      ]
+    }
+  ]
+}

@@ -8,6 +8,7 @@ syntax compatible with both Rhino 8 Python 3 and the legacy IronPython host.
 import json
 import math
 import os
+from contextlib import contextmanager
 from timeit import default_timer
 
 import Rhino
@@ -396,6 +397,23 @@ def _nurbs_parameter_curve_definition(curve):
     for control in definition["control_points"]:
         control["point"] = control["point"][:2]
     return definition
+
+
+def _surface_split_trim_value(curve, surface, sample_geometry):
+    if not sample_geometry:
+        return _nurbs_parameter_curve_definition(curve)
+    points = [curve.PointAtStart]
+    for index in range(1, 64):
+        success, parameter = curve.NormalizedLengthParameter(index / 64.0, 1e-12)
+        if not success:
+            raise ValueError("could not sample the split trim at equal UV arc lengths")
+        points.append(curve.PointAt(parameter))
+    points.append(curve.PointAtEnd)
+    return {
+        "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+        "uv_points": [_xy(point) for point in points],
+        "surface_points": [_xyz(surface.PointAt(point.X, point.Y)) for point in points],
+    }
 
 
 def _canonical_closed_intersection_curve_definition(curve):
@@ -7298,7 +7316,10 @@ def _execute(operation, iterations, tolerance):
                         topology = _mesh_to_nurb_brep_value(geometry)
                         object_kind = "brep"
                         trim_curves = [
-                            _nurbs_parameter_curve_definition(trim)
+                            _surface_split_trim_value(
+                                trim, surface_geometry,
+                                operation.get("sample_trim_geometry", False),
+                            )
                             for brep_face in geometry.Faces
                             for loop in brep_face.Loops
                             for trim in loop.Trims
@@ -9714,6 +9735,28 @@ def _validate_request(request):
     return iterations, operations, tolerance
 
 
+@contextmanager
+def _document_tolerance(document, tolerance):
+    """Run command macros with the same tolerance as the native document."""
+    if document is None:
+        raise ValueError("oracle requires an active Rhino document")
+    properties = (
+        ("ModelAbsoluteTolerance", "absolute"),
+        ("ModelRelativeTolerance", "relative"),
+        ("ModelAngleToleranceRadians", "angular"),
+    )
+    previous = [(name, getattr(document, name)) for name, _key in properties]
+    try:
+        for name, key in properties:
+            setattr(document, name, tolerance[key])
+            if getattr(document, name) != tolerance[key]:
+                raise ValueError("Rhino did not accept the requested %s" % name)
+        yield
+    finally:
+        for name, value in previous:
+            setattr(document, name, value)
+
+
 def _response(request):
     iterations = request.get("iterations", 1) if isinstance(request, dict) else 1
     response = {
@@ -9726,19 +9769,20 @@ def _response(request):
     try:
         iterations, operations, tolerance = _validate_request(request)
         response["iterations"] = iterations
-        for operation in operations:
-            _record_progress(
-                "operation %s: start"
-                % operation.get("id", operation.get("op", "unknown"))
-            )
-            value, elapsed = _execute(operation, iterations, tolerance)
-            response["results"].append(
-                {
-                    "id": operation["id"],
-                    "value": value,
-                    "elapsed_ns": elapsed,
-                }
-            )
+        with _document_tolerance(Rhino.RhinoDoc.ActiveDoc, tolerance):
+            for operation in operations:
+                _record_progress(
+                    "operation %s: start"
+                    % operation.get("id", operation.get("op", "unknown"))
+                )
+                value, elapsed = _execute(operation, iterations, tolerance)
+                response["results"].append(
+                    {
+                        "id": operation["id"],
+                        "value": value,
+                        "elapsed_ns": elapsed,
+                    }
+                )
     except Exception as error:
         response["results"] = []
         response["error"] = "%s at %s: %s" % (
@@ -9785,4 +9829,5 @@ def _main():
         Rhino.RhinoApp.Exit(False)
 
 
-_main()
+if __name__ == "__main__":
+    _main()

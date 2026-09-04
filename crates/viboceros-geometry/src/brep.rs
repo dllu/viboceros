@@ -7726,12 +7726,39 @@ fn surface_split_parameter_curve(
             tolerance,
         ),
     ];
-    if !parameter_points_near(parameter_curve.start_point()?, start, parameter_tolerance)
-        || !parameter_points_near(parameter_curve.end_point()?, end, parameter_tolerance)
+    let actual_start = parameter_curve.start_point()?;
+    let actual_end = parameter_curve.end_point()?;
+    if !parameter_points_near(actual_start, start, parameter_tolerance)
+        || !parameter_points_near(actual_end, end, parameter_tolerance)
     {
-        return Err(GeometryError::InvalidBrepTopology {
-            context: "a surface split p-curve must meet both requested boundary parameters",
-        });
+        // Clipping an approximate pullback and pulling back the clipped edge
+        // independently need not produce identical endpoint parameters. Keep
+        // the shared topological endpoints and qualify the adjusted trim in
+        // model space, where the caller's approximation budget is defined.
+        let domain = parameter_curve.domain();
+        let end_knots = parameter_curve.degree() + 1;
+        if !parameter_curve.knots()[..end_knots]
+            .iter()
+            .all(|knot| *knot == *domain.start())
+            || !parameter_curve.knots()[parameter_curve.knots().len() - end_knots..]
+                .iter()
+                .all(|knot| *knot == *domain.end())
+        {
+            return invalid("a surface split p-curve must be clamped to adjust its endpoints");
+        }
+        let mut controls = parameter_curve.control_points().to_vec();
+        let last = controls.len() - 1;
+        controls[0] = WeightedPoint2::try_new(start, controls[0].weight())?;
+        controls[last] = WeightedPoint2::try_new(end, controls[last].weight())?;
+        let adjusted = NurbsCurve2::try_new_rational(
+            parameter_curve.degree(),
+            controls,
+            parameter_curve.knots().to_vec(),
+        )?;
+        if !parameter_curve_matches_spatial_curve(surface, &adjusted, curve, tolerance)? {
+            return invalid("a surface split p-curve endpoint adjustment exceeds model tolerance");
+        }
+        return Ok(adjusted);
     }
     Ok(parameter_curve)
 }
@@ -7751,13 +7778,28 @@ fn parameter_curve_matches_spatial_curve(
         [spatial_extent, parameter_extent],
         "surface split curve parameter extents",
     )?;
-    for (span_start, span_end) in spatial_curve.spans() {
+    // A fitted p-curve may have many spans inside one spatial Bezier span.
+    // Sample both knot partitions so local fitting or endpoint-adjustment
+    // errors cannot hide between samples of the original spatial curve.
+    let mut breaks = vec![0.0, 1.0];
+    breaks.extend(
+        spatial_curve
+            .spans()
+            .map(|(_, end)| ((end - *spatial_domain.start()) / spatial_extent).clamp(0.0, 1.0)),
+    );
+    breaks.extend(
+        parameter_curve
+            .spans()
+            .map(|(_, end)| ((end - *parameter_domain.start()) / parameter_extent).clamp(0.0, 1.0)),
+    );
+    breaks.sort_by(Real::total_cmp);
+    breaks.dedup();
+    for interval in breaks.windows(2) {
         for sample in 0..=SAMPLES_PER_SPAN {
             let span_fraction = sample as Real / SAMPLES_PER_SPAN as Real;
-            let spatial_parameter =
-                span_start.mul_add(1.0 - span_fraction, span_end * span_fraction);
-            let normalized = (spatial_parameter - *spatial_domain.start()) / spatial_extent;
-            let parameter = normalized.mul_add(parameter_extent, *parameter_domain.start());
+            let normalized = interval[0].mul_add(1.0 - span_fraction, interval[1] * span_fraction);
+            let spatial_parameter = spatial_curve.parameter_at(normalized)?;
+            let parameter = parameter_curve.parameter_at(normalized)?;
             let uv = parameter_curve.evaluate(parameter)?;
             let surface_point = surface.evaluate(uv.x(), uv.y())?;
             let spatial_point = spatial_curve.evaluate(spatial_parameter)?;
@@ -10354,6 +10396,99 @@ mod tests {
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
+    }
+
+    #[test]
+    fn surface_split_endpoint_adjustments_respect_model_tolerance() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(8.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap();
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(5.0, 9.0, 0.0),
+                point(8.8, 6.0, 0.0),
+            ],
+            vec![2.0, 2.0, 2.0, 5.0, 5.0, 5.0],
+        )
+        .unwrap()
+        .try_trimmed(2.0..=4.0)
+        .unwrap();
+        // At normalized t=2/3 the spatial curve is (92/15, 62/9, 0),
+        // and inversion of S(u,v)=(u*(10-2v),10v,0) gives (138/194,31/45).
+        let start = Point2::try_new(0.0, 0.2).unwrap();
+        let exact_end = Point2::try_new(138.0 / 194.0, 31.0 / 45.0).unwrap();
+        let adjusted_end = Point2::try_new(exact_end.x() + 5.0e-12, exact_end.y()).unwrap();
+        let trim = surface_split_parameter_curve(
+            &surface,
+            &curve,
+            start,
+            adjusted_end,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(trim.start_point().unwrap(), start);
+        assert_eq!(trim.end_point().unwrap(), adjusted_end);
+        for sample in 0..=1000 {
+            let t = curve.parameter_at(sample as Real / 1000.0).unwrap();
+            let uv = trim.evaluate(t).unwrap();
+            assert!(
+                surface
+                    .evaluate(uv.x(), uv.y())
+                    .unwrap()
+                    .distance_to(curve.evaluate(t).unwrap())
+                    .unwrap()
+                    <= Tolerance::DEFAULT.absolute()
+            );
+        }
+        let wrong_end = Point2::try_new(exact_end.x() + 1.0e-4, exact_end.y()).unwrap();
+        assert!(
+            surface_split_parameter_curve(&surface, &curve, start, wrong_end, Tolerance::DEFAULT,)
+                .is_err()
+        );
+    }
+
+    #[test]
+    fn surface_split_curve_validation_checks_internal_trim_spans() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(1.0, 0.0, 0.0),
+            point(1.0, 1.0, 0.0),
+            point(0.0, 1.0, 0.0),
+        ])
+        .unwrap();
+        let spatial = NurbsCurve::try_new(
+            1,
+            vec![point(0.0, 0.0, 0.0), point(1.0, 0.0, 0.0)],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        // The excursion lies between two samples of a uniform 16-division
+        // check of the spatial curve's sole span.
+        let trim = NurbsCurve2::try_new(
+            1,
+            [
+                (0.0, 0.0),
+                (0.03, 0.0),
+                (0.031, 0.01),
+                (0.032, 0.0),
+                (1.0, 0.0),
+            ]
+            .into_iter()
+            .map(|(x, y)| Point2::try_new(x, y).unwrap())
+            .collect(),
+            vec![0.0, 0.0, 0.03, 0.031, 0.032, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(
+            !parameter_curve_matches_spatial_curve(&surface, &trim, &spatial, Tolerance::DEFAULT,)
+                .unwrap()
+        );
     }
 
     fn planar_polygon_brep(paths: &[Vec<Point3>]) -> Brep {

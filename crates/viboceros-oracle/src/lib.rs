@@ -639,6 +639,9 @@ pub enum Operation {
         pretrim: Option<SurfaceIsocurvePretrim>,
         cutters: Vec<SurfaceSplitCutterDefinition>,
         source_pick: [f64; 3],
+        /// Compare equal-UV-arc-length stations for independently fitted trims.
+        #[serde(default)]
+        sample_trim_geometry: bool,
     },
     CurveIntersectCommand {
         id: String,
@@ -3339,6 +3342,7 @@ fn execute(
             pretrim,
             cutters,
             source_pick,
+            sample_trim_geometry,
             ..
         } => surface_split_cutting_command(
             iterations,
@@ -3346,6 +3350,7 @@ fn execute(
             pretrim.as_ref(),
             cutters,
             *source_pick,
+            *sample_trim_geometry,
             tolerance,
         )?,
         Operation::CurveIntersectCommand { curves, .. } => {
@@ -7931,6 +7936,7 @@ fn surface_split_cutting_command(
     pretrim: Option<&SurfaceIsocurvePretrim>,
     cutter_definitions: &[SurfaceSplitCutterDefinition],
     source_pick: [f64; 3],
+    sample_trim_geometry: bool,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let source = nurbs_surface_from_definition(definition)?;
@@ -8063,8 +8069,10 @@ fn surface_split_cutting_command(
                     "topology": mesh_to_nurb_brep_value(brep)?,
                     "trim_curves": face.loops().iter().flat_map(|face_loop| face_loop.trims())
                         .filter(|trim| trim.iso() == SurfaceIso::NotIso)
-                        .map(|trim| nurbs_curve2_definition_value(trim.curve()))
-                        .collect::<Vec<_>>(),
+                        .map(|trim| surface_split_trim_value(
+                            trim.curve(), face.surface(), sample_trim_geometry, tolerance,
+                        ))
+                        .collect::<Result<Vec<_>, _>>()?,
                     "trim_bounds": [
                         trim_bounds[0][0],
                         trim_bounds[0][1],
@@ -8250,6 +8258,48 @@ fn nurbs_curve2_definition_value(curve: &NurbsCurve2) -> Value {
         "domain": [*curve.domain().start(), *curve.domain().end()],
         "knots": curve.knots(),
     })
+}
+
+fn surface_split_trim_value(
+    curve: &NurbsCurve2,
+    surface: &NurbsSurface,
+    sample_geometry: bool,
+    tolerance: Tolerance,
+) -> Result<Value, GeometryError> {
+    if !sample_geometry {
+        return Ok(nurbs_curve2_definition_value(curve));
+    }
+    // Fitted pullbacks may have different knots and parameter speeds. Equal
+    // arc-length stations in UV compare their locus and traversal direction.
+    let lifted = NurbsCurve::try_new_rational(
+        curve.degree(),
+        curve
+            .control_points()
+            .iter()
+            .map(|control| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(control.point().x(), control.point().y(), 0.0)?,
+                    control.weight(),
+                )
+            })
+            .collect::<Result<Vec<_>, _>>()?,
+        curve.knots().to_vec(),
+    )?;
+    let sampling_tolerance = Tolerance::try_new(
+        tolerance.absolute().min(1.0e-12),
+        tolerance.relative().min(1.0e-12),
+        tolerance.angular(),
+    )?;
+    let points = CurveRef::NurbsCurve(&lifted).divide_by_count(64, true, sampling_tolerance)?;
+    let surface_points = points
+        .iter()
+        .map(|point| surface.evaluate(point.x(), point.y()).map(Point3::to_array))
+        .collect::<Result<Vec<_>, _>>()?;
+    Ok(json!({
+        "domain": [*curve.domain().start(), *curve.domain().end()],
+        "uv_points": points.iter().map(|point| [point.x(), point.y()]).collect::<Vec<_>>(),
+        "surface_points": surface_points,
+    }))
 }
 
 fn canonical_closed_intersection_curve_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {
@@ -8682,6 +8732,82 @@ const fn unit_weight() -> f64 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn trim_geometry_sampling_is_independent_of_parameter_speed() {
+        use viboceros_geometry::{Point2, WeightedPoint2};
+        let point = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0),
+            point(10.0, 0.0),
+            point(8.0, 10.0),
+            point(0.0, 10.0),
+        ])
+        .unwrap();
+        let start = Point2::try_new(0.0, 0.1).unwrap();
+        let end = Point2::try_new(1.0, 0.7).unwrap();
+        let uniform = NurbsCurve2::try_line(start, end).unwrap();
+        let rational = NurbsCurve2::try_new_rational(
+            1,
+            vec![
+                WeightedPoint2::try_new(start, 1.0).unwrap(),
+                WeightedPoint2::try_new(end, 2.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_ne!(
+            uniform.evaluate(0.5).unwrap(),
+            rational.evaluate(0.5).unwrap()
+        );
+        let a = surface_split_trim_value(&uniform, &surface, true, Tolerance::DEFAULT).unwrap();
+        let b = surface_split_trim_value(&rational, &surface, true, Tolerance::DEFAULT).unwrap();
+        for field in ["uv_points", "surface_points"] {
+            let a = a[field].as_array().unwrap();
+            let b = b[field].as_array().unwrap();
+            assert_eq!(a.len(), 65);
+            assert_eq!(a.len(), b.len());
+            for (a, b) in a.iter().zip(b) {
+                for (a, b) in a.as_array().unwrap().iter().zip(b.as_array().unwrap()) {
+                    assert!((a.as_f64().unwrap() - b.as_f64().unwrap()).abs() < 1e-9);
+                }
+            }
+        }
+        let reversed = surface_split_trim_value(
+            &uniform.reversed().unwrap(),
+            &surface,
+            true,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(reversed["uv_points"][0], a["uv_points"][64]);
+        assert_eq!(reversed["uv_points"][64], a["uv_points"][0]);
+    }
+
+    #[test]
+    fn pretrimmed_nonaffine_fixture_samples_actual_trim_geometry() {
+        let request: ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/surface_split_nonaffine_trimmed.json"
+        ))
+        .unwrap();
+        let response = run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 2);
+        for result in response.results {
+            let objects = result.value["objects"].as_array().unwrap();
+            assert_eq!(objects.len(), 2);
+            assert_eq!(result.value["cutters_selected"], json!([false]));
+            for object in objects {
+                assert_eq!(object["attributes_match_source"], true);
+                assert_eq!(object["in_source_group"], true);
+                assert_eq!(object["selected"], true);
+                assert_eq!(object["topology"]["edge_count"], 4);
+                let trim = &object["trim_curves"][0];
+                assert!(trim.get("control_points").is_none());
+                assert_eq!(trim["uv_points"].as_array().unwrap().len(), 65);
+                assert_eq!(trim["surface_points"].as_array().unwrap().len(), 65);
+            }
+        }
+    }
 
     fn control(point: [f64; 3], weight: f64) -> ControlPoint {
         ControlPoint { point, weight }
@@ -11437,6 +11563,7 @@ mod tests {
         let response = run_request(&request(vec![
             Operation::SurfaceSplitCuttingCommand {
                 id: "split-surface-with-cutting-surface".to_owned(),
+                sample_trim_geometry: false,
                 surface: surface.clone(),
                 pretrim: None,
                 cutters: vec![SurfaceSplitCutterDefinition::Surface(cutter)],
@@ -11444,6 +11571,7 @@ mod tests {
             },
             Operation::SurfaceSplitCuttingCommand {
                 id: "split-surface-with-curved-cutting-curve".to_owned(),
+                sample_trim_geometry: false,
                 surface,
                 pretrim: None,
                 cutters: vec![SurfaceSplitCutterDefinition::Boundary(

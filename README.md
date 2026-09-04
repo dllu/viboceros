@@ -28,7 +28,7 @@ Enter `Help` to list commands.
 cargo test --workspace
 cargo clippy --workspace --all-targets -- -D warnings
 cargo fmt --all -- --check
-python3 -m unittest tools.rhino_oracle.test_client
+python3 -m unittest discover -s tools/rhino_oracle -t .
 ```
 
 - [Command reference and examples](docs/commands/README.md)

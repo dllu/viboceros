@@ -22191,6 +22191,16 @@ mod tests {
         .unwrap()
     }
 
+    fn nonaffine_planar_surface() -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(8.0, 10.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 10.0, 0.0).unwrap(),
+        ])
+        .unwrap()
+    }
+
     fn vertical_intersection_surface(x_start: Real, x_end: Real) -> NurbsSurface {
         NurbsSurface::try_bilinear([
             Point3::try_new(x_start, 5.0, -5.0).unwrap(),
@@ -30397,13 +30407,7 @@ mod tests {
     fn cutting_object_split_pulls_curves_back_on_nonaffine_planar_surfaces() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
-        let surface = NurbsSurface::try_bilinear([
-            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
-            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
-            Point3::try_new(8.0, 10.0, 0.0).unwrap(),
-            Point3::try_new(0.0, 10.0, 0.0).unwrap(),
-        ])
-        .unwrap();
+        let surface = nonaffine_planar_surface();
         let source_id = document
             .add_geometry(Geometry::NurbsSurface(surface.clone()))
             .unwrap();
@@ -30553,6 +30557,131 @@ mod tests {
                 ));
             }
             brep.tessellate(3, adaptive_document.tolerance()).unwrap();
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_clips_curves_on_trimmed_nonaffine_surfaces() {
+        let registry = CommandRegistry::with_builtins();
+        let exact_cutter = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.2, 20.0 / 3.0, 0.0).unwrap(),
+                Point3::try_new(82.0 / 15.0, 8.0, 0.0).unwrap(),
+                Point3::try_new(8.8, 6.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let adaptive_cutter = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 9.0, 0.0).unwrap(),
+                Point3::try_new(8.8, 6.0, 0.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 5.0, 5.0, 5.0],
+        )
+        .unwrap();
+
+        for (cutter, expects_exact_pullback) in [(exact_cutter, true), (adaptive_cutter, false)] {
+            let mut document = Document::default();
+            let surface = nonaffine_planar_surface();
+            let source_id = document
+                .add_geometry(Geometry::Brep(
+                    Brep::try_rectangular_surface_face(
+                        surface.clone(),
+                        0.0..=0.7,
+                        0.0..=0.75,
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ))
+                .unwrap();
+            let original_domain = cutter.domain();
+            let cutter_id = document
+                .add_geometry(Geometry::NurbsCurve(cutter.clone()))
+                .unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(&mut document, "Split CuttingObjects=1,1,0")
+                    .unwrap_or_else(|error| {
+                        panic!(
+                            "non-affine clipping failed (exact pullback: {expects_exact_pullback}): {error:?}"
+                        )
+                    }),
+                "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut area = 0.0;
+            let mut cut_domains = Vec::new();
+            let mut trim_reversals = Vec::new();
+            for object in outputs {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("trimmed non-affine Split must create B-rep faces")
+                };
+                assert_eq!(brep.faces().len(), 1);
+                assert_eq!(brep.faces()[0].surface(), &surface);
+                assert_eq!(brep.vertices().len(), 4);
+                assert_eq!(brep.edges().len(), 4);
+                let trim = brep.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                    .unwrap();
+                assert_eq!(trim.curve().degree(), 3);
+                if expects_exact_pullback {
+                    assert_eq!(trim.curve().control_points().len(), 4);
+                } else {
+                    assert!(trim.curve().control_points().len() > 4);
+                }
+                let edge = brep.edges()[trim.edge().unwrap()].curve();
+                assert_eq!(edge.degree(), cutter.degree());
+                assert!(*edge.domain().start() >= *original_domain.start());
+                assert!(*edge.domain().end() < *original_domain.end());
+                cut_domains.push(edge.domain());
+                trim_reversals.push(trim.is_reversed_3d());
+
+                let trim_domain = trim.curve().domain();
+                let mut endpoint_u = [
+                    trim.curve().evaluate(*trim_domain.start()).unwrap().x(),
+                    trim.curve().evaluate(*trim_domain.end()).unwrap().x(),
+                ];
+                endpoint_u.sort_by(Real::total_cmp);
+                assert!(document.tolerance().approx_eq(endpoint_u[0], 0.0));
+                assert!(document.tolerance().approx_eq(endpoint_u[1], 0.7));
+                for (span_start, span_end) in trim.curve().spans() {
+                    for normalized in [0.0, 0.5, 1.0] {
+                        let parameter = (span_end - span_start).mul_add(normalized, span_start);
+                        let uv = trim.curve().evaluate(parameter).unwrap();
+                        let edge_parameter = if trim.is_reversed_3d() {
+                            -parameter
+                        } else {
+                            parameter
+                        };
+                        assert!(
+                            surface.evaluate(uv.x(), uv.y()).unwrap().is_near(
+                                edge.evaluate(edge_parameter).unwrap(),
+                                document.tolerance()
+                            )
+                        );
+                    }
+                }
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(3, document.tolerance()).unwrap();
+            }
+            assert_eq!(cut_domains[0], cut_domains[1]);
+            trim_reversals.sort_unstable();
+            assert_eq!(trim_reversals, vec![false, true]);
+            assert!(document.tolerance().approx_eq(area, 48.5625));
         }
     }
 
