@@ -914,7 +914,8 @@ circles, or one of each may touch externally or internally at one vertex; they
 retain Rhino's welded loop topology and tessellate without opening the contact,
 independent of cutter order and direction. Smooth closed NURBS remain one edge,
 while degree-multiple kinks split into Rhino-compatible edges; self-crossing
-loops are rejected.
+loops are rejected. Boundary-to-boundary cutters may likewise touch a smooth
+circle or polygon vertex without falsely crossing or opening the closed region.
 Straight and curved intersections against an already-trimmed rectangular
 B-rep are partitioned at exact intersections with its four visible UV
 boundaries. Globally nonmonotone cutters may enter the face repeatedly; every
@@ -936,8 +937,9 @@ sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter
 arrangements, including internally and externally touching closed polygons and
 tangent rational circles, plus mixed polygon/circle tangencies in both traversal
-directions. It compares UV trim degree, controls, weights, knots, and domains as
-well as vertices, edge domains, trim order,
+directions and open/closed tangent contacts in both cutter orders. It compares UV
+trim degree, controls, weights, knots, and domains as well as vertices, edge
+domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point

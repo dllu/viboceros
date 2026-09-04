@@ -5227,6 +5227,12 @@ struct SurfaceCutArrangementRegion {
     holes: Vec<Vec<usize>>,
 }
 
+struct SurfaceCutArrangementSourceInfo {
+    first_closed: Option<usize>,
+    closed: Vec<bool>,
+    first_nodes: Vec<bool>,
+}
+
 #[derive(Clone, Copy)]
 enum SurfaceCutArrangementEdgeKind {
     Boundary(RectangularBoundarySide),
@@ -5611,8 +5617,24 @@ fn try_rectangular_surface_cut_arrangement(
     if outer_cycles.len() + hole_cycles.len() > crate::MAX_SURFACE_WIRES {
         return Err(GeometryError::TooManySurfaceWires);
     }
-    let first_closed_source = cuts.iter().position(|cut| cut.closed);
-    let closed_sources = cuts.iter().map(|cut| cut.closed).collect::<Vec<_>>();
+    let first_closed = cuts.iter().position(|cut| cut.closed);
+    let closed = cuts.iter().map(|cut| cut.closed).collect::<Vec<_>>();
+    let mut first_source_nodes = vec![false; nodes.len()];
+    for edge in &edges {
+        if matches!(
+            edge.kind,
+            SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+        ) {
+            for node in edge.nodes {
+                first_source_nodes[node] = true;
+            }
+        }
+    }
+    let source_info = SurfaceCutArrangementSourceInfo {
+        first_closed,
+        closed,
+        first_nodes: first_source_nodes,
+    };
     for cycle in &mut outer_cycles {
         rotate_surface_cut_outer_cycle(
             cycle,
@@ -5620,8 +5642,7 @@ fn try_rectangular_surface_cut_arrangement(
             &nodes,
             bounds,
             parameter_tolerance,
-            first_closed_source,
-            &closed_sources,
+            &source_info,
         )?;
     }
     let mut holes_by_outer = vec![Vec::<Vec<usize>>::new(); outer_cycles.len()];
@@ -5632,8 +5653,7 @@ fn try_rectangular_surface_cut_arrangement(
             &nodes,
             bounds,
             parameter_tolerance,
-            first_closed_source,
-            &closed_sources,
+            &source_info,
         )?;
         let parent =
             surface_cut_hole_parent(&edges, &outer_cycles, &cycle, bounds, parameter_tolerance)?
@@ -6192,16 +6212,18 @@ fn rotate_surface_cut_outer_cycle(
     nodes: &[SurfaceCutArrangementNode],
     bounds: [[Real; 2]; 2],
     tolerance: [Real; 2],
-    first_closed_source: Option<usize>,
-    closed_sources: &[bool],
+    source_info: &SurfaceCutArrangementSourceInfo,
 ) -> Result<(), GeometryError> {
+    let first_closed_source = source_info.first_closed;
+    let closed_sources = &source_info.closed;
+    let first_source_nodes = &source_info.first_nodes;
     if let Some((source, maximum_segment)) = surface_cut_cycle_single_source(edges, cycle)
-        && let Some(first_closed_source) = first_closed_source
+        && first_closed_source.is_some()
         && closed_sources.get(source).copied().unwrap_or(false)
     {
-        let forward = source == first_closed_source
-            || cycle.iter().any(|halfedge| halfedge.is_multiple_of(2));
-        let target_segment = if source == first_closed_source || !forward {
+        let first_cutter = source == 0;
+        let forward = first_cutter || cycle.iter().any(|halfedge| halfedge.is_multiple_of(2));
+        let target_segment = if first_cutter || !forward {
             0
         } else {
             maximum_segment
@@ -6251,6 +6273,60 @@ fn rotate_surface_cut_outer_cycle(
         return Ok(());
     }
 
+    if first_closed_source == Some(0)
+        && !cycle.iter().any(|halfedge| {
+            matches!(
+                edges[*halfedge / 2].kind,
+                SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+            )
+        })
+        && cycle.iter().any(|halfedge| {
+            edges[*halfedge / 2]
+                .nodes
+                .into_iter()
+                .any(|node| first_source_nodes.get(node).copied().unwrap_or(false))
+        })
+        && let Some(source) = cycle
+            .iter()
+            .filter_map(|halfedge| match edges[*halfedge / 2].kind {
+                SurfaceCutArrangementEdgeKind::Cut { source, .. } => Some(source),
+                SurfaceCutArrangementEdgeKind::Boundary(_) => None,
+            })
+            .max()
+    {
+        let forward = cycle.iter().any(|halfedge| {
+            halfedge.is_multiple_of(2)
+                && matches!(
+                    edges[*halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut {
+                        source: edge_source,
+                        ..
+                    } if edge_source == source
+                )
+        });
+        let anchor = cycle.iter().enumerate().filter_map(|(index, halfedge)| {
+            if halfedge.is_multiple_of(2) != forward {
+                return None;
+            }
+            match edges[*halfedge / 2].kind {
+                SurfaceCutArrangementEdgeKind::Cut {
+                    source: edge_source,
+                    segment,
+                } if edge_source == source => Some((segment, index)),
+                _ => None,
+            }
+        });
+        let anchor = if forward {
+            anchor.max_by_key(|(segment, _)| *segment)
+        } else {
+            anchor.min_by_key(|(segment, _)| *segment)
+        };
+        if let Some((_, anchor)) = anchor {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+    }
+
     let closed_source = cycle
         .iter()
         .filter_map(|halfedge| match edges[*halfedge / 2].kind {
@@ -6262,7 +6338,8 @@ fn rotate_surface_cut_outer_cycle(
             _ => None,
         })
         .min();
-    if let Some(source) = closed_source {
+    if closed_source == Some(0) {
+        let source = 0;
         let seam_node = edges.iter().find_map(|edge| match edge.kind {
             SurfaceCutArrangementEdgeKind::Cut {
                 source: edge_source,
@@ -6309,7 +6386,8 @@ fn rotate_surface_cut_outer_cycle(
             cycle.rotate_left(anchor);
             return Ok(());
         }
-    } else if first_closed_source.is_some()
+    }
+    if first_closed_source.is_some()
         && cycle.iter().all(|halfedge| {
             matches!(
                 edges[*halfedge / 2].kind,
@@ -6336,13 +6414,14 @@ fn rotate_surface_cut_hole_cycle(
     nodes: &[SurfaceCutArrangementNode],
     bounds: [[Real; 2]; 2],
     tolerance: [Real; 2],
-    first_closed_source: Option<usize>,
-    closed_sources: &[bool],
+    source_info: &SurfaceCutArrangementSourceInfo,
 ) -> Result<(), GeometryError> {
+    let first_closed_source = source_info.first_closed;
+    let closed_sources = &source_info.closed;
     if let Some((source, maximum_segment)) = surface_cut_cycle_single_source(edges, cycle)
-        && let Some(first_closed_source) = first_closed_source
+        && first_closed_source.is_some()
     {
-        let target_segment = if source == first_closed_source {
+        let target_segment = if source == 0 {
             maximum_segment
         } else {
             maximum_segment.saturating_sub(1)
@@ -10313,6 +10392,50 @@ mod tests {
             ],
             &[1, 6, 9],
             &[1, 1, 2],
+        );
+        assert_case(
+            vec![circle([5.0, 5.0], 2.0), line([0.0, 7.0], [10.0, 7.0])],
+            &[2, 5, 7],
+            &[1, 1, 1],
+        );
+        assert_case(
+            vec![line([0.0, 7.0], [10.0, 7.0]), circle([5.0, 5.0], 2.0)],
+            &[2, 5, 7],
+            &[1, 1, 1],
+        );
+        assert_case(
+            vec![
+                circle([5.0, 5.0], 2.0).reversed().unwrap(),
+                line([10.0, 7.0], [0.0, 7.0]),
+            ],
+            &[2, 5, 7],
+            &[1, 1, 1],
+        );
+        assert_case(
+            vec![circle([5.0, 5.0], 2.0), line([7.0, 0.0], [7.0, 10.0])],
+            &[1, 5, 6],
+            &[1, 1, 1],
+        );
+        let triangle = NurbsCurve::try_new(
+            1,
+            vec![
+                point(3.0, 3.0, 0.0),
+                point(7.0, 3.0, 0.0),
+                point(5.0, 6.0, 0.0),
+                point(3.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 3.0],
+        )
+        .unwrap();
+        assert_case(
+            vec![triangle.clone(), line([0.0, 6.0], [10.0, 6.0])],
+            &[3, 5, 8],
+            &[1, 1, 1],
+        );
+        assert_case(
+            vec![line([0.0, 6.0], [10.0, 6.0]), triangle],
+            &[3, 5, 8],
+            &[1, 1, 1],
         );
         let triple_nested = Brep::try_split_rectangular_surface_face_with_curves(
             surface,
