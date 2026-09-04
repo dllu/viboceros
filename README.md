@@ -875,8 +875,9 @@ point/parameter modes the first piece retains the source identity; every piece
 retains its attributes and group membership, becomes selected, and participates
 in one undo step. `Split CuttingObjects=source_point` instead chooses the
 selected curve nearest that point as the target and uses every other selected
-curve, untrimmed NURBS surface, and B-rep as an actual 3D cutter. Finite surface
-overlaps and exact B-rep trim regions, including holes, supply all split
+curve, untrimmed NURBS surface, and B-rep as an actual 3D cutter; in the UI,
+enter `Split CuttingObjects` and pick the source curve in a viewport. Finite
+surface overlaps and exact B-rep trim regions, including holes, supply all split
 locations. Rhino-compatible cutting-object output replaces the source with
 fresh, grouped, attribute-preserving selected pieces and leaves cutters
 unchanged and deselected. The permanent command fixture covers curve, surface,

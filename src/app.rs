@@ -277,6 +277,7 @@ enum InteractiveCommand {
         copy: bool,
     },
     SplitCurve,
+    SplitCurveWithCutters,
     TrimCurve,
     Move {
         start: Option<Point3>,
@@ -382,7 +383,7 @@ impl InteractiveCommand {
             Self::Extend { .. } => "Extend",
             Self::ExtendSrf { .. } => "ExtendSrf",
             Self::SubCrv { .. } => "SubCrv",
-            Self::SplitCurve => "Split",
+            Self::SplitCurve | Self::SplitCurveWithCutters => "Split",
             Self::TrimCurve => "Trim",
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
@@ -643,6 +644,9 @@ impl InteractiveCommand {
             Self::SplitCurve => {
                 "Split: pick curve split locations; press Enter to finish (Esc to cancel)"
             }
+            Self::SplitCurveWithCutters => {
+                "Split: pick the selected source curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
+            }
             Self::TrimCurve => {
                 "Trim: pick the interval to remove from one selected curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
             }
@@ -831,6 +835,7 @@ impl InteractiveCommand {
             | Self::ExtendSrf { .. }
             | Self::SubCrv { start: None, .. }
             | Self::SplitCurve
+            | Self::SplitCurveWithCutters
             | Self::TrimCurve
             | Self::Move { start: None }
             | Self::Copy { start: None }
@@ -2262,6 +2267,16 @@ impl VibocerosApp {
                 copy_seen = true;
             }
             InteractiveCommand::SubCrv { start: None, copy }
+        } else if normalized == "split"
+            && matches!(
+                arguments.as_slice(),
+                [option]
+                    if option
+                        .trim_start_matches(['_', '-'])
+                        .eq_ignore_ascii_case("CuttingObjects")
+            )
+        {
+            InteractiveCommand::SplitCurveWithCutters
         } else if matches!(normalized.as_str(), "extractisocurve" | "isocurve") {
             let mut direction = InteractiveIsocurveDirection::U;
             let mut ignore_trims = false;
@@ -2552,6 +2567,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtendSrf { .. }
                 | InteractiveCommand::SubCrv { .. }
                 | InteractiveCommand::SplitCurve
+                | InteractiveCommand::SplitCurveWithCutters
                 | InteractiveCommand::TrimCurve
                 | InteractiveCommand::Revolve { .. }
         ) && self.document.selected_object_count() == 0
@@ -3815,6 +3831,13 @@ impl VibocerosApp {
                     format_model_point(point)
                 ));
                 self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::SplitCurveWithCutters => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Split CuttingObjects={}",
+                    format_model_point(point)
+                ));
             }
             InteractiveCommand::TrimCurve => {
                 let normal = self.viewports[self.active_viewport]
@@ -7592,6 +7615,60 @@ mod tests {
         assert!(app.try_start_interactive_command("Split"));
         assert_eq!(app.active_command, None);
         assert!(app.command_log.back().unwrap().contains("no objects"));
+    }
+
+    #[test]
+    fn interactive_cutting_object_split_uses_one_source_pick() {
+        let mut app = test_app();
+        app.execute_command("Line 0,0 10,0");
+        app.execute_command("Line 3,-5 3,5");
+        app.execute_command("Line 7,-5 7,5");
+        app.execute_command("SelAll");
+        let ids = app
+            .document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let source_id = ids[0];
+        let cutter_ids = BTreeSet::from([ids[1], ids[2]]);
+
+        assert!(app.try_start_interactive_command("Split CuttingObjects"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SplitCurveWithCutters)
+        );
+        assert!(app.command_log.back().unwrap().contains("source curve"));
+        app.accept_drafting_point(point(1.0, 0.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.object(source_id).is_none());
+        assert!(
+            cutter_ids
+                .iter()
+                .all(|id| app.document.object(*id).is_some() && !app.document.is_selected(*id))
+        );
+        let domains = app
+            .document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("interactive Split selected unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(domains, vec![0.0..=3.0, 3.0..=7.0, 7.0..=10.0]);
+        assert_eq!(app.document.undo_label(), Some("Split"));
+        assert!(!app.try_start_interactive_command("Split CuttingObjects=1,0,0"));
+
+        let mut no_selection = test_app();
+        assert!(no_selection.try_start_interactive_command("Split _CuttingObjects"));
+        assert_eq!(no_selection.active_command, None);
+        assert!(
+            no_selection
+                .command_log
+                .back()
+                .unwrap()
+                .contains("no objects")
+        );
     }
 
     #[test]
