@@ -7672,13 +7672,42 @@ fn surface_split_parameter_curve(
         ],
     )?;
     let line_matches = parameter_curve_matches_spatial_curve(surface, &line, curve, tolerance)?;
-    if curve.degree() == 1 && curve.control_points().len() == 2 && line_matches {
-        return Ok(line);
-    }
-
     let parameter_curve = match surface.try_pullback_bilinear_curve(curve, tolerance) {
+        Ok(_) if curve.degree() == 1 && curve.control_points().len() == 2 && line_matches => {
+            return Ok(line);
+        }
         Ok(parameter_curve) => parameter_curve,
-        Err(_) if line_matches => return Ok(line),
+        Err(_) if line_matches => {
+            // Rhino's general-surface pullback stores an exact straight trim as
+            // one cubic Bezier, while its bilinear path retains the source form.
+            let delta_x = end.x() - start.x();
+            let delta_y = end.y() - start.y();
+            return NurbsCurve2::try_new(
+                3,
+                vec![
+                    start,
+                    Point2::try_new(
+                        delta_x.mul_add(1.0 / 3.0, start.x()),
+                        delta_y.mul_add(1.0 / 3.0, start.y()),
+                    )?,
+                    Point2::try_new(
+                        delta_x.mul_add(2.0 / 3.0, start.x()),
+                        delta_y.mul_add(2.0 / 3.0, start.y()),
+                    )?,
+                    end,
+                ],
+                vec![
+                    *curve_domain.start(),
+                    *curve_domain.start(),
+                    *curve_domain.start(),
+                    *curve_domain.start(),
+                    *curve_domain.end(),
+                    *curve_domain.end(),
+                    *curve_domain.end(),
+                    *curve_domain.end(),
+                ],
+            );
+        }
         Err(error) => return Err(error),
     };
     let parameter_tolerance = [
@@ -10860,6 +10889,47 @@ mod tests {
         assert_eq!(quadratic.degree(), 2);
         assert_eq!(quadratic.control_points().len(), 5);
         assert_eq!(quadratic.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0]);
+
+        let elevated_surface = surface.clone().try_change_degree(2, 2, false).unwrap();
+        let [_, elevated_north] = Brep::try_split_rectangular_surface_face_west_east(
+            elevated_surface,
+            0.0..=10.0,
+            0.0..=10.0,
+            [2.0, 6.0],
+            NurbsCurve::try_new(
+                1,
+                vec![point(0.0, 2.0, 0.0), point(10.0, 6.0, 0.0)],
+                vec![0.0, 0.0, 2.0, 2.0],
+            )
+            .unwrap(),
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let elevated_pcurve = elevated_north.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .find(|trim| trim.iso() == SurfaceIso::NotIso)
+            .unwrap()
+            .curve();
+        assert_eq!(elevated_pcurve.degree(), 3);
+        assert_eq!(elevated_pcurve.control_points().len(), 4);
+        assert_eq!(
+            elevated_pcurve.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 2.0, 2.0, 2.0, 2.0]
+        );
+        for (actual, expected) in elevated_pcurve.control_points().iter().zip([
+            [0.0, 2.0],
+            [10.0 / 3.0, 10.0 / 3.0],
+            [20.0 / 3.0, 14.0 / 3.0],
+            [10.0, 6.0],
+        ]) {
+            assert!(
+                actual
+                    .point()
+                    .is_near(Point2::try_from(expected).unwrap(), Tolerance::DEFAULT)
+            );
+        }
 
         let kinked = NurbsCurve::try_new(
             2,

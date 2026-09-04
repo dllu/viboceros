@@ -896,8 +896,10 @@ straight multi-span or higher-degree cutters retain their degree, controls,
 rational weights, knots, and domain instead of being simplified to a line.
 Curved paths are accepted when each retained in-face control polygon advances
 strictly in at least one UV direction. Warped patches use their independent
-bilinear twist direction as an exact affine left inverse. General nonplanar
-trims are constrained-triangulated in UV with
+bilinear twist direction as an exact affine left inverse. Straight paths on
+higher-order surface representations use Rhino's cubic four-control trim form
+while retaining the source domain. General nonplanar trims are
+constrained-triangulated in UV with
 interior knot-span grid samples, so denser display settings refine both their
 boundaries and surface interiors. Adjacent-side cuts produce Rhino's
 triangle-and-pentagon topology in all four orientations.
@@ -949,10 +951,10 @@ straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
 sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter
 arrangements, including collinear degree-one and degree-two multi-span paths,
-degree-two paths with kinked linear spans, internally and externally touching
-closed polygons, and tangent rational circles, plus mixed polygon/circle
-tangencies in both traversal directions, open/closed tangent contacts in both
-cutter orders, and open/open
+degree-two paths with kinked linear spans, a linear path on a degree-elevated
+planar surface, internally and externally touching closed polygons, and tangent
+rational circles, plus mixed polygon/circle tangencies in both traversal
+directions, open/closed tangent contacts in both cutter orders, and open/open
 tangent contacts with pinched lobes, plus shared-start and shared-middle cutter
 segments in swapped and reversed traversal orders, including an exact shared
 quadratic span, open/closed shared edges, and adjacent closed polygons. It also
