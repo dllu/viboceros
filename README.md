@@ -888,15 +888,17 @@ the target. One exact straight non-isoparametric intersection joining any two
 distinct rectangle sides is also supported; it retains the cutter curve as a
 matching boundary edge in both validated polygonally trimmed faces. Adjacent-side
 cuts produce Rhino's triangle-and-pentagon topology in all four orientations.
-Multiple non-isoparametric cuts are reported as unsupported instead of being
-approximated. Rhino-compatible cutting-object output replaces the source with
-fresh selected pieces and leaves cutters unchanged and deselected. The curve
-fixture covers curve, surface, solid box, holed planar-face, and view-aligned
-non-intersecting cutters. The topology-aware surface fixture covers both
-isoparametric directions, both opposite-side diagonal directions, and all four
-adjacent-side directions through vertices, edge domains, trim order, metadata,
-grouping, and selection to within `1.1e-14` of Rhino. Current surface/surface
-intersection support is planar. `Split Isocurve=point
+Intersections against an already-trimmed rectangular B-rep are clipped to its
+visible UV bounds while retaining the exact cutter subcurve domain. Multiple
+non-isoparametric cuts are reported as unsupported instead of being approximated.
+Rhino-compatible cutting-object output replaces the source with fresh selected
+pieces and leaves cutters unchanged and deselected. The curve fixture covers
+curve, surface, solid box, holed planar-face, and view-aligned non-intersecting
+cutters. The topology-aware surface fixture covers both isoparametric directions,
+both opposite-side diagonal directions, all four adjacent-side directions, and
+both opposite- and adjacent-side clipping on pretrimmed sources through vertices,
+edge domains, trim order, metadata, grouping, and selection to within `1.1e-14`
+of Rhino. Current surface/surface intersection support is planar. `Split Isocurve=point
 Direction=U|V|Both Shrink=Yes`
 splits exactly one selected untrimmed NURBS surface at the closest surface
 location; omit the point after `Split Isocurve` for one viewport pick. The

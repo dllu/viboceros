@@ -634,6 +634,8 @@ pub enum Operation {
     SurfaceSplitCuttingCommand {
         id: String,
         surface: NurbsSurfaceDefinition,
+        #[serde(default)]
+        pretrim: Option<SurfaceIsocurvePretrim>,
         cutters: Vec<NurbsSurfaceDefinition>,
         source_pick: [f64; 3],
     },
@@ -3326,10 +3328,18 @@ fn execute(
         )?,
         Operation::SurfaceSplitCuttingCommand {
             surface,
+            pretrim,
             cutters,
             source_pick,
             ..
-        } => surface_split_cutting_command(iterations, surface, cutters, *source_pick, tolerance)?,
+        } => surface_split_cutting_command(
+            iterations,
+            surface,
+            pretrim.as_ref(),
+            cutters,
+            *source_pick,
+            tolerance,
+        )?,
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
         }
@@ -7910,6 +7920,7 @@ fn surface_split_isocurve_command(
 fn surface_split_cutting_command(
     iterations: u32,
     definition: &NurbsSurfaceDefinition,
+    pretrim: Option<&SurfaceIsocurvePretrim>,
     cutter_definitions: &[NurbsSurfaceDefinition],
     source_pick: [f64; 3],
     tolerance: Tolerance,
@@ -7925,7 +7936,7 @@ fn surface_split_cutting_command(
         let attributes = ObjectAttributes::on_layer(document.current_layer_id())
             .with_name("Viboceros Split Surface Source")
             .with_object_color(ColorRgb::new(12, 34, 56));
-        let source_id = document.add_geometry_with_attributes(
+        let mut source_id = document.add_geometry_with_attributes(
             Geometry::NurbsSurface(source.clone()),
             attributes.clone(),
         )?;
@@ -7933,6 +7944,51 @@ fn surface_split_cutting_command(
             Some("Viboceros Split Surface Group".to_owned()),
             [source_id],
         )?;
+        document.select_object(source_id, SelectionMode::Replace)?;
+        if let Some(pretrim) = pretrim {
+            registry.execute(
+                &mut document,
+                &format!(
+                    "Split Isocurve={},{},{} Direction={} Shrink=No",
+                    pretrim.point[0],
+                    pretrim.point[1],
+                    pretrim.point[2],
+                    surface_uniform_direction_name(pretrim.direction),
+                ),
+            )?;
+            let mut pieces = document
+                .objects()
+                .filter_map(|object| {
+                    let Geometry::Brep(brep) = object.geometry() else {
+                        return None;
+                    };
+                    let face = (brep.faces().len() == 1).then(|| &brep.faces()[0])?;
+                    let bounds = face.rectangular_trim_bounds(tolerance).ok().flatten()?;
+                    Some((
+                        [bounds[0][0], bounds[1][0], bounds[0][1], bounds[1][1]],
+                        object.id(),
+                    ))
+                })
+                .collect::<Vec<_>>();
+            pieces.sort_by(|(left, _), (right, _)| {
+                left.iter()
+                    .zip(right)
+                    .map(|(left, right)| left.total_cmp(right))
+                    .find(|ordering| !ordering.is_eq())
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            });
+            source_id = pieces.get(pretrim.piece).map(|(_, id)| *id).ok_or(
+                ProbeError::FixtureInvariant(
+                    "surface cutting Split pretrim piece index is out of range",
+                ),
+            )?;
+            for (_, piece_id) in pieces {
+                if piece_id != source_id {
+                    document.delete_object(piece_id)?;
+                }
+            }
+            document.select_object(source_id, SelectionMode::Replace)?;
+        }
         let cutter_ids = cutters
             .iter()
             .map(|cutter| document.add_geometry(Geometry::NurbsSurface(cutter.clone())))
@@ -11339,6 +11395,7 @@ mod tests {
         let response = run_request(&request(vec![Operation::SurfaceSplitCuttingCommand {
             id: "split-surface-with-cutting-surface".to_owned(),
             surface,
+            pretrim: None,
             cutters: vec![cutter],
             source_pick: [2.0, 5.0, 0.0],
         }]))

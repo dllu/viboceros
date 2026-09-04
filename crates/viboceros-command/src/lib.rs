@@ -13172,7 +13172,7 @@ fn split_rectangular_surface_with_cutters(
     let mut cuts_v = Vec::new();
     let mut nonisoparametric_cut = None;
     for curve in &curves {
-        let Some(cut) =
+        let Some((cut, cut_curve)) =
             classify_complete_surface_cut(curve, surface, bounds, document.tolerance())?
         else {
             continue;
@@ -13193,7 +13193,7 @@ fn split_rectangular_surface_with_cutters(
                 if nonisoparametric_cut.is_some() {
                     return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
                 }
-                nonisoparametric_cut = Some((cut, curve.clone()));
+                nonisoparametric_cut = Some((cut, cut_curve));
             }
         }
     }
@@ -13398,7 +13398,7 @@ fn classify_complete_surface_cut(
     surface: &NurbsSurface,
     bounds: [[Real; 2]; 2],
     tolerance: Tolerance,
-) -> Result<Option<CompleteSurfaceCut>, CommandError> {
+) -> Result<Option<(CompleteSurfaceCut, NurbsCurve)>, CommandError> {
     const SAMPLE_COUNT: usize = 9;
     let mut range_u = [Real::INFINITY, Real::NEG_INFINITY];
     let mut range_v = [Real::INFINITY, Real::NEG_INFINITY];
@@ -13437,21 +13437,49 @@ fn classify_complete_surface_cut(
     let covers_u = range_u[0] <= bounds[0][0] + epsilon_u && range_u[1] >= bounds[0][1] - epsilon_u;
     let covers_v = range_v[0] <= bounds[1][0] + epsilon_v && range_v[1] >= bounds[1][1] - epsilon_v;
     if constant_u && covers_v {
-        return Ok(Some(CompleteSurfaceCut::ConstantU(
-            (sum_u / SAMPLE_COUNT as Real).clamp(bounds[0][0], bounds[0][1]),
+        return Ok(Some((
+            CompleteSurfaceCut::ConstantU(
+                (sum_u / SAMPLE_COUNT as Real).clamp(bounds[0][0], bounds[0][1]),
+            ),
+            curve.clone(),
         )));
     }
     if constant_v && covers_u {
-        return Ok(Some(CompleteSurfaceCut::ConstantV(
-            (sum_v / SAMPLE_COUNT as Real).clamp(bounds[1][0], bounds[1][1]),
+        return Ok(Some((
+            CompleteSurfaceCut::ConstantV(
+                (sum_v / SAMPLE_COUNT as Real).clamp(bounds[1][0], bounds[1][1]),
+            ),
+            curve.clone(),
         )));
     }
     if constant_u || constant_v {
         return Ok(None);
     }
 
-    let first = samples[0];
-    let last = samples[SAMPLE_COUNT - 1];
+    let original_endpoints = [samples[0], samples[SAMPLE_COUNT - 1]];
+    let parameters_form_segment =
+        surface_cut_parameters_form_collinear_segment(&samples, epsilon_u, epsilon_v);
+    let clipped_endpoints = if parameters_form_segment {
+        let Some(endpoints) =
+            clip_surface_cut_parameter_segment(original_endpoints, bounds, [epsilon_u, epsilon_v])
+        else {
+            return Ok(None);
+        };
+        endpoints
+    } else {
+        original_endpoints
+    };
+    let [first, last] = clipped_endpoints;
+    let clipped_curve = || {
+        trim_complete_surface_cut_curve(
+            curve,
+            surface,
+            original_endpoints,
+            clipped_endpoints,
+            [epsilon_u, epsilon_v],
+            tolerance,
+        )
+    };
     let near = |left: Real, right: Real, epsilon: Real| (left - right).abs() <= epsilon;
     let west_east = if near(first[0], bounds[0][0], epsilon_u)
         && near(last[0], bounds[0][1], epsilon_u)
@@ -13468,13 +13496,16 @@ fn classify_complete_surface_cut(
         && east_v > bounds[1][0] + epsilon_v
         && east_v < bounds[1][1] - epsilon_v
     {
-        if !surface_cut_parameters_are_collinear(&samples, epsilon_u, epsilon_v) {
+        if !parameters_form_segment {
             return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
         }
-        return Ok(Some(CompleteSurfaceCut::WestEast {
-            west_v: west_v.clamp(bounds[1][0], bounds[1][1]),
-            east_v: east_v.clamp(bounds[1][0], bounds[1][1]),
-        }));
+        return Ok(Some((
+            CompleteSurfaceCut::WestEast {
+                west_v: west_v.clamp(bounds[1][0], bounds[1][1]),
+                east_v: east_v.clamp(bounds[1][0], bounds[1][1]),
+            },
+            clipped_curve()?,
+        )));
     }
 
     let south_north = if near(first[1], bounds[1][0], epsilon_v)
@@ -13492,13 +13523,16 @@ fn classify_complete_surface_cut(
         && north_u > bounds[0][0] + epsilon_u
         && north_u < bounds[0][1] - epsilon_u
     {
-        if !surface_cut_parameters_are_collinear(&samples, epsilon_u, epsilon_v) {
+        if !parameters_form_segment {
             return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
         }
-        return Ok(Some(CompleteSurfaceCut::SouthNorth {
-            south_u: south_u.clamp(bounds[0][0], bounds[0][1]),
-            north_u: north_u.clamp(bounds[0][0], bounds[0][1]),
-        }));
+        return Ok(Some((
+            CompleteSurfaceCut::SouthNorth {
+                south_u: south_u.clamp(bounds[0][0], bounds[0][1]),
+                north_u: north_u.clamp(bounds[0][0], bounds[0][1]),
+            },
+            clipped_curve()?,
+        )));
     }
 
     let interior_u = |parameter: Real| {
@@ -13563,10 +13597,10 @@ fn classify_complete_surface_cut(
         None
     };
     if let Some(cut) = adjacent {
-        if !surface_cut_parameters_are_collinear(&samples, epsilon_u, epsilon_v) {
+        if !parameters_form_segment {
             return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
         }
-        return Ok(Some(cut));
+        return Ok(Some((cut, clipped_curve()?)));
     }
 
     let boundary_mask = |parameter: [Real; 2]| {
@@ -13581,7 +13615,7 @@ fn classify_complete_surface_cut(
     Ok(None)
 }
 
-fn surface_cut_parameters_are_collinear(
+fn surface_cut_parameters_form_collinear_segment(
     samples: &[[Real; 2]],
     epsilon_u: Real,
     epsilon_v: Real,
@@ -13592,10 +13626,120 @@ fn surface_cut_parameters_are_collinear(
     let delta_v = last[1] - first[1];
     let cross_tolerance =
         (epsilon_u * delta_v.abs() + epsilon_v * delta_u.abs()).max(Real::EPSILON) * 8.0;
-    samples.iter().all(|sample| {
+    if !samples.iter().all(|sample| {
         ((sample[0] - first[0]) * delta_v - (sample[1] - first[1]) * delta_u).abs()
             <= cross_tolerance
-    })
+    }) {
+        return false;
+    }
+
+    let (coordinate, direction, epsilon) = if delta_u.abs() / epsilon_u >= delta_v.abs() / epsilon_v
+    {
+        (0, delta_u.signum(), epsilon_u)
+    } else {
+        (1, delta_v.signum(), epsilon_v)
+    };
+    direction != 0.0
+        && samples
+            .windows(2)
+            .all(|pair| (pair[1][coordinate] - pair[0][coordinate]) * direction >= -epsilon * 8.0)
+}
+
+fn clip_surface_cut_parameter_segment(
+    endpoints: [[Real; 2]; 2],
+    bounds: [[Real; 2]; 2],
+    epsilon: [Real; 2],
+) -> Option<[[Real; 2]; 2]> {
+    let delta = [
+        endpoints[1][0] - endpoints[0][0],
+        endpoints[1][1] - endpoints[0][1],
+    ];
+    let mut interval = [0.0_f64, 1.0_f64];
+    for coordinate in 0..2 {
+        if delta[coordinate].abs() <= epsilon[coordinate] {
+            if endpoints[0][coordinate] < bounds[coordinate][0] - epsilon[coordinate]
+                || endpoints[0][coordinate] > bounds[coordinate][1] + epsilon[coordinate]
+            {
+                return None;
+            }
+            continue;
+        }
+        let mut entry = (bounds[coordinate][0] - endpoints[0][coordinate]) / delta[coordinate];
+        let mut exit = (bounds[coordinate][1] - endpoints[0][coordinate]) / delta[coordinate];
+        if entry > exit {
+            std::mem::swap(&mut entry, &mut exit);
+        }
+        interval[0] = interval[0].max(entry);
+        interval[1] = interval[1].min(exit);
+        if interval[0] >= interval[1] {
+            return None;
+        }
+    }
+
+    let mut clipped = interval.map(|parameter| {
+        [
+            endpoints[0][0] + parameter * delta[0],
+            endpoints[0][1] + parameter * delta[1],
+        ]
+    });
+    for endpoint in &mut clipped {
+        for coordinate in 0..2 {
+            endpoint[coordinate] =
+                endpoint[coordinate].clamp(bounds[coordinate][0], bounds[coordinate][1]);
+            if (endpoint[coordinate] - bounds[coordinate][0]).abs() <= epsilon[coordinate] {
+                endpoint[coordinate] = bounds[coordinate][0];
+            } else if (endpoint[coordinate] - bounds[coordinate][1]).abs() <= epsilon[coordinate] {
+                endpoint[coordinate] = bounds[coordinate][1];
+            }
+        }
+    }
+    Some(clipped)
+}
+
+fn trim_complete_surface_cut_curve(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    original_endpoints: [[Real; 2]; 2],
+    clipped_endpoints: [[Real; 2]; 2],
+    parameter_epsilon: [Real; 2],
+    tolerance: Tolerance,
+) -> Result<NurbsCurve, CommandError> {
+    let endpoint_near = |left: [Real; 2], right: [Real; 2]| {
+        (left[0] - right[0]).abs() <= parameter_epsilon[0]
+            && (left[1] - right[1]).abs() <= parameter_epsilon[1]
+    };
+    if endpoint_near(original_endpoints[0], clipped_endpoints[0])
+        && endpoint_near(original_endpoints[1], clipped_endpoints[1])
+    {
+        return Ok(curve.clone());
+    }
+
+    let [first_model, last_model] =
+        clipped_endpoints.map(|parameter| surface.evaluate(parameter[0], parameter[1]));
+    let model_endpoints = [first_model?, last_model?];
+    let curve_parameters = [
+        curve.closest_parameter(model_endpoints[0], tolerance)?,
+        curve.closest_parameter(model_endpoints[1], tolerance)?,
+    ];
+    for (point, parameter) in model_endpoints.into_iter().zip(curve_parameters) {
+        let coordinate_scale = point
+            .to_array()
+            .into_iter()
+            .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+        let allowed = tolerance
+            .absolute()
+            .max(tolerance.relative() * coordinate_scale)
+            * 4.0;
+        if curve.evaluate(parameter)?.distance_to(point)? > allowed {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+    }
+    let interval = if curve_parameters[0] < curve_parameters[1] {
+        curve_parameters[0]..=curve_parameters[1]
+    } else {
+        curve_parameters[1]..=curve_parameters[0]
+    };
+    curve.try_trimmed(interval).map_err(CommandError::from)
 }
 
 fn surface_split_parameter_epsilon(bounds: [Real; 2], tolerance: Tolerance) -> Real {
@@ -28239,6 +28383,26 @@ mod tests {
     }
 
     #[test]
+    fn surface_cut_parameter_segments_must_be_straight_and_monotone() {
+        let epsilon = 1.0e-9;
+        assert!(surface_cut_parameters_form_collinear_segment(
+            &[[0.0, 0.0], [0.5, 0.25], [1.0, 0.5]],
+            epsilon,
+            epsilon,
+        ));
+        assert!(!surface_cut_parameters_form_collinear_segment(
+            &[[0.0, 0.0], [0.75, 0.375], [0.5, 0.25], [1.0, 0.5]],
+            epsilon,
+            epsilon,
+        ));
+        assert!(!surface_cut_parameters_form_collinear_segment(
+            &[[0.0, 0.0], [0.5, 0.3], [1.0, 0.5]],
+            epsilon,
+            epsilon,
+        ));
+    }
+
+    #[test]
     fn cutting_object_split_supports_all_straight_adjacent_boundary_surface_cuts() {
         let registry = CommandRegistry::with_builtins();
         for (endpoints, expected_edges, expected_trim_reversals) in [
@@ -28332,6 +28496,102 @@ mod tests {
                 brep.tessellate(2, document.tolerance()).unwrap();
             }
             assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_clips_diagonal_curves_to_trimmed_surface_sources() {
+        let registry = CommandRegistry::with_builtins();
+        let diagonal_length = 136.0_f64.sqrt();
+        for (bounds, source_pick, expected_edges, expected_cut_domain) in [
+            (
+                [[0.0, 0.4], [0.0, 0.6]],
+                "1,1,0",
+                [
+                    vec![[0, 1], [1, 3], [2, 3], [2, 0]],
+                    vec![[0, 1], [1, 2], [2, 3], [3, 0]],
+                ],
+                [0.0, diagonal_length * 0.4],
+            ),
+            (
+                [[0.4, 1.0], [0.6, 1.0]],
+                "8,9,0",
+                [
+                    vec![[0, 3], [1, 2], [2, 0], [3, 4], [4, 1]],
+                    vec![[0, 2], [1, 2], [1, 0]],
+                ],
+                [diagonal_length * (2.0 / 3.0), diagonal_length],
+            ),
+        ] {
+            let mut document = Document::default();
+            let source = planar_intersection_surface();
+            let source_id = document
+                .add_geometry(Geometry::Brep(
+                    Brep::try_rectangular_surface_face_with_orientation(
+                        source.clone(),
+                        bounds[0][0]..=bounds[0][1],
+                        bounds[1][0]..=bounds[1][1],
+                        true,
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ))
+                .unwrap();
+            let cutter_id = document
+                .add_geometry(Geometry::NurbsSurface(west_east_diagonal_cutting_surface()))
+                .unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("Split CuttingObjects={source_pick}"),
+                    )
+                    .unwrap(),
+                "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut area = 0.0;
+            for (object, expected_edges) in outputs.iter().zip(expected_edges) {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("trim-clipped cutting Split must create B-rep faces")
+                };
+                assert!(brep.faces()[0].is_reversed());
+                assert_eq!(brep.faces()[0].surface(), &source);
+                assert_eq!(
+                    brep.edges()
+                        .iter()
+                        .map(|edge| edge.vertices())
+                        .collect::<Vec<_>>(),
+                    expected_edges
+                );
+                let cut_edge = brep.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                    .and_then(viboceros_geometry::BrepTrim::edge)
+                    .unwrap();
+                let actual_domain = brep.edges()[cut_edge].curve().domain();
+                assert!(
+                    document
+                        .tolerance()
+                        .approx_eq(*actual_domain.start(), expected_cut_domain[0])
+                );
+                assert!(
+                    document
+                        .tolerance()
+                        .approx_eq(*actual_domain.end(), expected_cut_domain[1])
+                );
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(2, document.tolerance()).unwrap();
+            }
+            assert!(document.tolerance().approx_eq(area, 24.0));
         }
     }
 
