@@ -7,11 +7,11 @@ use spade::{
 
 use crate::nurbs::{CURVE_COINCIDENCE_ABSOLUTE, find_span_in_knots};
 use crate::{
-    AffineTransform3, BoundingBox3, CurveCurveIntersectionEvent, Frame3, GeometryError,
-    LineSegment, MAX_REGULAR_POLYGON_SIDES, MeshFace, NurbsCurve, NurbsCurve2, NurbsSurface,
-    Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint2,
-    WeightedPoint3, integration::integrate_adaptive, nurbs_surface::integrate_area_patch,
-    require_finite, vector::product_three,
+    AffineTransform3, BoundingBox3, CurveCurveIntersectionEvent, CurveCurveOverlap, Frame3,
+    GeometryError, LineSegment, MAX_REGULAR_POLYGON_SIDES, MeshFace, NurbsCurve, NurbsCurve2,
+    NurbsSurface, Point2, Point3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    WeightedPoint2, WeightedPoint3, integration::integrate_adaptive,
+    nurbs_surface::integrate_area_patch, require_finite, vector::product_three,
 };
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
@@ -5220,6 +5220,7 @@ struct SurfaceCutArrangementEdge {
     parameter: NurbsCurve2,
     iso: SurfaceIso,
     kind: SurfaceCutArrangementEdgeKind,
+    coincidences: Vec<SurfaceCutArrangementCoincidence>,
 }
 
 struct SurfaceCutArrangementRegion {
@@ -5239,6 +5240,12 @@ struct SurfaceCutArrangementSourceInfo {
 enum SurfaceCutArrangementEdgeKind {
     Boundary(RectangularBoundarySide),
     Cut { source: usize, segment: usize },
+}
+
+#[derive(Clone, Copy)]
+struct SurfaceCutArrangementCoincidence {
+    source: usize,
+    same_direction: bool,
 }
 
 #[derive(Clone, Copy)]
@@ -5277,30 +5284,10 @@ fn try_rectangular_surface_cut_arrangement(
                 let CurveCurveIntersectionEvent::Overlap(overlap) = event else {
                     continue;
                 };
-                let candidate_domain = candidate.spatial.domain();
-                let existing_domain = existing.spatial.domain();
-                let candidate_epsilon = surface_cut_curve_parameter_epsilon(&candidate.spatial);
-                let existing_epsilon = surface_cut_curve_parameter_epsilon(&existing.spatial);
-                let start = overlap.start();
-                let end = overlap.end();
-                let covers_candidate = (start.first_parameter() - *candidate_domain.start()).abs()
-                    <= candidate_epsilon
-                    && (end.first_parameter() - *candidate_domain.end()).abs() <= candidate_epsilon;
-                let existing_parameters = [start.second_parameter(), end.second_parameter()];
-                let covers_existing = (existing_parameters[0].min(existing_parameters[1])
-                    - *existing_domain.start())
-                .abs()
-                    <= existing_epsilon
-                    && (existing_parameters[0].max(existing_parameters[1])
-                        - *existing_domain.end())
-                    .abs()
-                        <= existing_epsilon;
-                if !covers_candidate || !covers_existing {
-                    return invalid(
-                        "surface cutting arrangement curves may not partially coincide",
-                    );
+                if surface_cut_overlap_covers_curves(&candidate.spatial, &existing.spatial, overlap)
+                {
+                    duplicate = true;
                 }
-                duplicate = true;
             }
             if duplicate {
                 break;
@@ -5376,40 +5363,44 @@ fn try_rectangular_surface_cut_arrangement(
                 .spatial
                 .intersection_events_with_curve(&second.spatial, tolerance)?;
             for event in events {
-                let CurveCurveIntersectionEvent::Point(intersection) = event else {
-                    // Complete overlaps were removed above, so any remaining
-                    // overlap is necessarily only partial.
-                    return invalid(
-                        "surface cutting arrangement curves may not partially coincide",
-                    );
+                let contacts = match event {
+                    CurveCurveIntersectionEvent::Point(intersection) => [Some(intersection), None],
+                    CurveCurveIntersectionEvent::Overlap(overlap) => {
+                        [Some(overlap.start()), Some(overlap.end())]
+                    }
                 };
-                let first_parameter = intersection.first_parameter();
-                let second_parameter = intersection.second_parameter();
-                let first_uv = first.parameter.evaluate(first_parameter)?;
-                let second_uv = second.parameter.evaluate(second_parameter)?;
-                if !parameter_points_near(
-                    first_uv,
-                    second_uv,
-                    parameter_tolerance.map(|value| value * 8.0),
-                ) {
-                    return invalid(
-                        "a model-space cutter intersection is not shared in parameter space",
+                for intersection in contacts.into_iter().flatten() {
+                    let first_parameter = intersection.first_parameter();
+                    let second_parameter = intersection.second_parameter();
+                    let first_uv = first.parameter.evaluate(first_parameter)?;
+                    let second_uv = second.parameter.evaluate(second_parameter)?;
+                    if !parameter_points_near(
+                        first_uv,
+                        second_uv,
+                        parameter_tolerance.map(|value| value * 8.0),
+                    ) {
+                        return invalid(
+                            "a model-space cutter intersection is not shared in parameter space",
+                        );
+                    }
+                    let averaged = Point2::try_new(
+                        first_uv.x() * 0.5 + second_uv.x() * 0.5,
+                        first_uv.y() * 0.5 + second_uv.y() * 0.5,
+                    )?;
+                    let (parameter, _) = snap_surface_cut_arrangement_parameter(
+                        averaged,
+                        bounds,
+                        parameter_tolerance,
+                    )?;
+                    let node = surface_cut_arrangement_node(
+                        &mut nodes,
+                        parameter,
+                        intersection.point(),
+                        parameter_tolerance,
                     );
+                    push_surface_cut_arrangement_break(first, first_parameter, node)?;
+                    push_surface_cut_arrangement_break(second, second_parameter, node)?;
                 }
-                let averaged = Point2::try_new(
-                    first_uv.x() * 0.5 + second_uv.x() * 0.5,
-                    first_uv.y() * 0.5 + second_uv.y() * 0.5,
-                )?;
-                let (parameter, _) =
-                    snap_surface_cut_arrangement_parameter(averaged, bounds, parameter_tolerance)?;
-                let node = surface_cut_arrangement_node(
-                    &mut nodes,
-                    parameter,
-                    intersection.point(),
-                    parameter_tolerance,
-                );
-                push_surface_cut_arrangement_break(first, first_parameter, node)?;
-                push_surface_cut_arrangement_break(second, second_parameter, node)?;
             }
         }
     }
@@ -5484,6 +5475,7 @@ fn try_rectangular_surface_cut_arrangement(
                     parameter: NurbsCurve2::try_line(start, end)?,
                     iso: boundary_iso[side.index()],
                     kind: SurfaceCutArrangementEdgeKind::Boundary(side),
+                    coincidences: Vec::new(),
                 },
             )?;
         }
@@ -5529,7 +5521,7 @@ fn try_rectangular_surface_cut_arrangement(
             let parameter =
                 surface_split_parameter_curve(&surface, &spatial, start, end, tolerance)?;
             let iso = surface_cut_arrangement_iso(&parameter, bounds, parameter_tolerance)?;
-            push_surface_cut_arrangement_edge(
+            push_unique_surface_cut_arrangement_edge(
                 &mut edges,
                 SurfaceCutArrangementEdge {
                     nodes: [pair[0].node, pair[1].node],
@@ -5540,7 +5532,9 @@ fn try_rectangular_surface_cut_arrangement(
                         source: cut_index,
                         segment: segment_index,
                     },
+                    coincidences: Vec::new(),
                 },
+                tolerance,
             )?;
         }
     }
@@ -5967,6 +5961,67 @@ fn push_surface_cut_arrangement_edge(
     Ok(())
 }
 
+fn push_unique_surface_cut_arrangement_edge(
+    edges: &mut Vec<SurfaceCutArrangementEdge>,
+    edge: SurfaceCutArrangementEdge,
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let SurfaceCutArrangementEdgeKind::Cut { source, .. } = edge.kind else {
+        return push_surface_cut_arrangement_edge(edges, edge);
+    };
+    for existing in edges.iter_mut() {
+        if !matches!(existing.kind, SurfaceCutArrangementEdgeKind::Cut { .. })
+            || !(existing.nodes == edge.nodes || existing.nodes == [edge.nodes[1], edge.nodes[0]])
+        {
+            continue;
+        }
+        for event in edge
+            .spatial
+            .intersection_events_with_curve(&existing.spatial, tolerance)?
+        {
+            let CurveCurveIntersectionEvent::Overlap(overlap) = event else {
+                continue;
+            };
+            if surface_cut_overlap_covers_curves(&edge.spatial, &existing.spatial, overlap) {
+                existing
+                    .coincidences
+                    .push(SurfaceCutArrangementCoincidence {
+                        source,
+                        same_direction: existing.nodes == edge.nodes,
+                    });
+                return Ok(());
+            }
+        }
+    }
+    push_surface_cut_arrangement_edge(edges, edge)
+}
+
+fn surface_cut_overlap_covers_curves(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    overlap: CurveCurveOverlap,
+) -> bool {
+    let first_domain = first.domain();
+    let second_domain = second.domain();
+    let first_epsilon = surface_cut_curve_parameter_epsilon(first);
+    let second_epsilon = surface_cut_curve_parameter_epsilon(second);
+    let first_parameters = [
+        overlap.start().first_parameter(),
+        overlap.end().first_parameter(),
+    ];
+    let second_parameters = [
+        overlap.start().second_parameter(),
+        overlap.end().second_parameter(),
+    ];
+    (first_parameters[0].min(first_parameters[1]) - *first_domain.start()).abs() <= first_epsilon
+        && (first_parameters[0].max(first_parameters[1]) - *first_domain.end()).abs()
+            <= first_epsilon
+        && (second_parameters[0].min(second_parameters[1]) - *second_domain.start()).abs()
+            <= second_epsilon
+        && (second_parameters[0].max(second_parameters[1]) - *second_domain.end()).abs()
+            <= second_epsilon
+}
+
 fn surface_cut_halfedge_direction(
     edges: &[SurfaceCutArrangementEdge],
     halfedge: usize,
@@ -6306,6 +6361,74 @@ fn rotate_surface_cut_outer_cycle(
     {
         cycle.rotate_left(anchor);
         return Ok(());
+    }
+
+    // A partial interior overlap is represented by the earliest cutter's
+    // edge. When this face follows that sole first-cutter edge in a discarded
+    // later cutter's forward direction, Rhino places the seam on the later
+    // cutter's post-overlap branch. An overlap beginning on the rectangle
+    // boundary instead retains the ordinary boundary-derived seam.
+    if first_closed_source.is_none()
+        && cycle
+            .iter()
+            .filter(|halfedge| {
+                matches!(
+                    edges[**halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+                )
+            })
+            .count()
+            == 1
+    {
+        let mut overlap_anchor = None;
+        for &halfedge in cycle.iter() {
+            let edge = &edges[halfedge / 2];
+            if !matches!(
+                edge.kind,
+                SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+            ) || edge.nodes.into_iter().any(|node| {
+                [
+                    RectangularBoundarySide::South,
+                    RectangularBoundarySide::East,
+                    RectangularBoundarySide::North,
+                    RectangularBoundarySide::West,
+                ]
+                .into_iter()
+                .any(|side| {
+                    surface_cut_parameter_on_side(nodes[node].parameter, side, bounds, tolerance)
+                })
+            }) {
+                continue;
+            }
+            let forward = halfedge.is_multiple_of(2);
+            for coincidence in edge
+                .coincidences
+                .iter()
+                .filter(|coincidence| forward == coincidence.same_direction)
+            {
+                for (index, &candidate) in cycle.iter().enumerate() {
+                    if !candidate.is_multiple_of(2) {
+                        continue;
+                    }
+                    let SurfaceCutArrangementEdgeKind::Cut { source, segment } =
+                        edges[candidate / 2].kind
+                    else {
+                        continue;
+                    };
+                    if source != coincidence.source {
+                        continue;
+                    }
+                    let key = (source, segment, index);
+                    if overlap_anchor.is_none_or(|existing| key > existing) {
+                        overlap_anchor = Some(key);
+                    }
+                }
+            }
+        }
+        if let Some((_, _, anchor)) = overlap_anchor {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
     }
 
     // Faces incident to an open/open tangency retain the first cutter's seam:
@@ -10068,6 +10191,127 @@ mod tests {
         )
         .unwrap();
         assert_pieces(&duplicate, 2);
+
+        let shared_start = [
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 5.0, 0.0),
+                    point(5.0, 5.0, 0.0),
+                    point(10.0, 5.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            )
+            .unwrap(),
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(0.0, 5.0, 0.0),
+                    point(5.0, 5.0, 0.0),
+                    point(10.0, 8.0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        ];
+        let shared_start_pieces = Brep::try_split_rectangular_surface_face_with_curves(
+            surface.clone(),
+            0.0..=10.0,
+            0.0..=10.0,
+            shared_start,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_pieces(&shared_start_pieces, 3);
+        let mut shared_start_edge_counts = shared_start_pieces
+            .iter()
+            .map(|piece| piece.edges().len())
+            .collect::<Vec<_>>();
+        shared_start_edge_counts.sort_unstable();
+        assert_eq!(shared_start_edge_counts, vec![3, 5, 5]);
+
+        let shared_quadratic = [
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 5.0, 0.0),
+                    point(2.5, 7.0, 0.0),
+                    point(5.0, 5.0, 0.0),
+                    point(7.5, 3.0, 0.0),
+                    point(10.0, 4.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+            NurbsCurve::try_new(
+                2,
+                vec![
+                    point(0.0, 5.0, 0.0),
+                    point(2.5, 7.0, 0.0),
+                    point(5.0, 5.0, 0.0),
+                    point(7.5, 7.0, 0.0),
+                    point(10.0, 8.0, 0.0),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        ];
+        let shared_quadratic_pieces = Brep::try_split_rectangular_surface_face_with_curves(
+            surface.clone(),
+            0.0..=10.0,
+            0.0..=10.0,
+            shared_quadratic,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_pieces(&shared_quadratic_pieces, 3);
+
+        let lower = NurbsCurve::try_new(
+            1,
+            vec![
+                point(0.0, 3.0, 0.0),
+                point(3.0, 5.0, 0.0),
+                point(7.0, 5.0, 0.0),
+                point(10.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 3.0],
+        )
+        .unwrap();
+        let upper = NurbsCurve::try_new(
+            1,
+            vec![
+                point(0.0, 7.0, 0.0),
+                point(3.0, 5.0, 0.0),
+                point(7.0, 5.0, 0.0),
+                point(10.0, 7.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 3.0],
+        )
+        .unwrap();
+        for cutters in [
+            vec![lower.clone(), upper.clone()],
+            vec![upper.clone(), lower.clone()],
+            vec![lower.reversed().unwrap(), upper.reversed().unwrap()],
+        ] {
+            let shared_middle_pieces = Brep::try_split_rectangular_surface_face_with_curves(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                cutters,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_pieces(&shared_middle_pieces, 4);
+            let mut edge_counts = shared_middle_pieces
+                .iter()
+                .map(|piece| piece.edges().len())
+                .collect::<Vec<_>>();
+            edge_counts.sort_unstable();
+            assert_eq!(edge_counts, vec![3, 3, 6, 6]);
+        }
 
         let crossing = Brep::try_split_rectangular_surface_face_with_curves(
             surface.clone(),
