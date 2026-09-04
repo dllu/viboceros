@@ -902,7 +902,9 @@ boundaries and surface interiors. Adjacent-side cuts produce Rhino's
 triangle-and-pentagon topology in all four orientations.
 Cuts from a corner to either nonincident side reuse the existing corner vertex
 and produce exact triangle-and-quad topology; both opposite-corner diagonals
-produce two exact triangles.
+produce two exact triangles. A supported curved cut returning to the same
+noncorner boundary side produces Rhino's two-edge lens and complementary
+six-edge face in all four orientations.
 Straight and curved intersections against an already-trimmed rectangular
 B-rep are partitioned at exact intersections with its four visible UV
 boundaries. Globally nonmonotone cutters may enter the face repeatedly; every
@@ -914,11 +916,12 @@ pieces and leaves cutters unchanged and deselected. The curve fixture covers
 curve, surface, solid box, holed planar-face, and view-aligned non-intersecting
 cutters. The topology-aware surface fixture covers both isoparametric directions,
 both opposite-side diagonal directions, all four adjacent-side directions, and
-all ten corner-ending arrangements, single- and multi-span curved paths,
-straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
-sources, and parallel, crossing, mixed-isoparametric, rational-curved, and
-shared-corner multi-cutter arrangements. It compares UV trim degree, controls,
-weights, knots, and domains as well as vertices, edge domains, trim order,
+all ten corner-ending arrangements, all four same-side curved directions,
+single- and multi-span curved paths, straight, curved, nonmonotone-control, and
+repeated-entry clipping on pretrimmed sources, and parallel, crossing,
+mixed-isoparametric, rational-curved, and shared-corner multi-cutter
+arrangements. It compares UV trim degree, controls, weights, knots, and domains
+as well as vertices, edge domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point

@@ -13008,6 +13008,7 @@ enum CompleteSurfaceCut {
         corner: RectangularSurfaceCorner,
         destination: [Real; 2],
     },
+    SameBoundarySide,
 }
 
 fn selected_curve_cutter_inputs(
@@ -13230,7 +13231,8 @@ fn split_rectangular_surface_with_cutters(
                 | CompleteSurfaceCut::EastNorth { .. }
                 | CompleteSurfaceCut::NorthWest { .. }
                 | CompleteSurfaceCut::WestSouth { .. }
-                | CompleteSurfaceCut::Corner { .. } => {
+                | CompleteSurfaceCut::Corner { .. }
+                | CompleteSurfaceCut::SameBoundarySide => {
                     complete_cut_curves.push(cut_curve.clone());
                     nonisoparametric_cuts.push((cut, cut_curve));
                 }
@@ -13239,7 +13241,11 @@ fn split_rectangular_surface_with_cutters(
     }
     cuts_u.sort_by(Real::total_cmp);
     cuts_v.sort_by(Real::total_cmp);
-    if nonisoparametric_cuts.len() == 1 && cuts_u.is_empty() && cuts_v.is_empty() {
+    if nonisoparametric_cuts.len() == 1
+        && cuts_u.is_empty()
+        && cuts_v.is_empty()
+        && nonisoparametric_cuts[0].0 != CompleteSurfaceCut::SameBoundarySide
+    {
         let (cut, curve) = nonisoparametric_cuts.pop().unwrap();
         let pieces = match cut {
             CompleteSurfaceCut::WestEast { west_v, east_v } => {
@@ -13325,6 +13331,9 @@ fn split_rectangular_surface_with_cutters(
             )?,
             CompleteSurfaceCut::ConstantU(_) | CompleteSurfaceCut::ConstantV(_) => {
                 unreachable!("constant-parameter cuts are collected separately")
+            }
+            CompleteSurfaceCut::SameBoundarySide => {
+                unreachable!("same-side cuts use the general curve arrangement")
             }
         };
         replace_surface_split_source(document, source_id, Vec::from(pieces))?;
@@ -13795,6 +13804,21 @@ fn classify_complete_surface_cut_once(
                 corner,
                 destination,
             },
+            clipped_curve()?,
+        )));
+    }
+
+    let distinct_endpoints =
+        (first[0] - last[0]).abs() > epsilon_u || (first[1] - last[1]).abs() > epsilon_v;
+    if distinct_endpoints
+        && ((on_south(first) && on_south(last))
+            || (on_east(first) && on_east(last))
+            || (on_north(first) && on_north(last))
+            || (on_west(first) && on_west(last)))
+    {
+        validate_parameter_curve()?;
+        return Ok(Some((
+            CompleteSurfaceCut::SameBoundarySide,
             clipped_curve()?,
         )));
     }
@@ -29692,6 +29716,70 @@ mod tests {
             }
             trim_directions.sort_unstable();
             assert_eq!(trim_directions, vec![false, true]);
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_supports_curved_cuts_ending_on_the_same_side() {
+        let registry = CommandRegistry::with_builtins();
+        for (points, source_pick) in [
+            ([[0.0, 2.0], [5.0, 5.0], [0.0, 8.0]], "8,5,0"),
+            ([[2.0, 0.0], [5.0, 5.0], [8.0, 0.0]], "5,8,0"),
+            ([[10.0, 2.0], [5.0, 5.0], [10.0, 8.0]], "2,5,0"),
+            ([[8.0, 10.0], [5.0, 5.0], [2.0, 10.0]], "5,2,0"),
+        ] {
+            let mut document = Document::default();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap();
+            let cutter = NurbsCurve::try_new(
+                2,
+                points
+                    .into_iter()
+                    .map(|point| Point3::try_new(point[0], point[1], 0.0).unwrap())
+                    .collect(),
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap();
+            let cutter_id = document
+                .add_geometry(Geometry::NurbsCurve(cutter.clone()))
+                .unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("Split CuttingObjects={source_pick}"),
+                    )
+                    .unwrap(),
+                "Split the selected surface along 1 complete boundary-to-boundary curve(s) into 2 exact B-rep face(s)"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut edge_counts = Vec::new();
+            let mut area = 0.0;
+            for object in outputs {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("same-side cutting Split must create B-rep faces")
+                };
+                edge_counts.push(brep.edges().len());
+                let trim = brep.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                    .unwrap();
+                assert_eq!(brep.edges()[trim.edge().unwrap()].curve(), &cutter);
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(3, document.tolerance()).unwrap();
+            }
+            edge_counts.sort_unstable();
+            assert_eq!(edge_counts, vec![2, 6]);
             assert!(document.tolerance().approx_eq(area, 100.0));
         }
     }

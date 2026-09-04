@@ -5211,7 +5211,7 @@ fn try_rectangular_surface_cut_arrangement(
                 return invalid("surface cutting arrangement face traversal did not close");
             }
         }
-        if cycle.len() >= 3
+        if cycle.len() >= 2
             && sampled_surface_cut_cycle_signed_area(&edges, &cycle)?.is_some_and(|area| area > 0.0)
         {
             cycles.push(cycle);
@@ -5592,7 +5592,29 @@ fn rotate_surface_cut_cycle(
             SurfaceCutArrangementEdgeKind::Boundary(RectangularBoundarySide::South)
         )
     });
-    let anchor = if south_west && contains_south_boundary {
+    let same_side_cut = cycle.iter().position(|halfedge| {
+        let edge = &edges[*halfedge / 2];
+        matches!(edge.kind, SurfaceCutArrangementEdgeKind::Cut { .. })
+            && [
+                RectangularBoundarySide::South,
+                RectangularBoundarySide::East,
+                RectangularBoundarySide::North,
+                RectangularBoundarySide::West,
+            ]
+            .into_iter()
+            .any(|side| {
+                edge.nodes.iter().all(|node| {
+                    surface_cut_parameter_on_side(nodes[*node].parameter, side, bounds, tolerance)
+                })
+            })
+    });
+    let anchor = if let Some(index) = same_side_cut {
+        if cycle[index].is_multiple_of(2) {
+            Some(index)
+        } else {
+            Some((index + 1) % cycle.len())
+        }
+    } else if south_west && contains_south_boundary {
         cycle.iter().position(|halfedge| {
             let edge = &edges[*halfedge / 2];
             matches!(
@@ -8827,6 +8849,56 @@ mod tests {
                     .iter()
                     .any(|trim| trim.iso() == SurfaceIso::InteriorUConstant)
         }));
+    }
+
+    #[test]
+    fn rectangular_surface_curve_arrangements_retain_nonzero_two_edge_cells() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        let cut = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(5.0, 5.0, 0.0),
+                point(0.0, 8.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+            surface,
+            0.0..=10.0,
+            0.0..=10.0,
+            [cut],
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(pieces.len(), 2);
+        let mut edge_counts = pieces
+            .iter()
+            .map(|piece| piece.edges().len())
+            .collect::<Vec<_>>();
+        edge_counts.sort_unstable();
+        assert_eq!(edge_counts, vec![2, 6]);
+        assert!(pieces.iter().all(|piece| {
+            piece.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .any(|trim| trim.iso() == SurfaceIso::NotIso)
+        }));
+        let area = pieces
+            .iter()
+            .map(|piece| piece.area(Tolerance::DEFAULT).unwrap())
+            .sum::<Real>();
+        assert!(Tolerance::DEFAULT.approx_eq(area, 100.0));
     }
 
     #[test]
