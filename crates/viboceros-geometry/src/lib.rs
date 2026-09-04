@@ -31,6 +31,7 @@ mod point2;
 mod point_cloud;
 mod polyline;
 mod spiral;
+mod surface_pullback;
 mod tolerance;
 mod transform;
 mod vector;

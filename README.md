@@ -896,6 +896,10 @@ refinement, retaining their degree, control locations, weights, knots, and
 domain. Homogeneous-affine rational tensor-product faces are likewise inverted
 exactly without fitting; their UV weights absorb the surface's projective
 denominator while degree, knots, domain, and model-space locus remain exact.
+Other regular rectangular NURBS parameterizations use an adaptive piecewise-
+cubic Hermite pullback whose every span is verified in model space at document
+tolerance. Exact cubic parameter paths collapse to one span, while more
+nonlinear planar or rational paths subdivide without changing the spatial edge.
 Affine and genuinely warped non-rational bilinear faces also retain the source
 structure of supported geometrically straight multi-span and higher-degree
 cutters instead of simplifying them to a line. Rational trims
@@ -990,7 +994,7 @@ discarding the underlying surface. Closed directions reuse seam edges and
 collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
 and directions, face orientation, and geometry to within `2e-15`.
-Curved paths on rational non-projective or planar non-affine parameterizations,
+Curved paths through singular or self-overlapping parameterizations,
 nonmonotone curved trim clipping, nonlinear
 surface/surface cutters, and nonrectangular or multi-face B-rep sources remain
 future extensions.

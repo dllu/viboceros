@@ -13529,7 +13529,7 @@ fn classify_complete_surface_cuts(
     bounds: [[Real; 2]; 2],
     tolerance: Tolerance,
 ) -> Result<Vec<(CompleteSurfaceCut, NurbsCurve)>, CommandError> {
-    let parameter_curve = match surface.try_pullback_exact_curve(curve, tolerance) {
+    let parameter_curve = match surface.try_pullback_curve(curve, tolerance) {
         Ok(parameter_curve) => parameter_curve,
         Err(_) => {
             return Ok(
@@ -13609,7 +13609,7 @@ fn classify_complete_surface_cut_once(
     let epsilon_v = surface_split_parameter_epsilon(bounds[1], tolerance);
     if curve.is_closed()? {
         let parameter_curve = surface
-            .try_pullback_exact_curve(curve, tolerance)
+            .try_pullback_curve(curve, tolerance)
             .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
         if !surface_cut_parameter_curve_is_closed_inside_bounds(
             &parameter_curve,
@@ -13652,7 +13652,7 @@ fn classify_complete_surface_cut_once(
             Ok(())
         } else {
             let parameter_curve = surface
-                .try_pullback_exact_curve(curve, tolerance)
+                .try_pullback_curve(curve, tolerance)
                 .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
             if surface_cut_parameter_curve_is_simple_in_bounds(
                 &parameter_curve,
@@ -30390,6 +30390,169 @@ mod tests {
                 forward_edge.evaluate(parameter).unwrap(),
                 document.tolerance()
             ));
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_pulls_curves_back_on_nonaffine_planar_surfaces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(8.0, 10.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 10.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let cutter = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(3.2, 20.0 / 3.0, 0.0).unwrap(),
+                Point3::try_new(82.0 / 15.0, 8.0, 0.0).unwrap(),
+                Point3::try_new(8.8, 6.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let cutter_id = document
+            .add_geometry(Geometry::NurbsCurve(cutter.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=5,0,0")
+                .unwrap(),
+            "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(!document.is_selected(cutter_id));
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let mut forward_cut = None;
+        let mut area = 0.0;
+        for object in outputs {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("non-affine planar surface Split must create B-rep faces")
+            };
+            assert_eq!(brep.faces()[0].surface(), &surface);
+            assert_eq!(brep.vertices().len(), 4);
+            assert_eq!(brep.edges().len(), 4);
+            let trim = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                .unwrap();
+            let edge = brep.edges()[trim.edge().unwrap()].curve();
+            assert_eq!(edge, &cutter);
+            if !trim.is_reversed_3d() {
+                forward_cut = Some((trim.curve().clone(), edge.clone()));
+            }
+            area += brep.area(document.tolerance()).unwrap();
+            brep.tessellate(3, document.tolerance()).unwrap();
+        }
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(area, surface.area(document.tolerance()).unwrap())
+        );
+
+        let (forward_trim, forward_edge) = forward_cut.unwrap();
+        assert_eq!(forward_trim.degree(), 3);
+        assert_eq!(forward_trim.domain(), cutter.domain());
+        assert_eq!(
+            forward_trim.knots(),
+            &[0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0]
+        );
+        for (actual, expected) in forward_trim.control_points().iter().zip([
+            [0.0, 0.2],
+            [1.0 / 3.0, 2.0 / 3.0],
+            [2.0 / 3.0, 0.8],
+            [1.0, 0.6],
+        ]) {
+            assert!(
+                document
+                    .tolerance()
+                    .approx_eq(actual.point().x(), expected[0])
+            );
+            assert!(
+                document
+                    .tolerance()
+                    .approx_eq(actual.point().y(), expected[1])
+            );
+            assert_eq!(actual.weight(), 1.0);
+        }
+        for sample in 0..=32 {
+            let parameter = sample as Real / 32.0;
+            let uv = forward_trim.evaluate(parameter).unwrap();
+            assert!(surface.evaluate(uv.x(), uv.y()).unwrap().is_near(
+                forward_edge.evaluate(parameter).unwrap(),
+                document.tolerance()
+            ));
+        }
+
+        let mut adaptive_document = Document::default();
+        let adaptive_source_id = adaptive_document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let adaptive_cutter = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 9.0, 0.0).unwrap(),
+                Point3::try_new(8.8, 6.0, 0.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 5.0, 5.0, 5.0],
+        )
+        .unwrap();
+        let adaptive_cutter_id = adaptive_document
+            .add_geometry(Geometry::NurbsCurve(adaptive_cutter))
+            .unwrap();
+        adaptive_document
+            .select_objects_direct(
+                [adaptive_source_id, adaptive_cutter_id],
+                SelectionMode::Replace,
+            )
+            .unwrap();
+        registry
+            .execute(&mut adaptive_document, "Split CuttingObjects=5,0,0")
+            .unwrap();
+        assert!(adaptive_document.object(adaptive_source_id).is_none());
+        assert!(!adaptive_document.is_selected(adaptive_cutter_id));
+        let adaptive_outputs = adaptive_document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(adaptive_outputs.len(), 2);
+        for object in adaptive_outputs {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("adaptive non-affine planar Split must create B-rep faces")
+            };
+            let trim = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                .unwrap();
+            assert_eq!(trim.curve().degree(), 3);
+            assert!(trim.curve().control_points().len() > 4);
+            let edge = brep.edges()[trim.edge().unwrap()].curve();
+            for (span_start, span_end) in trim.curve().spans() {
+                let parameter = span_start.mul_add(0.5, span_end * 0.5);
+                let uv = trim.curve().evaluate(parameter).unwrap();
+                let edge_parameter = if trim.is_reversed_3d() {
+                    -parameter
+                } else {
+                    parameter
+                };
+                assert!(surface.evaluate(uv.x(), uv.y()).unwrap().is_near(
+                    edge.evaluate(edge_parameter).unwrap(),
+                    adaptive_document.tolerance()
+                ));
+            }
+            brep.tessellate(3, adaptive_document.tolerance()).unwrap();
         }
     }
 

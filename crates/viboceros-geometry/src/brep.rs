@@ -7714,7 +7714,7 @@ fn surface_split_parameter_curve(
                 ],
             );
         }
-        Err(_) => surface.try_pullback_exact_curve(curve, tolerance)?,
+        Err(_) => surface.try_pullback_curve(curve, tolerance)?,
     };
     let parameter_tolerance = [
         trim_parameter_epsilon(

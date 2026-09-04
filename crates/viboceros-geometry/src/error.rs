@@ -214,6 +214,12 @@ pub enum GeometryError {
     #[error("adaptive numerical integration did not converge at the requested tolerance")]
     NumericalIntegrationDidNotConverge,
 
+    #[error("surface pullback did not converge at absolute model tolerance {tolerance}")]
+    SurfacePullbackDidNotConverge { tolerance: Real },
+
+    #[error("surface pullback would create more than {maximum} control points")]
+    TooManySurfacePullbackControlPoints { maximum: usize },
+
     #[error("a curve division count must be from 1 through {maximum}, got {actual}")]
     InvalidCurveDivisionCount { actual: usize, maximum: usize },
 
