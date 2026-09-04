@@ -925,8 +925,9 @@ cutters. The topology-aware surface fixture covers both isoparametric directions
 both opposite-side diagonal directions, all four adjacent-side directions, and
 all ten nonincident corner-ending arrangements, same-side curved paths with
 interior and corner endpoints in all four directions, closed polygonal and
-rational-circle cutters in both directions, disjoint, nested, intersecting,
-and line-crossed multi-closed arrangements, single- and multi-span curved paths,
+rational-circle cutters in both directions, disjoint and nested rational-circle
+pairs, mixed smooth/kinky loop orders, intersecting polygons, and line-crossed
+multi-closed arrangements, single- and multi-span curved paths,
 straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
 sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter

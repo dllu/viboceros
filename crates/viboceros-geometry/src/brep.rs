@@ -5635,8 +5635,21 @@ fn try_rectangular_surface_cut_arrangement(
     }
     for holes in &mut holes_by_outer {
         holes.sort_by(|left, right| {
-            surface_cut_cycle_source_key(&edges, left)
-                .cmp(&surface_cut_cycle_source_key(&edges, right))
+            // Rhino places kinky closed loops before smooth one-edge loops.
+            // Source order is stable within kinky loops and reversed within
+            // the self-edge representation used for smooth closed curves.
+            right
+                .len()
+                .cmp(&left.len())
+                .then_with(|| {
+                    let left_source = surface_cut_cycle_source_key(&edges, left);
+                    let right_source = surface_cut_cycle_source_key(&edges, right);
+                    if left.len() == 1 {
+                        right_source.cmp(&left_source)
+                    } else {
+                        left_source.cmp(&right_source)
+                    }
+                })
                 .then_with(|| {
                     surface_cut_cycle_bounds(&edges, &nodes, left)
                         .into_iter()
