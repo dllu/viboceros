@@ -806,6 +806,113 @@
           "knots": [-2.0, -2.0, -2.0, 3.0, 3.0, 3.0]
         }
       ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-surface-with-clipped-curved-opposite-side-cutter",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "pretrim": {
+        "point": [4.0, 6.0, 0.0],
+        "direction": "both",
+        "piece": 0
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 7.0, 0.0], "weight": 0.75 },
+            { "point": [10.0, 8.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [2.0, 2.0, 2.0, 6.0, 6.0, 6.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-surface-with-clipped-curved-adjacent-side-cutter",
+      "source_pick": [8.0, 9.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "pretrim": {
+        "point": [4.0, 6.0, 0.0],
+        "direction": "both",
+        "piece": 3
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 7.0, 0.0], "weight": 0.75 },
+            { "point": [10.0, 8.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [2.0, 2.0, 2.0, 6.0, 6.0, 6.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-pretrimmed-surface-with-clipped-multispan-curved-cutter",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "pretrim": {
+        "point": [4.0, 6.0, 0.0],
+        "direction": "both",
+        "piece": 0
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 3.0, 0.0], "weight": 0.8 },
+            { "point": [5.0, 6.0, 0.0], "weight": 1.2 },
+            { "point": [8.0, 7.5, 0.0], "weight": 0.9 },
+            { "point": [10.0, 8.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [2.0, 2.0, 2.0, 3.0, 5.0, 6.0, 6.0, 6.0]
+        }
+      ]
     }
   ]
 }

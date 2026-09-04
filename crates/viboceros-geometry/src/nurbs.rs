@@ -847,6 +847,183 @@ impl NurbsCurve {
         )
     }
 
+    /// Projectively reparameterizes a clamped curve so its two end weights are
+    /// exactly one.
+    ///
+    /// The control locations, parameter domain, and geometric locus remain
+    /// unchanged. Interior knots and the correspondence between parameters
+    /// and points generally change according to the same Möbius transform
+    /// used by OpenNURBS' `ChangeEndWeights` operation.
+    pub fn try_normalized_end_weights(&self) -> Result<Self, GeometryError> {
+        let curve = self.clamped_to_active_domain()?;
+        let control_count = curve.control_points.len();
+        let start_weight = curve.control_points[0].weight();
+        let end_weight = curve.control_points[control_count - 1].weight();
+        if start_weight.is_sign_positive() != end_weight.is_sign_positive() {
+            return Err(GeometryError::InvalidControlNet {
+                context: "NURBS endpoint weights must have the same sign",
+            });
+        }
+
+        let start_scale = 1.0 / start_weight;
+        let end_scale = 1.0 / end_weight;
+        require_finite(
+            [start_scale, end_scale],
+            "NURBS endpoint-weight normalization scales",
+        )?;
+        if (start_scale - end_scale).abs() <= end_scale.abs() * Real::EPSILON.sqrt() {
+            let scale = if start_scale == end_scale {
+                end_scale
+            } else {
+                start_scale.mul_add(0.5, end_scale * 0.5)
+            };
+            let mut controls = curve
+                .control_points
+                .iter()
+                .map(|control| WeightedPoint3::try_new(control.point(), control.weight() * scale))
+                .collect::<Result<Vec<_>, _>>()?;
+            controls[0] = WeightedPoint3::try_new(controls[0].point(), 1.0)?;
+            controls[control_count - 1] =
+                WeightedPoint3::try_new(controls[control_count - 1].point(), 1.0)?;
+            return Self::try_new_rational(curve.degree, controls, curve.knots);
+        }
+
+        let degree = curve.degree as Real;
+        let log_c = (end_weight.abs().ln() - start_weight.abs().ln()) / degree;
+        let c = log_c.exp();
+        if !c.is_finite() || c == 0.0 {
+            return Err(GeometryError::NonFinite {
+                context: "NURBS endpoint-weight Möbius factor",
+            });
+        }
+        let domain = curve.domain();
+        let domain_start = *domain.start();
+        let domain_end = *domain.end();
+        let normalized_knots = curve
+            .knots
+            .iter()
+            .map(|knot| {
+                let normalized = reparameterize_value(*knot, domain_start, domain_end, 0.0, 1.0)?;
+                let numerator = c * normalized;
+                let denominator = numerator + (1.0 - normalized);
+                let mapped = numerator / denominator;
+                require_finite([mapped], "NURBS endpoint-weight Möbius knot")?;
+                Ok(mapped)
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        let knots = normalized_knots
+            .iter()
+            .map(|knot| reparameterize_value(*knot, 0.0, 1.0, domain_start, domain_end))
+            .collect::<Result<Vec<_>, _>>()?;
+        let end_log = end_weight.abs().ln();
+        let controls = curve
+            .control_points
+            .iter()
+            .enumerate()
+            .map(|(index, control)| {
+                let weight = if index == 0 || index + 1 == control_count {
+                    1.0
+                } else {
+                    let mut log_magnitude = control.weight().abs().ln() - end_log;
+                    for knot in &normalized_knots[index + 1..index + 1 + curve.degree] {
+                        let factor = (1.0 - *knot).mul_add(c, *knot);
+                        if !factor.is_finite() || factor <= 0.0 {
+                            return Err(GeometryError::NonFinite {
+                                context: "NURBS endpoint-weight Möbius control factor",
+                            });
+                        }
+                        log_magnitude += factor.ln();
+                    }
+                    let sign =
+                        if control.weight().is_sign_positive() == end_weight.is_sign_positive() {
+                            1.0
+                        } else {
+                            -1.0
+                        };
+                    sign * log_magnitude.exp()
+                };
+                WeightedPoint3::try_new(control.point(), weight)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        Ok(Self::try_new_rational(curve.degree, controls, knots)?.with_opennurbs_outer_knots())
+    }
+
+    /// Extracts an exact subcurve in Rhino's piecewise-Bezier trim form.
+    ///
+    /// Retained interior knots are raised to degree multiplicity. The first
+    /// and last Bezier spans are then independently projectively
+    /// reparameterized so the outer weights are one without shifting an
+    /// interior knot or changing the curve locus.
+    pub fn try_trimmed_with_normalized_end_weights(
+        &self,
+        interval: RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        let start = *interval.start();
+        let end = *interval.end();
+        let domain = self.domain();
+        if !start.is_finite()
+            || !end.is_finite()
+            || start >= end
+            || start < *domain.start()
+            || end > *domain.end()
+        {
+            return Err(GeometryError::InvalidCurveTrimInterval);
+        }
+        let mut interior_knots = self
+            .knots
+            .iter()
+            .copied()
+            .filter(|knot| *knot > start && *knot < end)
+            .collect::<Vec<_>>();
+        interior_knots.dedup();
+
+        let mut refined = self.clone();
+        for knot in interior_knots {
+            refined = refined.try_insert_knot(knot, self.degree)?;
+        }
+        let trimmed = refined.try_trimmed(interval)?;
+        let span_count = trimmed.spans().count();
+        let expected_control_count = span_count
+            .checked_mul(trimmed.degree)
+            .and_then(|count| count.checked_add(1))
+            .ok_or(GeometryError::InvalidControlNet {
+                context: "piecewise-Bezier trim control count overflowed",
+            })?;
+        if span_count == 0 || trimmed.control_points.len() != expected_control_count {
+            return Err(GeometryError::InvalidControlNet {
+                context: "trimmed curve must have degree-multiplicity interior knots",
+            });
+        }
+
+        let weight_sign = trimmed.control_points[0].weight().is_sign_positive();
+        if trimmed
+            .control_points
+            .iter()
+            .any(|control| control.weight().is_sign_positive() != weight_sign)
+        {
+            return Err(GeometryError::InvalidControlNet {
+                context: "piecewise-Bezier trim weights must have one sign",
+            });
+        }
+        let sign_scale = if weight_sign { 1.0 } else { -1.0 };
+        let mut controls = trimmed
+            .control_points
+            .iter()
+            .map(|control| WeightedPoint3::try_new(control.point(), control.weight() * sign_scale))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        if span_count == 1 {
+            change_bezier_end_weights(&mut controls, 1.0, 1.0)?;
+        } else {
+            let first_end_weight = controls[trimmed.degree].weight();
+            change_bezier_end_weights(&mut controls[..=trimmed.degree], 1.0, first_end_weight)?;
+            let last_start = (span_count - 1) * trimmed.degree;
+            let last_start_weight = controls[last_start].weight();
+            change_bezier_end_weights(&mut controls[last_start..], last_start_weight, 1.0)?;
+        }
+        Self::try_new_rational(trimmed.degree, controls, trimmed.knots)
+    }
+
     /// Replaces the knot vector with Rhino-compatible unit spacing while
     /// leaving the degree, control locations, and rational weights unchanged.
     ///
@@ -6155,6 +6332,40 @@ fn blend_homogeneous<const DIMENSION: usize>(
     Ok(result)
 }
 
+fn change_bezier_end_weights(
+    controls: &mut [WeightedPoint3],
+    desired_start: Real,
+    desired_end: Real,
+) -> Result<(), GeometryError> {
+    debug_assert!(controls.len() >= 2);
+    let last = controls.len() - 1;
+    let start_weight = controls[0].weight();
+    let end_weight = controls[last].weight();
+    if start_weight == desired_start && end_weight == desired_end {
+        return Ok(());
+    }
+    let scale = desired_start / start_weight;
+    let power = (desired_end / end_weight) / scale;
+    if !scale.is_finite() || scale == 0.0 || !power.is_finite() || power <= 0.0 {
+        return Err(GeometryError::InvalidControlNet {
+            context: "Bezier end weights cannot be changed projectively",
+        });
+    }
+    let ratio = power.powf(1.0 / last as Real);
+    if !ratio.is_finite() || ratio <= 0.0 {
+        return Err(GeometryError::NonFinite {
+            context: "Bezier end-weight reparameterization ratio",
+        });
+    }
+    for (index, control) in controls.iter_mut().enumerate() {
+        let weight = control.weight() * scale * ratio.powf(index as Real);
+        *control = WeightedPoint3::try_new(control.point(), weight)?;
+    }
+    controls[0] = WeightedPoint3::try_new(controls[0].point(), desired_start)?;
+    controls[last] = WeightedPoint3::try_new(controls[last].point(), desired_end)?;
+    Ok(())
+}
+
 fn blend_weighted_control_points(
     left: WeightedPoint3,
     right: WeightedPoint3,
@@ -7296,6 +7507,141 @@ mod tests {
             0.0..=Real::NAN,
         ] {
             assert!(mapped.try_reparameterized(domain).is_err());
+        }
+    }
+
+    #[test]
+    fn nurbs_end_weight_normalization_preserves_the_projective_locus() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(3.0, 5.0), 3.0).unwrap(),
+                WeightedPoint3::try_new(point(8.0, 1.0), 8.0).unwrap(),
+            ],
+            vec![2.0, 2.0, 2.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let normalized = curve.try_normalized_end_weights().unwrap();
+        assert_eq!(normalized.domain(), curve.domain());
+        assert_eq!(normalized.knots(), curve.knots());
+        assert_eq!(
+            normalized
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            curve
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>()
+        );
+        for (control, expected) in normalized.control_points().iter().zip([1.0, 0.75, 1.0]) {
+            assert!(Tolerance::DEFAULT.approx_eq(control.weight(), expected));
+        }
+
+        let projective_scale = 0.5;
+        for sample in 0..=32 {
+            let normalized_parameter = sample as Real / 32.0;
+            let source_fraction = projective_scale * normalized_parameter
+                / (1.0 - normalized_parameter + projective_scale * normalized_parameter);
+            let source_parameter = 2.0 + 4.0 * source_fraction;
+            let target_parameter = 2.0 + 4.0 * normalized_parameter;
+            assert_point_near(
+                curve.evaluate(source_parameter).unwrap(),
+                normalized.evaluate(target_parameter).unwrap(),
+            );
+        }
+
+        let multispan = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(2.0, 3.0), 3.0).unwrap(),
+                WeightedPoint3::try_new(point(4.0, 1.0), 5.0).unwrap(),
+                WeightedPoint3::try_new(point(6.0, 0.0), 8.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let normalized_multispan = multispan.try_normalized_end_weights().unwrap();
+        assert_eq!(normalized_multispan.control_points()[0].weight(), 1.0);
+        assert_eq!(normalized_multispan.control_points()[3].weight(), 1.0);
+        assert_ne!(normalized_multispan.knots(), multispan.knots());
+        for sample in 0..=32 {
+            let normalized_parameter = sample as Real / 32.0;
+            let source_fraction = 0.5 * normalized_parameter
+                / (1.0 - normalized_parameter + 0.5 * normalized_parameter);
+            assert_point_near(
+                multispan
+                    .evaluate(multispan.parameter_at(source_fraction).unwrap())
+                    .unwrap(),
+                normalized_multispan
+                    .evaluate(
+                        normalized_multispan
+                            .parameter_at(normalized_parameter)
+                            .unwrap(),
+                    )
+                    .unwrap(),
+            );
+        }
+    }
+
+    #[test]
+    fn normalized_multispan_trim_retains_piecewise_bezier_breaks() {
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([0.0, 2.0], 1.0),
+                ([2.0, 3.0], 0.8),
+                ([5.0, 6.0], 1.2),
+                ([8.0, 7.5], 0.9),
+                ([10.0, 8.0], 1.0),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(point(coordinates[0], coordinates[1]), weight).unwrap()
+            })
+            .collect(),
+            vec![2.0, 2.0, 2.0, 3.0, 5.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let end = 3.361_818_303_014_144;
+        let trimmed = curve
+            .try_trimmed_with_normalized_end_weights(2.0..=end)
+            .unwrap();
+
+        assert_eq!(trimmed.degree(), 2);
+        assert_eq!(trimmed.knots(), &[2.0, 2.0, 2.0, 3.0, 3.0, end, end, end]);
+        for ((control, expected_point), expected_weight) in trimmed
+            .control_points()
+            .iter()
+            .zip([
+                point(0.0, 2.0),
+                point(2.0, 3.0),
+                point(3.285_714_285_714_285_6, 4.285_714_285_714_286),
+                point(3.664_855_640_638_289, 4.664_855_640_638_289),
+                point(4.0, 4.970_966_978_942_94),
+            ])
+            .zip([
+                1.0,
+                0.8,
+                0.933_333_333_333_333_2,
+                0.974_514_160_436_564_2,
+                1.0,
+            ])
+        {
+            assert_point_near(control.point(), expected_point);
+            assert!(Tolerance::DEFAULT.approx_eq(control.weight(), expected_weight));
+        }
+        for sample in 0..=32 {
+            let point = trimmed
+                .evaluate(trimmed.parameter_at(sample as Real / 32.0).unwrap())
+                .unwrap();
+            let source_parameter = curve.closest_parameter(point, Tolerance::DEFAULT).unwrap();
+            assert!(source_parameter >= 2.0 && source_parameter <= end);
+            assert_point_near(point, curve.evaluate(source_parameter).unwrap());
         }
     }
 

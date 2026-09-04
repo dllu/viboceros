@@ -13716,6 +13716,29 @@ fn classify_complete_surface_cut(
         )));
     }
 
+    if !parameters_form_segment
+        && range_u[1] >= bounds[0][0] - epsilon_u
+        && range_u[0] <= bounds[0][1] + epsilon_u
+        && range_v[1] >= bounds[1][0] - epsilon_v
+        && range_v[0] <= bounds[1][1] + epsilon_v
+    {
+        let parameter_curve = surface
+            .try_pullback_affine_curve(curve, tolerance)
+            .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
+        let Some(clipped_curve) = clip_curved_surface_cut_to_bounds(
+            curve,
+            &parameter_curve,
+            bounds,
+            [epsilon_u, epsilon_v],
+        )?
+        else {
+            return Ok(None);
+        };
+        if clipped_curve.domain() != curve.domain() {
+            return classify_complete_surface_cut(&clipped_curve, surface, bounds, tolerance);
+        }
+    }
+
     let boundary_mask = |parameter: [Real; 2]| {
         u8::from(near(parameter[0], bounds[0][0], epsilon_u))
             | (u8::from(near(parameter[0], bounds[0][1], epsilon_u)) << 1)
@@ -13764,11 +13787,7 @@ fn surface_cut_parameter_curve_is_simple_in_bounds(
     epsilon: [Real; 2],
 ) -> bool {
     let controls = curve.control_points();
-    let weight_sign = controls[0].weight().is_sign_positive();
-    if controls
-        .iter()
-        .any(|control| control.weight().is_sign_positive() != weight_sign)
-    {
+    if !surface_cut_parameter_curve_has_one_weight_sign(curve) {
         return false;
     }
     if controls.iter().any(|control| {
@@ -13790,16 +13809,179 @@ fn surface_cut_parameter_curve_is_simple_in_bounds(
         return false;
     }
 
-    let strictly_monotone = |coordinate: usize| {
-        let value =
-            |control: &viboceros_geometry::WeightedPoint2| control.point().to_array()[coordinate];
-        let direction = (value(&controls[controls.len() - 1]) - value(&controls[0])).signum();
-        direction != 0.0
-            && controls
-                .windows(2)
-                .all(|pair| (value(&pair[1]) - value(&pair[0])) * direction > epsilon[coordinate])
-    };
-    strictly_monotone(0) || strictly_monotone(1)
+    (0..2).any(|coordinate| {
+        surface_cut_parameter_curve_strict_direction(curve, coordinate, epsilon[coordinate])
+            .is_some()
+    })
+}
+
+fn surface_cut_parameter_curve_has_one_weight_sign(curve: &NurbsCurve2) -> bool {
+    let controls = curve.control_points();
+    let weight_sign = controls[0].weight().is_sign_positive();
+    controls
+        .iter()
+        .all(|control| control.weight().is_sign_positive() == weight_sign)
+}
+
+fn surface_cut_parameter_curve_strict_direction(
+    curve: &NurbsCurve2,
+    coordinate: usize,
+    epsilon: Real,
+) -> Option<Real> {
+    let controls = curve.control_points();
+    let value = |index: usize| controls[index].point().to_array()[coordinate];
+    let direction = (value(controls.len() - 1) - value(0)).signum();
+    (direction != 0.0
+        && controls.windows(2).all(|pair| {
+            (pair[1].point().to_array()[coordinate] - pair[0].point().to_array()[coordinate])
+                * direction
+                > epsilon
+        }))
+    .then_some(direction)
+}
+
+fn clip_curved_surface_cut_to_bounds(
+    spatial_curve: &NurbsCurve,
+    parameter_curve: &NurbsCurve2,
+    bounds: [[Real; 2]; 2],
+    epsilon: [Real; 2],
+) -> Result<Option<NurbsCurve>, CommandError> {
+    let controls = parameter_curve.control_points();
+    if !surface_cut_parameter_curve_has_one_weight_sign(parameter_curve) {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+    }
+
+    let parameter_domain = parameter_curve.domain();
+    if parameter_domain != spatial_curve.domain() {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+    }
+    let mut clipped_domain = [*parameter_domain.start(), *parameter_domain.end()];
+    let mut has_strict_coordinate = false;
+    for coordinate in 0..2 {
+        let Some(direction) = surface_cut_parameter_curve_strict_direction(
+            parameter_curve,
+            coordinate,
+            epsilon[coordinate],
+        ) else {
+            if controls.iter().any(|control| {
+                let value = control.point().to_array()[coordinate];
+                value < bounds[coordinate][0] - epsilon[coordinate]
+                    || value > bounds[coordinate][1] + epsilon[coordinate]
+            }) {
+                return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+            }
+            continue;
+        };
+        has_strict_coordinate = true;
+
+        let start_value = parameter_curve
+            .evaluate(*parameter_domain.start())?
+            .to_array()[coordinate];
+        let end_value = parameter_curve
+            .evaluate(*parameter_domain.end())?
+            .to_array()[coordinate];
+        let curve_minimum = start_value.min(end_value);
+        let curve_maximum = start_value.max(end_value);
+        if curve_maximum < bounds[coordinate][0] - epsilon[coordinate]
+            || curve_minimum > bounds[coordinate][1] + epsilon[coordinate]
+        {
+            return Ok(None);
+        }
+        let inside_minimum = curve_minimum.max(bounds[coordinate][0]);
+        let inside_maximum = curve_maximum.min(bounds[coordinate][1]);
+        if inside_minimum >= inside_maximum {
+            return Ok(None);
+        }
+        let targets = if direction > 0.0 {
+            [inside_minimum, inside_maximum]
+        } else {
+            [inside_maximum, inside_minimum]
+        };
+        let coordinate_domain = targets.map(|target| {
+            monotone_parameter_curve_coordinate_parameter(
+                parameter_curve,
+                coordinate,
+                target,
+                direction,
+                epsilon[coordinate],
+            )
+        });
+        let [coordinate_start, coordinate_end] = coordinate_domain;
+        let coordinate_domain = [coordinate_start?, coordinate_end?];
+        clipped_domain[0] = clipped_domain[0].max(coordinate_domain[0]);
+        clipped_domain[1] = clipped_domain[1].min(coordinate_domain[1]);
+        if clipped_domain[0] >= clipped_domain[1] {
+            return Ok(None);
+        }
+    }
+    if !has_strict_coordinate {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+    }
+
+    if clipped_domain == [*parameter_domain.start(), *parameter_domain.end()] {
+        Ok(Some(spatial_curve.clone()))
+    } else {
+        Ok(Some(
+            spatial_curve
+                .try_trimmed_with_normalized_end_weights(clipped_domain[0]..=clipped_domain[1])?,
+        ))
+    }
+}
+
+fn monotone_parameter_curve_coordinate_parameter(
+    curve: &NurbsCurve2,
+    coordinate: usize,
+    target: Real,
+    direction: Real,
+    epsilon: Real,
+) -> Result<Real, CommandError> {
+    let domain = curve.domain();
+    let mut lower = *domain.start();
+    let mut upper = *domain.end();
+    let endpoint_values = [lower, upper].map(|parameter| {
+        curve
+            .evaluate(parameter)
+            .map(|point| point.to_array()[coordinate])
+    });
+    let [start_value, end_value] = endpoint_values;
+    let endpoint_values = [start_value?, end_value?];
+    if target == endpoint_values[0] {
+        return Ok(lower);
+    }
+    if target == endpoint_values[1] {
+        return Ok(upper);
+    }
+    let minimum = endpoint_values[0].min(endpoint_values[1]);
+    let maximum = endpoint_values[0].max(endpoint_values[1]);
+    if target < minimum - epsilon || target > maximum + epsilon {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+    }
+
+    for _ in 0..128 {
+        let middle = lower * 0.5 + upper * 0.5;
+        if middle == lower || middle == upper {
+            break;
+        }
+        let value = curve.evaluate(middle)?.to_array()[coordinate];
+        if (value < target) == (direction > 0.0) {
+            lower = middle;
+        } else {
+            upper = middle;
+        }
+    }
+    let candidates = [lower, upper];
+    let mut best = (Real::INFINITY, lower);
+    for parameter in candidates {
+        let value = curve.evaluate(parameter)?.to_array()[coordinate];
+        let residual = (value - target).abs();
+        if residual < best.0 {
+            best = (residual, parameter);
+        }
+    }
+    if best.0 > epsilon {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+    }
+    Ok(best.1)
 }
 
 fn clip_surface_cut_parameter_segment(
@@ -28829,6 +29011,227 @@ mod tests {
             }
             assert!(document.tolerance().approx_eq(area, 24.0));
         }
+    }
+
+    #[test]
+    fn cutting_object_split_clips_curved_nurbs_to_trimmed_surface_sources() {
+        let registry = CommandRegistry::with_builtins();
+        for (bounds, source_pick, expected_vertex_counts, boundary_coordinates) in [
+            (
+                [[0.0, 0.4], [0.0, 0.6]],
+                "1,1,0",
+                [4, 4],
+                [(0, 0.0), (0, 4.0)],
+            ),
+            (
+                [[0.4, 1.0], [0.6, 1.0]],
+                "8,9,0",
+                [5, 3],
+                [(1, 6.0), (0, 10.0)],
+            ),
+        ] {
+            let mut document = Document::default();
+            let source = planar_intersection_surface();
+            let source_id = document
+                .add_geometry(Geometry::Brep(
+                    Brep::try_rectangular_surface_face_with_orientation(
+                        source.clone(),
+                        bounds[0][0]..=bounds[0][1],
+                        bounds[1][0]..=bounds[1][1],
+                        true,
+                        document.tolerance(),
+                    )
+                    .unwrap(),
+                ))
+                .unwrap();
+            let cutter = curved_cutting_curve([[0.0, 2.0], [5.0, 7.0], [10.0, 8.0]]);
+            let cutter_id = document.add_geometry(Geometry::NurbsCurve(cutter)).unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(
+                        &mut document,
+                        &format!("Split CuttingObjects={source_pick}"),
+                    )
+                    .unwrap(),
+                "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut area = 0.0;
+            let mut cut_domains = Vec::new();
+            let mut trim_directions = Vec::new();
+            for (object, expected_vertex_count) in outputs.iter().zip(expected_vertex_counts) {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("curved trim-clipped cutting Split must create B-rep faces")
+                };
+                assert!(brep.faces()[0].is_reversed());
+                assert_eq!(brep.faces()[0].surface(), &source);
+                assert_eq!(brep.vertices().len(), expected_vertex_count);
+                let trim = brep.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                    .unwrap();
+                let cut_edge = &brep.edges()[trim.edge().unwrap()];
+                assert_eq!(cut_edge.curve().degree(), 2);
+                let domain = cut_edge.curve().domain();
+                assert!(*domain.start() >= 0.0 && *domain.end() <= 1.0);
+                assert!(*domain.start() > 0.0 || *domain.end() < 1.0);
+                let endpoints = [
+                    cut_edge.curve().evaluate(*domain.start()).unwrap(),
+                    cut_edge.curve().evaluate(*domain.end()).unwrap(),
+                ];
+                for (point, (coordinate, expected)) in
+                    endpoints.into_iter().zip(boundary_coordinates)
+                {
+                    assert!(
+                        document
+                            .tolerance()
+                            .approx_eq(point.to_array()[coordinate], expected)
+                    );
+                }
+                assert_eq!(trim.curve().degree(), 2);
+                let trim_controls = trim.curve().control_points();
+                assert_eq!(trim_controls[0].weight(), 1.0);
+                assert_eq!(trim_controls[trim_controls.len() - 1].weight(), 1.0);
+                cut_domains.push(domain);
+                trim_directions.push(trim.is_reversed_3d());
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(3, document.tolerance()).unwrap();
+            }
+            assert_eq!(cut_domains[0], cut_domains[1]);
+            trim_directions.sort_unstable();
+            assert_eq!(trim_directions, vec![false, true]);
+            assert!(document.tolerance().approx_eq(area, 24.0));
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_clips_multispan_rational_curve_exactly() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = planar_intersection_surface();
+        let source_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_rectangular_surface_face_with_orientation(
+                    source.clone(),
+                    0.2..=0.8,
+                    0.0..=1.0,
+                    false,
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let cutter = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([0.0, 2.0], 1.0),
+                ([2.0, 3.0], 0.8),
+                ([5.0, 6.0], 1.2),
+                ([8.0, 7.5], 0.9),
+                ([10.0, 8.0], 1.0),
+            ]
+            .into_iter()
+            .map(|(point, weight)| {
+                WeightedPoint3::try_new(Point3::try_new(point[0], point[1], 0.0).unwrap(), weight)
+                    .unwrap()
+            })
+            .collect(),
+            vec![2.0, 2.0, 2.0, 3.0, 5.0, 6.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let cutter_id = document.add_geometry(Geometry::NurbsCurve(cutter)).unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=3,1,0")
+                .unwrap(),
+            "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(!document.is_selected(cutter_id));
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let mut area = 0.0;
+        let mut edge_domains = Vec::new();
+        for object in outputs {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("multispan cutting Split must create B-rep faces")
+            };
+            let trim = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                .unwrap();
+            let edge = &brep.edges()[trim.edge().unwrap()];
+            let domain = edge.curve().domain();
+            assert!(*domain.start() > 2.0 && *domain.end() < 6.0);
+            assert!(edge.curve().spans().count() >= 2);
+            assert!(trim.curve().spans().count() >= 2);
+            let controls = trim.curve().control_points();
+            assert_eq!(controls[0].weight(), 1.0);
+            assert_eq!(controls[controls.len() - 1].weight(), 1.0);
+            edge_domains.push(domain);
+            area += brep.area(document.tolerance()).unwrap();
+            brep.tessellate(3, document.tolerance()).unwrap();
+        }
+        assert_eq!(edge_domains[0], edge_domains[1]);
+        assert!(document.tolerance().approx_eq(area, 60.0));
+    }
+
+    #[test]
+    fn cutting_object_split_rejects_folded_curved_clipping_atomically() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source_id = document
+            .add_geometry(Geometry::Brep(
+                Brep::try_rectangular_surface_face(
+                    planar_intersection_surface(),
+                    0.0..=0.4,
+                    0.0..=0.6,
+                    document.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let cutter_id = document
+            .add_geometry(Geometry::NurbsCurve(
+                NurbsCurve::try_new(
+                    3,
+                    [[0.0, 2.0], [7.0, 7.0], [3.0, 3.0], [10.0, 8.0]]
+                        .into_iter()
+                        .map(|point| Point3::try_new(point[0], point[1], 0.0).unwrap())
+                        .collect(),
+                    vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+        let before = document.objects().cloned().collect::<Vec<_>>();
+
+        assert!(matches!(
+            registry.execute(&mut document, "Split CuttingObjects=1,1,0"),
+            Err(CommandError::UnsupportedSurfaceCuttingIntersection)
+        ));
+        assert_eq!(
+            document.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert!(document.is_selected(source_id));
+        assert!(document.is_selected(cutter_id));
     }
 
     #[test]
