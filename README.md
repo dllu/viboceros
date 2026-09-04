@@ -883,18 +883,17 @@ produce exact, arc-length-parameterized lines clipped to both finite patches;
 selection order determines their orientation as in Rhino. Coincident
 nonsingular convex non-rational bilinear patches produce an exact shared edge
 or closed overlap perimeter, including Rhino's distinct edge orientation and
-loop-domain rules. Planar surface/B-rep intersections are clipped to exact face
-trim regions, deduplicated at shared edges and vertices, and joined into maximal
-linear components; coincident faces are currently limited to untrimmed natural
-domains.
+loop-domain rules. Planar surface/B-rep and B-rep/B-rep intersections are
+clipped to every exact face trim region, deduplicated at shared edges and
+vertices, and joined into maximal linear components; coincident faces are
+currently limited to untrimmed natural domains and one area-overlap face pair.
 Curve/curve overlaps use the later curve's orientation and parameterization,
 matching Rhino. Pairwise duplicates are intentionally retained when three or
 more source objects meet at one location. Inputs remain in the document and are
 deselected, outputs are selected, and all output creation is one undo step. A
 no-hit run still clears the input selection but creates no undo record.
 Non-planar and more general coincident surface/surface intersections, curved
-surface/B-rep face pairs, coincident trimmed regions, and B-rep/B-rep
-intersection curves remain future extensions.
+B-rep face pairs, and coincident trimmed regions remain future extensions.
 `Trim point` treats the selected curve nearest the point as the target and all
 other selected curves as cutters; omit the point in the UI to pick the interval
 to remove in a viewport. Only the nearest cutting intersection on either side
@@ -1266,6 +1265,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_brep_intersect_command.json \
+  --absolute-epsilon 1e-9 --relative-epsilon 1e-11
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/brep_brep_intersect_command.json \
   --absolute-epsilon 1e-9 --relative-epsilon 1e-11
 
 tools/rhino_oracle/run_headless.sh compare \

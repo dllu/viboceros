@@ -640,6 +640,17 @@ pub enum Operation {
         #[serde(default)]
         canonicalize_linear_curves: bool,
     },
+    BrepBrepIntersectCommand {
+        id: String,
+        first_box_min: [f64; 3],
+        first_box_max: [f64; 3],
+        second_box_min: [f64; 3],
+        second_box_max: [f64; 3],
+        #[serde(default)]
+        reverse_selection: bool,
+        #[serde(default)]
+        canonicalize_linear_curves: bool,
+    },
     SurfaceSurfaceIntersectCommand {
         id: String,
         first: NurbsSurfaceDefinition,
@@ -1294,6 +1305,7 @@ impl Operation {
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
             | Self::SurfaceBrepIntersectCommand { id, .. }
+            | Self::BrepBrepIntersectCommand { id, .. }
             | Self::SurfaceSurfaceIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
@@ -3283,6 +3295,24 @@ fn execute(
             *box_min,
             *box_max,
             *brep_first,
+            *canonicalize_linear_curves,
+            tolerance,
+        )?,
+        Operation::BrepBrepIntersectCommand {
+            first_box_min,
+            first_box_max,
+            second_box_min,
+            second_box_max,
+            reverse_selection,
+            canonicalize_linear_curves,
+            ..
+        } => brep_brep_intersect_command(
+            iterations,
+            *first_box_min,
+            *first_box_max,
+            *second_box_min,
+            *second_box_max,
+            *reverse_selection,
             *canonicalize_linear_curves,
             tolerance,
         )?,
@@ -7361,6 +7391,52 @@ fn surface_brep_intersect_command(
     }
 }
 
+#[allow(clippy::too_many_arguments)]
+fn brep_brep_intersect_command(
+    iterations: u32,
+    first_box_min: [f64; 3],
+    first_box_max: [f64; 3],
+    second_box_min: [f64; 3],
+    second_box_max: [f64; 3],
+    reverse_selection: bool,
+    canonicalize_linear_curves: bool,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0.0, 0.0, 0.0)?,
+        Vector3::try_new(0.0, 0.0, 1.0)?,
+        tolerance,
+    )?;
+    let intervals = |minimum: [f64; 3], maximum: [f64; 3]| {
+        std::array::from_fn(|axis| [minimum[axis], maximum[axis]])
+    };
+    let first = Geometry::Brep(Brep::try_box(
+        frame,
+        intervals(first_box_min, first_box_max),
+        tolerance,
+    )?);
+    let second = Geometry::Brep(Brep::try_box(
+        frame,
+        intervals(second_box_min, second_box_max),
+        tolerance,
+    )?);
+    let inputs = if reverse_selection {
+        [second, first]
+    } else {
+        [first, second]
+    };
+    if canonicalize_linear_curves {
+        intersect_command_with_curve_serializer(
+            iterations,
+            &inputs,
+            tolerance,
+            canonical_linear_intersection_curve_value,
+        )
+    } else {
+        intersect_command(iterations, &inputs, tolerance)
+    }
+}
+
 fn surface_surface_intersect_command(
     iterations: u32,
     first: &NurbsSurfaceDefinition,
@@ -10502,6 +10578,41 @@ mod tests {
         assert_eq!(
             objects[0]["curve"]["control_points"][0]["point"],
             json!([0.0, 0.0, 5.0])
+        );
+        assert_eq!(objects[0]["blank_name"], true);
+        assert_eq!(objects[0]["color_from_layer"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["on_current_layer"], true);
+        assert_eq!(objects[0]["selected"], true);
+    }
+
+    #[test]
+    fn captures_brep_brep_intersect_command_behavior() {
+        let response = run_request(&request(vec![Operation::BrepBrepIntersectCommand {
+            id: "intersect-breps".to_owned(),
+            first_box_min: [0.0, 0.0, 0.0],
+            first_box_max: [10.0, 10.0, 10.0],
+            second_box_min: [5.0, 5.0, 5.0],
+            second_box_max: [15.0, 15.0, 15.0],
+            reverse_selection: false,
+            canonicalize_linear_curves: true,
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["input_selected"], json!([false, false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 1);
+        assert_eq!(objects[0]["kind"], "curve");
+        assert_eq!(objects[0]["curve"]["degree"], 1);
+        assert_eq!(objects[0]["curve"]["domain"], json!([0.0, 1.0]));
+        assert_eq!(
+            objects[0]["curve"]["control_points"]
+                .as_array()
+                .unwrap()
+                .len(),
+            7
         );
         assert_eq!(objects[0]["blank_name"], true);
         assert_eq!(objects[0]["color_from_layer"], true);

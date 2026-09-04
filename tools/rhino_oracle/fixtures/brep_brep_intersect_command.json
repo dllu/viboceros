@@ -1,0 +1,72 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-overlapping-boxes",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [5.0, 5.0, 5.0],
+      "second_box_max": [15.0, 15.0, 15.0],
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-overlapping-boxes-reversed",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [5.0, 5.0, 5.0],
+      "second_box_max": [15.0, 15.0, 15.0],
+      "reverse_selection": true,
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-disjoint-boxes",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [20.0, 20.0, 20.0],
+      "second_box_max": [30.0, 30.0, 30.0]
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-contained-box",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [2.0, 2.0, 2.0],
+      "second_box_max": [8.0, 8.0, 8.0]
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-box-face-contact",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [10.0, 0.0, 0.0],
+      "second_box_max": [20.0, 10.0, 10.0],
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-box-edge-contact",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [10.0, 10.0, 0.0],
+      "second_box_max": [20.0, 20.0, 10.0],
+      "canonicalize_linear_curves": true
+    },
+    {
+      "op": "brep_brep_intersect_command",
+      "id": "intersect-box-vertex-contact",
+      "first_box_min": [0.0, 0.0, 0.0],
+      "first_box_max": [10.0, 10.0, 10.0],
+      "second_box_min": [10.0, 10.0, 10.0],
+      "second_box_max": [20.0, 20.0, 20.0]
+    }
+  ]
+}

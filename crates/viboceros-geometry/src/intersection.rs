@@ -156,6 +156,15 @@ pub enum SurfaceBrepIntersectionEvent {
     Curve(NurbsCurve),
 }
 
+/// A point or curve shared by two trimmed B-reps.
+#[derive(Clone, Debug, PartialEq)]
+pub enum BrepBrepIntersectionEvent {
+    /// An isolated contact between the trimmed B-rep boundaries.
+    Point(Point3),
+    /// A finite intersection-curve component.
+    Curve(NurbsCurve),
+}
+
 #[derive(Clone, Debug)]
 struct CurveNode {
     curve: NurbsCurve,
@@ -596,13 +605,8 @@ pub fn surface_brep_intersection_events(
                 context: "non-planar surfaces",
             },
         )?;
-        let normals_cross = surface_plane
-            .normal()
-            .as_vector()
-            .cross(face_plane.normal().as_vector())?;
-        let coincident = normals_cross.length()? <= tolerance.angular()
-            && surface_plane.signed_distance_to(face_plane.origin())?.abs()
-                <= distance_tolerance * 2.0;
+        let coincident =
+            planes_are_coincident(surface_plane, face_plane, tolerance, distance_tolerance)?;
         let face_events = surface_surface_intersection_events(surface, face.surface(), tolerance)?;
         if coincident
             && !face_events.is_empty()
@@ -617,14 +621,14 @@ pub fn surface_brep_intersection_events(
             match event {
                 SurfaceSurfaceIntersectionEvent::Point(point) => {
                     if point_on_brep_face(point, face, tolerance, distance_tolerance)? {
-                        push_unique_surface_brep_point(&mut points, point, distance_tolerance);
+                        push_unique_brep_point(&mut points, point, distance_tolerance);
                     }
                 }
                 SurfaceSurfaceIntersectionEvent::Curve(curve) => {
                     let (face_points, face_curves) =
                         clip_curve_to_brep_face(&curve, brep, face, tolerance, distance_tolerance)?;
                     for point in face_points {
-                        push_unique_surface_brep_point(&mut points, point, distance_tolerance);
+                        push_unique_brep_point(&mut points, point, distance_tolerance);
                     }
                     curves.extend(face_curves);
                 }
@@ -632,7 +636,173 @@ pub fn surface_brep_intersection_events(
         }
     }
 
-    let mut curves = join_surface_brep_linear_curves(curves, tolerance, distance_tolerance)?;
+    let (curves, points) = finalize_linear_brep_intersection_geometry(
+        points,
+        curves,
+        tolerance,
+        distance_tolerance,
+        GeometryError::UnsupportedSurfaceBrepIntersection {
+            context: "joining non-linear face intersection curves",
+        },
+    )?;
+
+    Ok(curves
+        .into_iter()
+        .map(SurfaceBrepIntersectionEvent::Curve)
+        .chain(points.into_iter().map(SurfaceBrepIntersectionEvent::Point))
+        .collect())
+}
+
+/// Intersects the trimmed faces of two B-reps.
+///
+/// The current exact path handles B-reps whose underlying face surfaces are
+/// planar. Every face-pair result is clipped against both exact trim regions,
+/// then shared-topology duplicates are removed and linear pieces are joined
+/// into maximal components. Coincident pairs currently require both faces to
+/// cover their complete natural surface domains, with at most one coincident
+/// area-overlap pair per B-rep pair.
+pub fn brep_brep_intersection_events(
+    first: &Brep,
+    second: &Brep,
+    tolerance: Tolerance,
+) -> Result<Vec<BrepBrepIntersectionEvent>, GeometryError> {
+    let distance_tolerance = brep_brep_distance_tolerance(first, second, tolerance);
+    let mut points = Vec::new();
+    let mut curves = Vec::new();
+    let mut coincident_area_pairs = 0_usize;
+
+    for first_face in first.faces() {
+        let first_plane = first_face.surface().plane(tolerance)?.ok_or(
+            GeometryError::UnsupportedBrepBrepIntersection {
+                context: "non-planar face surfaces",
+            },
+        )?;
+        for second_face in second.faces() {
+            let second_plane = second_face.surface().plane(tolerance)?.ok_or(
+                GeometryError::UnsupportedBrepBrepIntersection {
+                    context: "non-planar face surfaces",
+                },
+            )?;
+            let face_events = surface_surface_intersection_events(
+                first_face.surface(),
+                second_face.surface(),
+                tolerance,
+            )?;
+            let coincident = !face_events.is_empty()
+                && planes_are_coincident(first_plane, second_plane, tolerance, distance_tolerance)?;
+            if coincident {
+                if !crate::brep::face_covers_full_surface_domain(first_face, tolerance)?
+                    || !crate::brep::face_covers_full_surface_domain(second_face, tolerance)?
+                {
+                    return Err(GeometryError::UnsupportedBrepBrepIntersection {
+                        context: "coincident trimmed face regions",
+                    });
+                }
+                let mut has_area_overlap = false;
+                for event in &face_events {
+                    if let SurfaceSurfaceIntersectionEvent::Curve(curve) = event
+                        && curve.is_closed()?
+                    {
+                        has_area_overlap = true;
+                        break;
+                    }
+                }
+                if has_area_overlap {
+                    coincident_area_pairs += 1;
+                    if coincident_area_pairs > 1 {
+                        return Err(GeometryError::UnsupportedBrepBrepIntersection {
+                            context: "multiple coincident face regions",
+                        });
+                    }
+                }
+            }
+
+            for event in face_events {
+                match event {
+                    SurfaceSurfaceIntersectionEvent::Point(point) => {
+                        if point_on_brep_face(point, first_face, tolerance, distance_tolerance)?
+                            && point_on_brep_face(
+                                point,
+                                second_face,
+                                tolerance,
+                                distance_tolerance,
+                            )?
+                        {
+                            push_unique_brep_point(&mut points, point, distance_tolerance);
+                        }
+                    }
+                    SurfaceSurfaceIntersectionEvent::Curve(curve) => {
+                        let (second_points, second_curves) = clip_curve_to_brep_face(
+                            &curve,
+                            second,
+                            second_face,
+                            tolerance,
+                            distance_tolerance,
+                        )?;
+                        for point in second_points {
+                            if point_on_brep_face(point, first_face, tolerance, distance_tolerance)?
+                            {
+                                push_unique_brep_point(&mut points, point, distance_tolerance);
+                            }
+                        }
+                        for second_curve in second_curves {
+                            let (first_points, first_curves) = clip_curve_to_brep_face(
+                                &second_curve,
+                                first,
+                                first_face,
+                                tolerance,
+                                distance_tolerance,
+                            )?;
+                            for point in first_points {
+                                push_unique_brep_point(&mut points, point, distance_tolerance);
+                            }
+                            curves.extend(first_curves);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    let (curves, points) = finalize_linear_brep_intersection_geometry(
+        points,
+        curves,
+        tolerance,
+        distance_tolerance,
+        GeometryError::UnsupportedBrepBrepIntersection {
+            context: "joining non-linear face intersection curves",
+        },
+    )?;
+    Ok(curves
+        .into_iter()
+        .map(BrepBrepIntersectionEvent::Curve)
+        .chain(points.into_iter().map(BrepBrepIntersectionEvent::Point))
+        .collect())
+}
+
+fn planes_are_coincident(
+    first: Plane,
+    second: Plane,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<bool, GeometryError> {
+    let normals_cross = first
+        .normal()
+        .as_vector()
+        .cross(second.normal().as_vector())?;
+    Ok(normals_cross.length()? <= tolerance.angular()
+        && first.signed_distance_to(second.origin())?.abs() <= distance_tolerance * 2.0)
+}
+
+fn finalize_linear_brep_intersection_geometry(
+    points: Vec<Point3>,
+    curves: Vec<NurbsCurve>,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+    non_linear_error: GeometryError,
+) -> Result<(Vec<NurbsCurve>, Vec<Point3>), GeometryError> {
+    let mut curves =
+        join_brep_linear_curves(curves, tolerance, distance_tolerance, non_linear_error)?;
     let mut isolated_points = Vec::with_capacity(points.len());
     for point in points {
         let mut lies_on_curve = false;
@@ -656,11 +826,7 @@ pub fn surface_brep_intersection_events(
         )
     });
 
-    Ok(curves
-        .into_iter()
-        .map(SurfaceBrepIntersectionEvent::Curve)
-        .chain(points.into_iter().map(SurfaceBrepIntersectionEvent::Point))
-        .collect())
+    Ok((curves, points))
 }
 
 fn point_on_brep_face(
@@ -734,18 +900,17 @@ fn clip_curve_to_brep_face(
     Ok((points, curves))
 }
 
-fn join_surface_brep_linear_curves(
+fn join_brep_linear_curves(
     curves: Vec<NurbsCurve>,
     tolerance: Tolerance,
     distance_tolerance: Real,
+    non_linear_error: GeometryError,
 ) -> Result<Vec<NurbsCurve>, GeometryError> {
     if curves
         .iter()
         .any(|curve| curve.degree() != 1 || curve.is_rational())
     {
-        return Err(GeometryError::UnsupportedSurfaceBrepIntersection {
-            context: "joining non-linear face intersection curves",
-        });
+        return Err(non_linear_error);
     }
 
     let mut closed = Vec::new();
@@ -845,11 +1010,7 @@ fn point_pairs_match(first: [Point3; 2], second: [Point3; 2], distance_tolerance
         || (near(first[0], second[1]) && near(first[1], second[0]))
 }
 
-fn push_unique_surface_brep_point(
-    points: &mut Vec<Point3>,
-    point: Point3,
-    distance_tolerance: Real,
-) {
+fn push_unique_brep_point(points: &mut Vec<Point3>, point: Point3, distance_tolerance: Real) {
     if !points.iter().any(|existing| {
         existing
             .distance_to(point)
@@ -2102,6 +2263,27 @@ fn surface_brep_distance_tolerance(
         .max(tolerance.relative() * coordinate_scale)
 }
 
+fn brep_brep_distance_tolerance(first: &Brep, second: &Brep, tolerance: Tolerance) -> Real {
+    let coordinate_scale = first
+        .vertices()
+        .iter()
+        .map(|vertex| vertex.point())
+        .chain(second.vertices().iter().map(|vertex| vertex.point()))
+        .chain(
+            first
+                .faces()
+                .iter()
+                .chain(second.faces())
+                .flat_map(|face| face.surface().control_points())
+                .map(|control| control.point()),
+        )
+        .flat_map(Point3::to_array)
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale)
+}
+
 fn curve_brep_intersection_at_parameter(
     curve: &NurbsCurve,
     curve_parameter: Real,
@@ -3165,18 +3347,197 @@ mod tests {
     }
 
     fn box_brep() -> Brep {
+        box_brep_with_intervals([[0.0, 10.0], [0.0, 10.0], [0.0, 10.0]])
+    }
+
+    fn box_brep_with_intervals(intervals: [[Real; 2]; 3]) -> Brep {
         let frame = crate::Frame3::try_from_normal(
             point(0.0, 0.0, 0.0),
             crate::Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
             Tolerance::DEFAULT,
         )
         .unwrap();
-        Brep::try_box(
-            frame,
-            [[0.0, 10.0], [0.0, 10.0], [0.0, 10.0]],
+        Brep::try_box(frame, intervals, Tolerance::DEFAULT).unwrap()
+    }
+
+    #[test]
+    fn intersects_overlapping_planar_breps_as_one_joined_loop() {
+        let first = box_brep();
+        let second = box_brep_with_intervals([[5.0, 15.0], [5.0, 15.0], [5.0, 15.0]]);
+        let events = brep_brep_intersection_events(&first, &second, Tolerance::DEFAULT).unwrap();
+        let [BrepBrepIntersectionEvent::Curve(curve)] = events.as_slice() else {
+            panic!("overlapping boxes must produce one joined loop, got {events:#?}")
+        };
+        assert!(curve.is_closed().unwrap());
+        assert_eq!(curve.control_points().len(), 7);
+        assert_eq!(curve.domain(), 0.0..=30.0);
+        let actual = curve
+            .control_points()
+            .iter()
+            .map(|control| control.point())
+            .collect::<Vec<_>>();
+        for expected in [
+            point(10.0, 5.0, 5.0),
+            point(10.0, 10.0, 5.0),
+            point(5.0, 10.0, 5.0),
+            point(5.0, 10.0, 10.0),
+            point(5.0, 5.0, 10.0),
+            point(10.0, 5.0, 10.0),
+        ] {
+            assert!(
+                actual
+                    .iter()
+                    .any(|point| point.is_near(expected, Tolerance::DEFAULT)),
+                "missing expected box-intersection vertex {expected:?} from {actual:?}"
+            );
+        }
+
+        assert!(
+            brep_brep_intersection_events(
+                &first,
+                &box_brep_with_intervals([[2.0, 8.0], [2.0, 8.0], [2.0, 8.0]]),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+        assert!(
+            brep_brep_intersection_events(
+                &first,
+                &box_brep_with_intervals([[20.0, 30.0], [20.0, 30.0], [20.0, 30.0]]),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+    }
+
+    #[test]
+    fn brep_brep_intersection_distinguishes_face_edge_and_vertex_contacts() {
+        let first = box_brep();
+        let face_events = brep_brep_intersection_events(
+            &first,
+            &box_brep_with_intervals([[10.0, 20.0], [0.0, 10.0], [0.0, 10.0]]),
             Tolerance::DEFAULT,
         )
-        .unwrap()
+        .unwrap();
+        let [BrepBrepIntersectionEvent::Curve(face_boundary)] = face_events.as_slice() else {
+            panic!("face-touching boxes must produce one boundary, got {face_events:#?}")
+        };
+        assert!(face_boundary.is_closed().unwrap());
+        assert_eq!(face_boundary.control_points().len(), 5);
+
+        let edge_events = brep_brep_intersection_events(
+            &first,
+            &box_brep_with_intervals([[10.0, 20.0], [10.0, 20.0], [0.0, 10.0]]),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [BrepBrepIntersectionEvent::Curve(edge)] = edge_events.as_slice() else {
+            panic!("edge-touching boxes must produce one line, got {edge_events:#?}")
+        };
+        assert_eq!(edge.control_points().len(), 2);
+        let endpoints = [
+            edge.control_points()[0].point(),
+            edge.control_points()[1].point(),
+        ];
+        assert!(endpoints.contains(&point(10.0, 10.0, 0.0)));
+        assert!(endpoints.contains(&point(10.0, 10.0, 10.0)));
+
+        let vertex_events = brep_brep_intersection_events(
+            &first,
+            &box_brep_with_intervals([[10.0, 20.0], [10.0, 20.0], [10.0, 20.0]]),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [BrepBrepIntersectionEvent::Point(contact)] = vertex_events.as_slice() else {
+            panic!("vertex-touching boxes must produce one point, got {vertex_events:#?}")
+        };
+        assert!(contact.is_near(point(10.0, 10.0, 10.0), Tolerance::DEFAULT));
+
+        assert_eq!(
+            brep_brep_intersection_events(&first, &first, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedBrepBrepIntersection {
+                context: "multiple coincident face regions",
+            })
+        );
+    }
+
+    #[test]
+    fn brep_brep_intersection_clips_both_exact_trim_regions() {
+        let closed_polyline = |points: Vec<Point3>| {
+            Polyline3::try_new(points, Tolerance::DEFAULT)
+                .and_then(|polyline| polyline.to_nurbs())
+                .unwrap()
+        };
+        let horizontal_outer = closed_polyline(vec![
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+            point(0.0, 0.0, 0.0),
+        ]);
+        let horizontal_hole = closed_polyline(vec![
+            point(4.0, 4.0, 0.0),
+            point(6.0, 4.0, 0.0),
+            point(6.0, 6.0, 0.0),
+            point(4.0, 6.0, 0.0),
+            point(4.0, 4.0, 0.0),
+        ]);
+        let horizontal = Brep::try_planar_face_with_holes(
+            &horizontal_outer,
+            &[horizontal_hole],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let vertical_outer = closed_polyline(vec![
+            point(0.0, 5.0, -5.0),
+            point(10.0, 5.0, -5.0),
+            point(10.0, 5.0, 5.0),
+            point(0.0, 5.0, 5.0),
+            point(0.0, 5.0, -5.0),
+        ]);
+        let vertical_hole = closed_polyline(vec![
+            point(7.0, 5.0, -1.0),
+            point(9.0, 5.0, -1.0),
+            point(9.0, 5.0, 1.0),
+            point(7.0, 5.0, 1.0),
+            point(7.0, 5.0, -1.0),
+        ]);
+        let vertical =
+            Brep::try_planar_face_with_holes(&vertical_outer, &[vertical_hole], Tolerance::DEFAULT)
+                .unwrap();
+
+        let events =
+            brep_brep_intersection_events(&horizontal, &vertical, Tolerance::DEFAULT).unwrap();
+        assert_eq!(events.len(), 3);
+        let mut intervals = events
+            .iter()
+            .map(|event| {
+                let BrepBrepIntersectionEvent::Curve(curve) = event else {
+                    panic!("transverse trimmed faces must produce only curve intervals")
+                };
+                let mut interval = [
+                    curve.control_points()[0].point().x(),
+                    curve.control_points()[1].point().x(),
+                ];
+                interval.sort_by(Real::total_cmp);
+                interval
+            })
+            .collect::<Vec<_>>();
+        intervals.sort_by(|left, right| left[0].total_cmp(&right[0]));
+        for (actual, expected) in intervals.iter().zip([[0.0, 4.0], [6.0, 7.0], [9.0, 10.0]]) {
+            assert!((actual[0] - expected[0]).abs() < 1.0e-10);
+            assert!((actual[1] - expected[1]).abs() < 1.0e-10);
+        }
+
+        assert_eq!(
+            brep_brep_intersection_events(&horizontal, &horizontal, Tolerance::DEFAULT),
+            Err(GeometryError::UnsupportedBrepBrepIntersection {
+                context: "coincident trimmed face regions",
+            })
+        );
     }
 
     #[test]

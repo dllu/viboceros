@@ -93,6 +93,9 @@ pub enum GeometryError {
     #[error("surface/B-rep intersection does not yet support {context}")]
     UnsupportedSurfaceBrepIntersection { context: &'static str },
 
+    #[error("B-rep/B-rep intersection does not yet support {context}")]
+    UnsupportedBrepBrepIntersection { context: &'static str },
+
     #[error("a NURBS surface extension interval must be finite, increasing, and extend its domain")]
     InvalidSurfaceExtensionInterval,
 

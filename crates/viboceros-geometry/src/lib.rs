@@ -68,10 +68,10 @@ pub use interpolation::{
     MAX_CURVE_INTERPOLATION_POINTS,
 };
 pub use intersection::{
-    CurveBrepIntersection, CurveBrepIntersectionEvent, CurveBrepOverlap, CurveSurfaceIntersection,
-    CurveSurfaceIntersectionEvent, CurveSurfaceOverlap, SurfaceBrepIntersectionEvent,
-    SurfaceSurfaceIntersectionEvent, curve_brep_intersection_events,
-    curve_surface_intersection_events, curve_surface_intersections,
+    BrepBrepIntersectionEvent, CurveBrepIntersection, CurveBrepIntersectionEvent, CurveBrepOverlap,
+    CurveSurfaceIntersection, CurveSurfaceIntersectionEvent, CurveSurfaceOverlap,
+    SurfaceBrepIntersectionEvent, SurfaceSurfaceIntersectionEvent, brep_brep_intersection_events,
+    curve_brep_intersection_events, curve_surface_intersection_events, curve_surface_intersections,
     surface_brep_intersection_events, surface_surface_intersection_events,
 };
 pub use line::LineSegment;
