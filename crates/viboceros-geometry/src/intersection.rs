@@ -1,8 +1,8 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::{
-    BoundingBox3, Brep, BrepFace, GeometryError, NurbsCurve, NurbsSurface, Plane, Point3, Real,
-    Tolerance, UnitVector3, intersect_three_planes,
+    BoundingBox3, Brep, BrepFace, GeometryError, NurbsCurve, NurbsSurface, Plane, Point3,
+    Polyline3, Real, Tolerance, UnitVector3, intersect_three_planes,
 };
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
@@ -449,10 +449,12 @@ pub fn curve_brep_intersection_events(
 /// Intersects two finite NURBS surfaces.
 ///
 /// The current exact path handles transverse planar surfaces, including
-/// multiple clipped components and isolated boundary contacts. Parallel
-/// disjoint planes return no events. Non-planar and coincident planar inputs
-/// are reported explicitly until their curve and area-overlap paths are
-/// implemented.
+/// multiple clipped components and isolated boundary contacts, plus
+/// coincident nonsingular convex non-rational four-sided bilinear patches. Coincident
+/// patches return their area-overlap perimeter or shared edge; a lone shared
+/// corner produces no event, matching Rhino. Parallel disjoint planes return
+/// no events. Non-planar and more general coincident inputs are reported
+/// explicitly until their intersection-curve paths are implemented.
 pub fn surface_surface_intersection_events(
     first: &NurbsSurface,
     second: &NurbsSurface,
@@ -479,9 +481,13 @@ pub fn surface_surface_intersection_events(
         if first_plane.signed_distance_to(second_plane.origin())?.abs() > distance_tolerance * 2.0 {
             return Ok(Vec::new());
         }
-        return Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-            context: "coincident planar surfaces",
-        });
+        return coincident_planar_surface_intersection_events(
+            first,
+            second,
+            first_plane,
+            tolerance,
+            distance_tolerance,
+        );
     }
     if !weights_have_common_sign(first.control_points().iter().map(|point| point.weight()))
         || !weights_have_common_sign(second.control_points().iter().map(|point| point.weight()))
@@ -550,6 +556,439 @@ pub fn surface_surface_intersection_events(
             }
         })
         .collect()
+}
+
+#[derive(Clone, Copy, Debug)]
+struct ProjectedIntersectionPoint {
+    point: Point3,
+    x: Real,
+    y: Real,
+}
+
+fn coincident_planar_surface_intersection_events(
+    first: &NurbsSurface,
+    second: &NurbsSurface,
+    plane: Plane,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Vec<SurfaceSurfaceIntersectionEvent>, GeometryError> {
+    let unsupported = || GeometryError::UnsupportedSurfaceSurfaceIntersection {
+        context: "coincident planar surfaces other than nonsingular convex non-rational four-sided bilinear patches",
+    };
+    if !is_four_sided_bilinear_patch(first)
+        || !is_four_sided_bilinear_patch(second)
+        || first.is_rational()
+        || second.is_rational()
+    {
+        return Err(unsupported());
+    }
+
+    let mut first_polygon = bilinear_patch_polygon(first);
+    let mut second_polygon = bilinear_patch_polygon(second);
+    if !orient_and_validate_convex_polygon(&mut first_polygon, plane.normal(), distance_tolerance)?
+        || !orient_and_validate_convex_polygon(
+            &mut second_polygon,
+            plane.normal(),
+            distance_tolerance,
+        )?
+    {
+        return Err(unsupported());
+    }
+
+    let mut candidates = Vec::new();
+    for point in &first_polygon {
+        if point_inside_convex_polygon(*point, &second_polygon, plane.normal(), distance_tolerance)?
+        {
+            push_unique_planar_point(&mut candidates, *point, distance_tolerance);
+        }
+    }
+    for point in &second_polygon {
+        if point_inside_convex_polygon(*point, &first_polygon, plane.normal(), distance_tolerance)?
+        {
+            push_unique_planar_point(&mut candidates, *point, distance_tolerance);
+        }
+    }
+    for first_index in 0..first_polygon.len() {
+        let first_edge = [
+            first_polygon[first_index],
+            first_polygon[(first_index + 1) % first_polygon.len()],
+        ];
+        for second_index in 0..second_polygon.len() {
+            let second_edge = [
+                second_polygon[second_index],
+                second_polygon[(second_index + 1) % second_polygon.len()],
+            ];
+            if let Some(point) = planar_segment_intersection(
+                first_edge,
+                second_edge,
+                plane.normal(),
+                tolerance,
+                distance_tolerance,
+            )? {
+                push_unique_planar_point(&mut candidates, point, distance_tolerance);
+            }
+        }
+    }
+    if candidates.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let mut hull = planar_convex_hull(candidates, plane.normal(), distance_tolerance)?;
+    if hull.len() == 1 {
+        // Rhino does not create a point for a zero-area contact between
+        // coincident surface regions, unlike a transverse endpoint contact.
+        return Ok(Vec::new());
+    }
+    let domain_start = if hull.len() == 2 {
+        if let Some(oriented) =
+            coincident_line_orientation(second, [hull[0], hull[1]], tolerance, distance_tolerance)?
+                .or(coincident_line_orientation(
+                    first,
+                    [hull[0], hull[1]],
+                    tolerance,
+                    distance_tolerance,
+                )?)
+        {
+            hull = oriented.into();
+        }
+        0.0
+    } else {
+        let full_boundary = matching_polygon_start(&hull, &first_polygon, distance_tolerance)
+            .map(|point_index| (point_index, -*first.domain_v().start()))
+            .or_else(|| {
+                matching_polygon_start(&hull, &second_polygon, distance_tolerance)
+                    .map(|point_index| (point_index, -*second.domain_v().start()))
+            });
+        let partial_boundary = if full_boundary.is_none() {
+            coincident_boundary_start(first, &hull, tolerance, distance_tolerance)?.or(
+                coincident_boundary_start(second, &hull, tolerance, distance_tolerance)?,
+            )
+        } else {
+            None
+        };
+        if let Some((point_index, parameter)) = full_boundary.or(partial_boundary) {
+            hull.rotate_left(point_index);
+            parameter
+        } else {
+            0.0
+        }
+    };
+    if hull.len() > 2 {
+        hull.push(hull[0]);
+    }
+    let polyline = Polyline3::try_new(hull, tolerance)?;
+    let length = polyline.length()?;
+    let domain_end = domain_start + length;
+    crate::require_finite(
+        [domain_start, domain_end],
+        "coincident surface intersection curve domain",
+    )?;
+    let curve = polyline
+        .to_nurbs()?
+        .try_reparameterized(domain_start..=domain_end)?;
+    Ok(vec![SurfaceSurfaceIntersectionEvent::Curve(curve)])
+}
+
+fn is_four_sided_bilinear_patch(surface: &NurbsSurface) -> bool {
+    surface.degree_u() == 1
+        && surface.degree_v() == 1
+        && surface.control_point_count_u() == 2
+        && surface.control_point_count_v() == 2
+}
+
+fn bilinear_patch_polygon(surface: &NurbsSurface) -> Vec<Point3> {
+    [(0, 0), (1, 0), (1, 1), (0, 1)]
+        .into_iter()
+        .map(|(u, v)| {
+            surface
+                .control_point(u, v)
+                .expect("a bilinear patch has a two-by-two control net")
+                .point()
+        })
+        .collect()
+}
+
+fn orient_and_validate_convex_polygon(
+    polygon: &mut [Point3],
+    normal: UnitVector3,
+    distance_tolerance: Real,
+) -> Result<bool, GeometryError> {
+    let mut signed_twice_area = 0.0;
+    let mut perimeter = 0.0;
+    let origin = polygon[0];
+    for index in 0..polygon.len() {
+        let point = polygon[index];
+        let next = polygon[(index + 1) % polygon.len()];
+        let edge_length = point.distance_to(next)?;
+        if edge_length <= distance_tolerance * 2.0 {
+            return Ok(false);
+        }
+        perimeter += edge_length;
+        signed_twice_area += origin
+            .vector_to(point)?
+            .cross(origin.vector_to(next)?)?
+            .dot(normal.as_vector())?;
+    }
+    crate::require_finite(
+        [signed_twice_area, perimeter],
+        "coincident surface intersection polygon",
+    )?;
+    if signed_twice_area.abs() <= distance_tolerance * perimeter * 2.0 {
+        return Ok(false);
+    }
+    if signed_twice_area < 0.0 {
+        polygon[1..].reverse();
+    }
+
+    for index in 0..polygon.len() {
+        let previous = polygon[index];
+        let corner = polygon[(index + 1) % polygon.len()];
+        let next = polygon[(index + 2) % polygon.len()];
+        let edge = previous.vector_to(corner)?;
+        let edge_length = edge.length()?;
+        let turn_distance = edge
+            .cross(corner.vector_to(next)?)?
+            .dot(normal.as_vector())?
+            / edge_length;
+        // A flat or reflex corner makes the bilinear parameterization singular
+        // or folded at/near the boundary, so it is not the convex four-sided
+        // patch handled by this exact path.
+        if turn_distance <= distance_tolerance * 2.0 {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn point_inside_convex_polygon(
+    point: Point3,
+    polygon: &[Point3],
+    normal: UnitVector3,
+    distance_tolerance: Real,
+) -> Result<bool, GeometryError> {
+    for index in 0..polygon.len() {
+        let start = polygon[index];
+        let end = polygon[(index + 1) % polygon.len()];
+        let edge = start.vector_to(end)?;
+        let signed_distance = edge
+            .cross(start.vector_to(point)?)?
+            .dot(normal.as_vector())?
+            / edge.length()?;
+        if signed_distance < -distance_tolerance * 2.0 {
+            return Ok(false);
+        }
+    }
+    Ok(true)
+}
+
+fn planar_segment_intersection(
+    first: [Point3; 2],
+    second: [Point3; 2],
+    normal: UnitVector3,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<Point3>, GeometryError> {
+    let first_vector = first[0].vector_to(first[1])?;
+    let second_vector = second[0].vector_to(second[1])?;
+    let first_length = first_vector.length()?;
+    let second_length = second_vector.length()?;
+    let first_direction = first_vector.normalized_nonzero()?;
+    let second_direction = second_vector.normalized_nonzero()?;
+    let denominator = first_direction
+        .as_vector()
+        .cross(second_direction.as_vector())?
+        .dot(normal.as_vector())?;
+    if denominator.abs() <= tolerance.angular() {
+        return Ok(None);
+    }
+
+    let delta = first[0].vector_to(second[0])?;
+    let first_distance = delta
+        .cross(second_direction.as_vector())?
+        .dot(normal.as_vector())?
+        / denominator;
+    let second_distance = delta
+        .cross(first_direction.as_vector())?
+        .dot(normal.as_vector())?
+        / denominator;
+    if first_distance < -distance_tolerance * 2.0
+        || first_distance > first_length + distance_tolerance * 2.0
+        || second_distance < -distance_tolerance * 2.0
+        || second_distance > second_length + distance_tolerance * 2.0
+    {
+        return Ok(None);
+    }
+
+    let first_point = first[0].translated(
+        first_direction
+            .as_vector()
+            .scaled(first_distance.clamp(0.0, first_length))?,
+    )?;
+    let second_point = second[0].translated(
+        second_direction
+            .as_vector()
+            .scaled(second_distance.clamp(0.0, second_length))?,
+    )?;
+    Ok(Some(midpoint(first_point, second_point)?))
+}
+
+fn push_unique_planar_point(points: &mut Vec<Point3>, point: Point3, distance_tolerance: Real) {
+    if !points.iter().any(|existing| {
+        existing
+            .distance_to(point)
+            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+    }) {
+        points.push(point);
+    }
+}
+
+fn planar_convex_hull(
+    points: Vec<Point3>,
+    normal: UnitVector3,
+    distance_tolerance: Real,
+) -> Result<Vec<Point3>, GeometryError> {
+    if points.len() <= 1 {
+        return Ok(points);
+    }
+    let origin = points[0];
+    let x_axis = origin.vector_to(points[1])?.normalized_nonzero()?;
+    let y_axis = normal
+        .as_vector()
+        .cross(x_axis.as_vector())?
+        .normalized_nonzero()?;
+    let mut projected = points
+        .into_iter()
+        .map(|point| {
+            let offset = origin.vector_to(point)?;
+            Ok(ProjectedIntersectionPoint {
+                point,
+                x: offset.dot(x_axis.as_vector())?,
+                y: offset.dot(y_axis.as_vector())?,
+            })
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    projected.sort_by(|left, right| {
+        left.x
+            .total_cmp(&right.x)
+            .then_with(|| left.y.total_cmp(&right.y))
+    });
+
+    let mut lower = Vec::new();
+    for point in &projected {
+        while projected_hull_turn_is_flat_or_clockwise(&lower, *point, distance_tolerance)? {
+            lower.pop();
+        }
+        lower.push(*point);
+    }
+    let mut upper = Vec::new();
+    for point in projected.iter().rev() {
+        while projected_hull_turn_is_flat_or_clockwise(&upper, *point, distance_tolerance)? {
+            upper.pop();
+        }
+        upper.push(*point);
+    }
+    lower.pop();
+    upper.pop();
+    lower.extend(upper);
+    Ok(lower.into_iter().map(|point| point.point).collect())
+}
+
+fn projected_hull_turn_is_flat_or_clockwise(
+    hull: &[ProjectedIntersectionPoint],
+    candidate: ProjectedIntersectionPoint,
+    distance_tolerance: Real,
+) -> Result<bool, GeometryError> {
+    let [.., first, second] = hull else {
+        return Ok(false);
+    };
+    let first_edge = first.point.vector_to(second.point)?;
+    let second_edge = second.point.vector_to(candidate.point)?;
+    let scale = first_edge.length()?.max(second_edge.length()?);
+    let turn = (second.x - first.x).mul_add(
+        candidate.y - second.y,
+        -(second.y - first.y) * (candidate.x - second.x),
+    );
+    crate::require_finite([turn], "coincident surface intersection hull")?;
+    Ok(turn <= distance_tolerance * scale * 2.0)
+}
+
+fn coincident_boundary_start(
+    surface: &NurbsSurface,
+    hull: &[Point3],
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<(usize, Real)>, GeometryError> {
+    let mut best: Option<(Real, usize, Real)> = None;
+    for (edge_index, edge) in surface.natural_edge_curves()?.into_iter().enumerate() {
+        let domain = edge.domain();
+        let start = *domain.start();
+        let end = *domain.end();
+        for (point_index, point) in hull.iter().enumerate() {
+            let parameter = edge.closest_parameter(*point, tolerance)?;
+            if edge.evaluate(parameter)?.distance_to(*point)? > distance_tolerance * 2.0 {
+                continue;
+            }
+            let fraction = ((parameter - start) / (end - start)).clamp(0.0, 1.0);
+            let order = edge_index as Real + fraction;
+            if best.is_none_or(|current| order < current.0) {
+                best = Some((order, point_index, parameter));
+            }
+        }
+    }
+    Ok(best.map(|(_, point_index, parameter)| (point_index, parameter)))
+}
+
+fn coincident_line_orientation(
+    surface: &NurbsSurface,
+    points: [Point3; 2],
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Option<[Point3; 2]>, GeometryError> {
+    for edge in surface.natural_edge_curves()? {
+        let first_parameter = edge.closest_parameter(points[0], tolerance)?;
+        let second_parameter = edge.closest_parameter(points[1], tolerance)?;
+        if edge.evaluate(first_parameter)?.distance_to(points[0])? <= distance_tolerance * 2.0
+            && edge.evaluate(second_parameter)?.distance_to(points[1])? <= distance_tolerance * 2.0
+        {
+            return Ok(Some(if first_parameter <= second_parameter {
+                points
+            } else {
+                [points[1], points[0]]
+            }));
+        }
+    }
+    Ok(None)
+}
+
+fn matching_polygon_start(
+    hull: &[Point3],
+    polygon: &[Point3],
+    distance_tolerance: Real,
+) -> Option<usize> {
+    if hull.len() != polygon.len()
+        || polygon.iter().any(|point| {
+            !hull.iter().any(|candidate| {
+                candidate
+                    .distance_to(*point)
+                    .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+            })
+        })
+    {
+        return None;
+    }
+    hull.iter().position(|point| {
+        point
+            .distance_to(polygon[0])
+            .is_ok_and(|distance| distance <= distance_tolerance * 2.0)
+    })
+}
+
+fn midpoint(first: Point3, second: Point3) -> Result<Point3, GeometryError> {
+    Point3::try_new(
+        finite_midpoint(first.x(), second.x()),
+        finite_midpoint(first.y(), second.y()),
+        finite_midpoint(first.z(), second.z()),
+    )
 }
 
 fn surface_projection_range(
@@ -2091,12 +2530,23 @@ mod tests {
     }
 
     fn horizontal_surface(z: Real) -> NurbsSurface {
+        horizontal_rectangle(0.0, 10.0, 0.0, 10.0, z)
+    }
+
+    fn horizontal_rectangle(
+        x_start: Real,
+        x_end: Real,
+        y_start: Real,
+        y_end: Real,
+        z: Real,
+    ) -> NurbsSurface {
         NurbsSurface::try_bilinear([
-            point(0.0, 0.0, z),
-            point(10.0, 0.0, z),
-            point(10.0, 10.0, z),
-            point(0.0, 10.0, z),
+            point(x_start, y_start, z),
+            point(x_end, y_start, z),
+            point(x_end, y_end, z),
+            point(x_start, y_end, z),
         ])
+        .and_then(|surface| surface.try_reparameterized(x_start..=x_end, y_start..=y_end))
         .unwrap()
     }
 
@@ -2107,6 +2557,7 @@ mod tests {
             point(x_end, 5.0, 5.0),
             point(x_start, 5.0, 5.0),
         ])
+        .and_then(|surface| surface.try_reparameterized(x_start..=x_end, -5.0..=5.0))
         .unwrap()
     }
 
@@ -2205,7 +2656,8 @@ mod tests {
     }
 
     #[test]
-    fn distinguishes_disjoint_and_coincident_planar_surfaces() {
+    fn intersects_coincident_nonsingular_convex_bilinear_patches_and_distinguishes_parallel_planes()
+    {
         let horizontal = horizontal_surface(0.0);
         assert!(
             surface_surface_intersection_events(
@@ -2216,10 +2668,174 @@ mod tests {
             .unwrap()
             .is_empty()
         );
+        let identical =
+            surface_surface_intersection_events(&horizontal, &horizontal, Tolerance::DEFAULT)
+                .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(boundary)] = identical.as_slice() else {
+            panic!("identical bilinear patches must return one boundary, got {identical:#?}")
+        };
+        assert_eq!(boundary.domain(), 0.0..=40.0);
         assert_eq!(
-            surface_surface_intersection_events(&horizontal, &horizontal, Tolerance::DEFAULT,),
+            boundary
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, 10.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(0.0, 0.0, 0.0),
+            ]
+        );
+
+        let shifted = horizontal_rectangle(5.0, 15.0, 0.0, 10.0, 0.0);
+        let partial =
+            surface_surface_intersection_events(&horizontal, &shifted, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(boundary)] = partial.as_slice() else {
+            panic!("overlapping bilinear patches must return one boundary, got {partial:#?}")
+        };
+        assert_eq!(boundary.domain(), 5.0..=35.0);
+        assert_eq!(
+            boundary
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(5.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(10.0, 10.0, 0.0),
+                point(5.0, 10.0, 0.0),
+                point(5.0, 0.0, 0.0),
+            ]
+        );
+
+        let contained = surface_surface_intersection_events(
+            &horizontal,
+            &horizontal_rectangle(2.0, 8.0, 2.0, 8.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(boundary)] = contained.as_slice() else {
+            panic!("a contained coincident patch must return its boundary, got {contained:#?}")
+        };
+        assert_eq!(boundary.domain(), -2.0..=22.0);
+        assert_eq!(
+            boundary
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(2.0, 2.0, 0.0),
+                point(8.0, 2.0, 0.0),
+                point(8.0, 8.0, 0.0),
+                point(2.0, 8.0, 0.0),
+                point(2.0, 2.0, 0.0),
+            ]
+        );
+
+        let rotated = NurbsSurface::try_bilinear([
+            point(5.0, -2.0, 0.0),
+            point(12.0, 5.0, 0.0),
+            point(5.0, 12.0, 0.0),
+            point(-2.0, 5.0, 0.0),
+        ])
+        .unwrap();
+        let rotated_overlap =
+            surface_surface_intersection_events(&horizontal, &rotated, Tolerance::DEFAULT).unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(boundary)] = rotated_overlap.as_slice() else {
+            panic!("rotated coincident patches must return one boundary, got {rotated_overlap:#?}")
+        };
+        let expected = [
+            point(3.0, 0.0, 0.0),
+            point(7.0, 0.0, 0.0),
+            point(10.0, 3.0, 0.0),
+            point(10.0, 7.0, 0.0),
+            point(7.0, 10.0, 0.0),
+            point(3.0, 10.0, 0.0),
+            point(0.0, 7.0, 0.0),
+            point(0.0, 3.0, 0.0),
+            point(3.0, 0.0, 0.0),
+        ];
+        assert_eq!(boundary.control_points().len(), expected.len());
+        for (actual, expected) in boundary.control_points().iter().zip(expected) {
+            assert!(actual.point().is_near(expected, Tolerance::DEFAULT));
+        }
+        assert!((*boundary.domain().start() - 3.0).abs() < 1.0e-10);
+
+        let edge_contact = surface_surface_intersection_events(
+            &horizontal,
+            &horizontal_rectangle(10.0, 20.0, 0.0, 10.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [SurfaceSurfaceIntersectionEvent::Curve(edge)] = edge_contact.as_slice() else {
+            panic!("a shared coincident edge must return one line, got {edge_contact:#?}")
+        };
+        assert_eq!(edge.domain(), 0.0..=10.0);
+        assert_eq!(edge.evaluate(0.0).unwrap(), point(10.0, 10.0, 0.0));
+        assert_eq!(edge.evaluate(10.0).unwrap(), point(10.0, 0.0, 0.0));
+
+        let corner_contact = surface_surface_intersection_events(
+            &horizontal,
+            &horizontal_rectangle(10.0, 20.0, 10.0, 20.0, 0.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(corner_contact.is_empty());
+
+        assert!(
+            surface_surface_intersection_events(
+                &horizontal,
+                &horizontal_rectangle(11.0, 20.0, 0.0, 10.0, 0.0),
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+            .is_empty()
+        );
+
+        let singular_boundary = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(5.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap();
+        assert_eq!(
+            surface_surface_intersection_events(
+                &horizontal,
+                &singular_boundary,
+                Tolerance::DEFAULT,
+            ),
             Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
-                context: "coincident planar surfaces",
+                context: "coincident planar surfaces other than nonsingular convex non-rational four-sided bilinear patches",
+            })
+        );
+
+        let quadratic = NurbsSurface::try_new(
+            2,
+            1,
+            3,
+            2,
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(5.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(5.0, 10.0, 0.0),
+                point(10.0, 10.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 10.0, 10.0, 10.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        )
+        .unwrap();
+        assert_eq!(
+            surface_surface_intersection_events(&horizontal, &quadratic, Tolerance::DEFAULT,),
+            Err(GeometryError::UnsupportedSurfaceSurfaceIntersection {
+                context: "coincident planar surfaces other than nonsingular convex non-rational four-sided bilinear patches",
             })
         );
     }

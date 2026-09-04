@@ -198,6 +198,167 @@
         "knots_u": [0.0, 0.0, 10.0, 10.0],
         "knots_v": [0.0, 0.0, 10.0, 10.0]
       }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "intersect-coincident-overlap",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [5.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [15.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [5.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [15.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [5.0, 5.0, 15.0, 15.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "intersect-coincident-edge-contact",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [20.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [20.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [10.0, 10.0, 20.0, 20.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "intersect-coincident-contained-patch",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [2.0, 2.0, 0.0], "weight": 1.0 },
+          { "point": [8.0, 2.0, 0.0], "weight": 1.0 },
+          { "point": [2.0, 8.0, 0.0], "weight": 1.0 },
+          { "point": [8.0, 8.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [2.0, 2.0, 8.0, 8.0],
+        "knots_v": [2.0, 2.0, 8.0, 8.0]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "intersect-coincident-corner-contact",
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [20.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 20.0, 0.0], "weight": 1.0 },
+          { "point": [20.0, 20.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [10.0, 10.0, 20.0, 20.0],
+        "knots_v": [10.0, 10.0, 20.0, 20.0]
+      }
+    },
+    {
+      "op": "surface_surface_intersect_command",
+      "id": "intersect-coincident-rotated-overlap",
+      "canonicalize_closed_curves": true,
+      "first": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "second": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [5.0, -2.0, 0.0], "weight": 1.0 },
+          { "point": [12.0, 5.0, 0.0], "weight": 1.0 },
+          { "point": [-2.0, 5.0, 0.0], "weight": 1.0 },
+          { "point": [5.0, 12.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 1.0, 1.0],
+        "knots_v": [0.0, 0.0, 1.0, 1.0]
+      }
     }
   ]
 }

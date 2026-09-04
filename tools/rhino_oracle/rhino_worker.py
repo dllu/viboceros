@@ -391,6 +391,35 @@ def _nurbs_curve_definition(curve, canonicalize_parameters=False):
         nurbs.Dispose()
 
 
+def _canonical_closed_intersection_curve_definition(curve):
+    definition = _nurbs_curve_definition(curve)
+    controls = definition["control_points"]
+    if definition["degree"] != 1 or len(controls) < 3:
+        return definition
+    first = controls[0]["point"]
+    last = controls[-1]["point"]
+    if sum((first[index] - last[index]) ** 2 for index in range(3)) > 1e-18:
+        return definition
+    unique = controls[:-1]
+    seam = min(
+        range(len(unique)),
+        key=lambda index: tuple(
+            round(value, 9) for value in unique[index]["point"]
+        ),
+    )
+    rotated = unique[seam:] + unique[:seam]
+    rotated.append(rotated[0])
+    segment_count = len(rotated) - 1
+    definition["control_points"] = rotated
+    definition["domain"] = [0.0, 1.0]
+    definition["knots"] = (
+        [0.0, 0.0]
+        + [float(index) / float(segment_count) for index in range(1, segment_count)]
+        + [1.0, 1.0]
+    )
+    return definition
+
+
 def _nurbs_curve_from_definition(definition):
     degree = int(definition["degree"])
     controls = definition["control_points"]
@@ -6668,7 +6697,12 @@ def _execute(operation, iterations, tolerance):
                             float(location.Z),
                         )
                     elif isinstance(geometry, Rhino.Geometry.Curve):
-                        definition = _nurbs_curve_definition(geometry)
+                        if operation.get("canonicalize_closed_curves", False):
+                            definition = (
+                                _canonical_closed_intersection_curve_definition(geometry)
+                            )
+                        else:
+                            definition = _nurbs_curve_definition(geometry)
                         value = {"kind": "curve", "curve": definition}
                         sort_key = ("curve",) + tuple(
                             definition["control_points"][0]["point"]

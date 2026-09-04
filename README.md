@@ -880,13 +880,16 @@ current-layer point objects, while finite shared intervals create exact NURBS
 subcurves. Curve/B-rep contacts are clipped against exact face trim regions and
 deduplicated across shared edges and vertices. Transverse planar surface pairs
 produce exact, arc-length-parameterized lines clipped to both finite patches;
-selection order determines their orientation as in Rhino. Curve/curve overlaps
-use the later curve's orientation and parameterization, matching Rhino. Pairwise
-duplicates are intentionally retained when three or more source objects meet at
-one location. Inputs remain in the document and are deselected, outputs are
-selected, and all output creation is one undo step. A no-hit run still clears
-the input selection but
-creates no undo record. Non-planar and coincident surface/surface intersections,
+selection order determines their orientation as in Rhino. Coincident
+nonsingular convex non-rational bilinear patches produce an exact shared edge
+or closed overlap perimeter, including Rhino's distinct edge orientation and
+loop-domain rules.
+Curve/curve overlaps use the later curve's orientation and parameterization,
+matching Rhino. Pairwise duplicates are intentionally retained when three or
+more source objects meet at one location. Inputs remain in the document and are
+deselected, outputs are selected, and all output creation is one undo step. A
+no-hit run still clears the input selection but creates no undo record.
+Non-planar and more general coincident surface/surface intersections,
 surface/B-rep, and B-rep/B-rep intersection curves remain future extensions.
 `Trim point` treats the selected curve nearest the point as the target and all
 other selected curves as cutters; omit the point in the UI to pick the interval

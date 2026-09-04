@@ -634,6 +634,8 @@ pub enum Operation {
         id: String,
         first: NurbsSurfaceDefinition,
         second: NurbsSurfaceDefinition,
+        #[serde(default)]
+        canonicalize_closed_curves: bool,
     },
     CurveTrimCommand {
         id: String,
@@ -3257,9 +3259,18 @@ fn execute(
             box_max,
             ..
         } => curve_brep_intersect_command(iterations, curve, *box_min, *box_max, tolerance)?,
-        Operation::SurfaceSurfaceIntersectCommand { first, second, .. } => {
-            surface_surface_intersect_command(iterations, first, second, tolerance)?
-        }
+        Operation::SurfaceSurfaceIntersectCommand {
+            first,
+            second,
+            canonicalize_closed_curves,
+            ..
+        } => surface_surface_intersect_command(
+            iterations,
+            first,
+            second,
+            *canonicalize_closed_curves,
+            tolerance,
+        )?,
         Operation::CurveTrimCommand {
             curve,
             cutters,
@@ -7293,19 +7304,40 @@ fn surface_surface_intersect_command(
     iterations: u32,
     first: &NurbsSurfaceDefinition,
     second: &NurbsSurfaceDefinition,
+    canonicalize_closed_curves: bool,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let inputs = [
         Geometry::NurbsSurface(nurbs_surface_from_definition(first)?),
         Geometry::NurbsSurface(nurbs_surface_from_definition(second)?),
     ];
-    intersect_command(iterations, &inputs, tolerance)
+    if canonicalize_closed_curves {
+        intersect_command_with_curve_serializer(
+            iterations,
+            &inputs,
+            tolerance,
+            canonical_closed_intersection_curve_value,
+        )
+    } else {
+        intersect_command(iterations, &inputs, tolerance)
+    }
 }
 
 fn intersect_command(
     iterations: u32,
     inputs: &[Geometry],
     tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    intersect_command_with_curve_serializer(iterations, inputs, tolerance, |curve| {
+        Ok(nurbs_curve_definition_value(curve))
+    })
+}
+
+fn intersect_command_with_curve_serializer(
+    iterations: u32,
+    inputs: &[Geometry],
+    tolerance: Tolerance,
+    curve_value: impl Fn(&NurbsCurve) -> Result<Value, GeometryError>,
 ) -> Result<(Value, u64), ProbeError> {
     let run = || -> Result<_, ProbeError> {
         let registry = CommandRegistry::with_builtins();
@@ -7352,7 +7384,7 @@ fn intersect_command(
                     curve.control_points()[0].point().to_array(),
                     json!({
                         "kind": "curve",
-                        "curve": nurbs_curve_definition_value(curve),
+                        "curve": curve_value(curve)?,
                     }),
                 ),
                 _ => {
@@ -7526,6 +7558,41 @@ fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
         "domain": [*curve.domain().start(), *curve.domain().end()],
         "knots": curve.knots(),
     })
+}
+
+fn canonical_closed_intersection_curve_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {
+    if curve.degree() != 1 || !curve.is_closed()? || curve.control_points().len() < 3 {
+        return Ok(nurbs_curve_definition_value(curve));
+    }
+    let mut controls = curve.control_points()[..curve.control_points().len() - 1].to_vec();
+    let seam = controls
+        .iter()
+        .enumerate()
+        .min_by(|(_, left), (_, right)| {
+            let quantize = |value: f64| (value * 1.0e9).round();
+            compare_point(
+                &left.point().to_array().map(quantize),
+                &right.point().to_array().map(quantize),
+            )
+        })
+        .map(|(index, _)| index)
+        .expect("a closed degree-one curve has unique controls");
+    controls.rotate_left(seam);
+    controls.push(controls[0]);
+    let segment_count = controls.len() - 1;
+    let mut knots = Vec::with_capacity(controls.len() + 2);
+    knots.extend([0.0, 0.0]);
+    knots.extend((1..segment_count).map(|index| index as f64 / segment_count as f64));
+    knots.extend([1.0, 1.0]);
+    Ok(json!({
+        "control_points": controls.into_iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": 1,
+        "domain": [0.0, 1.0],
+        "knots": knots,
+    }))
 }
 
 fn canonical_curve_definition_value(curve: &NurbsCurve) -> Value {
@@ -10298,6 +10365,7 @@ mod tests {
                 vec![-5.0, -5.0, 15.0, 15.0],
                 vec![-5.0, -5.0, 5.0, 5.0],
             ),
+            canonicalize_closed_curves: false,
         }]))
         .unwrap();
 

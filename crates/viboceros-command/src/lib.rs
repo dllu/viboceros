@@ -26418,6 +26418,57 @@ mod tests {
     }
 
     #[test]
+    fn intersect_outputs_coincident_bilinear_patch_boundaries() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let shifted = NurbsSurface::try_bilinear([
+            Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(15.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(15.0, 10.0, 0.0).unwrap(),
+            Point3::try_new(5.0, 10.0, 0.0).unwrap(),
+        ])
+        .unwrap();
+        let input_ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsSurface(shifted))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        assert!(input_ids.iter().all(|id| !document.is_selected(*id)));
+        let output = document.selected_objects().next().unwrap();
+        let Geometry::NurbsCurve(boundary) = output.geometry() else {
+            panic!("coincident bilinear patches must create an overlap boundary")
+        };
+        assert_eq!(boundary.degree(), 1);
+        assert_eq!(
+            boundary
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
+                Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 10.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 10.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 0.0, 0.0).unwrap(),
+            ]
+        );
+        assert!(output.attributes().name().is_none());
+        assert_eq!(output.attributes().layer_id(), document.current_layer_id());
+    }
+
+    #[test]
     fn intersect_rejects_unsupported_surface_pairs_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
