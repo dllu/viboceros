@@ -7174,6 +7174,7 @@ def _execute(operation, iterations, tolerance):
                 )
                 succeeded = Rhino.RhinoApp.RunScript(command, False)
                 objects = []
+                unexpected_geometry_types = []
                 for item in document.Objects:
                     if item.Id in original_ids:
                         continue
@@ -7208,6 +7209,22 @@ def _execute(operation, iterations, tolerance):
                             max(float(point.Y) for point in trim_points),
                         ]
                     else:
+                        if isinstance(geometry, Rhino.Geometry.Brep):
+                            unexpected_geometry_types.append(
+                                "%s(faces=%d, loops=%d, trims=%d, edges=%d, vertices=%d)"
+                                % (
+                                    geometry.GetType().FullName,
+                                    geometry.Faces.Count,
+                                    geometry.Loops.Count,
+                                    geometry.Trims.Count,
+                                    geometry.Edges.Count,
+                                    geometry.Vertices.Count,
+                                )
+                            )
+                        else:
+                            unexpected_geometry_types.append(
+                                geometry.GetType().FullName
+                            )
                         continue
                     definition = _nurbs_surface_definition(surface_geometry)
                     objects.append(
@@ -7218,12 +7235,13 @@ def _execute(operation, iterations, tolerance):
                     history = Rhino.RhinoApp.CommandHistoryWindowText
                     raise ValueError(
                         "surface Split macro %r returned %r and left %d surface objects; "
-                        "expected %d; history tail: %s"
+                        "expected %d; unexpected geometry types: %r; history tail: %s"
                         % (
                             command,
                             succeeded,
                             len(objects),
                             expected_count,
+                            unexpected_geometry_types,
                             history[-3000:],
                         )
                     )
