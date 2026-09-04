@@ -1564,14 +1564,16 @@ impl Brep {
     }
 
     /// Splits one rectangular surface region by an arrangement of exact,
-    /// simple boundary-to-boundary curves.
+    /// simple boundary-to-boundary and closed interior curves.
     ///
     /// Every transverse curve/curve intersection becomes a shared
     /// parameter-space node. The curves and rectangular boundary are split at
     /// those nodes, and every bounded counterclockwise cell is returned as an
     /// independent one-face B-rep retaining the complete underlying surface.
-    /// Coincident complete cutters are ignored; partially coincident cutters
-    /// and cutters which do not end on the rectangular boundary are rejected.
+    /// Nested and disjoint closed curves become inner loops on their containing
+    /// faces. Coincident complete cutters are ignored; partially coincident
+    /// cutters and open cutters which do not end on the rectangular boundary
+    /// are rejected.
     ///
     /// Curved cutters require an exact affine pullback to the surface, matching
     /// the single-curve split constructors. Isoparametric cutters work on any
@@ -5189,7 +5191,7 @@ struct SurfaceCutArrangementCurve {
     spatial: NurbsCurve,
     parameter: NurbsCurve2,
     endpoints: [Point2; 2],
-    iso: SurfaceIso,
+    closed: bool,
     breaks: Vec<SurfaceCutArrangementBreak>,
 }
 
@@ -5212,6 +5214,11 @@ struct SurfaceCutArrangementEdge {
     parameter: NurbsCurve2,
     iso: SurfaceIso,
     kind: SurfaceCutArrangementEdgeKind,
+}
+
+struct SurfaceCutArrangementRegion {
+    outer: Vec<usize>,
+    holes: Vec<Vec<usize>>,
 }
 
 #[derive(Clone, Copy)]
@@ -5316,6 +5323,26 @@ fn try_rectangular_surface_cut_arrangement(
                 parameter: endpoint_parameter,
                 node,
             });
+        }
+        if cut.closed {
+            for (knot, multiplicity) in cut.spatial.interior_knot_groups() {
+                if multiplicity != cut.spatial.degree()
+                    || cut.spatial.kink_angle_at(knot)? <= tolerance.angular()
+                {
+                    continue;
+                }
+                let parameter = cut.parameter.evaluate(knot)?;
+                let node = surface_cut_arrangement_node(
+                    &mut nodes,
+                    parameter,
+                    cut.spatial.evaluate(knot)?,
+                    parameter_tolerance,
+                );
+                cut.breaks.push(SurfaceCutArrangementBreak {
+                    parameter: knot,
+                    node,
+                });
+            }
         }
     }
 
@@ -5459,7 +5486,11 @@ fn try_rectangular_surface_cut_arrangement(
         }
         let domain = cut.spatial.domain();
         for (segment_index, pair) in unique_breaks.windows(2).enumerate() {
-            if pair[0].node == pair[1].node
+            let complete_closed_edge = cut.closed
+                && unique_breaks.len() == 2
+                && pair[0].parameter == *domain.start()
+                && pair[1].parameter == *domain.end();
+            if (pair[0].node == pair[1].node && !complete_closed_edge)
                 || pair[1].parameter - pair[0].parameter <= parameter_epsilon
             {
                 continue;
@@ -5476,13 +5507,14 @@ fn try_rectangular_surface_cut_arrangement(
             let end = nodes[pair[1].node].parameter;
             let parameter =
                 surface_split_parameter_curve(&surface, &spatial, start, end, tolerance)?;
+            let iso = surface_cut_arrangement_iso(&parameter, bounds, parameter_tolerance)?;
             push_surface_cut_arrangement_edge(
                 &mut edges,
                 SurfaceCutArrangementEdge {
                     nodes: [pair[0].node, pair[1].node],
                     spatial,
                     parameter,
-                    iso: cut.iso,
+                    iso,
                     kind: SurfaceCutArrangementEdgeKind::Cut {
                         source: cut_index,
                         segment: segment_index,
@@ -5521,7 +5553,8 @@ fn try_rectangular_surface_cut_arrangement(
     }
 
     let mut visited = vec![false; halfedge_count];
-    let mut cycles = Vec::<Vec<usize>>::new();
+    let mut outer_cycles = Vec::<Vec<usize>>::new();
+    let mut hole_cycles = Vec::<Vec<usize>>::new();
     for start in 0..halfedge_count {
         if visited[start] {
             continue;
@@ -5542,25 +5575,89 @@ fn try_rectangular_surface_cut_arrangement(
                 return invalid("surface cutting arrangement face traversal did not close");
             }
         }
-        if cycle.len() >= 2
-            && sampled_surface_cut_cycle_signed_area(&edges, &cycle)?.is_some_and(|area| area > 0.0)
-        {
-            cycles.push(cycle);
+        if cycle.is_empty() {
+            continue;
+        }
+        if let Some(area) = sampled_surface_cut_cycle_signed_area(&edges, &cycle)? {
+            if area > 0.0 {
+                outer_cycles.push(cycle);
+            } else {
+                hole_cycles.push(cycle);
+            }
         }
     }
-    if cycles.len() < 2 {
+    if outer_cycles.len() < 2 {
         return invalid("surface cutting arrangement did not divide the rectangular region");
     }
-    if cycles.len() > crate::MAX_SURFACE_WIRES {
+    // The halfedge walk emits the unbounded exterior clockwise as well as
+    // clockwise inner boundaries. Only the exterior contains rectangle edges.
+    hole_cycles.retain(|cycle| {
+        !cycle.iter().any(|halfedge| {
+            matches!(
+                edges[*halfedge / 2].kind,
+                SurfaceCutArrangementEdgeKind::Boundary(_)
+            )
+        })
+    });
+    if outer_cycles.len() + hole_cycles.len() > crate::MAX_SURFACE_WIRES {
         return Err(GeometryError::TooManySurfaceWires);
     }
-    for cycle in &mut cycles {
-        rotate_surface_cut_cycle(cycle, &edges, &nodes, bounds, parameter_tolerance)?;
+    let first_closed_source = cuts.iter().position(|cut| cut.closed);
+    let closed_sources = cuts.iter().map(|cut| cut.closed).collect::<Vec<_>>();
+    for cycle in &mut outer_cycles {
+        rotate_surface_cut_outer_cycle(
+            cycle,
+            &edges,
+            &nodes,
+            bounds,
+            parameter_tolerance,
+            first_closed_source,
+            &closed_sources,
+        )?;
     }
-    cycles.sort_by(|left, right| {
-        surface_cut_cycle_bounds(&edges, &nodes, left)
+    let mut holes_by_outer = vec![Vec::<Vec<usize>>::new(); outer_cycles.len()];
+    for mut cycle in hole_cycles {
+        rotate_surface_cut_hole_cycle(
+            &mut cycle,
+            &edges,
+            &nodes,
+            bounds,
+            parameter_tolerance,
+            first_closed_source,
+        )?;
+        let parent =
+            surface_cut_hole_parent(&edges, &outer_cycles, &cycle, bounds, parameter_tolerance)?
+                .ok_or(GeometryError::InvalidBrepTopology {
+                    context: "a surface cutting arrangement hole has no containing face",
+                })?;
+        holes_by_outer[parent].push(cycle);
+    }
+    for holes in &mut holes_by_outer {
+        holes.sort_by(|left, right| {
+            surface_cut_cycle_source_key(&edges, left)
+                .cmp(&surface_cut_cycle_source_key(&edges, right))
+                .then_with(|| {
+                    surface_cut_cycle_bounds(&edges, &nodes, left)
+                        .into_iter()
+                        .zip(surface_cut_cycle_bounds(&edges, &nodes, right))
+                        .find_map(|(left, right)| {
+                            let ordering = left.total_cmp(&right);
+                            (ordering != std::cmp::Ordering::Equal).then_some(ordering)
+                        })
+                        .unwrap_or(std::cmp::Ordering::Equal)
+                })
+        });
+    }
+
+    let mut regions = outer_cycles
+        .into_iter()
+        .zip(holes_by_outer)
+        .map(|(outer, holes)| SurfaceCutArrangementRegion { outer, holes })
+        .collect::<Vec<_>>();
+    regions.sort_by(|left, right| {
+        surface_cut_cycle_bounds(&edges, &nodes, &left.outer)
             .into_iter()
-            .zip(surface_cut_cycle_bounds(&edges, &nodes, right))
+            .zip(surface_cut_cycle_bounds(&edges, &nodes, &right.outer))
             .find_map(|(left, right)| {
                 let ordering = left.total_cmp(&right);
                 (ordering != std::cmp::Ordering::Equal).then_some(ordering)
@@ -5568,16 +5665,16 @@ fn try_rectangular_surface_cut_arrangement(
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
-    cycles
+    regions
         .iter()
-        .map(|cycle| {
+        .map(|region| {
             try_surface_cut_arrangement_face(
                 surface.clone(),
                 reversed,
                 &nodes,
                 &node_rank,
                 &edges,
-                cycle,
+                region,
                 tolerance,
             )
         })
@@ -5592,6 +5689,28 @@ fn try_surface_cut_arrangement_curve(
     tolerance: Tolerance,
 ) -> Result<SurfaceCutArrangementCurve, GeometryError> {
     let domain = spatial.domain();
+    let closed = spatial.is_closed()?;
+    if closed {
+        let seam = spatial.evaluate(*domain.start())?;
+        let (u, v) = surface.closest_parameters(seam, tolerance)?;
+        let seam_parameter = Point2::try_new(u, v)?;
+        let parameter = surface_split_parameter_curve(
+            surface,
+            &spatial,
+            seam_parameter,
+            seam_parameter,
+            tolerance,
+        )?;
+        validate_closed_surface_cut_parameter_curve(&parameter, bounds, tolerance)?;
+        surface_cut_arrangement_iso(&parameter, bounds, parameter_tolerance)?;
+        return Ok(SurfaceCutArrangementCurve {
+            spatial,
+            parameter,
+            endpoints: [seam_parameter; 2],
+            closed,
+            breaks: Vec::new(),
+        });
+    }
     let mut endpoints = [Point2::try_new(0.0, 0.0)?; 2];
     for (end, curve_parameter) in [*domain.start(), *domain.end()].into_iter().enumerate() {
         let point = spatial.evaluate(curve_parameter)?;
@@ -5631,12 +5750,12 @@ fn try_surface_cut_arrangement_curve(
             snap_surface_cut_arrangement_parameter(point, bounds, parameter_tolerance)?;
         }
     }
-    let iso = surface_cut_arrangement_iso(&parameter, bounds, parameter_tolerance)?;
+    surface_cut_arrangement_iso(&parameter, bounds, parameter_tolerance)?;
     Ok(SurfaceCutArrangementCurve {
         spatial,
         parameter,
         endpoints,
-        iso,
+        closed,
         breaks: Vec::new(),
     })
 }
@@ -5761,7 +5880,7 @@ fn push_surface_cut_arrangement_edge(
     edges: &mut Vec<SurfaceCutArrangementEdge>,
     edge: SurfaceCutArrangementEdge,
 ) -> Result<(), GeometryError> {
-    if edge.nodes[0] == edge.nodes[1] {
+    if edge.nodes[0] == edge.nodes[1] && !edge.spatial.is_closed()? {
         return invalid("a surface cutting arrangement edge has coincident nodes");
     }
     if edges.len() == crate::MAX_SURFACE_WIRES {
@@ -5810,25 +5929,7 @@ fn sampled_surface_cut_cycle_signed_area(
     edges: &[SurfaceCutArrangementEdge],
     cycle: &[usize],
 ) -> Result<Option<Real>, GeometryError> {
-    let mut points = Vec::new();
-    for &halfedge in cycle {
-        let edge = &edges[halfedge / 2];
-        let curve = if halfedge.is_multiple_of(2) {
-            edge.parameter.clone()
-        } else {
-            edge.parameter.reversed()?
-        };
-        if points.is_empty() {
-            points.push(curve.start_point()?);
-        }
-        for (start, end) in curve.spans() {
-            for sample in 1..=LOOP_SAMPLES_PER_SPAN {
-                let fraction = sample as Real / LOOP_SAMPLES_PER_SPAN as Real;
-                let parameter = start.mul_add(1.0 - fraction, end * fraction);
-                points.push(curve.evaluate(parameter)?);
-            }
-        }
-    }
+    let points = sampled_surface_cut_cycle_points(edges, cycle)?;
     let Some(origin) = points.first().copied() else {
         return Ok(None);
     };
@@ -5864,6 +5965,32 @@ fn sampled_surface_cut_cycle_signed_area(
     Ok((doubled_area.abs() > 1.0e-14).then_some(doubled_area))
 }
 
+fn sampled_surface_cut_cycle_points(
+    edges: &[SurfaceCutArrangementEdge],
+    cycle: &[usize],
+) -> Result<Vec<Point2>, GeometryError> {
+    let mut points = Vec::new();
+    for &halfedge in cycle {
+        let edge = &edges[halfedge / 2];
+        let curve = if halfedge.is_multiple_of(2) {
+            edge.parameter.clone()
+        } else {
+            edge.parameter.reversed()?
+        };
+        if points.is_empty() {
+            points.push(curve.start_point()?);
+        }
+        for (start, end) in curve.spans() {
+            for sample in 1..=LOOP_SAMPLES_PER_SPAN {
+                let fraction = sample as Real / LOOP_SAMPLES_PER_SPAN as Real;
+                let parameter = start.mul_add(1.0 - fraction, end * fraction);
+                points.push(curve.evaluate(parameter)?);
+            }
+        }
+    }
+    Ok(points)
+}
+
 fn surface_cut_cycle_bounds(
     edges: &[SurfaceCutArrangementEdge],
     nodes: &[SurfaceCutArrangementNode],
@@ -5884,6 +6011,274 @@ fn surface_cut_cycle_bounds(
         bounds[3] = bounds[3].max(parameter.y());
     }
     bounds
+}
+
+fn surface_cut_cycle_source_key(edges: &[SurfaceCutArrangementEdge], cycle: &[usize]) -> usize {
+    cycle
+        .iter()
+        .filter_map(|halfedge| match edges[*halfedge / 2].kind {
+            SurfaceCutArrangementEdgeKind::Boundary(_) => None,
+            SurfaceCutArrangementEdgeKind::Cut { source, .. } => Some(source),
+        })
+        .min()
+        .unwrap_or(usize::MAX)
+}
+
+fn surface_cut_cycle_single_source(
+    edges: &[SurfaceCutArrangementEdge],
+    cycle: &[usize],
+) -> Option<(usize, usize)> {
+    let mut source = None;
+    let mut maximum_segment = 0;
+    for halfedge in cycle {
+        let SurfaceCutArrangementEdgeKind::Cut {
+            source: edge_source,
+            segment,
+        } = edges[*halfedge / 2].kind
+        else {
+            return None;
+        };
+        if source.is_some_and(|source| source != edge_source) {
+            return None;
+        }
+        source = Some(edge_source);
+        maximum_segment = maximum_segment.max(segment);
+    }
+    source.map(|source| (source, maximum_segment))
+}
+
+fn rotate_surface_cut_outer_cycle(
+    cycle: &mut [usize],
+    edges: &[SurfaceCutArrangementEdge],
+    nodes: &[SurfaceCutArrangementNode],
+    bounds: [[Real; 2]; 2],
+    tolerance: [Real; 2],
+    first_closed_source: Option<usize>,
+    closed_sources: &[bool],
+) -> Result<(), GeometryError> {
+    if let Some((source, maximum_segment)) = surface_cut_cycle_single_source(edges, cycle)
+        && let Some(first_closed_source) = first_closed_source
+        && closed_sources.get(source).copied().unwrap_or(false)
+    {
+        let target_segment = if source == first_closed_source {
+            0
+        } else {
+            maximum_segment
+        };
+        if let Some(anchor) = cycle.iter().position(|halfedge| {
+            halfedge.is_multiple_of(2)
+                && matches!(
+                    edges[*halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut {
+                        source: edge_source,
+                        segment,
+                    } if edge_source == source && segment == target_segment
+                )
+        }) {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+    }
+
+    let closed_source = cycle
+        .iter()
+        .filter_map(|halfedge| match edges[*halfedge / 2].kind {
+            SurfaceCutArrangementEdgeKind::Cut { source, .. }
+                if closed_sources.get(source).copied().unwrap_or(false) =>
+            {
+                Some(source)
+            }
+            _ => None,
+        })
+        .min();
+    if let Some(source) = closed_source {
+        let seam_node = edges.iter().find_map(|edge| match edge.kind {
+            SurfaceCutArrangementEdgeKind::Cut {
+                source: edge_source,
+                segment: 0,
+            } if edge_source == source => Some(edge.nodes[0]),
+            _ => None,
+        });
+        if let Some(seam_node) = seam_node
+            && let Some(anchor) = cycle.iter().position(|halfedge| {
+                surface_cut_halfedge_nodes(&edges[*halfedge / 2], *halfedge)[0] == seam_node
+            })
+        {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+
+        let anchor = cycle
+            .iter()
+            .enumerate()
+            .filter_map(|(index, halfedge)| {
+                let SurfaceCutArrangementEdgeKind::Cut {
+                    source: edge_source,
+                    segment,
+                } = edges[*halfedge / 2].kind
+                else {
+                    return None;
+                };
+                if edge_source != source {
+                    return None;
+                }
+                let next_edge = &edges[cycle[(index + 1) % cycle.len()] / 2];
+                (!matches!(
+                    next_edge.kind,
+                    SurfaceCutArrangementEdgeKind::Cut {
+                        source: next_source,
+                        ..
+                    } if next_source == source
+                ))
+                .then_some((segment, (index + 1) % cycle.len()))
+            })
+            .min_by_key(|(segment, _)| *segment)
+            .map(|(_, anchor)| anchor);
+        if let Some(anchor) = anchor {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+    } else if first_closed_source.is_some()
+        && cycle.iter().all(|halfedge| {
+            matches!(
+                edges[*halfedge / 2].kind,
+                SurfaceCutArrangementEdgeKind::Boundary(_)
+            )
+        })
+        && let Some(anchor) = cycle.iter().position(|halfedge| {
+            halfedge.is_multiple_of(2)
+                && matches!(
+                    edges[*halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Boundary(RectangularBoundarySide::South)
+                )
+        })
+    {
+        cycle.rotate_left(anchor);
+        return Ok(());
+    }
+    rotate_surface_cut_cycle(cycle, edges, nodes, bounds, tolerance)
+}
+
+fn rotate_surface_cut_hole_cycle(
+    cycle: &mut [usize],
+    edges: &[SurfaceCutArrangementEdge],
+    nodes: &[SurfaceCutArrangementNode],
+    bounds: [[Real; 2]; 2],
+    tolerance: [Real; 2],
+    first_closed_source: Option<usize>,
+) -> Result<(), GeometryError> {
+    if let Some((source, maximum_segment)) = surface_cut_cycle_single_source(edges, cycle)
+        && let Some(first_closed_source) = first_closed_source
+    {
+        let target_segment = if source == first_closed_source {
+            maximum_segment
+        } else {
+            maximum_segment.saturating_sub(1)
+        };
+        if let Some(anchor) = cycle.iter().position(|halfedge| {
+            !halfedge.is_multiple_of(2)
+                && matches!(
+                    edges[*halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut {
+                        source: edge_source,
+                        segment,
+                    } if edge_source == source && segment == target_segment
+                )
+        }) {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+    }
+    rotate_surface_cut_cycle(cycle, edges, nodes, bounds, tolerance)
+}
+
+fn surface_cut_hole_parent(
+    edges: &[SurfaceCutArrangementEdge],
+    outer_cycles: &[Vec<usize>],
+    hole: &[usize],
+    bounds: [[Real; 2]; 2],
+    tolerance: [Real; 2],
+) -> Result<Option<usize>, GeometryError> {
+    let scale = (bounds[0][1] - bounds[0][0]).max(bounds[1][1] - bounds[1][0]);
+    if !scale.is_finite() || scale <= 0.0 {
+        return invalid("surface cutting arrangement bounds have no finite extent");
+    }
+    let normalize = |point: Point2| {
+        [
+            (point.x() - bounds[0][0]) / scale,
+            (point.y() - bounds[1][0]) / scale,
+        ]
+    };
+    let outer_polygons = outer_cycles
+        .iter()
+        .map(|cycle| {
+            sampled_surface_cut_cycle_points(edges, cycle).map(|points| {
+                points
+                    .into_iter()
+                    .map(&normalize)
+                    .collect::<Vec<[Real; 2]>>()
+            })
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let outer_areas = outer_polygons
+        .iter()
+        .map(|polygon| {
+            polygon
+                .iter()
+                .copied()
+                .zip(polygon.iter().copied().cycle().skip(1))
+                .take(polygon.len())
+                .map(|(start, end)| start[0] * end[1] - end[0] * start[1])
+                .sum::<Real>()
+                .abs()
+        })
+        .collect::<Vec<_>>();
+    let epsilon = (tolerance[0].max(tolerance[1]) / scale * 16.0).max(Real::EPSILON * 256.0);
+    let base_step = (epsilon * 32.0).max(1.0e-7);
+
+    for &halfedge in hole {
+        let edge = &edges[halfedge / 2];
+        let reversed = !halfedge.is_multiple_of(2);
+        let domain = edge.parameter.domain();
+        for fraction in [0.5, 0.25, 0.75] {
+            let parameter = domain
+                .start()
+                .mul_add(1.0 - fraction, domain.end() * fraction);
+            let (point, derivative) = edge.parameter.evaluate_with_derivative(parameter)?;
+            let tangent = if reversed {
+                [-derivative[0], -derivative[1]]
+            } else {
+                derivative
+            };
+            let tangent_length = tangent[0].hypot(tangent[1]);
+            if !tangent_length.is_finite() || tangent_length == 0.0 {
+                continue;
+            }
+            let point = normalize(point);
+            let left = [-tangent[1] / tangent_length, tangent[0] / tangent_length];
+            for step in [base_step, base_step * 0.25, base_step * 4.0] {
+                let candidate = [point[0] + left[0] * step, point[1] + left[1] * step];
+                if outer_polygons
+                    .iter()
+                    .any(|polygon| point_on_trim_polygon(candidate, polygon, epsilon))
+                {
+                    continue;
+                }
+                let parent = outer_polygons
+                    .iter()
+                    .enumerate()
+                    .filter(|(_, polygon)| point_in_trim_polygon(candidate, polygon, epsilon))
+                    .min_by(|(left, _), (right, _)| {
+                        outer_areas[*left].total_cmp(&outer_areas[*right])
+                    })
+                    .map(|(index, _)| index);
+                if parent.is_some() {
+                    return Ok(parent);
+                }
+            }
+        }
+    }
+    Ok(None)
 }
 
 fn rotate_surface_cut_cycle(
@@ -5993,11 +6388,15 @@ fn try_surface_cut_arrangement_face(
     nodes: &[SurfaceCutArrangementNode],
     node_rank: &[usize],
     edges: &[SurfaceCutArrangementEdge],
-    cycle: &[usize],
+    region: &SurfaceCutArrangementRegion,
     tolerance: Tolerance,
 ) -> Result<Brep, GeometryError> {
-    let mut face_nodes = cycle
+    let cycles = std::iter::once(region.outer.as_slice())
+        .chain(region.holes.iter().map(Vec::as_slice))
+        .collect::<Vec<_>>();
+    let mut face_nodes = cycles
         .iter()
+        .flat_map(|cycle| cycle.iter())
         .flat_map(|halfedge| edges[*halfedge / 2].nodes)
         .collect::<Vec<_>>();
     face_nodes.sort_by_key(|node| node_rank[*node]);
@@ -6012,7 +6411,10 @@ fn try_surface_cut_arrangement_face(
         })
         .collect::<Result<Vec<_>, _>>()?;
 
-    let mut ordered_halfedges = cycle.to_vec();
+    let mut ordered_halfedges = cycles
+        .iter()
+        .flat_map(|cycle| cycle.iter().copied())
+        .collect::<Vec<_>>();
     ordered_halfedges.sort_by_key(|halfedge| {
         let edge = &edges[*halfedge / 2];
         match edge.kind {
@@ -6022,43 +6424,51 @@ fn try_surface_cut_arrangement_face(
             SurfaceCutArrangementEdgeKind::Cut { source, segment } => (1, source, segment),
         }
     });
+    ordered_halfedges.dedup_by_key(|halfedge| *halfedge / 2);
     let edge_map = ordered_halfedges
         .iter()
         .enumerate()
         .map(|(local, halfedge)| (*halfedge / 2, local))
         .collect::<BTreeMap<_, _>>();
-    let mut face_edges = Vec::<BrepEdge>::with_capacity(cycle.len());
+    let mut face_edges = Vec::<BrepEdge>::with_capacity(ordered_halfedges.len());
     for &halfedge in &ordered_halfedges {
         let edge = &edges[halfedge / 2];
         let edge_vertices = edge.nodes.map(|node| vertex_map[&node]);
         face_edges.push(BrepEdge::try_new(edge_vertices, edge.spatial.clone(), 0.0)?);
     }
-    let mut trims = Vec::<BrepTrim>::with_capacity(cycle.len());
-    for &halfedge in cycle {
-        let edge = &edges[halfedge / 2];
-        let edge_index = edge_map[&(halfedge / 2)];
-        let reversed_3d = !halfedge.is_multiple_of(2);
-        let trim_vertices = oriented_edge_vertices(&face_edges[edge_index], reversed_3d);
-        let parameter_curve = if reversed_3d {
-            edge.parameter.reversed()?
-        } else {
-            edge.parameter.clone()
-        };
-        trims.push(BrepTrim::try_new(
-            trim_vertices,
-            Some(edge_index),
-            reversed_3d,
-            parameter_curve,
-            BrepTrimType::Boundary,
-            edge.iso,
-            [0.0, 0.0],
+    let mut loops = Vec::with_capacity(cycles.len());
+    for (index, cycle) in cycles.into_iter().enumerate() {
+        let mut trims = Vec::<BrepTrim>::with_capacity(cycle.len());
+        for &halfedge in cycle {
+            let edge = &edges[halfedge / 2];
+            let edge_index = edge_map[&(halfedge / 2)];
+            let reversed_3d = !halfedge.is_multiple_of(2);
+            let trim_vertices = oriented_edge_vertices(&face_edges[edge_index], reversed_3d);
+            let parameter_curve = if reversed_3d {
+                edge.parameter.reversed()?
+            } else {
+                edge.parameter.clone()
+            };
+            trims.push(BrepTrim::try_new(
+                trim_vertices,
+                Some(edge_index),
+                reversed_3d,
+                parameter_curve,
+                BrepTrimType::Boundary,
+                edge.iso,
+                [0.0, 0.0],
+            )?);
+        }
+        loops.push(BrepLoop::try_new(
+            if index == 0 {
+                BrepLoopType::Outer
+            } else {
+                BrepLoopType::Inner
+            },
+            trims,
         )?);
     }
-    let face = BrepFace::try_new(
-        surface,
-        reversed,
-        vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
-    )?;
+    let face = BrepFace::try_new(surface, reversed, loops)?;
     Brep::try_new(vertices, face_edges, vec![face], tolerance)
 }
 
@@ -9353,6 +9763,154 @@ mod tests {
             )
             .is_err()
         );
+    }
+
+    #[test]
+    fn rectangular_surface_curve_arrangements_support_multiple_closed_regions() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        let polygon = |x0: Real, x1: Real, y0: Real, y1: Real| {
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    point(x0, y0, 0.0),
+                    point(x1, y0, 0.0),
+                    point(x1, y1, 0.0),
+                    point(x0, y1, 0.0),
+                    point(x0, y0, 0.0),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+            )
+            .unwrap()
+        };
+        let line = |start: [Real; 2], end: [Real; 2]| {
+            NurbsCurve::try_new(
+                1,
+                vec![point(start[0], start[1], 0.0), point(end[0], end[1], 0.0)],
+                vec![0.0, 0.0, 1.0, 1.0],
+            )
+            .unwrap()
+        };
+        let circle = |center: [Real; 2], radius: Real| {
+            let [x, y] = center;
+            let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+            NurbsCurve::try_new_rational(
+                2,
+                [
+                    ([x + radius, y], 1.0),
+                    ([x + radius, y + radius], diagonal_weight),
+                    ([x, y + radius], 1.0),
+                    ([x - radius, y + radius], diagonal_weight),
+                    ([x - radius, y], 1.0),
+                    ([x - radius, y - radius], diagonal_weight),
+                    ([x, y - radius], 1.0),
+                    ([x + radius, y - radius], diagonal_weight),
+                    ([x + radius, y], 1.0),
+                ]
+                .into_iter()
+                .map(|(coordinates, weight)| {
+                    WeightedPoint3::try_new(point(coordinates[0], coordinates[1], 0.0), weight)
+                        .unwrap()
+                })
+                .collect(),
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+            )
+            .unwrap()
+        };
+        let assert_case =
+            |cuts: Vec<NurbsCurve>, expected_edges: &[usize], expected_loops: &[usize]| {
+                let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+                    surface.clone(),
+                    0.0..=10.0,
+                    0.0..=10.0,
+                    cuts,
+                    false,
+                    Tolerance::DEFAULT,
+                )
+                .unwrap();
+                let mut edge_counts = pieces
+                    .iter()
+                    .map(|piece| piece.edges().len())
+                    .collect::<Vec<_>>();
+                let mut loop_counts = pieces
+                    .iter()
+                    .map(|piece| piece.faces()[0].loops().len())
+                    .collect::<Vec<_>>();
+                edge_counts.sort_unstable();
+                loop_counts.sort_unstable();
+                assert_eq!(edge_counts, expected_edges);
+                assert_eq!(loop_counts, expected_loops);
+
+                let mut area = 0.0;
+                for piece in &pieces {
+                    assert_eq!(piece.faces().len(), 1);
+                    assert_eq!(piece.faces()[0].surface(), &surface);
+                    assert_eq!(piece.faces()[0].loops()[0].loop_type(), BrepLoopType::Outer);
+                    assert!(
+                        piece.faces()[0]
+                            .loops()
+                            .iter()
+                            .skip(1)
+                            .all(|loop_| loop_.loop_type() == BrepLoopType::Inner)
+                    );
+                    piece.tessellate(4, Tolerance::DEFAULT).unwrap();
+                    area += piece.area(Tolerance::DEFAULT).unwrap();
+                }
+                assert!(Tolerance::DEFAULT.approx_eq(area, 100.0));
+            };
+
+        assert_case(
+            vec![polygon(1.0, 4.0, 2.0, 5.0), polygon(6.0, 9.0, 5.0, 8.0)],
+            &[4, 4, 12],
+            &[1, 1, 3],
+        );
+        assert_case(
+            vec![polygon(2.0, 8.0, 2.0, 8.0), polygon(4.0, 6.0, 4.0, 6.0)],
+            &[4, 8, 8],
+            &[1, 2, 2],
+        );
+        assert_case(
+            vec![polygon(3.0, 7.0, 3.0, 7.0), line([0.0, 5.0], [10.0, 5.0])],
+            &[4, 4, 8, 8],
+            &[1, 1, 1, 1],
+        );
+        assert_case(
+            vec![circle([2.5, 2.5], 1.0), circle([7.5, 7.5], 1.0)],
+            &[1, 1, 6],
+            &[1, 1, 3],
+        );
+        let triple_nested = Brep::try_split_rectangular_surface_face_with_curves(
+            surface,
+            0.0..=10.0,
+            0.0..=10.0,
+            vec![
+                polygon(2.0, 8.0, 2.0, 8.0),
+                polygon(3.0, 7.0, 3.0, 7.0),
+                polygon(4.0, 6.0, 4.0, 6.0),
+            ],
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut triple_edge_counts = triple_nested
+            .iter()
+            .map(|piece| piece.edges().len())
+            .collect::<Vec<_>>();
+        let mut triple_loop_counts = triple_nested
+            .iter()
+            .map(|piece| piece.faces()[0].loops().len())
+            .collect::<Vec<_>>();
+        triple_edge_counts.sort_unstable();
+        triple_loop_counts.sort_unstable();
+        assert_eq!(triple_edge_counts, vec![4, 8, 8, 8]);
+        assert_eq!(triple_loop_counts, vec![1, 2, 2, 2]);
     }
 
     #[test]

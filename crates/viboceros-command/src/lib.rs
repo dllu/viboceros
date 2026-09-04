@@ -13358,12 +13358,10 @@ fn split_rectangular_surface_with_cutters(
                 .to_owned()
         });
     }
-    if nonisoparametric_cuts
+    let closed_cut_count = nonisoparametric_cuts
         .iter()
-        .any(|(cut, _)| *cut == CompleteSurfaceCut::ClosedInterior)
-    {
-        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-    }
+        .filter(|(cut, _)| *cut == CompleteSurfaceCut::ClosedInterior)
+        .count();
     if !nonisoparametric_cuts.is_empty() || cuts_u.len() + cuts_v.len() > 1 {
         let cut_count = complete_cut_curves.len();
         let pieces = Brep::try_split_rectangular_surface_face_with_curves(
@@ -13382,6 +13380,16 @@ fn split_rectangular_surface_with_cutters(
         if nonisoparametric_cuts.is_empty() {
             return Ok(format!(
                 "Split the selected surface at {cut_count} complete isoparametric intersection(s) into {piece_count} exact B-rep face(s)"
+            ));
+        }
+        if closed_cut_count == cut_count {
+            return Ok(format!(
+                "Split the selected surface along {cut_count} closed interior curve(s) into {piece_count} exact B-rep face(s)"
+            ));
+        }
+        if closed_cut_count != 0 {
+            return Ok(format!(
+                "Split the selected surface along {cut_count} complete cutting curve(s) into {piece_count} exact B-rep face(s)"
             ));
         }
         return Ok(format!(
@@ -29979,6 +29987,75 @@ mod tests {
             assert_eq!(loop_counts, vec![1, 2]);
             assert!(document.tolerance().approx_eq(area, 100.0));
         }
+    }
+
+    #[test]
+    fn cutting_object_split_supports_multiple_closed_interior_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let polygon = |x0: Real, x1: Real, y0: Real, y1: Real| {
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    Point3::try_new(x0, y0, 0.0).unwrap(),
+                    Point3::try_new(x1, y0, 0.0).unwrap(),
+                    Point3::try_new(x1, y1, 0.0).unwrap(),
+                    Point3::try_new(x0, y1, 0.0).unwrap(),
+                    Point3::try_new(x0, y0, 0.0).unwrap(),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+            )
+            .unwrap()
+        };
+        let mut document = Document::default();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        let cutter_ids = [
+            document
+                .add_geometry(Geometry::NurbsCurve(polygon(1.0, 4.0, 2.0, 5.0)))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::NurbsCurve(polygon(6.0, 9.0, 5.0, 8.0)))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(
+                [source_id, cutter_ids[0], cutter_ids[1]],
+                SelectionMode::Replace,
+            )
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=5,1,0")
+                .unwrap(),
+            "Split the selected surface along 2 closed interior curve(s) into 3 exact B-rep face(s)"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(
+            cutter_ids
+                .iter()
+                .all(|id| document.object(*id).is_some() && !document.is_selected(*id))
+        );
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 3);
+        let mut edge_counts = Vec::new();
+        let mut loop_counts = Vec::new();
+        let mut area = 0.0;
+        for object in outputs {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("multiple closed cutting Split must create B-rep faces")
+            };
+            edge_counts.push(brep.edges().len());
+            loop_counts.push(brep.faces()[0].loops().len());
+            area += brep.area(document.tolerance()).unwrap();
+            brep.tessellate(4, document.tolerance()).unwrap();
+        }
+        edge_counts.sort_unstable();
+        loop_counts.sort_unstable();
+        assert_eq!(edge_counts, vec![4, 4, 12]);
+        assert_eq!(loop_counts, vec![1, 1, 3]);
+        assert!(document.tolerance().approx_eq(area, 100.0));
     }
 
     #[test]
