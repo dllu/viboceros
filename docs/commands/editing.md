@@ -71,7 +71,8 @@ analytic, polyline, and NURBS curves with controlled accuracy; `Area` measures
 circles, ellipses, closed planar polylines, exact NURBS surfaces, B-reps, and
 meshes. Full-domain NURBS faces are integrated per knot-span rectangle, while
 planar trimmed B-rep faces use their exact boundary integrals, including inner
-holes; general nonplanar trims remain explicit errors.
+holes. Nonplanar trimmed faces use nested adaptive integration over their exact
+UV boundaries, independently of display meshes.
 
 `Volume` reports the accumulated signed volume of selected closed triangle
 meshes and exact B-rep solids; outward orientation is positive and reversed
@@ -79,8 +80,9 @@ orientation is negative. Meshes use translation-stable tetrahedral
 accumulation. Full-domain NURBS B-rep faces are integrated directly over each
 knot-span rectangle with adaptive quadrature, without measuring a display
 tessellation. Planar trimmed caps use an exact-edge boundary-area integral;
-general nonplanar trims are rejected until constrained trimmed-domain mass
-properties are implemented. Measurement does not alter history.
+nonplanar trims integrate the same oriented volume density over their retained
+UV region, including holes. Measurement does not alter history. See
+[mass properties](../mass-properties.md) for numerical policy and validation.
 
 ## Intersection and trimming
 

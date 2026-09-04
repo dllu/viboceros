@@ -36,6 +36,14 @@ Topology, edge domains, underlying surfaces, attributes, groups, and selection
 are still compared. The default retains complete trim control/knot comparisons.
 Sampling is bounded evidence of geometric agreement, not a continuous error proof.
 
+The `trimmed_mass_properties.json` fixture checks [nonplanar trimmed-face area
+and signed volume](mass-properties.md). Its `trimmed_surface_mass_properties`
+operation supplies exact spatial and UV loop curves, an underlying surface, and
+an optional cap surface sharing those boundaries. Rhino's public B-rep topology
+API builds the same input geometry as the native probe, avoiding changes to the
+input from a separate trim-fitting operation. Numerical API calls are timed;
+the native probe also checks `Area` and `Volume` command results and document state.
+
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):
 

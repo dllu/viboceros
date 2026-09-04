@@ -416,6 +416,80 @@ def _surface_split_trim_value(curve, surface, sample_geometry):
     }
 
 
+def _trimmed_surface_mass_properties(operation, iterations, tolerance):
+    owned = []
+    try:
+        brep = Rhino.Geometry.Brep()
+        owned.append(brep)
+        capped = operation.get("cap_surface") is not None
+        parameter_indices = []
+        for index, boundary in enumerate(operation["boundaries"]):
+            spatial = _nurbs_curve_from_definition(boundary["curve"])
+            owned.append(spatial)
+            parameter = _nurbs_curve_from_definition(boundary["parameter_curve"], 2)
+            owned.append(parameter)
+            if not spatial.IsClosed or not parameter.IsClosed:
+                raise ValueError("mass property boundaries must be closed")
+            brep.Vertices.Add(spatial.PointAtStart, 0.0)
+            curve_index = brep.Curves3D.Add(spatial)
+            brep.Edges.Add(index, index, curve_index, 0.0)
+            parameter_indices.append(brep.Curves2D.Add(parameter))
+
+        def add_face(definition, reversed_face):
+            surface = _nurbs_surface_from_definition(definition)
+            owned.append(surface)
+            face = brep.Faces.Add(brep.AddSurface(surface))
+            face.OrientationIsReversed = reversed_face
+            for index, parameter_index in enumerate(parameter_indices):
+                loop_type = Rhino.Geometry.BrepLoopType.Outer if index == 0 else Rhino.Geometry.BrepLoopType.Inner
+                loop = brep.Loops.Add(loop_type, face)
+                trim = brep.Trims.Add(brep.Edges[index], False, loop, parameter_index)
+                trim.TrimType = Rhino.Geometry.BrepTrimType.Mated if capped else Rhino.Geometry.BrepTrimType.Boundary
+                trim.IsoStatus = getattr(Rhino.Geometry.IsoStatus, "None")
+                trim.SetTolerances(0.0, 0.0)
+
+        reversed_face = bool(operation.get("reversed", False))
+        add_face(operation["surface"], reversed_face)
+        cap = operation.get("cap_surface")
+        if cap is not None:
+            add_face(cap, not reversed_face)
+        valid, log = brep.IsValidWithLog()
+        if not valid:
+            raise ValueError("invalid mass property B-rep: %s" % log)
+        if capped and not brep.IsSolid:
+            raise ValueError("capped mass property fixture is not solid")
+        u, v = operation["interior_uv"]
+        if str(brep.Faces[0].IsPointOnFace(u, v)) != "Interior":
+            raise ValueError("mass property interior point must lie in the retained face")
+
+        def compute():
+            properties = Rhino.Geometry.AreaMassProperties.Compute(
+                brep, True, False, False, False, tolerance["relative"], tolerance["absolute"]
+            )
+            if properties is None:
+                raise ValueError("trimmed surface area integration failed")
+            try:
+                area = float(properties.Area)
+            finally:
+                properties.Dispose()
+            volume = None
+            if brep.IsSolid:
+                properties = Rhino.Geometry.VolumeMassProperties.Compute(
+                    brep, True, False, False, False, tolerance["relative"], tolerance["absolute"]
+                )
+                if properties is None:
+                    raise ValueError("trimmed surface volume integration failed")
+                try:
+                    volume = float(properties.Volume)
+                finally:
+                    properties.Dispose()
+            return {"area": area, "volume": volume, "is_solid": bool(brep.IsSolid)}
+        return _measure(iterations, compute)
+    finally:
+        for geometry in reversed(owned):
+            geometry.Dispose()
+
+
 def _canonical_closed_intersection_curve_definition(curve):
     definition = _nurbs_curve_definition(curve)
     controls = definition["control_points"]
@@ -479,10 +553,10 @@ def _canonical_linear_intersection_curve_definition(curve):
     return definition
 
 
-def _nurbs_curve_from_definition(definition):
+def _nurbs_curve_from_definition(definition, dimension=3):
     degree = int(definition["degree"])
     controls = definition["control_points"]
-    curve = Rhino.Geometry.NurbsCurve(3, True, degree + 1, len(controls))
+    curve = Rhino.Geometry.NurbsCurve(dimension, True, degree + 1, len(controls))
     try:
         _set_curve_controls(curve, controls)
         _set_knots(curve.Knots, definition["knots"], "curve knot")
@@ -693,6 +767,8 @@ def _mesh_unweld_value(mesh):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "trimmed_surface_mass_properties":
+        return _trimmed_surface_mass_properties(operation, iterations, tolerance)
     if kind == "mesh_weld_vertex":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _triangle_mesh(operation["vertices"], operation["triangles"])

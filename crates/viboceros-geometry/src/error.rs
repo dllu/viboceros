@@ -370,16 +370,8 @@ pub enum GeometryError {
     #[error("B-rep face {face} could not be robustly tessellated inside its trim domain")]
     UnsupportedBrepTrimTessellation { face: usize },
 
-    #[error(
-        "B-rep face {face} requires trimmed-domain integration before its area can be measured"
-    )]
-    UnsupportedBrepTrimArea { face: usize },
-
     #[error("oriented volume requires a closed, consistently oriented B-rep")]
     OpenBrepVolume,
-
-    #[error("B-rep face {face} requires trimmed-domain integration for mass properties")]
-    UnsupportedBrepTrimMassProperties { face: usize },
 
     #[error("a capped curve extrusion requires a closed, nondegenerate planar profile")]
     InvalidCappedExtrusionProfile,

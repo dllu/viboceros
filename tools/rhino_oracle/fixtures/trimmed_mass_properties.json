@@ -1,0 +1,470 @@
+{
+  "protocol_version": 1,
+  "iterations": 3,
+  "tolerance": {"absolute": 1e-11, "relative": 1e-13, "angular": 1e-10},
+  "operations": [
+    {
+      "op": "trimmed_surface_mass_properties",
+      "id": "paraboloid-disk",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {"point": [-1, -1, 2], "weight": 1},
+          {"point": [0, -1, 0], "weight": 1},
+          {"point": [1, -1, 2], "weight": 1},
+          {"point": [-1, 0, 0], "weight": 1},
+          {"point": [0, 0, -2], "weight": 1},
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [-1, 1, 2], "weight": 1},
+          {"point": [0, 1, 0], "weight": 1},
+          {"point": [1, 1, 2], "weight": 1}
+        ],
+        "knots_u": [-1, -1, -1, 1, 1, 1],
+        "knots_v": [-1, -1, -1, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0], "weight": 1},
+              {"point": [0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0], "weight": 1},
+              {"point": [-0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0], "weight": 1},
+              {"point": [-0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0], "weight": 1},
+              {"point": [0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          }
+        }
+      ],
+      "interior_uv": [0, 0],
+      "cap_surface": null,
+      "reversed": false
+    },
+    {
+      "op": "trimmed_surface_mass_properties",
+      "id": "paraboloid-annulus",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {"point": [-1, -1, 2], "weight": 1},
+          {"point": [0, -1, 0], "weight": 1},
+          {"point": [1, -1, 2], "weight": 1},
+          {"point": [-1, 0, 0], "weight": 1},
+          {"point": [0, 0, -2], "weight": 1},
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [-1, 1, 2], "weight": 1},
+          {"point": [0, 1, 0], "weight": 1},
+          {"point": [1, 1, 2], "weight": 1}
+        ],
+        "knots_u": [-1, -1, -1, 1, 1, 1],
+        "knots_v": [-1, -1, -1, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0], "weight": 1},
+              {"point": [0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0], "weight": 1},
+              {"point": [-0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0], "weight": 1},
+              {"point": [-0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0], "weight": 1},
+              {"point": [0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          }
+        },
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.35, 0, 0.12249999999999998], "weight": 1},
+              {"point": [0.35, -0.35, 0.12249999999999998], "weight": 0.7071067811865476},
+              {"point": [0, -0.35, 0.12249999999999998], "weight": 1},
+              {"point": [-0.35, -0.35, 0.12249999999999998], "weight": 0.7071067811865476},
+              {"point": [-0.35, 0, 0.12249999999999998], "weight": 1},
+              {"point": [-0.35, 0.35, 0.12249999999999998], "weight": 0.7071067811865476},
+              {"point": [0, 0.35, 0.12249999999999998], "weight": 1},
+              {"point": [0.35, 0.35, 0.12249999999999998], "weight": 0.7071067811865476},
+              {"point": [0.35, 0, 0.12249999999999998], "weight": 1}
+            ],
+            "knots": [-4, -4, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.35, 0, 0], "weight": 1},
+              {"point": [0.35, -0.35, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.35, 0], "weight": 1},
+              {"point": [-0.35, -0.35, 0], "weight": 0.7071067811865476},
+              {"point": [-0.35, 0, 0], "weight": 1},
+              {"point": [-0.35, 0.35, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.35, 0], "weight": 1},
+              {"point": [0.35, 0.35, 0], "weight": 0.7071067811865476},
+              {"point": [0.35, 0, 0], "weight": 1}
+            ],
+            "knots": [-4, -4, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0]
+          }
+        }
+      ],
+      "interior_uv": [0.575, 0],
+      "cap_surface": null,
+      "reversed": false
+    },
+    {
+      "op": "trimmed_surface_mass_properties",
+      "id": "paraboloid-thin-annulus",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {"point": [-1, -1, 2], "weight": 1},
+          {"point": [0, -1, 0], "weight": 1},
+          {"point": [1, -1, 2], "weight": 1},
+          {"point": [-1, 0, 0], "weight": 1},
+          {"point": [0, 0, -2], "weight": 1},
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [-1, 1, 2], "weight": 1},
+          {"point": [0, 1, 0], "weight": 1},
+          {"point": [1, 1, 2], "weight": 1}
+        ],
+        "knots_u": [-1, -1, -1, 1, 1, 1],
+        "knots_v": [-1, -1, -1, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0], "weight": 1},
+              {"point": [0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0], "weight": 1},
+              {"point": [-0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0], "weight": 1},
+              {"point": [-0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0], "weight": 1},
+              {"point": [0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          }
+        },
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.799, 0, 0.6384010000000001], "weight": 1},
+              {"point": [0.799, -0.799, 0.6384010000000001], "weight": 0.7071067811865476},
+              {"point": [0, -0.799, 0.6384010000000001], "weight": 1},
+              {"point": [-0.799, -0.799, 0.6384010000000001], "weight": 0.7071067811865476},
+              {"point": [-0.799, 0, 0.6384010000000001], "weight": 1},
+              {"point": [-0.799, 0.799, 0.6384010000000001], "weight": 0.7071067811865476},
+              {"point": [0, 0.799, 0.6384010000000001], "weight": 1},
+              {"point": [0.799, 0.799, 0.6384010000000001], "weight": 0.7071067811865476},
+              {"point": [0.799, 0, 0.6384010000000001], "weight": 1}
+            ],
+            "knots": [-4, -4, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.799, 0, 0], "weight": 1},
+              {"point": [0.799, -0.799, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.799, 0], "weight": 1},
+              {"point": [-0.799, -0.799, 0], "weight": 0.7071067811865476},
+              {"point": [-0.799, 0, 0], "weight": 1},
+              {"point": [-0.799, 0.799, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.799, 0], "weight": 1},
+              {"point": [0.799, 0.799, 0], "weight": 0.7071067811865476},
+              {"point": [0.799, 0, 0], "weight": 1}
+            ],
+            "knots": [-4, -4, -4, -3, -3, -2, -2, -1, -1, 0, 0, 0]
+          }
+        }
+      ],
+      "interior_uv": [0.7995000000000001, 0],
+      "cap_surface": null,
+      "reversed": false
+    },
+    {
+      "op": "trimmed_surface_mass_properties",
+      "id": "paraboloid-capped-outward",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {"point": [-1, -1, 2], "weight": 1},
+          {"point": [0, -1, 0], "weight": 1},
+          {"point": [1, -1, 2], "weight": 1},
+          {"point": [-1, 0, 0], "weight": 1},
+          {"point": [0, 0, -2], "weight": 1},
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [-1, 1, 2], "weight": 1},
+          {"point": [0, 1, 0], "weight": 1},
+          {"point": [1, 1, 2], "weight": 1}
+        ],
+        "knots_u": [-1, -1, -1, 1, 1, 1],
+        "knots_v": [-1, -1, -1, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0], "weight": 1},
+              {"point": [0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0], "weight": 1},
+              {"point": [-0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0], "weight": 1},
+              {"point": [-0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0], "weight": 1},
+              {"point": [0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          }
+        }
+      ],
+      "interior_uv": [0, 0],
+      "cap_surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {"point": [-1, -1, 0.6400000000000001], "weight": 1},
+          {"point": [1, -1, 0.6400000000000001], "weight": 1},
+          {"point": [-1, 1, 0.6400000000000001], "weight": 1},
+          {"point": [1, 1, 0.6400000000000001], "weight": 1}
+        ],
+        "knots_u": [-1, -1, 1, 1],
+        "knots_v": [-1, -1, 1, 1]
+      },
+      "reversed": true
+    },
+    {
+      "op": "trimmed_surface_mass_properties",
+      "id": "paraboloid-capped-inward",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {"point": [-1, -1, 2], "weight": 1},
+          {"point": [0, -1, 0], "weight": 1},
+          {"point": [1, -1, 2], "weight": 1},
+          {"point": [-1, 0, 0], "weight": 1},
+          {"point": [0, 0, -2], "weight": 1},
+          {"point": [1, 0, 0], "weight": 1},
+          {"point": [-1, 1, 2], "weight": 1},
+          {"point": [0, 1, 0], "weight": 1},
+          {"point": [1, 1, 2], "weight": 1}
+        ],
+        "knots_u": [-1, -1, -1, 1, 1, 1],
+        "knots_v": [-1, -1, -1, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, 0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0.6400000000000001], "weight": 1},
+              {"point": [-0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0.6400000000000001], "weight": 1},
+              {"point": [0.8, -0.8, 0.6400000000000001], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0.6400000000000001], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.8, 0, 0], "weight": 1},
+              {"point": [0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.8, 0], "weight": 1},
+              {"point": [-0.8, 0.8, 0], "weight": 0.7071067811865476},
+              {"point": [-0.8, 0, 0], "weight": 1},
+              {"point": [-0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.8, 0], "weight": 1},
+              {"point": [0.8, -0.8, 0], "weight": 0.7071067811865476},
+              {"point": [0.8, 0, 0], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          }
+        }
+      ],
+      "interior_uv": [0, 0],
+      "cap_surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {"point": [-1, -1, 0.6400000000000001], "weight": 1},
+          {"point": [1, -1, 0.6400000000000001], "weight": 1},
+          {"point": [-1, 1, 0.6400000000000001], "weight": 1},
+          {"point": [1, 1, 0.6400000000000001], "weight": 1}
+        ],
+        "knots_u": [-1, -1, 1, 1],
+        "knots_v": [-1, -1, 1, 1]
+      },
+      "reversed": false
+    },
+    {
+      "op": "trimmed_surface_mass_properties",
+      "id": "paraboloid-rotated-translated",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 3,
+        "control_point_count_v": 3,
+        "control_points": [
+          {"point": [7, -6, 15], "weight": 1},
+          {"point": [8, -4, 15], "weight": 1},
+          {"point": [9, -6, 15], "weight": 1},
+          {"point": [7, -4, 16], "weight": 1},
+          {"point": [8, -2, 16], "weight": 1},
+          {"point": [9, -4, 16], "weight": 1},
+          {"point": [7, -6, 17], "weight": 1},
+          {"point": [8, -4, 17], "weight": 1},
+          {"point": [9, -6, 17], "weight": 1}
+        ],
+        "knots_u": [-1, -1, -1, 1, 1, 1],
+        "knots_v": [-1, -1, -1, 1, 1, 1]
+      },
+      "boundaries": [
+        {
+          "curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [8.5, -4.25, 16], "weight": 1},
+              {"point": [8.5, -4.25, 16.5], "weight": 0.7071067811865476},
+              {"point": [8, -4.25, 16.5], "weight": 1},
+              {"point": [7.5, -4.25, 16.5], "weight": 0.7071067811865476},
+              {"point": [7.5, -4.25, 16], "weight": 1},
+              {"point": [7.5, -4.25, 15.5], "weight": 0.7071067811865476},
+              {"point": [8, -4.25, 15.5], "weight": 1},
+              {"point": [8.5, -4.25, 15.5], "weight": 0.7071067811865476},
+              {"point": [8.5, -4.25, 16], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          },
+          "parameter_curve": {
+            "degree": 2,
+            "control_points": [
+              {"point": [0.5, 0, 0], "weight": 1},
+              {"point": [0.5, 0.5, 0], "weight": 0.7071067811865476},
+              {"point": [0, 0.5, 0], "weight": 1},
+              {"point": [-0.5, 0.5, 0], "weight": 0.7071067811865476},
+              {"point": [-0.5, 0, 0], "weight": 1},
+              {"point": [-0.5, -0.5, 0], "weight": 0.7071067811865476},
+              {"point": [0, -0.5, 0], "weight": 1},
+              {"point": [0.5, -0.5, 0], "weight": 0.7071067811865476},
+              {"point": [0.5, 0, 0], "weight": 1}
+            ],
+            "knots": [0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4]
+          }
+        }
+      ],
+      "interior_uv": [0, 0],
+      "cap_surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {"point": [7, -4.25, 15], "weight": 1},
+          {"point": [9, -4.25, 15], "weight": 1},
+          {"point": [7, -4.25, 17], "weight": 1},
+          {"point": [9, -4.25, 17], "weight": 1}
+        ],
+        "knots_u": [-1, -1, 1, 1],
+        "knots_v": [-1, -1, 1, 1]
+      },
+      "reversed": true
+    }
+  ]
+}

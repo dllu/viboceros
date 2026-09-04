@@ -9,6 +9,7 @@ use std::time::{Instant, SystemTime, UNIX_EPOCH};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use thiserror::Error;
+
 use viboceros_command::{CommandError, CommandRegistry};
 use viboceros_document::{
     ColorRgb, Document, DocumentError, Geometry, LayerId, ObjectAttributes, ObjectColorSource,
@@ -31,6 +32,9 @@ use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
     ThreeDmObject, read_3dm_file, write_3dm_file,
 };
+
+mod mass_properties;
+pub use mass_properties::{MassBoundary, TrimmedMassFixture};
 
 pub const PROTOCOL_VERSION: u32 = 1;
 const MAX_ITERATIONS: u32 = 1_000_000;
@@ -72,6 +76,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    TrimmedSurfaceMassProperties {
+        id: String,
+        #[serde(flatten)]
+        fixture: TrimmedMassFixture,
+    },
     DocumentObjectStateCycle {
         id: String,
         object_count: usize,
@@ -1257,7 +1266,8 @@ pub enum SurfaceSplitCutterDefinition {
 impl Operation {
     pub fn id(&self) -> &str {
         match self {
-            Self::DocumentObjectStateCycle { id, .. }
+            Self::TrimmedSurfaceMassProperties { id, .. }
+            | Self::DocumentObjectStateCycle { id, .. }
             | Self::DocumentObjectSwapCycle { id }
             | Self::DocumentObjectIsolationCycle { id }
             | Self::DocumentActionSelectionCycle { id }
@@ -1529,6 +1539,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::TrimmedSurfaceMassProperties { fixture, .. } => {
+            mass_properties::run(fixture, iterations, tolerance)?
+        }
         Operation::DocumentObjectStateCycle {
             object_count,
             hide_indices,
