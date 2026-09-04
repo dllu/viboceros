@@ -6199,13 +6199,15 @@ fn rotate_surface_cut_outer_cycle(
         && let Some(first_closed_source) = first_closed_source
         && closed_sources.get(source).copied().unwrap_or(false)
     {
-        let target_segment = if source == first_closed_source {
+        let forward = source == first_closed_source
+            || cycle.iter().any(|halfedge| halfedge.is_multiple_of(2));
+        let target_segment = if source == first_closed_source || !forward {
             0
         } else {
             maximum_segment
         };
         if let Some(anchor) = cycle.iter().position(|halfedge| {
-            halfedge.is_multiple_of(2)
+            halfedge.is_multiple_of(2) == forward
                 && matches!(
                     edges[*halfedge / 2].kind,
                     SurfaceCutArrangementEdgeKind::Cut {
@@ -6220,6 +6222,13 @@ fn rotate_surface_cut_outer_cycle(
     }
 
     if let Some(first_closed_source) = first_closed_source
+        // Intersecting loops start at the last forward segment from a later
+        // cutter. At a one-point contact, a complete self-edge remains and
+        // Rhino instead retains the earliest cutter's seam.
+        && !cycle.iter().any(|halfedge| {
+            let edge = &edges[*halfedge / 2];
+            edge.nodes[0] == edge.nodes[1]
+        })
         && let Some((_, _, anchor)) = cycle
             .iter()
             .enumerate()
@@ -10277,6 +10286,32 @@ mod tests {
         assert_case(
             vec![circle([5.0, 5.0], 3.0), circle([6.5, 5.0], 1.5)],
             &[1, 2, 5],
+            &[1, 1, 2],
+        );
+        assert_case(
+            vec![polygon(2.0, 5.0, 3.0, 7.0), circle([6.5, 5.0], 1.5)],
+            &[2, 5, 11],
+            &[1, 1, 2],
+        );
+        assert_case(
+            vec![circle([6.0, 5.0], 2.0), polygon(2.0, 8.0, 2.0, 8.0)],
+            &[1, 6, 9],
+            &[1, 1, 2],
+        );
+        assert_case(
+            vec![
+                polygon(2.0, 5.0, 3.0, 7.0).reversed().unwrap(),
+                circle([6.5, 5.0], 1.5).reversed().unwrap(),
+            ],
+            &[2, 5, 11],
+            &[1, 1, 2],
+        );
+        assert_case(
+            vec![
+                polygon(2.0, 8.0, 2.0, 8.0).reversed().unwrap(),
+                circle([6.0, 5.0], 2.0).reversed().unwrap(),
+            ],
+            &[1, 6, 9],
             &[1, 1, 2],
         );
         let triple_nested = Brep::try_split_rectangular_surface_face_with_curves(

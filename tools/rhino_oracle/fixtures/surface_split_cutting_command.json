@@ -1977,6 +1977,194 @@
     },
     {
       "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-externally-tangent-polygon-and-rational-circle",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [2.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 6.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.5, 6.5, 0.0], "weight": 1.0 },
+            { "point": [5.0, 6.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [5.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 3.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.5, 3.5, 0.0], "weight": 1.0 },
+            { "point": [8.0, 3.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-internally-tangent-rational-circle-and-polygon",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 7.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [4.0, 7.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [4.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [4.0, 3.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 3.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [2.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 8.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 8.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 2.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-externally-tangent-reversed-polygon-and-circle",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [2.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 3.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 3.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.5, 3.5, 0.0], "weight": 1.0 },
+            { "point": [5.0, 3.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [5.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [5.0, 6.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.5, 6.5, 0.0], "weight": 1.0 },
+            { "point": [8.0, 6.5, 0.0], "weight": 0.7071067811865476 },
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-internally-tangent-reversed-polygon-and-circle",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [2.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 8.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 8.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 2.0, 0.0], "weight": 1.0 },
+            { "point": [2.0, 2.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 3.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.0, 3.0, 0.0], "weight": 1.0 },
+            { "point": [4.0, 3.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [4.0, 5.0, 0.0], "weight": 1.0 },
+            { "point": [4.0, 7.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [6.0, 7.0, 0.0], "weight": 1.0 },
+            { "point": [8.0, 7.0, 0.0], "weight": 0.7071067811865476 },
+            { "point": [8.0, 5.0, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
       "id": "split-planar-surface-with-reversed-and-forward-closed-polygons",
       "source_pick": [5.0, 1.0, 0.0],
       "surface": {

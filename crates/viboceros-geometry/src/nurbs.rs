@@ -5892,6 +5892,16 @@ fn refine_curve_curve_intersection(
     if first_point.distance_to(second_point)? > distance_tolerance {
         return Ok(None);
     }
+    (first_parameter, second_parameter) = snap_curve_intersection_to_domain_boundary(
+        first,
+        second,
+        [first_parameter, second_parameter],
+        first_domain,
+        second_domain,
+        distance_tolerance,
+    )?;
+    let first_point = first.evaluate(first_parameter)?;
+    let second_point = second.evaluate(second_parameter)?;
     let point = Point3::try_new(
         finite_midpoint(first_point.x(), second_point.x()),
         finite_midpoint(first_point.y(), second_point.y()),
@@ -5902,6 +5912,86 @@ fn refine_curve_curve_intersection(
         second_parameter,
         point,
     }))
+}
+
+fn snap_curve_intersection_to_domain_boundary(
+    first: &NurbsCurve,
+    second: &NurbsCurve,
+    parameters: [Real; 2],
+    first_domain: [Real; 2],
+    second_domain: [Real; 2],
+    distance_tolerance: Real,
+) -> Result<(Real, Real), GeometryError> {
+    let first_point = first.evaluate(parameters[0])?;
+    let second_point = second.evaluate(parameters[1])?;
+    let mut best = (
+        0_usize,
+        first_point.distance_to(second_point)?,
+        parameters[0],
+        parameters[1],
+    );
+    let mut consider =
+        |snapped: usize, distance: Real, first_parameter: Real, second_parameter: Real| {
+            if distance > distance_tolerance {
+                return;
+            }
+            let parameters_precede = first_parameter
+                .total_cmp(&best.2)
+                .then_with(|| second_parameter.total_cmp(&best.3))
+                .is_lt();
+            let better = snapped > best.0
+                || (snapped == best.0
+                    && (distance < best.1 || (distance == best.1 && parameters_precede)));
+            if better {
+                best = (snapped, distance, first_parameter, second_parameter);
+            }
+        };
+
+    for first_boundary in first_domain {
+        if !intersection_parameter_near(parameters[0], first_boundary) {
+            continue;
+        }
+        let first_point = first.evaluate(first_boundary)?;
+        for second_boundary in second_domain {
+            if intersection_parameter_near(parameters[1], second_boundary) {
+                let distance = first_point.distance_to(second.evaluate(second_boundary)?)?;
+                consider(2, distance, first_boundary, second_boundary);
+            }
+        }
+    }
+
+    let closest_tolerance = Tolerance::try_new(
+        distance_tolerance,
+        Real::EPSILON * 16.0,
+        Real::EPSILON * 16.0,
+    )?;
+    for first_boundary in first_domain {
+        if !intersection_parameter_near(parameters[0], first_boundary) {
+            continue;
+        }
+        let first_point = first.evaluate(first_boundary)?;
+        let (second_parameter, distance) = second.refine_closest_parameter(
+            first_point,
+            parameters[1],
+            second_domain,
+            closest_tolerance,
+        )?;
+        consider(1, distance, first_boundary, second_parameter);
+    }
+    for second_boundary in second_domain {
+        if !intersection_parameter_near(parameters[1], second_boundary) {
+            continue;
+        }
+        let second_point = second.evaluate(second_boundary)?;
+        let (first_parameter, distance) = first.refine_closest_parameter(
+            second_point,
+            parameters[0],
+            first_domain,
+            closest_tolerance,
+        )?;
+        consider(1, distance, first_parameter, second_boundary);
+    }
+    Ok((best.2, best.3))
 }
 
 #[allow(clippy::too_many_arguments)]
@@ -9646,6 +9736,84 @@ mod tests {
         assert_point_near(intersections[0].point(), contact);
         assert!((intersections[0].first_parameter() - parameter).abs() < 1.0e-11);
         assert!(intersections[0].second_parameter().abs() < 1.0e-11);
+    }
+
+    #[test]
+    fn curve_intersection_finds_a_rational_span_endpoint_tangent_to_a_polyline() {
+        let weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([8.0, 5.0], 1.0),
+                ([8.0, 6.5], weight),
+                ([6.5, 6.5], 1.0),
+                ([5.0, 6.5], weight),
+                ([5.0, 5.0], 1.0),
+                ([5.0, 3.5], weight),
+                ([6.5, 3.5], 1.0),
+                ([8.0, 3.5], weight),
+                ([8.0, 5.0], 1.0),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(point(coordinates[0], coordinates[1]), weight).unwrap()
+            })
+            .collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let polygon = NurbsCurve::try_new(
+            1,
+            vec![
+                point(2.0, 3.0),
+                point(5.0, 3.0),
+                point(5.0, 7.0),
+                point(2.0, 7.0),
+                point(2.0, 3.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+
+        let circle_first = circle
+            .intersections_with_curve(&polygon, Tolerance::DEFAULT)
+            .unwrap();
+        let polygon_first = polygon
+            .intersections_with_curve(&circle, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(circle_first.len(), 1, "{circle_first:#?}");
+        assert_eq!(polygon_first.len(), 1, "{polygon_first:#?}");
+        assert!((circle_first[0].first_parameter() - 2.0).abs() < 1.0e-10);
+        assert!((circle_first[0].second_parameter() - 1.5).abs() < 1.0e-10);
+        assert!((polygon_first[0].first_parameter() - 1.5).abs() < 1.0e-10);
+        assert!((polygon_first[0].second_parameter() - 2.0).abs() < 1.0e-10);
+        assert_point_near(circle_first[0].point(), point(5.0, 5.0));
+        assert_point_near(polygon_first[0].point(), point(5.0, 5.0));
+
+        let separated = NurbsCurve::try_new(
+            1,
+            vec![
+                point(2.0, 3.0),
+                point(5.0 - 1.0e-8, 3.0),
+                point(5.0 - 1.0e-8, 7.0),
+                point(2.0, 7.0),
+                point(2.0, 3.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        assert!(
+            circle
+                .intersections_with_curve(&separated, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+        assert!(
+            separated
+                .intersections_with_curve(&circle, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
     }
 
     #[test]
