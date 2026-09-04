@@ -5231,6 +5231,8 @@ struct SurfaceCutArrangementSourceInfo {
     first_closed: Option<usize>,
     closed: Vec<bool>,
     first_nodes: Vec<bool>,
+    first_tangent_nodes: Vec<bool>,
+    first_maximum_segment: usize,
 }
 
 #[derive(Clone, Copy)]
@@ -5555,6 +5557,37 @@ fn try_rectangular_surface_cut_arrangement(
         outgoing[edge.nodes[0]].push(edge_index * 2);
         outgoing[edge.nodes[1]].push(edge_index * 2 + 1);
     }
+    // A tangential contact has the same unoriented tangent line on the first
+    // cutter and a later cutter. Rhino uses a different trim seam at these
+    // pinched vertices than it does at a transverse crossing.
+    let parallel_tolerance = tolerance.angular().clamp(Real::EPSILON * 256.0, 1.0e-7);
+    let first_tangent_nodes = outgoing
+        .iter()
+        .map(|halfedges| {
+            halfedges.iter().copied().any(|first_halfedge| {
+                if !matches!(
+                    edges[first_halfedge / 2].kind,
+                    SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+                ) {
+                    return false;
+                }
+                let first_tangent = halfedge_directions[first_halfedge].tangent;
+                halfedges.iter().copied().any(|second_halfedge| {
+                    if !matches!(
+                        edges[second_halfedge / 2].kind,
+                        SurfaceCutArrangementEdgeKind::Cut { source, .. } if source != 0
+                    ) {
+                        return false;
+                    }
+                    let second_tangent = halfedge_directions[second_halfedge].tangent;
+                    first_tangent[0]
+                        .mul_add(second_tangent[1], -first_tangent[1] * second_tangent[0])
+                        .abs()
+                        <= parallel_tolerance
+                })
+            })
+        })
+        .collect::<Vec<_>>();
     let mut next = vec![usize::MAX; halfedge_count];
     for halfedges in &mut outgoing {
         sort_surface_cut_outgoing_halfedges(halfedges, &halfedge_directions, tolerance.angular());
@@ -5620,11 +5653,10 @@ fn try_rectangular_surface_cut_arrangement(
     let first_closed = cuts.iter().position(|cut| cut.closed);
     let closed = cuts.iter().map(|cut| cut.closed).collect::<Vec<_>>();
     let mut first_source_nodes = vec![false; nodes.len()];
+    let mut first_maximum_segment = 0_usize;
     for edge in &edges {
-        if matches!(
-            edge.kind,
-            SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
-        ) {
+        if let SurfaceCutArrangementEdgeKind::Cut { source: 0, segment } = edge.kind {
+            first_maximum_segment = first_maximum_segment.max(segment);
             for node in edge.nodes {
                 first_source_nodes[node] = true;
             }
@@ -5634,6 +5666,8 @@ fn try_rectangular_surface_cut_arrangement(
         first_closed,
         closed,
         first_nodes: first_source_nodes,
+        first_tangent_nodes,
+        first_maximum_segment,
     };
     for cycle in &mut outer_cycles {
         rotate_surface_cut_outer_cycle(
@@ -6217,6 +6251,7 @@ fn rotate_surface_cut_outer_cycle(
     let first_closed_source = source_info.first_closed;
     let closed_sources = &source_info.closed;
     let first_source_nodes = &source_info.first_nodes;
+    let first_tangent_nodes = &source_info.first_tangent_nodes;
     if let Some((source, maximum_segment)) = surface_cut_cycle_single_source(edges, cycle)
         && first_closed_source.is_some()
         && closed_sources.get(source).copied().unwrap_or(false)
@@ -6273,26 +6308,91 @@ fn rotate_surface_cut_outer_cycle(
         return Ok(());
     }
 
-    if first_closed_source == Some(0)
-        && !cycle.iter().any(|halfedge| {
-            matches!(
-                edges[*halfedge / 2].kind,
-                SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
-            )
-        })
+    // Faces incident to an open/open tangency retain the first cutter's seam:
+    // its earliest forward segment, or the vertex after that segment when the
+    // face traverses the cutter backward.
+    if first_closed_source.is_none()
+        && source_info.first_maximum_segment > 0
         && cycle.iter().any(|halfedge| {
             edges[*halfedge / 2]
                 .nodes
                 .into_iter()
-                .any(|node| first_source_nodes.get(node).copied().unwrap_or(false))
+                .any(|node| first_tangent_nodes[node])
         })
-        && let Some(source) = cycle
+    {
+        let forward_anchor = cycle
             .iter()
-            .filter_map(|halfedge| match edges[*halfedge / 2].kind {
-                SurfaceCutArrangementEdgeKind::Cut { source, .. } => Some(source),
-                SurfaceCutArrangementEdgeKind::Boundary(_) => None,
+            .enumerate()
+            .filter_map(|(index, halfedge)| {
+                if !halfedge.is_multiple_of(2) {
+                    return None;
+                }
+                match edges[*halfedge / 2].kind {
+                    SurfaceCutArrangementEdgeKind::Cut { source: 0, segment } => {
+                        Some((segment, index))
+                    }
+                    _ => None,
+                }
             })
-            .max()
+            .min_by_key(|(segment, _)| *segment)
+            .map(|(_, anchor)| anchor);
+        let anchor = forward_anchor.or_else(|| {
+            cycle
+                .iter()
+                .enumerate()
+                .filter_map(|(index, halfedge)| {
+                    if halfedge.is_multiple_of(2) {
+                        return None;
+                    }
+                    match edges[*halfedge / 2].kind {
+                        SurfaceCutArrangementEdgeKind::Cut { source: 0, segment } => {
+                            Some((segment, (index + 1) % cycle.len()))
+                        }
+                        _ => None,
+                    }
+                })
+                .min_by_key(|(segment, _)| *segment)
+                .map(|(_, anchor)| anchor)
+        });
+        if let Some(anchor) = anchor {
+            cycle.rotate_left(anchor);
+            return Ok(());
+        }
+    }
+
+    // A face on the far side of a one-point contact can omit every edge from
+    // the first cutter while still sharing its contact node. Closed first
+    // cutters use this rule at any shared node; an open first cutter uses it
+    // only at an interior tangency, not a transverse crossing or shared corner.
+    if !cycle.iter().any(|halfedge| {
+        matches!(
+            edges[*halfedge / 2].kind,
+            SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+        )
+    }) && cycle.iter().any(|halfedge| {
+        edges[*halfedge / 2].nodes.into_iter().any(|node| {
+            if first_closed_source == Some(0) {
+                return first_source_nodes[node];
+            }
+            first_tangent_nodes[node]
+                && [
+                    RectangularBoundarySide::South,
+                    RectangularBoundarySide::East,
+                    RectangularBoundarySide::North,
+                    RectangularBoundarySide::West,
+                ]
+                .into_iter()
+                .all(|side| {
+                    !surface_cut_parameter_on_side(nodes[node].parameter, side, bounds, tolerance)
+                })
+        })
+    }) && let Some(source) = cycle
+        .iter()
+        .filter_map(|halfedge| match edges[*halfedge / 2].kind {
+            SurfaceCutArrangementEdgeKind::Cut { source, .. } => Some(source),
+            SurfaceCutArrangementEdgeKind::Boundary(_) => None,
+        })
+        .max()
     {
         let forward = cycle.iter().any(|halfedge| {
             halfedge.is_multiple_of(2)
@@ -10436,6 +10536,31 @@ mod tests {
             vec![line([0.0, 6.0], [10.0, 6.0]), triangle],
             &[3, 5, 8],
             &[1, 1, 1],
+        );
+        let arch = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(5.0, 10.0, 0.0),
+                point(10.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert_case(
+            vec![arch.clone(), line([0.0, 6.0], [10.0, 6.0])],
+            &[3, 3, 5, 5],
+            &[1, 1, 1, 1],
+        );
+        assert_case(
+            vec![line([0.0, 6.0], [10.0, 6.0]), arch.clone()],
+            &[3, 3, 5, 5],
+            &[1, 1, 1, 1],
+        );
+        assert_case(
+            vec![arch.reversed().unwrap(), line([10.0, 6.0], [0.0, 6.0])],
+            &[3, 3, 5, 5],
+            &[1, 1, 1, 1],
         );
         let triple_nested = Brep::try_split_rectangular_surface_face_with_curves(
             surface,

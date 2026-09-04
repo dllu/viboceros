@@ -2419,6 +2419,120 @@
     },
     {
       "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-arch-then-tangent-line",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0, 2, 0.0], "weight": 1.0 },
+            { "point": [5, 10, 0.0], "weight": 1.0 },
+            { "point": [10, 2, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0, 6, 0.0], "weight": 1.0 },
+            { "point": [10, 6, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-tangent-line-then-arch",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [0, 6, 0.0], "weight": 1.0 },
+            { "point": [10, 6, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [0, 2, 0.0], "weight": 1.0 },
+            { "point": [5, 10, 0.0], "weight": 1.0 },
+            { "point": [10, 2, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
+      "id": "split-planar-surface-with-reversed-arch-and-tangent-line",
+      "source_pick": [1.0, 1.0, 0.0],
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+          { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+          { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+        ],
+        "knots_u": [0.0, 0.0, 10.0, 10.0],
+        "knots_v": [0.0, 0.0, 10.0, 10.0]
+      },
+      "cutters": [
+        {
+          "degree": 2,
+          "control_points": [
+            { "point": [10, 2, 0.0], "weight": 1.0 },
+            { "point": [5, 10, 0.0], "weight": 1.0 },
+            { "point": [0, 2, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 1.0]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            { "point": [10, 6, 0.0], "weight": 1.0 },
+            { "point": [0, 6, 0.0], "weight": 1.0 }
+          ],
+          "knots": [0.0, 0.0, 1.0, 1.0]
+        }
+      ]
+    },
+    {
+      "op": "surface_split_cutting_command",
       "id": "split-planar-surface-with-reversed-and-forward-closed-polygons",
       "source_pick": [5.0, 1.0, 0.0],
       "surface": {
