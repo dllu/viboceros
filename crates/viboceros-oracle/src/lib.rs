@@ -624,6 +624,12 @@ pub enum Operation {
         curve: NurbsCurveDefinition,
         surface: NurbsSurfaceDefinition,
     },
+    CurveBrepIntersectCommand {
+        id: String,
+        curve: NurbsCurveDefinition,
+        box_min: [f64; 3],
+        box_max: [f64; 3],
+    },
     CurveTrimCommand {
         id: String,
         curve: NurbsCurveDefinition,
@@ -1269,6 +1275,7 @@ impl Operation {
             | Self::CurveMultiSplitGeometry { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
+            | Self::CurveBrepIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
             | Self::CurveInsertKnotGeometry { id, .. }
@@ -3238,6 +3245,12 @@ fn execute(
         Operation::CurveSurfaceIntersectCommand { curve, surface, .. } => {
             curve_surface_intersect_command(iterations, curve, surface, tolerance)?
         }
+        Operation::CurveBrepIntersectCommand {
+            curve,
+            box_min,
+            box_max,
+            ..
+        } => curve_brep_intersect_command(iterations, curve, *box_min, *box_max, tolerance)?,
         Operation::CurveTrimCommand {
             curve,
             cutters,
@@ -7247,6 +7260,26 @@ fn curve_surface_intersect_command(
     intersect_command(iterations, &inputs, tolerance)
 }
 
+fn curve_brep_intersect_command(
+    iterations: u32,
+    curve_definition: &NurbsCurveDefinition,
+    box_min: [f64; 3],
+    box_max: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0.0, 0.0, 0.0)?,
+        Vector3::try_new(0.0, 0.0, 1.0)?,
+        tolerance,
+    )?;
+    let intervals = std::array::from_fn(|axis| [box_min[axis], box_max[axis]]);
+    let inputs = [
+        Geometry::NurbsCurve(nurbs_curve_from_definition(curve_definition)?),
+        Geometry::Brep(Brep::try_box(frame, intervals, tolerance)?),
+    ];
+    intersect_command(iterations, &inputs, tolerance)
+}
+
 fn intersect_command(
     iterations: u32,
     inputs: &[Geometry],
@@ -10156,6 +10189,53 @@ mod tests {
         assert_eq!(objects[0]["in_source_group"], false);
         assert_eq!(objects[0]["on_current_layer"], true);
         assert_eq!(objects[0]["selected"], true);
+    }
+
+    #[test]
+    fn captures_curve_brep_intersect_command_behavior() {
+        let curve = NurbsCurveDefinition {
+            degree: 1,
+            control_points: [[-5.0, 5.0, 5.0], [15.0, 5.0, 5.0]]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![0.0, 0.0, 20.0, 20.0],
+            domain: None,
+        };
+        let response = run_request(&request(vec![Operation::CurveBrepIntersectCommand {
+            id: "intersect-curve-brep".to_owned(),
+            curve,
+            box_min: [0.0, 0.0, 0.0],
+            box_max: [10.0, 10.0, 10.0],
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["input_selected"], json!([false, false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 2);
+        assert_eq!(objects[0]["kind"], "point");
+        assert_eq!(objects[0]["point"], json!([0.0, 5.0, 5.0]));
+        assert_eq!(objects[1]["kind"], "point");
+        assert_eq!(objects[1]["point"], json!([10.0, 5.0, 5.0]));
+        assert!(objects.iter().all(|object| object["blank_name"] == true));
+        assert!(
+            objects
+                .iter()
+                .all(|object| object["color_from_layer"] == true)
+        );
+        assert!(
+            objects
+                .iter()
+                .all(|object| object["in_source_group"] == false)
+        );
+        assert!(
+            objects
+                .iter()
+                .all(|object| object["on_current_layer"] == true)
+        );
+        assert!(objects.iter().all(|object| object["selected"] == true));
     }
 
     #[test]

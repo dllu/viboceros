@@ -874,15 +874,18 @@ piece retains the source identity; every piece retains its attributes and group
 membership, becomes selected, and participates in one undo step. This is the
 curve `Point` path; cutting-object and surface splitting remain future
 extensions.
-`Intersect` compares every pair of selected curve-compatible objects and
-untrimmed NURBS surfaces. Isolated and tangent contacts create current-layer
-point objects; a finite curve/curve or curve/surface shared interval creates an
-exact NURBS subcurve. Curve/curve overlaps use the later curve's orientation and
+`Intersect` compares every supported pair of selected curve-compatible objects,
+untrimmed NURBS surfaces, and B-reps; each pair currently requires at least one
+curve. Isolated and tangent contacts create current-layer point objects, while
+finite shared intervals create exact NURBS subcurves. Curve/B-rep contacts are
+clipped against exact face trim regions and deduplicated across shared edges and
+vertices. Curve/curve overlaps use the later curve's orientation and
 parameterization, matching Rhino. Pairwise duplicates are intentionally
-retained when three or more curves meet at one location. Inputs remain in the
-document and are deselected, outputs are selected, and all output creation is
-one undo step. A no-hit run still clears the input selection but creates no undo
-record. Surface/surface and B-rep intersection curves remain future extensions.
+retained when three or more source objects meet at one location. Inputs remain
+in the document and are deselected, outputs are selected, and all output
+creation is one undo step. A no-hit run still clears the input selection but
+creates no undo record. Surface/surface, surface/B-rep, and B-rep/B-rep
+intersection curves remain future extensions.
 `Trim point` treats the selected curve nearest the point as the target and all
 other selected curves as cutters; omit the point in the UI to pick the interval
 to remove in a viewport. Only the nearest cutting intersection on either side
@@ -1242,6 +1245,10 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_surface_intersect_command.json \
+  --absolute-epsilon 1e-9 --relative-epsilon 1e-11
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/curve_brep_intersect_command.json \
   --absolute-epsilon 1e-9 --relative-epsilon 1e-11
 
 tools/rhino_oracle/run_headless.sh compare \

@@ -9,25 +9,26 @@ use viboceros_document::{
 };
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepFace, CatenaryConstruction, CatenaryCurve,
-    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveCurveIntersectionEvent,
-    CurveExtensionBoundary as GeometryCurveExtensionBoundary, CurveExtensionSide,
-    CurveExtensionStyle as GeometryCurveExtensionStyle, CurveInterpolationOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, CurveSurfaceIntersectionEvent,
-    CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT,
-    DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError,
-    InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
-    MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
-    MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh,
-    UnitVector3, Vector3, curve_surface_intersection_events, join_polylines, sort_and_cull_points,
-    try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
+    CatenaryOutput, Circle3, CircularArc3, ControlPointCurveClosure, CurveBrepIntersectionEvent,
+    CurveCurveIntersectionEvent, CurveExtensionBoundary as GeometryCurveExtensionBoundary,
+    CurveExtensionSide, CurveExtensionStyle as GeometryCurveExtensionStyle,
+    CurveInterpolationOptions, CurveKnotSpacing, CurveRef, CurveSample,
+    CurveSurfaceIntersectionEvent, CurveThroughConstruction, CurveTweenMatchMethod,
+    DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
+    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
+    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE,
+    MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER,
+    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
+    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
+    MIN_POLYLINE_CATENARY_POINT_COUNT, MIN_SMOOTH_CATENARY_POINT_COUNT,
+    MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
+    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    curve_brep_intersection_events, curve_surface_intersection_events, join_polylines,
+    sort_and_cull_points, try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
     try_tween_nurbs_curves,
 };
 use viboceros_io::{
@@ -12501,6 +12502,7 @@ struct IntersectCommand;
 enum IntersectInput {
     Curve(NurbsCurve),
     Surface(NurbsSurface),
+    Brep(Brep),
 }
 
 impl Command for IntersectCommand {
@@ -12516,6 +12518,9 @@ impl Command for IntersectCommand {
                 let geometry = object.geometry();
                 if let Geometry::NurbsSurface(surface) = geometry {
                     return Ok(IntersectInput::Surface(surface.clone()));
+                }
+                if let Geometry::Brep(brep) = geometry {
+                    return Ok(IntersectInput::Brep(brep.clone()));
                 }
                 geometry
                     .nurbs_curve_representation()?
@@ -12577,8 +12582,27 @@ impl Command for IntersectCommand {
                             })
                             .collect::<Result<Vec<_>, GeometryError>>()?
                     }
-                    (IntersectInput::Surface(_), IntersectInput::Surface(_)) => {
-                        return Err(CommandError::UnsupportedSurfaceSurfaceIntersect);
+                    (IntersectInput::Curve(curve), IntersectInput::Brep(brep))
+                    | (IntersectInput::Brep(brep), IntersectInput::Curve(curve)) => {
+                        curve_brep_intersection_events(curve, brep, document.tolerance())?
+                            .into_iter()
+                            .map(|event| match event {
+                                CurveBrepIntersectionEvent::Point(intersection) => {
+                                    Ok(Geometry::Point(intersection.point()))
+                                }
+                                CurveBrepIntersectionEvent::Overlap(overlap) => {
+                                    Ok(Geometry::NurbsCurve(
+                                        curve.try_trimmed(overlap.curve_interval())?,
+                                    ))
+                                }
+                            })
+                            .collect::<Result<Vec<_>, GeometryError>>()?
+                    }
+                    (IntersectInput::Surface(_), IntersectInput::Surface(_))
+                    | (IntersectInput::Surface(_), IntersectInput::Brep(_))
+                    | (IntersectInput::Brep(_), IntersectInput::Surface(_))
+                    | (IntersectInput::Brep(_), IntersectInput::Brep(_)) => {
+                        return Err(CommandError::UnsupportedIntersectObjectPair);
                     }
                 };
                 for geometry in pair_output {
@@ -19891,14 +19915,16 @@ pub enum CommandError {
     #[error("Split currently requires exactly one selected curve, got {actual}")]
     SplitRequiresOneCurve { actual: usize },
 
-    #[error("Intersect currently supports selected curves and untrimmed NURBS surfaces only")]
+    #[error(
+        "Intersect currently supports selected curves, untrimmed NURBS surfaces, and B-reps only"
+    )]
     UnsupportedIntersectGeometry,
 
     #[error("Intersect requires at least two selected objects, got {actual}")]
     IntersectRequiresAtLeastTwoObjects { actual: usize },
 
-    #[error("Intersect does not yet support surface/surface pairs")]
-    UnsupportedSurfaceSurfaceIntersect,
+    #[error("Intersect does not yet support pairs without at least one curve")]
+    UnsupportedIntersectObjectPair,
 
     #[error("Intersect supports at most {maximum} selected object pairs")]
     TooManyIntersectPairs { maximum: usize },
@@ -20352,6 +20378,21 @@ mod tests {
             Point3::try_new(10.0, 10.0, 0.0).unwrap(),
             Point3::try_new(0.0, 10.0, 0.0).unwrap(),
         ])
+        .unwrap()
+    }
+
+    fn intersection_box() -> Brep {
+        let frame = Frame3::try_from_normal(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 0.0, 1.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        Brep::try_box(
+            frame,
+            [[0.0, 10.0], [0.0, 10.0], [0.0, 10.0]],
+            Tolerance::DEFAULT,
+        )
         .unwrap()
     }
 
@@ -26228,7 +26269,92 @@ mod tests {
     }
 
     #[test]
-    fn intersect_rejects_surface_surface_pairs_atomically() {
+    fn intersect_supports_curve_brep_points_and_exact_face_overlaps() {
+        let registry = CommandRegistry::with_builtins();
+        let mut crossing = Document::default();
+        let curve = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(-5.0, 5.0, 5.0).unwrap(),
+                Point3::try_new(15.0, 5.0, 5.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 20.0, 20.0],
+        )
+        .unwrap();
+        let input_ids = [
+            crossing.add_geometry(Geometry::NurbsCurve(curve)).unwrap(),
+            crossing
+                .add_geometry(Geometry::Brep(intersection_box()))
+                .unwrap(),
+        ];
+        crossing
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut crossing, "Intersect").unwrap(),
+            "Created 2 intersection object(s) from 1 object pair(s)"
+        );
+        let mut points = crossing
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Point(point) => *point,
+                _ => panic!("a transverse curve/B-rep contact must create points"),
+            })
+            .collect::<Vec<_>>();
+        points.sort_by(|left, right| left.x().total_cmp(&right.x()));
+        assert_eq!(
+            points,
+            vec![
+                Point3::try_new(0.0, 5.0, 5.0).unwrap(),
+                Point3::try_new(10.0, 5.0, 5.0).unwrap(),
+            ]
+        );
+
+        let mut overlapping = Document::default();
+        let curve = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(-5.0, 5.0, 10.0).unwrap(),
+                Point3::try_new(15.0, 5.0, 10.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 20.0, 20.0],
+        )
+        .unwrap();
+        let input_ids = [
+            overlapping
+                .add_geometry(Geometry::NurbsCurve(curve))
+                .unwrap(),
+            overlapping
+                .add_geometry(Geometry::Brep(intersection_box()))
+                .unwrap(),
+        ];
+        overlapping
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+        registry.execute(&mut overlapping, "Intersect").unwrap();
+        let Geometry::NurbsCurve(overlap) =
+            overlapping.selected_objects().next().unwrap().geometry()
+        else {
+            panic!("a curve on a B-rep face must create an exact source subcurve")
+        };
+        let domain = overlap.domain();
+        assert!((*domain.start() - 5.0).abs() < 1.0e-10);
+        assert!((*domain.end() - 15.0).abs() < 1.0e-10);
+        assert!(
+            overlap
+                .evaluate(*domain.start())
+                .unwrap()
+                .is_near(Point3::try_new(0.0, 5.0, 10.0).unwrap(), Tolerance::DEFAULT)
+        );
+        assert!(overlap.evaluate(*domain.end()).unwrap().is_near(
+            Point3::try_new(10.0, 5.0, 10.0).unwrap(),
+            Tolerance::DEFAULT
+        ));
+    }
+
+    #[test]
+    fn intersect_rejects_pairs_without_a_curve_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let input_ids = [
@@ -26248,7 +26374,7 @@ mod tests {
 
         assert!(matches!(
             registry.execute(&mut document, "Intersect"),
-            Err(CommandError::UnsupportedSurfaceSurfaceIntersect)
+            Err(CommandError::UnsupportedIntersectObjectPair)
         ));
         assert_eq!(
             document.objects().cloned().collect::<Vec<_>>(),
