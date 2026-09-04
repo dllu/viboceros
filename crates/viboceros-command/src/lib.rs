@@ -13810,12 +13810,12 @@ fn classify_complete_surface_cut_once(
 
     let distinct_endpoints =
         (first[0] - last[0]).abs() > epsilon_u || (first[1] - last[1]).abs() > epsilon_v;
-    if distinct_endpoints
-        && ((on_south(first) && on_south(last))
-            || (on_east(first) && on_east(last))
-            || (on_north(first) && on_north(last))
-            || (on_west(first) && on_west(last)))
-    {
+    let same_boundary_side = (near(first[1], bounds[1][0], epsilon_v)
+        && near(last[1], bounds[1][0], epsilon_v))
+        || (near(first[0], bounds[0][1], epsilon_u) && near(last[0], bounds[0][1], epsilon_u))
+        || (near(first[1], bounds[1][1], epsilon_v) && near(last[1], bounds[1][1], epsilon_v))
+        || (near(first[0], bounds[0][0], epsilon_u) && near(last[0], bounds[0][0], epsilon_u));
+    if distinct_endpoints && same_boundary_side {
         validate_parameter_curve()?;
         return Ok(Some((
             CompleteSurfaceCut::SameBoundarySide,
@@ -29780,6 +29780,65 @@ mod tests {
             }
             edge_counts.sort_unstable();
             assert_eq!(edge_counts, vec![2, 6]);
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_supports_same_side_curves_through_corners() {
+        let registry = CommandRegistry::with_builtins();
+        for (points, source_pick, expected_edge_counts) in [
+            ([[0.0, 0.0], [5.0, 4.0], [0.0, 8.0]], "8,5,0", [2, 5]),
+            ([[0.0, 0.0], [4.0, 5.0], [8.0, 0.0]], "5,8,0", [2, 5]),
+            ([[10.0, 0.0], [6.0, 5.0], [2.0, 0.0]], "5,8,0", [2, 5]),
+            ([[10.0, 0.0], [5.0, 4.0], [10.0, 8.0]], "2,5,0", [2, 5]),
+            ([[10.0, 10.0], [5.0, 6.0], [10.0, 2.0]], "2,5,0", [2, 5]),
+            ([[10.0, 10.0], [6.0, 5.0], [2.0, 10.0]], "5,2,0", [2, 5]),
+            ([[0.0, 10.0], [4.0, 5.0], [8.0, 10.0]], "5,2,0", [2, 5]),
+            ([[0.0, 10.0], [5.0, 6.0], [0.0, 2.0]], "8,5,0", [2, 5]),
+            ([[0.0, 0.0], [5.0, 5.0], [10.0, 0.0]], "5,8,0", [2, 4]),
+            ([[10.0, 0.0], [5.0, 5.0], [10.0, 10.0]], "2,5,0", [2, 4]),
+            ([[10.0, 10.0], [5.0, 5.0], [0.0, 10.0]], "5,2,0", [2, 4]),
+            ([[0.0, 10.0], [5.0, 5.0], [0.0, 0.0]], "8,5,0", [2, 4]),
+        ] {
+            let mut document = Document::default();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap();
+            let cutter = NurbsCurve::try_new(
+                2,
+                points
+                    .into_iter()
+                    .map(|point| Point3::try_new(point[0], point[1], 0.0).unwrap())
+                    .collect(),
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap();
+            let cutter_id = document.add_geometry(Geometry::NurbsCurve(cutter)).unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            registry
+                .execute(
+                    &mut document,
+                    &format!("Split CuttingObjects={source_pick}"),
+                )
+                .unwrap();
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut edge_counts = Vec::new();
+            let mut area = 0.0;
+            for object in outputs {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("corner same-side cutting Split must create B-rep faces")
+                };
+                edge_counts.push(brep.edges().len());
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(3, document.tolerance()).unwrap();
+            }
+            edge_counts.sort_unstable();
+            assert_eq!(edge_counts, expected_edge_counts);
             assert!(document.tolerance().approx_eq(area, 100.0));
         }
     }
