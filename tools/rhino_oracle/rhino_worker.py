@@ -7137,6 +7137,141 @@ def _execute(operation, iterations, tolerance):
             for cutter in cutters:
                 cutter.Dispose()
 
+    if kind == "surface_split_cutting_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _nurbs_surface_from_definition(operation["surface"])
+        cutters = [
+            _nurbs_surface_from_definition(definition)
+            for definition in operation["cutters"]
+        ]
+
+        def split_surface_cutting_command():
+            original_ids = set(item.Id for item in document.Objects)
+            source_id = System.Guid.Empty
+            cutter_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Split Surface Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                source_id = document.Objects.AddSurface(source, attributes)
+                if source_id == System.Guid.Empty:
+                    raise ValueError("could not add cutting Split source surface")
+                group_index = document.Groups.Add(
+                    "Viboceros Split Surface Group " + str(System.Guid.NewGuid()),
+                    [source_id],
+                )
+                if group_index < 0:
+                    raise ValueError("could not group cutting Split source surface")
+                for cutter in cutters:
+                    cutter_id = document.Objects.AddSurface(cutter)
+                    if cutter_id == System.Guid.Empty:
+                        raise ValueError("could not add cutting Split surface cutter")
+                    cutter_ids.append(cutter_id)
+                document.Objects.Select(source_id)
+                command = "_-Split %s _Enter" % " ".join(
+                    "_SelID %s" % str(cutter_id) for cutter_id in cutter_ids
+                )
+                succeeded = Rhino.RhinoApp.RunScript(command, False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in cutter_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Surface):
+                        surface_geometry = geometry
+                        object_kind = "surface"
+                        topology = None
+                        trim_bounds = [
+                            float(geometry.Domain(0).T0),
+                            float(geometry.Domain(0).T1),
+                            float(geometry.Domain(1).T0),
+                            float(geometry.Domain(1).T1),
+                        ]
+                    elif (
+                        isinstance(geometry, Rhino.Geometry.Brep)
+                        and geometry.Faces.Count == 1
+                    ):
+                        face = geometry.Faces[0]
+                        surface_geometry = face.UnderlyingSurface()
+                        topology = _mesh_to_nurb_brep_value(geometry)
+                        object_kind = "brep"
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend([trim.PointAtStart, trim.PointAtEnd])
+                        if not trim_points:
+                            raise ValueError(
+                                "cutting Split returned an empty outer trim loop"
+                            )
+                        trim_bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
+                    else:
+                        continue
+                    groups = item.Attributes.GetGroupList()
+                    color = item.Attributes.ObjectColor
+                    records.append({
+                        "attributes_match_source": (
+                            item.Attributes.Name == "Viboceros Split Surface Source"
+                            and int(item.Attributes.LayerIndex)
+                            == int(attributes.LayerIndex)
+                            and int(color.R) == 12
+                            and int(color.G) == 34
+                            and int(color.B) == 56
+                            and item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "object_kind": object_kind,
+                        "original_id": item.Id == source_id,
+                        "selected": item.IsSelected(False) > 0,
+                        "surface": _nurbs_surface_definition(surface_geometry),
+                        "topology": topology,
+                        "trim_bounds": trim_bounds,
+                    })
+                if not records:
+                    history = Rhino.RhinoApp.CommandHistoryWindowText
+                    raise ValueError(
+                        "surface cutting Split macro %r returned %r and left no "
+                        "surface pieces; history tail: %s"
+                        % (command, succeeded, history[-3000:])
+                    )
+                records.sort(key=lambda record: (
+                    record["trim_bounds"][0],
+                    record["trim_bounds"][2],
+                    record["trim_bounds"][1],
+                    record["trim_bounds"][3],
+                ))
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "cutters_selected": [
+                        document.Objects.FindId(cutter_id).IsSelected(False) > 0
+                        for cutter_id in cutter_ids
+                    ],
+                    "objects": records,
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, split_surface_cutting_command)
+        finally:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+
     if kind == "surface_split_isocurve_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_surface_from_definition(operation["surface"])

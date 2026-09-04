@@ -591,6 +591,107 @@ impl Brep {
         Self::try_new(vertices, edges, vec![face], tolerance)
     }
 
+    /// Splits one rectangular surface region at an interior constant-U
+    /// isocurve while retaining the complete underlying surface in both
+    /// pieces.
+    ///
+    /// Ordinary four-sided faces use the vertex, edge, and trim ordering
+    /// produced by Rhino's cutting-object `Split`. Closed seams and singular
+    /// sides retain the canonical rectangular-face topology.
+    pub fn try_split_rectangular_surface_face_u(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        parameter: Real,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<[Self; 2], GeometryError> {
+        require_finite([parameter], "rectangular surface-face U split parameter")?;
+        let [u_start, u_end] = [*u.start(), *u.end()];
+        let [v_start, v_end] = [*v.start(), *v.end()];
+        let west = Self::try_rectangular_surface_face_with_orientation(
+            surface.clone(),
+            u_start..=parameter,
+            v_start..=v_end,
+            reversed,
+            tolerance,
+        )?;
+        let east = Self::try_rectangular_surface_face_with_orientation(
+            surface,
+            parameter..=u_end,
+            v_start..=v_end,
+            reversed,
+            tolerance,
+        )?;
+        Ok([
+            reorder_cutting_split_rectangle(
+                west,
+                [0, 3, 1, 2],
+                [0, 3, 1, 2],
+                [1, 2, 3, 0],
+                None,
+                tolerance,
+            )?,
+            reorder_cutting_split_rectangle(
+                east,
+                [1, 2, 0, 3],
+                [1, 2, 3, 0],
+                [0, 1, 2, 3],
+                Some(3),
+                tolerance,
+            )?,
+        ])
+    }
+
+    /// Splits one rectangular surface region at an interior constant-V
+    /// isocurve while retaining the complete underlying surface in both
+    /// pieces. See [`Self::try_split_rectangular_surface_face_u`] for topology
+    /// ordering details.
+    pub fn try_split_rectangular_surface_face_v(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        parameter: Real,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<[Self; 2], GeometryError> {
+        require_finite([parameter], "rectangular surface-face V split parameter")?;
+        let [u_start, u_end] = [*u.start(), *u.end()];
+        let [v_start, v_end] = [*v.start(), *v.end()];
+        let south = Self::try_rectangular_surface_face_with_orientation(
+            surface.clone(),
+            u_start..=u_end,
+            v_start..=parameter,
+            reversed,
+            tolerance,
+        )?;
+        let north = Self::try_rectangular_surface_face_with_orientation(
+            surface,
+            u_start..=u_end,
+            parameter..=v_end,
+            reversed,
+            tolerance,
+        )?;
+        Ok([
+            reorder_cutting_split_rectangle(
+                south,
+                [0, 1, 3, 2],
+                [0, 1, 2, 3],
+                [3, 0, 1, 2],
+                Some(2),
+                tolerance,
+            )?,
+            reorder_cutting_split_rectangle(
+                north,
+                [2, 3, 0, 1],
+                [2, 3, 0, 1],
+                [0, 1, 2, 3],
+                None,
+                tolerance,
+            )?,
+        ])
+    }
+
     /// Converts every polygon of a mesh into one degree-one NURBS face.
     ///
     /// Exact-location mesh vertices and edges become shared B-rep topology.
@@ -3282,6 +3383,75 @@ impl Brep {
     }
 }
 
+fn reorder_cutting_split_rectangle(
+    brep: Brep,
+    vertex_order: [usize; 4],
+    edge_order: [usize; 4],
+    trim_order: [usize; 4],
+    reversed_edge: Option<usize>,
+    tolerance: Tolerance,
+) -> Result<Brep, GeometryError> {
+    if brep.vertices.len() != 4
+        || brep.edges.len() != 4
+        || brep.faces.len() != 1
+        || brep.faces[0].loops.len() != 1
+        || brep.faces[0].loops[0].trims.len() != 4
+    {
+        return Ok(brep);
+    }
+
+    let mut vertex_map = [usize::MAX; 4];
+    let vertices = vertex_order
+        .into_iter()
+        .enumerate()
+        .map(|(new_index, old_index)| {
+            vertex_map[old_index] = new_index;
+            brep.vertices[old_index]
+        })
+        .collect::<Vec<_>>();
+
+    let mut edge_map = [usize::MAX; 4];
+    let edges = edge_order
+        .into_iter()
+        .enumerate()
+        .map(|(new_index, old_index)| {
+            edge_map[old_index] = new_index;
+            let edge = &brep.edges[old_index];
+            let mut edge_vertices = edge.vertices.map(|vertex| vertex_map[vertex]);
+            let mut curve = edge.curve.clone();
+            if reversed_edge == Some(old_index) {
+                edge_vertices.reverse();
+                curve = curve.reversed()?;
+            }
+            BrepEdge::try_new(edge_vertices, curve, edge.tolerance)
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+
+    let old_face = &brep.faces[0];
+    let old_loop = &old_face.loops[0];
+    let trims = trim_order
+        .into_iter()
+        .map(|old_index| {
+            let trim = &old_loop.trims[old_index];
+            BrepTrim::try_new(
+                trim.vertices.map(|vertex| vertex_map[vertex]),
+                trim.edge.map(|edge| edge_map[edge]),
+                trim.reversed_3d ^ trim.edge.is_some_and(|edge| reversed_edge == Some(edge)),
+                trim.curve.clone(),
+                trim.trim_type,
+                trim.iso,
+                trim.tolerance,
+            )
+        })
+        .collect::<Result<Vec<_>, _>>()?;
+    let face = BrepFace::try_new(
+        old_face.surface.clone(),
+        old_face.reversed,
+        vec![BrepLoop::try_new(old_loop.loop_type, trims)?],
+    )?;
+    Brep::try_new(vertices, edges, vec![face], tolerance)
+}
+
 fn ordered_pair(first: usize, second: usize) -> (usize, usize) {
     if first < second {
         (first, second)
@@ -5696,6 +5866,148 @@ mod tests {
         let full = Brep::try_surface_face(surface.clone(), Tolerance::DEFAULT).unwrap();
         assert_eq!(full.faces()[0].surface(), &surface);
         assert!(face_covers_full_surface_domain(&full.faces()[0], Tolerance::DEFAULT).unwrap());
+    }
+
+    #[test]
+    fn rectangular_surface_cutting_split_uses_rhino_topology_order() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+
+        let [west, east] = Brep::try_split_rectangular_surface_face_u(
+            surface.clone(),
+            0.0..=10.0,
+            0.0..=10.0,
+            4.0,
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_eq!(
+            west.vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(0.0, 10.0, 0.0),
+                point(4.0, 0.0, 0.0),
+                point(4.0, 10.0, 0.0),
+            ]
+        );
+        assert_eq!(
+            west.edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 2], [1, 0], [2, 3], [3, 1]]
+        );
+        assert_eq!(
+            west.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(2), false, SurfaceIso::InteriorUConstant),
+                (Some(3), false, SurfaceIso::North),
+                (Some(1), false, SurfaceIso::West),
+                (Some(0), false, SurfaceIso::South),
+            ]
+        );
+        assert_eq!(
+            east.edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 1], [1, 3], [2, 3], [2, 0]]
+        );
+        assert_eq!(
+            east.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(3), false, SurfaceIso::South),
+                (Some(0), false, SurfaceIso::East),
+                (Some(1), false, SurfaceIso::North),
+                (Some(2), true, SurfaceIso::InteriorUConstant),
+            ]
+        );
+
+        let [south, north] = Brep::try_split_rectangular_surface_face_v(
+            surface,
+            0.0..=10.0,
+            0.0..=10.0,
+            6.0,
+            true,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert!(south.faces()[0].is_reversed());
+        assert!(north.faces()[0].is_reversed());
+        assert_eq!(
+            south
+                .vertices()
+                .iter()
+                .map(|vertex| vertex.point())
+                .collect::<Vec<_>>(),
+            vec![
+                point(0.0, 0.0, 0.0),
+                point(10.0, 0.0, 0.0),
+                point(0.0, 6.0, 0.0),
+                point(10.0, 6.0, 0.0),
+            ]
+        );
+        assert_eq!(
+            south
+                .edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 1], [1, 3], [2, 3], [2, 0]]
+        );
+        assert_eq!(
+            south.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(3), false, SurfaceIso::West),
+                (Some(0), false, SurfaceIso::South),
+                (Some(1), false, SurfaceIso::East),
+                (Some(2), true, SurfaceIso::InteriorVConstant),
+            ]
+        );
+        assert_eq!(
+            north
+                .edges()
+                .iter()
+                .map(BrepEdge::vertices)
+                .collect::<Vec<_>>(),
+            vec![[0, 1], [1, 2], [2, 3], [3, 0]]
+        );
+        assert_eq!(
+            north.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d(), trim.iso()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(2), false, SurfaceIso::InteriorVConstant),
+                (Some(3), false, SurfaceIso::East),
+                (Some(0), false, SurfaceIso::North),
+                (Some(1), false, SurfaceIso::West),
+            ]
+        );
     }
 
     #[test]

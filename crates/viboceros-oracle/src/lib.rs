@@ -631,6 +631,12 @@ pub enum Operation {
         #[serde(default = "default_true")]
         shrink: bool,
     },
+    SurfaceSplitCuttingCommand {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        cutters: Vec<NurbsSurfaceDefinition>,
+        source_pick: [f64; 3],
+    },
     CurveIntersectCommand {
         id: String,
         curves: Vec<NurbsCurveDefinition>,
@@ -1326,6 +1332,7 @@ impl Operation {
             | Self::CurveMultiSplitGeometry { id, .. }
             | Self::CurveSplitCommand { id, .. }
             | Self::SurfaceSplitIsocurveCommand { id, .. }
+            | Self::SurfaceSplitCuttingCommand { id, .. }
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
@@ -3317,6 +3324,12 @@ fn execute(
             *shrink,
             tolerance,
         )?,
+        Operation::SurfaceSplitCuttingCommand {
+            surface,
+            cutters,
+            source_pick,
+            ..
+        } => surface_split_cutting_command(iterations, surface, cutters, *source_pick, tolerance)?,
         Operation::CurveIntersectCommand { curves, .. } => {
             curve_intersect_command(iterations, curves, tolerance)?
         }
@@ -7894,6 +7907,128 @@ fn surface_split_isocurve_command(
     Ok((value, elapsed_ns))
 }
 
+fn surface_split_cutting_command(
+    iterations: u32,
+    definition: &NurbsSurfaceDefinition,
+    cutter_definitions: &[NurbsSurfaceDefinition],
+    source_pick: [f64; 3],
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let source = nurbs_surface_from_definition(definition)?;
+    let cutters = cutter_definitions
+        .iter()
+        .map(nurbs_surface_from_definition)
+        .collect::<Result<Vec<_>, _>>()?;
+    let run = || -> Result<_, ProbeError> {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::new(tolerance);
+        let attributes = ObjectAttributes::on_layer(document.current_layer_id())
+            .with_name("Viboceros Split Surface Source")
+            .with_object_color(ColorRgb::new(12, 34, 56));
+        let source_id = document.add_geometry_with_attributes(
+            Geometry::NurbsSurface(source.clone()),
+            attributes.clone(),
+        )?;
+        let group_id = document.add_group(
+            Some("Viboceros Split Surface Group".to_owned()),
+            [source_id],
+        )?;
+        let cutter_ids = cutters
+            .iter()
+            .map(|cutter| document.add_geometry(Geometry::NurbsSurface(cutter.clone())))
+            .collect::<Result<Vec<_>, _>>()?;
+        document.select_objects_direct(
+            std::iter::once(source_id).chain(cutter_ids.iter().copied()),
+            SelectionMode::Replace,
+        )?;
+        registry.execute(
+            &mut document,
+            &format!(
+                "Split CuttingObjects={},{},{}",
+                source_pick[0], source_pick[1], source_pick[2]
+            ),
+        )?;
+        Ok((document, source_id, cutter_ids, group_id, attributes))
+    };
+
+    let (document, source_id, cutter_ids, group_id, attributes) = run()?;
+    let source_group_members = document
+        .group(group_id)
+        .expect("the surface Split source group remains in the document")
+        .members()
+        .collect::<BTreeSet<_>>();
+    let cutter_set = cutter_ids.iter().copied().collect::<BTreeSet<_>>();
+    let mut records = document
+        .objects()
+        .filter(|object| !cutter_set.contains(&object.id()))
+        .map(|object| {
+            let Geometry::Brep(brep) = object.geometry() else {
+                return Err(ProbeError::FixtureInvariant(
+                    "surface cutting Split produced unsupported geometry",
+                ));
+            };
+            if brep.faces().len() != 1 {
+                return Err(ProbeError::FixtureInvariant(
+                    "surface cutting Split produced a multi-face B-rep",
+                ));
+            }
+            let face = &brep.faces()[0];
+            let trim_bounds =
+                face.rectangular_trim_bounds(tolerance)?
+                    .ok_or(ProbeError::FixtureInvariant(
+                        "surface cutting Split produced a non-rectangular face trim",
+                    ))?;
+            let sort_key = [
+                trim_bounds[0][0],
+                trim_bounds[1][0],
+                trim_bounds[0][1],
+                trim_bounds[1][1],
+            ];
+            Ok((
+                sort_key,
+                json!({
+                    "attributes_match_source": object.attributes() == &attributes,
+                    "in_source_group": source_group_members.contains(&object.id()),
+                    "object_kind": "brep",
+                    "original_id": object.id() == source_id,
+                    "selected": document.is_selected(object.id()),
+                    "surface": nurbs_surface_definition_value(face.surface()),
+                    "topology": mesh_to_nurb_brep_value(brep)?,
+                    "trim_bounds": [
+                        trim_bounds[0][0],
+                        trim_bounds[0][1],
+                        trim_bounds[1][0],
+                        trim_bounds[1][1],
+                    ],
+                }),
+            ))
+        })
+        .collect::<Result<Vec<_>, ProbeError>>()?;
+    records.sort_by(|(left, _), (right, _)| {
+        left.iter()
+            .zip(right)
+            .map(|(left, right)| left.total_cmp(right))
+            .find(|ordering| !ordering.is_eq())
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
+    let value = json!({
+        "command_succeeded": true,
+        "cutters_selected": cutter_ids
+            .iter()
+            .map(|id| document.is_selected(*id))
+            .collect::<Vec<_>>(),
+        "objects": records.into_iter().map(|(_, value)| value).collect::<Vec<_>>(),
+    });
+
+    let started = Instant::now();
+    for _ in 0..iterations {
+        black_box(run()?);
+    }
+    let elapsed_ns =
+        u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
+    Ok((value, elapsed_ns))
+}
+
 const fn surface_uniform_direction_name(direction: SurfaceUniformDirection) -> &'static str {
     match direction {
         SurfaceUniformDirection::U => "U",
@@ -11149,6 +11284,77 @@ mod tests {
             assert_eq!(object["trim_bounds"], json!(trim_bounds));
             assert_eq!(object["object_kind"], "brep");
         }
+    }
+
+    #[test]
+    fn captures_surface_cutting_split_command_behavior() {
+        let definition = |points: [[f64; 3]; 4], knots_u, knots_v| NurbsSurfaceDefinition {
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: points
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots_u,
+            knots_v,
+            domain_u: None,
+            domain_v: None,
+        };
+        let surface = definition(
+            [
+                [0.0, 0.0, 0.0],
+                [10.0, 0.0, 0.0],
+                [0.0, 10.0, 0.0],
+                [10.0, 10.0, 0.0],
+            ],
+            vec![0.0, 0.0, 10.0, 10.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        );
+        let cutter = definition(
+            [
+                [4.0, -5.0, -5.0],
+                [4.0, 15.0, -5.0],
+                [4.0, -5.0, 5.0],
+                [4.0, 15.0, 5.0],
+            ],
+            vec![0.0, 0.0, 20.0, 20.0],
+            vec![0.0, 0.0, 10.0, 10.0],
+        );
+        let response = run_request(&request(vec![Operation::SurfaceSplitCuttingCommand {
+            id: "split-surface-with-cutting-surface".to_owned(),
+            surface,
+            cutters: vec![cutter],
+            source_pick: [2.0, 5.0, 0.0],
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["cutters_selected"], json!([false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 2);
+        for (object, trim_bounds) in objects
+            .iter()
+            .zip([[0.0, 4.0, 0.0, 10.0], [4.0, 10.0, 0.0, 10.0]])
+        {
+            assert_eq!(object["attributes_match_source"], true);
+            assert_eq!(object["in_source_group"], true);
+            assert_eq!(object["object_kind"], "brep");
+            assert_eq!(object["original_id"], false);
+            assert_eq!(object["selected"], true);
+            assert_eq!(object["trim_bounds"], json!(trim_bounds));
+        }
+        assert_eq!(
+            objects[0]["topology"]["edges"],
+            json!([
+                {"domain": [0.0, 4.0], "vertices": [0, 2]},
+                {"domain": [-10.0, 0.0], "vertices": [1, 0]},
+                {"domain": [0.0, 10.0], "vertices": [2, 3]},
+                {"domain": [-4.0, 0.0], "vertices": [3, 1]},
+            ])
+        );
     }
 
     #[test]

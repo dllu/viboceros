@@ -12413,7 +12413,7 @@ impl Command for SplitCurveCommand {
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
         let location = parse_curve_split_location(arguments)?;
         if let CurveSplitLocation::CuttingObjects(source_pick) = location {
-            return split_curve_with_selected_cutters(document, source_pick);
+            return split_with_selected_cutters(document, source_pick);
         }
         if let CurveSplitLocation::Isocurve(options) = location {
             return split_surface_at_isocurve(document, options);
@@ -12966,6 +12966,21 @@ enum CurveCutterInput {
     Brep(Brep),
 }
 
+enum CuttingSplitSource {
+    Curve(NurbsCurve),
+    RectangularSurface {
+        surface: NurbsSurface,
+        bounds: [[Real; 2]; 2],
+        reversed: bool,
+    },
+}
+
+#[derive(Clone, Copy, Debug, PartialEq)]
+enum CompleteSurfaceIsocurve {
+    ConstantU(Real),
+    ConstantV(Real),
+}
+
 fn selected_curve_cutter_inputs(
     document: &Document,
 ) -> Result<Vec<(ObjectId, CurveCutterInput)>, GeometryError> {
@@ -12987,7 +13002,7 @@ fn selected_curve_cutter_inputs(
         .collect()
 }
 
-fn split_curve_with_selected_cutters(
+fn split_with_selected_cutters(
     document: &mut Document,
     source_pick: Point3,
 ) -> Result<String, CommandError> {
@@ -12998,27 +13013,95 @@ fn split_curve_with_selected_cutters(
         });
     }
 
-    let mut picked = None;
+    let mut picked: Option<(usize, Real, CuttingSplitSource)> = None;
     for (index, (_, input)) in candidates.iter().enumerate() {
-        let CurveCutterInput::Curve(curve) = input else {
+        let source = match input {
+            CurveCutterInput::Curve(curve) => {
+                let parameter = curve.closest_parameter(source_pick, document.tolerance())?;
+                let distance = curve.evaluate(parameter)?.distance_to(source_pick)?;
+                Some((distance, CuttingSplitSource::Curve(curve.clone())))
+            }
+            CurveCutterInput::Surface(surface) => {
+                let (u, v) = surface.closest_parameters(source_pick, document.tolerance())?;
+                let distance = surface.evaluate(u, v)?.distance_to(source_pick)?;
+                let domain_u = surface.domain_u();
+                let domain_v = surface.domain_v();
+                Some((
+                    distance,
+                    CuttingSplitSource::RectangularSurface {
+                        surface: surface.clone(),
+                        bounds: [
+                            [*domain_u.start(), *domain_u.end()],
+                            [*domain_v.start(), *domain_v.end()],
+                        ],
+                        reversed: false,
+                    },
+                ))
+            }
+            CurveCutterInput::Brep(brep) if brep.faces().len() == 1 => {
+                let face = &brep.faces()[0];
+                let Some(bounds) = face.rectangular_trim_bounds(document.tolerance())? else {
+                    continue;
+                };
+                let Some((_, u, v)) =
+                    brep.closest_face_parameters(source_pick, document.tolerance())?
+                else {
+                    continue;
+                };
+                let distance = face.surface().evaluate(u, v)?.distance_to(source_pick)?;
+                Some((
+                    distance,
+                    CuttingSplitSource::RectangularSurface {
+                        surface: face.surface().clone(),
+                        bounds,
+                        reversed: face.is_reversed(),
+                    },
+                ))
+            }
+            CurveCutterInput::Brep(_) => None,
+        };
+        let Some((distance, source)) = source else {
             continue;
         };
-        let parameter = curve.closest_parameter(source_pick, document.tolerance())?;
-        let distance = curve.evaluate(parameter)?.distance_to(source_pick)?;
         if picked
             .as_ref()
-            .is_none_or(|(_, nearest_distance)| distance < *nearest_distance)
+            .is_none_or(|(_, nearest_distance, _)| distance < *nearest_distance)
         {
-            picked = Some((index, distance));
+            picked = Some((index, distance, source));
         }
     }
-    let Some((source_index, _)) = picked else {
-        return Err(CommandError::SplitRequiresCurveSource);
+    let Some((source_index, _, source)) = picked else {
+        return Err(CommandError::SplitRequiresCurveOrRectangularSurfaceSource);
     };
-    let (source_id, CurveCutterInput::Curve(source)) = &candidates[source_index] else {
-        unreachable!("only selected curves participate in Split source picking")
-    };
+    let source_id = candidates[source_index].0;
 
+    match source {
+        CuttingSplitSource::Curve(source) => {
+            split_curve_with_cutters(document, &candidates, source_index, source_id, &source)
+        }
+        CuttingSplitSource::RectangularSurface {
+            surface,
+            bounds,
+            reversed,
+        } => split_rectangular_surface_with_cutters(
+            document,
+            &candidates,
+            source_index,
+            source_id,
+            &surface,
+            bounds,
+            reversed,
+        ),
+    }
+}
+
+fn split_curve_with_cutters(
+    document: &mut Document,
+    candidates: &[(ObjectId, CurveCutterInput)],
+    source_index: usize,
+    source_id: ObjectId,
+    source: &NurbsCurve,
+) -> Result<String, CommandError> {
     let mut intersections = Vec::new();
     for (index, (_, cutter)) in candidates.iter().enumerate() {
         if index == source_index {
@@ -13042,16 +13125,284 @@ fn split_curve_with_selected_cutters(
         .map(|(parameter, _)| parameter)
         .collect::<Vec<_>>();
     if parameters.is_empty() {
-        document.select_objects_direct([*source_id], SelectionMode::Replace)?;
+        document.select_objects_direct([source_id], SelectionMode::Replace)?;
         return Ok("No cutting intersection was available to split the curve".to_owned());
     }
     split_curve_at_parameters(
         document,
-        *source_id,
+        source_id,
         source,
         parameters,
         CurveSplitReplacement::ReplaceAll,
     )
+}
+
+#[allow(clippy::too_many_arguments)]
+fn split_rectangular_surface_with_cutters(
+    document: &mut Document,
+    candidates: &[(ObjectId, CurveCutterInput)],
+    source_index: usize,
+    source_id: ObjectId,
+    surface: &NurbsSurface,
+    bounds: [[Real; 2]; 2],
+    reversed: bool,
+) -> Result<String, CommandError> {
+    let mut curves = Vec::new();
+    for (index, (_, cutter)) in candidates.iter().enumerate() {
+        if index == source_index {
+            continue;
+        }
+        append_surface_cutter_intersection_curves(
+            &mut curves,
+            surface,
+            cutter,
+            document.tolerance(),
+        )?;
+    }
+
+    let epsilon_u = surface_split_parameter_epsilon(bounds[0], document.tolerance());
+    let epsilon_v = surface_split_parameter_epsilon(bounds[1], document.tolerance());
+    let mut cuts_u = Vec::new();
+    let mut cuts_v = Vec::new();
+    for curve in &curves {
+        let Some(isocurve) =
+            classify_complete_surface_isocurve(curve, surface, bounds, document.tolerance())?
+        else {
+            continue;
+        };
+        match isocurve {
+            CompleteSurfaceIsocurve::ConstantU(parameter) => {
+                push_unique_surface_split_parameter(&mut cuts_u, parameter, bounds[0], epsilon_u);
+            }
+            CompleteSurfaceIsocurve::ConstantV(parameter) => {
+                push_unique_surface_split_parameter(&mut cuts_v, parameter, bounds[1], epsilon_v);
+            }
+        }
+    }
+    cuts_u.sort_by(Real::total_cmp);
+    cuts_v.sort_by(Real::total_cmp);
+    if cuts_u.is_empty() && cuts_v.is_empty() {
+        document.select_objects_direct([source_id], SelectionMode::Replace)?;
+        return Ok(
+            "No complete isoparametric cutting intersection was available to split the surface"
+                .to_owned(),
+        );
+    }
+
+    let piece_count = (cuts_u.len() + 1)
+        .checked_mul(cuts_v.len() + 1)
+        .filter(|count| *count <= MAX_SPAN_OUTPUT_OBJECTS)
+        .ok_or_else(|| too_many_span_outputs("Split"))?;
+    let pieces = if cuts_u.len() == 1 && cuts_v.is_empty() {
+        Brep::try_split_rectangular_surface_face_u(
+            surface.clone(),
+            bounds[0][0]..=bounds[0][1],
+            bounds[1][0]..=bounds[1][1],
+            cuts_u[0],
+            reversed,
+            document.tolerance(),
+        )?
+        .into_iter()
+        .collect::<Vec<_>>()
+    } else if cuts_v.len() == 1 && cuts_u.is_empty() {
+        Brep::try_split_rectangular_surface_face_v(
+            surface.clone(),
+            bounds[0][0]..=bounds[0][1],
+            bounds[1][0]..=bounds[1][1],
+            cuts_v[0],
+            reversed,
+            document.tolerance(),
+        )?
+        .into_iter()
+        .collect::<Vec<_>>()
+    } else {
+        let mut u_boundaries = Vec::with_capacity(cuts_u.len() + 2);
+        u_boundaries.push(bounds[0][0]);
+        u_boundaries.extend(cuts_u.iter().copied());
+        u_boundaries.push(bounds[0][1]);
+        let mut v_boundaries = Vec::with_capacity(cuts_v.len() + 2);
+        v_boundaries.push(bounds[1][0]);
+        v_boundaries.extend(cuts_v.iter().copied());
+        v_boundaries.push(bounds[1][1]);
+        let mut pieces = Vec::with_capacity(piece_count);
+        for u in u_boundaries.windows(2) {
+            for v in v_boundaries.windows(2) {
+                pieces.push(Brep::try_rectangular_surface_face_with_orientation(
+                    surface.clone(),
+                    u[0]..=u[1],
+                    v[0]..=v[1],
+                    reversed,
+                    document.tolerance(),
+                )?);
+            }
+        }
+        pieces
+    };
+
+    replace_surface_split_source(document, source_id, pieces)?;
+    Ok(format!(
+        "Split the selected surface at {} complete isoparametric intersection(s) into {piece_count} exact B-rep face(s)",
+        cuts_u.len() + cuts_v.len(),
+    ))
+}
+
+fn append_surface_cutter_intersection_curves(
+    curves: &mut Vec<NurbsCurve>,
+    surface: &NurbsSurface,
+    cutter: &CurveCutterInput,
+    tolerance: Tolerance,
+) -> Result<(), CommandError> {
+    match cutter {
+        CurveCutterInput::Curve(curve) => {
+            for event in curve_surface_intersection_events(curve, surface, tolerance)? {
+                if let CurveSurfaceIntersectionEvent::Overlap(overlap) = event {
+                    append_surface_split_curve(
+                        curves,
+                        curve.try_trimmed(overlap.curve_interval())?,
+                    )?;
+                }
+            }
+        }
+        CurveCutterInput::Surface(cutter) => {
+            for event in surface_surface_intersection_events(surface, cutter, tolerance)? {
+                if let SurfaceSurfaceIntersectionEvent::Curve(curve) = event {
+                    append_surface_split_curve(curves, curve)?;
+                }
+            }
+        }
+        CurveCutterInput::Brep(cutter) => {
+            for event in surface_brep_intersection_events(surface, cutter, tolerance)? {
+                if let SurfaceBrepIntersectionEvent::Curve(curve) = event {
+                    append_surface_split_curve(curves, curve)?;
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn append_surface_split_curve(
+    curves: &mut Vec<NurbsCurve>,
+    curve: NurbsCurve,
+) -> Result<(), CommandError> {
+    if !nurbs_curve_has_extent(&curve) {
+        return Ok(());
+    }
+    if curves.len() == MAX_SPAN_OUTPUT_OBJECTS {
+        return Err(too_many_span_outputs("Split"));
+    }
+    curves.push(curve);
+    Ok(())
+}
+
+fn classify_complete_surface_isocurve(
+    curve: &NurbsCurve,
+    surface: &NurbsSurface,
+    bounds: [[Real; 2]; 2],
+    tolerance: Tolerance,
+) -> Result<Option<CompleteSurfaceIsocurve>, CommandError> {
+    const SAMPLE_COUNT: usize = 9;
+    let mut range_u = [Real::INFINITY, Real::NEG_INFINITY];
+    let mut range_v = [Real::INFINITY, Real::NEG_INFINITY];
+    let mut sum_u = 0.0;
+    let mut sum_v = 0.0;
+    for index in 0..SAMPLE_COUNT {
+        let normalized = index as Real / (SAMPLE_COUNT - 1) as Real;
+        let point = curve.evaluate(curve.parameter_at(normalized)?)?;
+        let (u, v) = surface.closest_parameters(point, tolerance)?;
+        let coordinate_scale = point
+            .to_array()
+            .into_iter()
+            .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+        if surface.evaluate(u, v)?.distance_to(point)?
+            > tolerance
+                .absolute()
+                .max(tolerance.relative() * coordinate_scale)
+                * 4.0
+        {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+        range_u[0] = range_u[0].min(u);
+        range_u[1] = range_u[1].max(u);
+        range_v[0] = range_v[0].min(v);
+        range_v[1] = range_v[1].max(v);
+        sum_u += u;
+        sum_v += v;
+    }
+
+    let epsilon_u = surface_split_parameter_epsilon(bounds[0], tolerance);
+    let epsilon_v = surface_split_parameter_epsilon(bounds[1], tolerance);
+    let constant_u = range_u[1] - range_u[0] <= epsilon_u;
+    let constant_v = range_v[1] - range_v[0] <= epsilon_v;
+    let covers_u = range_u[0] <= bounds[0][0] + epsilon_u && range_u[1] >= bounds[0][1] - epsilon_u;
+    let covers_v = range_v[0] <= bounds[1][0] + epsilon_v && range_v[1] >= bounds[1][1] - epsilon_v;
+    if constant_u && covers_v {
+        return Ok(Some(CompleteSurfaceIsocurve::ConstantU(
+            (sum_u / SAMPLE_COUNT as Real).clamp(bounds[0][0], bounds[0][1]),
+        )));
+    }
+    if constant_v && covers_u {
+        return Ok(Some(CompleteSurfaceIsocurve::ConstantV(
+            (sum_v / SAMPLE_COUNT as Real).clamp(bounds[1][0], bounds[1][1]),
+        )));
+    }
+    if constant_u || constant_v {
+        return Ok(None);
+    }
+    Err(CommandError::UnsupportedSurfaceCuttingIntersection)
+}
+
+fn surface_split_parameter_epsilon(bounds: [Real; 2], tolerance: Tolerance) -> Real {
+    let scale = bounds[0].abs().max(bounds[1].abs()).max(1.0);
+    tolerance
+        .absolute()
+        .max(tolerance.relative() * scale)
+        .max(Real::EPSILON * scale * 512.0)
+}
+
+fn push_unique_surface_split_parameter(
+    parameters: &mut Vec<Real>,
+    parameter: Real,
+    bounds: [Real; 2],
+    epsilon: Real,
+) {
+    if parameter <= bounds[0] + epsilon || parameter >= bounds[1] - epsilon {
+        return;
+    }
+    if !parameters
+        .iter()
+        .any(|existing| (*existing - parameter).abs() <= epsilon)
+    {
+        parameters.push(parameter);
+    }
+}
+
+fn replace_surface_split_source(
+    document: &mut Document,
+    source_id: ObjectId,
+    pieces: Vec<Brep>,
+) -> Result<(), CommandError> {
+    let source = document
+        .object(source_id)
+        .expect("the selected surface Split source belongs to the document");
+    let attributes = source.attributes().clone();
+    let group_ids = document
+        .groups()
+        .filter(|group| group.members().any(|member| member == source_id))
+        .map(|group| group.id())
+        .collect::<Vec<_>>();
+    let mut output_ids = Vec::with_capacity(pieces.len());
+    for piece in pieces {
+        output_ids.push(
+            document.add_geometry_with_attributes(Geometry::Brep(piece), attributes.clone())?,
+        );
+    }
+    for group_id in group_ids {
+        document.add_group_members(group_id, output_ids.iter().copied())?;
+    }
+    document.delete_object(source_id)?;
+    document.select_objects_direct(output_ids, SelectionMode::Replace)?;
+    Ok(())
 }
 
 impl Command for TrimCurveCommand {
@@ -20460,12 +20811,19 @@ pub enum CommandError {
     SplitRequiresOneCurve { actual: usize },
 
     #[error(
-        "cutting-object Split requires a selected source curve and at least one selected curve, surface, or B-rep cutter, got {actual} supported selected object(s)"
+        "cutting-object Split requires a selected curve or rectangular surface source and at least one selected curve, surface, or B-rep cutter, got {actual} supported selected object(s)"
     )]
     SplitRequiresSourceAndCuttingObjects { actual: usize },
 
-    #[error("cutting-object Split requires at least one selected curve to use as the source")]
-    SplitRequiresCurveSource,
+    #[error(
+        "cutting-object Split requires a selected curve, NURBS surface, or rectangular single-face B-rep to use as the source"
+    )]
+    SplitRequiresCurveOrRectangularSurfaceSource,
+
+    #[error(
+        "surface cutting-object Split currently requires every splitting intersection to be a complete isocurve"
+    )]
+    UnsupportedSurfaceCuttingIntersection,
 
     #[error(
         "isocurve Split requires exactly one selected NURBS surface or rectangular single-face B-rep, got {actual} supported target(s)"
@@ -20954,6 +21312,43 @@ mod tests {
             Point3::try_new(x_start, 5.0, 5.0).unwrap(),
         ])
         .unwrap()
+    }
+
+    fn transverse_surface_at_x(x: Real) -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            Point3::try_new(x, -5.0, -5.0).unwrap(),
+            Point3::try_new(x, 15.0, -5.0).unwrap(),
+            Point3::try_new(x, 15.0, 5.0).unwrap(),
+            Point3::try_new(x, -5.0, 5.0).unwrap(),
+        ])
+        .unwrap()
+    }
+
+    fn transverse_surface_at_y(y: Real) -> NurbsSurface {
+        NurbsSurface::try_bilinear([
+            Point3::try_new(-5.0, y, -5.0).unwrap(),
+            Point3::try_new(15.0, y, -5.0).unwrap(),
+            Point3::try_new(15.0, y, 5.0).unwrap(),
+            Point3::try_new(-5.0, y, 5.0).unwrap(),
+        ])
+        .unwrap()
+    }
+
+    fn assert_surface_bounds_near(
+        actual: [[Real; 2]; 2],
+        expected: [[Real; 2]; 2],
+        tolerance: Tolerance,
+    ) {
+        for (actual, expected) in actual
+            .into_iter()
+            .flatten()
+            .zip(expected.into_iter().flatten())
+        {
+            assert!(
+                tolerance.approx_eq(actual, expected),
+                "surface parameter bound {actual} differs from {expected}"
+            );
+        }
     }
 
     fn intersection_box() -> Brep {
@@ -27233,6 +27628,251 @@ mod tests {
     }
 
     #[test]
+    fn cutting_object_split_replaces_surface_source_with_exact_brep_faces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Layer New CuttingSplitSurfaces")
+            .unwrap();
+        let source_surface = planar_intersection_surface();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(source_surface.clone()))
+            .unwrap();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut document, "SetObjectName CuttingSplitSource")
+            .unwrap();
+        registry
+            .execute(&mut document, "Group CuttingSplitPieces")
+            .unwrap();
+        let source = document.object(source_id).unwrap().clone();
+        let cutter_surface = transverse_surface_at_x(4.0);
+        let cutter_id = document
+            .add_geometry(Geometry::NurbsSurface(cutter_surface.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=2,5,0")
+                .unwrap(),
+            "Split the selected surface at 1 complete isoparametric intersection(s) into 2 exact B-rep face(s)"
+        );
+        assert!(document.object(source_id).is_none());
+        assert_eq!(
+            document.object(cutter_id).unwrap().geometry(),
+            &Geometry::NurbsSurface(cutter_surface)
+        );
+        assert!(!document.is_selected(cutter_id));
+
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let group_members = document
+            .group_by_name("CuttingSplitPieces")
+            .unwrap()
+            .members()
+            .collect::<BTreeSet<_>>();
+        let expected_bounds = [[[0.0, 0.4], [0.0, 1.0]], [[0.4, 1.0], [0.0, 1.0]]];
+        for (object, expected) in outputs.iter().zip(expected_bounds) {
+            assert_eq!(object.attributes(), source.attributes());
+            assert!(group_members.contains(&object.id()));
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("surface cutting Split must create B-rep faces")
+            };
+            assert_eq!(brep.faces()[0].surface(), &source_surface);
+            assert_surface_bounds_near(
+                brep.faces()[0]
+                    .rectangular_trim_bounds(document.tolerance())
+                    .unwrap()
+                    .unwrap(),
+                expected,
+                document.tolerance(),
+            );
+            brep.tessellate(2, document.tolerance()).unwrap();
+        }
+        let west = match outputs[0].geometry() {
+            Geometry::Brep(brep) => brep,
+            _ => unreachable!(),
+        };
+        let east = match outputs[1].geometry() {
+            Geometry::Brep(brep) => brep,
+            _ => unreachable!(),
+        };
+        assert_eq!(
+            west.edges()
+                .iter()
+                .map(|edge| edge.vertices())
+                .collect::<Vec<_>>(),
+            vec![[0, 2], [1, 0], [2, 3], [3, 1]]
+        );
+        assert_eq!(
+            east.edges()
+                .iter()
+                .map(|edge| edge.vertices())
+                .collect::<Vec<_>>(),
+            vec![[0, 1], [1, 3], [2, 3], [2, 0]]
+        );
+        assert_eq!(
+            east.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .map(|trim| (trim.edge(), trim.is_reversed_3d()))
+                .collect::<Vec<_>>(),
+            vec![
+                (Some(3), false),
+                (Some(0), false),
+                (Some(1), false),
+                (Some(2), true)
+            ]
+        );
+        assert_eq!(document.undo_label(), Some("Split"));
+
+        registry.execute(&mut document, "Undo").unwrap();
+        assert_eq!(document.object(source_id).unwrap(), &source);
+        assert!(document.object(cutter_id).is_some());
+    }
+
+    #[test]
+    fn cutting_object_split_supports_perpendicular_multiple_and_trimmed_surface_sources() {
+        let registry = CommandRegistry::with_builtins();
+
+        let mut perpendicular = Document::default();
+        let source_id = perpendicular
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        let cutter_id = perpendicular
+            .add_geometry(Geometry::NurbsSurface(transverse_surface_at_y(6.0)))
+            .unwrap();
+        perpendicular
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut perpendicular, "Split CuttingObjects=5,2,0")
+            .unwrap();
+        let perpendicular_outputs = perpendicular.selected_objects().collect::<Vec<_>>();
+        assert_eq!(perpendicular_outputs.len(), 2);
+        let expected_v = [[[0.0, 1.0], [0.0, 0.6]], [[0.0, 1.0], [0.6, 1.0]]];
+        for (object, expected) in perpendicular_outputs.iter().zip(expected_v) {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("perpendicular cutting Split must create B-rep faces")
+            };
+            assert_surface_bounds_near(
+                brep.faces()[0]
+                    .rectangular_trim_bounds(perpendicular.tolerance())
+                    .unwrap()
+                    .unwrap(),
+                expected,
+                perpendicular.tolerance(),
+            );
+        }
+
+        let mut curve_cutter = Document::default();
+        let source_id = curve_cutter
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        registry
+            .execute(&mut curve_cutter, "Line 4,0,0 4,10,0")
+            .unwrap();
+        let cutter_id = curve_cutter
+            .objects()
+            .find(|object| object.id() != source_id)
+            .unwrap()
+            .id();
+        curve_cutter
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut curve_cutter, "Split CuttingObjects=2,5,0")
+            .unwrap();
+        assert_eq!(curve_cutter.selected_object_count(), 2);
+        assert!(curve_cutter.selected_objects().all(|object| {
+            matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() == 1)
+        }));
+
+        let mut multiple = Document::default();
+        let source_id = multiple
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        let cutter_ids = [3.0, 7.0, 7.0].map(|x| {
+            multiple
+                .add_geometry(Geometry::NurbsSurface(transverse_surface_at_x(x)))
+                .unwrap()
+        });
+        multiple
+            .select_objects_direct(
+                std::iter::once(source_id).chain(cutter_ids),
+                SelectionMode::Replace,
+            )
+            .unwrap();
+        registry
+            .execute(&mut multiple, "Split CuttingObjects=1,5,0")
+            .unwrap();
+        let bounds = multiple
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::Brep(brep) => brep.faces()[0]
+                    .rectangular_trim_bounds(multiple.tolerance())
+                    .unwrap()
+                    .unwrap(),
+                geometry => panic!("multiple cutting Split selected {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        for (actual, expected) in bounds.into_iter().zip([
+            [[0.0, 0.3], [0.0, 1.0]],
+            [[0.3, 0.7], [0.0, 1.0]],
+            [[0.7, 1.0], [0.0, 1.0]],
+        ]) {
+            assert_surface_bounds_near(actual, expected, multiple.tolerance());
+        }
+
+        let mut trimmed = Document::default();
+        let source_surface = planar_intersection_surface();
+        let source_id = trimmed
+            .add_geometry(Geometry::Brep(
+                Brep::try_rectangular_surface_face_with_orientation(
+                    source_surface.clone(),
+                    0.2..=0.8,
+                    0.1..=0.9,
+                    true,
+                    trimmed.tolerance(),
+                )
+                .unwrap(),
+            ))
+            .unwrap();
+        let cutter_id = trimmed
+            .add_geometry(Geometry::Brep(
+                Brep::try_surface_face(transverse_surface_at_x(4.0), trimmed.tolerance()).unwrap(),
+            ))
+            .unwrap();
+        trimmed
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+        registry
+            .execute(&mut trimmed, "Split CuttingObjects=3,5,0")
+            .unwrap();
+        let expected_trimmed = [[[0.2, 0.4], [0.1, 0.9]], [[0.4, 0.8], [0.1, 0.9]]];
+        for (object, expected) in trimmed.selected_objects().zip(expected_trimmed) {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("trimmed cutting Split must create B-rep faces")
+            };
+            assert!(brep.faces()[0].is_reversed());
+            assert_eq!(brep.faces()[0].surface(), &source_surface);
+            assert_surface_bounds_near(
+                brep.faces()[0]
+                    .rectangular_trim_bounds(trimmed.tolerance())
+                    .unwrap()
+                    .unwrap(),
+                expected,
+                trimmed.tolerance(),
+            );
+        }
+    }
+
+    #[test]
     fn cutting_object_split_handles_no_hit_and_rejects_invalid_sources_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -27307,14 +27947,55 @@ mod tests {
             .select_objects_direct(ids, SelectionMode::Replace)
             .unwrap();
         let before = surfaces.objects().cloned().collect::<Vec<_>>();
-        assert!(matches!(
-            registry.execute(&mut surfaces, "Split CuttingObjects=0,0,0"),
-            Err(CommandError::SplitRequiresCurveSource)
-        ));
+        assert_eq!(
+            registry
+                .execute(&mut surfaces, "Split CuttingObjects=0,0,0")
+                .unwrap(),
+            "No complete isoparametric cutting intersection was available to split the surface"
+        );
         assert_eq!(
             surfaces.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
+
+        let mut solids = Document::default();
+        registry.execute(&mut solids, "Box 0,0,0 1,1,0 1").unwrap();
+        registry.execute(&mut solids, "Box 3,0,0 4,1,0 1").unwrap();
+        registry.execute(&mut solids, "SelAll").unwrap();
+        let before = solids.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut solids, "Split CuttingObjects=0,0,0"),
+            Err(CommandError::SplitRequiresCurveOrRectangularSurfaceSource)
+        ));
+        assert_eq!(
+            solids.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+
+        let mut unsupported = Document::default();
+        let source_id = unsupported
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        registry
+            .execute(&mut unsupported, "Line 0,0,0 10,10,0")
+            .unwrap();
+        let ids = unsupported
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        unsupported
+            .select_objects_direct(ids, SelectionMode::Replace)
+            .unwrap();
+        let before = unsupported.objects().cloned().collect::<Vec<_>>();
+        assert!(matches!(
+            registry.execute(&mut unsupported, "Split CuttingObjects=1,2,0"),
+            Err(CommandError::UnsupportedSurfaceCuttingIntersection)
+        ));
+        assert_eq!(
+            unsupported.objects().collect::<Vec<_>>(),
+            before.iter().collect::<Vec<_>>()
+        );
+        assert!(unsupported.object(source_id).is_some());
     }
 
     #[test]

@@ -875,15 +875,24 @@ Lines, analytic curves, polylines, and NURBS curves are supported. In these
 point/parameter modes the first piece retains the source identity; every piece
 retains its attributes and group membership, becomes selected, and participates
 in one undo step. `Split CuttingObjects=source_point` instead chooses the
-selected curve nearest that point as the target and uses every other selected
-curve, untrimmed NURBS surface, and B-rep as an actual 3D cutter; in the UI,
-enter `Split CuttingObjects` and pick the source curve in a viewport. Finite
-surface overlaps and exact B-rep trim regions, including holes, supply all split
-locations. Rhino-compatible cutting-object output replaces the source with
-fresh, grouped, attribute-preserving selected pieces and leaves cutters
-unchanged and deselected. The permanent command fixture covers curve, surface,
-solid box, holed planar-face, and view-aligned non-intersecting cutters to
-floating-point roundoff. `Split Isocurve=point Direction=U|V|Both Shrink=Yes`
+selected curve, NURBS surface, or rectangular single-face B-rep nearest that
+point as the target and uses every other selected curve, surface, and B-rep as
+an actual 3D cutter; in the UI, enter `Split CuttingObjects` and pick the source
+in a viewport. Finite surface overlaps and exact B-rep trim regions, including
+holes, supply curve split locations. A rectangular surface target is split at
+every complete constant-U or constant-V intersection, with duplicate cuts
+culled and multiple directions forming an exact UV grid. Its fresh single-face
+B-rep results retain the complete underlying surface, the source face
+orientation, attributes, and group membership. Partial isocurves do not divide
+the target; non-isoparametric surface cuts are reported as unsupported instead
+of being approximated. Rhino-compatible cutting-object output replaces the
+source with fresh selected pieces and leaves cutters unchanged and deselected.
+The curve fixture covers curve, surface, solid box, holed planar-face, and
+view-aligned non-intersecting cutters. The topology-aware surface fixture covers
+both isoparametric directions through vertices, edge domains, trim order,
+metadata, grouping, and selection to within `9e-16` of Rhino. Current
+surface/surface intersection support is planar. `Split Isocurve=point
+Direction=U|V|Both Shrink=Yes`
 splits exactly one selected untrimmed NURBS surface at the closest surface
 location; omit the point after `Split Isocurve` for one viewport pick. The
 direction names the isocurve itself, so a U isocurve divides the V parameter
@@ -897,9 +906,9 @@ tessellate, pick, bound, measure exact area, and round-trip through 3DM without
 discarding the underlying surface. Closed directions reuse seam edges and
 collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
-and directions, face orientation, and geometry to within `2e-15`. General
-surface cutting-object splits and nonrectangular or multi-face B-rep targets
-remain future extensions.
+and directions, face orientation, and geometry to within `2e-15`.
+Non-isoparametric cutting-object surface splits and nonrectangular or multi-face
+B-rep sources remain future extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS
@@ -1279,6 +1288,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_split_isocurve_command.json
+
+tools/rhino_oracle/run_headless.sh compare \
+  tools/rhino_oracle/fixtures/surface_split_cutting_command.json
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_intersect_command.json \

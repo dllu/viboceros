@@ -651,7 +651,7 @@ impl InteractiveCommand {
                 "Split: pick curve split locations; press Enter to finish (Esc to cancel)"
             }
             Self::SplitCurveWithCutters => {
-                "Split: pick the selected source curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
+                "Split: pick the selected source curve or rectangular surface; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
             }
             Self::SplitSurfaceIsocurve { .. } => {
                 "Split: pick an isocurve location on the selected surface (Esc to cancel)"
@@ -7699,7 +7699,12 @@ mod tests {
             app.active_command,
             Some(InteractiveCommand::SplitCurveWithCutters)
         );
-        assert!(app.command_log.back().unwrap().contains("source curve"));
+        assert!(
+            app.command_log
+                .back()
+                .unwrap()
+                .contains("source curve or rectangular surface")
+        );
         app.accept_drafting_point(point(1.0, 0.0, 0.0));
 
         assert_eq!(app.active_command, None);
@@ -7731,6 +7736,38 @@ mod tests {
                 .unwrap()
                 .contains("no objects")
         );
+    }
+
+    #[test]
+    fn interactive_cutting_object_split_accepts_a_surface_source_pick() {
+        let mut app = test_app();
+        app.execute_command("SrfPt 0,0,0 10,0,0 10,10,0 0,10,0");
+        app.execute_command("SrfPt 4,-5,-5 4,15,-5 4,15,5 4,-5,5");
+        app.execute_command("SelAll");
+        let ids = app
+            .document
+            .objects()
+            .map(|object| object.id())
+            .collect::<Vec<_>>();
+        let source_id = ids[0];
+        let cutter_id = ids[1];
+
+        assert!(app.try_start_interactive_command("Split CuttingObjects"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::SplitCurveWithCutters)
+        );
+        app.accept_drafting_point(point(2.0, 5.0, 0.0));
+
+        assert_eq!(app.active_command, None);
+        assert!(app.document.object(source_id).is_none());
+        assert!(app.document.object(cutter_id).is_some());
+        assert!(!app.document.is_selected(cutter_id));
+        assert_eq!(app.document.selected_object_count(), 2);
+        assert!(app.document.selected_objects().all(|object| {
+            matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() == 1)
+        }));
+        assert_eq!(app.document.undo_label(), Some("Split"));
     }
 
     #[test]
