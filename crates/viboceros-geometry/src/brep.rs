@@ -4598,7 +4598,7 @@ fn validate_iso(
     }
 }
 
-fn face_covers_full_surface_domain(
+pub(crate) fn face_covers_full_surface_domain(
     face: &BrepFace,
     tolerance: Tolerance,
 ) -> Result<bool, GeometryError> {

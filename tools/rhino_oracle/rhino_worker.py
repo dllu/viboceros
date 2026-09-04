@@ -420,6 +420,40 @@ def _canonical_closed_intersection_curve_definition(curve):
     return definition
 
 
+def _canonical_linear_intersection_curve_definition(curve):
+    definition = _nurbs_curve_definition(curve)
+    controls = definition["control_points"]
+    if definition["degree"] != 1 or len(controls) < 2:
+        return definition
+    if any(abs(control["weight"] - controls[0]["weight"]) > 1e-12 for control in controls):
+        return definition
+    quantized_point = lambda control: tuple(
+        round(value, 9) for value in control["point"]
+    )
+    first = controls[0]["point"]
+    last = controls[-1]["point"]
+    closed = sum((first[index] - last[index]) ** 2 for index in range(3)) <= 1e-18
+    if closed:
+        unique = controls[:-1]
+        seam = min(range(len(unique)), key=lambda index: quantized_point(unique[index]))
+        forward = unique[seam:] + unique[:seam]
+        reverse = [forward[0]] + list(reversed(forward[1:]))
+        if tuple(map(quantized_point, reverse)) < tuple(map(quantized_point, forward)):
+            forward = reverse
+        controls = forward + [forward[0]]
+    elif quantized_point(controls[-1]) < quantized_point(controls[0]):
+        controls = list(reversed(controls))
+    segment_count = len(controls) - 1
+    definition["control_points"] = controls
+    definition["domain"] = [0.0, 1.0]
+    definition["knots"] = (
+        [0.0, 0.0]
+        + [float(index) / float(segment_count) for index in range(1, segment_count)]
+        + [1.0, 1.0]
+    )
+    return definition
+
+
 def _nurbs_curve_from_definition(definition):
     degree = int(definition["degree"])
     controls = definition["control_points"]
@@ -6751,6 +6785,122 @@ def _execute(operation, iterations, tolerance):
         finally:
             for surface in surfaces:
                 surface.Dispose()
+
+    if kind == "surface_brep_intersect_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        box_min = _point(operation["box_min"])
+        box_max = _point(operation["box_max"])
+        brep = Rhino.Geometry.Brep.CreateFromBox(
+            Rhino.Geometry.BoundingBox(box_min, box_max)
+        )
+        if brep is None:
+            surface.Dispose()
+            raise ValueError("could not create surface/B-rep Intersect box")
+
+        def intersect_surface_brep_command():
+            original_ids = set(item.Id for item in document.Objects)
+            input_ids = []
+            group_index = -1
+            try:
+                document.Objects.UnselectAll()
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = "Viboceros Intersect Source"
+                attributes.ObjectColor = System.Drawing.Color.FromArgb(12, 34, 56)
+                attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                surface_id = document.Objects.AddSurface(surface, attributes)
+                brep_id = document.Objects.AddBrep(brep, attributes)
+                if surface_id == System.Guid.Empty or brep_id == System.Guid.Empty:
+                    raise ValueError("could not add surface/B-rep Intersect inputs")
+                if operation.get("brep_first", False):
+                    input_ids.extend([brep_id, surface_id])
+                else:
+                    input_ids.extend([surface_id, brep_id])
+                for object_id in input_ids:
+                    document.Objects.Select(object_id)
+                group_index = document.Groups.Add(
+                    "Viboceros Intersect Group " + str(System.Guid.NewGuid()),
+                    input_ids,
+                )
+                if group_index < 0:
+                    raise ValueError("could not group surface/B-rep Intersect inputs")
+                succeeded = Rhino.RhinoApp.RunScript("_-Intersect _Enter", False)
+                records = []
+                for item in document.Objects:
+                    if item.Id in original_ids or item.Id in input_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Point):
+                        location = geometry.Location
+                        value = {
+                            "kind": "point",
+                            "point": [
+                                float(location.X),
+                                float(location.Y),
+                                float(location.Z),
+                            ],
+                        }
+                        sort_key = (
+                            "point",
+                            float(location.X),
+                            float(location.Y),
+                            float(location.Z),
+                        )
+                    elif isinstance(geometry, Rhino.Geometry.Curve):
+                        if operation.get("canonicalize_linear_curves", False):
+                            definition = (
+                                _canonical_linear_intersection_curve_definition(geometry)
+                            )
+                        else:
+                            definition = _nurbs_curve_definition(geometry)
+                        value = {"kind": "curve", "curve": definition}
+                        sort_key = ("curve",) + tuple(
+                            definition["control_points"][0]["point"]
+                        )
+                    else:
+                        raise ValueError(
+                            "surface/B-rep Intersect produced unsupported geometry %s"
+                            % type(geometry).__name__
+                        )
+                    groups = item.Attributes.GetGroupList()
+                    value.update({
+                        "blank_name": not bool(item.Attributes.Name),
+                        "color_from_layer": (
+                            item.Attributes.ColorSource
+                            == Rhino.DocObjects.ObjectColorSource.ColorFromLayer
+                        ),
+                        "in_source_group": (
+                            groups is not None and group_index in groups
+                        ),
+                        "on_current_layer": (
+                            int(item.Attributes.LayerIndex)
+                            == int(document.Layers.CurrentLayerIndex)
+                        ),
+                        "selected": item.IsSelected(False) > 0,
+                    })
+                    records.append((sort_key, value))
+                records.sort(key=lambda record: record[0])
+                return {
+                    "command_succeeded": bool(succeeded),
+                    "input_selected": [
+                        document.Objects.FindId(object_id).IsSelected(False) > 0
+                        for object_id in input_ids
+                    ],
+                    "objects": [value for _, value in records],
+                }
+            finally:
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+                if group_index >= 0 and not document.Groups.IsDeleted(group_index):
+                    document.Groups.Delete(group_index)
+
+        try:
+            return _measure(iterations, intersect_surface_brep_command)
+        finally:
+            surface.Dispose()
+            brep.Dispose()
 
     if kind == "curve_trim_command":
         document = Rhino.RhinoDoc.ActiveDoc

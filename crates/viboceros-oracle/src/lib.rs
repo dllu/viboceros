@@ -630,6 +630,16 @@ pub enum Operation {
         box_min: [f64; 3],
         box_max: [f64; 3],
     },
+    SurfaceBrepIntersectCommand {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        box_min: [f64; 3],
+        box_max: [f64; 3],
+        #[serde(default)]
+        brep_first: bool,
+        #[serde(default)]
+        canonicalize_linear_curves: bool,
+    },
     SurfaceSurfaceIntersectCommand {
         id: String,
         first: NurbsSurfaceDefinition,
@@ -1283,6 +1293,7 @@ impl Operation {
             | Self::CurveIntersectCommand { id, .. }
             | Self::CurveSurfaceIntersectCommand { id, .. }
             | Self::CurveBrepIntersectCommand { id, .. }
+            | Self::SurfaceBrepIntersectCommand { id, .. }
             | Self::SurfaceSurfaceIntersectCommand { id, .. }
             | Self::CurveTrimCommand { id, .. }
             | Self::CurveInsertControlPointGeometry { id, .. }
@@ -3259,6 +3270,22 @@ fn execute(
             box_max,
             ..
         } => curve_brep_intersect_command(iterations, curve, *box_min, *box_max, tolerance)?,
+        Operation::SurfaceBrepIntersectCommand {
+            surface,
+            box_min,
+            box_max,
+            brep_first,
+            canonicalize_linear_curves,
+            ..
+        } => surface_brep_intersect_command(
+            iterations,
+            surface,
+            *box_min,
+            *box_max,
+            *brep_first,
+            *canonicalize_linear_curves,
+            tolerance,
+        )?,
         Operation::SurfaceSurfaceIntersectCommand {
             first,
             second,
@@ -7300,6 +7327,40 @@ fn curve_brep_intersect_command(
     intersect_command(iterations, &inputs, tolerance)
 }
 
+fn surface_brep_intersect_command(
+    iterations: u32,
+    surface_definition: &NurbsSurfaceDefinition,
+    box_min: [f64; 3],
+    box_max: [f64; 3],
+    brep_first: bool,
+    canonicalize_linear_curves: bool,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let frame = Frame3::try_from_normal(
+        Point3::try_new(0.0, 0.0, 0.0)?,
+        Vector3::try_new(0.0, 0.0, 1.0)?,
+        tolerance,
+    )?;
+    let intervals = std::array::from_fn(|axis| [box_min[axis], box_max[axis]]);
+    let surface = Geometry::NurbsSurface(nurbs_surface_from_definition(surface_definition)?);
+    let brep = Geometry::Brep(Brep::try_box(frame, intervals, tolerance)?);
+    let inputs = if brep_first {
+        [brep, surface]
+    } else {
+        [surface, brep]
+    };
+    if canonicalize_linear_curves {
+        intersect_command_with_curve_serializer(
+            iterations,
+            &inputs,
+            tolerance,
+            canonical_linear_intersection_curve_value,
+        )
+    } else {
+        intersect_command(iterations, &inputs, tolerance)
+    }
+}
+
 fn surface_surface_intersect_command(
     iterations: u32,
     first: &NurbsSurfaceDefinition,
@@ -7593,6 +7654,71 @@ fn canonical_closed_intersection_curve_value(curve: &NurbsCurve) -> Result<Value
         "domain": [0.0, 1.0],
         "knots": knots,
     }))
+}
+
+fn canonical_linear_intersection_curve_value(curve: &NurbsCurve) -> Result<Value, GeometryError> {
+    if curve.degree() != 1 || curve.is_rational() || curve.control_points().len() < 2 {
+        return Ok(nurbs_curve_definition_value(curve));
+    }
+    let closed = curve.is_closed()?;
+    let mut controls = curve.control_points().to_vec();
+    if closed {
+        controls.pop();
+        let seam = controls
+            .iter()
+            .enumerate()
+            .min_by(|(_, left), (_, right)| compare_quantized_points(left.point(), right.point()))
+            .map(|(index, _)| index)
+            .expect("a closed degree-one curve has unique controls");
+        controls.rotate_left(seam);
+        let mut reversed = Vec::with_capacity(controls.len());
+        reversed.push(controls[0]);
+        reversed.extend(controls[1..].iter().rev().copied());
+        if compare_quantized_control_sequences(&reversed, &controls).is_lt() {
+            controls = reversed;
+        }
+        controls.push(controls[0]);
+    } else if compare_quantized_points(
+        controls.last().expect("a curve has controls").point(),
+        controls[0].point(),
+    )
+    .is_lt()
+    {
+        controls.reverse();
+    }
+    let segment_count = controls.len() - 1;
+    let mut knots = Vec::with_capacity(controls.len() + 2);
+    knots.extend([0.0, 0.0]);
+    knots.extend((1..segment_count).map(|index| index as f64 / segment_count as f64));
+    knots.extend([1.0, 1.0]);
+    Ok(json!({
+        "control_points": controls.into_iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": 1,
+        "domain": [0.0, 1.0],
+        "knots": knots,
+    }))
+}
+
+fn compare_quantized_control_sequences(
+    left: &[viboceros_geometry::WeightedPoint3],
+    right: &[viboceros_geometry::WeightedPoint3],
+) -> std::cmp::Ordering {
+    left.iter()
+        .zip(right)
+        .map(|(left, right)| compare_quantized_points(left.point(), right.point()))
+        .find(|ordering| !ordering.is_eq())
+        .unwrap_or(std::cmp::Ordering::Equal)
+}
+
+fn compare_quantized_points(left: Point3, right: Point3) -> std::cmp::Ordering {
+    let quantize = |value: f64| (value * 1.0e9).round();
+    compare_point(
+        &left.to_array().map(quantize),
+        &right.to_array().map(quantize),
+    )
 }
 
 fn canonical_curve_definition_value(curve: &NurbsCurve) -> Value {
@@ -10325,6 +10451,63 @@ mod tests {
                 .all(|object| object["on_current_layer"] == true)
         );
         assert!(objects.iter().all(|object| object["selected"] == true));
+    }
+
+    #[test]
+    fn captures_surface_brep_intersect_command_behavior() {
+        let surface = NurbsSurfaceDefinition {
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [-5.0, -5.0, 5.0],
+                [15.0, -5.0, 5.0],
+                [-5.0, 15.0, 5.0],
+                [15.0, 15.0, 5.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![-5.0, -5.0, 15.0, 15.0],
+            knots_v: vec![-5.0, -5.0, 15.0, 15.0],
+            domain_u: None,
+            domain_v: None,
+        };
+        let response = run_request(&request(vec![Operation::SurfaceBrepIntersectCommand {
+            id: "intersect-surface-brep".to_owned(),
+            surface,
+            box_min: [0.0, 0.0, 0.0],
+            box_max: [10.0, 10.0, 10.0],
+            brep_first: false,
+            canonicalize_linear_curves: false,
+        }]))
+        .unwrap();
+
+        let value = &response.results[0].value;
+        assert_eq!(value["command_succeeded"], true);
+        assert_eq!(value["input_selected"], json!([false, false]));
+        let objects = value["objects"].as_array().unwrap();
+        assert_eq!(objects.len(), 1);
+        assert_eq!(objects[0]["kind"], "curve");
+        assert_eq!(objects[0]["curve"]["degree"], 1);
+        assert_eq!(objects[0]["curve"]["domain"], json!([0.0, 40.0]));
+        assert_eq!(
+            objects[0]["curve"]["control_points"]
+                .as_array()
+                .unwrap()
+                .len(),
+            5
+        );
+        assert_eq!(
+            objects[0]["curve"]["control_points"][0]["point"],
+            json!([0.0, 0.0, 5.0])
+        );
+        assert_eq!(objects[0]["blank_name"], true);
+        assert_eq!(objects[0]["color_from_layer"], true);
+        assert_eq!(objects[0]["in_source_group"], false);
+        assert_eq!(objects[0]["on_current_layer"], true);
+        assert_eq!(objects[0]["selected"], true);
     }
 
     #[test]

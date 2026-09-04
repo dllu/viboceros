@@ -69,9 +69,10 @@ pub use interpolation::{
 };
 pub use intersection::{
     CurveBrepIntersection, CurveBrepIntersectionEvent, CurveBrepOverlap, CurveSurfaceIntersection,
-    CurveSurfaceIntersectionEvent, CurveSurfaceOverlap, SurfaceSurfaceIntersectionEvent,
-    curve_brep_intersection_events, curve_surface_intersection_events, curve_surface_intersections,
-    surface_surface_intersection_events,
+    CurveSurfaceIntersectionEvent, CurveSurfaceOverlap, SurfaceBrepIntersectionEvent,
+    SurfaceSurfaceIntersectionEvent, curve_brep_intersection_events,
+    curve_surface_intersection_events, curve_surface_intersections,
+    surface_brep_intersection_events, surface_surface_intersection_events,
 };
 pub use line::LineSegment;
 pub use mesh::{

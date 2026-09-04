@@ -25,12 +25,12 @@ use viboceros_geometry::{
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
     MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
     MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsSurface,
-    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceExtensionEdge,
-    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, curve_brep_intersection_events,
+    Plane, Point3, PointCloud3, Polyline3, PolylineClosure, Real, SurfaceBrepIntersectionEvent,
+    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
+    Tolerance, TriangleMesh, UnitVector3, Vector3, curve_brep_intersection_events,
     curve_surface_intersection_events, join_polylines, sort_and_cull_points,
-    surface_surface_intersection_events, try_catenary, try_curve_through_points, try_fit_curve,
-    try_rebuild_curve, try_tween_nurbs_curves,
+    surface_brep_intersection_events, surface_surface_intersection_events, try_catenary,
+    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -12612,9 +12612,21 @@ impl Command for IntersectCommand {
                             })
                             .collect()
                     }
-                    (IntersectInput::Surface(_), IntersectInput::Brep(_))
-                    | (IntersectInput::Brep(_), IntersectInput::Surface(_))
-                    | (IntersectInput::Brep(_), IntersectInput::Brep(_)) => {
+                    (IntersectInput::Surface(surface), IntersectInput::Brep(brep))
+                    | (IntersectInput::Brep(brep), IntersectInput::Surface(surface)) => {
+                        surface_brep_intersection_events(surface, brep, document.tolerance())?
+                            .into_iter()
+                            .map(|event| match event {
+                                SurfaceBrepIntersectionEvent::Point(point) => {
+                                    Geometry::Point(point)
+                                }
+                                SurfaceBrepIntersectionEvent::Curve(curve) => {
+                                    Geometry::NurbsCurve(curve)
+                                }
+                            })
+                            .collect()
+                    }
+                    (IntersectInput::Brep(_), IntersectInput::Brep(_)) => {
                         return Err(CommandError::UnsupportedIntersectObjectPair);
                     }
                 };
@@ -26469,12 +26481,51 @@ mod tests {
     }
 
     #[test]
-    fn intersect_rejects_unsupported_surface_pairs_atomically() {
+    fn intersect_joins_planar_surface_brep_sections() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let section = NurbsSurface::try_bilinear([
+            Point3::try_new(-5.0, -5.0, 5.0).unwrap(),
+            Point3::try_new(15.0, -5.0, 5.0).unwrap(),
+            Point3::try_new(15.0, 15.0, 5.0).unwrap(),
+            Point3::try_new(-5.0, 15.0, 5.0).unwrap(),
+        ])
+        .unwrap();
+        let input_ids = [
+            document
+                .add_geometry(Geometry::NurbsSurface(section))
+                .unwrap(),
+            document
+                .add_geometry(Geometry::Brep(intersection_box()))
+                .unwrap(),
+        ];
+        document
+            .select_objects_direct(input_ids, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut document, "Intersect").unwrap(),
+            "Created 1 intersection object(s) from 1 object pair(s)"
+        );
+        assert!(input_ids.iter().all(|id| !document.is_selected(*id)));
+        let output = document.selected_objects().next().unwrap();
+        let Geometry::NurbsCurve(section) = output.geometry() else {
+            panic!("a planar box section must produce one joined intersection curve")
+        };
+        assert!(section.is_closed().unwrap());
+        assert_eq!(section.domain(), 0.0..=40.0);
+        assert_eq!(section.control_points().len(), 5);
+        assert!(output.attributes().name().is_none());
+        assert_eq!(output.attributes().layer_id(), document.current_layer_id());
+    }
+
+    #[test]
+    fn intersect_rejects_unsupported_brep_pairs_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         let input_ids = [
             document
-                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .add_geometry(Geometry::Brep(intersection_box()))
                 .unwrap(),
             document
                 .add_geometry(Geometry::Brep(intersection_box()))
