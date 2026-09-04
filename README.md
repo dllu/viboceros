@@ -893,9 +893,12 @@ vertex, edge, and trim ordering. Straight parameter paths work on arbitrary
 rectangular NURBS faces. On affine non-rational tensor-product faces, curved
 NURBS paths are pulled back exactly through degree elevation and knot
 refinement, retaining their degree, control locations, weights, knots, and
-domain. Affine and genuinely warped non-rational bilinear faces also retain the
-source structure of supported geometrically straight multi-span and
-higher-degree cutters instead of simplifying them to a line. Rational trims
+domain. Homogeneous-affine rational tensor-product faces are likewise inverted
+exactly without fitting; their UV weights absorb the surface's projective
+denominator while degree, knots, domain, and model-space locus remain exact.
+Affine and genuinely warped non-rational bilinear faces also retain the source
+structure of supported geometrically straight multi-span and higher-degree
+cutters instead of simplifying them to a line. Rational trims
 preserve their projective locus and interior junction data while normalizing
 the outer Bezier weights to Rhino's canonical unit values. Curved paths are
 accepted when each retained in-face control polygon advances strictly in at
@@ -987,7 +990,7 @@ discarding the underlying surface. Closed directions reuse seam edges and
 collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
 and directions, face orientation, and geometry to within `2e-15`.
-Curved paths on higher-degree, rational, or planar non-affine parameterizations,
+Curved paths on rational non-projective or planar non-affine parameterizations,
 nonmonotone curved trim clipping, nonlinear
 surface/surface cutters, and nonrectangular or multi-face B-rep sources remain
 future extensions.

@@ -1,5 +1,7 @@
 use std::ops::RangeInclusive;
 
+use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
+
 use crate::integration::integrate_adaptive;
 use crate::nurbs::{
     clamped_uniform_knots, control_polygon_length, control_polygon_range,
@@ -27,6 +29,19 @@ pub struct NurbsSurface {
     knots_u: Vec<Real>,
     knots_v: Vec<Real>,
     rational: bool,
+}
+
+#[derive(Clone, Debug)]
+struct ProjectiveSurfaceFrame {
+    model_origin: Point3,
+    model_scale: Real,
+    parameter_start: [Real; 2],
+    parameter_extent: [Real; 2],
+    parameter_domain: [[Real; 2]; 2],
+    homogeneous_basis: [[Real; 4]; 3],
+    solve_rows: [usize; 3],
+    solve_matrix: Matrix3<Real>,
+    solve_column_scales: [Real; 3],
 }
 
 /// Parametric direction changed by [`NurbsSurface::try_make_uniform`].
@@ -98,6 +113,288 @@ fn model_points_near(
         .fold(1.0, Real::max);
     let allowed = tolerance.absolute().max(tolerance.relative() * scale);
     Ok(first.distance_to(second)? <= allowed)
+}
+
+fn normalized_homogeneous_control(
+    control: WeightedPoint3,
+    model_origin: Point3,
+    model_scale: Real,
+    weight_scale: Real,
+) -> Result<[Real; 4], GeometryError> {
+    let offset = model_origin.vector_to(control.point())?.to_array();
+    let weight = control.weight() / weight_scale;
+    let homogeneous = [
+        (offset[0] / model_scale) * weight,
+        (offset[1] / model_scale) * weight,
+        (offset[2] / model_scale) * weight,
+        weight,
+    ];
+    require_finite(homogeneous, "normalized homogeneous surface control")?;
+    Ok(homogeneous)
+}
+
+fn projective_scalars_near(first: Real, second: Real, epsilon_factor: Real) -> bool {
+    first == second
+        || (first - second).abs() <= epsilon_factor * Real::EPSILON * first.abs().max(second.abs())
+}
+
+fn projective_surface_control_near(
+    expected: [Real; 4],
+    actual: [Real; 4],
+    control: WeightedPoint3,
+    model_scale: Real,
+    tolerance: Tolerance,
+) -> bool {
+    if !projective_scalars_near(expected[3], actual[3], 16_384.0) {
+        return false;
+    }
+    let coordinate_scale = control
+        .point()
+        .to_array()
+        .into_iter()
+        .map(Real::abs)
+        .fold(1.0_f64, Real::max);
+    let model_allowance = tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale)
+        / model_scale
+        * actual[3].abs();
+    (0..3).all(|coordinate| {
+        let roundoff =
+            16_384.0 * Real::EPSILON * expected[coordinate].abs().max(actual[coordinate].abs());
+        (expected[coordinate] - actual[coordinate]).abs() <= roundoff + model_allowance
+    })
+}
+
+impl ProjectiveSurfaceFrame {
+    fn try_from_surface(
+        surface: &NurbsSurface,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let model_origin = surface.control_points[0].point();
+        let mut model_scale = 0.0_f64;
+        for control in &surface.control_points {
+            model_scale = model_origin
+                .vector_to(control.point())?
+                .to_array()
+                .into_iter()
+                .map(Real::abs)
+                .fold(model_scale, Real::max);
+        }
+        if model_scale <= tolerance.absolute() {
+            return Err(GeometryError::Degenerate {
+                context: "projective surface control net",
+            });
+        }
+        let weight_scale = surface
+            .control_points
+            .iter()
+            .map(|control| control.weight().abs())
+            .fold(0.0_f64, Real::max);
+        let homogeneous_controls = surface
+            .control_points
+            .iter()
+            .map(|control| {
+                normalized_homogeneous_control(*control, model_origin, model_scale, weight_scale)
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let greville_u = (0..surface.control_point_count_u)
+            .map(|control| {
+                stable_knot_mean(&surface.knots_u[control + 1..control + surface.degree_u + 1])
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let greville_v = (0..surface.control_point_count_v)
+            .map(|control| {
+                stable_knot_mean(&surface.knots_v[control + 1..control + surface.degree_v + 1])
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let parameter_start = [greville_u[0], greville_v[0]];
+        let parameter_extent = [
+            greville_u[greville_u.len() - 1] - parameter_start[0],
+            greville_v[greville_v.len() - 1] - parameter_start[1],
+        ];
+        require_finite(parameter_extent, "projective surface Greville extents")?;
+        if parameter_extent[0] <= 0.0 || parameter_extent[1] <= 0.0 {
+            return Err(GeometryError::InvalidControlNet {
+                context: "projective surface Greville parameters must advance",
+            });
+        }
+
+        let origin = homogeneous_controls[0];
+        let east = homogeneous_controls[surface.control_point_count_u - 1];
+        let north = homogeneous_controls
+            [(surface.control_point_count_v - 1) * surface.control_point_count_u];
+        let axis_u = std::array::from_fn(|coordinate| east[coordinate] - origin[coordinate]);
+        let axis_v = std::array::from_fn(|coordinate| north[coordinate] - origin[coordinate]);
+        require_finite(
+            axis_u.into_iter().chain(axis_v),
+            "projective surface homogeneous axes",
+        )?;
+        for (v, &parameter_v) in greville_v.iter().enumerate() {
+            let fraction_v = (parameter_v - parameter_start[1]) / parameter_extent[1];
+            for (u, &parameter_u) in greville_u.iter().enumerate() {
+                let fraction_u = (parameter_u - parameter_start[0]) / parameter_extent[0];
+                require_finite(
+                    [fraction_u, fraction_v],
+                    "projective surface control parameters",
+                )?;
+                let expected = std::array::from_fn(|coordinate| {
+                    axis_v[coordinate].mul_add(
+                        fraction_v,
+                        axis_u[coordinate].mul_add(fraction_u, origin[coordinate]),
+                    )
+                });
+                let index = surface.control_index(u, v);
+                let actual = homogeneous_controls[index];
+                if !projective_surface_control_near(
+                    expected,
+                    actual,
+                    surface.control_points[index],
+                    model_scale,
+                    tolerance,
+                ) {
+                    return Err(GeometryError::InvalidControlNet {
+                        context: "exact projective pullback requires a homogeneous-affine surface control net",
+                    });
+                }
+            }
+        }
+
+        let homogeneous_basis = [axis_u, axis_v, origin];
+        const ROW_SETS: [[usize; 3]; 4] = [[0, 1, 2], [0, 1, 3], [0, 2, 3], [1, 2, 3]];
+        let mut best = None;
+        for rows in ROW_SETS {
+            let column_scales = std::array::from_fn(|column| {
+                rows.into_iter()
+                    .map(|row| homogeneous_basis[column][row].abs())
+                    .fold(0.0_f64, Real::max)
+            });
+            if column_scales.into_iter().any(|scale| scale == 0.0) {
+                continue;
+            }
+            let matrix = Matrix3::from_fn(|row, column| {
+                homogeneous_basis[column][rows[row]] / column_scales[column]
+            });
+            let determinant = matrix.determinant().abs();
+            if determinant.is_finite()
+                && best
+                    .as_ref()
+                    .is_none_or(|(best_determinant, _, _, _)| determinant > *best_determinant)
+            {
+                best = Some((determinant, rows, matrix, column_scales));
+            }
+        }
+        let Some((determinant, solve_rows, solve_matrix, solve_column_scales)) = best else {
+            return Err(GeometryError::Degenerate {
+                context: "projective surface parameter frame",
+            });
+        };
+        if determinant <= tolerance.angular().max(16_384.0 * Real::EPSILON) {
+            return Err(GeometryError::Degenerate {
+                context: "projective surface parameter frame",
+            });
+        }
+
+        Ok(Self {
+            model_origin,
+            model_scale,
+            parameter_start,
+            parameter_extent,
+            parameter_domain: [
+                [*surface.domain_u().start(), *surface.domain_u().end()],
+                [*surface.domain_v().start(), *surface.domain_v().end()],
+            ],
+            homogeneous_basis,
+            solve_rows,
+            solve_matrix,
+            solve_column_scales,
+        })
+    }
+
+    fn pullback_control(
+        &self,
+        control: WeightedPoint3,
+        curve_weight_scale: Real,
+        tolerance: Tolerance,
+    ) -> Result<WeightedPoint2, GeometryError> {
+        let target = normalized_homogeneous_control(
+            control,
+            self.model_origin,
+            self.model_scale,
+            curve_weight_scale,
+        )?;
+        let right_hand_side = NalgebraVector3::new(
+            target[self.solve_rows[0]],
+            target[self.solve_rows[1]],
+            target[self.solve_rows[2]],
+        );
+        let scaled_coefficients = self
+            .solve_matrix
+            .lu()
+            .solve(&right_hand_side)
+            .ok_or(GeometryError::SingularSystem)?;
+        let coefficients: [Real; 3] = std::array::from_fn(|index| {
+            scaled_coefficients[index] / self.solve_column_scales[index]
+        });
+        require_finite(coefficients, "projective surface pullback coordinates")?;
+        let reconstructed: [Real; 4] = std::array::from_fn(|coordinate| {
+            self.homogeneous_basis[0][coordinate].mul_add(
+                coefficients[0],
+                self.homogeneous_basis[1][coordinate].mul_add(
+                    coefficients[1],
+                    self.homogeneous_basis[2][coordinate] * coefficients[2],
+                ),
+            )
+        });
+        require_finite(reconstructed, "reconstructed projective surface control")?;
+        let point = control.point();
+        let coordinate_scale = point
+            .to_array()
+            .into_iter()
+            .map(Real::abs)
+            .fold(1.0_f64, Real::max);
+        let model_allowance = tolerance
+            .absolute()
+            .max(tolerance.relative() * coordinate_scale)
+            / self.model_scale
+            * target[3].abs();
+        if (0..3).any(|coordinate| {
+            let roundoff = 65_536.0
+                * Real::EPSILON
+                * reconstructed[coordinate]
+                    .abs()
+                    .max(target[coordinate].abs());
+            (reconstructed[coordinate] - target[coordinate]).abs() > roundoff + model_allowance
+        }) || !projective_scalars_near(reconstructed[3], target[3], 65_536.0)
+        {
+            return Err(GeometryError::InvalidControlNet {
+                context: "curve controls must lie in the projective surface plane",
+            });
+        }
+
+        let weight = coefficients[2];
+        if weight == 0.0 {
+            return Err(GeometryError::InvalidControlNet {
+                context: "projective surface pullback produced a control at infinity",
+            });
+        }
+        let normalized_u = coefficients[0] / weight;
+        let normalized_v = coefficients[1] / weight;
+        let raw_u = self.parameter_extent[0].mul_add(normalized_u, self.parameter_start[0]);
+        let raw_v = self.parameter_extent[1].mul_add(normalized_v, self.parameter_start[1]);
+        let parameter = Point2::try_new(
+            snap_parameter_domain_roundoff(
+                raw_u,
+                &(self.parameter_domain[0][0]..=self.parameter_domain[0][1]),
+            ),
+            snap_parameter_domain_roundoff(
+                raw_v,
+                &(self.parameter_domain[1][0]..=self.parameter_domain[1][1]),
+            ),
+        )?;
+        WeightedPoint2::try_new(parameter, weight)
+    }
 }
 
 fn validate_surface_knot_insertion(
@@ -3122,10 +3419,11 @@ impl NurbsSurface {
     /// Pulls a model-space NURBS curve back without fitting when this surface
     /// has one of the supported exact inverse parameterizations.
     ///
-    /// Equal-weight affine tensor-product surfaces of any degree are
-    /// supported, as are equal-weight two-by-two bilinear surfaces whose twist
-    /// supplies an independent affine left inverse. The returned p-curve
-    /// retains the source curve's degree, weights, knots, and domain.
+    /// Affine and homogeneous-affine projective tensor-product surfaces of any
+    /// degree are supported, as are equal-weight two-by-two bilinear surfaces
+    /// whose twist supplies an independent affine left inverse. The returned
+    /// p-curve retains the source curve's degree, knots, and domain; affine and
+    /// bilinear inverses also retain its weights unchanged.
     pub fn try_pullback_exact_curve(
         &self,
         curve: &NurbsCurve,
@@ -3135,17 +3433,71 @@ impl NurbsSurface {
             Ok(parameter_curve) => Ok(parameter_curve),
             Err(bilinear_error) => match self.try_pullback_affine_curve(curve, tolerance) {
                 Ok(parameter_curve) => Ok(parameter_curve),
-                Err(_)
-                    if self.degree_u == 1
-                        && self.degree_v == 1
-                        && self.control_point_count_u == 2
-                        && self.control_point_count_v == 2 =>
-                {
-                    Err(bilinear_error)
-                }
-                Err(affine_error) => Err(affine_error),
+                Err(affine_error) => match self.try_pullback_projective_curve(curve, tolerance) {
+                    Ok(parameter_curve) => Ok(parameter_curve),
+                    Err(_)
+                        if self.degree_u == 1
+                            && self.degree_v == 1
+                            && self.control_point_count_u == 2
+                            && self.control_point_count_v == 2 =>
+                    {
+                        Err(bilinear_error)
+                    }
+                    Err(projective_error) if self.rational => Err(projective_error),
+                    Err(_) => Err(affine_error),
+                },
             },
         }
+    }
+
+    /// Pulls a model-space NURBS curve back exactly through a projective
+    /// tensor-product surface whose homogeneous control net is affine in both
+    /// parameters.
+    ///
+    /// Degree elevation and knot refinement are accepted because every
+    /// homogeneous control is checked at its Greville parameters. Applying
+    /// the inverse projective frame transforms the curve's homogeneous
+    /// controls directly, retaining its degree, knots, and parameter domain
+    /// without fitting.
+    pub fn try_pullback_projective_curve(
+        &self,
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve2, GeometryError> {
+        let frame = ProjectiveSurfaceFrame::try_from_surface(self, tolerance)?;
+        let curve_weight_scale = curve
+            .control_points()
+            .iter()
+            .map(|control| control.weight().abs())
+            .fold(0.0_f64, Real::max);
+        let parameter_controls = curve
+            .control_points()
+            .iter()
+            .map(|control| frame.pullback_control(*control, curve_weight_scale, tolerance))
+            .collect::<Result<Vec<_>, _>>()?;
+        let parameter_curve = NurbsCurve2::try_new_rational(
+            curve.degree(),
+            parameter_controls,
+            curve.knots().to_vec(),
+        )?;
+
+        for (span_start, span_end) in curve.spans() {
+            for sample in 0..=8 {
+                let fraction = sample as Real / 8.0;
+                let parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
+                let uv = parameter_curve.evaluate(parameter)?;
+                if !model_points_near(
+                    self.evaluate(uv.x(), uv.y())?,
+                    curve.evaluate(parameter)?,
+                    tolerance,
+                )? {
+                    return Err(GeometryError::InvalidControlNet {
+                        context: "curve does not lie on the projective surface at model tolerance",
+                    });
+                }
+            }
+        }
+        Ok(parameter_curve)
     }
 
     /// Pulls a model-space NURBS curve back into the parameter space of an
@@ -5088,6 +5440,194 @@ mod tests {
         .unwrap();
         assert!(matches!(
             non_affine.try_pullback_affine_curve(&curve, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidControlNet { .. })
+        ));
+    }
+
+    #[test]
+    fn projective_curve_pullback_preserves_exact_rational_nurbs_structure() {
+        // In homogeneous coordinates this surface is the affine map
+        // (s, t) -> [10s, 10t, 0, 1 + s + t / 2]. Its Euclidean
+        // parameterization is rational even though its locus is planar.
+        let surface = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            vec![
+                WeightedPoint3::try_new(point(0.0, 0.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(5.0, 0.0, 0.0), 2.0).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 20.0 / 3.0, 0.0), 1.5).unwrap(),
+                WeightedPoint3::try_new(point(4.0, 4.0, 0.0), 2.5).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let expected_parameters = [
+            Point2::try_new(0.0, 0.2).unwrap(),
+            Point2::try_new(0.5, 0.8).unwrap(),
+            Point2::try_new(1.0, 0.6).unwrap(),
+        ];
+        let parameter_weights = [1.0, 0.75, 1.2];
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            expected_parameters
+                .iter()
+                .zip(parameter_weights)
+                .map(|(parameter, parameter_weight)| {
+                    let denominator = 1.0 + parameter.x() + 0.5 * parameter.y();
+                    WeightedPoint3::try_new(
+                        point(
+                            10.0 * parameter.x() / denominator,
+                            10.0 * parameter.y() / denominator,
+                            0.0,
+                        ),
+                        parameter_weight * denominator,
+                    )
+                    .unwrap()
+                })
+                .collect(),
+            vec![3.0, 3.0, 3.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+
+        let verify_pullback = |candidate_surface: &NurbsSurface,
+                               candidate_curve: &NurbsCurve,
+                               expected_parameters: [Point2; 3]| {
+            let pulled = candidate_surface
+                .try_pullback_projective_curve(candidate_curve, Tolerance::DEFAULT)
+                .unwrap();
+            assert_eq!(pulled.degree(), candidate_curve.degree());
+            assert_eq!(pulled.knots(), candidate_curve.knots());
+            assert_eq!(pulled.domain(), candidate_curve.domain());
+            let actual_weight_scale = pulled.control_points()[0].weight();
+            for ((actual, expected), expected_weight) in pulled
+                .control_points()
+                .iter()
+                .zip(expected_parameters)
+                .zip(parameter_weights)
+            {
+                assert!(actual.point().is_near(expected, Tolerance::DEFAULT));
+                assert!(Tolerance::DEFAULT.approx_eq(
+                    actual.weight() / actual_weight_scale,
+                    expected_weight / parameter_weights[0]
+                ));
+            }
+            for sample in 0..=32 {
+                let parameter = 3.0 + 4.0 * sample as Real / 32.0;
+                let uv = pulled.evaluate(parameter).unwrap();
+                assert!(candidate_surface.evaluate(uv.x(), uv.y()).unwrap().is_near(
+                    candidate_curve.evaluate(parameter).unwrap(),
+                    Tolerance::DEFAULT
+                ));
+            }
+            pulled
+        };
+
+        let pulled = verify_pullback(&surface, &curve, expected_parameters);
+        assert_eq!(pulled.control_points()[0].point().x(), 0.0);
+        assert_eq!(pulled.control_points()[2].point().x(), 1.0);
+
+        let reparameterized_parameters = expected_parameters.map(|parameter| {
+            Point2::try_new(6.0 * parameter.x() - 2.0, 10.0 * parameter.y() + 10.0).unwrap()
+        });
+        let refined_surface = surface
+            .try_reparameterized(-2.0..=4.0, 10.0..=20.0)
+            .unwrap()
+            .try_change_degree(3, 2, false)
+            .unwrap()
+            .try_insert_knot_u(0.4, 2)
+            .unwrap()
+            .try_insert_knot_v(16.5, 1)
+            .unwrap();
+        verify_pullback(&refined_surface, &curve, reparameterized_parameters);
+
+        let transform = AffineTransform3::try_new(
+            [[2.0, -1.0, 0.5], [0.25, 3.0, -0.5], [0.5, 0.75, 4.0]],
+            Vector3::try_new(4.0, -2.0, 7.0).unwrap(),
+        )
+        .unwrap();
+        let transformed_surface = refined_surface.transformed(transform).unwrap();
+        let transformed_curve = curve.transformed(transform).unwrap();
+        verify_pullback(
+            &transformed_surface,
+            &transformed_curve,
+            reparameterized_parameters,
+        );
+
+        let far_transform =
+            AffineTransform3::from_translation(Vector3::try_new(1.0e12, -2.0e12, 3.0e12).unwrap());
+        let far_surface = surface.transformed(far_transform).unwrap();
+        let far_curve = curve.transformed(far_transform).unwrap();
+        far_surface
+            .try_pullback_projective_curve(&far_curve, Tolerance::DEFAULT)
+            .unwrap();
+
+        let tiny_surface = NurbsSurface::try_new_rational(
+            surface.degree_u(),
+            surface.degree_v(),
+            surface.control_point_count_u(),
+            surface.control_point_count_v(),
+            surface
+                .control_points()
+                .iter()
+                .map(|control| {
+                    WeightedPoint3::try_new(control.point(), control.weight() * 1.0e-280).unwrap()
+                })
+                .collect(),
+            surface.knots_u().to_vec(),
+            surface.knots_v().to_vec(),
+        )
+        .unwrap();
+        let tiny_curve = NurbsCurve::try_new_rational(
+            curve.degree(),
+            curve
+                .control_points()
+                .iter()
+                .map(|control| {
+                    WeightedPoint3::try_new(control.point(), control.weight() * 1.0e-280).unwrap()
+                })
+                .collect(),
+            curve.knots().to_vec(),
+        )
+        .unwrap();
+        verify_pullback(&tiny_surface, &tiny_curve, expected_parameters);
+
+        let mut off_plane_controls = curve.control_points().to_vec();
+        let middle = off_plane_controls[1];
+        off_plane_controls[1] = WeightedPoint3::try_new(
+            middle
+                .point()
+                .translated(Vector3::try_new(0.0, 0.0, 0.25).unwrap())
+                .unwrap(),
+            middle.weight(),
+        )
+        .unwrap();
+        let off_plane = NurbsCurve::try_new_rational(
+            curve.degree(),
+            off_plane_controls,
+            curve.knots().to_vec(),
+        )
+        .unwrap();
+        assert!(matches!(
+            surface.try_pullback_projective_curve(&off_plane, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidControlNet { .. })
+        ));
+
+        let mut non_projective = refined_surface;
+        let index = non_projective.control_index(2, 1);
+        let control = non_projective.control_points[index];
+        non_projective.control_points[index] = WeightedPoint3::try_new(
+            control
+                .point()
+                .translated(Vector3::try_new(0.0, 0.0, 0.25).unwrap())
+                .unwrap(),
+            control.weight(),
+        )
+        .unwrap();
+        assert!(matches!(
+            non_projective.try_pullback_projective_curve(&curve, Tolerance::DEFAULT),
             Err(GeometryError::InvalidControlNet { .. })
         ));
     }

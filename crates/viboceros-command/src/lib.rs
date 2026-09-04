@@ -30262,6 +30262,138 @@ mod tests {
     }
 
     #[test]
+    fn cutting_object_split_preserves_curved_paths_on_projective_surfaces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(5.0, 0.0, 0.0).unwrap(), 2.0).unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(0.0, 20.0 / 3.0, 0.0).unwrap(), 1.5)
+                    .unwrap(),
+                WeightedPoint3::try_new(Point3::try_new(4.0, 4.0, 0.0).unwrap(), 2.5).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let cutter = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(Point3::try_new(0.0, 20.0 / 11.0, 0.0).unwrap(), 1.1)
+                    .unwrap(),
+                WeightedPoint3::try_new(
+                    Point3::try_new(50.0 / 19.0, 80.0 / 19.0, 0.0).unwrap(),
+                    1.9,
+                )
+                .unwrap(),
+                WeightedPoint3::try_new(
+                    Point3::try_new(100.0 / 23.0, 60.0 / 23.0, 0.0).unwrap(),
+                    2.3,
+                )
+                .unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let cutter_id = document
+            .add_geometry(Geometry::NurbsCurve(cutter.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=3.3333333333333335,0,0",)
+                .unwrap(),
+            "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(!document.is_selected(cutter_id));
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let mut forward_cut = None;
+        let mut area = 0.0;
+        for object in outputs {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("projective surface cutting Split must create B-rep faces")
+            };
+            assert_eq!(brep.faces()[0].surface(), &surface);
+            assert_eq!(brep.vertices().len(), 4);
+            assert_eq!(brep.edges().len(), 4);
+            let trim = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                .unwrap();
+            let edge = brep.edges()[trim.edge().unwrap()].curve();
+            assert_eq!(edge.degree(), cutter.degree());
+            assert_eq!(edge.knots(), cutter.knots());
+            assert_eq!(edge.domain(), cutter.domain());
+            assert_eq!(edge.control_points()[0].weight(), 1.0);
+            assert_eq!(edge.control_points()[2].weight(), 1.0);
+            if !trim.is_reversed_3d() {
+                forward_cut = Some((trim.curve().clone(), edge.clone()));
+            }
+            area += brep.area(document.tolerance()).unwrap();
+            brep.tessellate(3, document.tolerance()).unwrap();
+        }
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(area, surface.area(document.tolerance()).unwrap())
+        );
+
+        let (forward_trim, forward_edge) = forward_cut.unwrap();
+        assert_eq!(forward_trim.degree(), cutter.degree());
+        assert_eq!(forward_trim.knots(), cutter.knots());
+        assert_eq!(forward_trim.domain(), cutter.domain());
+        for (actual, expected) in
+            forward_trim
+                .control_points()
+                .iter()
+                .zip([[0.0, 0.2], [0.5, 0.8], [1.0, 0.6]])
+        {
+            assert!(
+                document
+                    .tolerance()
+                    .approx_eq(actual.point().x(), expected[0])
+            );
+            assert!(
+                document
+                    .tolerance()
+                    .approx_eq(actual.point().y(), expected[1])
+            );
+        }
+        let weights = forward_trim.control_points();
+        assert!(document.tolerance().approx_eq(
+            weights[1].weight() / weights[0].weight(),
+            (1.1_f64 / 2.3).sqrt()
+        ));
+        assert!(
+            document
+                .tolerance()
+                .approx_eq(weights[2].weight() / weights[0].weight(), 1.1 / 2.3)
+        );
+        for sample in 0..=32 {
+            let parameter = 2.0 * sample as Real / 32.0;
+            let uv = forward_trim.evaluate(parameter).unwrap();
+            assert!(surface.evaluate(uv.x(), uv.y()).unwrap().is_near(
+                forward_edge.evaluate(parameter).unwrap(),
+                document.tolerance()
+            ));
+        }
+    }
+
+    #[test]
     fn cutting_object_split_supports_parallel_crossing_and_mixed_surface_cutters() {
         let registry = CommandRegistry::with_builtins();
         let run_case = |cutters: &[&str],
