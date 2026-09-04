@@ -391,6 +391,13 @@ def _nurbs_curve_definition(curve, canonicalize_parameters=False):
         nurbs.Dispose()
 
 
+def _nurbs_parameter_curve_definition(curve):
+    definition = _nurbs_curve_definition(curve)
+    for control in definition["control_points"]:
+        control["point"] = control["point"][:2]
+    return definition
+
+
 def _canonical_closed_intersection_curve_definition(curve):
     definition = _nurbs_curve_definition(curve)
     controls = definition["control_points"]
@@ -565,6 +572,12 @@ def _curve_extension_boundary_from_definition(definition, tolerance):
             raise ValueError("box boundary is invalid")
         return brep
     return _nurbs_curve_from_definition(definition)
+
+
+def _surface_split_cutter_from_definition(definition, tolerance):
+    if "degree_u" in definition:
+        return _nurbs_surface_from_definition(definition)
+    return _curve_extension_boundary_from_definition(definition, tolerance)
 
 
 def _nurbs_surface_definition(surface):
@@ -7141,7 +7154,7 @@ def _execute(operation, iterations, tolerance):
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_surface_from_definition(operation["surface"])
         cutters = [
-            _nurbs_surface_from_definition(definition)
+            _surface_split_cutter_from_definition(definition, tolerance)
             for definition in operation["cutters"]
         ]
 
@@ -7244,9 +7257,16 @@ def _execute(operation, iterations, tolerance):
                     document.Objects.UnselectAll()
                     document.Objects.Select(source_id)
                 for cutter in cutters:
-                    cutter_id = document.Objects.AddSurface(cutter)
+                    if isinstance(cutter, Rhino.Geometry.Curve):
+                        cutter_id = document.Objects.AddCurve(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Surface):
+                        cutter_id = document.Objects.AddSurface(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Brep):
+                        cutter_id = document.Objects.AddBrep(cutter)
+                    else:
+                        raise ValueError("unsupported cutting Split cutter geometry")
                     if cutter_id == System.Guid.Empty:
-                        raise ValueError("could not add cutting Split surface cutter")
+                        raise ValueError("could not add cutting Split cutter")
                     cutter_ids.append(cutter_id)
                 document.Objects.Select(source_id)
                 command = "_-Split %s _Enter" % " ".join(
@@ -7262,6 +7282,7 @@ def _execute(operation, iterations, tolerance):
                         surface_geometry = geometry
                         object_kind = "surface"
                         topology = None
+                        trim_curves = []
                         trim_bounds = [
                             float(geometry.Domain(0).T0),
                             float(geometry.Domain(0).T1),
@@ -7276,6 +7297,13 @@ def _execute(operation, iterations, tolerance):
                         surface_geometry = face.UnderlyingSurface()
                         topology = _mesh_to_nurb_brep_value(geometry)
                         object_kind = "brep"
+                        trim_curves = [
+                            _nurbs_parameter_curve_definition(trim)
+                            for brep_face in geometry.Faces
+                            for loop in brep_face.Loops
+                            for trim in loop.Trims
+                            if str(trim.IsoStatus) == "None"
+                        ]
                         trim_points = []
                         for trim in face.OuterLoop.Trims:
                             trim_points.extend([trim.PointAtStart, trim.PointAtEnd])
@@ -7312,6 +7340,7 @@ def _execute(operation, iterations, tolerance):
                         "selected": item.IsSelected(False) > 0,
                         "surface": _nurbs_surface_definition(surface_geometry),
                         "topology": topology,
+                        "trim_curves": trim_curves,
                         "trim_bounds": trim_bounds,
                     })
                 if not records:

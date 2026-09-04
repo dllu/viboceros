@@ -25,12 +25,13 @@ use viboceros_geometry::{
     MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
     MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, PolylineClosure, Real,
-    RectangularSurfaceCorner, RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent,
-    SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent,
-    Tolerance, TriangleMesh, UnitVector3, Vector3, brep_brep_intersection_events,
-    curve_brep_intersection_events, curve_surface_intersection_events, join_polylines,
-    sort_and_cull_points, surface_brep_intersection_events, surface_surface_intersection_events,
+    NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3,
+    PolylineClosure, Real, RectangularSurfaceCorner, RectangularSurfaceCornerCut,
+    SurfaceBrepIntersectionEvent, SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph,
+    SurfaceSurfaceIntersectionEvent, Tolerance, TriangleMesh, UnitVector3, Vector3,
+    brep_brep_intersection_events, curve_brep_intersection_events,
+    curve_surface_intersection_events, join_polylines, sort_and_cull_points,
+    surface_brep_intersection_events, surface_surface_intersection_events,
     transformed_curve_brep_intersection_events, try_catenary, try_curve_through_points,
     try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
@@ -13497,6 +13498,24 @@ fn classify_complete_surface_cut(
     let original_endpoints = [samples[0], samples[SAMPLE_COUNT - 1]];
     let parameters_form_segment =
         surface_cut_parameters_form_collinear_segment(&samples, epsilon_u, epsilon_v);
+    let validate_parameter_curve = || {
+        if parameters_form_segment {
+            Ok(())
+        } else {
+            let parameter_curve = surface
+                .try_pullback_affine_curve(curve, tolerance)
+                .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
+            if surface_cut_parameter_curve_is_simple_in_bounds(
+                &parameter_curve,
+                bounds,
+                [epsilon_u, epsilon_v],
+            ) {
+                Ok(())
+            } else {
+                Err(CommandError::UnsupportedSurfaceCuttingIntersection)
+            }
+        }
+    };
     let clipped_endpoints = if parameters_form_segment {
         let Some(endpoints) =
             clip_surface_cut_parameter_segment(original_endpoints, bounds, [epsilon_u, epsilon_v])
@@ -13534,9 +13553,7 @@ fn classify_complete_surface_cut(
         && east_v > bounds[1][0] + epsilon_v
         && east_v < bounds[1][1] - epsilon_v
     {
-        if !parameters_form_segment {
-            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-        }
+        validate_parameter_curve()?;
         return Ok(Some((
             CompleteSurfaceCut::WestEast {
                 west_v: west_v.clamp(bounds[1][0], bounds[1][1]),
@@ -13561,9 +13578,7 @@ fn classify_complete_surface_cut(
         && north_u > bounds[0][0] + epsilon_u
         && north_u < bounds[0][1] - epsilon_u
     {
-        if !parameters_form_segment {
-            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-        }
+        validate_parameter_curve()?;
         return Ok(Some((
             CompleteSurfaceCut::SouthNorth {
                 south_u: south_u.clamp(bounds[0][0], bounds[0][1]),
@@ -13635,9 +13650,7 @@ fn classify_complete_surface_cut(
         None
     };
     if let Some(cut) = adjacent {
-        if !parameters_form_segment {
-            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-        }
+        validate_parameter_curve()?;
         return Ok(Some((cut, clipped_curve()?)));
     }
 
@@ -13693,9 +13706,7 @@ fn classify_complete_surface_cut(
                 .map(|corner| (corner, first))
         });
     if let Some((corner, destination)) = corner_cut {
-        if !parameters_form_segment {
-            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-        }
+        validate_parameter_curve()?;
         return Ok(Some((
             CompleteSurfaceCut::Corner {
                 corner,
@@ -13745,6 +13756,50 @@ fn surface_cut_parameters_form_collinear_segment(
         && samples
             .windows(2)
             .all(|pair| (pair[1][coordinate] - pair[0][coordinate]) * direction >= -epsilon * 8.0)
+}
+
+fn surface_cut_parameter_curve_is_simple_in_bounds(
+    curve: &NurbsCurve2,
+    bounds: [[Real; 2]; 2],
+    epsilon: [Real; 2],
+) -> bool {
+    let controls = curve.control_points();
+    let weight_sign = controls[0].weight().is_sign_positive();
+    if controls
+        .iter()
+        .any(|control| control.weight().is_sign_positive() != weight_sign)
+    {
+        return false;
+    }
+    if controls.iter().any(|control| {
+        let point = control.point();
+        point.x() < bounds[0][0] - epsilon[0]
+            || point.x() > bounds[0][1] + epsilon[0]
+            || point.y() < bounds[1][0] - epsilon[1]
+            || point.y() > bounds[1][1] + epsilon[1]
+    }) {
+        return false;
+    }
+    if controls[1..controls.len() - 1].iter().any(|control| {
+        let point = control.point();
+        point.x() <= bounds[0][0] + epsilon[0]
+            || point.x() >= bounds[0][1] - epsilon[0]
+            || point.y() <= bounds[1][0] + epsilon[1]
+            || point.y() >= bounds[1][1] - epsilon[1]
+    }) {
+        return false;
+    }
+
+    let strictly_monotone = |coordinate: usize| {
+        let value =
+            |control: &viboceros_geometry::WeightedPoint2| control.point().to_array()[coordinate];
+        let direction = (value(&controls[controls.len() - 1]) - value(&controls[0])).signum();
+        direction != 0.0
+            && controls
+                .windows(2)
+                .all(|pair| (value(&pair[1]) - value(&pair[0])) * direction > epsilon[coordinate])
+    };
+    strictly_monotone(0) || strictly_monotone(1)
 }
 
 fn clip_surface_cut_parameter_segment(
@@ -21863,6 +21918,25 @@ mod tests {
         .unwrap()
     }
 
+    fn curved_cutting_curve(points: [[Real; 2]; 3]) -> NurbsCurve {
+        NurbsCurve::try_new_rational(
+            2,
+            points
+                .into_iter()
+                .zip([1.0, 0.75, 1.0])
+                .map(|(point, weight)| {
+                    WeightedPoint3::try_new(
+                        Point3::try_new(point[0], point[1], 0.0).unwrap(),
+                        weight,
+                    )
+                    .unwrap()
+                })
+                .collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap()
+    }
+
     fn assert_surface_bounds_near(
         actual: [[Real; 2]; 2],
         expected: [[Real; 2]; 2],
@@ -28485,7 +28559,7 @@ mod tests {
     }
 
     #[test]
-    fn surface_cut_parameter_segments_must_be_straight_and_monotone() {
+    fn surface_cut_parameter_paths_must_be_admissible() {
         let epsilon = 1.0e-9;
         assert!(surface_cut_parameters_form_collinear_segment(
             &[[0.0, 0.0], [0.5, 0.25], [1.0, 0.5]],
@@ -28501,6 +28575,66 @@ mod tests {
             &[[0.0, 0.0], [0.5, 0.3], [1.0, 0.5]],
             epsilon,
             epsilon,
+        ));
+
+        let parameter_curve = |points: &[[Real; 2]], weights: &[Real]| {
+            let degree = points.len() - 1;
+            NurbsCurve2::try_new_rational(
+                degree,
+                points
+                    .iter()
+                    .zip(weights)
+                    .map(|(point, weight)| {
+                        viboceros_geometry::WeightedPoint2::try_new(
+                            Point2::try_new(point[0], point[1]).unwrap(),
+                            *weight,
+                        )
+                        .unwrap()
+                    })
+                    .collect(),
+                std::iter::repeat_n(0.0, degree + 1)
+                    .chain(std::iter::repeat_n(1.0, degree + 1))
+                    .collect(),
+            )
+            .unwrap()
+        };
+        let bounds = [[0.0, 10.0], [0.0, 10.0]];
+        assert!(surface_cut_parameter_curve_is_simple_in_bounds(
+            &parameter_curve(&[[0.0, 2.0], [5.0, 9.0], [10.0, 8.0]], &[1.0, 0.75, 1.0]),
+            bounds,
+            [epsilon, epsilon],
+        ));
+        assert!(!surface_cut_parameter_curve_is_simple_in_bounds(
+            &parameter_curve(&[[0.0, 2.0], [5.0, 11.0], [10.0, 8.0]], &[1.0, 0.75, 1.0],),
+            bounds,
+            [epsilon, epsilon],
+        ));
+        assert!(!surface_cut_parameter_curve_is_simple_in_bounds(
+            &parameter_curve(
+                &[[0.0, 2.0], [7.0, 8.0], [3.0, 3.0], [10.0, 8.0]],
+                &[1.0, 1.0, 1.0, 1.0],
+            ),
+            bounds,
+            [epsilon, epsilon],
+        ));
+        let backtracking_vertical_span = NurbsCurve2::try_new(
+            1,
+            [[0.0, 2.0], [5.0, 2.0], [5.0, 8.0], [5.0, 4.0], [10.0, 8.0]]
+                .into_iter()
+                .map(|point| Point2::try_new(point[0], point[1]).unwrap())
+                .collect(),
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        assert!(!surface_cut_parameter_curve_is_simple_in_bounds(
+            &backtracking_vertical_span,
+            bounds,
+            [epsilon, epsilon],
+        ));
+        assert!(!surface_cut_parameter_curve_is_simple_in_bounds(
+            &parameter_curve(&[[0.0, 2.0], [5.0, 9.0], [10.0, 8.0]], &[1.0, -0.75, 1.0],),
+            bounds,
+            [epsilon, epsilon],
         ));
     }
 
@@ -28761,6 +28895,89 @@ mod tests {
     }
 
     #[test]
+    fn cutting_object_split_preserves_curved_parameter_trims_in_all_boundary_arrangements() {
+        let registry = CommandRegistry::with_builtins();
+        for (points, expected_vertex_counts) in [
+            ([[0.0, 2.0], [5.0, 9.0], [10.0, 8.0]], [4, 4]),
+            ([[2.0, 0.0], [8.0, 5.0], [8.0, 10.0]], [4, 4]),
+            ([[2.0, 0.0], [7.0, 2.0], [10.0, 7.0]], [5, 3]),
+            ([[10.0, 2.0], [8.0, 6.0], [7.0, 10.0]], [5, 3]),
+            ([[8.0, 10.0], [3.0, 8.0], [0.0, 3.0]], [5, 3]),
+            ([[0.0, 8.0], [1.0, 4.0], [3.0, 0.0]], [3, 5]),
+            ([[0.0, 0.0], [3.0, 6.0], [10.0, 7.0]], [3, 4]),
+            ([[0.0, 0.0], [5.0, 3.0], [6.0, 10.0]], [3, 4]),
+            ([[10.0, 0.0], [8.0, 6.0], [4.0, 10.0]], [4, 3]),
+            ([[10.0, 0.0], [4.0, 2.0], [0.0, 6.0]], [3, 4]),
+            ([[10.0, 10.0], [4.0, 8.0], [0.0, 3.0]], [4, 3]),
+            ([[10.0, 10.0], [8.0, 4.0], [4.0, 0.0]], [4, 3]),
+            ([[0.0, 10.0], [2.0, 4.0], [6.0, 0.0]], [3, 4]),
+            ([[0.0, 10.0], [6.0, 8.0], [10.0, 4.0]], [4, 3]),
+            ([[0.0, 0.0], [2.0, 8.0], [10.0, 10.0]], [3, 3]),
+            ([[10.0, 0.0], [2.0, 2.0], [0.0, 10.0]], [3, 3]),
+        ] {
+            let mut document = Document::default();
+            let source = planar_intersection_surface();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(source.clone()))
+                .unwrap();
+            let cutter = curved_cutting_curve(points);
+            let cutter_id = document
+                .add_geometry(Geometry::NurbsCurve(cutter.clone()))
+                .unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(&mut document, "Split CuttingObjects=5,5,0")
+                    .unwrap(),
+                "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+            );
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut area = 0.0;
+            let mut trim_directions = Vec::new();
+            for (object, expected_vertex_count) in outputs.iter().zip(expected_vertex_counts) {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("curved cutting Split must create B-rep faces")
+                };
+                assert_eq!(brep.vertices().len(), expected_vertex_count);
+                assert_eq!(brep.faces()[0].surface(), &source);
+                let trim = brep.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                    .unwrap();
+                assert_eq!(trim.curve().degree(), 2);
+                assert_eq!(trim.curve().control_points().len(), 3);
+                assert_eq!(
+                    trim.curve()
+                        .control_points()
+                        .iter()
+                        .map(|control| control.weight())
+                        .collect::<Vec<_>>(),
+                    vec![1.0, 0.75, 1.0]
+                );
+                let expected_domain = if trim.is_reversed_3d() {
+                    -1.0..=-0.0
+                } else {
+                    0.0..=1.0
+                };
+                assert_eq!(trim.curve().domain(), expected_domain);
+                trim_directions.push(trim.is_reversed_3d());
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(3, document.tolerance()).unwrap();
+            }
+            trim_directions.sort_unstable();
+            assert_eq!(trim_directions, vec![false, true]);
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
     fn cutting_object_split_handles_no_hit_and_rejects_invalid_sources_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -28865,7 +29082,10 @@ mod tests {
             .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
             .unwrap();
         registry
-            .execute(&mut unsupported, "Curve Degree=2 0,0,0 5,7,0 10,10,0")
+            .execute(&mut unsupported, "Line 0,2,0 10,8,0")
+            .unwrap();
+        registry
+            .execute(&mut unsupported, "Line 0,8,0 10,2,0")
             .unwrap();
         let ids = unsupported
             .objects()

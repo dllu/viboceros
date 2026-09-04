@@ -767,6 +767,8 @@ impl Brep {
             surface.evaluate(u_end, east_v)?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, west_cut, east_cut, tolerance)?;
         let boundary_iso =
             rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
 
@@ -803,6 +805,7 @@ impl Brep {
                 (1, false, boundary_iso[1]),
                 (2, true, SurfaceIso::NotIso),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         let north = try_surface_cutting_face(
@@ -841,6 +844,7 @@ impl Brep {
                 (0, false, boundary_iso[2]),
                 (1, false, boundary_iso[3]),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         Ok([south, north])
@@ -879,6 +883,8 @@ impl Brep {
             surface.evaluate(north_u, v_end)?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, south_cut, north_cut, tolerance)?;
         let boundary_iso =
             rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
 
@@ -920,6 +926,7 @@ impl Brep {
                 (1, false, boundary_iso[3]),
                 (0, false, boundary_iso[0]),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         let east = try_surface_cutting_face(
@@ -955,6 +962,7 @@ impl Brep {
                 (1, false, boundary_iso[2]),
                 (2, true, SurfaceIso::NotIso),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         Ok([west, east])
@@ -993,6 +1001,8 @@ impl Brep {
             surface.evaluate(u_end, east_v)?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, south_cut, east_cut, tolerance)?;
         let boundary_iso =
             rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
 
@@ -1040,6 +1050,7 @@ impl Brep {
                 (2, false, boundary_iso[3]),
                 (0, false, boundary_iso[0]),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         let corner = try_surface_cutting_face(
@@ -1062,6 +1073,7 @@ impl Brep {
                 (0, false, boundary_iso[1]),
                 (1, true, SurfaceIso::NotIso),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         Ok([remainder, corner])
@@ -1100,6 +1112,8 @@ impl Brep {
             surface.evaluate(north_u, v_end)?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, east_cut, north_cut, tolerance)?;
         let boundary_iso =
             rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
 
@@ -1145,6 +1159,7 @@ impl Brep {
                 (0, false, boundary_iso[0]),
                 (1, false, boundary_iso[1]),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         let corner = try_surface_cutting_face(
@@ -1170,6 +1185,7 @@ impl Brep {
                 (0, false, boundary_iso[2]),
                 (1, true, SurfaceIso::NotIso),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         Ok([remainder, corner])
@@ -1208,6 +1224,8 @@ impl Brep {
             surface.evaluate(u_start, west_v)?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, north_cut, west_cut, tolerance)?;
         let boundary_iso =
             rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
 
@@ -1253,6 +1271,7 @@ impl Brep {
                 (1, false, boundary_iso[1]),
                 (2, false, boundary_iso[2]),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         let corner = try_surface_cutting_face(
@@ -1281,6 +1300,7 @@ impl Brep {
                 (0, false, boundary_iso[3]),
                 (1, true, SurfaceIso::NotIso),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         Ok([remainder, corner])
@@ -1320,6 +1340,8 @@ impl Brep {
             surface.evaluate(south_u, v_start)?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, west_cut, south_cut, tolerance)?;
         let boundary_iso =
             rectangular_surface_boundary_iso(&surface, [[u_start, u_end], [v_start, v_end]]);
 
@@ -1348,6 +1370,7 @@ impl Brep {
                 (0, false, boundary_iso[0]),
                 (1, true, SurfaceIso::NotIso),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         let remainder = try_surface_cutting_face(
@@ -1392,6 +1415,7 @@ impl Brep {
                 (1, false, boundary_iso[2]),
                 (2, false, boundary_iso[3]),
             ],
+            &cut_parameter_curve,
             tolerance,
         )?;
         Ok([corner, remainder])
@@ -1422,6 +1446,8 @@ impl Brep {
             surface.evaluate(cut_end.x(), cut_end.y())?,
             tolerance,
         )?;
+        let cut_parameter_curve =
+            surface_split_parameter_curve(&surface, &cut_curve, cut_start, cut_end, tolerance)?;
         let [first, second] = rectangular_corner_cut_face_specs(kind);
         Ok([
             try_rectangular_corner_cut_face(
@@ -1429,7 +1455,10 @@ impl Brep {
                 reversed,
                 bounds,
                 destination,
-                &cut_curve,
+                SurfaceSplitCurveRef {
+                    spatial: &cut_curve,
+                    parameter: &cut_parameter_curve,
+                },
                 first,
                 tolerance,
             )?,
@@ -1438,7 +1467,10 @@ impl Brep {
                 reversed,
                 bounds,
                 destination,
-                &cut_curve,
+                SurfaceSplitCurveRef {
+                    spatial: &cut_curve,
+                    parameter: &cut_parameter_curve,
+                },
                 second,
                 tolerance,
             )?,
@@ -4301,6 +4333,12 @@ struct CornerCutFaceSpec {
     loop_edges: Vec<(usize, bool)>,
 }
 
+#[derive(Clone, Copy)]
+struct SurfaceSplitCurveRef<'a> {
+    spatial: &'a NurbsCurve,
+    parameter: &'a NurbsCurve2,
+}
+
 fn classify_rectangular_corner_cut(
     corner: RectangularSurfaceCorner,
     destination: Point2,
@@ -4645,7 +4683,7 @@ fn try_rectangular_corner_cut_face(
     reversed: bool,
     bounds: [[Real; 2]; 2],
     destination: Point2,
-    cut_curve: &NurbsCurve,
+    cut: SurfaceSplitCurveRef<'_>,
     spec: CornerCutFaceSpec,
     tolerance: Tolerance,
 ) -> Result<Brep, GeometryError> {
@@ -4680,7 +4718,7 @@ fn try_rectangular_corner_cut_face(
                     vertex_parameters[edge.vertices[0]],
                     vertex_parameters[edge.vertices[1]],
                 )?,
-                CornerCutEdgeKind::Cut => cut_curve.clone(),
+                CornerCutEdgeKind::Cut => cut.spatial.clone(),
             };
             Ok((edge.vertices, curve))
         })
@@ -4702,6 +4740,7 @@ fn try_rectangular_corner_cut_face(
         vertex_parameters,
         edge_specs,
         loop_specs,
+        cut.parameter,
         tolerance,
     )
 }
@@ -4753,12 +4792,98 @@ fn orient_surface_split_curve(
     })
 }
 
+fn surface_split_parameter_curve(
+    surface: &NurbsSurface,
+    curve: &NurbsCurve,
+    start: Point2,
+    end: Point2,
+    tolerance: Tolerance,
+) -> Result<NurbsCurve2, GeometryError> {
+    let curve_domain = curve.domain();
+    let line = NurbsCurve2::try_new(
+        1,
+        vec![start, end],
+        vec![
+            *curve_domain.start(),
+            *curve_domain.start(),
+            *curve_domain.end(),
+            *curve_domain.end(),
+        ],
+    )?;
+    if parameter_curve_matches_spatial_curve(surface, &line, curve, tolerance)? {
+        return Ok(line);
+    }
+
+    let parameter_curve = surface.try_pullback_affine_curve(curve, tolerance)?;
+    let parameter_tolerance = [
+        trim_parameter_epsilon(
+            [*surface.domain_u().start(), *surface.domain_u().end()],
+            tolerance,
+        ),
+        trim_parameter_epsilon(
+            [*surface.domain_v().start(), *surface.domain_v().end()],
+            tolerance,
+        ),
+    ];
+    if !parameter_points_near(parameter_curve.start_point()?, start, parameter_tolerance)
+        || !parameter_points_near(parameter_curve.end_point()?, end, parameter_tolerance)
+    {
+        return Err(GeometryError::InvalidBrepTopology {
+            context: "a surface split p-curve must meet both requested boundary parameters",
+        });
+    }
+    Ok(parameter_curve)
+}
+
+fn parameter_curve_matches_spatial_curve(
+    surface: &NurbsSurface,
+    parameter_curve: &NurbsCurve2,
+    spatial_curve: &NurbsCurve,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    const SAMPLES_PER_SPAN: usize = 16;
+    let spatial_domain = spatial_curve.domain();
+    let parameter_domain = parameter_curve.domain();
+    let spatial_extent = *spatial_domain.end() - *spatial_domain.start();
+    let parameter_extent = *parameter_domain.end() - *parameter_domain.start();
+    require_finite(
+        [spatial_extent, parameter_extent],
+        "surface split curve parameter extents",
+    )?;
+    for (span_start, span_end) in spatial_curve.spans() {
+        for sample in 0..=SAMPLES_PER_SPAN {
+            let span_fraction = sample as Real / SAMPLES_PER_SPAN as Real;
+            let spatial_parameter =
+                span_start.mul_add(1.0 - span_fraction, span_end * span_fraction);
+            let normalized = (spatial_parameter - *spatial_domain.start()) / spatial_extent;
+            let parameter = normalized.mul_add(parameter_extent, *parameter_domain.start());
+            let uv = parameter_curve.evaluate(parameter)?;
+            let surface_point = surface.evaluate(uv.x(), uv.y())?;
+            let spatial_point = spatial_curve.evaluate(spatial_parameter)?;
+            let coordinate_scale = surface_point
+                .to_array()
+                .into_iter()
+                .chain(spatial_point.to_array())
+                .map(Real::abs)
+                .fold(1.0, Real::max);
+            let allowed = tolerance
+                .absolute()
+                .max(tolerance.relative() * coordinate_scale);
+            if surface_point.distance_to(spatial_point)? > allowed {
+                return Ok(false);
+            }
+        }
+    }
+    Ok(true)
+}
+
 fn try_surface_cutting_face(
     surface: NurbsSurface,
     reversed: bool,
     vertex_parameters: impl AsRef<[Point2]>,
     edge_specs: impl IntoIterator<Item = ([usize; 2], NurbsCurve)>,
     loop_specs: impl IntoIterator<Item = (usize, bool, SurfaceIso)>,
+    cut_parameter_curve: &NurbsCurve2,
     tolerance: Tolerance,
 ) -> Result<Brep, GeometryError> {
     let vertex_parameters = vertex_parameters.as_ref();
@@ -4774,14 +4899,23 @@ fn try_surface_cutting_face(
         .into_iter()
         .map(|(edge_index, reversed_3d, iso)| {
             let trim_vertices = oriented_edge_vertices(&edges[edge_index], reversed_3d);
+            let parameter_curve = if iso == SurfaceIso::NotIso {
+                if reversed_3d {
+                    cut_parameter_curve.reversed()?
+                } else {
+                    cut_parameter_curve.clone()
+                }
+            } else {
+                NurbsCurve2::try_line(
+                    vertex_parameters[trim_vertices[0]],
+                    vertex_parameters[trim_vertices[1]],
+                )?
+            };
             BrepTrim::try_new(
                 trim_vertices,
                 Some(edge_index),
                 reversed_3d,
-                NurbsCurve2::try_line(
-                    vertex_parameters[trim_vertices[0]],
-                    vertex_parameters[trim_vertices[1]],
-                )?,
+                parameter_curve,
                 BrepTrimType::Boundary,
                 iso,
                 [0.0, 0.0],

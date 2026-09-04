@@ -21,10 +21,11 @@ use viboceros_geometry::{
     CurveTweenMatchMethod, Ellipse3, Frame3, GeometryError, LineSegment, MeshCapFaceStyle,
     MeshConeOptions, MeshCylinderOptions, MeshEllipsoidOptions, MeshFace,
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3, SurfaceExtensionEdge,
-    SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance, TriangleMesh, UnitVector3,
-    Vector3, WeightedPoint3, join_polylines, sort_and_cull_points, try_catenary,
-    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    NurbsCurve, NurbsCurve2, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
+    SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_polylines, sort_and_cull_points,
+    try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
+    try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -636,7 +637,7 @@ pub enum Operation {
         surface: NurbsSurfaceDefinition,
         #[serde(default)]
         pretrim: Option<SurfaceIsocurvePretrim>,
-        cutters: Vec<NurbsSurfaceDefinition>,
+        cutters: Vec<SurfaceSplitCutterDefinition>,
         source_pick: [f64; 3],
     },
     CurveIntersectCommand {
@@ -1241,6 +1242,13 @@ pub enum CurveExtensionBoundaryDefinition {
         box_boundary: AxisAlignedBoxBoundaryDefinition,
     },
     Curve(NurbsCurveDefinition),
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum SurfaceSplitCutterDefinition {
+    Surface(NurbsSurfaceDefinition),
+    Boundary(CurveExtensionBoundaryDefinition),
 }
 
 impl Operation {
@@ -7921,14 +7929,21 @@ fn surface_split_cutting_command(
     iterations: u32,
     definition: &NurbsSurfaceDefinition,
     pretrim: Option<&SurfaceIsocurvePretrim>,
-    cutter_definitions: &[NurbsSurfaceDefinition],
+    cutter_definitions: &[SurfaceSplitCutterDefinition],
     source_pick: [f64; 3],
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     let source = nurbs_surface_from_definition(definition)?;
     let cutters = cutter_definitions
         .iter()
-        .map(nurbs_surface_from_definition)
+        .map(|definition| match definition {
+            SurfaceSplitCutterDefinition::Surface(surface) => Ok(Geometry::NurbsSurface(
+                nurbs_surface_from_definition(surface)?,
+            )),
+            SurfaceSplitCutterDefinition::Boundary(boundary) => {
+                curve_cutter_geometry_from_definition(boundary, tolerance)
+            }
+        })
         .collect::<Result<Vec<_>, _>>()?;
     let run = || -> Result<_, ProbeError> {
         let registry = CommandRegistry::with_builtins();
@@ -7991,7 +8006,7 @@ fn surface_split_cutting_command(
         }
         let cutter_ids = cutters
             .iter()
-            .map(|cutter| document.add_geometry(Geometry::NurbsSurface(cutter.clone())))
+            .map(|cutter| document.add_geometry(cutter.clone()))
             .collect::<Result<Vec<_>, _>>()?;
         document.select_objects_direct(
             std::iter::once(source_id).chain(cutter_ids.iter().copied()),
@@ -8046,6 +8061,10 @@ fn surface_split_cutting_command(
                     "selected": document.is_selected(object.id()),
                     "surface": nurbs_surface_definition_value(face.surface()),
                     "topology": mesh_to_nurb_brep_value(brep)?,
+                    "trim_curves": face.loops().iter().flat_map(|face_loop| face_loop.trims())
+                        .filter(|trim| trim.iso() == SurfaceIso::NotIso)
+                        .map(|trim| nurbs_curve2_definition_value(trim.curve()))
+                        .collect::<Vec<_>>(),
                     "trim_bounds": [
                         trim_bounds[0][0],
                         trim_bounds[0][1],
@@ -8210,6 +8229,18 @@ fn uniform_surface_definition_value(surface: &NurbsSurface) -> Value {
 }
 
 fn nurbs_curve_definition_value(curve: &NurbsCurve) -> Value {
+    json!({
+        "control_points": curve.control_points().iter().map(|control| json!({
+            "point": control.point().to_array(),
+            "weight": control.weight(),
+        })).collect::<Vec<_>>(),
+        "degree": curve.degree(),
+        "domain": [*curve.domain().start(), *curve.domain().end()],
+        "knots": curve.knots(),
+    })
+}
+
+fn nurbs_curve2_definition_value(curve: &NurbsCurve2) -> Value {
     json!({
         "control_points": curve.control_points().iter().map(|control| json!({
             "point": control.point().to_array(),
@@ -11392,13 +11423,35 @@ mod tests {
             vec![0.0, 0.0, 20.0, 20.0],
             vec![0.0, 0.0, 10.0, 10.0],
         );
-        let response = run_request(&request(vec![Operation::SurfaceSplitCuttingCommand {
-            id: "split-surface-with-cutting-surface".to_owned(),
-            surface,
-            pretrim: None,
-            cutters: vec![cutter],
-            source_pick: [2.0, 5.0, 0.0],
-        }]))
+        let curved_cutter = NurbsCurveDefinition {
+            degree: 2,
+            control_points: [
+                control([2.0, 0.0, 0.0], 1.0),
+                control([7.0, 2.0, 0.0], 0.75),
+                control([10.0, 7.0, 0.0], 1.0),
+            ]
+            .to_vec(),
+            knots: vec![2.0, 2.0, 2.0, 6.0, 6.0, 6.0],
+            domain: None,
+        };
+        let response = run_request(&request(vec![
+            Operation::SurfaceSplitCuttingCommand {
+                id: "split-surface-with-cutting-surface".to_owned(),
+                surface: surface.clone(),
+                pretrim: None,
+                cutters: vec![SurfaceSplitCutterDefinition::Surface(cutter)],
+                source_pick: [2.0, 5.0, 0.0],
+            },
+            Operation::SurfaceSplitCuttingCommand {
+                id: "split-surface-with-curved-cutting-curve".to_owned(),
+                surface,
+                pretrim: None,
+                cutters: vec![SurfaceSplitCutterDefinition::Boundary(
+                    CurveExtensionBoundaryDefinition::Curve(curved_cutter),
+                )],
+                source_pick: [5.0, 5.0, 0.0],
+            },
+        ]))
         .unwrap();
 
         let value = &response.results[0].value;
@@ -11426,6 +11479,20 @@ mod tests {
                 {"domain": [-4.0, 0.0], "vertices": [3, 1]},
             ])
         );
+
+        let curved = response.results[1].value["objects"].as_array().unwrap();
+        assert_eq!(curved.len(), 2);
+        assert_eq!(curved[0]["trim_curves"][0]["degree"], 2);
+        assert_eq!(
+            curved[0]["trim_curves"][0]["control_points"],
+            json!([
+                {"point": [2.0, 0.0], "weight": 1.0},
+                {"point": [7.0, 2.0], "weight": 0.75},
+                {"point": [10.0, 7.0], "weight": 1.0},
+            ])
+        );
+        assert_eq!(curved[0]["trim_curves"][0]["domain"], json!([2.0, 6.0]));
+        assert_eq!(curved[1]["trim_curves"][0]["domain"], json!([-6.0, -2.0]));
     }
 
     #[test]
