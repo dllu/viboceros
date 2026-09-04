@@ -943,8 +943,9 @@ arrangements, including internally and externally touching closed polygons and
 tangent rational circles, plus mixed polygon/circle tangencies in both traversal
 directions, open/closed tangent contacts in both cutter orders, and open/open
 tangent contacts with pinched lobes, plus shared-start and shared-middle cutter
-segments, including an exact shared quadratic span. It compares UV trim degree,
-controls, weights, knots, and domains as well as vertices, edge domains, trim order,
+segments in swapped and reversed traversal orders, including an exact shared
+quadratic span. It compares UV trim degree, controls, weights, knots, and domains
+as well as vertices, edge domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point
