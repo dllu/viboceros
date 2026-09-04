@@ -65,6 +65,8 @@ pub(crate) fn encode(brep: &Brep) -> Result<Vec<u8>, BrepCodecError> {
                 });
                 writer.u8(match trim.iso() {
                     SurfaceIso::NotIso => 0,
+                    SurfaceIso::InteriorUConstant => 1,
+                    SurfaceIso::InteriorVConstant => 2,
                     SurfaceIso::West => 3,
                     SurfaceIso::South => 4,
                     SurfaceIso::East => 5,
@@ -132,6 +134,8 @@ pub(crate) fn decode(bytes: &[u8], tolerance: Tolerance) -> Result<Brep, BrepCod
                 };
                 let iso = match reader.u8()? {
                     0 => SurfaceIso::NotIso,
+                    1 => SurfaceIso::InteriorUConstant,
+                    2 => SurfaceIso::InteriorVConstant,
                     3 => SurfaceIso::West,
                     4 => SurfaceIso::South,
                     5 => SurfaceIso::East,
@@ -393,6 +397,19 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        let rectangular_trim = Brep::try_rectangular_surface_face(
+            NurbsSurface::try_bilinear([
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 1.0).unwrap(),
+                Point3::try_new(10.0, 10.0, 3.0).unwrap(),
+                Point3::try_new(0.0, 10.0, -1.0).unwrap(),
+            ])
+            .unwrap(),
+            0.0..=0.4,
+            0.0..=0.6,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
         for brep in [
             Brep::try_box(
                 frame,
@@ -402,6 +419,7 @@ mod tests {
             .unwrap(),
             Brep::try_cylinder(frame, 2.5, -3.0, 4.0, Tolerance::DEFAULT).unwrap(),
             Brep::try_cone(frame, 2.5, -4.0, Tolerance::DEFAULT).unwrap(),
+            rectangular_trim,
         ] {
             let payload = encode(&brep).unwrap();
             assert_eq!(decode(&payload, Tolerance::DEFAULT).unwrap(), brep);

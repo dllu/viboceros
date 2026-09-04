@@ -7180,15 +7180,39 @@ def _execute(operation, iterations, tolerance):
                     geometry = item.Geometry
                     if isinstance(geometry, Rhino.Geometry.Surface):
                         surface_geometry = geometry
+                        object_kind = "surface"
+                        topology = None
+                        trim_bounds = [
+                            float(geometry.Domain(0).T0),
+                            float(geometry.Domain(0).T1),
+                            float(geometry.Domain(1).T0),
+                            float(geometry.Domain(1).T1),
+                        ]
                     elif (
                         isinstance(geometry, Rhino.Geometry.Brep)
                         and geometry.Faces.Count == 1
                     ):
-                        surface_geometry = geometry.Faces[0].UnderlyingSurface()
+                        face = geometry.Faces[0]
+                        surface_geometry = face.UnderlyingSurface()
+                        object_kind = "brep"
+                        topology = _mesh_to_nurb_brep_value(geometry)
+                        trim_points = []
+                        for trim in face.OuterLoop.Trims:
+                            trim_points.extend([trim.PointAtStart, trim.PointAtEnd])
+                        if not trim_points:
+                            raise ValueError("surface Split returned an empty outer trim loop")
+                        trim_bounds = [
+                            min(float(point.X) for point in trim_points),
+                            max(float(point.X) for point in trim_points),
+                            min(float(point.Y) for point in trim_points),
+                            max(float(point.Y) for point in trim_points),
+                        ]
                     else:
                         continue
                     definition = _nurbs_surface_definition(surface_geometry)
-                    objects.append((item, definition))
+                    objects.append(
+                        (item, definition, object_kind, trim_bounds, topology)
+                    )
                 expected_count = 4 if direction == "both" else 2
                 if len(objects) != expected_count:
                     history = Rhino.RhinoApp.CommandHistoryWindowText
@@ -7204,7 +7228,7 @@ def _execute(operation, iterations, tolerance):
                         )
                     )
                 records = []
-                for item, definition in objects:
+                for item, definition, object_kind, trim_bounds, topology in objects:
                     groups = item.Attributes.GetGroupList()
                     color = item.Attributes.ObjectColor
                     records.append({
@@ -7220,15 +7244,18 @@ def _execute(operation, iterations, tolerance):
                         "in_source_group": (
                             groups is not None and group_index in groups
                         ),
+                        "object_kind": object_kind,
                         "original_id": item.Id == source_id,
                         "selected": item.IsSelected(False) > 0,
                         "surface": definition,
+                        "topology": topology,
+                        "trim_bounds": trim_bounds,
                     })
                 records.sort(key=lambda record: (
-                    record["surface"]["domain_u"][0],
-                    record["surface"]["domain_v"][0],
-                    record["surface"]["domain_u"][1],
-                    record["surface"]["domain_v"][1],
+                    record["trim_bounds"][0],
+                    record["trim_bounds"][2],
+                    record["trim_bounds"][1],
+                    record["trim_bounds"][3],
                 ))
                 return {
                     "command_succeeded": bool(succeeded),

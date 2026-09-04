@@ -1145,6 +1145,19 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
+        let rectangular_trim_brep = Brep::try_rectangular_surface_face(
+            NurbsSurface::try_bilinear([
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 0.0, 1.0).unwrap(),
+                Point3::try_new(10.0, 10.0, 3.0).unwrap(),
+                Point3::try_new(0.0, 10.0, -1.0).unwrap(),
+            ])
+            .unwrap(),
+            0.0..=0.4,
+            0.0..=0.6,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
         ThreeDmModel::new(
             vec![
                 ThreeDmLayer {
@@ -1205,6 +1218,7 @@ mod tests {
                 ThreeDmObject::new(ThreeDmGeometry::Brep(apex_extrusion_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(path_extrusion_brep), 0),
                 ThreeDmObject::new(ThreeDmGeometry::Brep(planar_face_brep), 0),
+                ThreeDmObject::new(ThreeDmGeometry::Brep(rectangular_trim_brep), 0),
             ],
         )
     }

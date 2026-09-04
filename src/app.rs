@@ -7759,32 +7759,26 @@ mod tests {
         assert_eq!(app.document.selected_object_count(), 4);
         assert!(app.document.objects().all(|object| {
             app.document.is_selected(object.id())
-                && matches!(object.geometry(), Geometry::NurbsSurface(_))
+                && matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() == 1)
         }));
         assert_eq!(app.document.undo_label(), Some("Split"));
         assert!(!app.try_start_interactive_command("Split Isocurve=1,2,0"));
         assert!(!app.try_start_interactive_command("Split Isocurve Direction=U Direction=V"));
 
-        let mut unsupported = test_app();
-        unsupported.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
-        let unsupported_source = unsupported.document.objects().next().unwrap().id();
-        unsupported
+        let mut unshrunk = test_app();
+        unshrunk.execute_command("SrfPt 0,0,0 4,0,0 4,3,0 0,3,0");
+        let unshrunk_source = unshrunk.document.objects().next().unwrap().id();
+        unshrunk
             .document
-            .select_object(
-                unsupported_source,
-                viboceros_document::SelectionMode::Replace,
-            )
+            .select_object(unshrunk_source, viboceros_document::SelectionMode::Replace)
             .unwrap();
-        assert!(unsupported.try_start_interactive_command("Split Isocurve Shrink=No"));
-        unsupported.accept_drafting_point(point(1.5, 2.0, 0.0));
-        assert!(unsupported.document.object(unsupported_source).is_some());
-        assert!(
-            unsupported
-                .command_log
-                .back()
-                .unwrap()
-                .contains("Shrink=No")
-        );
+        assert!(unshrunk.try_start_interactive_command("Split Isocurve Shrink=No"));
+        unshrunk.accept_drafting_point(point(1.5, 2.0, 0.0));
+        assert!(unshrunk.document.object(unshrunk_source).is_none());
+        assert_eq!(unshrunk.document.objects().count(), 2);
+        assert!(unshrunk.document.objects().all(|object| {
+            matches!(object.geometry(), Geometry::Brep(brep) if brep.faces().len() == 1)
+        }));
     }
 
     #[test]

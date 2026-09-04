@@ -495,6 +495,8 @@ bool append_brep(const ON_Brep& source, BridgeObject& output) {
         }
         writer.U8(static_cast<uint8_t>(trim.m_type));
         if (trim.m_iso != ON_Surface::not_iso &&
+            trim.m_iso != ON_Surface::x_iso &&
+            trim.m_iso != ON_Surface::y_iso &&
             trim.m_iso != ON_Surface::W_iso &&
             trim.m_iso != ON_Surface::S_iso &&
             trim.m_iso != ON_Surface::E_iso &&
@@ -835,6 +837,8 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
             start_vertex >= vertex_count || end_vertex >= vertex_count ||
             encoded_trim_type < 1 || encoded_trim_type > 4 ||
             (encoded_iso != ON_Surface::not_iso &&
+             encoded_iso != ON_Surface::x_iso &&
+             encoded_iso != ON_Surface::y_iso &&
              encoded_iso != ON_Surface::W_iso &&
              encoded_iso != ON_Surface::S_iso &&
              encoded_iso != ON_Surface::E_iso &&

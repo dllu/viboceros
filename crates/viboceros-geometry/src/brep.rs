@@ -1,4 +1,5 @@
 use std::collections::{BTreeMap, VecDeque};
+use std::ops::RangeInclusive;
 
 use spade::{
     ConstrainedDelaunayTriangulation, HasPosition, Point2 as TriangulationPoint2, Triangulation,
@@ -115,10 +116,14 @@ pub enum BrepTrimType {
     Singular,
 }
 
-/// Classification of a trim lying on an underlying surface-domain side.
+/// Isoparametric classification of a face-local trim.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SurfaceIso {
     NotIso,
+    /// A constant-U isocurve in the interior of the underlying surface.
+    InteriorUConstant,
+    /// A constant-V isocurve in the interior of the underlying surface.
+    InteriorVConstant,
     South,
     East,
     North,
@@ -345,6 +350,15 @@ impl BrepFace {
             .iter()
             .any(|interval| parameter_interval_contains(*interval, u, epsilon)))
     }
+
+    /// Returns the exact U/V bounds when the outer trim is one
+    /// counterclockwise axis-aligned rectangle with no holes.
+    pub fn rectangular_trim_bounds(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Option<[[Real; 2]; 2]>, GeometryError> {
+        rectangular_face_trim_bounds(self, tolerance)
+    }
 }
 
 /// A validated boundary representation with shared model-space topology and
@@ -375,6 +389,153 @@ impl Brep {
         };
         brep.validate(tolerance)?;
         Ok(brep)
+    }
+
+    /// Wraps a nonsingular open NURBS surface as one exact rectangular face.
+    pub fn try_surface_face(
+        surface: NurbsSurface,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let u = surface.domain_u();
+        let v = surface.domain_v();
+        Self::try_rectangular_surface_face(
+            surface.clone(),
+            *u.start()..=*u.end(),
+            *v.start()..=*v.end(),
+            tolerance,
+        )
+    }
+
+    /// Builds one exact face whose rectangular trim lies in the supplied
+    /// subdomain while retaining the complete underlying NURBS surface.
+    ///
+    /// The four trim sides must be nonsingular and open. Interior constant-U
+    /// and constant-V trims retain their OpenNURBS isoparametric classes.
+    pub fn try_rectangular_surface_face(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite(
+            [*u.start(), *u.end(), *v.start(), *v.end()],
+            "rectangular surface-face trim bounds",
+        )?;
+        // Reuse the exact tensor trimmer's domain validation without changing
+        // the underlying surface retained by this face.
+        surface.try_trimmed(u.clone(), v.clone())?;
+        let bounds = [[*u.start(), *u.end()], [*v.start(), *v.end()]];
+        let corner_points = [
+            surface.evaluate(bounds[0][0], bounds[1][0])?,
+            surface.evaluate(bounds[0][1], bounds[1][0])?,
+            surface.evaluate(bounds[0][1], bounds[1][1])?,
+            surface.evaluate(bounds[0][0], bounds[1][1])?,
+        ];
+        for side in 0..4 {
+            if corner_points[side].distance_to(corner_points[(side + 1) % 4])?
+                <= tolerance.absolute()
+            {
+                return Err(GeometryError::Degenerate {
+                    context: "rectangular surface-face trim side",
+                });
+            }
+        }
+        let vertices = corner_points
+            .into_iter()
+            .map(|point| BrepVertex::try_new(point, 0.0))
+            .collect::<Result<Vec<_>, _>>()?;
+        let edges = vec![
+            BrepEdge::try_new(
+                [0, 1],
+                surface
+                    .isocurve_u(bounds[1][0])?
+                    .try_trimmed(bounds[0][0]..=bounds[0][1])?,
+                0.0,
+            )?,
+            BrepEdge::try_new(
+                [1, 2],
+                surface
+                    .isocurve_v(bounds[0][1])?
+                    .try_trimmed(bounds[1][0]..=bounds[1][1])?,
+                0.0,
+            )?,
+            BrepEdge::try_new(
+                [2, 3],
+                surface
+                    .isocurve_u(bounds[1][1])?
+                    .try_trimmed(bounds[0][0]..=bounds[0][1])?
+                    .reversed()?,
+                0.0,
+            )?,
+            BrepEdge::try_new(
+                [3, 0],
+                surface
+                    .isocurve_v(bounds[0][0])?
+                    .try_trimmed(bounds[1][0]..=bounds[1][1])?
+                    .reversed()?,
+                0.0,
+            )?,
+        ];
+        let surface_u = surface.domain_u();
+        let surface_v = surface.domain_v();
+        let iso = [
+            if bounds[1][0] == *surface_v.start() {
+                SurfaceIso::South
+            } else {
+                SurfaceIso::InteriorVConstant
+            },
+            if bounds[0][1] == *surface_u.end() {
+                SurfaceIso::East
+            } else {
+                SurfaceIso::InteriorUConstant
+            },
+            if bounds[1][1] == *surface_v.end() {
+                SurfaceIso::North
+            } else {
+                SurfaceIso::InteriorVConstant
+            },
+            if bounds[0][0] == *surface_u.start() {
+                SurfaceIso::West
+            } else {
+                SurfaceIso::InteriorUConstant
+            },
+        ];
+        let parameter_corners = [
+            Point2::try_new(bounds[0][0], bounds[1][0])?,
+            Point2::try_new(bounds[0][1], bounds[1][0])?,
+            Point2::try_new(bounds[0][1], bounds[1][1])?,
+            Point2::try_new(bounds[0][0], bounds[1][1])?,
+        ];
+        let edge_specs = [
+            ([0, 1], 0, false),
+            ([1, 2], 1, false),
+            ([2, 3], 2, false),
+            ([3, 0], 3, false),
+        ];
+        let trims = edge_specs
+            .into_iter()
+            .enumerate()
+            .map(|(side, (vertices, edge, reversed_3d))| {
+                BrepTrim::try_new(
+                    vertices,
+                    Some(edge),
+                    reversed_3d,
+                    NurbsCurve2::try_line(
+                        parameter_corners[side],
+                        parameter_corners[(side + 1) % 4],
+                    )?,
+                    BrepTrimType::Boundary,
+                    iso[side],
+                    [0.0, 0.0],
+                )
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let face = BrepFace::try_new(
+            surface,
+            false,
+            vec![BrepLoop::try_new(BrepLoopType::Outer, trims)?],
+        )?;
+        Self::try_new(vertices, edges, vec![face], tolerance)
     }
 
     /// Converts every polygon of a mesh into one degree-one NURBS face.
@@ -2494,24 +2655,36 @@ impl Brep {
     /// Conservative control-geometry bounds. Exact curved-edge bounds can be
     /// tighter, but this box always contains every positive-weight NURBS locus.
     pub fn bounds(&self) -> BoundingBox3 {
-        BoundingBox3::from_points(
-            self.vertices
-                .iter()
-                .map(|vertex| vertex.point)
-                .chain(self.edges.iter().flat_map(|edge| {
-                    edge.curve
-                        .control_points()
-                        .iter()
-                        .map(|control| control.point())
-                }))
-                .chain(self.faces.iter().flat_map(|face| {
+        let mut points = self
+            .vertices
+            .iter()
+            .map(|vertex| vertex.point)
+            .chain(self.edges.iter().flat_map(|edge| {
+                edge.curve
+                    .control_points()
+                    .iter()
+                    .map(|control| control.point())
+            }))
+            .collect::<Vec<_>>();
+        for face in &self.faces {
+            let trimmed = rectangular_face_trim_bounds(face, Tolerance::DEFAULT)
+                .ok()
+                .flatten()
+                .and_then(|bounds| {
                     face.surface
-                        .control_points()
-                        .iter()
-                        .map(|control| control.point())
-                })),
-        )
-        .expect("a validated B-rep has finite control geometry")
+                        .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])
+                        .ok()
+                });
+            points.extend(
+                trimmed
+                    .as_ref()
+                    .unwrap_or(&face.surface)
+                    .control_points()
+                    .iter()
+                    .map(|control| control.point()),
+            );
+        }
+        BoundingBox3::from_points(points).expect("a validated B-rep has finite control geometry")
     }
 
     /// Applies a nonsingular affine map while retaining the shared topology
@@ -2636,6 +2809,15 @@ impl Brep {
                     surface_mesh.faces().to_vec(),
                     tolerance,
                 )?
+            } else if let Some(bounds) = rectangular_face_trim_bounds(face, tolerance)? {
+                let surface = face
+                    .surface
+                    .try_trimmed(bounds[0][0]..=bounds[0][1], bounds[1][0]..=bounds[1][1])?;
+                if preserve_quads {
+                    surface.tessellate_grid(samples_per_span, true, tolerance)?
+                } else {
+                    surface.tessellate(samples_per_span, tolerance)?
+                }
             } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
                 self.tessellate_planar_trimmed_face(face_index, face, samples_per_span, tolerance)?
             } else {
@@ -2779,8 +2961,10 @@ impl Brep {
                 SurfaceIso::East => 1,
                 SurfaceIso::North => 2,
                 SurfaceIso::West => 3,
-                SurfaceIso::NotIso => {
-                    return invalid("a full-domain B-rep face has a non-isoparametric side");
+                SurfaceIso::NotIso
+                | SurfaceIso::InteriorUConstant
+                | SurfaceIso::InteriorVConstant => {
+                    return invalid("a full-domain B-rep face has a non-boundary side");
                 }
             };
             candidates[side].extend(self.trim_snap_points(trim, samples_per_span, tolerance)?);
@@ -4576,13 +4760,29 @@ fn validate_iso(
 ) -> Result<(), GeometryError> {
     let domain_u = face.surface.domain_u();
     let domain_v = face.surface.domain_v();
-    let (coordinate, expected, allowed) = match trim.iso {
+    let (coordinate, expected, allowed, interior) = match trim.iso {
         SurfaceIso::NotIso => return Ok(()),
-        SurfaceIso::South => (1, *domain_v.start(), tolerance[1]),
-        SurfaceIso::East => (0, *domain_u.end(), tolerance[0]),
-        SurfaceIso::North => (1, *domain_v.end(), tolerance[1]),
-        SurfaceIso::West => (0, *domain_u.start(), tolerance[0]),
+        SurfaceIso::InteriorUConstant => (
+            0,
+            trim.curve.control_points()[0].point().x(),
+            tolerance[0],
+            true,
+        ),
+        SurfaceIso::InteriorVConstant => (
+            1,
+            trim.curve.control_points()[0].point().y(),
+            tolerance[1],
+            true,
+        ),
+        SurfaceIso::South => (1, *domain_v.start(), tolerance[1], false),
+        SurfaceIso::East => (0, *domain_u.end(), tolerance[0], false),
+        SurfaceIso::North => (1, *domain_v.end(), tolerance[1], false),
+        SurfaceIso::West => (0, *domain_u.start(), tolerance[0], false),
     };
+    let domain = if coordinate == 0 { domain_u } else { domain_v };
+    if interior && (expected <= *domain.start() || expected >= *domain.end()) {
+        return invalid("an interior isoparametric trim is not inside its surface domain");
+    }
     if trim.curve.control_points().iter().any(|control| {
         let point = control.point();
         let value = if coordinate == 0 {
@@ -4596,6 +4796,76 @@ fn validate_iso(
     } else {
         Ok(())
     }
+}
+
+fn rectangular_face_trim_bounds(
+    face: &BrepFace,
+    tolerance: Tolerance,
+) -> Result<Option<[[Real; 2]; 2]>, GeometryError> {
+    if face.loops.len() != 1
+        || face.loops[0].loop_type != BrepLoopType::Outer
+        || face.loops[0].trims.len() != 4
+    {
+        return Ok(None);
+    }
+    let trims = &face.loops[0].trims;
+    if trims
+        .iter()
+        .any(|trim| trim.curve.degree() != 1 || trim.curve.control_points().len() != 2)
+    {
+        return Ok(None);
+    }
+    let mut bounds = [[Real::INFINITY, Real::NEG_INFINITY]; 2];
+    for trim in trims {
+        for point in [trim.curve.start_point()?, trim.curve.end_point()?] {
+            bounds[0][0] = bounds[0][0].min(point.x());
+            bounds[0][1] = bounds[0][1].max(point.x());
+            bounds[1][0] = bounds[1][0].min(point.y());
+            bounds[1][1] = bounds[1][1].max(point.y());
+        }
+    }
+    if bounds[0][0] >= bounds[0][1] || bounds[1][0] >= bounds[1][1] {
+        return Ok(None);
+    }
+    let corners = [
+        Point2::try_new(bounds[0][0], bounds[1][0])?,
+        Point2::try_new(bounds[0][1], bounds[1][0])?,
+        Point2::try_new(bounds[0][1], bounds[1][1])?,
+        Point2::try_new(bounds[0][0], bounds[1][1])?,
+    ];
+    let mut seen = [false; 4];
+    for trim in trims {
+        let allowed = [
+            tolerance.absolute().max(trim.tolerance[0]),
+            tolerance.absolute().max(trim.tolerance[1]),
+        ];
+        let start = trim.curve.start_point()?;
+        let end = trim.curve.end_point()?;
+        let Some(side) = (0..4).find(|&side| {
+            parameter_points_near(start, corners[side], allowed)
+                && parameter_points_near(end, corners[(side + 1) % 4], allowed)
+        }) else {
+            return Ok(None);
+        };
+        if seen[side] {
+            return Ok(None);
+        }
+        seen[side] = true;
+    }
+    if !seen.into_iter().all(|side| side) {
+        return Ok(None);
+    }
+    let domain_u = face.surface.domain_u();
+    let domain_v = face.surface.domain_v();
+    let allowed = tolerance.absolute();
+    if bounds[0][0] < *domain_u.start() - allowed
+        || bounds[0][1] > *domain_u.end() + allowed
+        || bounds[1][0] < *domain_v.start() - allowed
+        || bounds[1][1] > *domain_v.end() + allowed
+    {
+        return invalid("a rectangular face trim leaves its underlying surface domain");
+    }
+    Ok(Some(bounds))
 }
 
 pub(crate) fn face_covers_full_surface_domain(
@@ -4620,7 +4890,9 @@ pub(crate) fn face_covers_full_surface_domain(
             SurfaceIso::East => 1,
             SurfaceIso::North => 2,
             SurfaceIso::West => 3,
-            SurfaceIso::NotIso => return Ok(false),
+            SurfaceIso::NotIso | SurfaceIso::InteriorUConstant | SurfaceIso::InteriorVConstant => {
+                return Ok(false);
+            }
         };
         if seen[side] {
             return Ok(false);
@@ -5259,6 +5531,77 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap()
+    }
+
+    #[test]
+    fn rectangular_surface_face_retains_underlying_surface_and_tessellates_its_trim() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 2.0),
+            point(10.0, 10.0, 5.0),
+            point(0.0, 10.0, -1.0),
+        ])
+        .unwrap()
+        .try_reparameterized(2.0..=12.0, -3.0..=7.0)
+        .unwrap();
+        let brep = Brep::try_rectangular_surface_face(
+            surface.clone(),
+            2.0..=6.0,
+            -3.0..=3.0,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        assert_eq!(brep.faces().len(), 1);
+        let face = &brep.faces()[0];
+        assert_eq!(face.surface(), &surface);
+        assert_eq!(
+            face.rectangular_trim_bounds(Tolerance::DEFAULT).unwrap(),
+            Some([[2.0, 6.0], [-3.0, 3.0]])
+        );
+        assert_eq!(
+            face.loops()[0]
+                .trims()
+                .iter()
+                .map(BrepTrim::iso)
+                .collect::<Vec<_>>(),
+            vec![
+                SurfaceIso::South,
+                SurfaceIso::InteriorUConstant,
+                SurfaceIso::InteriorVConstant,
+                SurfaceIso::West,
+            ]
+        );
+        assert!(
+            face.loops()[0]
+                .trims()
+                .iter()
+                .all(|trim| !trim.is_reversed_3d())
+        );
+        assert_eq!(brep.edges()[2].curve().domain(), -6.0..=-2.0);
+        assert_eq!(brep.edges()[3].curve().domain(), -3.0..=3.0);
+        let bounds = brep.bounds();
+        assert!(bounds.min().x().abs() <= 1.0e-12);
+        assert!(bounds.min().y().abs() <= 1.0e-12);
+        assert!(bounds.max().x() <= 4.0 + 1.0e-12);
+        assert!(bounds.max().y() <= 6.0 + 1.0e-12);
+        for mesh in [
+            brep.tessellate(2, Tolerance::DEFAULT).unwrap(),
+            brep.polygon_mesh(0.5, false, false, Tolerance::DEFAULT)
+                .unwrap(),
+        ] {
+            assert!(!mesh.faces().is_empty());
+            assert!(mesh.vertices().iter().all(|point| {
+                point.x() >= -1.0e-12
+                    && point.x() <= 4.0 + 1.0e-12
+                    && point.y() >= -1.0e-12
+                    && point.y() <= 6.0 + 1.0e-12
+            }));
+        }
+
+        let full = Brep::try_surface_face(surface.clone(), Tolerance::DEFAULT).unwrap();
+        assert_eq!(full.faces()[0].surface(), &surface);
+        assert!(face_covers_full_surface_domain(&full.faces()[0], Tolerance::DEFAULT).unwrap());
     }
 
     #[test]

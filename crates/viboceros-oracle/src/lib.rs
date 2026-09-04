@@ -7762,25 +7762,58 @@ fn surface_split_isocurve_command(
     let mut records = document
         .objects()
         .map(|object| {
-            let Geometry::NurbsSurface(surface) = object.geometry() else {
-                return Err(ProbeError::FixtureInvariant(
-                    "isocurve Split produced non-surface geometry",
-                ));
+            let (object_kind, surface, trim_bounds, topology) = match object.geometry() {
+                Geometry::NurbsSurface(surface) => (
+                    "surface",
+                    surface,
+                    [
+                        [*surface.domain_u().start(), *surface.domain_u().end()],
+                        [*surface.domain_v().start(), *surface.domain_v().end()],
+                    ],
+                    Value::Null,
+                ),
+                Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                    let face = &brep.faces()[0];
+                    let bounds = face.rectangular_trim_bounds(tolerance)?.ok_or(
+                        ProbeError::FixtureInvariant(
+                            "isocurve Split produced a non-rectangular face trim",
+                        ),
+                    )?;
+                    (
+                        "brep",
+                        face.surface(),
+                        bounds,
+                        mesh_to_nurb_brep_value(brep)?,
+                    )
+                }
+                _ => {
+                    return Err(ProbeError::FixtureInvariant(
+                        "isocurve Split produced unsupported geometry",
+                    ));
+                }
             };
             let domain_key = [
-                *surface.domain_u().start(),
-                *surface.domain_v().start(),
-                *surface.domain_u().end(),
-                *surface.domain_v().end(),
+                trim_bounds[0][0],
+                trim_bounds[1][0],
+                trim_bounds[0][1],
+                trim_bounds[1][1],
             ];
             Ok((
                 domain_key,
                 json!({
                     "attributes_match_source": object.attributes() == &attributes,
                     "in_source_group": source_group_members.contains(&object.id()),
+                    "object_kind": object_kind,
                     "original_id": object.id() == source_id,
                     "selected": document.is_selected(object.id()),
                     "surface": nurbs_surface_definition_value(surface),
+                    "topology": topology,
+                    "trim_bounds": [
+                        trim_bounds[0][0],
+                        trim_bounds[0][1],
+                        trim_bounds[1][0],
+                        trim_bounds[1][1],
+                    ],
                 }),
             ))
         })
@@ -8153,6 +8186,8 @@ const fn brep_trim_type_name(trim_type: BrepTrimType) -> &'static str {
 const fn surface_iso_name(iso: SurfaceIso) -> &'static str {
     match iso {
         SurfaceIso::NotIso => "None",
+        SurfaceIso::InteriorUConstant => "X",
+        SurfaceIso::InteriorVConstant => "Y",
         SurfaceIso::South => "South",
         SurfaceIso::East => "East",
         SurfaceIso::North => "North",
@@ -10977,13 +11012,22 @@ mod tests {
             domain_u: None,
             domain_v: None,
         };
-        let response = run_request(&request(vec![Operation::SurfaceSplitIsocurveCommand {
-            id: "split-surface-both-directions".to_owned(),
-            surface,
-            point: [4.0, 6.0, 0.0],
-            direction: SurfaceUniformDirection::Both,
-            shrink: true,
-        }]))
+        let response = run_request(&request(vec![
+            Operation::SurfaceSplitIsocurveCommand {
+                id: "split-surface-both-directions".to_owned(),
+                surface: surface.clone(),
+                point: [4.0, 6.0, 0.0],
+                direction: SurfaceUniformDirection::Both,
+                shrink: true,
+            },
+            Operation::SurfaceSplitIsocurveCommand {
+                id: "split-surface-without-shrinking".to_owned(),
+                surface,
+                point: [4.0, 6.0, 0.0],
+                direction: SurfaceUniformDirection::Both,
+                shrink: false,
+            },
+        ]))
         .unwrap();
 
         let value = &response.results[0].value;
@@ -11003,6 +11047,18 @@ mod tests {
             assert_eq!(object["in_source_group"], true);
             assert_eq!(object["original_id"], false);
             assert_eq!(object["selected"], true);
+        }
+
+        let unshrunk = response.results[1].value["objects"].as_array().unwrap();
+        assert_eq!(unshrunk.len(), 4);
+        for (object, (domain_u, domain_v)) in unshrunk.iter().zip(expected_domains) {
+            assert_eq!(object["surface"]["domain_u"], json!([0.0, 1.0]));
+            assert_eq!(object["surface"]["domain_v"], json!([0.0, 1.0]));
+            assert_eq!(
+                object["trim_bounds"],
+                json!([domain_u[0], domain_u[1], domain_v[0], domain_v[1]])
+            );
+            assert_eq!(object["object_kind"], "brep");
         }
     }
 

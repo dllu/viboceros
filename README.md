@@ -887,11 +887,16 @@ floating-point roundoff. `Split Isocurve=point Direction=U|V|Both Shrink=Yes`
 splits exactly one selected untrimmed NURBS surface at the closest surface
 location; omit the point after `Split Isocurve` for one viewport pick. The
 direction names the isocurve itself, so a U isocurve divides the V parameter
-domain and vice versa. The source is replaced by two or four fresh exact NURBS
-patches with matching attributes and group membership, selected together in
-one undo step. The permanent U/V/Both Rhino fixture agrees to within `2e-15`.
-`Shrink=No`, general surface cutting-object splits, and B-rep targets remain
-future extensions rather than silently changing trim semantics.
+domain and vice versa. The source is replaced by two or four fresh exact
+single-face B-reps with matching attributes and group membership, selected
+together in one undo step. `Shrink=Yes` clamps each underlying NURBS surface to
+its result domain; `Shrink=No` retains the complete original surface and stores
+the result as an exact rectangular UV trim. These nonplanar trims tessellate,
+pick, bound, and round-trip through 3DM without discarding the underlying
+surface. The topology-aware U/V/Both Rhino fixture agrees through vertices,
+edge domains, trim classes and directions, face orientation, and geometry to
+within `2e-15`. General surface cutting-object splits and B-rep targets remain
+future extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS
@@ -1377,8 +1382,9 @@ solid/shell B-reps and assemblies, apply instance transforms, and robustly
 tessellate exact trimmed surfaces into validated display meshes. Parser,
 topology, and unsupported-representation losses are reported instead of being
 silent. STL and STEP export tessellate visible NURBS surfaces plus full-domain
-and trimmed planar B-rep faces; exact outer and inner p-curves are sampled into
-a constrained triangulation so holes remain open. STEP writes the results as
-faceted shells with shared topology and planar faces. Nonplanar general trims
-remain explicit errors rather than being silently filled. Editable STEP B-rep
-interchange and production surface and solid modelling are not implemented yet.
+and rectangular-isoparametric nonplanar or trimmed planar B-rep faces; exact
+outer and inner p-curves are sampled into a constrained triangulation so holes
+remain open. STEP writes the results as faceted shells with shared topology and
+planar faces. Other nonplanar general trims remain explicit errors rather than
+being silently filled. Editable STEP B-rep interchange and production surface
+and solid modelling are not implemented yet.

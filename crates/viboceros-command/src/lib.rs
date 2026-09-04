@@ -12386,7 +12386,7 @@ fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, Command
     Ok(SubcurveOptions { location, copy })
 }
 
-const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...] | Split CuttingObjects=source_point | Split Isocurve=point [Direction=U|V|Both] [Shrink=Yes]";
+const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...] | Split CuttingObjects=source_point | Split Isocurve=point [Direction=U|V|Both] [Shrink=Yes|No]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct SurfaceIsocurveSplitOptions {
@@ -12616,9 +12616,6 @@ fn split_surface_at_isocurve(
     document: &mut Document,
     options: SurfaceIsocurveSplitOptions,
 ) -> Result<String, CommandError> {
-    if !options.shrink {
-        return Err(CommandError::UnshrunkSurfaceIsocurveSplitUnsupported);
-    }
     let mut candidates = document
         .selected_objects()
         .filter_map(|object| match object.geometry() {
@@ -12637,7 +12634,7 @@ fn split_surface_at_isocurve(
     let (u, v) = surface.closest_parameters(options.point, document.tolerance())?;
     // Rhino names an isocurve by the parameter that varies along it: a U
     // isocurve is constant in V, and therefore splits the V parameter domain.
-    let pieces = match options.direction {
+    let surface_pieces = match options.direction {
         SurfaceKnotDirection::U => {
             let (south, north) = surface.try_split_v(v)?;
             vec![south, north]
@@ -12653,6 +12650,42 @@ fn split_surface_at_isocurve(
             vec![southwest, northwest, southeast, northeast]
         }
     };
+    let pieces = if options.shrink {
+        surface_pieces
+            .into_iter()
+            .map(|surface| Brep::try_surface_face(surface, document.tolerance()))
+            .collect::<Result<Vec<_>, _>>()?
+    } else {
+        let domain_u = surface.domain_u();
+        let domain_v = surface.domain_v();
+        let rectangles = match options.direction {
+            SurfaceKnotDirection::U => vec![
+                ([*domain_u.start(), *domain_u.end()], [*domain_v.start(), v]),
+                ([*domain_u.start(), *domain_u.end()], [v, *domain_v.end()]),
+            ],
+            SurfaceKnotDirection::V => vec![
+                ([*domain_u.start(), u], [*domain_v.start(), *domain_v.end()]),
+                ([u, *domain_u.end()], [*domain_v.start(), *domain_v.end()]),
+            ],
+            SurfaceKnotDirection::Both => vec![
+                ([*domain_u.start(), u], [*domain_v.start(), v]),
+                ([*domain_u.start(), u], [v, *domain_v.end()]),
+                ([u, *domain_u.end()], [*domain_v.start(), v]),
+                ([u, *domain_u.end()], [v, *domain_v.end()]),
+            ],
+        };
+        rectangles
+            .into_iter()
+            .map(|(u, v)| {
+                Brep::try_rectangular_surface_face(
+                    surface.clone(),
+                    u[0]..=u[1],
+                    v[0]..=v[1],
+                    document.tolerance(),
+                )
+            })
+            .collect::<Result<Vec<_>, _>>()?
+    };
     let source = document
         .object(source_id)
         .expect("the selected isocurve Split surface belongs to the document");
@@ -12665,8 +12698,7 @@ fn split_surface_at_isocurve(
     let mut output_ids = Vec::with_capacity(pieces.len());
     for piece in pieces {
         output_ids.push(
-            document
-                .add_geometry_with_attributes(Geometry::NurbsSurface(piece), attributes.clone())?,
+            document.add_geometry_with_attributes(Geometry::Brep(piece), attributes.clone())?,
         );
     }
     for group_id in group_ids {
@@ -12681,7 +12713,7 @@ fn split_surface_at_isocurve(
         SurfaceKnotDirection::Both => "U and V",
     };
     Ok(format!(
-        "Split the selected surface along {direction} isocurves into {output_count} exact NURBS surface(s)"
+        "Split the selected surface along {direction} isocurves into {output_count} exact B-rep face(s)"
     ))
 }
 
@@ -20377,9 +20409,6 @@ pub enum CommandError {
     #[error("isocurve Split requires exactly one selected untrimmed NURBS surface, got {actual}")]
     SplitIsocurveRequiresOneSurface { actual: usize },
 
-    #[error("isocurve Split with Shrink=No is not yet supported")]
-    UnshrunkSurfaceIsocurveSplitUnsupported,
-
     #[error(
         "Intersect currently supports selected curves, untrimmed NURBS surfaces, and B-reps only"
     )]
@@ -26748,7 +26777,7 @@ mod tests {
             registry
                 .execute(&mut document, "Split Isocurve=4,6,0 Direction=U Shrink=Yes",)
                 .unwrap(),
-            "Split the selected surface along U isocurves into 2 exact NURBS surface(s)"
+            "Split the selected surface along U isocurves into 2 exact B-rep face(s)"
         );
         assert!(document.object(source_id).is_none());
         let outputs = document.objects().collect::<Vec<_>>();
@@ -26760,7 +26789,23 @@ mod tests {
         let domains = outputs
             .iter()
             .map(|object| match object.geometry() {
-                Geometry::NurbsSurface(surface) => (surface.domain_u(), surface.domain_v()),
+                Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                    let face = &brep.faces()[0];
+                    assert_eq!(
+                        face.rectangular_trim_bounds(Tolerance::DEFAULT).unwrap(),
+                        Some([
+                            [
+                                *face.surface().domain_u().start(),
+                                *face.surface().domain_u().end()
+                            ],
+                            [
+                                *face.surface().domain_v().start(),
+                                *face.surface().domain_v().end()
+                            ],
+                        ])
+                    );
+                    (face.surface().domain_u(), face.surface().domain_v())
+                }
                 geometry => panic!("isocurve Split created unexpected geometry {geometry:?}"),
             })
             .collect::<Vec<_>>();
@@ -26805,7 +26850,10 @@ mod tests {
         let v_domains = v
             .objects()
             .map(|object| match object.geometry() {
-                Geometry::NurbsSurface(surface) => (surface.domain_u(), surface.domain_v()),
+                Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                    let surface = brep.faces()[0].surface();
+                    (surface.domain_u(), surface.domain_v())
+                }
                 geometry => panic!("V isocurve Split created unexpected geometry {geometry:?}"),
             })
             .collect::<Vec<_>>();
@@ -26818,12 +26866,15 @@ mod tests {
         let mut both_domains = both
             .objects()
             .map(|object| match object.geometry() {
-                Geometry::NurbsSurface(surface) => [
-                    *surface.domain_u().start(),
-                    *surface.domain_u().end(),
-                    *surface.domain_v().start(),
-                    *surface.domain_v().end(),
-                ],
+                Geometry::Brep(brep) if brep.faces().len() == 1 => {
+                    let surface = brep.faces()[0].surface();
+                    [
+                        *surface.domain_u().start(),
+                        *surface.domain_u().end(),
+                        *surface.domain_v().start(),
+                        *surface.domain_v().end(),
+                    ]
+                }
                 geometry => {
                     panic!("two-direction isocurve Split created unexpected geometry {geometry:?}")
                 }
@@ -26848,6 +26899,51 @@ mod tests {
             ]
         );
         assert_eq!(both.selected_object_count(), 4);
+    }
+
+    #[test]
+    fn split_surface_at_isocurve_can_retain_the_complete_underlying_surface() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source = planar_intersection_surface();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(source.clone()))
+            .unwrap();
+        document
+            .select_object(source_id, SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(
+                    &mut document,
+                    "Split Isocurve=4,6,0 Direction=Both Shrink=No",
+                )
+                .unwrap(),
+            "Split the selected surface along U and V isocurves into 4 exact B-rep face(s)"
+        );
+        assert!(document.object(source_id).is_none());
+        let expected_bounds = [
+            [[0.0, 0.4], [0.0, 0.6]],
+            [[0.0, 0.4], [0.6, 1.0]],
+            [[0.4, 1.0], [0.0, 0.6]],
+            [[0.4, 1.0], [0.6, 1.0]],
+        ];
+        for (object, expected) in document.objects().zip(expected_bounds) {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("unshrunk isocurve Split must create B-rep faces")
+            };
+            assert_eq!(brep.faces().len(), 1);
+            assert_eq!(brep.faces()[0].surface(), &source);
+            assert_eq!(
+                brep.faces()[0]
+                    .rectangular_trim_bounds(document.tolerance())
+                    .unwrap(),
+                Some(expected)
+            );
+            assert!(document.is_selected(object.id()));
+            brep.tessellate(2, document.tolerance()).unwrap();
+        }
     }
 
     #[test]
@@ -26876,15 +26972,6 @@ mod tests {
         document
             .select_object(source_id, SelectionMode::Replace)
             .unwrap();
-        let before = document.object(source_id).unwrap().clone();
-        let history = document.undo_label().map(str::to_owned);
-        assert!(matches!(
-            registry.execute(&mut document, "Split Isocurve=4,6,0 Direction=U Shrink=No"),
-            Err(CommandError::UnshrunkSurfaceIsocurveSplitUnsupported)
-        ));
-        assert_eq!(document.object(source_id).unwrap(), &before);
-        assert_eq!(document.undo_label(), history.as_deref());
-
         registry.execute(&mut document, "Line 0,0 1,1").unwrap();
         registry.execute(&mut document, "SelAll").unwrap();
         let before = document.objects().cloned().collect::<Vec<_>>();
