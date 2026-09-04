@@ -3746,13 +3746,13 @@ impl Brep {
         Self::try_new(vertices, edges, faces, tolerance)
     }
 
-    /// Tessellates full rectangular faces and trimmed planar faces.
+    /// Tessellates full rectangular and generally trimmed faces.
     ///
-    /// Planar trim boundaries are sampled per exact p-curve knot span and
+    /// Trim boundaries are sampled per exact p-curve knot span and
     /// constrained-triangulated in parameter space while preserving every
     /// outer and inner boundary sample for watertight stitching. Nonplanar
-    /// general trims remain explicit errors; they are never silently filled
-    /// as untrimmed surfaces.
+    /// faces also receive the underlying surface's knot-span grid samples so
+    /// their interior approximation tracks the requested density.
     pub fn tessellate(
         &self,
         samples_per_span: usize,
@@ -3835,7 +3835,12 @@ impl Brep {
             } else if planar_surface_plane(&face.surface, tolerance)?.is_some() {
                 self.tessellate_planar_trimmed_face(face_index, face, samples_per_span, tolerance)?
             } else {
-                return Err(GeometryError::UnsupportedBrepTrimTessellation { face: face_index });
+                self.tessellate_nonplanar_trimmed_face(
+                    face_index,
+                    face,
+                    samples_per_span,
+                    tolerance,
+                )?
             };
             let offset =
                 u32::try_from(vertices.len()).map_err(|_| GeometryError::TooManyMeshVertices)?;
@@ -3899,6 +3904,42 @@ impl Brep {
                 .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
             (parameters, boundary_vertex_count, triangles)
         };
+        let mut face_vertices = parameters
+            .iter()
+            .map(|parameter| face.surface.evaluate(parameter.x(), parameter.y()))
+            .collect::<Result<Vec<_>, _>>()?;
+        let candidates = self.trim_boundary_snap_points(face, samples_per_span, tolerance)?;
+        snap_points_to_candidates(
+            &mut face_vertices[..boundary_vertex_count],
+            candidates,
+            tolerance,
+        );
+        TriangleMesh::try_new(face_vertices, triangles, tolerance)
+    }
+
+    fn tessellate_nonplanar_trimmed_face(
+        &self,
+        face_index: usize,
+        face: &BrepFace,
+        samples_per_span: usize,
+        tolerance: Tolerance,
+    ) -> Result<TriangleMesh, GeometryError> {
+        let sampled_loops = face
+            .loops
+            .iter()
+            .map(|face_loop| sample_trim_loop(face_loop, samples_per_span))
+            .collect::<Result<Vec<_>, _>>()?;
+        let loop_lengths = sampled_loops.iter().map(Vec::len).collect::<Vec<_>>();
+        let mut parameters = sampled_loops.into_iter().flatten().collect::<Vec<_>>();
+        let boundary_vertex_count = parameters.len();
+        append_trimmed_surface_grid_parameters(
+            &mut parameters,
+            &loop_lengths,
+            &face.surface,
+            samples_per_span,
+        )?;
+        let triangles = triangulate_trim_region(&parameters, &loop_lengths)?
+            .ok_or(GeometryError::UnsupportedBrepTrimTessellation { face: face_index })?;
         let mut face_vertices = parameters
             .iter()
             .map(|parameter| face.surface.evaluate(parameter.x(), parameter.y()))
@@ -5694,7 +5735,7 @@ fn surface_split_parameter_curve(
         return Ok(line);
     }
 
-    let parameter_curve = surface.try_pullback_affine_curve(curve, tolerance)?;
+    let parameter_curve = surface.try_pullback_bilinear_curve(curve, tolerance)?;
     let parameter_tolerance = [
         trim_parameter_epsilon(
             [*surface.domain_u().start(), *surface.domain_u().end()],
@@ -7568,6 +7609,97 @@ fn sample_trim_loop(
     Ok(points)
 }
 
+fn append_trimmed_surface_grid_parameters(
+    parameters: &mut Vec<Point2>,
+    loop_lengths: &[usize],
+    surface: &NurbsSurface,
+    samples_per_span: usize,
+) -> Result<(), GeometryError> {
+    let boundary_vertex_count = loop_lengths
+        .iter()
+        .try_fold(0_usize, |total, length| total.checked_add(*length))
+        .ok_or(GeometryError::TooManyMeshVertices)?;
+    if boundary_vertex_count != parameters.len() || loop_lengths.is_empty() {
+        return invalid("trimmed surface grid requires complete sampled boundary loops");
+    }
+    if boundary_vertex_count > MAX_CONSTRAINED_TRIM_VERTICES {
+        return Err(GeometryError::TooManyMeshVertices);
+    }
+    let Some(normalization) = TrimParameterNormalization::try_from_points(parameters)? else {
+        return Ok(());
+    };
+    let normalized_boundary = parameters
+        .iter()
+        .map(|parameter| normalization.normalize(*parameter))
+        .collect::<Result<Vec<_>, _>>()?;
+    let mut loop_ranges = Vec::with_capacity(loop_lengths.len());
+    let mut loop_start = 0;
+    for length in loop_lengths {
+        let loop_end = loop_start + *length;
+        loop_ranges.push(loop_start..loop_end);
+        loop_start = loop_end;
+    }
+    let epsilon = 64.0 * Real::EPSILON;
+    let strictly_inside = |parameter: Point2| -> Result<bool, GeometryError> {
+        let point = normalization.normalize(parameter)?;
+        if loop_ranges
+            .iter()
+            .any(|range| point_on_trim_polygon(point, &normalized_boundary[range.clone()], epsilon))
+        {
+            return Ok(false);
+        }
+        if !point_in_trim_polygon(point, &normalized_boundary[loop_ranges[0].clone()], epsilon) {
+            return Ok(false);
+        }
+        Ok(!loop_ranges[1..].iter().any(|range| {
+            point_in_trim_polygon(point, &normalized_boundary[range.clone()], epsilon)
+        }))
+    };
+
+    let sample_direction = |spans: Vec<(Real, Real)>| -> Result<Vec<Real>, GeometryError> {
+        let capacity = spans
+            .len()
+            .checked_mul(samples_per_span)
+            .and_then(|count| count.checked_add(1))
+            .ok_or(GeometryError::TooManyMeshVertices)?;
+        if capacity > MAX_CONSTRAINED_TRIM_VERTICES {
+            return Err(GeometryError::TooManyMeshVertices);
+        }
+        let mut result = Vec::with_capacity(capacity);
+        for (span_index, span) in spans.into_iter().enumerate() {
+            let first_sample = usize::from(span_index != 0);
+            for sample in first_sample..=samples_per_span {
+                result.push(normalized_span_parameter(
+                    [span.0, span.1],
+                    sample as Real / samples_per_span as Real,
+                )?);
+            }
+        }
+        Ok(result)
+    };
+    let parameters_u = sample_direction(surface.spans_u().collect())?;
+    let parameters_v = sample_direction(surface.spans_v().collect())?;
+    if parameters_u
+        .len()
+        .checked_mul(parameters_v.len())
+        .is_none_or(|count| count > MAX_CONSTRAINED_TRIM_VERTICES)
+    {
+        return Err(GeometryError::TooManyMeshVertices);
+    }
+    for v in parameters_v {
+        for &u in &parameters_u {
+            let parameter = Point2::try_new(u, v)?;
+            if strictly_inside(parameter)? {
+                if parameters.len() == MAX_CONSTRAINED_TRIM_VERTICES {
+                    return Err(GeometryError::TooManyMeshVertices);
+                }
+                parameters.push(parameter);
+            }
+        }
+    }
+    Ok(())
+}
+
 fn triangulate_simple_trim_polygon(
     parameters: &mut Vec<Point2>,
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
@@ -7680,13 +7812,16 @@ fn triangulate_trim_region(
     parameters: &[Point2],
     loop_lengths: &[usize],
 ) -> Result<Option<Vec<[u32; 3]>>, GeometryError> {
-    if loop_lengths.len() < 2
+    let Some(boundary_vertex_count) = loop_lengths
+        .iter()
+        .try_fold(0_usize, |total, length| total.checked_add(*length))
+    else {
+        return Ok(None);
+    };
+    if loop_lengths.is_empty()
         || loop_lengths.iter().any(|length| *length < 3)
         || parameters.len() > MAX_CONSTRAINED_TRIM_VERTICES
-        || loop_lengths
-            .iter()
-            .try_fold(0_usize, |total, length| total.checked_add(*length))
-            != Some(parameters.len())
+        || boundary_vertex_count > parameters.len()
     {
         return Ok(None);
     }
@@ -7759,7 +7894,7 @@ fn triangulate_trim_region(
             }
         }
     }
-    if triangulation.num_constraints() != parameters.len() {
+    if triangulation.num_constraints() != boundary_vertex_count {
         return Ok(None);
     }
 
@@ -7845,12 +7980,7 @@ fn point_in_trim_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real)
         let start = polygon[index];
         let end = polygon[(index + 1) % polygon.len()];
         let cross = polygon_cross(start, end, point);
-        if cross.abs() <= epsilon
-            && point[0] >= start[0].min(end[0]) - epsilon
-            && point[0] <= start[0].max(end[0]) + epsilon
-            && point[1] >= start[1].min(end[1]) - epsilon
-            && point[1] <= start[1].max(end[1]) + epsilon
-        {
+        if point_on_trim_segment(point, start, end, cross, epsilon) {
             return true;
         }
         if start[1] <= point[1] {
@@ -7864,64 +7994,110 @@ fn point_in_trim_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real)
     winding != 0
 }
 
-fn normalized_trim_polygon(parameters: &[Point2]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
-    let Some(origin) = parameters.first() else {
-        return Ok(None);
-    };
-    let relative = parameters
-        .iter()
-        .map(|point| [point.x() - origin.x(), point.y() - origin.y()])
-        .collect::<Vec<_>>();
-    if relative.iter().flatten().all(|value| value.is_finite()) {
-        let scale = relative
+fn point_on_trim_polygon(point: [Real; 2], polygon: &[[Real; 2]], epsilon: Real) -> bool {
+    (0..polygon.len()).any(|index| {
+        let start = polygon[index];
+        let end = polygon[(index + 1) % polygon.len()];
+        point_on_trim_segment(point, start, end, polygon_cross(start, end, point), epsilon)
+    })
+}
+
+fn point_on_trim_segment(
+    point: [Real; 2],
+    start: [Real; 2],
+    end: [Real; 2],
+    cross: Real,
+    epsilon: Real,
+) -> bool {
+    cross.abs() <= epsilon
+        && point[0] >= start[0].min(end[0]) - epsilon
+        && point[0] <= start[0].max(end[0]) + epsilon
+        && point[1] >= start[1].min(end[1]) - epsilon
+        && point[1] <= start[1].max(end[1]) + epsilon
+}
+
+#[derive(Clone, Copy)]
+struct TrimParameterNormalization {
+    coordinate_scale: Real,
+    origin: [Real; 2],
+    relative_scale: Real,
+}
+
+impl TrimParameterNormalization {
+    fn try_from_points(parameters: &[Point2]) -> Result<Option<Self>, GeometryError> {
+        let Some(origin) = parameters.first() else {
+            return Ok(None);
+        };
+        let direct_relative = parameters
+            .iter()
+            .map(|point| [point.x() - origin.x(), point.y() - origin.y()])
+            .collect::<Vec<_>>();
+        if direct_relative
             .iter()
             .flatten()
-            .map(|value| value.abs())
+            .all(|value| value.is_finite())
+        {
+            let relative_scale = direct_relative
+                .iter()
+                .flatten()
+                .map(|value| value.abs())
+                .fold(0.0, Real::max);
+            return Ok((relative_scale > 0.0).then_some(Self {
+                coordinate_scale: 1.0,
+                origin: [origin.x(), origin.y()],
+                relative_scale,
+            }));
+        }
+
+        let coordinate_scale = parameters
+            .iter()
+            .flat_map(|point| [point.x().abs(), point.y().abs()])
             .fold(0.0, Real::max);
-        return if scale > 0.0 {
-            Ok(Some(
-                relative
-                    .into_iter()
-                    .map(|point| point.map(|value| value / scale))
-                    .collect(),
-            ))
-        } else {
-            Ok(None)
-        };
+        if coordinate_scale == 0.0 {
+            return Ok(None);
+        }
+        let scaled_origin = [origin.x() / coordinate_scale, origin.y() / coordinate_scale];
+        let relative_scale = parameters
+            .iter()
+            .flat_map(|point| {
+                [
+                    point.x() / coordinate_scale - scaled_origin[0],
+                    point.y() / coordinate_scale - scaled_origin[1],
+                ]
+            })
+            .map(Real::abs)
+            .fold(0.0, Real::max);
+        require_finite(
+            [coordinate_scale, relative_scale],
+            "trim parameter normalization",
+        )?;
+        Ok((relative_scale > 0.0).then_some(Self {
+            coordinate_scale,
+            origin: scaled_origin,
+            relative_scale,
+        }))
     }
 
-    let global_scale = parameters
-        .iter()
-        .flat_map(|point| [point.x().abs(), point.y().abs()])
-        .fold(0.0, Real::max);
-    if global_scale == 0.0 {
-        return Ok(None);
+    fn normalize(self, parameter: Point2) -> Result<[Real; 2], GeometryError> {
+        let normalized = [
+            (parameter.x() / self.coordinate_scale - self.origin[0]) / self.relative_scale,
+            (parameter.y() / self.coordinate_scale - self.origin[1]) / self.relative_scale,
+        ];
+        require_finite(normalized, "normalized trim parameter")?;
+        Ok(normalized)
     }
-    let scaled_origin = [origin.x() / global_scale, origin.y() / global_scale];
-    let relative = parameters
-        .iter()
-        .map(|point| {
-            [
-                point.x() / global_scale - scaled_origin[0],
-                point.y() / global_scale - scaled_origin[1],
-            ]
-        })
-        .collect::<Vec<_>>();
-    require_finite(
-        relative.iter().flatten().copied(),
-        "trim triangulation coordinates",
-    )?;
-    let scale = relative
-        .iter()
-        .flatten()
-        .map(|value| value.abs())
-        .fold(0.0, Real::max);
-    Ok((scale > 0.0).then(|| {
-        relative
-            .into_iter()
-            .map(|point| point.map(|value| value / scale))
-            .collect()
-    }))
+}
+
+fn normalized_trim_polygon(parameters: &[Point2]) -> Result<Option<Vec<[Real; 2]>>, GeometryError> {
+    let Some(normalization) = TrimParameterNormalization::try_from_points(parameters)? else {
+        return Ok(None);
+    };
+    Ok(Some(
+        parameters
+            .iter()
+            .map(|parameter| normalization.normalize(*parameter))
+            .collect::<Result<Vec<_>, _>>()?,
+    ))
 }
 
 fn stable_parameter_average(parameters: &[Point2]) -> Result<Point2, GeometryError> {
@@ -10039,6 +10215,126 @@ mod tests {
             expected_boundary_edges
         );
         assert!((mesh.area().unwrap() - (10_000.0 - holes.len() as Real)).abs() < 1.0e-10);
+    }
+
+    #[test]
+    fn nonplanar_trim_tessellation_refines_the_surface_and_preserves_a_hole() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 10.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        let parameter_loops = [
+            (
+                BrepLoopType::Outer,
+                vec![[0.0, 0.0], [10.0, 0.0], [10.0, 10.0], [0.0, 10.0]],
+                vec![
+                    SurfaceIso::South,
+                    SurfaceIso::East,
+                    SurfaceIso::North,
+                    SurfaceIso::West,
+                ],
+            ),
+            (
+                BrepLoopType::Inner,
+                vec![[3.0, 3.0], [3.0, 7.0], [7.0, 7.0], [7.0, 3.0]],
+                vec![
+                    SurfaceIso::InteriorUConstant,
+                    SurfaceIso::InteriorVConstant,
+                    SurfaceIso::InteriorUConstant,
+                    SurfaceIso::InteriorVConstant,
+                ],
+            ),
+        ];
+        let mut vertices = Vec::new();
+        let mut edges = Vec::new();
+        let mut loops = Vec::new();
+        for (loop_type, parameters, isos) in parameter_loops {
+            let vertex_offset = vertices.len();
+            let parameter_points = parameters
+                .into_iter()
+                .map(|parameter| Point2::try_from(parameter).unwrap())
+                .collect::<Vec<_>>();
+            for parameter in &parameter_points {
+                vertices.push(
+                    BrepVertex::try_new(
+                        surface.evaluate(parameter.x(), parameter.y()).unwrap(),
+                        0.0,
+                    )
+                    .unwrap(),
+                );
+            }
+            let mut trims = Vec::new();
+            for index in 0..parameter_points.len() {
+                let next = (index + 1) % parameter_points.len();
+                let edge_index = edges.len();
+                let edge_vertices = [vertex_offset + index, vertex_offset + next];
+                let model_points = edge_vertices.map(|vertex| vertices[vertex].point());
+                edges.push(
+                    BrepEdge::try_new(
+                        edge_vertices,
+                        NurbsCurve::try_new(1, model_points.to_vec(), vec![0.0, 0.0, 1.0, 1.0])
+                            .unwrap(),
+                        0.0,
+                    )
+                    .unwrap(),
+                );
+                trims.push(
+                    BrepTrim::try_new(
+                        edge_vertices,
+                        Some(edge_index),
+                        false,
+                        NurbsCurve2::try_line(parameter_points[index], parameter_points[next])
+                            .unwrap(),
+                        BrepTrimType::Boundary,
+                        isos[index],
+                        [0.0, 0.0],
+                    )
+                    .unwrap(),
+                );
+            }
+            loops.push(BrepLoop::try_new(loop_type, trims).unwrap());
+        }
+        let brep = Brep::try_new(
+            vertices,
+            edges,
+            vec![BrepFace::try_new(surface.clone(), false, loops).unwrap()],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+
+        let coarse = brep.tessellate(1, Tolerance::DEFAULT).unwrap();
+        let dense = brep.tessellate(4, Tolerance::DEFAULT).unwrap();
+        assert_eq!(coarse.topology().boundary_edge_count(), 8);
+        assert_eq!(dense.topology().boundary_edge_count(), 32);
+        assert!(dense.vertices().len() > coarse.vertices().len());
+        let dense_parameters = dense
+            .vertices()
+            .iter()
+            .map(|point| {
+                surface
+                    .closest_parameters(*point, Tolerance::DEFAULT)
+                    .unwrap()
+            })
+            .collect::<Vec<_>>();
+        for face in dense.faces() {
+            let centroid = face.indices().iter().fold([0.0, 0.0], |mut sum, index| {
+                let parameter = dense_parameters[*index as usize];
+                sum[0] += parameter.0 / face.vertex_count() as Real;
+                sum[1] += parameter.1 / face.vertex_count() as Real;
+                sum
+            });
+            assert!(
+                centroid[0] <= 3.0
+                    || centroid[0] >= 7.0
+                    || centroid[1] <= 3.0
+                    || centroid[1] >= 7.0
+            );
+        }
     }
 
     #[test]

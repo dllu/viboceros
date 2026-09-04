@@ -361,7 +361,7 @@ pub enum GeometryError {
     #[error("surface wireframe would contain more than {MAX_SURFACE_WIRES} curves")]
     TooManySurfaceWires,
 
-    #[error("B-rep face {face} requires trimmed-face clipping before it can be tessellated")]
+    #[error("B-rep face {face} could not be robustly tessellated inside its trim domain")]
     UnsupportedBrepTrimTessellation { face: usize },
 
     #[error(

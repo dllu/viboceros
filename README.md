@@ -405,8 +405,9 @@ bounded per-knot-span sampling level; `SimplePlanes=Yes` minimizes entirely
 planar inputs, and `JaggedSeams=Yes` disables shared-edge snapping on B-reps.
 Regular surface cells remain quadrilaterals, singular sides and planar trim
 regions use triangles, and smooth-seam closed solids must remain watertight.
-Unsupported nonplanar general trims fail atomically rather than being silently
-meshed as untrimmed surfaces.
+General nonplanar trims are constrained-triangulated in parameter space with
+interior knot-span grid samples; outer and inner boundaries remain exact mesh
+constraints instead of being silently filled.
 `MeshBox` draws an unselected closed quadrilateral mesh from two opposite
 World-XY base corners and a signed height or height point. `XCount`, `YCount`,
 and `ZCount` set the side divisions and default to 1. Each of Rhino's bottom,
@@ -890,9 +891,13 @@ arrangement splits every cutter at transverse crossings, reuses shared corner
 and intersection nodes, and emits every bounded cell with Rhino-compatible
 vertex, edge, and trim ordering. Straight parameter paths work on arbitrary
 rectangular NURBS faces; curved NURBS paths whose control polygons advance
-strictly in at least one UV direction are pulled back exactly on affine bilinear
-faces, preserving degree, controls, rational weights, knots, and domain in every
-validated polygonal trim. Adjacent-side cuts produce Rhino's
+strictly in at least one UV direction are pulled back exactly on affine and
+genuinely warped non-rational bilinear faces. Warped patches use their
+independent bilinear twist direction as an exact affine left inverse, preserving
+degree, controls, rational weights, knots, and domain in every validated
+polygonal trim. General nonplanar trims are constrained-triangulated in UV with
+interior knot-span grid samples, so denser display settings refine both their
+boundaries and surface interiors. Adjacent-side cuts produce Rhino's
 triangle-and-pentagon topology in all four orientations.
 Cuts from a corner to either nonincident side reuse the existing corner vertex
 and produce exact triangle-and-quad topology; both opposite-corner diagonals
@@ -929,9 +934,9 @@ discarding the underlying surface. Closed directions reuse seam edges and
 collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
 and directions, face orientation, and geometry to within `2e-15`.
-Curved paths on non-affine parameterizations, nonmonotone curved trim clipping,
-nonlinear surface/surface cutters, and nonrectangular or multi-face B-rep
-sources remain future extensions.
+Curved paths on higher-degree, rational, or planar non-affine parameterizations,
+nonmonotone curved trim clipping, nonlinear surface/surface cutters, and
+nonrectangular or multi-face B-rep sources remain future extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS
@@ -1419,10 +1424,9 @@ Initial STEP interchange uses the Apache-2.0 Monstertruck kernel to read
 solid/shell B-reps and assemblies, apply instance transforms, and robustly
 tessellate exact trimmed surfaces into validated display meshes. Parser,
 topology, and unsupported-representation losses are reported instead of being
-silent. STL and STEP export tessellate visible NURBS surfaces plus full-domain
-and rectangular-isoparametric nonplanar or trimmed planar B-rep faces; exact
-outer and inner p-curves are sampled into a constrained triangulation so holes
-remain open. STEP writes the results as faceted shells with shared topology and
-planar faces. Other nonplanar general trims remain explicit errors rather than
-being silently filled. Editable STEP B-rep interchange and production surface
-and solid modelling are not implemented yet.
+silent. STL and STEP export tessellate visible NURBS surfaces and B-rep faces;
+exact outer and inner p-curves are sampled into a constrained UV triangulation
+so holes remain open, with interior knot-span samples refining nonplanar
+trimmed surfaces. STEP writes the results as faceted shells with shared
+topology and planar faces. Editable STEP B-rep interchange and production
+surface and solid modelling are not implemented yet.
