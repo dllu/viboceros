@@ -6477,6 +6477,119 @@ fn rotate_surface_cut_overlap_outer_cycle(
     let touches_overlap = |edge: &SurfaceCutArrangementEdge| {
         touches_marked_node(edge, &source_info.first_overlap_nodes)
     };
+    let shared_first_edge_count = cycle
+        .iter()
+        .filter(|halfedge| {
+            let edge = &edges[**halfedge / 2];
+            !edge.coincidences.is_empty()
+                && surface_cut_arrangement_edge_contributor(edge, 0).is_some()
+        })
+        .count();
+    let has_exclusive_first_edge = cycle.iter().any(|halfedge| {
+        let edge = &edges[*halfedge / 2];
+        edge.coincidences.is_empty()
+            && matches!(
+                edge.kind,
+                SurfaceCutArrangementEdgeKind::Cut { source: 0, .. }
+            )
+    });
+
+    // When a later cutter bounds a face through multiple disjoint overlaps
+    // and the first cutter contributes only the shared spans, Rhino starts on
+    // the later cutter's final forward branch after the last overlap.
+    if shared_first_edge_count > 1
+        && !has_exclusive_first_edge
+        && let Some((_, _, anchor)) = cycle
+            .iter()
+            .enumerate()
+            .filter_map(|(index, halfedge)| {
+                if !halfedge.is_multiple_of(2) {
+                    return None;
+                }
+                let edge = &edges[*halfedge / 2];
+                let SurfaceCutArrangementEdgeKind::Cut { source, segment } = edge.kind else {
+                    return None;
+                };
+                (source != 0
+                    && !source_info.closed[source]
+                    && edge.coincidences.is_empty()
+                    && touches_overlap(edge))
+                .then_some((source, segment, index))
+            })
+            .max()
+    {
+        cycle.rotate_left(anchor);
+        return true;
+    }
+
+    // Two disjoint shared spans can enclose a face whose cycle contains no
+    // shared edge, but reaches a distinct overlap node at each end. Rhino
+    // retains the earliest later cutter and uses its last forward branch, or
+    // its first reverse branch when the loop traverses that cutter backward.
+    if shared_first_edge_count == 0 {
+        let overlap_nodes = cycle
+            .iter()
+            .flat_map(|halfedge| edges[*halfedge / 2].nodes)
+            .filter(|node| source_info.first_overlap_nodes[*node])
+            .collect::<BTreeSet<_>>();
+        let later_source = if overlap_nodes.len() > 1 {
+            cycle
+                .iter()
+                .filter_map(|halfedge| match edges[*halfedge / 2].kind {
+                    SurfaceCutArrangementEdgeKind::Cut { source, .. } if source != 0 => {
+                        Some(source)
+                    }
+                    _ => None,
+                })
+                .min()
+        } else {
+            None
+        };
+        if let Some(later_source) = later_source {
+            let forward_anchor = cycle
+                .iter()
+                .enumerate()
+                .filter_map(|(index, halfedge)| {
+                    if !halfedge.is_multiple_of(2) {
+                        return None;
+                    }
+                    let edge = &edges[*halfedge / 2];
+                    let SurfaceCutArrangementEdgeKind::Cut { source, segment } = edge.kind else {
+                        return None;
+                    };
+                    (source == later_source
+                        && !source_info.closed[source]
+                        && edge.coincidences.is_empty()
+                        && touches_overlap(edge))
+                    .then_some((segment, index))
+                })
+                .max_by_key(|(segment, _)| *segment)
+                .map(|(_, anchor)| anchor);
+            let reverse_anchor = cycle
+                .iter()
+                .enumerate()
+                .filter_map(|(index, halfedge)| {
+                    if halfedge.is_multiple_of(2) {
+                        return None;
+                    }
+                    let edge = &edges[*halfedge / 2];
+                    let SurfaceCutArrangementEdgeKind::Cut { source, segment } = edge.kind else {
+                        return None;
+                    };
+                    (source == later_source
+                        && !source_info.closed[source]
+                        && edge.coincidences.is_empty()
+                        && touches_overlap(edge))
+                    .then_some((segment, index))
+                })
+                .min_by_key(|(segment, _)| *segment)
+                .map(|(_, anchor)| anchor);
+            if let Some(anchor) = forward_anchor.or(reverse_anchor) {
+                cycle.rotate_left(anchor);
+                return true;
+            }
+        }
+    }
 
     // A forward branch adjacent to the overlap retains the lowest source
     // segment. Oppositely directed coincident cutters compete by segment
@@ -10774,6 +10887,102 @@ mod tests {
                 .collect::<Vec<_>>(),
             vec![2, 2, 0]
         );
+
+        let lower_disjoint_overlap = NurbsCurve::try_new(
+            1,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(2.0, 4.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(5.0, 2.0, 0.0),
+                point(6.0, 4.0, 0.0),
+                point(8.0, 4.0, 0.0),
+                point(10.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let upper_disjoint_overlap = NurbsCurve::try_new(
+            1,
+            vec![
+                point(0.0, 8.0, 0.0),
+                point(2.0, 4.0, 0.0),
+                point(4.0, 4.0, 0.0),
+                point(5.0, 8.0, 0.0),
+                point(6.0, 4.0, 0.0),
+                point(8.0, 4.0, 0.0),
+                point(10.0, 8.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 6.0],
+        )
+        .unwrap();
+        let reversed_lower_disjoint_overlap = lower_disjoint_overlap.reversed().unwrap();
+        let reversed_upper_disjoint_overlap = upper_disjoint_overlap.reversed().unwrap();
+        let disjoint_overlap_cases = [
+            (
+                vec![
+                    lower_disjoint_overlap.clone(),
+                    upper_disjoint_overlap.clone(),
+                ],
+                vec![(2, true), (0, false), (1, false), (3, true)],
+            ),
+            (
+                vec![
+                    upper_disjoint_overlap.clone(),
+                    lower_disjoint_overlap.clone(),
+                ],
+                vec![(3, false), (1, true), (0, true), (2, false)],
+            ),
+            (
+                vec![
+                    reversed_lower_disjoint_overlap.clone(),
+                    reversed_upper_disjoint_overlap.clone(),
+                ],
+                vec![(3, false), (1, true), (0, true), (2, false)],
+            ),
+            (
+                vec![
+                    reversed_lower_disjoint_overlap,
+                    upper_disjoint_overlap.clone(),
+                ],
+                vec![(2, true), (1, true), (0, true), (3, true)],
+            ),
+            (
+                vec![lower_disjoint_overlap, reversed_upper_disjoint_overlap],
+                vec![(3, false), (0, false), (1, false), (2, false)],
+            ),
+        ];
+        for (case, (cutters, expected_lens)) in disjoint_overlap_cases.into_iter().enumerate() {
+            let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                cutters,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_pieces(&pieces, 5);
+            assert_eq!(
+                pieces[3].faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .map(|trim| (trim.edge().unwrap(), trim.is_reversed_3d()))
+                    .collect::<Vec<_>>(),
+                expected_lens,
+                "disjoint-overlap lens case {case}"
+            );
+            if case == 0 {
+                assert_eq!(
+                    pieces[2].faces()[0].loops()[0]
+                        .trims()
+                        .iter()
+                        .map(|trim| trim.edge().unwrap())
+                        .collect::<Vec<_>>(),
+                    vec![7, 8, 0, 1, 4, 2, 5, 6, 3]
+                );
+            }
+        }
 
         let duplicate_cut = line([0.0, 2.0], [10.0, 8.0]);
         let duplicate = Brep::try_split_rectangular_surface_face_with_curves(

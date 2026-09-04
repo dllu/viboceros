@@ -920,9 +920,12 @@ circle or polygon vertex without falsely crossing or opening the closed region.
 Two open cutters may meet tangentially; regions pinched together only at that
 contact remain distinct Rhino-compatible faces. Partially coincident cutters
 are subdivided at both overlap boundaries and share one topological edge instead
-of creating zero-area faces. When coincident contributors differ at an overlap
-endpoint, the tangent-continuous curve supplies Rhino's canonical edge geometry
-and parameterization; otherwise the first equivalent contributor is retained.
+of creating zero-area faces. Multiple disjoint shared spans between the same
+pair retain each shared edge and the intervening lens faces with canonical seam
+ordering across cutter order and direction. When coincident contributors differ
+at an overlap endpoint, the tangent-continuous curve supplies Rhino's canonical
+edge geometry and parameterization; otherwise the first equivalent contributor
+is retained.
 All contributor provenance is preserved for three-way overlaps, and open curves
 provide the canonical edge when they overlap closed loops.
 Straight and curved intersections against an already-trimmed rectangular
@@ -953,8 +956,9 @@ quadratic span, open/closed shared edges, and adjacent closed polygons. It also
 covers a reversed smooth continuation promoted over an earlier kinked cutter,
 both smooth-promoted and all-kinked three-way shared spans, and degree-one and
 genuinely curved degree-two open-cutter kinks in single- and multi-cutter
-arrangements. It compares UV trim degree, controls, weights, knots, and domains
-as well as vertices, edge domains, trim order,
+arrangements, plus disjoint repeated overlaps in swapped, reversed, and mixed
+directions. It compares UV trim degree, controls, weights, knots, and domains as
+well as vertices, edge domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point
