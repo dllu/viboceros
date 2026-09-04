@@ -884,12 +884,15 @@ every complete constant-U or constant-V intersection, with duplicate cuts
 culled and multiple directions forming an exact UV grid. Its fresh single-face
 B-rep results retain the complete underlying surface, the source face
 orientation, attributes, and group membership. Partial isocurves do not divide
-the target. One exact non-isoparametric intersection joining any two distinct
-rectangle sides is also supported. Straight parameter paths work on arbitrary
+the target. Exact non-isoparametric intersections joining rectangle boundaries
+may be combined with each other and with isoparametric cuts. Their planar UV
+arrangement splits every cutter at transverse crossings, reuses shared corner
+and intersection nodes, and emits every bounded cell with Rhino-compatible
+vertex, edge, and trim ordering. Straight parameter paths work on arbitrary
 rectangular NURBS faces; curved NURBS paths whose control polygons advance
 strictly in at least one UV direction are pulled back exactly on affine bilinear
-faces, preserving degree, controls, rational weights, knots, and domain in both
-validated polygonal trims. Adjacent-side cuts produce Rhino's
+faces, preserving degree, controls, rational weights, knots, and domain in every
+validated polygonal trim. Adjacent-side cuts produce Rhino's
 triangle-and-pentagon topology in all four orientations.
 Cuts from a corner to either nonincident side reuse the existing corner vertex
 and produce exact triangle-and-quad topology; both opposite-corner diagonals
@@ -897,19 +900,19 @@ produce two exact triangles.
 Straight and supported monotone curved intersections against an
 already-trimmed rectangular B-rep are clipped to its visible UV bounds while
 retaining the exact cutter subcurve domain. Rational clipped spans use Rhino's
-piecewise-Bezier knot multiplicities and normalized outer weights. Multiple
-non-isoparametric cuts are reported as unsupported instead of being approximated.
+piecewise-Bezier knot multiplicities and normalized outer weights.
 Rhino-compatible cutting-object output replaces the source with fresh selected
 pieces and leaves cutters unchanged and deselected. The curve fixture covers
 curve, surface, solid box, holed planar-face, and view-aligned non-intersecting
 cutters. The topology-aware surface fixture covers both isoparametric directions,
 both opposite-side diagonal directions, all four adjacent-side directions, and
 all ten corner-ending arrangements, six single- and multi-span curved paths,
-plus straight and curved opposite- and adjacent-side clipping on pretrimmed
-sources. It compares UV trim degree, controls, weights, knots, and domains as
-well as vertices, edge domains, trim order, metadata, grouping, and selection,
-agreeing to within `1.1e-14` of Rhino. Current surface/surface intersection
-support is planar.
+straight and curved opposite- and adjacent-side clipping on pretrimmed sources,
+and parallel, crossing, mixed-isoparametric, rational-curved, and shared-corner
+multi-cutter arrangements. It compares UV trim degree, controls, weights,
+knots, and domains as well as vertices, edge domains, trim order, metadata,
+grouping, and selection, agreeing to within `1.1e-14` of Rhino. Current
+surface/surface intersection support is planar.
 `Split Isocurve=point
 Direction=U|V|Both Shrink=Yes`
 splits exactly one selected untrimmed NURBS surface at the closest surface
@@ -926,9 +929,9 @@ discarding the underlying surface. Closed directions reuse seam edges and
 collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
 and directions, face orientation, and geometry to within `2e-15`.
-Multiple non-isoparametric cuts, curved paths on non-affine parameterizations,
-nonmonotone curved trim clipping, nonlinear surface/surface cutters, and
-nonrectangular or multi-face B-rep sources remain future extensions.
+Curved paths on non-affine parameterizations, nonmonotone curved trim clipping,
+nonlinear surface/surface cutters, and nonrectangular or multi-face B-rep
+sources remain future extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS

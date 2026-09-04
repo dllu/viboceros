@@ -13193,7 +13193,8 @@ fn split_rectangular_surface_with_cutters(
     let epsilon_v = surface_split_parameter_epsilon(bounds[1], document.tolerance());
     let mut cuts_u = Vec::new();
     let mut cuts_v = Vec::new();
-    let mut nonisoparametric_cut = None;
+    let mut nonisoparametric_cuts = Vec::new();
+    let mut complete_cut_curves = Vec::new();
     for curve in &curves {
         let Some((cut, cut_curve)) =
             classify_complete_surface_cut(curve, surface, bounds, document.tolerance())?
@@ -13202,10 +13203,18 @@ fn split_rectangular_surface_with_cutters(
         };
         match cut {
             CompleteSurfaceCut::ConstantU(parameter) => {
+                let previous_count = cuts_u.len();
                 push_unique_surface_split_parameter(&mut cuts_u, parameter, bounds[0], epsilon_u);
+                if cuts_u.len() != previous_count {
+                    complete_cut_curves.push(cut_curve);
+                }
             }
             CompleteSurfaceCut::ConstantV(parameter) => {
+                let previous_count = cuts_v.len();
                 push_unique_surface_split_parameter(&mut cuts_v, parameter, bounds[1], epsilon_v);
+                if cuts_v.len() != previous_count {
+                    complete_cut_curves.push(cut_curve);
+                }
             }
             CompleteSurfaceCut::WestEast { .. }
             | CompleteSurfaceCut::SouthNorth { .. }
@@ -13214,19 +13223,15 @@ fn split_rectangular_surface_with_cutters(
             | CompleteSurfaceCut::NorthWest { .. }
             | CompleteSurfaceCut::WestSouth { .. }
             | CompleteSurfaceCut::Corner { .. } => {
-                if nonisoparametric_cut.is_some() {
-                    return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-                }
-                nonisoparametric_cut = Some((cut, cut_curve));
+                complete_cut_curves.push(cut_curve.clone());
+                nonisoparametric_cuts.push((cut, cut_curve));
             }
         }
     }
     cuts_u.sort_by(Real::total_cmp);
     cuts_v.sort_by(Real::total_cmp);
-    if let Some((cut, curve)) = nonisoparametric_cut {
-        if !cuts_u.is_empty() || !cuts_v.is_empty() {
-            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
-        }
+    if nonisoparametric_cuts.len() == 1 && cuts_u.is_empty() && cuts_v.is_empty() {
+        let (cut, curve) = nonisoparametric_cuts.pop().unwrap();
         let pieces = match cut {
             CompleteSurfaceCut::WestEast { west_v, east_v } => {
                 Brep::try_split_rectangular_surface_face_west_east(
@@ -13318,6 +13323,25 @@ fn split_rectangular_surface_with_cutters(
             "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
                 .to_owned(),
         );
+    }
+    if !nonisoparametric_cuts.is_empty() {
+        let cut_count = complete_cut_curves.len();
+        let pieces = Brep::try_split_rectangular_surface_face_with_curves(
+            surface.clone(),
+            bounds[0][0]..=bounds[0][1],
+            bounds[1][0]..=bounds[1][1],
+            complete_cut_curves,
+            reversed,
+            document.tolerance(),
+        )?;
+        let piece_count = pieces.len();
+        if piece_count > MAX_SPAN_OUTPUT_OBJECTS {
+            return Err(too_many_span_outputs("Split"));
+        }
+        replace_surface_split_source(document, source_id, pieces)?;
+        return Ok(format!(
+            "Split the selected surface along {cut_count} complete boundary-to-boundary curve(s) into {piece_count} exact B-rep face(s)"
+        ));
     }
     if cuts_u.is_empty() && cuts_v.is_empty() {
         document.select_objects_direct([source_id], SelectionMode::Replace)?;
@@ -29381,6 +29405,72 @@ mod tests {
     }
 
     #[test]
+    fn cutting_object_split_supports_parallel_crossing_and_mixed_surface_cutters() {
+        let registry = CommandRegistry::with_builtins();
+        let run_case = |cutters: &[&str],
+                        surface_cutter_x: Option<Real>,
+                        expected_pieces: usize,
+                        expected_noniso_trims: usize,
+                        expected_interior_u_trims: usize| {
+            let mut document = Document::default();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap();
+            for cutter in cutters {
+                registry.execute(&mut document, cutter).unwrap();
+            }
+            if let Some(x) = surface_cutter_x {
+                document
+                    .add_geometry(Geometry::NurbsSurface(transverse_surface_at_x(x)))
+                    .unwrap();
+            }
+            let ids = document
+                .objects()
+                .map(|object| object.id())
+                .collect::<Vec<_>>();
+            document
+                .select_objects_direct(ids, SelectionMode::Replace)
+                .unwrap();
+
+            assert_eq!(
+                registry
+                    .execute(&mut document, "Split CuttingObjects=1,1,0")
+                    .unwrap(),
+                format!(
+                    "Split the selected surface along 2 complete boundary-to-boundary curve(s) into {expected_pieces} exact B-rep face(s)"
+                )
+            );
+            assert!(document.object(source_id).is_none());
+            let pieces = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(pieces.len(), expected_pieces);
+            let mut area = 0.0;
+            let mut noniso_trims = 0;
+            let mut interior_u_trims = 0;
+            for object in pieces {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("multiple cutting Split must create B-rep faces")
+                };
+                for trim in brep.faces()[0].loops()[0].trims() {
+                    noniso_trims +=
+                        usize::from(trim.iso() == viboceros_geometry::SurfaceIso::NotIso);
+                    interior_u_trims += usize::from(
+                        trim.iso() == viboceros_geometry::SurfaceIso::InteriorUConstant,
+                    );
+                }
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(3, document.tolerance()).unwrap();
+            }
+            assert_eq!(noniso_trims, expected_noniso_trims);
+            assert_eq!(interior_u_trims, expected_interior_u_trims);
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        };
+
+        run_case(&["Line 0,2,0 10,4,0", "Line 0,6,0 10,8,0"], None, 3, 4, 0);
+        run_case(&["Line 0,2,0 10,8,0", "Line 0,8,0 10,2,0"], None, 4, 8, 0);
+        run_case(&["Line 0,2,0 10,8,0"], Some(5.0), 4, 4, 4);
+    }
+
+    #[test]
     fn cutting_object_split_handles_no_hit_and_rejects_invalid_sources_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -29479,34 +29569,6 @@ mod tests {
             solids.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
         );
-
-        let mut unsupported = Document::default();
-        let source_id = unsupported
-            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
-            .unwrap();
-        registry
-            .execute(&mut unsupported, "Line 0,2,0 10,8,0")
-            .unwrap();
-        registry
-            .execute(&mut unsupported, "Line 0,8,0 10,2,0")
-            .unwrap();
-        let ids = unsupported
-            .objects()
-            .map(|object| object.id())
-            .collect::<Vec<_>>();
-        unsupported
-            .select_objects_direct(ids, SelectionMode::Replace)
-            .unwrap();
-        let before = unsupported.objects().cloned().collect::<Vec<_>>();
-        assert!(matches!(
-            registry.execute(&mut unsupported, "Split CuttingObjects=1,2,0"),
-            Err(CommandError::UnsupportedSurfaceCuttingIntersection)
-        ));
-        assert_eq!(
-            unsupported.objects().collect::<Vec<_>>(),
-            before.iter().collect::<Vec<_>>()
-        );
-        assert!(unsupported.object(source_id).is_some());
     }
 
     #[test]
