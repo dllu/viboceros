@@ -4137,6 +4137,68 @@
             "knots": [0.0, 0.0, 2.0, 2.0]
           }
         ]
+      },
+      {
+        "op": "surface_split_cutting_command",
+        "id": "split-planar-surface-with-rational-straight-cutter",
+        "source_pick": [5.0, 1.0, 0.0],
+        "surface": {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+          ],
+          "knots_u": [0.0, 0.0, 10.0, 10.0],
+          "knots_v": [0.0, 0.0, 10.0, 10.0]
+        },
+        "cutters": [
+          {
+            "degree": 2,
+            "control_points": [
+              { "point": [0.0, 2.0, 0.0], "weight": 2.0 },
+              { "point": [5.0, 4.0, 0.0], "weight": 0.75 },
+              { "point": [10.0, 6.0, 0.0], "weight": 3.0 }
+            ],
+            "knots": [0.0, 0.0, 0.0, 2.0, 2.0, 2.0]
+          }
+        ]
+      },
+      {
+        "op": "surface_split_cutting_command",
+        "id": "split-planar-surface-with-rational-multispan-straight-cutter",
+        "source_pick": [5.0, 1.0, 0.0],
+        "surface": {
+          "degree_u": 1,
+          "degree_v": 1,
+          "control_point_count_u": 2,
+          "control_point_count_v": 2,
+          "control_points": [
+            { "point": [0.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 0.0, 0.0], "weight": 1.0 },
+            { "point": [0.0, 10.0, 0.0], "weight": 1.0 },
+            { "point": [10.0, 10.0, 0.0], "weight": 1.0 }
+          ],
+          "knots_u": [0.0, 0.0, 10.0, 10.0],
+          "knots_v": [0.0, 0.0, 10.0, 10.0]
+        },
+        "cutters": [
+          {
+            "degree": 2,
+            "control_points": [
+              { "point": [0.0, 2.0, 0.0], "weight": 2.0 },
+              { "point": [2.5, 3.0, 0.0], "weight": 0.75 },
+              { "point": [5.0, 4.0, 0.0], "weight": 1.25 },
+              { "point": [7.5, 5.0, 0.0], "weight": 0.5 },
+              { "point": [10.0, 6.0, 0.0], "weight": 3.0 }
+            ],
+            "knots": [0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0]
+          }
+        ]
       }
   ]
 }

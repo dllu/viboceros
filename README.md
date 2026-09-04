@@ -892,13 +892,15 @@ and intersection nodes, and emits every bounded cell with Rhino-compatible
 vertex, edge, and trim ordering. Straight parameter paths work on arbitrary
 rectangular NURBS faces. On affine and genuinely warped non-rational bilinear
 faces, supported NURBS paths are pulled back exactly, so even geometrically
-straight multi-span or higher-degree cutters retain their degree, controls,
-rational weights, knots, and domain instead of being simplified to a line.
-Curved paths are accepted when each retained in-face control polygon advances
-strictly in at least one UV direction. Warped patches use their independent
-bilinear twist direction as an exact affine left inverse. Straight paths on
-higher-order surface representations use Rhino's cubic four-control trim form
-while retaining the source domain. General nonplanar trims are
+straight multi-span or higher-degree cutters retain their degree, control
+locations, knots, and domain instead of being simplified to a line. Rational
+trims preserve their projective locus and interior junction data while
+normalizing the outer Bezier weights to Rhino's canonical unit values. Curved
+paths are accepted when each retained in-face control polygon advances strictly
+in at least one UV direction. Warped patches use their independent bilinear
+twist direction as an exact affine left inverse. Straight paths on higher-order
+surface representations use Rhino's cubic four-control trim form while
+retaining the source domain. General nonplanar trims are
 constrained-triangulated in UV with
 interior knot-span grid samples, so denser display settings refine both their
 boundaries and surface interiors. Adjacent-side cuts produce Rhino's
@@ -951,7 +953,8 @@ straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
 sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter
 arrangements, including collinear degree-one and degree-two multi-span paths,
-degree-two paths with kinked linear spans, a linear path on a degree-elevated
+degree-two paths with kinked linear spans, single- and multi-span rational
+straight paths with nonunit endpoint weights, a linear path on a degree-elevated
 planar surface, internally and externally touching closed polygons, and tangent
 rational circles, plus mixed polygon/circle tangencies in both traversal
 directions, open/closed tangent contacts in both cutter orders, and open/open

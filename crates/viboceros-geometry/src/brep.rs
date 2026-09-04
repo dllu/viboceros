@@ -5879,6 +5879,7 @@ fn try_surface_cut_arrangement_curve(
     parameter_tolerance: [Real; 2],
     tolerance: Tolerance,
 ) -> Result<SurfaceCutArrangementCurve, GeometryError> {
+    let spatial = canonical_surface_split_curve(&spatial)?;
     let domain = spatial.domain();
     let closed = spatial.is_closed()?;
     if closed {
@@ -7642,15 +7643,20 @@ fn orient_surface_split_curve(
     let domain = curve.domain();
     let curve_start = curve.evaluate(*domain.start())?;
     let curve_end = curve.evaluate(*domain.end())?;
-    if curve_start.is_near(start, tolerance) && curve_end.is_near(end, tolerance) {
-        return Ok(curve.clone());
-    }
-    if curve_start.is_near(end, tolerance) && curve_end.is_near(start, tolerance) {
-        return curve.reversed();
-    }
-    Err(GeometryError::InvalidBrepTopology {
-        context: "a surface split curve must meet both requested boundary locations",
-    })
+    let oriented = if curve_start.is_near(start, tolerance) && curve_end.is_near(end, tolerance) {
+        curve.clone()
+    } else if curve_start.is_near(end, tolerance) && curve_end.is_near(start, tolerance) {
+        curve.reversed()?
+    } else {
+        return Err(GeometryError::InvalidBrepTopology {
+            context: "a surface split curve must meet both requested boundary locations",
+        });
+    };
+    canonical_surface_split_curve(&oriented)
+}
+
+fn canonical_surface_split_curve(curve: &NurbsCurve) -> Result<NurbsCurve, GeometryError> {
+    curve.try_trimmed_with_normalized_end_weights(curve.domain())
 }
 
 fn surface_split_parameter_curve(
@@ -10889,6 +10895,57 @@ mod tests {
         assert_eq!(quadratic.degree(), 2);
         assert_eq!(quadratic.control_points().len(), 5);
         assert_eq!(quadratic.knots(), &[0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0]);
+
+        let rational = split_and_forward_trim(
+            NurbsCurve::try_new_rational(
+                2,
+                vec![
+                    WeightedPoint3::try_new(point(0.0, 2.0, 0.0), 2.0).unwrap(),
+                    WeightedPoint3::try_new(point(5.0, 4.0, 0.0), 0.75).unwrap(),
+                    WeightedPoint3::try_new(point(10.0, 6.0, 0.0), 3.0).unwrap(),
+                ],
+                vec![0.0, 0.0, 0.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(rational.degree(), 2);
+        assert_eq!(rational.control_points().len(), 3);
+        for (control, expected) in
+            rational
+                .control_points()
+                .iter()
+                .zip([1.0, 0.75 / 6.0_f64.sqrt(), 1.0])
+        {
+            assert!(Tolerance::DEFAULT.approx_eq(control.weight(), expected));
+        }
+
+        let rational_multispan = split_and_forward_trim(
+            NurbsCurve::try_new_rational(
+                2,
+                vec![
+                    WeightedPoint3::try_new(point(0.0, 2.0, 0.0), 2.0).unwrap(),
+                    WeightedPoint3::try_new(point(2.5, 3.0, 0.0), 0.75).unwrap(),
+                    WeightedPoint3::try_new(point(5.0, 4.0, 0.0), 1.25).unwrap(),
+                    WeightedPoint3::try_new(point(7.5, 5.0, 0.0), 0.5).unwrap(),
+                    WeightedPoint3::try_new(point(10.0, 6.0, 0.0), 3.0).unwrap(),
+                ],
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+            )
+            .unwrap(),
+        );
+        assert_eq!(
+            rational_multispan.knots(),
+            &[0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 2.0]
+        );
+        for (control, expected) in rational_multispan.control_points().iter().zip([
+            1.0,
+            0.75 / 2.0_f64.sqrt(),
+            1.25,
+            0.5 / 3.0_f64.sqrt(),
+            1.0,
+        ]) {
+            assert!(Tolerance::DEFAULT.approx_eq(control.weight(), expected));
+        }
 
         let elevated_surface = surface.clone().try_change_degree(2, 2, false).unwrap();
         let [_, elevated_north] = Brep::try_split_rectangular_surface_face_west_east(
