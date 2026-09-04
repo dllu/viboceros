@@ -1478,6 +1478,91 @@ impl Brep {
         ])
     }
 
+    /// Splits a rectangular surface region along one exact simple closed curve
+    /// wholly inside its trim bounds.
+    ///
+    /// The first result retains the rectangular outer loop and uses the cut as
+    /// a clockwise inner loop. The second result uses the same cut
+    /// counterclockwise as its outer loop. Smooth closed cutters remain one
+    /// edge, while interior degree-multiple kinks become separate edges,
+    /// matching Rhino's cutting-object `Split` topology.
+    pub fn try_split_rectangular_surface_face_with_closed_curve(
+        surface: NurbsSurface,
+        u: RangeInclusive<Real>,
+        v: RangeInclusive<Real>,
+        cut_curve: NurbsCurve,
+        reversed: bool,
+        tolerance: Tolerance,
+    ) -> Result<[Self; 2], GeometryError> {
+        require_finite(
+            [*u.start(), *u.end(), *v.start(), *v.end()],
+            "rectangular closed surface split bounds",
+        )?;
+        surface.try_trimmed(u.clone(), v.clone())?;
+        if !cut_curve.is_closed()? {
+            return invalid("a closed surface split requires a closed cutting curve");
+        }
+        let bounds = [[*u.start(), *u.end()], [*v.start(), *v.end()]];
+        let seam = cut_curve.evaluate(*cut_curve.domain().start())?;
+        let (seam_u, seam_v) = surface.closest_parameters(seam, tolerance)?;
+        let seam_parameter = Point2::try_new(seam_u, seam_v)?;
+        let parameter_curve = surface_split_parameter_curve(
+            &surface,
+            &cut_curve,
+            seam_parameter,
+            seam_parameter,
+            tolerance,
+        )?;
+        validate_closed_surface_cut_parameter_curve(&parameter_curve, bounds, tolerance)?;
+        let (_, source_reversed_for_outer) = oriented_cap_curve(parameter_curve.clone())?;
+        let segments =
+            closed_surface_cut_segments(&surface, &cut_curve, &parameter_curve, bounds, tolerance)?;
+
+        let cut_points = segments
+            .iter()
+            .map(|segment| segment.spatial.evaluate(*segment.spatial.domain().start()))
+            .collect::<Result<Vec<_>, _>>()?;
+        let cut_vertices = cut_points
+            .iter()
+            .copied()
+            .map(|point| BrepVertex::try_new(point, 0.0))
+            .collect::<Result<Vec<_>, _>>()?;
+
+        let mut outside = Self::try_rectangular_surface_face_with_orientation(
+            surface.clone(),
+            u,
+            v,
+            reversed,
+            tolerance,
+        )?;
+        let outside_vertex_offset = outside.vertices.len();
+        let outside_edge_offset = outside.edges.len();
+        outside.vertices.extend(cut_vertices.iter().copied());
+        outside
+            .edges
+            .extend(closed_surface_cut_edges(&segments, outside_vertex_offset)?);
+        outside.faces[0].loops.push(closed_surface_cut_loop(
+            &segments,
+            outside_vertex_offset,
+            outside_edge_offset,
+            BrepLoopType::Inner,
+            !source_reversed_for_outer,
+        )?);
+        let outside = Self::try_new(outside.vertices, outside.edges, outside.faces, tolerance)?;
+
+        let inside_edges = closed_surface_cut_edges(&segments, 0)?;
+        let inside_loop = closed_surface_cut_loop(
+            &segments,
+            0,
+            0,
+            BrepLoopType::Outer,
+            source_reversed_for_outer,
+        )?;
+        let inside_face = BrepFace::try_new(surface, reversed, vec![inside_loop])?;
+        let inside = Self::try_new(cut_vertices, inside_edges, vec![inside_face], tolerance)?;
+        Ok([outside, inside])
+    }
+
     /// Splits one rectangular surface region by an arrangement of exact,
     /// simple boundary-to-boundary curves.
     ///
@@ -4851,6 +4936,252 @@ fn rectangular_surface_boundary_segment(
         }
     };
     if forward { Ok(curve) } else { curve.reversed() }
+}
+
+struct ClosedSurfaceCutSegment {
+    spatial: NurbsCurve,
+    parameter: NurbsCurve2,
+    iso: SurfaceIso,
+}
+
+fn validate_closed_surface_cut_parameter_curve(
+    curve: &NurbsCurve2,
+    bounds: [[Real; 2]; 2],
+    tolerance: Tolerance,
+) -> Result<(), GeometryError> {
+    let parameter_tolerance = [
+        trim_parameter_epsilon(bounds[0], tolerance),
+        trim_parameter_epsilon(bounds[1], tolerance),
+    ];
+    if !parameter_points_near(
+        curve.start_point()?,
+        curve.end_point()?,
+        parameter_tolerance,
+    ) {
+        return invalid("a closed surface split p-curve must be closed");
+    }
+    let weight_sign = curve.control_points()[0].weight().is_sign_positive();
+    for control in curve.control_points() {
+        if control.weight().is_sign_positive() != weight_sign {
+            return invalid("a closed surface split p-curve must have one weight sign");
+        }
+        let point = control.point();
+        if point.x() <= bounds[0][0] + parameter_tolerance[0]
+            || point.x() >= bounds[0][1] - parameter_tolerance[0]
+            || point.y() <= bounds[1][0] + parameter_tolerance[1]
+            || point.y() >= bounds[1][1] - parameter_tolerance[1]
+        {
+            return invalid("a closed surface split p-curve must lie strictly inside the bounds");
+        }
+    }
+
+    let lifted = NurbsCurve::try_new_rational(
+        curve.degree(),
+        curve
+            .control_points()
+            .iter()
+            .map(|control| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(control.point().x(), control.point().y(), 0.0)?,
+                    control.weight(),
+                )
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?,
+        curve.knots().to_vec(),
+    )?;
+    let spans = lifted.spans().collect::<Vec<_>>();
+    if spans.len() < 2 {
+        return invalid("a closed surface split p-curve needs independently simple spans");
+    }
+    let span_curves = spans
+        .iter()
+        .map(|span| lifted.try_trimmed_with_normalized_end_weights(span.0..=span.1))
+        .collect::<Result<Vec<_>, _>>()?;
+    if span_curves
+        .iter()
+        .any(|span| !closed_surface_cut_span_control_polygon_is_monotone(span, parameter_tolerance))
+    {
+        return invalid("a closed surface split p-curve span is not coordinate-monotone");
+    }
+
+    let intersection_tolerance = Tolerance::try_new(
+        parameter_tolerance[0]
+            .max(parameter_tolerance[1])
+            .max(Real::EPSILON),
+        tolerance.relative().max(Real::EPSILON * 64.0),
+        tolerance.angular(),
+    )?;
+    for first in 0..span_curves.len() {
+        for second in first + 1..span_curves.len() {
+            let consecutive = second == first + 1;
+            let seam_pair = first == 0 && second + 1 == span_curves.len();
+            let mut allowed = Vec::with_capacity(2);
+            if consecutive {
+                allowed.push(span_curves[first].evaluate(*span_curves[first].domain().end())?);
+            }
+            if seam_pair {
+                allowed.push(span_curves[first].evaluate(*span_curves[first].domain().start())?);
+            }
+            for event in span_curves[first]
+                .intersection_events_with_curve(&span_curves[second], intersection_tolerance)?
+            {
+                let CurveCurveIntersectionEvent::Point(intersection) = event else {
+                    return invalid("a closed surface split p-curve overlaps itself");
+                };
+                let point = intersection.point();
+                if !allowed.iter().any(|expected| {
+                    point
+                        .distance_to(*expected)
+                        .is_ok_and(|distance| distance <= intersection_tolerance.absolute() * 8.0)
+                }) {
+                    return invalid("a closed surface split p-curve intersects itself");
+                }
+            }
+        }
+    }
+    Ok(())
+}
+
+fn closed_surface_cut_span_control_polygon_is_monotone(
+    curve: &NurbsCurve,
+    tolerance: [Real; 2],
+) -> bool {
+    let controls = curve.control_points();
+    let coordinate_is_monotone = |coordinate: usize| {
+        let first = controls[0].point().to_array()[coordinate];
+        let last = controls[controls.len() - 1].point().to_array()[coordinate];
+        let delta = last - first;
+        if delta.abs() <= tolerance[coordinate] {
+            controls.iter().all(|control| {
+                (control.point().to_array()[coordinate] - first).abs() <= tolerance[coordinate]
+            })
+        } else {
+            let direction = delta.signum();
+            controls.windows(2).all(|pair| {
+                (pair[1].point().to_array()[coordinate] - pair[0].point().to_array()[coordinate])
+                    * direction
+                    >= -tolerance[coordinate]
+            })
+        }
+    };
+    let has_extent = (0..2).any(|coordinate| {
+        (controls[controls.len() - 1].point().to_array()[coordinate]
+            - controls[0].point().to_array()[coordinate])
+            .abs()
+            > tolerance[coordinate]
+    });
+    has_extent && (0..2).all(coordinate_is_monotone)
+}
+
+fn closed_surface_cut_segments(
+    surface: &NurbsSurface,
+    spatial: &NurbsCurve,
+    parameter: &NurbsCurve2,
+    bounds: [[Real; 2]; 2],
+    tolerance: Tolerance,
+) -> Result<Vec<ClosedSurfaceCutSegment>, GeometryError> {
+    let domain = spatial.domain();
+    let mut breaks = vec![*domain.start()];
+    for (knot, multiplicity) in spatial.interior_knot_groups() {
+        if multiplicity == spatial.degree() && spatial.kink_angle_at(knot)? > tolerance.angular() {
+            breaks.push(knot);
+        }
+    }
+    breaks.push(*domain.end());
+    if breaks.len() - 1 > crate::MAX_SURFACE_WIRES {
+        return Err(GeometryError::TooManySurfaceWires);
+    }
+
+    breaks
+        .windows(2)
+        .map(|interval| {
+            let spatial_segment = if interval == [*domain.start(), *domain.end()] {
+                spatial.clone()
+            } else {
+                spatial.try_trimmed_with_normalized_end_weights(interval[0]..=interval[1])?
+            };
+            let start = parameter.evaluate(interval[0])?;
+            let end = parameter.evaluate(interval[1])?;
+            let parameter_segment = if interval == [*domain.start(), *domain.end()] {
+                parameter.clone()
+            } else {
+                surface_split_parameter_curve(surface, &spatial_segment, start, end, tolerance)?
+            };
+            let iso = surface_cut_arrangement_iso(
+                &parameter_segment,
+                bounds,
+                [
+                    trim_parameter_epsilon(bounds[0], tolerance),
+                    trim_parameter_epsilon(bounds[1], tolerance),
+                ],
+            )?;
+            Ok(ClosedSurfaceCutSegment {
+                spatial: spatial_segment,
+                parameter: parameter_segment,
+                iso,
+            })
+        })
+        .collect()
+}
+
+fn closed_surface_cut_edges(
+    segments: &[ClosedSurfaceCutSegment],
+    vertex_offset: usize,
+) -> Result<Vec<BrepEdge>, GeometryError> {
+    segments
+        .iter()
+        .enumerate()
+        .map(|(index, segment)| {
+            BrepEdge::try_new(
+                [
+                    vertex_offset + index,
+                    vertex_offset + (index + 1) % segments.len(),
+                ],
+                segment.spatial.clone(),
+                0.0,
+            )
+        })
+        .collect()
+}
+
+fn closed_surface_cut_loop(
+    segments: &[ClosedSurfaceCutSegment],
+    vertex_offset: usize,
+    edge_offset: usize,
+    loop_type: BrepLoopType,
+    reverse_source: bool,
+) -> Result<BrepLoop, GeometryError> {
+    let mut trims = Vec::with_capacity(segments.len());
+    for step in 0..segments.len() {
+        let index = if reverse_source {
+            segments.len() - step - 1
+        } else {
+            step
+        };
+        let segment = &segments[index];
+        let source_vertices = [
+            vertex_offset + index,
+            vertex_offset + (index + 1) % segments.len(),
+        ];
+        let (vertices, parameter) = if reverse_source {
+            (
+                [source_vertices[1], source_vertices[0]],
+                segment.parameter.reversed()?,
+            )
+        } else {
+            (source_vertices, segment.parameter.clone())
+        };
+        trims.push(BrepTrim::try_new(
+            vertices,
+            Some(edge_offset + index),
+            reverse_source,
+            parameter,
+            BrepTrimType::Boundary,
+            segment.iso,
+            [0.0, 0.0],
+        )?);
+    }
+    BrepLoop::try_new(loop_type, trims)
 }
 
 #[derive(Clone)]
@@ -8899,6 +9230,129 @@ mod tests {
             .map(|piece| piece.area(Tolerance::DEFAULT).unwrap())
             .sum::<Real>();
         assert!(Tolerance::DEFAULT.approx_eq(area, 100.0));
+    }
+
+    #[test]
+    fn rectangular_surface_closed_curve_splits_create_inner_and_holed_faces() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0.0, 0.0, 0.0),
+            point(10.0, 0.0, 0.0),
+            point(10.0, 10.0, 0.0),
+            point(0.0, 10.0, 0.0),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap();
+        let polygon = NurbsCurve::try_new(
+            1,
+            vec![
+                point(3.0, 3.0, 0.0),
+                point(7.0, 3.0, 0.0),
+                point(7.0, 7.0, 0.0),
+                point(3.0, 7.0, 0.0),
+                point(3.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([7.0, 5.0], 1.0),
+                ([7.0, 7.0], diagonal_weight),
+                ([5.0, 7.0], 1.0),
+                ([3.0, 7.0], diagonal_weight),
+                ([3.0, 5.0], 1.0),
+                ([3.0, 3.0], diagonal_weight),
+                ([5.0, 3.0], 1.0),
+                ([7.0, 3.0], diagonal_weight),
+                ([7.0, 5.0], 1.0),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(point(coordinates[0], coordinates[1], 0.0), weight).unwrap()
+            })
+            .collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+        )
+        .unwrap();
+
+        for (cut, expected_vertices, expected_edges, source_clockwise) in [
+            (polygon.clone(), [8, 4], [8, 4], false),
+            (polygon.reversed().unwrap(), [8, 4], [8, 4], true),
+            (circle.clone(), [5, 1], [5, 1], false),
+            (circle.reversed().unwrap(), [5, 1], [5, 1], true),
+        ] {
+            let [outside, inside] = Brep::try_split_rectangular_surface_face_with_closed_curve(
+                surface.clone(),
+                0.0..=10.0,
+                0.0..=10.0,
+                cut,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+            assert_eq!(outside.vertices().len(), expected_vertices[0]);
+            assert_eq!(outside.edges().len(), expected_edges[0]);
+            assert_eq!(inside.vertices().len(), expected_vertices[1]);
+            assert_eq!(inside.edges().len(), expected_edges[1]);
+            assert_eq!(
+                outside.faces()[0]
+                    .loops()
+                    .iter()
+                    .map(BrepLoop::loop_type)
+                    .collect::<Vec<_>>(),
+                vec![BrepLoopType::Outer, BrepLoopType::Inner]
+            );
+            assert!(
+                outside.faces()[0].loops()[1]
+                    .trims()
+                    .iter()
+                    .all(|trim| trim.is_reversed_3d() != source_clockwise)
+            );
+            assert_eq!(
+                inside.faces()[0].loops()[0].loop_type(),
+                BrepLoopType::Outer
+            );
+            assert!(
+                inside.faces()[0].loops()[0]
+                    .trims()
+                    .iter()
+                    .all(|trim| trim.is_reversed_3d() == source_clockwise)
+            );
+            outside.tessellate(4, Tolerance::DEFAULT).unwrap();
+            inside.tessellate(4, Tolerance::DEFAULT).unwrap();
+            assert!(Tolerance::DEFAULT.approx_eq(
+                outside.area(Tolerance::DEFAULT).unwrap()
+                    + inside.area(Tolerance::DEFAULT).unwrap(),
+                100.0,
+            ));
+        }
+
+        let bow_tie = NurbsCurve::try_new(
+            1,
+            vec![
+                point(3.0, 3.0, 0.0),
+                point(7.0, 7.0, 0.0),
+                point(3.0, 7.0, 0.0),
+                point(7.0, 3.0, 0.0),
+                point(3.0, 3.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        assert!(
+            Brep::try_split_rectangular_surface_face_with_closed_curve(
+                surface,
+                0.0..=10.0,
+                0.0..=10.0,
+                bow_tie,
+                false,
+                Tolerance::DEFAULT,
+            )
+            .is_err()
+        );
     }
 
     #[test]

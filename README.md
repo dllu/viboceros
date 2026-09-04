@@ -906,6 +906,10 @@ produce two exact triangles. A supported curved cut returning to the same
 boundary side produces Rhino's two-edge lens in all four orientations. Its
 complement has six edges for interior endpoints, five when one endpoint is a
 corner, and four when it joins the side's two corners.
+A single simple closed cutter wholly inside the trim produces an exact inner
+face and a complementary face with a clockwise inner loop. Smooth closed NURBS
+remain one edge, while degree-multiple kinks split into Rhino-compatible edges;
+self-crossing loops are rejected.
 Straight and curved intersections against an already-trimmed rectangular
 B-rep are partitioned at exact intersections with its four visible UV
 boundaries. Globally nonmonotone cutters may enter the face repeatedly; every
@@ -918,9 +922,10 @@ curve, surface, solid box, holed planar-face, and view-aligned non-intersecting
 cutters. The topology-aware surface fixture covers both isoparametric directions,
 both opposite-side diagonal directions, all four adjacent-side directions, and
 all ten nonincident corner-ending arrangements, same-side curved paths with
-interior and corner endpoints in all four directions, single- and multi-span
-curved paths, straight, curved, nonmonotone-control, and repeated-entry clipping
-on pretrimmed sources, and parallel, crossing,
+interior and corner endpoints in all four directions, closed polygonal and
+rational-circle cutters in both directions, single- and multi-span curved paths,
+straight, curved, nonmonotone-control, and repeated-entry clipping on pretrimmed
+sources, and parallel, crossing,
 mixed-isoparametric, rational-curved, and shared-corner multi-cutter
 arrangements. It compares UV trim degree, controls, weights, knots, and domains
 as well as vertices, edge domains, trim order,
@@ -943,8 +948,9 @@ collapsed poles use singular trims. The topology-aware planar, cylindrical,
 and spherical Rhino fixture agrees through vertices, edge domains, trim classes
 and directions, face orientation, and geometry to within `2e-15`.
 Curved paths on higher-degree, rational, or planar non-affine parameterizations,
-nonmonotone curved trim clipping, nonlinear surface/surface cutters, and
-nonrectangular or multi-face B-rep sources remain future extensions.
+multiple interacting closed cutters, nonmonotone curved trim clipping, nonlinear
+surface/surface cutters, and nonrectangular or multi-face B-rep sources remain
+future extensions.
 `Intersect` compares every supported pair of selected curve-compatible objects,
 untrimmed NURBS surfaces, and B-reps. Isolated and tangent contacts create
 current-layer point objects, while finite shared intervals create exact NURBS

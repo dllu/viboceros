@@ -13009,6 +13009,7 @@ enum CompleteSurfaceCut {
         destination: [Real; 2],
     },
     SameBoundarySide,
+    ClosedInterior,
 }
 
 fn selected_curve_cutter_inputs(
@@ -13232,7 +13233,8 @@ fn split_rectangular_surface_with_cutters(
                 | CompleteSurfaceCut::NorthWest { .. }
                 | CompleteSurfaceCut::WestSouth { .. }
                 | CompleteSurfaceCut::Corner { .. }
-                | CompleteSurfaceCut::SameBoundarySide => {
+                | CompleteSurfaceCut::SameBoundarySide
+                | CompleteSurfaceCut::ClosedInterior => {
                     complete_cut_curves.push(cut_curve.clone());
                     nonisoparametric_cuts.push((cut, cut_curve));
                 }
@@ -13247,6 +13249,7 @@ fn split_rectangular_surface_with_cutters(
         && nonisoparametric_cuts[0].0 != CompleteSurfaceCut::SameBoundarySide
     {
         let (cut, curve) = nonisoparametric_cuts.pop().unwrap();
+        let closed_interior = cut == CompleteSurfaceCut::ClosedInterior;
         let pieces = match cut {
             CompleteSurfaceCut::WestEast { west_v, east_v } => {
                 Brep::try_split_rectangular_surface_face_west_east(
@@ -13335,12 +13338,31 @@ fn split_rectangular_surface_with_cutters(
             CompleteSurfaceCut::SameBoundarySide => {
                 unreachable!("same-side cuts use the general curve arrangement")
             }
+            CompleteSurfaceCut::ClosedInterior => {
+                Brep::try_split_rectangular_surface_face_with_closed_curve(
+                    surface.clone(),
+                    bounds[0][0]..=bounds[0][1],
+                    bounds[1][0]..=bounds[1][1],
+                    curve,
+                    reversed,
+                    document.tolerance(),
+                )?
+            }
         };
         replace_surface_split_source(document, source_id, Vec::from(pieces))?;
-        return Ok(
+        return Ok(if closed_interior {
+            "Split the selected surface along 1 closed interior curve into 2 exact B-rep faces"
+                .to_owned()
+        } else {
             "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
-                .to_owned(),
-        );
+                .to_owned()
+        });
+    }
+    if nonisoparametric_cuts
+        .iter()
+        .any(|(cut, _)| *cut == CompleteSurfaceCut::ClosedInterior)
+    {
+        return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
     }
     if !nonisoparametric_cuts.is_empty() || cuts_u.len() + cuts_v.len() > 1 {
         let cut_count = complete_cut_curves.len();
@@ -13563,6 +13585,19 @@ fn classify_complete_surface_cut_once(
 
     let epsilon_u = surface_split_parameter_epsilon(bounds[0], tolerance);
     let epsilon_v = surface_split_parameter_epsilon(bounds[1], tolerance);
+    if curve.is_closed()? {
+        let parameter_curve = surface
+            .try_pullback_bilinear_curve(curve, tolerance)
+            .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
+        if !surface_cut_parameter_curve_is_closed_inside_bounds(
+            &parameter_curve,
+            bounds,
+            [epsilon_u, epsilon_v],
+        ) {
+            return Err(CommandError::UnsupportedSurfaceCuttingIntersection);
+        }
+        return Ok(Some((CompleteSurfaceCut::ClosedInterior, curve.clone())));
+    }
     let constant_u = range_u[1] - range_u[0] <= epsilon_u;
     let constant_v = range_v[1] - range_v[0] <= epsilon_v;
     let covers_u = range_u[0] <= bounds[0][0] + epsilon_u && range_u[1] >= bounds[0][1] - epsilon_u;
@@ -13902,6 +13937,29 @@ fn surface_cut_parameter_curve_is_simple_in_bounds(
     (0..2).any(|coordinate| {
         surface_cut_parameter_curve_strict_direction(curve, coordinate, epsilon[coordinate])
             .is_some()
+    })
+}
+
+fn surface_cut_parameter_curve_is_closed_inside_bounds(
+    curve: &NurbsCurve2,
+    bounds: [[Real; 2]; 2],
+    epsilon: [Real; 2],
+) -> bool {
+    let (Ok(start), Ok(end)) = (curve.start_point(), curve.end_point()) else {
+        return false;
+    };
+    if !surface_cut_parameter_curve_has_one_weight_sign(curve)
+        || (start.x() - end.x()).abs() > epsilon[0]
+        || (start.y() - end.y()).abs() > epsilon[1]
+    {
+        return false;
+    }
+    curve.control_points().iter().all(|control| {
+        let point = control.point();
+        point.x() > bounds[0][0] + epsilon[0]
+            && point.x() < bounds[0][1] - epsilon[0]
+            && point.y() > bounds[1][0] + epsilon[1]
+            && point.y() < bounds[1][1] - epsilon[1]
     })
 }
 
@@ -29839,6 +29897,86 @@ mod tests {
             }
             edge_counts.sort_unstable();
             assert_eq!(edge_counts, expected_edge_counts);
+            assert!(document.tolerance().approx_eq(area, 100.0));
+        }
+    }
+
+    #[test]
+    fn cutting_object_split_supports_closed_interior_curves() {
+        let registry = CommandRegistry::with_builtins();
+        let polygon = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(3.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(7.0, 3.0, 0.0).unwrap(),
+                Point3::try_new(7.0, 7.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 7.0, 0.0).unwrap(),
+                Point3::try_new(3.0, 3.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+        )
+        .unwrap();
+        let diagonal_weight = std::f64::consts::FRAC_1_SQRT_2;
+        let circle = NurbsCurve::try_new_rational(
+            2,
+            [
+                ([7.0, 5.0], 1.0),
+                ([7.0, 7.0], diagonal_weight),
+                ([5.0, 7.0], 1.0),
+                ([3.0, 7.0], diagonal_weight),
+                ([3.0, 5.0], 1.0),
+                ([3.0, 3.0], diagonal_weight),
+                ([5.0, 3.0], 1.0),
+                ([7.0, 3.0], diagonal_weight),
+                ([7.0, 5.0], 1.0),
+            ]
+            .into_iter()
+            .map(|(coordinates, weight)| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(coordinates[0], coordinates[1], 0.0).unwrap(),
+                    weight,
+                )
+                .unwrap()
+            })
+            .collect(),
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 2.0, 2.0, 3.0, 3.0, 4.0, 4.0, 4.0],
+        )
+        .unwrap();
+
+        for (cutter, expected_edge_counts) in [(polygon, [4, 8]), (circle, [1, 5])] {
+            let mut document = Document::default();
+            let source_id = document
+                .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+                .unwrap();
+            let cutter_id = document.add_geometry(Geometry::NurbsCurve(cutter)).unwrap();
+            document
+                .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+                .unwrap();
+
+            let message = registry
+                .execute(&mut document, "Split CuttingObjects=1,1,0")
+                .unwrap();
+            assert!(message.contains("1 closed interior curve"));
+            assert!(document.object(source_id).is_none());
+            assert!(!document.is_selected(cutter_id));
+            let outputs = document.selected_objects().collect::<Vec<_>>();
+            assert_eq!(outputs.len(), 2);
+            let mut edge_counts = Vec::new();
+            let mut loop_counts = Vec::new();
+            let mut area = 0.0;
+            for object in outputs {
+                let Geometry::Brep(brep) = object.geometry() else {
+                    panic!("closed cutting Split must create B-rep faces")
+                };
+                edge_counts.push(brep.edges().len());
+                loop_counts.push(brep.faces()[0].loops().len());
+                area += brep.area(document.tolerance()).unwrap();
+                brep.tessellate(4, document.tolerance()).unwrap();
+            }
+            edge_counts.sort_unstable();
+            loop_counts.sort_unstable();
+            assert_eq!(edge_counts, expected_edge_counts);
+            assert_eq!(loop_counts, vec![1, 2]);
             assert!(document.tolerance().approx_eq(area, 100.0));
         }
     }
