@@ -13243,9 +13243,17 @@ fn split_rectangular_surface_with_cutters(
     }
     cuts_u.sort_by(Real::total_cmp);
     cuts_v.sort_by(Real::total_cmp);
+    let single_open_cut_has_kink = if let [(cut, curve)] = nonisoparametric_cuts.as_slice()
+        && *cut != CompleteSurfaceCut::ClosedInterior
+    {
+        curve.has_full_multiplicity_kink(document.tolerance())?
+    } else {
+        false
+    };
     if nonisoparametric_cuts.len() == 1
         && cuts_u.is_empty()
         && cuts_v.is_empty()
+        && !single_open_cut_has_kink
         && nonisoparametric_cuts[0].0 != CompleteSurfaceCut::SameBoundarySide
     {
         let (cut, curve) = nonisoparametric_cuts.pop().unwrap();
@@ -13391,6 +13399,12 @@ fn split_rectangular_surface_with_cutters(
             return Ok(format!(
                 "Split the selected surface along {cut_count} complete cutting curve(s) into {piece_count} exact B-rep face(s)"
             ));
+        }
+        if single_open_cut_has_kink && cut_count == 1 {
+            return Ok(
+                "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+                    .to_owned(),
+            );
         }
         return Ok(format!(
             "Split the selected surface along {cut_count} complete boundary-to-boundary curve(s) into {piece_count} exact B-rep face(s)"
@@ -30219,6 +30233,56 @@ mod tests {
         run_case(&["Line 0,2,0 10,4,0", "Line 0,6,0 10,8,0"], None, 3, 4, 0);
         run_case(&["Line 0,2,0 10,8,0", "Line 0,8,0 10,2,0"], None, 4, 8, 0);
         run_case(&["Line 0,2,0 10,8,0"], Some(5.0), 4, 4, 4);
+    }
+
+    #[test]
+    fn cutting_object_split_preserves_single_open_cutter_kinks() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(planar_intersection_surface()))
+            .unwrap();
+        let cutter = NurbsCurve::try_new(
+            1,
+            vec![
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 6.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 2.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let cutter_id = document.add_geometry(Geometry::NurbsCurve(cutter)).unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=5,1,0")
+                .unwrap(),
+            "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(!document.is_selected(cutter_id));
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        for output in outputs {
+            let Geometry::Brep(brep) = output.geometry() else {
+                panic!("kinked surface cutting Split must create B-rep faces")
+            };
+            assert_eq!(brep.vertices().len(), 5);
+            assert_eq!(brep.edges().len(), 5);
+            let mut cut_domains = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .filter(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                .map(|trim| brep.edges()[trim.edge().unwrap()].curve().domain())
+                .collect::<Vec<_>>();
+            cut_domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+            assert_eq!(cut_domains, vec![0.0..=1.0, 1.0..=2.0]);
+            brep.tessellate(3, document.tolerance()).unwrap();
+        }
     }
 
     #[test]

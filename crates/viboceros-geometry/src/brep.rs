@@ -5090,11 +5090,7 @@ fn closed_surface_cut_segments(
 ) -> Result<Vec<ClosedSurfaceCutSegment>, GeometryError> {
     let domain = spatial.domain();
     let mut breaks = vec![*domain.start()];
-    for (knot, multiplicity) in spatial.interior_knot_groups() {
-        if multiplicity == spatial.degree() && spatial.kink_angle_at(knot)? > tolerance.angular() {
-            breaks.push(knot);
-        }
-    }
+    breaks.extend(spatial.full_multiplicity_kink_parameters(tolerance)?);
     breaks.push(*domain.end());
     if breaks.len() - 1 > crate::MAX_SURFACE_WIRES {
         return Err(GeometryError::TooManySurfaceWires);
@@ -5373,25 +5369,18 @@ fn try_rectangular_surface_cut_arrangement(
                 node,
             });
         }
-        if cut.closed {
-            for (knot, multiplicity) in cut.spatial.interior_knot_groups() {
-                if multiplicity != cut.spatial.degree()
-                    || cut.spatial.kink_angle_at(knot)? <= tolerance.angular()
-                {
-                    continue;
-                }
-                let parameter = cut.parameter.evaluate(knot)?;
-                let node = surface_cut_arrangement_node(
-                    &mut nodes,
-                    parameter,
-                    cut.spatial.evaluate(knot)?,
-                    parameter_tolerance,
-                );
-                cut.breaks.push(SurfaceCutArrangementBreak {
-                    parameter: knot,
-                    node,
-                });
-            }
+        for knot in cut.spatial.full_multiplicity_kink_parameters(tolerance)? {
+            let parameter = cut.parameter.evaluate(knot)?;
+            let node = surface_cut_arrangement_node(
+                &mut nodes,
+                parameter,
+                cut.spatial.evaluate(knot)?,
+                parameter_tolerance,
+            );
+            cut.breaks.push(SurfaceCutArrangementBreak {
+                parameter: knot,
+                node,
+            });
         }
     }
 
@@ -10743,6 +10732,47 @@ mod tests {
                 })
                 .collect::<Vec<_>>(),
             vec![1, 2, 1]
+        );
+
+        let open_kink = NurbsCurve::try_new(
+            1,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(5.0, 6.0, 0.0),
+                point(10.0, 2.0, 0.0),
+            ],
+            vec![0.0, 0.0, 1.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let kinked_parallel = Brep::try_split_rectangular_surface_face_with_curves(
+            surface.clone(),
+            0.0..=10.0,
+            0.0..=10.0,
+            [open_kink, line([0.0, 8.0], [10.0, 8.0])],
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        assert_pieces(&kinked_parallel, 3);
+        assert_eq!(
+            kinked_parallel
+                .iter()
+                .map(|piece| piece.edges().len())
+                .collect::<Vec<_>>(),
+            vec![5, 5, 4]
+        );
+        assert_eq!(
+            kinked_parallel
+                .iter()
+                .map(|piece| {
+                    piece.faces()[0].loops()[0]
+                        .trims()
+                        .iter()
+                        .filter(|trim| trim.iso() == SurfaceIso::NotIso)
+                        .count()
+                })
+                .collect::<Vec<_>>(),
+            vec![2, 2, 0]
         );
 
         let duplicate_cut = line([0.0, 2.0], [10.0, 8.0]);

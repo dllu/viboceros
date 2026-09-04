@@ -805,6 +805,18 @@ impl NurbsCurve {
         self.knots[self.degree]..=self.knots[self.control_points.len()]
     }
 
+    /// Reports whether an interior knot has full degree multiplicity and a
+    /// one-sided tangent discontinuity larger than the angular tolerance.
+    ///
+    /// These are the curve locations that become distinct B-rep edges when
+    /// Rhino uses the curve as a surface cutting object. Lower-multiplicity
+    /// knots and collinear full-multiplicity knots remain within one edge.
+    pub fn has_full_multiplicity_kink(&self, tolerance: Tolerance) -> Result<bool, GeometryError> {
+        Ok(!self
+            .full_multiplicity_kink_parameters(tolerance)?
+            .is_empty())
+    }
+
     /// Affinely maps the full knot vector onto a new active parameter domain.
     ///
     /// Control points and weights are unchanged, so the geometric image and
@@ -2602,7 +2614,25 @@ impl NurbsCurve {
             .as_vector()
             .dot(outgoing.as_vector())?
             .clamp(-1.0, 1.0);
-        Ok(cosine.acos())
+        let sine = incoming
+            .as_vector()
+            .cross(outgoing.as_vector())?
+            .length()?
+            .clamp(0.0, 1.0);
+        Ok(sine.atan2(cosine))
+    }
+
+    pub(crate) fn full_multiplicity_kink_parameters(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Real>, GeometryError> {
+        let mut kinks = Vec::new();
+        for (knot, multiplicity) in self.interior_knot_groups() {
+            if multiplicity == self.degree && self.kink_angle_at(knot)? > tolerance.angular() {
+                kinks.push(knot);
+            }
+        }
+        Ok(kinks)
     }
 
     pub(crate) fn try_remove_multiple_knot_groups(
@@ -8707,6 +8737,33 @@ mod tests {
         assert_eq!(removed.knots(), &[10.0, 10.0, 10.0, 14.0, 14.0, 14.0]);
         assert_point_near(removed.evaluate(10.0).unwrap(), endpoints[0]);
         assert_point_near(removed.evaluate(14.0).unwrap(), endpoints[1]);
+    }
+
+    #[test]
+    fn full_multiplicity_kink_predicate_ignores_collinear_knots() {
+        let curve = |middle_y| {
+            NurbsCurve::try_new(
+                1,
+                vec![
+                    Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                    Point3::try_new(5.0, middle_y, 0.0).unwrap(),
+                    Point3::try_new(10.0, 6.0, 0.0).unwrap(),
+                ],
+                vec![0.0, 0.0, 1.0, 2.0, 2.0],
+            )
+            .unwrap()
+        };
+
+        assert!(
+            !curve(4.0)
+                .has_full_multiplicity_kink(Tolerance::DEFAULT)
+                .unwrap()
+        );
+        assert!(
+            curve(7.0)
+                .has_full_multiplicity_kink(Tolerance::DEFAULT)
+                .unwrap()
+        );
     }
 
     #[test]

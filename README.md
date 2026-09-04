@@ -912,9 +912,10 @@ nested loops produce annular faces, and transverse cuts split both the closed
 interiors and their complements. Pairs of polygonal loops, smooth rational
 circles, or one of each may touch externally or internally at one vertex; they
 retain Rhino's welded loop topology and tessellate without opening the contact,
-independent of cutter order and direction. Smooth closed NURBS remain one edge,
-while degree-multiple kinks split into Rhino-compatible edges; self-crossing
-loops are rejected. Boundary-to-boundary cutters may likewise touch a smooth
+independent of cutter order and direction. Smooth open and closed NURBS spans
+remain intact between arrangement contacts, while degree-multiple tangent
+kinks split into Rhino-compatible edges; self-crossing loops are rejected.
+Boundary-to-boundary cutters may likewise touch a smooth
 circle or polygon vertex without falsely crossing or opening the closed region.
 Two open cutters may meet tangentially; regions pinched together only at that
 contact remain distinct Rhino-compatible faces. Partially coincident cutters
@@ -949,10 +950,11 @@ directions, open/closed tangent contacts in both cutter orders, and open/open
 tangent contacts with pinched lobes, plus shared-start and shared-middle cutter
 segments in swapped and reversed traversal orders, including an exact shared
 quadratic span, open/closed shared edges, and adjacent closed polygons. It also
-covers a reversed smooth continuation promoted over an earlier kinked cutter
-and both smooth-promoted and all-kinked three-way shared spans. It
-compares UV trim degree, controls, weights, knots, and domains as well as
-vertices, edge domains, trim order,
+covers a reversed smooth continuation promoted over an earlier kinked cutter,
+both smooth-promoted and all-kinked three-way shared spans, and degree-one and
+genuinely curved degree-two open-cutter kinks in single- and multi-cutter
+arrangements. It compares UV trim degree, controls, weights, knots, and domains
+as well as vertices, edge domains, trim order,
 metadata, grouping, and selection, agreeing to within `1.1e-14` of Rhino.
 Current surface/surface intersection support is planar.
 `Split Isocurve=point
