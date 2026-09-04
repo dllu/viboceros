@@ -30,8 +30,9 @@ use viboceros_geometry::{
     SurfaceSurfaceIntersectionEvent, Tolerance, TriangleMesh, UnitVector3, Vector3,
     brep_brep_intersection_events, curve_brep_intersection_events,
     curve_surface_intersection_events, join_polylines, sort_and_cull_points,
-    surface_brep_intersection_events, surface_surface_intersection_events, try_catenary,
-    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
+    surface_brep_intersection_events, surface_surface_intersection_events,
+    transformed_curve_brep_intersection_events, try_catenary, try_curve_through_points,
+    try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     StepError, StlError, StlFormat, ThreeDmColorSource, ThreeDmError, ThreeDmGeometry,
@@ -12681,6 +12682,12 @@ struct TrimCurveOptions {
 
 struct TrimCurveCommand;
 
+enum TrimCurveInput {
+    Curve(NurbsCurve),
+    Surface(NurbsSurface),
+    Brep(Brep),
+}
+
 impl Command for TrimCurveCommand {
     fn name(&self) -> &'static str {
         "Trim"
@@ -12692,86 +12699,173 @@ impl Command for TrimCurveCommand {
         let candidates = document
             .selected_objects()
             .filter_map(|object| {
-                object
-                    .geometry()
-                    .nurbs_curve_representation()
-                    .transpose()
-                    .map(|curve| curve.map(|curve| (object.id(), curve)))
+                let input = match object.geometry() {
+                    Geometry::NurbsSurface(surface) => {
+                        Some(Ok(TrimCurveInput::Surface(surface.clone())))
+                    }
+                    Geometry::Brep(brep) => Some(Ok(TrimCurveInput::Brep(brep.clone()))),
+                    geometry => geometry
+                        .nurbs_curve_representation()
+                        .transpose()
+                        .map(|curve| curve.map(TrimCurveInput::Curve)),
+                };
+                input.map(|input| input.map(|input| (object.id(), input)))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
         if candidates.len() < 2 {
-            return Err(CommandError::TrimRequiresAtLeastTwoCurves {
+            return Err(CommandError::TrimRequiresSourceAndCuttingObjects {
                 actual: candidates.len(),
             });
         }
 
-        let (intersection_curves, intersection_pick) = if options.apparent_intersections {
+        let (projection, intersection_pick) = if options.apparent_intersections {
             let origin = Point3::try_new(0.0, 0.0, 0.0)?;
             let normal = options.view_normal.normalized(document.tolerance())?;
             let projection = AffineTransform3::try_planar_projection(Plane::new(origin, normal))?;
-            (
-                candidates
-                    .iter()
-                    .map(|(_, curve)| curve.transformed(projection))
-                    .collect::<Result<Vec<_>, _>>()?,
-                projection.transform_point(options.pick)?,
-            )
+            (Some(projection), projection.transform_point(options.pick)?)
         } else {
-            (
-                candidates.iter().map(|(_, curve)| curve.clone()).collect(),
-                options.pick,
-            )
+            (None, options.pick)
         };
 
         let mut picked = None;
-        for (index, curve) in intersection_curves.iter().enumerate() {
-            let parameter = curve.closest_parameter(intersection_pick, document.tolerance())?;
-            let distance = curve.evaluate(parameter)?.distance_to(intersection_pick)?;
-            if picked.is_none_or(|(_, _, nearest_distance)| distance < nearest_distance) {
-                picked = Some((index, parameter, distance));
+        for (index, (_, input)) in candidates.iter().enumerate() {
+            let TrimCurveInput::Curve(curve) = input else {
+                continue;
+            };
+            let intersection_curve = if let Some(projection) = projection {
+                curve.transformed(projection)?
+            } else {
+                curve.clone()
+            };
+            let parameter =
+                intersection_curve.closest_parameter(intersection_pick, document.tolerance())?;
+            let distance = intersection_curve
+                .evaluate(parameter)?
+                .distance_to(intersection_pick)?;
+            if picked
+                .as_ref()
+                .is_none_or(|(_, _, _, nearest_distance)| distance < *nearest_distance)
+            {
+                picked = Some((index, intersection_curve, parameter, distance));
             }
         }
-        let (source_index, picked_parameter, _) =
-            picked.expect("at least two Trim candidates were required");
-        let (source_id, source) = &candidates[source_index];
-        let intersection_source = &intersection_curves[source_index];
+        let Some((source_index, intersection_source, picked_parameter, _)) = picked else {
+            return Err(CommandError::TrimRequiresCurveSource);
+        };
+        let (source_id, TrimCurveInput::Curve(source)) = &candidates[source_index] else {
+            unreachable!("only selected curves participate in Trim source picking")
+        };
 
         let domain = source.domain();
         let domain_start = *domain.start();
         let domain_end = *domain.end();
-        let start_point = intersection_source.evaluate(domain_start)?;
-        let end_point = intersection_source.evaluate(domain_end)?;
+        let start_point = source.evaluate(domain_start)?;
+        let end_point = source.evaluate(domain_end)?;
         let mut intersections = Vec::new();
-        for (index, cutter) in intersection_curves.iter().enumerate() {
+        for (index, (_, cutter)) in candidates.iter().enumerate() {
             if index == source_index {
                 continue;
             }
-            for intersection in
-                intersection_source.intersections_with_curve(cutter, document.tolerance())?
-            {
-                let parameter = intersection.first_parameter();
-                let point = intersection.point();
-                if !trim_intersections_near(
-                    (parameter, point),
-                    (domain_start, start_point),
-                    document.tolerance(),
-                ) && !trim_intersections_near(
-                    (parameter, point),
-                    (domain_end, end_point),
-                    document.tolerance(),
-                ) {
-                    if intersections.len() == MAX_CURVE_TRIM_INTERSECTIONS {
-                        return Err(CommandError::TooManyTrimIntersections {
-                            maximum: MAX_CURVE_TRIM_INTERSECTIONS,
-                        });
+            match cutter {
+                TrimCurveInput::Curve(cutter) => {
+                    let intersection_cutter = if let Some(projection) = projection {
+                        cutter.transformed(projection)?
+                    } else {
+                        cutter.clone()
+                    };
+                    for intersection in intersection_source
+                        .intersections_with_curve(&intersection_cutter, document.tolerance())?
+                    {
+                        push_trim_curve_intersection(
+                            &mut intersections,
+                            source,
+                            intersection.first_parameter(),
+                            (domain_start, start_point),
+                            (domain_end, end_point),
+                            document.tolerance(),
+                        )?;
                     }
-                    intersections.push((parameter, point));
+                }
+                TrimCurveInput::Surface(surface) => {
+                    let transformed_surface;
+                    let intersection_surface = if let Some(projection) = projection {
+                        transformed_surface = surface.transformed(projection)?;
+                        &transformed_surface
+                    } else {
+                        surface
+                    };
+                    for event in curve_surface_intersection_events(
+                        &intersection_source,
+                        intersection_surface,
+                        document.tolerance(),
+                    )? {
+                        match event {
+                            CurveSurfaceIntersectionEvent::Point(intersection) => {
+                                push_trim_curve_intersection(
+                                    &mut intersections,
+                                    source,
+                                    intersection.curve_parameter(),
+                                    (domain_start, start_point),
+                                    (domain_end, end_point),
+                                    document.tolerance(),
+                                )?;
+                            }
+                            CurveSurfaceIntersectionEvent::Overlap(overlap) => {
+                                for intersection in [overlap.start(), overlap.end()] {
+                                    push_trim_curve_intersection(
+                                        &mut intersections,
+                                        source,
+                                        intersection.curve_parameter(),
+                                        (domain_start, start_point),
+                                        (domain_end, end_point),
+                                        document.tolerance(),
+                                    )?;
+                                }
+                            }
+                        }
+                    }
+                }
+                TrimCurveInput::Brep(brep) => {
+                    let events = if let Some(projection) = projection {
+                        transformed_curve_brep_intersection_events(
+                            source,
+                            brep,
+                            projection,
+                            document.tolerance(),
+                        )?
+                    } else {
+                        curve_brep_intersection_events(source, brep, document.tolerance())?
+                    };
+                    for event in events {
+                        match event {
+                            CurveBrepIntersectionEvent::Point(intersection) => {
+                                push_trim_curve_intersection(
+                                    &mut intersections,
+                                    source,
+                                    intersection.curve_parameter(),
+                                    (domain_start, start_point),
+                                    (domain_end, end_point),
+                                    document.tolerance(),
+                                )?;
+                            }
+                            CurveBrepIntersectionEvent::Overlap(overlap) => {
+                                for intersection in [overlap.start(), overlap.end()] {
+                                    push_trim_curve_intersection(
+                                        &mut intersections,
+                                        source,
+                                        intersection.curve_parameter(),
+                                        (domain_start, start_point),
+                                        (domain_end, end_point),
+                                        document.tolerance(),
+                                    )?;
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
         intersections.sort_by(|left, right| left.0.total_cmp(&right.0));
-        intersections
-            .dedup_by(|left, right| trim_intersections_near(*left, *right, document.tolerance()));
         let parameters = intersections
             .into_iter()
             .map(|(parameter, _)| parameter)
@@ -12836,6 +12930,32 @@ impl Command for TrimCurveCommand {
             "Trimmed one curve interval and retained {output_count} exact NURBS piece(s)"
         ))
     }
+}
+
+fn push_trim_curve_intersection(
+    intersections: &mut Vec<(Real, Point3)>,
+    source: &NurbsCurve,
+    parameter: Real,
+    start: (Real, Point3),
+    end: (Real, Point3),
+    tolerance: Tolerance,
+) -> Result<(), CommandError> {
+    let intersection = (parameter, source.evaluate(parameter)?);
+    if trim_intersections_near(intersection, start, tolerance)
+        || trim_intersections_near(intersection, end, tolerance)
+        || intersections
+            .iter()
+            .any(|existing| trim_intersections_near(*existing, intersection, tolerance))
+    {
+        return Ok(());
+    }
+    if intersections.len() == MAX_CURVE_TRIM_INTERSECTIONS {
+        return Err(CommandError::TooManyTrimIntersections {
+            maximum: MAX_CURVE_TRIM_INTERSECTIONS,
+        });
+    }
+    intersections.push(intersection);
+    Ok(())
 }
 
 fn parse_trim_curve_options(arguments: &[&str]) -> Result<TrimCurveOptions, CommandError> {
@@ -19966,8 +20086,13 @@ pub enum CommandError {
     #[error("Intersect supports at most {maximum} output objects")]
     TooManyIntersectOutputs { maximum: usize },
 
-    #[error("Trim requires at least two selected curves, got {actual}")]
-    TrimRequiresAtLeastTwoCurves { actual: usize },
+    #[error(
+        "Trim requires a selected source curve and at least one selected curve, surface, or B-rep cutter, got {actual} supported selected object(s)"
+    )]
+    TrimRequiresSourceAndCuttingObjects { actual: usize },
+
+    #[error("Trim requires at least one selected curve to use as the source")]
+    TrimRequiresCurveSource,
 
     #[error("Trim supports at most {maximum} cutting intersections")]
     TooManyTrimIntersections { maximum: usize },
@@ -26899,6 +27024,204 @@ mod tests {
     }
 
     #[test]
+    fn trim_uses_exact_surface_and_brep_cutters() {
+        let registry = CommandRegistry::with_builtins();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+
+        let mut surface_document = Document::default();
+        registry
+            .execute(&mut surface_document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let source_id = surface_document.objects().next().unwrap().id();
+        let surface = NurbsSurface::try_bilinear([
+            point(3.0, -1.0, 0.0),
+            point(7.0, -1.0, 0.0),
+            point(7.0, 1.0, 0.0),
+            point(3.0, 1.0, 0.0),
+        ])
+        .unwrap();
+        let surface_id = surface_document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        surface_document
+            .select_objects_direct([source_id, surface_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut surface_document, "Trim 5,0,0 ApparentIntersections=No",)
+                .unwrap(),
+            "Trimmed one curve interval and retained 2 exact NURBS piece(s)"
+        );
+        let mut surface_domains = surface_document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("surface Trim selected unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        surface_domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        assert_eq!(surface_domains, vec![0.0..=3.0, 7.0..=10.0]);
+        assert!(surface_document.object(surface_id).is_some());
+
+        let mut brep_document = Document::default();
+        registry
+            .execute(&mut brep_document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let source_id = brep_document.objects().next().unwrap().id();
+        let cutter_id = brep_document
+            .add_geometry(Geometry::Brep(intersection_box_with_intervals([
+                [2.0, 8.0],
+                [-1.0, 1.0],
+                [-1.0, 1.0],
+            ])))
+            .unwrap();
+        brep_document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry.execute(&mut brep_document, "Trim 5,0,0").unwrap(),
+            "Trimmed one curve interval and retained 2 exact NURBS piece(s)"
+        );
+        let mut brep_domains = brep_document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("B-rep Trim selected unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        brep_domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        for (actual, expected) in brep_domains.iter().zip([[0.0, 2.0], [8.0, 10.0]]) {
+            assert!((*actual.start() - expected[0]).abs() < 1.0e-12);
+            assert!((*actual.end() - expected[1]).abs() < 1.0e-12);
+        }
+        assert!(brep_document.object(cutter_id).is_some());
+
+        let closed_polyline = |points| {
+            Polyline3::try_new(points, Tolerance::DEFAULT)
+                .and_then(|polyline| polyline.to_nurbs())
+                .unwrap()
+        };
+        let outer = closed_polyline(vec![
+            point(2.0, -2.0, 0.0),
+            point(8.0, -2.0, 0.0),
+            point(8.0, 2.0, 0.0),
+            point(2.0, 2.0, 0.0),
+            point(2.0, -2.0, 0.0),
+        ]);
+        let hole = closed_polyline(vec![
+            point(4.0, -1.0, 0.0),
+            point(6.0, -1.0, 0.0),
+            point(6.0, 1.0, 0.0),
+            point(4.0, 1.0, 0.0),
+            point(4.0, -1.0, 0.0),
+        ]);
+        let trimmed_face =
+            Brep::try_planar_face_with_holes(&outer, &[hole], Tolerance::DEFAULT).unwrap();
+        let mut trimmed_document = Document::default();
+        registry
+            .execute(&mut trimmed_document, "Line 0,0,0 10,0,0")
+            .unwrap();
+        let source_id = trimmed_document.objects().next().unwrap().id();
+        let cutter_id = trimmed_document
+            .add_geometry(Geometry::Brep(trimmed_face))
+            .unwrap();
+        trimmed_document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry
+            .execute(&mut trimmed_document, "Trim 5,0,0")
+            .unwrap();
+        let mut trimmed_domains = trimmed_document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("trimmed-face Trim selected unexpected geometry {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        trimmed_domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        for (actual, expected) in trimmed_domains.iter().zip([[0.0, 4.0], [6.0, 10.0]]) {
+            assert!((*actual.start() - expected[0]).abs() < 1.0e-12);
+            assert!((*actual.end() - expected[1]).abs() < 1.0e-12);
+        }
+        assert!(trimmed_document.object(cutter_id).is_some());
+    }
+
+    #[test]
+    fn trim_applies_apparent_intersections_to_surface_and_brep_cutters() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        registry
+            .execute(&mut document, "Line 0,0,1 10,0,1")
+            .unwrap();
+        let source_id = document.objects().next().unwrap().id();
+        let point = |x, y, z| Point3::try_new(x, y, z).unwrap();
+        let surface = NurbsSurface::try_bilinear([
+            point(3.0, -1.0, 0.0),
+            point(7.0, -1.0, 0.0),
+            point(7.0, 1.0, 0.0),
+            point(3.0, 1.0, 0.0),
+        ])
+        .unwrap();
+        let cutter_id = document
+            .add_geometry(Geometry::NurbsSurface(surface))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+        assert_eq!(
+            registry.execute(&mut document, "Trim 5,0,1").unwrap(),
+            "Trimmed one curve interval and retained 2 exact NURBS piece(s)"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(!document.is_selected(cutter_id));
+        let mut domains = document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("projected surface Trim selected unexpected {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        for (actual, expected) in domains.iter().zip([[0.0, 3.0], [7.0, 10.0]]) {
+            assert!((*actual.start() - expected[0]).abs() < 1.0e-12);
+            assert!((*actual.end() - expected[1]).abs() < 1.0e-12);
+        }
+
+        let mut brep_document = Document::default();
+        registry
+            .execute(&mut brep_document, "Line 0,0,2 10,0,2")
+            .unwrap();
+        let source_id = brep_document.objects().next().unwrap().id();
+        let cutter_id = brep_document
+            .add_geometry(Geometry::Brep(intersection_box_with_intervals([
+                [2.0, 8.0],
+                [-1.0, 1.0],
+                [0.0, 1.0],
+            ])))
+            .unwrap();
+        brep_document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        registry.execute(&mut brep_document, "Trim 5,0,2").unwrap();
+        let mut domains = brep_document
+            .selected_objects()
+            .map(|object| match object.geometry() {
+                Geometry::NurbsCurve(curve) => curve.domain(),
+                geometry => panic!("projected B-rep Trim selected unexpected {geometry:?}"),
+            })
+            .collect::<Vec<_>>();
+        domains.sort_by(|left, right| left.start().total_cmp(right.start()));
+        for (actual, expected) in domains.iter().zip([[0.0, 2.0], [8.0, 10.0]]) {
+            assert!((*actual.start() - expected[0]).abs() < 1.0e-12);
+            assert!((*actual.end() - expected[1]).abs() < 1.0e-12);
+        }
+    }
+
+    #[test]
     fn trim_rejects_invalid_or_underspecified_requests_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -26915,7 +27238,7 @@ mod tests {
         }
         assert!(matches!(
             registry.execute(&mut document, "Trim 0,0"),
-            Err(CommandError::TrimRequiresAtLeastTwoCurves { actual: 0 })
+            Err(CommandError::TrimRequiresSourceAndCuttingObjects { actual: 0 })
         ));
         registry.execute(&mut document, "Line 0,0 10,0").unwrap();
         let source_id = document.objects().next().unwrap().id();
@@ -26926,7 +27249,7 @@ mod tests {
         let history = document.undo_label().map(str::to_owned);
         assert!(matches!(
             registry.execute(&mut document, "Trim 5,0"),
-            Err(CommandError::TrimRequiresAtLeastTwoCurves { actual: 1 })
+            Err(CommandError::TrimRequiresSourceAndCuttingObjects { actual: 1 })
         ));
         assert_eq!(document.object(source_id).unwrap(), &before);
         assert_eq!(document.undo_label(), history.as_deref());

@@ -661,7 +661,7 @@ pub enum Operation {
     CurveTrimCommand {
         id: String,
         curve: NurbsCurveDefinition,
-        cutters: Vec<NurbsCurveDefinition>,
+        cutters: Vec<CurveExtensionBoundaryDefinition>,
         pick: [f64; 3],
         #[serde(default = "default_true")]
         apparent_intersections: bool,
@@ -7586,7 +7586,7 @@ fn intersect_command_with_curve_serializer(
 fn curve_trim_command(
     iterations: u32,
     definition: &NurbsCurveDefinition,
-    cutter_definitions: &[NurbsCurveDefinition],
+    cutter_definitions: &[CurveExtensionBoundaryDefinition],
     pick: [f64; 3],
     apparent_intersections: bool,
     view_normal: [f64; 3],
@@ -7595,8 +7595,16 @@ fn curve_trim_command(
     let source = nurbs_curve_from_definition(definition)?;
     let cutters = cutter_definitions
         .iter()
-        .map(nurbs_curve_from_definition)
-        .collect::<Result<Vec<_>, _>>()?;
+        .map(|definition| -> Result<Geometry, GeometryError> {
+            Ok(
+                match curve_extension_boundary_from_definition(definition, tolerance)? {
+                    CurveExtensionBoundary::Curve(curve) => Geometry::NurbsCurve(curve),
+                    CurveExtensionBoundary::Surface(surface) => Geometry::NurbsSurface(surface),
+                    CurveExtensionBoundary::Brep(brep) => Geometry::Brep(brep),
+                },
+            )
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
     let run = || -> Result<_, ProbeError> {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::new(tolerance);
@@ -7610,7 +7618,7 @@ fn curve_trim_command(
         let group_id = document.add_group(Some("Viboceros Trim Group".to_owned()), [source_id])?;
         let mut cutter_ids = Vec::with_capacity(cutters.len());
         for cutter in &cutters {
-            cutter_ids.push(document.add_geometry(Geometry::NurbsCurve(cutter.clone()))?);
+            cutter_ids.push(document.add_geometry(cutter.clone())?);
         }
         document.select_objects_direct(
             std::iter::once(source_id).chain(cutter_ids.iter().copied()),
@@ -10705,16 +10713,16 @@ mod tests {
                 vec![0.0, 0.0, 10.0, 10.0],
             ),
             cutters: vec![
-                line(
+                CurveExtensionBoundaryDefinition::Curve(line(
                     [3.0, -5.0, 0.0],
                     [3.0, 5.0, 0.0],
                     vec![0.0, 0.0, 10.0, 10.0],
-                ),
-                line(
+                )),
+                CurveExtensionBoundaryDefinition::Curve(line(
                     [7.0, -5.0, 0.0],
                     [7.0, 5.0, 0.0],
                     vec![0.0, 0.0, 10.0, 10.0],
-                ),
+                )),
             ],
             pick: [5.0, 0.0, 0.0],
             apparent_intersections: true,
@@ -10731,6 +10739,116 @@ mod tests {
             assert_eq!(object["in_source_group"], true);
             assert_eq!(object["original_id"], false);
             assert_eq!(object["selected"], true);
+        }
+    }
+
+    #[test]
+    fn captures_curve_trim_with_surface_and_brep_cutters() {
+        let line = NurbsCurveDefinition {
+            degree: 1,
+            control_points: [[0.0, 0.0, 0.0], [10.0, 0.0, 0.0]]
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![0.0, 0.0, 10.0, 10.0],
+            domain: None,
+        };
+        let surface = NurbsSurfaceDefinition {
+            degree_u: 1,
+            degree_v: 1,
+            control_point_count_u: 2,
+            control_point_count_v: 2,
+            control_points: [
+                [3.0, -1.0, 0.0],
+                [7.0, -1.0, 0.0],
+                [3.0, 1.0, 0.0],
+                [7.0, 1.0, 0.0],
+            ]
+            .into_iter()
+            .map(|point| ControlPoint { point, weight: 1.0 })
+            .collect(),
+            knots_u: vec![0.0, 0.0, 1.0, 1.0],
+            knots_v: vec![0.0, 0.0, 1.0, 1.0],
+            domain_u: None,
+            domain_v: None,
+        };
+        let closed_polyline = |points: Vec<[f64; 3]>| NurbsCurveDefinition {
+            degree: 1,
+            control_points: points
+                .into_iter()
+                .map(|point| ControlPoint { point, weight: 1.0 })
+                .collect(),
+            knots: vec![0.0, 0.0, 1.0, 2.0, 3.0, 4.0, 4.0],
+            domain: None,
+        };
+        let response = run_request(&request(vec![
+            Operation::CurveTrimCommand {
+                id: "trim-line-with-surface".to_owned(),
+                curve: line.clone(),
+                cutters: vec![CurveExtensionBoundaryDefinition::Surface { surface }],
+                pick: [5.0, 0.0, 0.0],
+                apparent_intersections: true,
+                view_normal: [0.0, 0.0, 1.0],
+            },
+            Operation::CurveTrimCommand {
+                id: "trim-line-with-box".to_owned(),
+                curve: line.clone(),
+                cutters: vec![CurveExtensionBoundaryDefinition::Box {
+                    box_boundary: AxisAlignedBoxBoundaryDefinition {
+                        x: [2.0, 8.0],
+                        y: [-1.0, 1.0],
+                        z: [-1.0, 1.0],
+                    },
+                }],
+                pick: [5.0, 0.0, 0.0],
+                apparent_intersections: true,
+                view_normal: [0.0, 0.0, 1.0],
+            },
+            Operation::CurveTrimCommand {
+                id: "trim-line-with-holed-face".to_owned(),
+                curve: line,
+                cutters: vec![CurveExtensionBoundaryDefinition::PlanarFace {
+                    planar_face: PlanarFaceBoundaryDefinition {
+                        outer: closed_polyline(vec![
+                            [2.0, -2.0, 0.0],
+                            [8.0, -2.0, 0.0],
+                            [8.0, 2.0, 0.0],
+                            [2.0, 2.0, 0.0],
+                            [2.0, -2.0, 0.0],
+                        ]),
+                        holes: vec![closed_polyline(vec![
+                            [4.0, -1.0, 0.0],
+                            [6.0, -1.0, 0.0],
+                            [6.0, 1.0, 0.0],
+                            [4.0, 1.0, 0.0],
+                            [4.0, -1.0, 0.0],
+                        ])],
+                    },
+                }],
+                pick: [5.0, 0.0, 0.0],
+                apparent_intersections: true,
+                view_normal: [0.0, 0.0, 1.0],
+            },
+        ]))
+        .unwrap();
+
+        for (result, expected_domains) in response.results.iter().zip([
+            [[0.0, 3.0], [7.0, 10.0]],
+            [[0.0, 2.0], [8.0, 10.0]],
+            [[0.0, 4.0], [6.0, 10.0]],
+        ]) {
+            let objects = result.value["objects"].as_array().unwrap();
+            assert_eq!(objects.len(), 2);
+            for (object, expected_domain) in objects.iter().zip(expected_domains) {
+                let actual_domain = object["curve"]["domain"].as_array().unwrap();
+                for (actual, expected) in actual_domain.iter().zip(expected_domain) {
+                    assert!((actual.as_f64().unwrap() - expected).abs() < 1.0e-12);
+                }
+                assert_eq!(object["attributes_match_source"], true);
+                assert_eq!(object["in_source_group"], true);
+                assert_eq!(object["original_id"], false);
+                assert_eq!(object["selected"], true);
+            }
         }
     }
 

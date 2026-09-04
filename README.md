@@ -895,19 +895,20 @@ no-hit run still clears the input selection but creates no undo record.
 Non-planar and more general coincident surface/surface intersections, curved
 B-rep face pairs, and coincident trimmed regions remain future extensions.
 `Trim point` treats the selected curve nearest the point as the target and all
-other selected curves as cutters; omit the point in the UI to pick the interval
-to remove in a viewport. Only the nearest cutting intersection on either side
-of the pick bounds the removed interval, so unused intersections do not split
-the retained geometry. `ApparentIntersections=Yes` is the Rhino-compatible
-default and projects orthogonally along world Z unless `ViewNormal=x,y,z` is
-supplied; the UI passes the active view direction (an orthogonal approximation
-in the perspective viewport). Use `ApparentIntersections=No` for actual 3D
-curve intersections. End trims and closed-curve trims retain the source
-identity. Removing a middle interval creates two new exact NURBS objects and
-deletes the source, matching Rhino; both pieces inherit its attributes and
-groups. Results replace the cutter selection and the complete edit is one undo
-step. Curve cutters are implemented; surface, B-rep, and mesh cutters remain
-future extensions.
+other selected curves, untrimmed NURBS surfaces, and B-reps as cutters; omit the
+point in the UI to pick the interval to remove in a viewport. Only the nearest
+cutting intersection on either side of the pick bounds the removed interval,
+so unused intersections do not split the retained geometry.
+`ApparentIntersections=Yes` is the Rhino-compatible default and projects the
+curve target and all cutter geometry orthogonally along world Z unless
+`ViewNormal=x,y,z` is supplied; the UI passes the active view direction (an
+orthogonal approximation in the perspective viewport). Use
+`ApparentIntersections=No` for actual 3D intersections. End trims and
+closed-curve trims retain the source identity.
+Removing a middle interval creates two new exact NURBS objects and deletes the
+source, matching Rhino; both pieces inherit its attributes and groups. Results
+replace the cutter selection and the complete edit is one undo step. Mesh
+cutters and trimming surfaces or B-reps as targets remain future extensions.
 `ExtractPt` duplicates curve controls, surface control nets, and every raw mesh
 vertex (including unused and coincident vertices). Closed seams and periodic
 NURBS control rings follow Rhino ordering. Point results default to each input

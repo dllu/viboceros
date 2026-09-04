@@ -644,7 +644,7 @@ impl InteractiveCommand {
                 "Split: pick curve split locations; press Enter to finish (Esc to cancel)"
             }
             Self::TrimCurve => {
-                "Trim: pick the interval to remove from one selected curve; the other selected curves are cutters (Esc to cancel)"
+                "Trim: pick the interval to remove from one selected curve; the other selected curves, surfaces, and B-reps are cutters (Esc to cancel)"
             }
             Self::Move { start: None } => {
                 "Move: pick the base point in the viewport (Esc to cancel)"

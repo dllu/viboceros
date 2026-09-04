@@ -1,8 +1,8 @@
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::{
-    BoundingBox3, Brep, BrepFace, GeometryError, NurbsCurve, NurbsSurface, Plane, Point3,
-    Polyline3, Real, Tolerance, UnitVector3, intersect_three_planes, join_polylines,
+    AffineTransform3, BoundingBox3, Brep, BrepFace, GeometryError, NurbsCurve, NurbsSurface, Plane,
+    Point3, Polyline3, Real, Tolerance, UnitVector3, intersect_three_planes, join_polylines,
 };
 
 const MAX_CURVE_SURFACE_NODE_PAIRS: usize = 1_000_000;
@@ -404,10 +404,51 @@ pub fn curve_brep_intersection_events(
     tolerance: Tolerance,
 ) -> Result<Vec<CurveBrepIntersectionEvent>, GeometryError> {
     let distance_tolerance = curve_brep_distance_tolerance(curve, brep, tolerance);
+    curve_brep_intersection_events_with_transform(curve, brep, None, tolerance, distance_tolerance)
+}
+
+/// Finds curve/B-rep contacts after applying the same affine map to both
+/// objects' model-space geometry.
+///
+/// Face-local trim parameter curves are retained because the transform does
+/// not alter surface parameters. This supports view-projected command
+/// intersections without constructing an invalid, dimension-collapsed B-rep.
+pub fn transformed_curve_brep_intersection_events(
+    curve: &NurbsCurve,
+    brep: &Brep,
+    transform: AffineTransform3,
+    tolerance: Tolerance,
+) -> Result<Vec<CurveBrepIntersectionEvent>, GeometryError> {
+    let curve = curve.transformed(transform)?;
+    let distance_tolerance =
+        transformed_curve_brep_distance_tolerance(&curve, brep, transform, tolerance)?;
+    curve_brep_intersection_events_with_transform(
+        &curve,
+        brep,
+        Some(transform),
+        tolerance,
+        distance_tolerance,
+    )
+}
+
+fn curve_brep_intersection_events_with_transform(
+    curve: &NurbsCurve,
+    brep: &Brep,
+    transform: Option<AffineTransform3>,
+    tolerance: Tolerance,
+    distance_tolerance: Real,
+) -> Result<Vec<CurveBrepIntersectionEvent>, GeometryError> {
     let mut intersections = Vec::new();
     let mut overlaps = Vec::new();
     for face in brep.faces() {
-        for event in curve_surface_intersection_events(curve, face.surface(), tolerance)? {
+        let transformed_surface;
+        let surface = if let Some(transform) = transform {
+            transformed_surface = face.surface().transformed(transform)?;
+            &transformed_surface
+        } else {
+            face.surface()
+        };
+        for event in curve_surface_intersection_events(curve, surface, tolerance)? {
             match event {
                 CurveSurfaceIntersectionEvent::Point(intersection) => {
                     if face.contains_parameters(intersection.u, intersection.v, tolerance)? {
@@ -424,8 +465,12 @@ pub fn curve_brep_intersection_events(
                 CurveSurfaceIntersectionEvent::Overlap(overlap) => {
                     overlaps.extend(curve_brep_face_overlaps(
                         curve,
-                        brep,
-                        face,
+                        CurveBrepFaceGeometry {
+                            brep,
+                            face,
+                            surface,
+                            transform,
+                        },
                         overlap,
                         &mut intersections,
                         tolerance,
@@ -868,8 +913,12 @@ fn clip_curve_to_brep_face(
             CurveSurfaceIntersectionEvent::Overlap(overlap) => {
                 overlaps.extend(curve_brep_face_overlaps(
                     curve,
-                    brep,
-                    face,
+                    CurveBrepFaceGeometry {
+                        brep,
+                        face,
+                        surface: face.surface(),
+                        transform: None,
+                    },
                     overlap,
                     &mut intersections,
                     tolerance,
@@ -2135,22 +2184,42 @@ fn curve_interval_lies_on_surface(
     Ok(true)
 }
 
+#[derive(Clone, Copy)]
+struct CurveBrepFaceGeometry<'a> {
+    brep: &'a Brep,
+    face: &'a BrepFace,
+    surface: &'a NurbsSurface,
+    transform: Option<AffineTransform3>,
+}
+
 fn curve_brep_face_overlaps(
     curve: &NurbsCurve,
-    brep: &Brep,
-    face: &BrepFace,
+    geometry: CurveBrepFaceGeometry<'_>,
     overlap: CurveSurfaceOverlap,
     intersections: &mut Vec<CurveBrepIntersection>,
     tolerance: Tolerance,
     distance_tolerance: Real,
 ) -> Result<Vec<CurveBrepOverlap>, GeometryError> {
+    let CurveBrepFaceGeometry {
+        brep,
+        face,
+        surface: face_surface,
+        transform,
+    } = geometry;
     let start = overlap.start.curve_parameter;
     let end = overlap.end.curve_parameter;
     let mut breakpoints = vec![start, end];
     for trim in face.loops().iter().flat_map(|face_loop| face_loop.trims()) {
         if let Some(edge_index) = trim.edge() {
             let edge = &brep.edges()[edge_index];
-            for intersection in curve.intersections_with_curve(edge.curve(), tolerance)? {
+            let transformed_edge;
+            let edge_curve = if let Some(transform) = transform {
+                transformed_edge = edge.curve().transformed(transform)?;
+                &transformed_edge
+            } else {
+                edge.curve()
+            };
+            for intersection in curve.intersections_with_curve(edge_curve, tolerance)? {
                 let parameter =
                     snap_parameter_to_interval(intersection.first_parameter(), start, end);
                 if parameter_inside_interval(parameter, start, end) {
@@ -2158,7 +2227,10 @@ fn curve_brep_face_overlaps(
                 }
             }
         } else {
-            let vertex = brep.vertices()[trim.vertices()[0]].point();
+            let mut vertex = brep.vertices()[trim.vertices()[0]].point();
+            if let Some(transform) = transform {
+                vertex = transform.transform_point(vertex)?;
+            }
             let parameter = curve.closest_parameter(vertex, tolerance)?;
             if parameter_inside_interval(parameter, start, end)
                 && curve.evaluate(parameter)?.distance_to(vertex)? <= distance_tolerance * 2.0
@@ -2177,12 +2249,10 @@ fn curve_brep_face_overlaps(
     // belonging to actual overlap intervals are removed after global merging.
     for &curve_parameter in &breakpoints {
         let intersection = curve_brep_intersection_at_parameter(curve, curve_parameter)?;
-        let (u, v) = face
-            .surface()
-            .closest_parameters(intersection.point, tolerance)?;
+        let (u, v) = face_surface.closest_parameters(intersection.point, tolerance)?;
         if intersection
             .point
-            .distance_to(face.surface().evaluate(u, v)?)?
+            .distance_to(face_surface.evaluate(u, v)?)?
             <= distance_tolerance * 2.0
             && face.contains_parameters(u, v, tolerance)?
         {
@@ -2198,8 +2268,8 @@ fn curve_brep_face_overlaps(
         }
         let middle = finite_midpoint(interval[0], interval[1]);
         let point = curve.evaluate(middle)?;
-        let (u, v) = face.surface().closest_parameters(point, tolerance)?;
-        if point.distance_to(face.surface().evaluate(u, v)?)? <= distance_tolerance * 2.0
+        let (u, v) = face_surface.closest_parameters(point, tolerance)?;
+        if point.distance_to(face_surface.evaluate(u, v)?)? <= distance_tolerance * 2.0
             && face.contains_parameters(u, v, tolerance)?
         {
             result.push(CurveBrepOverlap {
@@ -2238,6 +2308,36 @@ fn curve_brep_distance_tolerance(curve: &NurbsCurve, brep: &Brep, tolerance: Tol
     tolerance
         .absolute()
         .max(tolerance.relative() * coordinate_scale)
+}
+
+fn transformed_curve_brep_distance_tolerance(
+    transformed_curve: &NurbsCurve,
+    brep: &Brep,
+    transform: AffineTransform3,
+    tolerance: Tolerance,
+) -> Result<Real, GeometryError> {
+    let mut coordinate_scale = transformed_curve
+        .control_points()
+        .iter()
+        .flat_map(|control| control.point().to_array())
+        .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+    for point in brep.vertices().iter().map(|vertex| vertex.point()).chain(
+        brep.faces()
+            .iter()
+            .flat_map(|face| face.surface().control_points())
+            .map(|control| control.point()),
+    ) {
+        coordinate_scale = transform
+            .transform_point(point)?
+            .to_array()
+            .into_iter()
+            .fold(coordinate_scale, |scale, coordinate| {
+                scale.max(coordinate.abs())
+            });
+    }
+    Ok(tolerance
+        .absolute()
+        .max(tolerance.relative() * coordinate_scale))
 }
 
 fn surface_brep_distance_tolerance(
@@ -3836,6 +3936,49 @@ mod tests {
             assert!((*actual.start() - *expected.start()).abs() < 1.0e-10);
             assert!((*actual.end() - *expected.end()).abs() < 1.0e-10);
         }
+
+        let elevated = NurbsCurve::try_new(
+            1,
+            vec![point(-1.0, 5.0, 1.0), point(11.0, 5.0, 1.0)],
+            vec![0.0, 0.0, 12.0, 12.0],
+        )
+        .unwrap();
+        assert!(
+            curve_brep_intersection_events(&elevated, &brep, Tolerance::DEFAULT)
+                .unwrap()
+                .is_empty()
+        );
+        let projection = AffineTransform3::try_planar_projection(Plane::new(
+            point(0.0, 0.0, 0.0),
+            crate::Vector3::try_new(0.0, 0.0, 1.0)
+                .unwrap()
+                .normalized(Tolerance::DEFAULT)
+                .unwrap(),
+        ))
+        .unwrap();
+        let projected = transformed_curve_brep_intersection_events(
+            &elevated,
+            &brep,
+            projection,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let [
+            CurveBrepIntersectionEvent::Overlap(before_hole),
+            CurveBrepIntersectionEvent::Overlap(after_hole),
+        ] = projected.as_slice()
+        else {
+            panic!("projected face hole must split the overlap, got {projected:#?}")
+        };
+        for (actual, expected) in [
+            (before_hole.curve_interval(), 1.0..=5.0),
+            (after_hole.curve_interval(), 7.0..=11.0),
+        ] {
+            assert!((*actual.start() - *expected.start()).abs() < 1.0e-10);
+            assert!((*actual.end() - *expected.end()).abs() < 1.0e-10);
+        }
+        assert_eq!(before_hole.start().point().z(), 0.0);
+        assert_eq!(after_hole.end().point().z(), 0.0);
 
         let through_hole = NurbsCurve::try_new(
             1,

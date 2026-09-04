@@ -7030,10 +7030,17 @@ def _execute(operation, iterations, tolerance):
     if kind == "curve_trim_command":
         document = Rhino.RhinoDoc.ActiveDoc
         source = _nurbs_curve_from_definition(operation["curve"])
-        cutters = [
-            _nurbs_curve_from_definition(definition)
-            for definition in operation["cutters"]
-        ]
+        cutters = []
+        try:
+            for definition in operation["cutters"]:
+                cutters.append(
+                    _curve_extension_boundary_from_definition(definition, tolerance)
+                )
+        except Exception:
+            source.Dispose()
+            for cutter in cutters:
+                cutter.Dispose()
+            raise
         pick = _point(operation["pick"])
 
         def crossing_selection(point, radius):
@@ -7065,9 +7072,16 @@ def _execute(operation, iterations, tolerance):
                 if group_index < 0:
                     raise ValueError("could not group Trim command source curve")
                 for cutter in cutters:
-                    cutter_id = document.Objects.AddCurve(cutter)
+                    if isinstance(cutter, Rhino.Geometry.Curve):
+                        cutter_id = document.Objects.AddCurve(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Surface):
+                        cutter_id = document.Objects.AddSurface(cutter)
+                    elif isinstance(cutter, Rhino.Geometry.Brep):
+                        cutter_id = document.Objects.AddBrep(cutter)
+                    else:
+                        raise ValueError("unsupported Trim cutter geometry")
                     if cutter_id == System.Guid.Empty:
-                        raise ValueError("could not add Trim command cutter curve")
+                        raise ValueError("could not add Trim command cutter object")
                     cutter_ids.append(cutter_id)
                     document.Objects.Select(cutter_id)
                 Rhino.RhinoApp.RunScript("_-SetView _World _Top _Zoom _Extents", False)

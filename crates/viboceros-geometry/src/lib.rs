@@ -73,6 +73,7 @@ pub use intersection::{
     SurfaceBrepIntersectionEvent, SurfaceSurfaceIntersectionEvent, brep_brep_intersection_events,
     curve_brep_intersection_events, curve_surface_intersection_events, curve_surface_intersections,
     surface_brep_intersection_events, surface_surface_intersection_events,
+    transformed_curve_brep_intersection_events,
 };
 pub use line::LineSegment;
 pub use mesh::{
