@@ -890,15 +890,17 @@ may be combined with each other and with isoparametric cuts. Their planar UV
 arrangement splits every cutter at transverse crossings, reuses shared corner
 and intersection nodes, and emits every bounded cell with Rhino-compatible
 vertex, edge, and trim ordering. Straight parameter paths work on arbitrary
-rectangular NURBS faces. On affine and genuinely warped non-rational bilinear
-faces, supported NURBS paths are pulled back exactly, so even geometrically
-straight multi-span or higher-degree cutters retain their degree, control
-locations, knots, and domain instead of being simplified to a line. Rational
-trims preserve their projective locus and interior junction data while
-normalizing the outer Bezier weights to Rhino's canonical unit values. Curved
-paths are accepted when each retained in-face control polygon advances strictly
-in at least one UV direction. Warped patches use their independent bilinear
-twist direction as an exact affine left inverse. Straight paths on higher-order
+rectangular NURBS faces. On affine non-rational tensor-product faces, curved
+NURBS paths are pulled back exactly through degree elevation and knot
+refinement, retaining their degree, control locations, weights, knots, and
+domain. Affine and genuinely warped non-rational bilinear faces also retain the
+source structure of supported geometrically straight multi-span and
+higher-degree cutters instead of simplifying them to a line. Rational trims
+preserve their projective locus and interior junction data while normalizing
+the outer Bezier weights to Rhino's canonical unit values. Curved paths are
+accepted when each retained in-face control polygon advances strictly in at
+least one UV direction. Warped patches use their independent bilinear twist
+direction as an exact affine left inverse. Straight paths on higher-order
 surface representations use Rhino's cubic four-control trim form while
 retaining the source domain. General nonplanar trims are
 constrained-triangulated in UV with

@@ -85,6 +85,21 @@ fn snap_parameter_domain_roundoff(parameter: Real, domain: &RangeInclusive<Real>
     }
 }
 
+fn model_points_near(
+    first: Point3,
+    second: Point3,
+    tolerance: Tolerance,
+) -> Result<bool, GeometryError> {
+    let scale = first
+        .to_array()
+        .into_iter()
+        .chain(second.to_array())
+        .map(Real::abs)
+        .fold(1.0, Real::max);
+    let allowed = tolerance.absolute().max(tolerance.relative() * scale);
+    Ok(first.distance_to(second)? <= allowed)
+}
+
 fn validate_surface_knot_insertion(
     parameter: Real,
     target_multiplicity: usize,
@@ -3104,33 +3119,77 @@ impl NurbsSurface {
         )
     }
 
-    /// Pulls a model-space NURBS curve back into the parameter space of an
-    /// affine bilinear surface without fitting or resampling its control net.
+    /// Pulls a model-space NURBS curve back without fitting when this surface
+    /// has one of the supported exact inverse parameterizations.
     ///
-    /// The surface must have degree one and two controls in each direction,
-    /// equal control weights, and a parallelogram control net at the requested
-    /// tolerance. The returned p-curve retains the source curve's degree,
-    /// weights, knots, and parameter domain exactly.
+    /// Equal-weight affine tensor-product surfaces of any degree are
+    /// supported, as are equal-weight two-by-two bilinear surfaces whose twist
+    /// supplies an independent affine left inverse. The returned p-curve
+    /// retains the source curve's degree, weights, knots, and domain.
+    pub fn try_pullback_exact_curve(
+        &self,
+        curve: &NurbsCurve,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve2, GeometryError> {
+        match self.try_pullback_bilinear_curve(curve, tolerance) {
+            Ok(parameter_curve) => Ok(parameter_curve),
+            Err(bilinear_error) => match self.try_pullback_affine_curve(curve, tolerance) {
+                Ok(parameter_curve) => Ok(parameter_curve),
+                Err(_)
+                    if self.degree_u == 1
+                        && self.degree_v == 1
+                        && self.control_point_count_u == 2
+                        && self.control_point_count_v == 2 =>
+                {
+                    Err(bilinear_error)
+                }
+                Err(affine_error) => Err(affine_error),
+            },
+        }
+    }
+
+    /// Pulls a model-space NURBS curve back into the parameter space of an
+    /// affine tensor-product surface without fitting or resampling its control
+    /// net.
+    ///
+    /// The surface may have any degrees and knot layout, but its weights must
+    /// be equal and every control point must represent the same affine frame
+    /// at that control's Greville parameters. The returned p-curve retains the
+    /// source curve's degree, weights, knots, and parameter domain exactly.
     pub fn try_pullback_affine_curve(
         &self,
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve2, GeometryError> {
-        if self.degree_u != 1
-            || self.degree_v != 1
-            || self.control_point_count_u != 2
-            || self.control_point_count_v != 2
-            || self.rational
-        {
+        let reference_weight = self.control_points[0].weight();
+        let weight_scale = self
+            .control_points
+            .iter()
+            .map(|control| control.weight().abs())
+            .fold(0.0_f64, Real::max);
+        let normalized_reference_weight = reference_weight / weight_scale;
+        // Homogeneous degree elevation can leave otherwise uniform weights a
+        // few ulps apart. Normalize first so this roundoff test is invariant
+        // under projective rescaling of the complete control net.
+        let normalized_weight_tolerance = 4096.0 * Real::EPSILON;
+        if self.control_points.iter().any(|control| {
+            (control.weight() / weight_scale - normalized_reference_weight).abs()
+                > normalized_weight_tolerance
+        }) {
             return Err(GeometryError::InvalidControlNet {
-                context: "affine curve pullback requires an equal-weight two-by-two bilinear surface",
+                context: "affine curve pullback requires equal surface control weights",
             });
         }
 
-        let origin = self.control_points[0].point();
-        let east = self.control_points[1].point();
-        let north = self.control_points[2].point();
-        let opposite = self.control_points[3].point();
+        let domain_u = self.domain_u();
+        let domain_v = self.domain_v();
+        let extent_u = *domain_u.end() - *domain_u.start();
+        let extent_v = *domain_v.end() - *domain_v.start();
+        require_finite([extent_u, extent_v], "affine surface parameter extents")?;
+        let origin = self.evaluate(*domain_u.start(), *domain_v.start())?;
+        let east = self.evaluate(*domain_u.end(), *domain_v.start())?;
+        let north = self.evaluate(*domain_u.start(), *domain_v.end())?;
+        let opposite = self.evaluate(*domain_u.end(), *domain_v.end())?;
         let axis_u = origin.vector_to(east)?;
         let axis_v = origin.vector_to(north)?;
         let length_u = axis_u.length()?;
@@ -3152,41 +3211,43 @@ impl NurbsSurface {
         let determinant = sine * sine;
         require_finite([determinant], "affine surface parameter determinant")?;
 
-        let points_near = |first: Point3, second: Point3| -> Result<bool, GeometryError> {
-            let scale = first
-                .to_array()
-                .into_iter()
-                .chain(second.to_array())
-                .map(Real::abs)
-                .fold(1.0, Real::max);
-            let allowed = tolerance.absolute().max(tolerance.relative() * scale);
-            Ok(first.distance_to(second)? <= allowed)
-        };
-        let opposite_v = east.vector_to(opposite)?;
-        let twist = Vector3::try_new(
-            opposite_v.x() - axis_v.x(),
-            opposite_v.y() - axis_v.y(),
-            opposite_v.z() - axis_v.z(),
-        )?;
-        let control_scale = [origin, east, north, opposite]
-            .into_iter()
-            .flat_map(Point3::to_array)
-            .map(Real::abs)
-            .fold(1.0, Real::max);
-        let twist_tolerance = tolerance
-            .absolute()
-            .max(tolerance.relative() * control_scale);
-        if twist.length()? > twist_tolerance {
+        let expected_opposite = east.translated(axis_v)?;
+        if !model_points_near(expected_opposite, opposite, tolerance)? {
             return Err(GeometryError::InvalidControlNet {
-                context: "affine curve pullback requires a parallelogram surface control net",
+                context: "affine curve pullback requires an affine surface parameter frame",
             });
         }
 
-        let domain_u = self.domain_u();
-        let domain_v = self.domain_v();
-        let extent_u = *domain_u.end() - *domain_u.start();
-        let extent_v = *domain_v.end() - *domain_v.start();
-        require_finite([extent_u, extent_v], "affine surface parameter extents")?;
+        let greville_u = (0..self.control_point_count_u)
+            .map(|control| {
+                stable_knot_mean(&self.knots_u[control + 1..control + self.degree_u + 1])
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let greville_v = (0..self.control_point_count_v)
+            .map(|control| {
+                stable_knot_mean(&self.knots_v[control + 1..control + self.degree_v + 1])
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        for (v, &parameter_v) in greville_v.iter().enumerate() {
+            let fraction_v = (parameter_v - *domain_v.start()) / extent_v;
+            for (u, &parameter_u) in greville_u.iter().enumerate() {
+                let fraction_u = (parameter_u - *domain_u.start()) / extent_u;
+                require_finite(
+                    [fraction_u, fraction_v],
+                    "affine surface control parameters",
+                )?;
+                let expected = origin
+                    .translated(axis_u.scaled(fraction_u)?)?
+                    .translated(axis_v.scaled(fraction_v)?)?;
+                let actual = self.control_points[self.control_index(u, v)].point();
+                if !model_points_near(expected, actual, tolerance)? {
+                    return Err(GeometryError::InvalidControlNet {
+                        context: "affine curve pullback requires an affine surface control net",
+                    });
+                }
+            }
+        }
+
         let parameter_controls = curve
             .control_points()
             .iter()
@@ -3205,7 +3266,7 @@ impl NurbsSurface {
                 let reconstructed = origin
                     .translated(axis_u.scaled(fraction_u)?)?
                     .translated(axis_v.scaled(fraction_v)?)?;
-                if !points_near(reconstructed, control.point())? {
+                if !model_points_near(reconstructed, control.point(), tolerance)? {
                     return Err(GeometryError::InvalidControlNet {
                         context: "curve control points must lie in the affine surface plane",
                     });
@@ -3236,7 +3297,11 @@ impl NurbsSurface {
                 let fraction = sample as Real / 4.0;
                 let parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
                 let uv = parameter_curve.evaluate(parameter)?;
-                if !points_near(self.evaluate(uv.x(), uv.y())?, curve.evaluate(parameter)?)? {
+                if !model_points_near(
+                    self.evaluate(uv.x(), uv.y())?,
+                    curve.evaluate(parameter)?,
+                    tolerance,
+                )? {
                     return Err(GeometryError::InvalidControlNet {
                         context: "curve does not lie on the affine surface at model tolerance",
                     });
@@ -3276,16 +3341,6 @@ impl NurbsSurface {
         let opposite = self.control_points[3].point();
         let axis_u = origin.vector_to(east)?;
         let axis_v = origin.vector_to(north)?;
-        let points_near = |first: Point3, second: Point3| -> Result<bool, GeometryError> {
-            let scale = first
-                .to_array()
-                .into_iter()
-                .chain(second.to_array())
-                .map(Real::abs)
-                .fold(1.0, Real::max);
-            let allowed = tolerance.absolute().max(tolerance.relative() * scale);
-            Ok(first.distance_to(second)? <= allowed)
-        };
         let opposite_v = east.vector_to(opposite)?;
         let twist = Vector3::try_new(
             opposite_v.x() - axis_v.x(),
@@ -3365,7 +3420,11 @@ impl NurbsSurface {
                 let fraction = sample as Real / 8.0;
                 let parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
                 let uv = parameter_curve.evaluate(parameter)?;
-                if !points_near(self.evaluate(uv.x(), uv.y())?, curve.evaluate(parameter)?)? {
+                if !model_points_near(
+                    self.evaluate(uv.x(), uv.y())?,
+                    curve.evaluate(parameter)?,
+                    tolerance,
+                )? {
                     return Err(GeometryError::InvalidControlNet {
                         context: "curve does not lie on the bilinear surface at model tolerance",
                     });
@@ -4925,6 +4984,110 @@ mod tests {
         .unwrap();
         assert!(matches!(
             surface.try_pullback_affine_curve(&off_plane, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidControlNet { .. })
+        ));
+
+        let unequal_tiny_weights = NurbsSurface::try_new_rational(
+            1,
+            1,
+            2,
+            2,
+            [origin, east, north, opposite]
+                .into_iter()
+                .zip([1.0e-300, 2.0e-300, 1.0e-300, 2.0e-300])
+                .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+                .collect(),
+            vec![0.0, 0.0, 1.0, 1.0],
+            vec![0.0, 0.0, 1.0, 1.0],
+        )
+        .unwrap();
+        assert!(matches!(
+            unequal_tiny_weights.try_pullback_affine_curve(&curve, Tolerance::DEFAULT),
+            Err(GeometryError::InvalidControlNet { .. })
+        ));
+    }
+
+    #[test]
+    fn affine_curve_pullback_accepts_degree_elevated_and_knot_refined_surfaces() {
+        let surface = NurbsSurface::try_bilinear([
+            point(3.0, -2.0, 5.0),
+            point(13.0, 0.0, 6.0),
+            point(11.0, 9.0, 9.0),
+            point(1.0, 7.0, 8.0),
+        ])
+        .unwrap()
+        .try_reparameterized(-2.0..=4.0, 10.0..=20.0)
+        .unwrap()
+        .try_change_degree(3, 2, false)
+        .unwrap()
+        .try_insert_knot_u(0.5, 1)
+        .unwrap()
+        .try_insert_knot_v(16.0, 2)
+        .unwrap();
+        let expected_parameters = [
+            Point2::try_new(-2.0, 12.0).unwrap(),
+            Point2::try_new(-0.5, 18.0).unwrap(),
+            Point2::try_new(1.0, 15.0).unwrap(),
+            Point2::try_new(2.5, 11.0).unwrap(),
+            Point2::try_new(4.0, 17.0).unwrap(),
+        ];
+        let weights = [2.0, 0.75, 1.25, 0.5, 3.0];
+        let curve = NurbsCurve::try_new_rational(
+            2,
+            expected_parameters
+                .iter()
+                .zip(weights)
+                .map(|(parameter, weight)| {
+                    WeightedPoint3::try_new(
+                        surface.evaluate(parameter.x(), parameter.y()).unwrap(),
+                        weight,
+                    )
+                    .unwrap()
+                })
+                .collect(),
+            vec![3.0, 3.0, 3.0, 5.0, 5.0, 7.0, 7.0, 7.0],
+        )
+        .unwrap();
+
+        let pulled = surface
+            .try_pullback_affine_curve(&curve, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(pulled.degree(), curve.degree());
+        assert_eq!(pulled.knots(), curve.knots());
+        assert_eq!(pulled.domain(), curve.domain());
+        for ((actual, expected), expected_weight) in pulled
+            .control_points()
+            .iter()
+            .zip(expected_parameters)
+            .zip(weights)
+        {
+            assert!(actual.point().is_near(expected, Tolerance::DEFAULT));
+            assert_eq!(actual.weight(), expected_weight);
+        }
+        for sample in 0..=32 {
+            let parameter = 3.0 + 4.0 * sample as Real / 32.0;
+            let uv = pulled.evaluate(parameter).unwrap();
+            assert!(
+                surface
+                    .evaluate(uv.x(), uv.y())
+                    .unwrap()
+                    .is_near(curve.evaluate(parameter).unwrap(), Tolerance::DEFAULT)
+            );
+        }
+
+        let mut non_affine = surface.clone();
+        let index = non_affine.control_index(2, 1);
+        let control = non_affine.control_points[index];
+        non_affine.control_points[index] = WeightedPoint3::try_new(
+            control
+                .point()
+                .translated(Vector3::try_new(0.0, 0.0, 0.25).unwrap())
+                .unwrap(),
+            control.weight(),
+        )
+        .unwrap();
+        assert!(matches!(
+            non_affine.try_pullback_affine_curve(&curve, Tolerance::DEFAULT),
             Err(GeometryError::InvalidControlNet { .. })
         ));
     }

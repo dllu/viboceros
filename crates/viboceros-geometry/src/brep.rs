@@ -7714,7 +7714,7 @@ fn surface_split_parameter_curve(
                 ],
             );
         }
-        Err(error) => return Err(error),
+        Err(_) => surface.try_pullback_exact_curve(curve, tolerance)?,
     };
     let parameter_tolerance = [
         trim_parameter_epsilon(
@@ -10832,7 +10832,7 @@ mod tests {
     }
 
     #[test]
-    fn rectangular_surface_splits_preserve_structured_straight_pcurves() {
+    fn rectangular_surface_splits_preserve_structured_pcurves() {
         let surface = NurbsSurface::try_bilinear([
             point(0.0, 0.0, 0.0),
             point(10.0, 0.0, 0.0),
@@ -10949,7 +10949,7 @@ mod tests {
 
         let elevated_surface = surface.clone().try_change_degree(2, 2, false).unwrap();
         let [_, elevated_north] = Brep::try_split_rectangular_surface_face_west_east(
-            elevated_surface,
+            elevated_surface.clone(),
             0.0..=10.0,
             0.0..=10.0,
             [2.0, 6.0],
@@ -10986,6 +10986,60 @@ mod tests {
                     .point()
                     .is_near(Point2::try_from(expected).unwrap(), Tolerance::DEFAULT)
             );
+        }
+
+        let curved_cutter = NurbsCurve::try_new(
+            2,
+            vec![
+                point(0.0, 2.0, 0.0),
+                point(5.0, 8.0, 0.0),
+                point(10.0, 6.0, 0.0),
+            ],
+            vec![0.0, 0.0, 0.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let [curved_south, curved_north] = Brep::try_split_rectangular_surface_face_west_east(
+            elevated_surface.clone(),
+            0.0..=10.0,
+            0.0..=10.0,
+            [2.0, 6.0],
+            curved_cutter.clone(),
+            false,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let curved_pcurve = curved_north.faces()[0].loops()[0]
+            .trims()
+            .iter()
+            .find(|trim| trim.iso() == SurfaceIso::NotIso)
+            .unwrap()
+            .curve();
+        assert_eq!(curved_pcurve.degree(), 2);
+        assert_eq!(curved_pcurve.knots(), curved_cutter.knots());
+        for (actual, expected) in
+            curved_pcurve
+                .control_points()
+                .iter()
+                .zip([[0.0, 2.0], [5.0, 8.0], [10.0, 6.0]])
+        {
+            assert!(
+                actual
+                    .point()
+                    .is_near(Point2::try_from(expected).unwrap(), Tolerance::DEFAULT)
+            );
+            assert_eq!(actual.weight(), 1.0);
+        }
+        assert!(
+            parameter_curve_matches_spatial_curve(
+                &elevated_surface,
+                curved_pcurve,
+                &curved_cutter,
+                Tolerance::DEFAULT,
+            )
+            .unwrap()
+        );
+        for piece in [&curved_south, &curved_north] {
+            piece.tessellate(3, Tolerance::DEFAULT).unwrap();
         }
 
         let kinked = NurbsCurve::try_new(

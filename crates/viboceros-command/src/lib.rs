@@ -13529,7 +13529,7 @@ fn classify_complete_surface_cuts(
     bounds: [[Real; 2]; 2],
     tolerance: Tolerance,
 ) -> Result<Vec<(CompleteSurfaceCut, NurbsCurve)>, CommandError> {
-    let parameter_curve = match surface.try_pullback_bilinear_curve(curve, tolerance) {
+    let parameter_curve = match surface.try_pullback_exact_curve(curve, tolerance) {
         Ok(parameter_curve) => parameter_curve,
         Err(_) => {
             return Ok(
@@ -13609,7 +13609,7 @@ fn classify_complete_surface_cut_once(
     let epsilon_v = surface_split_parameter_epsilon(bounds[1], tolerance);
     if curve.is_closed()? {
         let parameter_curve = surface
-            .try_pullback_bilinear_curve(curve, tolerance)
+            .try_pullback_exact_curve(curve, tolerance)
             .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
         if !surface_cut_parameter_curve_is_closed_inside_bounds(
             &parameter_curve,
@@ -13652,7 +13652,7 @@ fn classify_complete_surface_cut_once(
             Ok(())
         } else {
             let parameter_curve = surface
-                .try_pullback_bilinear_curve(curve, tolerance)
+                .try_pullback_exact_curve(curve, tolerance)
                 .map_err(|_| CommandError::UnsupportedSurfaceCuttingIntersection)?;
             if surface_cut_parameter_curve_is_simple_in_bounds(
                 &parameter_curve,
@@ -30167,6 +30167,98 @@ mod tests {
             );
         }
         assert!(dense_vertex_count > coarse_vertex_count);
+    }
+
+    #[test]
+    fn cutting_object_split_preserves_curved_paths_on_degree_elevated_affine_surfaces() {
+        let registry = CommandRegistry::with_builtins();
+        let mut document = Document::default();
+        let surface = NurbsSurface::try_bilinear([
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(10.0, 10.0, 0.0).unwrap(),
+            Point3::try_new(0.0, 10.0, 0.0).unwrap(),
+        ])
+        .unwrap()
+        .try_reparameterized(0.0..=10.0, 0.0..=10.0)
+        .unwrap()
+        .try_change_degree(2, 2, false)
+        .unwrap();
+        let source_id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        let cutter = NurbsCurve::try_new(
+            2,
+            vec![
+                Point3::try_new(0.0, 2.0, 0.0).unwrap(),
+                Point3::try_new(5.0, 8.0, 0.0).unwrap(),
+                Point3::try_new(10.0, 6.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 2.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let cutter_id = document
+            .add_geometry(Geometry::NurbsCurve(cutter.clone()))
+            .unwrap();
+        document
+            .select_objects_direct([source_id, cutter_id], SelectionMode::Replace)
+            .unwrap();
+
+        assert_eq!(
+            registry
+                .execute(&mut document, "Split CuttingObjects=5,1,0")
+                .unwrap(),
+            "Split the selected surface along 1 complete boundary-to-boundary curve into 2 exact B-rep faces"
+        );
+        assert!(document.object(source_id).is_none());
+        assert!(!document.is_selected(cutter_id));
+        let outputs = document.selected_objects().collect::<Vec<_>>();
+        assert_eq!(outputs.len(), 2);
+        let mut forward_trim = None;
+        let mut area = 0.0;
+        for object in outputs {
+            let Geometry::Brep(brep) = object.geometry() else {
+                panic!("degree-elevated surface cutting Split must create B-rep faces")
+            };
+            assert_eq!(brep.faces()[0].surface(), &surface);
+            assert_eq!(brep.vertices().len(), 4);
+            assert_eq!(brep.edges().len(), 4);
+            let trim = brep.faces()[0].loops()[0]
+                .trims()
+                .iter()
+                .find(|trim| trim.iso() == viboceros_geometry::SurfaceIso::NotIso)
+                .unwrap();
+            assert_eq!(brep.edges()[trim.edge().unwrap()].curve(), &cutter);
+            if !trim.is_reversed_3d() {
+                forward_trim = Some(trim.curve().clone());
+            }
+            area += brep.area(document.tolerance()).unwrap();
+            brep.tessellate(3, document.tolerance()).unwrap();
+        }
+        assert!(document.tolerance().approx_eq(area, 100.0));
+
+        let forward_trim = forward_trim.unwrap();
+        assert_eq!(forward_trim.degree(), cutter.degree());
+        assert_eq!(forward_trim.knots(), cutter.knots());
+        assert_eq!(forward_trim.domain(), cutter.domain());
+        for (actual, expected) in
+            forward_trim
+                .control_points()
+                .iter()
+                .zip([[0.0, 2.0], [5.0, 8.0], [10.0, 6.0]])
+        {
+            assert!(
+                document
+                    .tolerance()
+                    .approx_eq(actual.point().x(), expected[0])
+            );
+            assert!(
+                document
+                    .tolerance()
+                    .approx_eq(actual.point().y(), expected[1])
+            );
+            assert_eq!(actual.weight(), 1.0);
+        }
     }
 
     #[test]
