@@ -5880,7 +5880,7 @@ def _execute(operation, iterations, tolerance):
         if side_name not in ("start", "end", "both"):
             source.Dispose()
             raise ValueError("invalid curve extension side")
-        if style_name not in ("natural", "line", "smooth"):
+        if style_name not in ("natural", "arc", "line", "smooth"):
             source.Dispose()
             raise ValueError("invalid curve extension style")
         if join_name not in ("merge", "yes", "no"):
@@ -5925,7 +5925,11 @@ def _execute(operation, iterations, tolerance):
                     (
                         "Natural"
                         if style_name == "natural"
-                        else ("Line" if style_name == "line" else "Smooth")
+                        else (
+                            "Arc"
+                            if style_name == "arc"
+                            else ("Line" if style_name == "line" else "Smooth")
+                        )
                     ),
                     (
                         "Merge"

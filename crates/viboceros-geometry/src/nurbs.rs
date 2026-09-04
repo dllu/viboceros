@@ -3,8 +3,8 @@ use std::ops::RangeInclusive;
 use faer::{Mat, prelude::*};
 
 use crate::{
-    AffineTransform3, BoundingBox3, Frame3, GeometryError, Point3, Polyline3, Real, Tolerance,
-    Vector3, integration::integrate_adaptive, require_finite,
+    AffineTransform3, BoundingBox3, CircularArc3, Frame3, GeometryError, Point3, Polyline3, Real,
+    Tolerance, Vector3, integration::integrate_adaptive, require_finite,
 };
 use crate::{CurveRef, curve::ArcLengthSampler};
 
@@ -24,7 +24,7 @@ pub enum ControlPointCurveClosure {
     Sharp,
 }
 
-/// Endpoint selection for a natural curve extension by arc length.
+/// Endpoint selection for a curve extension by model-space arc length.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum CurveExtensionSide {
     Start,
@@ -2394,7 +2394,7 @@ impl NurbsCurve {
         Ok(result)
     }
 
-    /// Naturally extends the selected end or ends by the requested arc
+    /// Smoothly extrapolates the selected end or ends by the requested arc
     /// length. `Both` applies the full length independently at each end.
     pub fn try_extended_by_length(
         &self,
@@ -2423,6 +2423,25 @@ impl NurbsCurve {
             CurveExtensionSide::Start => *domain.end(),
         };
         self.try_extended_to(start..=end)
+    }
+
+    /// Applies Rhino's type-sensitive `Natural` merge behavior: line-like
+    /// sources extend linearly, exact circular arcs retain their radius, and
+    /// other curves use smooth NURBS extrapolation.
+    pub fn try_merged_naturally_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.validate_length_extension(length)?;
+        if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
+            return self.try_merged_linearly_by_length(side, length, tolerance);
+        }
+        if self.try_canonical_circular_arc(tolerance)?.is_some() {
+            return self.try_merged_circularly_by_length(side, length, tolerance);
+        }
+        self.try_extended_by_length(side, length, tolerance)
     }
 
     /// Extends an open curve with an exact degree-matched straight tangent
@@ -2510,6 +2529,114 @@ impl NurbsCurve {
         )
     }
 
+    /// Extends with the endpoint's exact osculating arc. A zero-curvature end
+    /// falls back to a degree-matched tangent-line span, and sweeps beyond one
+    /// revolution cap at a full circle, as Rhino does.
+    pub fn try_extended_circularly_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.validate_length_extension(length)?;
+
+        let domain = self.domain();
+        let start_extension =
+            if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+                Some(self.circular_extension_piece(true, length, tolerance, true)?)
+            } else {
+                None
+            };
+        let end_extension = if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            Some(self.circular_extension_piece(false, length, tolerance, true)?)
+        } else {
+            None
+        };
+        let mut source = self.clone();
+        if start_extension.is_some() {
+            source = source.clamped_at_start(*domain.start())?;
+        }
+        if end_extension.is_some() {
+            source = source.clamped_at_end(*domain.end())?;
+        }
+        let mut result = if let Some(extension) = start_extension {
+            extension.try_append_clamped(&source)?
+        } else {
+            source
+        };
+        if let Some(extension) = end_extension {
+            result = result.try_append_clamped(&extension)?;
+        }
+        Ok(result)
+    }
+
+    /// Applies Rhino's `Join=Merge` cleanup to an osculating-arc extension.
+    /// Lines merge linearly and a same-circle source becomes one canonical arc;
+    /// other sources retain the exact joined arc boundary.
+    pub fn try_merged_circularly_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
+            return self.try_merged_linearly_by_length(side, length, tolerance);
+        }
+        let extended = self.try_extended_circularly_by_length(side, length, tolerance)?;
+        Ok(extended
+            .try_canonical_circular_arc(tolerance)?
+            .unwrap_or(extended))
+    }
+
+    /// Joins osculating-arc extensions while retaining explicit source
+    /// boundaries. Degree-one sources use Rhino's unit-span polyline form.
+    pub fn try_joined_circularly_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        if self.degree == 1 {
+            self.try_joined_linearly_by_length(side, length, tolerance)
+        } else {
+            self.try_extended_circularly_by_length(side, length, tolerance)
+        }
+    }
+
+    /// Creates independent osculating-arc extension pieces without changing
+    /// the source. Degree-one sources produce unit-domain tangent lines.
+    pub fn try_separate_circular_extensions_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Self>, GeometryError> {
+        if self.degree == 1 {
+            return self.try_separate_linear_extensions_by_length(side, length, tolerance);
+        }
+        self.validate_length_extension(length)?;
+        let mut extensions = Vec::with_capacity(if side == CurveExtensionSide::Both {
+            2
+        } else {
+            1
+        });
+        if matches!(side, CurveExtensionSide::Start | CurveExtensionSide::Both) {
+            let mut extension = self.circular_extension_piece(true, length, tolerance, false)?;
+            if extension.degree == 1 {
+                extension = extension.try_reparameterized(0.0..=1.0)?;
+            }
+            extensions.push(extension);
+        }
+        if matches!(side, CurveExtensionSide::End | CurveExtensionSide::Both) {
+            let mut extension = self.circular_extension_piece(false, length, tolerance, false)?;
+            if extension.degree == 1 {
+                extension = extension.try_reparameterized(0.0..=1.0)?;
+            }
+            extensions.push(extension);
+        }
+        Ok(extensions)
+    }
+
     /// Joins tangent-line extensions while retaining explicit segment
     /// boundaries, matching Rhino's `Join=Yes` command behavior.
     pub fn try_joined_linearly_by_length(
@@ -2570,6 +2697,24 @@ impl NurbsCurve {
     /// Joins natural extension pieces to the unchanged source with explicit
     /// full-multiplicity seams, matching Rhino's `Join=Yes` curve result.
     pub fn try_joined_naturally_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        self.validate_length_extension(length)?;
+        if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
+            return self.try_joined_linearly_by_length(side, length, tolerance);
+        }
+        if self.try_canonical_circular_arc(tolerance)?.is_some() {
+            return self.try_joined_circularly_by_length(side, length, tolerance);
+        }
+        self.try_joined_smoothly_by_length(side, length, tolerance)
+    }
+
+    /// Joins smooth NURBS extrapolation pieces to the unchanged source with
+    /// explicit full-multiplicity seams.
+    pub fn try_joined_smoothly_by_length(
         &self,
         side: CurveExtensionSide,
         length: Real,
@@ -2669,6 +2814,24 @@ impl NurbsCurve {
     /// curve. Degree-one inputs use Rhino's standalone line representation;
     /// other inputs retain the natural extension's source parameter values.
     pub fn try_separate_natural_extensions_by_length(
+        &self,
+        side: CurveExtensionSide,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Vec<Self>, GeometryError> {
+        self.validate_length_extension(length)?;
+        if self.degree == 1 || self.is_linear_at_zero_tolerance()? {
+            return self.try_separate_linear_extensions_by_length(side, length, tolerance);
+        }
+        if self.try_canonical_circular_arc(tolerance)?.is_some() {
+            return self.try_separate_circular_extensions_by_length(side, length, tolerance);
+        }
+        self.try_separate_smooth_extensions_by_length(side, length, tolerance)
+    }
+
+    /// Creates independent smooth NURBS extrapolation pieces without changing
+    /// the source. Degree-one inputs use standalone line representation.
+    pub fn try_separate_smooth_extensions_by_length(
         &self,
         side: CurveExtensionSide,
         length: Real,
@@ -2855,6 +3018,165 @@ impl NurbsCurve {
             self.try_extended_to(start..=parameter)?
                 .try_trimmed(end..=parameter)
         }
+    }
+
+    fn validate_length_extension(&self, length: Real) -> Result<(), GeometryError> {
+        if !length.is_finite() || length <= 0.0 {
+            return Err(GeometryError::InvalidCurveExtensionLength);
+        }
+        if self.is_closed()? {
+            return Err(GeometryError::CurveExtensionMustBeOpen);
+        }
+        Ok(())
+    }
+
+    fn circular_extension_piece(
+        &self,
+        at_start: bool,
+        length: Real,
+        tolerance: Tolerance,
+        match_source_degree: bool,
+    ) -> Result<Self, GeometryError> {
+        let domain = self.domain();
+        let endpoint_parameter = if at_start {
+            *domain.start()
+        } else {
+            *domain.end()
+        };
+        let endpoint = self.evaluate(endpoint_parameter)?;
+        let derivative = self.derivative_at(endpoint_parameter)?;
+        let speed = derivative.length()?;
+        let tangent = derivative.normalized(tolerance)?;
+        let parameter_delta = length / speed;
+        require_finite([parameter_delta], "circular curve extension parameter")?;
+        if parameter_delta == 0.0 {
+            return Err(GeometryError::CurveExtensionLengthDidNotConverge);
+        }
+        let piece_domain = if at_start {
+            (endpoint_parameter - parameter_delta)..=endpoint_parameter
+        } else {
+            endpoint_parameter..=(endpoint_parameter + parameter_delta)
+        };
+        require_finite(
+            [*piece_domain.start(), *piece_domain.end()],
+            "circular curve extension domain",
+        )?;
+
+        let curvature = CurveRef::NurbsCurve(self).curvature_vector(endpoint_parameter)?;
+        let curvature_magnitude = curvature.length()?;
+        let mut piece = if self.degree == 1 || curvature_magnitude == 0.0 {
+            let degree = if match_source_degree { self.degree } else { 1 };
+            let points = (0..=degree)
+                .map(|index| {
+                    let fraction = index as Real / degree as Real;
+                    let offset = if at_start {
+                        -length * (1.0 - fraction)
+                    } else {
+                        length * fraction
+                    };
+                    endpoint.translated(tangent.as_vector().scaled(offset)?)
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            let mut knots = vec![*piece_domain.start(); degree + 1];
+            knots.extend(std::iter::repeat_n(*piece_domain.end(), degree + 1));
+            Self::try_new(degree, points, knots)?
+        } else {
+            let arc = CircularArc3::try_from_start_tangent_curvature_length(
+                endpoint,
+                if at_start {
+                    tangent.opposite()
+                } else {
+                    tangent
+                },
+                curvature,
+                length,
+                tolerance,
+            )?;
+            let arc = if at_start {
+                arc.reversed(tolerance)?
+            } else {
+                arc
+            };
+            arc.to_nurbs()?.try_reparameterized(piece_domain)?
+        };
+        if match_source_degree && piece.degree < self.degree {
+            piece = piece.try_change_degree(self.degree, false)?;
+        }
+        Ok(piece)
+    }
+
+    fn try_canonical_circular_arc(
+        &self,
+        tolerance: Tolerance,
+    ) -> Result<Option<Self>, GeometryError> {
+        if self.degree < 2 {
+            return Ok(None);
+        }
+        let domain = self.domain();
+        let start_parameter = *domain.start();
+        let (start, derivative, _) = self.evaluate_with_second_derivative(start_parameter)?;
+        let tangent = derivative.normalized(tolerance)?;
+        let curvature = CurveRef::NurbsCurve(self).curvature_vector(start_parameter)?;
+        let curvature_magnitude = curvature.length()?;
+        if curvature_magnitude == 0.0 {
+            return Ok(None);
+        }
+        let radius = 1.0 / curvature_magnitude;
+        require_finite([radius], "canonical circular arc radius")?;
+        let center =
+            start.translated(curvature.normalized_nonzero()?.as_vector().scaled(radius)?)?;
+        let radial = center.vector_to(start)?.normalized_nonzero()?;
+        let normal = radial
+            .as_vector()
+            .cross(tangent.as_vector())?
+            .normalized_nonzero()?;
+        let center_scale = center
+            .to_array()
+            .into_iter()
+            .chain([radius])
+            .fold(1.0_f64, |scale, coordinate| scale.max(coordinate.abs()));
+        let center_tolerance = tolerance
+            .absolute()
+            .max(tolerance.relative() * center_scale)
+            * 8.0;
+
+        for (span_start, span_end) in self.spans() {
+            for parameter in [span_start, span_start * 0.5 + span_end * 0.5, span_end] {
+                let point = self.evaluate(parameter)?;
+                let sample_curvature = CurveRef::NurbsCurve(self).curvature_vector(parameter)?;
+                let sample_magnitude = sample_curvature.length()?;
+                if sample_magnitude == 0.0 {
+                    return Ok(None);
+                }
+                let sample_center = point.translated(
+                    sample_curvature.scaled(1.0 / (sample_magnitude * sample_magnitude))?,
+                )?;
+                if center.distance_to(sample_center)? > center_tolerance {
+                    return Ok(None);
+                }
+                let sample_tangent = self.derivative_at(parameter)?.normalized(tolerance)?;
+                let sample_radial = center.vector_to(point)?.normalized_nonzero()?;
+                let orientation = sample_radial
+                    .as_vector()
+                    .cross(sample_tangent.as_vector())?
+                    .dot(normal.as_vector())?;
+                if orientation <= 0.0 {
+                    return Ok(None);
+                }
+            }
+        }
+
+        let length = self.length(tolerance)?;
+        let arc = match CircularArc3::try_from_start_tangent_curvature_length(
+            start, tangent, curvature, length, tolerance,
+        ) {
+            Ok(arc) => arc,
+            Err(GeometryError::Degenerate {
+                context: "circular arc",
+            }) => return Ok(None),
+            Err(error) => return Err(error),
+        };
+        Ok(Some(arc.to_nurbs()?.try_reparameterized(domain)?))
     }
 
     /// Extracts the directed subcurve from `start` to `end`.
@@ -7184,6 +7506,170 @@ mod tests {
     }
 
     #[test]
+    fn circular_extension_uses_the_exact_endpoint_osculating_arc() {
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![point(0.0, 0.0), point(1.0, 2.0), point(3.0, 1.0)],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = curve
+            .try_extended_circularly_by_length(CurveExtensionSide::End, 2.0, Tolerance::DEFAULT)
+            .unwrap();
+
+        let end = 1.0 + 1.0 / 5.0_f64.sqrt();
+        assert_eq!(extended.degree(), 2);
+        assert!(Tolerance::DEFAULT.approx_eq(*extended.domain().end(), end));
+        assert_eq!(extended.knot_multiplicity(1.0).unwrap(), 2);
+        assert!(Tolerance::DEFAULT.approx_eq(
+            extended.control_points()[3].weight(),
+            0.975_103_993_210_479_4,
+        ));
+        assert_point_near(
+            extended.control_points()[4].point(),
+            Point3::try_new(4.533_130_546_115_57, -0.258_287_297_307_559_06, 0.0).unwrap(),
+        );
+        assert!(
+            Tolerance::DEFAULT.approx_eq(
+                extended
+                    .try_trimmed(1.0..=end)
+                    .unwrap()
+                    .length(Tolerance::DEFAULT)
+                    .unwrap(),
+                2.0,
+            )
+        );
+
+        let capped = curve
+            .try_extended_circularly_by_length(CurveExtensionSide::End, 30.0, Tolerance::DEFAULT)
+            .unwrap();
+        assert_eq!(capped.control_points().len(), 11);
+        assert_point_near(
+            capped.evaluate(*capped.domain().end()).unwrap(),
+            point(3.0, 1.0),
+        );
+        let capped_length = capped
+            .try_trimmed(1.0..=*capped.domain().end())
+            .unwrap()
+            .length(Tolerance::DEFAULT)
+            .unwrap();
+        let circumference = std::f64::consts::TAU * 2.0 * 5.0_f64.sqrt();
+        assert!(
+            (capped_length - circumference).abs() < 1.0e-8,
+            "actual full-circle length {capped_length}"
+        );
+    }
+
+    #[test]
+    fn circular_extension_elevates_a_zero_curvature_line_fallback() {
+        let curve = NurbsCurve::try_new(
+            3,
+            vec![
+                point(0.0, 0.0),
+                point(1.0, 1.0),
+                point(2.0, 0.0),
+                point(3.0, -1.0),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let extended = curve
+            .try_extended_circularly_by_length(CurveExtensionSide::End, 2.0, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert_eq!(extended.degree(), 3);
+        assert_eq!(extended.control_points().len(), 7);
+        assert_eq!(extended.knot_multiplicity(1.0).unwrap(), 3);
+        assert_point_near(
+            extended.control_points()[6].point(),
+            Point3::try_new(4.414_213_562_373_095, -2.414_213_562_373_095, 0.0).unwrap(),
+        );
+        assert!(
+            extended.control_points()[3..]
+                .iter()
+                .all(|control| control.weight() == 1.0)
+        );
+
+        let separate = curve
+            .try_separate_circular_extensions_by_length(
+                CurveExtensionSide::End,
+                2.0,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(separate.len(), 1);
+        assert_eq!(separate[0].degree(), 1);
+        assert_eq!(separate[0].domain(), 0.0..=1.0);
+        assert_point_near(
+            separate[0].control_points()[1].point(),
+            extended.control_points()[6].point(),
+        );
+
+        let spatial = NurbsCurve::try_new(
+            3,
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(1.0, 3.0, 1.0).unwrap(),
+                Point3::try_new(4.0, -2.0, 2.0).unwrap(),
+                Point3::try_new(7.0, 1.0, 0.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let separate = spatial
+            .try_separate_circular_extensions_by_length(
+                CurveExtensionSide::End,
+                2.0,
+                Tolerance::DEFAULT,
+            )
+            .unwrap();
+        assert_eq!(separate[0].degree(), 2);
+        assert_eq!(separate[0].control_points().len(), 3);
+    }
+
+    #[test]
+    fn merged_circular_extension_rebuilds_one_same_radius_arc() {
+        let source = NurbsCurve::try_new_rational(
+            2,
+            vec![
+                WeightedPoint3::try_new(point(1.0, 0.0), 1.0).unwrap(),
+                WeightedPoint3::try_new(point(1.0, 1.0), std::f64::consts::FRAC_1_SQRT_2).unwrap(),
+                WeightedPoint3::try_new(point(0.0, 1.0), 1.0).unwrap(),
+            ],
+            vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+        )
+        .unwrap();
+        let joined = source
+            .try_joined_circularly_by_length(CurveExtensionSide::End, 0.5, Tolerance::DEFAULT)
+            .unwrap();
+        let merged = source
+            .try_merged_circularly_by_length(CurveExtensionSide::End, 0.5, Tolerance::DEFAULT)
+            .unwrap();
+        let natural = source
+            .try_merged_naturally_by_length(CurveExtensionSide::End, 0.5, Tolerance::DEFAULT)
+            .unwrap();
+        let smooth = source
+            .try_extended_by_length(CurveExtensionSide::End, 0.5, Tolerance::DEFAULT)
+            .unwrap();
+
+        assert_eq!(joined.knot_multiplicity(1.0).unwrap(), 2);
+        assert_eq!(natural, merged);
+        assert_ne!(smooth, merged);
+        assert_eq!(merged.degree(), 2);
+        assert_eq!(merged.control_points().len(), 5);
+        assert_eq!(merged.domain(), joined.domain());
+        assert!(!merged.knots().contains(&1.0));
+        assert!(
+            Tolerance::DEFAULT
+                .approx_eq(merged.control_points()[1].weight(), 0.868_960_162_057_560_4,)
+        );
+        assert_point_near(
+            merged.control_points()[4].point(),
+            Point3::try_new(-0.479_425_538_604_203, 0.877_582_561_890_372_5, 0.0).unwrap(),
+        );
+    }
+
+    #[test]
     fn merged_linear_extension_simplifies_lines_and_extends_polyline_end_spans() {
         let straight = NurbsCurve::try_new(
             2,
@@ -7428,6 +7914,11 @@ mod tests {
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
         assert_eq!(
+            closed
+                .try_merged_naturally_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
             closed.try_extended_linearly_by_length(
                 CurveExtensionSide::End,
                 1.0,
@@ -7440,12 +7931,48 @@ mod tests {
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
         assert_eq!(
+            closed.try_extended_circularly_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed.try_merged_circularly_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed.try_joined_circularly_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed.try_separate_circular_extensions_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
             closed.try_joined_linearly_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
         assert_eq!(
             closed
                 .try_joined_naturally_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
+        assert_eq!(
+            closed.try_joined_smoothly_by_length(CurveExtensionSide::End, 1.0, Tolerance::DEFAULT,),
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
         assert_eq!(
@@ -7464,9 +7991,25 @@ mod tests {
             ),
             Err(GeometryError::CurveExtensionMustBeOpen)
         );
+        assert_eq!(
+            closed.try_separate_smooth_extensions_by_length(
+                CurveExtensionSide::End,
+                1.0,
+                Tolerance::DEFAULT,
+            ),
+            Err(GeometryError::CurveExtensionMustBeOpen)
+        );
         for length in [0.0, -1.0, Real::NAN] {
             assert_eq!(
                 curve.try_extended_by_length(CurveExtensionSide::End, length, Tolerance::DEFAULT),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_merged_naturally_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
                 Err(GeometryError::InvalidCurveExtensionLength)
             );
             assert_eq!(
@@ -7479,6 +8022,38 @@ mod tests {
             );
             assert_eq!(
                 curve.try_merged_linearly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_extended_circularly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_merged_circularly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_joined_circularly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_separate_circular_extensions_by_length(
                     CurveExtensionSide::End,
                     length,
                     Tolerance::DEFAULT,
@@ -7502,6 +8077,14 @@ mod tests {
                 Err(GeometryError::InvalidCurveExtensionLength)
             );
             assert_eq!(
+                curve.try_joined_smoothly_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
                 curve.try_separate_linear_extensions_by_length(
                     CurveExtensionSide::End,
                     length,
@@ -7511,6 +8094,14 @@ mod tests {
             );
             assert_eq!(
                 curve.try_separate_natural_extensions_by_length(
+                    CurveExtensionSide::End,
+                    length,
+                    Tolerance::DEFAULT,
+                ),
+                Err(GeometryError::InvalidCurveExtensionLength)
+            );
+            assert_eq!(
+                curve.try_separate_smooth_extensions_by_length(
                     CurveExtensionSide::End,
                     length,
                     Tolerance::DEFAULT,

@@ -994,6 +994,7 @@ pub enum CurveExtensionEnd {
 #[derive(Clone, Copy, Debug, Default, Deserialize, Eq, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum CurveLengthExtensionStyle {
+    Arc,
     Line,
     #[default]
     Smooth,
@@ -1003,6 +1004,7 @@ pub enum CurveLengthExtensionStyle {
 #[serde(rename_all = "snake_case")]
 pub enum CurveCommandExtensionStyle {
     Natural,
+    Arc,
     Line,
     Smooth,
 }
@@ -3060,6 +3062,11 @@ fn execute(
         } => {
             let source = nurbs_curve_from_definition(curve)?;
             let (curve, elapsed) = measure(iterations, || match style {
+                CurveLengthExtensionStyle::Arc => source.try_extended_circularly_by_length(
+                    black_box(side.geometry()),
+                    black_box(*length),
+                    tolerance,
+                ),
                 CurveLengthExtensionStyle::Line => source.try_extended_linearly_by_length(
                     black_box(side.geometry()),
                     black_box(*length),
@@ -6753,6 +6760,7 @@ fn curve_extend_command(
     };
     let style_name = match style {
         CurveCommandExtensionStyle::Natural => "Natural",
+        CurveCommandExtensionStyle::Arc => "Arc",
         CurveCommandExtensionStyle::Line => "Line",
         CurveCommandExtensionStyle::Smooth => "Smooth",
     };
@@ -6808,24 +6816,77 @@ fn curve_extend_command(
         (
             CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
             CurveCommandExtensionJoin::Merge,
-        ) => source
-            .try_extended_by_length(black_box(side.geometry()), black_box(length), tolerance)
-            .map(|_| 1),
+        ) => match style {
+            CurveCommandExtensionStyle::Natural => source.try_merged_naturally_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            ),
+            CurveCommandExtensionStyle::Smooth => source.try_extended_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            ),
+            CurveCommandExtensionStyle::Arc | CurveCommandExtensionStyle::Line => {
+                unreachable!("the match arm accepts only natural and smooth styles")
+            }
+        }
+        .map(|_| 1),
         (
             CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
             CurveCommandExtensionJoin::Yes,
-        ) => source
-            .try_joined_naturally_by_length(
+        ) => match style {
+            CurveCommandExtensionStyle::Natural => source.try_joined_naturally_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            ),
+            CurveCommandExtensionStyle::Smooth => source.try_joined_smoothly_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            ),
+            CurveCommandExtensionStyle::Arc | CurveCommandExtensionStyle::Line => {
+                unreachable!("the match arm accepts only natural and smooth styles")
+            }
+        }
+        .map(|_| 1),
+        (
+            CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
+            CurveCommandExtensionJoin::No,
+        ) => match style {
+            CurveCommandExtensionStyle::Natural => source
+                .try_separate_natural_extensions_by_length(
+                    black_box(side.geometry()),
+                    black_box(length),
+                    tolerance,
+                ),
+            CurveCommandExtensionStyle::Smooth => source.try_separate_smooth_extensions_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            ),
+            CurveCommandExtensionStyle::Arc | CurveCommandExtensionStyle::Line => {
+                unreachable!("the match arm accepts only natural and smooth styles")
+            }
+        }
+        .map(|curves| curves.len()),
+        (CurveCommandExtensionStyle::Arc, CurveCommandExtensionJoin::Merge) => source
+            .try_merged_circularly_by_length(
                 black_box(side.geometry()),
                 black_box(length),
                 tolerance,
             )
             .map(|_| 1),
-        (
-            CurveCommandExtensionStyle::Natural | CurveCommandExtensionStyle::Smooth,
-            CurveCommandExtensionJoin::No,
-        ) => source
-            .try_separate_natural_extensions_by_length(
+        (CurveCommandExtensionStyle::Arc, CurveCommandExtensionJoin::Yes) => source
+            .try_joined_circularly_by_length(
+                black_box(side.geometry()),
+                black_box(length),
+                tolerance,
+            )
+            .map(|_| 1),
+        (CurveCommandExtensionStyle::Arc, CurveCommandExtensionJoin::No) => source
+            .try_separate_circular_extensions_by_length(
                 black_box(side.geometry()),
                 black_box(length),
                 tolerance,
@@ -9268,6 +9329,36 @@ mod tests {
         assert_eq!(
             curve["control_points"][4]["point"],
             json!([4.5, 0.25, -2.5])
+        );
+    }
+
+    #[test]
+    fn captures_osculating_arc_curve_extension_by_length() {
+        let response = run_request(&request(vec![Operation::CurveExtendLengthGeometry {
+            id: "extend-quadratic-arc".to_owned(),
+            curve: NurbsCurveDefinition {
+                degree: 2,
+                control_points: [[0.0, 0.0, 0.0], [1.0, 2.0, 0.0], [3.0, 1.0, 0.0]]
+                    .into_iter()
+                    .map(|point| ControlPoint { point, weight: 1.0 })
+                    .collect(),
+                knots: vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+                domain: None,
+            },
+            side: CurveExtensionEnd::End,
+            length: 2.0,
+            style: CurveLengthExtensionStyle::Arc,
+        }]))
+        .unwrap();
+
+        let curve = &response.results[0].value;
+        assert_eq!(curve["degree"], 2);
+        assert_eq!(curve["control_points"].as_array().unwrap().len(), 5);
+        assert!((curve["domain"][1].as_f64().unwrap() - 1.447_213_595_499_957_9).abs() < 1.0e-14);
+        assert!(
+            (curve["control_points"][3]["weight"].as_f64().unwrap() - 0.975_103_993_210_479_4)
+                .abs()
+                < 1.0e-14
         );
     }
 

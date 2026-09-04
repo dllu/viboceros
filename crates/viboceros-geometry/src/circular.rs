@@ -216,7 +216,7 @@ impl Circle3 {
     }
 }
 
-/// A finite circular arc with a positive sweep smaller than one revolution.
+/// A finite circular arc with a positive sweep no greater than one revolution.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CircularArc3 {
     circle: Circle3,
@@ -282,6 +282,56 @@ impl CircularArc3 {
         })
     }
 
+    /// Constructs the osculating arc that starts at `start`, follows
+    /// `tangent`, bends toward `curvature`, and has the requested arc length,
+    /// capped at one full revolution. The curvature vector is the derivative
+    /// of unit tangent with respect to arc length, so its magnitude is the
+    /// reciprocal radius.
+    pub(crate) fn try_from_start_tangent_curvature_length(
+        start: Point3,
+        tangent: UnitVector3,
+        curvature: Vector3,
+        length: Real,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        require_finite([length], "circular arc length")?;
+        if length <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "circular arc",
+            });
+        }
+        let curvature_magnitude = curvature.length()?;
+        if curvature_magnitude == 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "circular arc",
+            });
+        }
+        let radius = 1.0 / curvature_magnitude;
+        let sweep_radians = (length * curvature_magnitude).min(TAU);
+        require_finite(
+            [radius, sweep_radians],
+            "osculating circular arc dimensions",
+        )?;
+        if !(sweep_radians > 0.0 && sweep_radians <= TAU) {
+            return Err(GeometryError::Degenerate {
+                context: "circular arc",
+            });
+        }
+
+        let inward = curvature.normalized_nonzero()?;
+        let center = start.translated(inward.as_vector().scaled(radius)?)?;
+        let x_axis = inward.opposite();
+        let normal = x_axis
+            .as_vector()
+            .cross(tangent.as_vector())?
+            .normalized_nonzero()?;
+        let circle = Circle3::try_from_frame(center, radius, x_axis, normal, tolerance)?;
+        Ok(Self {
+            circle,
+            sweep_radians,
+        })
+    }
+
     #[inline]
     pub const fn center(self) -> Point3 {
         self.circle.center()
@@ -306,7 +356,11 @@ impl CircularArc3 {
     }
 
     pub fn end(self) -> Result<Point3, GeometryError> {
-        self.circle.point_at_angle(self.sweep_radians)
+        if self.sweep_radians == TAU {
+            self.start()
+        } else {
+            self.circle.point_at_angle(self.sweep_radians)
+        }
     }
 
     pub fn point_at(self, normalized: Real) -> Result<Point3, GeometryError> {
