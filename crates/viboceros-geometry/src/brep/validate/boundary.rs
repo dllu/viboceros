@@ -1,5 +1,6 @@
 //! Sampled geometric correspondence, independent of edge/p-curve parameterization.
 
+use super::super::trim_image::LiftedTrim;
 use super::*;
 use crate::ParameterSide;
 
@@ -11,33 +12,17 @@ pub(super) fn validate(
 ) -> Result<(), GeometryError> {
     // Reuse the stable sided rational evaluator for (u,v,0). This temporary
     // representation never turns parameter-space coordinates into model space.
-    let parameters = NurbsCurve::try_new_rational(
-        trim.curve.degree(),
-        trim.curve
-            .control_points()
-            .iter()
-            .map(|cp| {
-                WeightedPoint3::try_new(
-                    Point3::try_new(cp.point().x(), cp.point().y(), 0.0)?,
-                    cp.weight(),
-                )
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?,
-        trim.curve.knots().to_vec(),
-    )?;
-    let image = LiftedTrim {
-        curve: &parameters,
-        surface: &face.surface,
-    };
+    let image = LiftedTrim::new(trim, &face.surface)?;
+    let parameters = &image.curve;
     let allowed_uv = [
         tolerance.absolute().max(trim.tolerance[0]),
         tolerance.absolute().max(trim.tolerance[1]),
         0.0,
     ];
-    continuous(&parameters, |delta| {
+    continuous(parameters, |delta| {
         (0..3).all(|axis| delta[axis].abs() <= allowed_uv[axis])
     })?;
-    let stations = samples(&parameters)?;
+    let stations = samples(parameters)?;
     let mut lifted = Vec::with_capacity(stations.len());
     for (parameter, side) in stations {
         lifted.push((parameter, image.point(parameter, side)?));
@@ -85,7 +70,11 @@ pub(super) fn validate(
         if point.distance_to(direct)? <= allowed {
             continue;
         }
-        if image.closest_distance(point, &lifted, search_tolerance.absolute())? > allowed {
+        if image
+            .closest_point(point, &lifted, search_tolerance.absolute())?
+            .0
+            > allowed
+        {
             return invalid("a model-space edge interior leaves its lifted p-curve");
         }
     }
@@ -153,86 +142,4 @@ fn normalized(parameter: Real, domain: RangeInclusive<Real>) -> Result<Real, Geo
     };
     require_finite([fraction], "B-rep boundary parameter fraction")?;
     Ok(fraction.clamp(0.0, 1.0))
-}
-
-struct LiftedTrim<'a> {
-    curve: &'a NurbsCurve,
-    surface: &'a NurbsSurface,
-}
-
-impl LiftedTrim<'_> {
-    fn point(&self, parameter: Real, side: ParameterSide) -> Result<Point3, GeometryError> {
-        let uv = self.curve.evaluate_on_side(parameter, side)?;
-        self.surface.evaluate(uv.x(), uv.y())
-    }
-
-    fn jet(&self, parameter: Real) -> Result<(Point3, Vector3), GeometryError> {
-        let (uv, derivative) = self.curve.evaluate_with_derivative(parameter)?;
-        let (point, du, dv) = self.surface.evaluate_with_derivatives(uv.x(), uv.y())?;
-        let tangent = Vector3::try_from(std::array::from_fn(|axis| {
-            du.to_array()[axis].mul_add(derivative.x(), dv.to_array()[axis] * derivative.y())
-        }))?;
-        Ok((point, tangent))
-    }
-
-    fn closest_distance(
-        &self,
-        target: Point3,
-        samples: &[(Real, Point3)],
-        epsilon: Real,
-    ) -> Result<Real, GeometryError> {
-        let mut candidates = samples
-            .iter()
-            .map(|&(t, point)| Ok((point.distance_to(target)?, t)))
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        candidates.sort_by(|a, b| a.0.total_cmp(&b.0));
-        candidates.truncate(16);
-        let mut best = candidates[0].0;
-        let domain = self.curve.domain();
-        for (mut distance, mut parameter) in candidates {
-            for _ in 0..64 {
-                if distance <= epsilon {
-                    return Ok(distance);
-                }
-                let (point, tangent) = self.jet(parameter)?;
-                let speed = tangent.length()?;
-                if speed == 0.0 {
-                    break;
-                }
-                let projection = point.vector_to(target)?.dot(tangent)? / speed;
-                if projection.abs() <= epsilon {
-                    break;
-                }
-                let delta = projection / speed;
-                if !delta.is_finite() {
-                    break;
-                }
-                let mut accepted = None;
-                let mut step: Real = 1.0;
-                for _ in 0..24 {
-                    let next = step
-                        .mul_add(delta, parameter)
-                        .clamp(*domain.start(), *domain.end());
-                    if next == parameter {
-                        break;
-                    }
-                    let next_distance = self
-                        .point(next, ParameterSide::Right)?
-                        .distance_to(target)?;
-                    if next_distance < distance {
-                        accepted = Some((next, next_distance));
-                        break;
-                    }
-                    step *= 0.5;
-                }
-                let Some((next, next_distance)) = accepted else {
-                    break;
-                };
-                parameter = next;
-                distance = next_distance;
-            }
-            best = best.min(distance);
-        }
-        Ok(best)
-    }
 }

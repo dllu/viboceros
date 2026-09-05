@@ -44635,7 +44635,7 @@ mod tests {
     }
 
     #[test]
-    fn orient_on_surface_fits_surface_interiors_and_restores_copy_and_in_place_history() {
+    fn orient_on_surface_fits_surfaces_and_breps_and_restores_copy_and_in_place_history() {
         use viboceros_geometry::PointMorph;
         let registry = CommandRegistry::with_builtins();
         let source = NurbsSurface::try_bilinear([
@@ -44646,9 +44646,21 @@ mod tests {
         ])
         .unwrap();
         let surface = orient_surface_quarter_cylinder();
-        for copy in [false, true] {
+        for (copy, as_brep) in [(false, false), (true, false), (false, true), (true, true)] {
             let mut document = Document::default();
-            let original = add_named_surface(&mut document, source.clone(), "Source");
+            let geometry = if as_brep {
+                Geometry::Brep(
+                    Brep::try_surface_face(source.clone(), document.tolerance()).unwrap(),
+                )
+            } else {
+                Geometry::NurbsSurface(source.clone())
+            };
+            let original = document
+                .add_geometry_with_attributes(
+                    geometry,
+                    ObjectAttributes::on_layer(document.current_layer_id()).with_name("Source"),
+                )
+                .unwrap();
             let target = add_named_surface(&mut document, surface.clone(), "Target");
             document
                 .add_group(Some("Shared".into()), [original])
@@ -44676,8 +44688,14 @@ mod tests {
                 .objects()
                 .find(|object| object.id() != target && (!copy || object.id() != original))
                 .unwrap();
-            let Geometry::NurbsSurface(fitted) = result.geometry() else {
-                panic!("expected fitted NURBS surface");
+            let fitted = match (result.geometry(), as_brep) {
+                (Geometry::NurbsSurface(surface), false) => surface,
+                (Geometry::Brep(brep), true) => {
+                    assert_eq!(brep.faces().len(), 1);
+                    assert_eq!(brep.edges().len(), 4);
+                    brep.faces()[0].surface()
+                }
+                _ => panic!("surface morph changed the source representation"),
             };
             assert_eq!(fitted.domain_u(), source.domain_u());
             assert_eq!(fitted.domain_v(), source.domain_v());
@@ -44699,10 +44717,15 @@ mod tests {
                 document.tolerance(),
             )
             .unwrap();
+            let fraction = |i| match i {
+                0 => 0.0,
+                32 => 1.0,
+                _ => (i as f64 - 0.3819660112501051) / 32.0,
+            };
             for j in 0..=32 {
                 for i in 0..=32 {
-                    let u = source.parameter_at_u(i as f64 / 32.0).unwrap();
-                    let v = source.parameter_at_v(j as f64 / 32.0).unwrap();
+                    let u = source.parameter_at_u(fraction(i)).unwrap();
+                    let v = source.parameter_at_v(fraction(j)).unwrap();
                     let expected = morph.morph_point(source.evaluate(u, v).unwrap()).unwrap();
                     let actual = fitted.evaluate(u, v).unwrap();
                     assert!(

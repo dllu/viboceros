@@ -14,6 +14,9 @@ use crate::{
 };
 
 mod mass_properties;
+mod morph;
+mod tessellation;
+mod trim_image;
 mod validate;
 
 const LOOP_SAMPLES_PER_SPAN: usize = 4;
@@ -3578,6 +3581,8 @@ impl Brep {
     /// outer and inner boundary sample for watertight stitching. Nonplanar
     /// faces also receive the underlying surface's knot-span grid samples so
     /// their interior approximation tracks the requested density.
+    /// If independent grids fail closed-solid stitching, a shared-edge
+    /// constrained triangulation rebuilds the face boundaries.
     pub fn tessellate(
         &self,
         samples_per_span: usize,
@@ -3591,7 +3596,8 @@ impl Brep {
     /// Full rectangular surface cells remain quadrilaterals and trimmed
     /// regions remain constrained triangles. With smooth seams, boundary
     /// samples are snapped to shared exact edges and closed solids are
-    /// required to remain watertight. Jagged seams intentionally disable
+    /// required to remain watertight. A conforming triangle fallback replaces
+    /// quads when independent boundary grids cannot be stitched. Jagged seams intentionally disable
     /// shared-edge snapping and permit naked edges between faces.
     pub fn polygon_mesh(
         &self,
@@ -3695,10 +3701,7 @@ impl Brep {
             && ((self.is_closed() && !topology.is_closed())
                 || (self.is_solid() && !topology.is_solid()))
         {
-            return Err(GeometryError::UnstitchedBrepTessellation {
-                boundary_edges: topology.boundary_edge_count(),
-                orientation_conflicts: topology.orientation_conflict_edge_count(),
-            });
+            return self.tessellate_conforming(samples_per_span, tolerance);
         }
         Ok(mesh)
     }

@@ -156,7 +156,7 @@ impl Geometry {
             Self::NurbsSurface(surface) => {
                 Self::NurbsSurface(morph.morph_nurbs_surface(surface, tolerance)?)
             }
-            Self::Brep(_) => return Err(GeometryError::UnsupportedBrepMorph),
+            Self::Brep(brep) => Self::Brep(morph.morph_brep(brep, tolerance)?),
             Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
         })
     }

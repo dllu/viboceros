@@ -4954,7 +4954,7 @@ fn push_tessellation_cell(
     Ok(())
 }
 
-fn tessellation_triangle_is_nondegenerate(
+pub(crate) fn tessellation_triangle_is_nondegenerate(
     vertices: &[Point3],
     triangle: [u32; 3],
     tolerance: Tolerance,

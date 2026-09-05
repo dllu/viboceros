@@ -433,9 +433,6 @@ pub enum GeometryError {
         orientation_conflicts: usize,
     },
 
-    #[error("non-affine B-rep morphing is not yet supported")]
-    UnsupportedBrepMorph,
-
     #[error("a revolution sweep must be finite, non-zero, and no greater than one turn")]
     InvalidRevolutionSweep,
 

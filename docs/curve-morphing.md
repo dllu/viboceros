@@ -62,7 +62,8 @@ introduced by the mapping itself are not located analytically. Extremely narrow
 native spans, ill-conditioned rational sources, or tolerances below representable
 coordinate resolution can prevent a fit. A separate [surface fitter](surface-morphing.md)
 now handles untrimmed NURBS surfaces and shares the banded interpolation helpers;
-trimmed B-rep morph fitting remains unsupported.
+[B-rep morph assembly](brep-morphing.md) combines both fitters with shared topology
+and exact UV trim preservation.
 
 ## Rhino validation
 

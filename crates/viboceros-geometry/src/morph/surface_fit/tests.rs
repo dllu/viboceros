@@ -90,6 +90,37 @@ fn quartic_surface_image_requires_refinement_beyond_mapped_controls() {
 }
 
 #[test]
+fn cubic_variation_does_not_refine_an_already_represented_tensor_direction() {
+    struct Product(bool);
+    impl PointMorph for Product {
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            let (x, y) = if self.0 {
+                (p.y(), p.x())
+            } else {
+                (p.x(), p.y())
+            };
+            Point3::try_new(p.x(), p.y(), p.z() + x.powi(4) * (1.0 + y.powi(3)))
+        }
+    }
+    let source = unit_patch();
+    for swapped in [false, true] {
+        let morph = Product(swapped);
+        let fitted = morph
+            .morph_nurbs_surface(&source, Tolerance::try_new(1e-7, 1e-12, 1e-10).unwrap())
+            .unwrap();
+        check_image(&source, &fitted, &morph, 1e-7);
+        assert_eq!(
+            if swapped {
+                fitted.control_point_count_u()
+            } else {
+                fitted.control_point_count_v()
+            },
+            4
+        );
+    }
+}
+
+#[test]
 fn two_nonlinear_directions_are_refined_independently() {
     struct Both;
     impl PointMorph for Both {

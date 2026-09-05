@@ -40,7 +40,8 @@ selected object. `Rigid=Yes` (the default) maps a frame without deformation;
 `Rigid=No` applies the plane-to-surface point map; all supported curves,
 including lines and polylines, receive tolerance-driven adaptive cubic fits,
 untrimmed NURBS surfaces use checked control mapping or adaptive bicubic fitting,
-and meshes map per vertex. Trimmed B-rep morphs are not supported yet.
+trimmed B-reps fit shared edges and underlying faces while retaining exact UV
+trims, and meshes map per vertex.
 `Scale=` must be positive,
 `Rotation=` is in degrees, `Flip=Yes` reverses surface Y and Z, and
 `SourceNormal=` defaults to world Z. In deformable mode, `ConstrainNormal=Yes`
@@ -49,7 +50,8 @@ Rhino's placement-viewport construction-plane normal.
 This command defaults to `Copy=Yes`; originals remain selected and copied group
 topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
 
-See [curve morphing](../curve-morphing.md) and [surface morphing](../surface-morphing.md)
+See [curve morphing](../curve-morphing.md), [surface morphing](../surface-morphing.md),
+and [B-rep morphing](../brep-morphing.md)
 for native parameter and knot-limit
 preservation, fitting limits, and separate direct-map versus fitted-output
 comparisons. The earlier fixed-cubic line fitting has been replaced. Rhino's

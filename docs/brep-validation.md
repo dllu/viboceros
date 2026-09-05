@@ -52,12 +52,13 @@ These are finite geometric checks, not a continuous Hausdorff-distance proof or
 a complete validity classifier for arbitrary rational B-reps. Unsampled features
 may escape them, and ill-conditioned correspondence searches can reject a valid
 model. They do not prove absence of face self-intersection or interior singularities.
-Existing loop-orientation and incidence checks remain necessary. Trimmed B-rep
-morph fitting is still unfinished: accurate individual surface fits alone do not
-establish shared-boundary consistency.
+Existing loop-orientation and incidence checks remain necessary.
+[B-rep morph fitting](brep-morphing.md) now uses these assembly checks: accurate
+individual surface fits alone do not establish shared-boundary consistency.
 
-The checkpoint passes 1,310 Rust tests, 19 Python tests, and strict Clippy.
-All 117 native oracle fixtures (1,193 operations) still execute; 369 recorded
+The initial boundary-validation checkpoint passed 1,310 Rust tests, 19 Python
+tests, and strict Clippy. All 117 native oracle fixtures (1,193 operations)
+executed; 369 recorded
 curve comparisons retain their documented tolerances. Fresh Rhino 8.32 checks
 pass for six trimmed mass-property cases at absolute `1e-8`, relative `1e-10`
 (largest difference `1.22e-9`), and two non-affine trimmed-surface splits at

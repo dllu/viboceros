@@ -27,9 +27,12 @@ overflowing coordinate differences. Interpolated knot-intersection point values
 are pinned exactly; constant large-coordinate targets retain their exact controls.
 
 Each nonempty knot rectangle is checked on the tensor product of uniform and
-cosine-spaced stations, including all sided boundary values. Residual variation
-guides independent U/V bisection: a direction already represented accurately does
-not automatically need more controls. Refinement targets 80% of the requested
+cosine-spaced stations, including all sided boundary values. Fourth differences
+of the uniform-grid residuals guide independent U/V bisection: an error in U
+multiplied by a cubic function of V does not automatically require more V
+controls. When those differences nearly vanish, all-grid residual variation
+provides a fallback against uniform-grid aliasing. These are refinement
+heuristics, not error bounds. Refinement targets 80% of the requested
 tolerance. At exhausted control or parameter resolution, a result is accepted
 only if its measured error meets the actual requested tolerance.
 
@@ -43,11 +46,9 @@ remain atomic on failure, including attributes, selection, groups, and history.
 These finite checks are not a continuous error certificate for an arbitrary
 black-box mapping. Unsampled sharp features, mapping-induced discontinuities,
 ill-conditioned rational sources, or sub-resolution tolerances can defeat a fit.
-The resource limits can reject otherwise valid complicated images. This work does
-not yet fit trimmed B-reps or reconstruct their shared edges and trims.
-The B-rep constructor's separate [boundary checks](brep-validation.md) now test
-interior edge/trim correspondence; they are a prerequisite, not an implementation
-of trimmed B-rep morph fitting.
+The resource limits can reject otherwise valid complicated images.
+[B-rep morph assembly](brep-morphing.md) now combines these fits with shared
+edge fits and exact UV trims, then checks interior edge/trim correspondence.
 
 ## Validation
 
@@ -96,7 +97,7 @@ Illustrative release fit times range from roughly `2–17 ms` natively and
 different achieved errors and B-rep-versus-surface work make these observations
 unsuitable for claiming native-Rhino performance parity.
 
-This checkpoint passes 1,301 Rust tests, 19 Python tests, and strict Clippy.
-All 117 native fixtures (1,193 operations) execute successfully. Recorded curve
-and surface-jet comparisons retain their documented tolerances. This is bounded
-regression evidence, not complete Rhino compatibility or B-rep morph support.
+At the initial surface-fitting checkpoint, 1,301 Rust tests, 19 Python tests,
+strict Clippy, and 117 native fixtures (1,193 operations) passed. See
+[B-rep morphing](brep-morphing.md) for the subsequent combined regression run.
+This is bounded evidence, not complete Rhino compatibility.

@@ -96,6 +96,10 @@ now compares unrounded curve samples and document state, not rounded control net
 `surface_surface_morph.json` adds five [surface-fitting cases](surface-morphing.md)
 with 1,089 offset-grid direct-map and fitted samples per case; native fit errors
 are independently checked at each case's requested tolerance.
+`brep_surface_morph.json` adds four [trimmed B-rep morph cases](brep-morphing.md),
+checking shared topology, direct maps, and fitted geometry separately. Edge
+samples use closest-point correspondence because Rhino changes their parameter
+speeds; native fits additionally retain original-parameter accuracy checks.
 
 `curve_3dm_interchange.json` checks Rhino's reading of actual Viboceros-written
 files, including decomposed full-order knots and all visibility/locking states.

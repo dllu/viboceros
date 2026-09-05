@@ -6,7 +6,7 @@ fn point(x: f64, y: f64) -> Point3 {
 }
 
 #[test]
-fn failed_curve_and_surface_fits_leave_in_place_and_copy_document_edits_atomic() {
+fn failed_curve_surface_and_brep_fits_leave_in_place_and_copy_document_edits_atomic() {
     use crate::{Document, ObjectAttributes, SelectionMode};
     struct CannotFit;
     impl PointMorph for CannotFit {
@@ -47,6 +47,19 @@ fn failed_curve_and_surface_fits_leave_in_place_and_copy_document_edits_atomic()
                 point(1.0, 1.0),
                 point(0.0, 1.0),
             ])
+            .unwrap(),
+        ),
+        Geometry::Brep(
+            Brep::try_surface_face(
+                NurbsSurface::try_bilinear([
+                    point(0.0, 0.0),
+                    point(1.0, 0.0),
+                    point(1.0, 1.0),
+                    point(0.0, 1.0),
+                ])
+                .unwrap(),
+                Tolerance::DEFAULT,
+            )
             .unwrap(),
         ),
     ];

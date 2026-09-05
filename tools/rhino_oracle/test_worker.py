@@ -250,6 +250,66 @@ class RhinoWorkerTests(unittest.TestCase):
         for item in candidates + [source, surface, morph]:
             item.Dispose.assert_called_once_with()
 
+    def test_brep_morph_probe_separates_samples_and_disposes_repeated_fits(self):
+        def xyz(x):
+            return SimpleNamespace(X=x, Y=0.0, Z=0.0)
+        candidates = []
+        def duplicate():
+            candidate = SimpleNamespace(IsValid=True, Dispose=Mock())
+            candidates.append(candidate)
+            return candidate
+        source = SimpleNamespace(DuplicateBrep=duplicate, Dispose=Mock())
+        surface = SimpleNamespace(Dispose=Mock())
+        morph = SimpleNamespace(MorphPoint=lambda p: xyz(p.X + 1.0),
+                                Morph=Mock(return_value=True), Dispose=Mock())
+        with patch.object(self.worker, "_trimmed_brep_from_definition", return_value=source), patch.object(
+            self.worker, "_nurbs_surface_from_definition", return_value=surface
+        ), patch.object(self.worker, "_surface_point_morph", return_value=morph), patch.object(
+            self.worker, "_brep_morph_plan", return_value=[("vertex", 0)]
+        ), patch.object(self.worker, "_brep_morph_point", side_effect=lambda g, s: xyz(0.0 if g is source else 0.25)), patch.object(
+            self.worker, "_brep_morph_topology", return_value={"vertices": 1}
+        ):
+            value, _ = self.worker._brep_surface_morph({"source": {}, "surface": {}}, 2, {"absolute": 1e-9})
+        self.assertEqual(value["exact_samples"], [[1.0, 0.0, 0.0]])
+        self.assertEqual(value["fitted_samples"], [[0.25, 0.0, 0.0]])
+        self.assertEqual(len(candidates), 3)
+        for item in candidates + [source, surface, morph]:
+            item.Dispose.assert_called_once_with()
+
+    def test_trimmed_brep_builder_disposes_partial_brep_on_boundary_failure(self):
+        brep = SimpleNamespace(Dispose=Mock())
+        self.worker.Rhino.Geometry = SimpleNamespace(Brep=lambda: brep)
+        with patch.object(self.worker, "_nurbs_curve_from_definition", side_effect=ValueError("curve failed")):
+            with self.assertRaisesRegex(ValueError, "curve failed"):
+                self.worker._trimmed_brep_from_definition({"boundaries": [{"curve": {}}]}, {"absolute": 1e-9})
+        brep.Dispose.assert_called_once_with()
+
+    def test_brep_morph_edge_comparison_uses_closest_point_not_source_parameter(self):
+        point = object()
+        edge = SimpleNamespace(ClosestPoint=Mock(return_value=(True, 0.75)),
+                               PointAt=Mock(return_value=point))
+        with patch.object(self.worker, "_point", return_value=point):
+            actual = self.worker._brep_morph_corresponding_point(
+                SimpleNamespace(Edges=[edge]), ("edge", 0, 0.25), [1.0, 2.0, 3.0])
+        self.assertIs(actual, point)
+        edge.ClosestPoint.assert_called_once_with(point)
+        edge.PointAt.assert_called_once_with(0.75)
+
+    def test_brep_morph_releases_failed_candidate_and_all_owned_geometry(self):
+        candidate = SimpleNamespace(Dispose=Mock())
+        source = SimpleNamespace(DuplicateBrep=lambda: candidate, Dispose=Mock())
+        surface = SimpleNamespace(Dispose=Mock())
+        morph = SimpleNamespace(Morph=Mock(return_value=False), Dispose=Mock())
+        with patch.object(self.worker, "_trimmed_brep_from_definition", return_value=source), patch.object(
+            self.worker, "_nurbs_surface_from_definition", return_value=surface
+        ), patch.object(self.worker, "_surface_point_morph", return_value=morph), patch.object(
+            self.worker, "_brep_morph_plan", return_value=[]
+        ):
+            with self.assertRaisesRegex(ValueError, "could not morph"):
+                self.worker._brep_surface_morph({"source": {}, "surface": {}}, 1, {"absolute": 1e-9})
+        for item in [candidate, source, surface, morph]:
+            item.Dispose.assert_called_once_with()
+
     def test_curve_morph_probe_releases_source_when_surface_creation_fails(self):
         source = SimpleNamespace(Dispose=Mock())
         with patch.object(self.worker, "_nurbs_curve_from_definition", return_value=source), patch.object(

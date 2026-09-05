@@ -3,8 +3,8 @@ mod interpolation;
 mod surface_fit;
 
 use crate::{
-    Frame3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3,
-    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
+    Brep, Frame3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3,
+    Polyline3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
 };
 
 /// Resource ceiling for adaptive cubic fitting and point-map sampling.
@@ -85,6 +85,12 @@ pub trait PointMorph {
             MAX_MORPH_SURFACE_AXIS_CONTROLS,
             MAX_MORPH_SURFACE_SAMPLES,
         )
+    }
+
+    /// Fits shared edges and underlying surfaces, preserving UV trims and
+    /// validating the assembled B-rep at the document tolerance.
+    fn morph_brep(&self, brep: &Brep, tolerance: Tolerance) -> Result<Brep, GeometryError> {
+        brep.morphed(self, tolerance)
     }
 
     fn morph_mesh(

@@ -590,11 +590,10 @@ def _polycurve_geometry(operation, iterations, tolerance):
         source.Dispose()
 
 
-def _trimmed_surface_mass_properties(operation, iterations, tolerance):
+def _trimmed_brep_from_definition(operation, tolerance):
+    brep = Rhino.Geometry.Brep()
     owned = []
     try:
-        brep = Rhino.Geometry.Brep()
-        owned.append(brep)
         capped = operation.get("cap_surface") is not None
         parameter_indices = []
         for index, boundary in enumerate(operation["boundaries"]):
@@ -636,6 +635,18 @@ def _trimmed_surface_mass_properties(operation, iterations, tolerance):
         if str(brep.Faces[0].IsPointOnFace(u, v)) != "Interior":
             raise ValueError("mass property interior point must lie in the retained face")
 
+        return brep
+    except Exception:
+        brep.Dispose()
+        raise
+    finally:
+        for geometry in reversed(owned):
+            geometry.Dispose()
+
+
+def _trimmed_surface_mass_properties(operation, iterations, tolerance):
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
         def compute():
             properties = Rhino.Geometry.AreaMassProperties.Compute(
                 brep, True, False, False, False, tolerance["relative"], tolerance["absolute"]
@@ -660,8 +671,7 @@ def _trimmed_surface_mass_properties(operation, iterations, tolerance):
             return {"area": area, "volume": volume, "is_solid": bool(brep.IsSolid)}
         return _measure(iterations, compute)
     finally:
-        for geometry in reversed(owned):
-            geometry.Dispose()
+        brep.Dispose()
 
 
 def _canonical_closed_intersection_curve_definition(curve):
@@ -1481,6 +1491,25 @@ def _surface_surface_morph(operation, iterations, tolerance):
     return _geometry_surface_morph(operation, iterations, tolerance, True)
 
 
+def _surface_point_morph(operation, tolerance, surface):
+    frame = Rhino.Geometry.Plane(_point(operation["source_origin"]),
+                                 _vector(operation["source_x"]), _vector(operation["source_y"]))
+    if not frame.IsValid:
+        raise ValueError("invalid morph source plane")
+    morph = Rhino.Geometry.Morphs.SplopSpaceMorph(frame, surface,
+        Rhino.Geometry.Point2d(*operation["uv"]), float(operation["scale"]), float(operation["angle"]))
+    try:
+        morph.Tolerance = _finite(operation.get("fit_tolerance", tolerance["absolute"]), "morph tolerance")
+        if morph.Tolerance <= 0.0:
+            raise ValueError("morph tolerance must be positive")
+        morph.QuickPreview = False
+        morph.PreserveStructure = False
+        return morph
+    except Exception:
+        morph.Dispose()
+        raise
+
+
 def _geometry_surface_morph(operation, iterations, tolerance, is_surface):
     source = (_nurbs_surface_from_definition(operation["source"]) if is_surface
               else _nurbs_curve_from_definition(operation["curve"]))
@@ -1489,17 +1518,7 @@ def _geometry_surface_morph(operation, iterations, tolerance, is_surface):
     fitted = None
     try:
         surface = _nurbs_surface_from_definition(operation["surface"])
-        frame = Rhino.Geometry.Plane(_point(operation["source_origin"]),
-                                     _vector(operation["source_x"]), _vector(operation["source_y"]))
-        if not frame.IsValid:
-            raise ValueError("invalid morph source plane")
-        morph = Rhino.Geometry.Morphs.SplopSpaceMorph(frame, surface,
-            Rhino.Geometry.Point2d(*operation["uv"]), float(operation["scale"]), float(operation["angle"]))
-        morph.Tolerance = _finite(operation.get("fit_tolerance", tolerance["absolute"]), "morph tolerance")
-        if morph.Tolerance <= 0.0:
-            raise ValueError("morph tolerance must be positive")
-        morph.QuickPreview = False
-        morph.PreserveStructure = False
+        morph = _surface_point_morph(operation, tolerance, surface)
         if is_surface:
             domains = [source.Domain(axis) for axis in range(2)]
             # Offset interior samples from dyadic interpolation/refinement knots.
@@ -1549,12 +1568,106 @@ def _geometry_surface_morph(operation, iterations, tolerance, is_surface):
                 item.Dispose()
 
 
+def _brep_morph_plan(source):
+    def fraction(i, count):
+        return 0.0 if i == 0 else 1.0 if i == count else (i - 0.3819660112501051) / count
+    plan = [("vertex", i) for i in range(source.Vertices.Count)]
+    for i, edge in enumerate(source.Edges):
+        plan.extend(("edge", i, edge.Domain.ParameterAt(fraction(j, 64))) for j in range(65))
+    for f, face in enumerate(source.Faces):
+        for j in range(17):
+            for i in range(17):
+                u = face.Domain(0).ParameterAt(fraction(i, 16))
+                v = face.Domain(1).ParameterAt(fraction(j, 16))
+                if str(face.IsPointOnFace(u, v)) != "Exterior":
+                    plan.append(("face", f, u, v))
+        for l, loop in enumerate(face.Loops):
+            for t, trim in enumerate(loop.Trims):
+                plan.extend(("trim", f, l, t, trim.Domain.ParameterAt(fraction(i, 64))) for i in range(65))
+    return plan
+
+
+def _brep_morph_point(brep, sample):
+    kind, index = sample[:2]
+    if kind == "vertex":
+        return brep.Vertices[index].Location
+    if kind == "edge":
+        return brep.Edges[index].PointAt(sample[2])
+    face = brep.Faces[index]
+    if kind == "face":
+        return face.PointAt(sample[2], sample[3])
+    uv = face.Loops[sample[2]].Trims[sample[3]].PointAt(sample[4])
+    return face.PointAt(uv.X, uv.Y)
+
+
+def _brep_morph_corresponding_point(brep, sample, target):
+    if sample[0] == "edge":
+        edge = brep.Edges[sample[1]]
+        success, parameter = edge.ClosestPoint(_point(target))
+        if not success:
+            raise ValueError("Rhino could not locate a corresponding morphed edge point")
+        return edge.PointAt(parameter)
+    return _brep_morph_point(brep, sample)
+
+
+def _brep_morph_topology(brep):
+    def endpoints(curve):
+        return [int(curve.StartVertex.VertexIndex), int(curve.EndVertex.VertexIndex)]
+    return {"vertices": int(brep.Vertices.Count), "solid": bool(brep.IsSolid),
+            "edges": [endpoints(edge) for edge in brep.Edges],
+            "faces": [{"reversed": bool(face.OrientationIsReversed),
+                       "loops": [{"outer": str(loop.LoopType) == "Outer",
+                                  "trims": [{"vertices": endpoints(trim),
+                                             "edge": None if trim.Edge is None else int(trim.Edge.EdgeIndex),
+                                             "reversed": bool(trim.IsReversed()), "type": str(trim.TrimType)}
+                                            for trim in loop.Trims]} for loop in face.Loops]}
+                      for face in brep.Faces]}
+
+
+def _brep_surface_morph(operation, iterations, tolerance):
+    source = _trimmed_brep_from_definition(operation["source"], tolerance)
+    surface = morph = fitted = None
+    try:
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        morph = _surface_point_morph(operation, tolerance, surface)
+        plan = _brep_morph_plan(source)
+        exact = [_xyz(morph.MorphPoint(_brep_morph_point(source, sample))) for sample in plan]
+
+        def compute():
+            candidate = source.DuplicateBrep()
+            try:
+                if not morph.Morph(candidate) or not candidate.IsValid:
+                    raise ValueError("Rhino could not morph the B-rep")
+                return candidate
+            except Exception:
+                candidate.Dispose()
+                raise
+
+        fitted = compute()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            fitted.Dispose()
+            fitted = None
+            fitted = compute()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        return {"source_topology": _brep_morph_topology(source),
+                "fitted_topology": _brep_morph_topology(fitted), "exact_samples": exact,
+                "fitted_samples": [_xyz(_brep_morph_corresponding_point(fitted, sample, target))
+                                   for sample, target in zip(plan, exact)]}, max(0, elapsed)
+    finally:
+        for item in [fitted, morph, surface, source]:
+            if item is not None:
+                item.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "curve_surface_morph":
         return _curve_surface_morph(operation, iterations, tolerance)
     if kind == "surface_surface_morph":
         return _surface_surface_morph(operation, iterations, tolerance)
+    if kind == "brep_surface_morph":
+        return _brep_surface_morph(operation, iterations, tolerance)
     if kind == "surface_jets":
         return _surface_jets(operation, iterations)
     if kind == "three_dm_curve_interchange":

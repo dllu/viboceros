@@ -33,7 +33,8 @@ use viboceros_io::{
 };
 
 mod mass_properties;
-pub use mass_properties::{MassBoundary, TrimmedMassFixture};
+mod trimmed_brep;
+pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
 mod curve_join_close;
@@ -48,6 +49,8 @@ mod curve_morph;
 pub use curve_morph::CurveMorphFixture;
 mod surface_morph;
 pub use surface_morph::SurfaceMorphFixture;
+mod brep_morph;
+pub use brep_morph::BrepMorphFixture;
 mod polycurve_document;
 pub use curve_interchange::CurveInterchangeFixture;
 pub use curve_join_close::CurveJoinCloseFixture;
@@ -92,6 +95,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    BrepSurfaceMorph {
+        id: String,
+        #[serde(flatten)]
+        fixture: BrepMorphFixture,
+    },
     SurfaceSurfaceMorph {
         id: String,
         #[serde(flatten)]
@@ -145,7 +153,7 @@ pub enum Operation {
     TrimmedSurfaceMassProperties {
         id: String,
         #[serde(flatten)]
-        fixture: TrimmedMassFixture,
+        fixture: TrimmedBrepFixture,
     },
     DocumentObjectStateCycle {
         id: String,
@@ -1335,6 +1343,7 @@ impl Operation {
             Self::PolycurveGeometry { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
+            | Self::BrepSurfaceMorph { id, .. }
             | Self::SurfaceJets { id, .. }
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::CurveNative { id, .. }
@@ -1615,6 +1624,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::BrepSurfaceMorph { fixture, .. } => {
+            brep_morph::run(fixture, iterations, tolerance)?
+        }
         Operation::SurfaceSurfaceMorph { fixture, .. } => {
             surface_morph::run(fixture, iterations, tolerance)?
         }
