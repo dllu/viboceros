@@ -24,6 +24,10 @@ pub struct BrepInterchangeFixture {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum BrepInterchangeSource {
+    PointGrid {
+        #[serde(flatten)]
+        fixture: Box<super::PointGridFixture>,
+    },
     EdgeSurface {
         #[serde(flatten)]
         fixture: Box<super::EdgeSurfaceFixture>,
@@ -65,7 +69,9 @@ impl PointMorph for CubicLift {
 impl BrepInterchangeSource {
     fn tolerance(&self, tolerance: Tolerance) -> Result<Tolerance, GeometryError> {
         let absolute = match self {
-            Self::Loft { .. } | Self::EdgeSurface { .. } => tolerance.absolute(),
+            Self::Loft { .. } | Self::EdgeSurface { .. } | Self::PointGrid { .. } => {
+                tolerance.absolute()
+            }
             Self::SurfaceMorph { fixture } => fixture.fit_tolerance,
             Self::CubicLift { fit_tolerance, .. } => *fit_tolerance,
         };
@@ -74,6 +80,7 @@ impl BrepInterchangeSource {
 
     fn build(&self, tolerance: Tolerance) -> Result<Brep, ProbeError> {
         Ok(match self {
+            Self::PointGrid { fixture } => super::point_grid::build_brep(fixture, tolerance)?,
             Self::EdgeSurface { fixture } => super::edge_surface::build_brep(fixture, tolerance)?,
             Self::Loft { fixture } => super::loft::build_brep(fixture, tolerance)?,
             Self::SurfaceMorph { fixture } => {

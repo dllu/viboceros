@@ -1493,6 +1493,148 @@ def _three_dm_brep_interchange(operation, iterations):
             model.Dispose()
 
 
+def _surface_grid(operation, iterations):
+    if operation.get("command", False):
+        return _surface_grid_command(operation, iterations)
+    points = [_point(p) for p in operation["points"]]
+    count_u, count_v = operation["count"]
+    degree_u, degree_v = operation.get("degree", [3, 3])
+    closed_u, closed_v = operation.get("closed", [False, False])
+    result = []
+    def build():
+        for surface in result:
+            surface.Dispose()
+        del result[:]
+        if operation.get("control", False):
+            surface = Rhino.Geometry.NurbsSurface.CreateFromPoints(
+                points, count_u, count_v, degree_u, degree_v)
+        else:
+            surface = Rhino.Geometry.NurbsSurface.CreateThroughPoints(
+                points, count_u, count_v, degree_u, degree_v, closed_u, closed_v)
+        if surface is not None:
+            result.append(surface)
+    try:
+        _unused, elapsed = _measure(iterations, build)
+        if not result:
+            return None, elapsed
+        return _surface_grid_record(result[0], operation), elapsed
+    finally:
+        for surface in result:
+            surface.Dispose()
+
+
+def _surface_grid_record(surface, operation, include_constraints=True):
+    definition = _nurbs_surface_definition(surface)
+    return {"surface": definition,
+            "closed": [bool(surface.IsClosed(axis)) for axis in range(2)],
+            "periodic": [bool(surface.IsPeriodic(axis)) for axis in range(2)],
+            "valid": bool(surface.IsValid),
+            "samples": [_xyz(surface.PointAt(surface.Domain(0).ParameterAt(i/12.0),
+                                              surface.Domain(1).ParameterAt(j/12.0)))
+                        for j in range(13) for i in range(13)],
+            "constraints": _surface_grid_constraints(surface, definition, operation) if include_constraints else None}
+
+
+def _surface_grid_constraints(surface, definition, operation):
+    if operation.get("control", False):
+        return None
+    points = [_point(p) for p in operation["points"]]
+    count = operation["count"]
+    parameters = []
+    for axis in range(2):
+        degree = definition["degree"][axis]
+        if operation.get("closed", [False, False])[axis] and degree > 1:
+            knots = definition["knots_u" if axis == 0 else "knots_v"]
+            parameters.append([sum(knots[i+1:i+degree+1])/degree for i in range(count[axis])])
+        else:
+            values = [0.0]
+            def point(i, j):
+                return points[i * count[1] + j] if axis == 0 else points[j * count[1] + i]
+            for i in range(count[axis] - 1):
+                delta = sum(point(i, j).DistanceTo(point(i+1, j)) for j in range(count[1-axis])) / count[1-axis]
+                values.append(values[-1] + delta)
+            parameters.append(values)
+    samples = [_xyz(surface.PointAt(u, v)) for v in parameters[1] for u in parameters[0]]
+    return {"parameters": parameters, "samples": samples,
+            "outside_domain": [any(t < surface.Domain(axis).T0 or t > surface.Domain(axis).T1
+                                   for t in parameters[axis]) for axis in range(2)]}
+
+
+def _surface_grid_command(operation, iterations):
+    counts = operation["count"]
+    degrees = operation.get("degree", [3, 3])
+    closure = operation.get("closed", [False, False])
+    if any(len(values) != 2 for values in [counts, degrees, closure]):
+        raise ValueError("point grid command requires two counts, degrees, and closure flags")
+    for degree, count, closed in zip(degrees, counts, closure):
+        if any(isinstance(value, bool) or int(value) != value for value in [degree, count]):
+            raise ValueError("point grid command counts and degrees must be integers")
+        if not 1 <= degree <= 11 or not (3 if closed else 2) <= count <= 256 or count <= degree:
+            raise ValueError("point grid command counts must exceed degrees (and closed directions need three stations)")
+    if len(operation["points"]) != counts[0] * counts[1]:
+        raise ValueError("point grid command requires the complete rectangular point array")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    control = operation.get("control", False)
+    macro = "_SrfControlPtGrid " if control else "_SrfPtGrid "
+    macro += "_KeepPoints=%s " % ("Yes" if operation.get("keep_points", False) else "No")
+    for axis, degree, count, closed in zip("UV", operation.get("degree", [3, 3]), operation["count"],
+                                            operation.get("closed", [False, False])):
+        macro += "_Degree%s=%d " % ("" if control else axis, degree)
+        if not control:
+            macro += "_Closed%s=%s " % (axis, "Yes" if closed else "No")
+        macro += "%d " % count
+    macro += " ".join(_command_point(p) for p in operation["points"])
+    def compute():
+        before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+        try:
+            document.Objects.UnselectAll()
+            marker = document.Objects.AddPoint(Rhino.Geometry.Point3d(93, 97, 101))
+            if marker == System.Guid.Empty:
+                raise ValueError("could not add point grid selection sentinel")
+            document.Objects.Select(marker)
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
+            outputs = [obj for obj in document.Objects.GetObjectList(settings) if obj.Id not in before and obj.Id != marker]
+            if not succeeded or not outputs:
+                raise ValueError("point grid command failed: %r; history: %s" % (
+                    macro, Rhino.RhinoApp.CommandHistoryWindowText[-3000:]))
+            records, points = [], []
+            for obj in outputs:
+                if isinstance(obj.Geometry, (Rhino.Geometry.Point, Rhino.Geometry.PointCloud)):
+                    cloud = isinstance(obj.Geometry, Rhino.Geometry.PointCloud)
+                    points.append({"kind": "point_cloud" if cloud else "point",
+                                   "points": [_xyz(p) for p in obj.Geometry.GetPoints()] if cloud else [_xyz(obj.Geometry.Location)],
+                                   "selected": bool(obj.IsSelected(False)), "name": obj.Attributes.Name,
+                                   "group_count": obj.Attributes.GroupCount})
+                    continue
+                brep = obj.Geometry
+                if not isinstance(brep, Rhino.Geometry.Brep):
+                    raise ValueError("point grid command must produce a B-rep")
+                faces = [(_surface_grid_record(face, operation, False), bool(face.OrientationIsReversed))
+                         for face in brep.Faces]
+                faces.sort(key=lambda item: (item[0]["surface"]["domain_v"], item[0]["surface"]["domain_u"]))
+                value = {"faces": [item[0] for item in faces], "face_reversed": [item[1] for item in faces],
+                         "valid": bool(brep.IsValid), "vertices": brep.Vertices.Count, "edges": brep.Edges.Count}
+                value.update(selected=bool(obj.IsSelected(False)), name=obj.Attributes.Name,
+                             group_count=obj.Attributes.GroupCount)
+                records.append(value)
+            expected_degree = [max(1, min(11, d, n-1)) for d, n in zip(operation.get("degree", [3, 3]), operation["count"])]
+            if len(records) != 1 or any(face["surface"]["degree"] != expected_degree for face in records[0]["faces"]):
+                raise ValueError("point grid command ignored the requested degrees: %r" % (
+                    [face["surface"]["degree"] for output in records for face in output["faces"]],))
+            original = document.Objects.FindId(marker)
+            return {"outputs": records, "points": points,
+                    "sentinel_present": original is not None,
+                    "sentinel_selected": bool(original and original.IsSelected(False)),
+                    "sentinel_point": _xyz(original.Geometry.Location) if original else None}
+        finally:
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+    return _measure(iterations, compute)
+
+
 def _edge_surface(operation, iterations):
     curves = []
     result = []
@@ -2071,6 +2213,8 @@ def _execute(operation, iterations, tolerance):
         return _loft(operation, iterations)
     if kind == "edge_surface":
         return _edge_surface(operation, iterations)
+    if kind == "surface_grid":
+        return _surface_grid(operation, iterations)
     if kind == "curve_surface_morph":
         return _curve_surface_morph(operation, iterations, tolerance)
     if kind == "surface_surface_morph":

@@ -9,6 +9,109 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_point_grid_api_disposes_results_on_success_null_and_failures(self):
+        for control in [False, True]:
+            for failure in [None, "build", "record", "null"]:
+                results = []
+                def build(*args):
+                    if failure == "build" and results:
+                        raise ValueError("build failed")
+                    if failure == "null":
+                        return None
+                    result = SimpleNamespace(Dispose=Mock())
+                    results.append(result)
+                    return result
+                self.worker.Rhino.Geometry = SimpleNamespace(NurbsSurface=SimpleNamespace(
+                    CreateFromPoints=build, CreateThroughPoints=build))
+                with patch.object(self.worker, "_point", side_effect=lambda p: p), patch.object(
+                    self.worker, "_surface_grid_record", return_value={"valid": True},
+                    side_effect=ValueError("record failed") if failure == "record" else None
+                ):
+                    operation = {"count": [2, 2], "points": [[0, 0, 0]]*4, "control": control}
+                    if failure in ["build", "record"]:
+                        with self.assertRaises(ValueError):
+                            self.worker._surface_grid(operation, 2)
+                    else:
+                        value, _ = self.worker._surface_grid(operation, 2)
+                        self.assertEqual(value, None if failure == "null" else {"valid": True})
+                        self.assertEqual(len(results), 0 if failure == "null" else 3)
+                for result in results:
+                    result.Dispose.assert_called_once_with()
+
+    def test_point_grid_command_records_every_face_and_cleans_only_owned_objects(self):
+        for control, failure in [(c, f) for c in [False, True]
+                                 for f in [None, "add", "command", "record", "degree"]]:
+            objects = {0: SimpleNamespace(Id=0)}
+            class Point:
+                def __init__(self, p): self.Location = p
+            class Cloud:
+                def GetPoints(self): return [SimpleNamespace(X=1, Y=2, Z=3)]
+            class Brep:
+                IsValid = True
+                Vertices = SimpleNamespace(Count=6)
+                Edges = SimpleNamespace(Count=7)
+                Faces = [SimpleNamespace(index=1, OrientationIsReversed=True),
+                         SimpleNamespace(index=0, OrientationIsReversed=False)]
+            def obj(index, geometry, selected=False):
+                return SimpleNamespace(Id=index, Geometry=geometry,
+                    Attributes=SimpleNamespace(Name=None, GroupCount=0), IsSelected=lambda sub: selected)
+            def add(p):
+                if failure == "add": raise ValueError("add failed")
+                objects[1] = obj(1, Point(p), True)
+                return 1
+            def command(macro, echo):
+                if control:
+                    self.assertIn("_SrfControlPtGrid _KeepPoints=Yes _Degree=2 3 _Degree=2 3 ", macro)
+                    self.assertNotIn("_DegreeU", macro)
+                    self.assertNotIn("_Closed", macro)
+                else:
+                    for option in ["_DegreeU=2", "_DegreeV=2", "_ClosedU=No", "_ClosedV=No"]:
+                        self.assertIn(option, macro)
+                    self.assertNotIn("_Degree=", macro)
+                objects[2], objects[3] = obj(2, Brep()), obj(3, Cloud())
+                return failure != "command"
+            def record(face, operation, constraints):
+                if failure == "record": raise ValueError("record failed")
+                self.assertFalse(constraints)
+                return {"surface": {"degree": [1, 1] if failure == "degree" else [2, 2],
+                                    "domain_u": [0, 1], "domain_v": [face.index, face.index+1]}}
+            self.document.Objects = SimpleNamespace(GetObjectList=lambda settings: list(objects.values()),
+                UnselectAll=lambda: None, AddPoint=add, Select=lambda i: None,
+                FindId=objects.get, Delete=lambda i, quiet: objects.pop(i))
+            self.worker.Rhino.DocObjects = SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace)
+            self.worker.Rhino.Geometry = SimpleNamespace(Point=Point, PointCloud=Cloud, Brep=Brep,
+                Point3d=lambda x,y,z: SimpleNamespace(X=x, Y=y, Z=z))
+            self.worker.Rhino.RhinoApp.RunScript = command
+            self.worker.Rhino.RhinoApp.CommandHistoryWindowText = "test macro failure"
+            self.worker.System.Guid = SimpleNamespace(Empty=-1)
+            operation = {"count": [3, 3], "degree": [2, 2], "points": [[0, 0, 0]]*9,
+                         "keep_points": True, "control": control}
+            with patch.object(self.worker, "_surface_grid_record", side_effect=record):
+                if failure:
+                    with self.assertRaises(ValueError): self.worker._surface_grid_command(operation, 2)
+                else:
+                    value, _ = self.worker._surface_grid_command(operation, 2)
+                    self.assertEqual(len(value["outputs"][0]["faces"]), 2)
+                    self.assertEqual(value["outputs"][0]["face_reversed"], [False, True])
+                    self.assertEqual(value["points"][0]["kind"], "point_cloud")
+                    self.assertTrue(value["sentinel_selected"])
+            self.assertEqual(set(objects), {0})
+
+    def test_point_grid_command_rejects_counts_that_would_leave_rhino_at_a_prompt(self):
+        self.worker.Rhino.RhinoApp.RunScript = Mock()
+        for operation in [
+            {"count": [7, 6], "degree": [11, 11], "points": []},
+            {"count": [4, 4], "points": [[0, 0, 0]]*15},
+            {"count": [4, 4], "points": [[0, 0, 0]]*17},
+            {"count": [4], "points": []},
+            {"count": [4, 4], "degree": [3], "points": []},
+            {"count": [4.5, 4], "points": []},
+            {"count": [257, 4], "points": []},
+        ]:
+            with self.assertRaises(ValueError):
+                self.worker._surface_grid_command(operation, 1)
+        self.worker.Rhino.RhinoApp.RunScript.assert_not_called()
+
     def test_edge_surface_disposes_owned_geometry_on_success_null_and_failure(self):
         for failure in [None, "source", "build", "record", "null"]:
             sources, results = [], []

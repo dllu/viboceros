@@ -45,6 +45,13 @@ is an unselected B-rep on the current layer. See [edge-surface construction and
 limits](../edge-surfaces.md), including how gaps can displace boundary geometry
 and how homogeneous controls at infinity are handled.
 
+## Point-grid surfaces
+
+`SrfPtGrid` and `SrfControlPtGrid` build a B-rep from a complete rectangular
+point grid. `KeepPoints=Yes` additionally retains one ordered point cloud.
+See [point-grid construction](../point-grid-surfaces.md) for degree/count syntax,
+closed-direction compatibility, crease topology, and numeric limits.
+
 ## Lofting
 
 `Loft Type=Normal Closed=No` creates one shared-topology B-rep from selected

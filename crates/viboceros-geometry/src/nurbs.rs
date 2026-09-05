@@ -4933,12 +4933,33 @@ pub(crate) fn bspline_basis_values(
     control_count: usize,
     parameter: Real,
 ) -> Result<Vec<Real>, GeometryError> {
+    bspline_basis_values_impl(knots, degree, control_count, parameter, false)
+}
+
+/// Basis of the nearest nonempty boundary span outside the active domain.
+/// Unlike periodic wrapping, this is polynomial span continuation.
+pub(crate) fn bspline_basis_values_extended(
+    knots: &[Real],
+    degree: usize,
+    control_count: usize,
+    parameter: Real,
+) -> Result<Vec<Real>, GeometryError> {
+    bspline_basis_values_impl(knots, degree, control_count, parameter, true)
+}
+
+fn bspline_basis_values_impl(
+    knots: &[Real],
+    degree: usize,
+    control_count: usize,
+    parameter: Real,
+    extended: bool,
+) -> Result<Vec<Real>, GeometryError> {
     debug_assert_eq!(knots.len(), control_count + degree + 1);
-    debug_assert!(degree >= 1 && control_count > degree);
+    debug_assert!(control_count > degree);
     let domain_start = knots[degree];
     let domain_end = knots[control_count];
     require_finite([parameter], "B-spline basis parameter")?;
-    if parameter < domain_start || parameter > domain_end {
+    if !extended && (parameter < domain_start || parameter > domain_end) {
         return Err(GeometryError::ParameterOutOfDomain {
             parameter,
             domain_start,
@@ -4953,7 +4974,11 @@ pub(crate) fn bspline_basis_values(
         for row in 0..column {
             let left_knot = knots[span + 1 - column + row];
             let right_knot = knots[span + row + 1];
-            let left_fraction = interval_fraction(parameter, left_knot, right_knot)?;
+            let left_fraction = if extended {
+                interval_fraction_unbounded(parameter, left_knot, right_knot)?
+            } else {
+                interval_fraction(parameter, left_knot, right_knot)?
+            };
             let value = local[row];
             local[row] = (1.0 - left_fraction).mul_add(value, saved);
             saved = left_fraction * value;

@@ -3480,6 +3480,16 @@ impl Brep {
         (0..self.edges.len()).all(|edge| self.edge_use_count(edge) == Some(2))
     }
 
+    /// Reverses every face normal without changing surfaces, trims, or shared
+    /// topology. Global orientation reversal preserves all incidence invariants.
+    pub fn reversed(&self) -> Self {
+        let mut result = self.clone();
+        for face in &mut result.faces {
+            face.reversed = !face.reversed;
+        }
+        result
+    }
+
     pub fn is_solid(&self) -> bool {
         if !self.is_manifold() || !self.is_closed() {
             return false;

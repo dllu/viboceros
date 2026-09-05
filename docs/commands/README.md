@@ -46,6 +46,8 @@ RemoveKnot 0.52,3.1 Direction=V
 RemoveControlPoint 3 Direction=U
 RemoveMultiKnot RemoveFullyMultipleKnots=Yes MaxKinkAngle=5
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
+SrfPtGrid DegreeU=1 2 DegreeV=1 3 0,0,0 0,1,1 0,2,0 3,0,0 3,1,2 3,2,0
+SrfControlPtGrid Degree=1 2 Degree=1 3 0,0,0 0,1,1 0,2,0 3,0,0 3,1,2 3,2,0
 PlanarSrf DeleteInput=No
 Loft Type=Normal Closed=No
 EdgeSrf

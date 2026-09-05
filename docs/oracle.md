@@ -60,6 +60,16 @@ case uses exact comparison-degree elevation while retaining original-surface
 samples. `edge_surface_3dm_interchange.json` separately checks both readers of the
 same native-written files, without changing the serialized basis.
 
+`point_grid.json` checks [point-grid surface construction](point-grid-surfaces.md),
+including native domains, full coefficients, active samples, and actual
+construction-site samples (including closed-direction continuation).
+`point_grid_command.json` checks every output face and retained point-cloud
+state. Higher degrees and same-file 3DM checks have separate fixtures.
+`point_grid_high_degree_diagnostics.json` deliberately retains ill-conditioned
+closed-grid residuals and a folded-shell orientation mismatch; it is not a
+passing full-record reference. See the point-grid page for limits and measured
+differences.
+
 `polycurve_native.json` checks native analytic evaluation and segment classes
 through reversal, trim/split, and transforms. `polycurve_analytic_editing.json`
 checks analytic endpoint policy inside composites. These fixtures include both

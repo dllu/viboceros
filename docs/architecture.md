@@ -92,6 +92,12 @@ Unlike Loft's common-basis policy, three/four-edge endpoint-weight normalization
 precedes pair matching. Exact degree elevation retains finite patches whose
 original Coons basis contains a projective control at infinity.
 
+The [point-grid module](point-grid-surfaces.md) separates tensor interpolation,
+open/periodic basis policy, and polynomial shell-orientation integration.
+Command adapters preserve Rhino's input order while the kernel retains U-fast
+storage. Complete face records distinguish API tensor construction from
+command-level shared crease topology.
+
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,
 not a proof of full Rhino compatibility. The [oracle](oracle.md) checks public

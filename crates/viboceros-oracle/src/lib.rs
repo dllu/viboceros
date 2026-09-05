@@ -46,10 +46,12 @@ mod brep_interchange;
 mod curve_interchange;
 pub use brep_interchange::{BrepInterchangeFixture, BrepInterchangeSource, LiftPrimitive};
 mod edge_surface;
-mod loft;
 pub use edge_surface::EdgeSurfaceFixture;
-mod surface_jets;
+mod loft;
 pub use loft::LoftFixture;
+mod point_grid;
+pub use point_grid::PointGridFixture;
+mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
 mod curve_morph;
 pub use curve_morph::CurveMorphFixture;
@@ -103,6 +105,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    SurfaceGrid {
+        id: String,
+        #[serde(flatten)]
+        fixture: PointGridFixture,
+    },
     EdgeSurface {
         id: String,
         #[serde(flatten)]
@@ -1371,6 +1378,7 @@ impl Operation {
             Self::PolycurveGeometry { id, .. }
             | Self::Loft { id, .. }
             | Self::EdgeSurface { id, .. }
+            | Self::SurfaceGrid { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
@@ -1672,6 +1680,7 @@ fn execute(
         Operation::EdgeSurface { fixture, .. } => {
             edge_surface::run(fixture, iterations, tolerance)?
         }
+        Operation::SurfaceGrid { fixture, .. } => point_grid::run(fixture, iterations, tolerance)?,
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?
         }

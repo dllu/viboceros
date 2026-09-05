@@ -54,6 +54,10 @@ temporary files; standalone Rhino probes need an existing native artifact.
 
 ## Cases and limits
 
+`point_grid_3dm_interchange.json` covers a control net, a mixed-degree
+interpolating grid, a periodic torus-like grid, and a degree-one grid split into
+shared-edge faces. Both readers inspect the actual native-written topology.
+
 `edge_surface_3dm_interchange.json` covers a rational Coons quadrilateral,
 an exactly elevated projective-control case, a singular triangle, and shifted
 native domains. These files retain the native result's actual basis; the oracle's
