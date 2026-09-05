@@ -40,6 +40,9 @@ for capability boundaries. Rhino Render is outside the project scope.
 B-rep area and volume live in `viboceros-geometry/src/brep/mass_properties/`
 and its parent module. [Trimmed-domain integration](mass-properties.md) uses
 exact NURBS boundaries and adaptive quadrature, including nonplanar faces and holes.
+[Boundary validation](brep-validation.md) in `brep/validate` checks shared topology
+and bidirectional edge/trim correspondence; matching endpoints alone do not
+establish a valid face boundary.
 
 The [polycurve kernel](polycurves.md) preserves independent exact segments and
 parameter maps. Document geometry operations live in their own module, separate

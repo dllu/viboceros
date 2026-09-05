@@ -45,6 +45,9 @@ black-box mapping. Unsampled sharp features, mapping-induced discontinuities,
 ill-conditioned rational sources, or sub-resolution tolerances can defeat a fit.
 The resource limits can reject otherwise valid complicated images. This work does
 not yet fit trimmed B-reps or reconstruct their shared edges and trims.
+The B-rep constructor's separate [boundary checks](brep-validation.md) now test
+interior edge/trim correspondence; they are a prerequisite, not an implementation
+of trimmed B-rep morph fitting.
 
 ## Validation
 
