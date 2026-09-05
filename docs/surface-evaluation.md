@@ -63,7 +63,9 @@ This is not arbitrary-precision arithmetic. Extreme *relative* weights in one
 active rectangle can still underflow during normalization, derivative intermediate
 values can exceed `f64`, and ill-conditioned denominators amplify error. The
 [curve numerical limitations](nurbs-numerics.md) apply here too. Singular-surface
-limiting normals and general curvature analysis are not implemented by this change.
+limiting normals remain unsupported. The separate [curvature module](curvature.md)
+computes principal, mean and Gaussian curvature from regular analytic surface
+jets, including one-sided limits.
 
 ## Validation
 

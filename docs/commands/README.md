@@ -157,6 +157,7 @@ Ungroup Assembly
 Join
 Explode
 Length
+Curvature MarkCurvature=No 2,0,0
 Area
 Volume
 Divide 8

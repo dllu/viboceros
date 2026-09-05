@@ -72,6 +72,9 @@ through composite leaves and supplies exact kink checks and stationary tangents.
 The `nurbs_surface/evaluate` module shares `ParameterSide` and nonempty knot-span
 selection with curves. Its [surface jets](surface-evaluation.md) use local rational
 coordinates and expose exact U/V limits and boundary-span continuation.
+The separate [curvature module](curvature.md) forms a scale-aware orthonormal
+shape operator from those jets. Geometry evaluation is independent of the
+command's closest-point selection, reports, and permanent markers.
 The [curve fitter](curve-morphing.md) in `morph/curve_fit` and
 [surface fitter](surface-morphing.md) in `morph/surface_fit` are separate from
 point-map construction. They share sided cubic banded interpolation in

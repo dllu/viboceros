@@ -89,6 +89,15 @@ nonplanar trims integrate the same oriented volume density over their retained
 UV region, including holes. Measurement does not alter history. See
 [mass properties](../mass-properties.md) for numerical policy and validation.
 
+## Curvature
+
+`Curvature [MarkCurvature=Yes|No] point` measures the selected curve or surface
+nearest the point; omit the point for a one-pick viewport workflow. The default
+is read-only. Permanent markers retain the source and selection and form one
+undo step. B-rep measurements respect trims and face orientation. See
+[curvature measurement](../curvature.md) for principal-curvature signs, marker
+geometry, numerical limits and the separate sphere comparison tolerance.
+
 ## Intersection and trimming
 
 `Intersect` compares every supported pair of selected curve-compatible objects,

@@ -43,6 +43,7 @@ mod point_grid;
 mod polycurve;
 mod polyline;
 mod spiral;
+mod surface_curvature;
 mod surface_pullback;
 mod tolerance;
 mod transform;
@@ -125,6 +126,7 @@ pub use spiral::{
     DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, MAX_SPIRAL_CONTROL_POINTS,
     MIN_SWEPT_SPIRAL_POINTS_PER_TURN,
 };
+pub use surface_curvature::SurfaceCurvature;
 pub use tolerance::Tolerance;
 pub use transform::AffineTransform3;
 pub use vector::{UnitVector3, Vector3};

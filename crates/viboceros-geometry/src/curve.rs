@@ -439,7 +439,7 @@ impl CurveRef<'_> {
     /// This is the curvature vector, including its model-space direction. At
     /// the interior of a polyline segment it is zero; vertices have no unique
     /// curvature and deterministically use the active segment's zero value.
-    pub(crate) fn curvature_vector(self, parameter: Real) -> Result<Vector3, GeometryError> {
+    pub fn curvature_vector(self, parameter: Real) -> Result<Vector3, GeometryError> {
         self.evaluate(parameter)?;
         match self {
             Self::Line(_) | Self::Polyline(_) => Vector3::try_new(0.0, 0.0, 0.0),

@@ -22,3 +22,8 @@ Esc to clear the selection; press Delete to remove selected objects.
 Commands are case-insensitive. Typing while another non-text UI element or a
 viewport is active moves the text to the command line automatically. Matching
 command names appear below the input; press Tab or click a match to complete it.
+
+With a curve or surface selected, `Curvature` starts a one-pick measurement.
+`Curvature MarkCurvature=Yes` also adds permanent osculating markers; Esc cancels
+without changing the document. Continuous hover analysis is not yet implemented.
+See [curvature measurement](curvature.md) for reporting and marker behavior.

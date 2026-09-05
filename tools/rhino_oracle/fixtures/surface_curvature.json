@@ -1,0 +1,3168 @@
+{
+  "protocol_version": 1,
+  "iterations": 2,
+  "operations": [
+    {
+      "id": "surface-curvature-mixed-bilinear",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      }
+    },
+    {
+      "id": "surface-curvature-small-weights",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1.90109156629516e-211
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 3.80218313259032e-211
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 5.7032746988854795e-211
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 9.505457831475799e-211
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      }
+    },
+    {
+      "id": "surface-curvature-large-weights",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 5.260135901548374e+210
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 1.0520271803096747e+211
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 1.578040770464512e+211
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 2.6300679507741868e+211
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      }
+    },
+    {
+      "id": "surface-curvature-mapped",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1],
+        "domain_u": [-7,13],
+        "domain_v": [2,6]
+      }
+    },
+    {
+      "id": "surface-curvature-reverse-u",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1],
+        "domain_u": [-7,13],
+        "domain_v": [2,6]
+      },
+      "reverse_u": true
+    },
+    {
+      "id": "surface-curvature-reverse-v",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1],
+        "domain_u": [-7,13],
+        "domain_v": [2,6]
+      },
+      "reverse_v": true
+    },
+    {
+      "id": "surface-curvature-swap",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1],
+        "domain_u": [-7,13],
+        "domain_v": [2,6]
+      },
+      "swap_uv": true
+    },
+    {
+      "id": "surface-curvature-reverse-swap",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1],
+        "domain_u": [-7,13],
+        "domain_v": [2,6]
+      },
+      "reverse_u": true,
+      "reverse_v": true,
+      "swap_uv": true
+    },
+    {
+      "id": "surface-curvature-bicubic-quadratic",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1.25
+          },
+          {
+            "point": [2,0,2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,0,-1],
+            "weight": 1.75
+          },
+          {
+            "point": [0,2,1],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,-2],
+            "weight": 1.75
+          },
+          {
+            "point": [2,2,0],
+            "weight": 1
+          },
+          {
+            "point": [3,2,2],
+            "weight": 1.25
+          },
+          {
+            "point": [0,4,-1],
+            "weight": 1
+          },
+          {
+            "point": [1,4,1],
+            "weight": 1.25
+          },
+          {
+            "point": [2,4,-2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,4,0],
+            "weight": 1.75
+          }
+        ],
+        "knots_u": [0,0,0,0,1,1,1,1],
+        "knots_v": [0,0,0,1,1,1]
+      }
+    },
+    {
+      "id": "surface-curvature-bicubic-quadratic-reverse-swap",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1.25
+          },
+          {
+            "point": [2,0,2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,0,-1],
+            "weight": 1.75
+          },
+          {
+            "point": [0,2,1],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,-2],
+            "weight": 1.75
+          },
+          {
+            "point": [2,2,0],
+            "weight": 1
+          },
+          {
+            "point": [3,2,2],
+            "weight": 1.25
+          },
+          {
+            "point": [0,4,-1],
+            "weight": 1
+          },
+          {
+            "point": [1,4,1],
+            "weight": 1.25
+          },
+          {
+            "point": [2,4,-2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,4,0],
+            "weight": 1.75
+          }
+        ],
+        "knots_u": [0,0,0,0,1,1,1,1],
+        "knots_v": [0,0,0,1,1,1]
+      },
+      "reverse_u": true,
+      "swap_uv": true
+    },
+    {
+      "id": "surface-curvature-nonuniform",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 6,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 0.5
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,0,-1],
+            "weight": 2
+          },
+          {
+            "point": [4,0,1],
+            "weight": 0.5
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,2,1],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,-2],
+            "weight": 2
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.5
+          },
+          {
+            "point": [3,2,2],
+            "weight": 1
+          },
+          {
+            "point": [4,2,-1],
+            "weight": 1.5
+          },
+          {
+            "point": [5,2,1],
+            "weight": 2
+          },
+          {
+            "point": [0,4,-1],
+            "weight": 0.5
+          },
+          {
+            "point": [1,4,1],
+            "weight": 1
+          },
+          {
+            "point": [2,4,-2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,4,0],
+            "weight": 2
+          },
+          {
+            "point": [4,4,2],
+            "weight": 0.5
+          },
+          {
+            "point": [5,4,-1],
+            "weight": 1
+          },
+          {
+            "point": [0,6,2],
+            "weight": 1.5
+          },
+          {
+            "point": [1,6,-1],
+            "weight": 2
+          },
+          {
+            "point": [2,6,1],
+            "weight": 0.5
+          },
+          {
+            "point": [3,6,-2],
+            "weight": 1
+          },
+          {
+            "point": [4,6,0],
+            "weight": 1.5
+          },
+          {
+            "point": [5,6,2],
+            "weight": 2
+          },
+          {
+            "point": [0,8,0],
+            "weight": 0.5
+          },
+          {
+            "point": [1,8,2],
+            "weight": 1
+          },
+          {
+            "point": [2,8,-1],
+            "weight": 1.5
+          },
+          {
+            "point": [3,8,1],
+            "weight": 2
+          },
+          {
+            "point": [4,8,-2],
+            "weight": 0.5
+          },
+          {
+            "point": [5,8,0],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,0,0.2,0.7,1,1,1,1],
+        "knots_v": [-2,-2,-2,-0.25,1,3,3,3]
+      }
+    },
+    {
+      "id": "surface-curvature-nonuniform-reverse-v",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 6,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 0.5
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,0,-1],
+            "weight": 2
+          },
+          {
+            "point": [4,0,1],
+            "weight": 0.5
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,2,1],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,-2],
+            "weight": 2
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.5
+          },
+          {
+            "point": [3,2,2],
+            "weight": 1
+          },
+          {
+            "point": [4,2,-1],
+            "weight": 1.5
+          },
+          {
+            "point": [5,2,1],
+            "weight": 2
+          },
+          {
+            "point": [0,4,-1],
+            "weight": 0.5
+          },
+          {
+            "point": [1,4,1],
+            "weight": 1
+          },
+          {
+            "point": [2,4,-2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,4,0],
+            "weight": 2
+          },
+          {
+            "point": [4,4,2],
+            "weight": 0.5
+          },
+          {
+            "point": [5,4,-1],
+            "weight": 1
+          },
+          {
+            "point": [0,6,2],
+            "weight": 1.5
+          },
+          {
+            "point": [1,6,-1],
+            "weight": 2
+          },
+          {
+            "point": [2,6,1],
+            "weight": 0.5
+          },
+          {
+            "point": [3,6,-2],
+            "weight": 1
+          },
+          {
+            "point": [4,6,0],
+            "weight": 1.5
+          },
+          {
+            "point": [5,6,2],
+            "weight": 2
+          },
+          {
+            "point": [0,8,0],
+            "weight": 0.5
+          },
+          {
+            "point": [1,8,2],
+            "weight": 1
+          },
+          {
+            "point": [2,8,-1],
+            "weight": 1.5
+          },
+          {
+            "point": [3,8,1],
+            "weight": 2
+          },
+          {
+            "point": [4,8,-2],
+            "weight": 0.5
+          },
+          {
+            "point": [5,8,0],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,0,0.2,0.7,1,1,1,1],
+        "knots_v": [-2,-2,-2,-0.25,1,3,3,3]
+      },
+      "reverse_v": true
+    },
+    {
+      "id": "surface-curvature-periodic",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 5,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,3,0],
+            "weight": 3
+          },
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.5
+          },
+          {
+            "point": [3,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,3,2],
+            "weight": 1.5
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.5
+          },
+          {
+            "point": [3,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,4],
+            "weight": 2
+          },
+          {
+            "point": [3,0,4],
+            "weight": 4
+          },
+          {
+            "point": [0,3,4],
+            "weight": 6
+          },
+          {
+            "point": [0,0,4],
+            "weight": 2
+          },
+          {
+            "point": [3,0,4],
+            "weight": 4
+          }
+        ],
+        "knots_u": [-2,-1,0,1,2,3,4,5],
+        "knots_v": [0,0,0,1,1,1]
+      }
+    },
+    {
+      "id": "surface-curvature-periodic-swap",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 5,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,3,0],
+            "weight": 3
+          },
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.5
+          },
+          {
+            "point": [3,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,3,2],
+            "weight": 1.5
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.5
+          },
+          {
+            "point": [3,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,4],
+            "weight": 2
+          },
+          {
+            "point": [3,0,4],
+            "weight": 4
+          },
+          {
+            "point": [0,3,4],
+            "weight": 6
+          },
+          {
+            "point": [0,0,4],
+            "weight": 2
+          },
+          {
+            "point": [3,0,4],
+            "weight": 4
+          }
+        ],
+        "knots_u": [-2,-1,0,1,2,3,4,5],
+        "knots_v": [0,0,0,1,1,1]
+      },
+      "swap_uv": true
+    },
+    {
+      "id": "surface-curvature-crossed-limits",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 5,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1.5
+          },
+          {
+            "point": [2,0,0],
+            "weight": 2
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [4,0,0],
+            "weight": 1.5
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,1],
+            "weight": 2
+          },
+          {
+            "point": [2,2,2],
+            "weight": 1
+          },
+          {
+            "point": [2,2,3],
+            "weight": 1.5
+          },
+          {
+            "point": [4,2,4],
+            "weight": 2
+          },
+          {
+            "point": [0,3,0],
+            "weight": 2
+          },
+          {
+            "point": [1,3,2],
+            "weight": 1
+          },
+          {
+            "point": [2,3,4],
+            "weight": 1.5
+          },
+          {
+            "point": [2,3,6],
+            "weight": 2
+          },
+          {
+            "point": [4,3,8],
+            "weight": 1
+          },
+          {
+            "point": [0,5,0],
+            "weight": 1
+          },
+          {
+            "point": [1,5,3],
+            "weight": 1.5
+          },
+          {
+            "point": [2,5,6],
+            "weight": 2
+          },
+          {
+            "point": [2,5,9],
+            "weight": 1
+          },
+          {
+            "point": [4,5,12],
+            "weight": 1.5
+          },
+          {
+            "point": [0,4,0],
+            "weight": 1.5
+          },
+          {
+            "point": [1,4,4],
+            "weight": 2
+          },
+          {
+            "point": [2,4,8],
+            "weight": 1
+          },
+          {
+            "point": [2,4,12],
+            "weight": 1.5
+          },
+          {
+            "point": [4,4,16],
+            "weight": 2
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,2],
+        "knots_v": [0,0,0,1,1,2,2,2]
+      },
+      "samples": [
+        {
+          "parameter": [1,1],
+          "side_u": "left",
+          "side_v": "left"
+        },
+        {
+          "parameter": [1,1],
+          "side_u": "left",
+          "side_v": "right"
+        },
+        {
+          "parameter": [1,1],
+          "side_u": "right",
+          "side_v": "left"
+        },
+        {
+          "parameter": [1,1],
+          "side_u": "right",
+          "side_v": "right"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "left",
+          "side_v": "left"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "left",
+          "side_v": "right"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "right",
+          "side_v": "left"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "right",
+          "side_v": "right"
+        },
+        {
+          "parameter": [2,2],
+          "side_u": "left",
+          "side_v": "left"
+        },
+        {
+          "parameter": [2,2],
+          "side_u": "left",
+          "side_v": "right"
+        },
+        {
+          "parameter": [2,2],
+          "side_u": "right",
+          "side_v": "left"
+        },
+        {
+          "parameter": [2,2],
+          "side_u": "right",
+          "side_v": "right"
+        }
+      ]
+    },
+    {
+      "id": "surface-curvature-crossed-reversed-limits",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 5,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1.5
+          },
+          {
+            "point": [2,0,0],
+            "weight": 2
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [4,0,0],
+            "weight": 1.5
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,1],
+            "weight": 2
+          },
+          {
+            "point": [2,2,2],
+            "weight": 1
+          },
+          {
+            "point": [2,2,3],
+            "weight": 1.5
+          },
+          {
+            "point": [4,2,4],
+            "weight": 2
+          },
+          {
+            "point": [0,3,0],
+            "weight": 2
+          },
+          {
+            "point": [1,3,2],
+            "weight": 1
+          },
+          {
+            "point": [2,3,4],
+            "weight": 1.5
+          },
+          {
+            "point": [2,3,6],
+            "weight": 2
+          },
+          {
+            "point": [4,3,8],
+            "weight": 1
+          },
+          {
+            "point": [0,5,0],
+            "weight": 1
+          },
+          {
+            "point": [1,5,3],
+            "weight": 1.5
+          },
+          {
+            "point": [2,5,6],
+            "weight": 2
+          },
+          {
+            "point": [2,5,9],
+            "weight": 1
+          },
+          {
+            "point": [4,5,12],
+            "weight": 1.5
+          },
+          {
+            "point": [0,4,0],
+            "weight": 1.5
+          },
+          {
+            "point": [1,4,4],
+            "weight": 2
+          },
+          {
+            "point": [2,4,8],
+            "weight": 1
+          },
+          {
+            "point": [2,4,12],
+            "weight": 1.5
+          },
+          {
+            "point": [4,4,16],
+            "weight": 2
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,2],
+        "knots_v": [0,0,0,1,1,2,2,2]
+      },
+      "reverse_u": true,
+      "reverse_v": true,
+      "samples": [
+        {
+          "parameter": [-1,-1],
+          "side_u": "left",
+          "side_v": "left"
+        },
+        {
+          "parameter": [-1,-1],
+          "side_u": "left",
+          "side_v": "right"
+        },
+        {
+          "parameter": [-1,-1],
+          "side_u": "right",
+          "side_v": "left"
+        },
+        {
+          "parameter": [-1,-1],
+          "side_u": "right",
+          "side_v": "right"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "left",
+          "side_v": "left"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "left",
+          "side_v": "right"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "right",
+          "side_v": "left"
+        },
+        {
+          "parameter": [0,0],
+          "side_u": "right",
+          "side_v": "right"
+        },
+        {
+          "parameter": [-2,-2],
+          "side_u": "left",
+          "side_v": "left"
+        },
+        {
+          "parameter": [-2,-2],
+          "side_u": "left",
+          "side_v": "right"
+        },
+        {
+          "parameter": [-2,-2],
+          "side_u": "right",
+          "side_v": "left"
+        },
+        {
+          "parameter": [-2,-2],
+          "side_u": "right",
+          "side_v": "right"
+        }
+      ]
+    },
+    {
+      "id": "surface-curvature-constant",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [7,-11,13],
+            "weight": 1
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.25
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.5
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.75
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.5
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.75
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.25
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.25
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.5
+          },
+          {
+            "point": [7,-11,13],
+            "weight": 1.75
+          }
+        ],
+        "knots_u": [0,0,0,0,1,1,1,1],
+        "knots_v": [0,0,0,1,1,1]
+      }
+    },
+    {
+      "id": "surface-curvature-bilinear-continuation",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "extended": true,
+      "samples": [
+        {
+          "parameter": [-0.1,1.2]
+        },
+        {
+          "parameter": [1.2,-0.1]
+        },
+        {
+          "parameter": [1.2,1.2]
+        }
+      ]
+    },
+    {
+      "id": "surface-curvature-nonuniform-continuation",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 6,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 0.5
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,0,-1],
+            "weight": 2
+          },
+          {
+            "point": [4,0,1],
+            "weight": 0.5
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,2,1],
+            "weight": 1.5
+          },
+          {
+            "point": [1,2,-2],
+            "weight": 2
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.5
+          },
+          {
+            "point": [3,2,2],
+            "weight": 1
+          },
+          {
+            "point": [4,2,-1],
+            "weight": 1.5
+          },
+          {
+            "point": [5,2,1],
+            "weight": 2
+          },
+          {
+            "point": [0,4,-1],
+            "weight": 0.5
+          },
+          {
+            "point": [1,4,1],
+            "weight": 1
+          },
+          {
+            "point": [2,4,-2],
+            "weight": 1.5
+          },
+          {
+            "point": [3,4,0],
+            "weight": 2
+          },
+          {
+            "point": [4,4,2],
+            "weight": 0.5
+          },
+          {
+            "point": [5,4,-1],
+            "weight": 1
+          },
+          {
+            "point": [0,6,2],
+            "weight": 1.5
+          },
+          {
+            "point": [1,6,-1],
+            "weight": 2
+          },
+          {
+            "point": [2,6,1],
+            "weight": 0.5
+          },
+          {
+            "point": [3,6,-2],
+            "weight": 1
+          },
+          {
+            "point": [4,6,0],
+            "weight": 1.5
+          },
+          {
+            "point": [5,6,2],
+            "weight": 2
+          },
+          {
+            "point": [0,8,0],
+            "weight": 0.5
+          },
+          {
+            "point": [1,8,2],
+            "weight": 1
+          },
+          {
+            "point": [2,8,-1],
+            "weight": 1.5
+          },
+          {
+            "point": [3,8,1],
+            "weight": 2
+          },
+          {
+            "point": [4,8,-2],
+            "weight": 0.5
+          },
+          {
+            "point": [5,8,0],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,0,0.2,0.7,1,1,1,1],
+        "knots_v": [-2,-2,-2,-0.25,1,3,3,3]
+      },
+      "extended": true,
+      "samples": [
+        {
+          "parameter": [-0.01,3.05]
+        },
+        {
+          "parameter": [1.01,-2.05]
+        },
+        {
+          "parameter": [1.01,3.05]
+        }
+      ]
+    },
+    {
+      "id": "surface-curvature-rational-plane",
+      "op": "surface_curvature",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [4,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,3,0],
+            "weight": 1
+          },
+          {
+            "point": [4,3,0],
+            "weight": 2
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      }
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-cylinder",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 9,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,5],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,5,5]
+      },
+      "samples": [
+        {
+          "parameter": [0,0]
+        },
+        {
+          "parameter": [0,2.5]
+        },
+        {
+          "parameter": [0,5]
+        },
+        {
+          "parameter": [0.13,0]
+        },
+        {
+          "parameter": [0.13,2.5]
+        },
+        {
+          "parameter": [0.13,5]
+        },
+        {
+          "parameter": [1,0]
+        },
+        {
+          "parameter": [1,2.5]
+        },
+        {
+          "parameter": [1,5]
+        },
+        {
+          "parameter": [2.4,0]
+        },
+        {
+          "parameter": [2.4,2.5]
+        },
+        {
+          "parameter": [2.4,5]
+        },
+        {
+          "parameter": [4,0]
+        },
+        {
+          "parameter": [4,2.5]
+        },
+        {
+          "parameter": [4,5]
+        }
+      ]
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-torus",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 9,
+        "control_point_count_v": 9,
+        "control_points": [
+          {
+            "point": [7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,7,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-7,0],
+            "weight": 1
+          },
+          {
+            "point": [7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [7,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,7,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-7,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,-7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-7,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,-7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [7,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,2],
+            "weight": 1
+          },
+          {
+            "point": [5,5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,5,2],
+            "weight": 1
+          },
+          {
+            "point": [-5,5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-5,0,2],
+            "weight": 1
+          },
+          {
+            "point": [-5,-5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-5,2],
+            "weight": 1
+          },
+          {
+            "point": [5,-5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,2],
+            "weight": 1
+          },
+          {
+            "point": [3,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,3,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-3,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,-3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-3,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,-3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [3,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,3,0],
+            "weight": 1
+          },
+          {
+            "point": [-3,3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-3,-3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-3,0],
+            "weight": 1
+          },
+          {
+            "point": [3,-3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,3,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-3,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,-3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-3,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,-3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [3,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [5,5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,5,-2],
+            "weight": 1
+          },
+          {
+            "point": [-5,5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [-5,-5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-5,-2],
+            "weight": 1
+          },
+          {
+            "point": [5,-5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [7,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,7,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-7,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,-7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-7,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,-7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [7,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,7,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-7,0],
+            "weight": 1
+          },
+          {
+            "point": [7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,0,0],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,0,1,1,2,2,3,3,4,4,4]
+      },
+      "samples": [
+        {
+          "parameter": [0,0]
+        },
+        {
+          "parameter": [0,0.6]
+        },
+        {
+          "parameter": [0,1]
+        },
+        {
+          "parameter": [0,2]
+        },
+        {
+          "parameter": [0,3]
+        },
+        {
+          "parameter": [0,4]
+        },
+        {
+          "parameter": [0.3,0]
+        },
+        {
+          "parameter": [0.3,0.6]
+        },
+        {
+          "parameter": [0.3,1]
+        },
+        {
+          "parameter": [0.3,2]
+        },
+        {
+          "parameter": [0.3,3]
+        },
+        {
+          "parameter": [0.3,4]
+        },
+        {
+          "parameter": [1,0]
+        },
+        {
+          "parameter": [1,0.6]
+        },
+        {
+          "parameter": [1,1]
+        },
+        {
+          "parameter": [1,2]
+        },
+        {
+          "parameter": [1,3]
+        },
+        {
+          "parameter": [1,4]
+        },
+        {
+          "parameter": [2.4,0]
+        },
+        {
+          "parameter": [2.4,0.6]
+        },
+        {
+          "parameter": [2.4,1]
+        },
+        {
+          "parameter": [2.4,2]
+        },
+        {
+          "parameter": [2.4,3]
+        },
+        {
+          "parameter": [2.4,4]
+        },
+        {
+          "parameter": [4,0]
+        },
+        {
+          "parameter": [4,0.6]
+        },
+        {
+          "parameter": [4,1]
+        },
+        {
+          "parameter": [4,2]
+        },
+        {
+          "parameter": [4,3]
+        },
+        {
+          "parameter": [4,4]
+        }
+      ]
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-sphere-small",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 9,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0.000002,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0.000002,0.000002,-0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,0.000002,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-0.000002,0.000002,-0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-0.000002,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-0.000002,-0.000002,-0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-0.000002,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0.000002,-0.000002,-0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0.000002,0,-0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0.000002,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.000002,0.000002,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0.000002,0],
+            "weight": 1
+          },
+          {
+            "point": [-0.000002,0.000002,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-0.000002,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-0.000002,-0.000002,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-0.000002,0],
+            "weight": 1
+          },
+          {
+            "point": [0.000002,-0.000002,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0.000002,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.000002,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0.000002,0.000002,0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,0.000002,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-0.000002,0.000002,0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-0.000002,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-0.000002,-0.000002,0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-0.000002,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0.000002,-0.000002,0.000002],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0.000002,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 1
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,0.000002],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [-2,-2,-2,0,0,2,2,2]
+      },
+      "samples": [
+        {
+          "parameter": [0.3,-0.6]
+        }
+      ]
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-sphere-large",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 9,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2000000],
+            "weight": 1
+          },
+          {
+            "point": [2000000,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2000000,2000000,-2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,2000000,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2000000,2000000,-2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-2000000,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2000000,-2000000,-2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-2000000,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2000000,-2000000,-2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [2000000,0,-2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2000000,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2000000,2000000,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2000000,0],
+            "weight": 1
+          },
+          {
+            "point": [-2000000,2000000,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2000000,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2000000,-2000000,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2000000,0],
+            "weight": 1
+          },
+          {
+            "point": [2000000,-2000000,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2000000,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2000000,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2000000,2000000,2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,2000000,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2000000,2000000,2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-2000000,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2000000,-2000000,2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-2000000,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2000000,-2000000,2000000],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [2000000,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2000000],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [-2,-2,-2,0,0,2,2,2]
+      },
+      "samples": [
+        {
+          "parameter": [0.3,-0.6]
+        }
+      ]
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-sphere-reverse",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 9,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [2,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,2,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-2,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,-2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-2,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,-2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [2,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,2,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-2,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,-2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-2,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,-2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [2,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [-2,-2,-2,0,0,2,2,2]
+      },
+      "samples": [
+        {
+          "parameter": [-0.3,-0.6]
+        }
+      ],
+      "reverse_u": true
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-torus-swap",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 9,
+        "control_point_count_v": 9,
+        "control_points": [
+          {
+            "point": [7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,7,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-7,0],
+            "weight": 1
+          },
+          {
+            "point": [7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [7,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,7,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-7,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,-7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-7,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,-7,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [7,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,2],
+            "weight": 1
+          },
+          {
+            "point": [5,5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,5,2],
+            "weight": 1
+          },
+          {
+            "point": [-5,5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-5,0,2],
+            "weight": 1
+          },
+          {
+            "point": [-5,-5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-5,2],
+            "weight": 1
+          },
+          {
+            "point": [5,-5,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,2],
+            "weight": 1
+          },
+          {
+            "point": [3,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,3,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-3,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,-3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-3,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,-3,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [3,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,3,0],
+            "weight": 1
+          },
+          {
+            "point": [-3,3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-3,-3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-3,0],
+            "weight": 1
+          },
+          {
+            "point": [3,-3,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,0,0],
+            "weight": 1
+          },
+          {
+            "point": [3,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,3,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-3,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-3,-3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-3,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [3,-3,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [3,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [5,5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,5,-2],
+            "weight": 1
+          },
+          {
+            "point": [-5,5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [-5,-5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-5,-2],
+            "weight": 1
+          },
+          {
+            "point": [5,-5,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [5,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [7,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,7,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-7,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,-7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-7,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,-7,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [7,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,7,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-7,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-7,0],
+            "weight": 1
+          },
+          {
+            "point": [7,-7,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [7,0,0],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,0,1,1,2,2,3,3,4,4,4]
+      },
+      "samples": [
+        {
+          "parameter": [0.3,1.6]
+        },
+        {
+          "parameter": [3,2]
+        }
+      ],
+      "swap_uv": true
+    },
+    {
+      "op": "surface_curvature",
+      "id": "surface-curvature-sphere-poles",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 2,
+        "control_point_count_u": 9,
+        "control_point_count_v": 5,
+        "control_points": [
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,-2],
+            "weight": 1
+          },
+          {
+            "point": [2,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,2,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-2,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,-2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-2,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,-2,-2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [2,0,-2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,2,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [-2,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,-2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [0,-2,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,-2,2],
+            "weight": 0.5000000000000001
+          },
+          {
+            "point": [2,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          },
+          {
+            "point": [0,0,2],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,0,2],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [-2,-2,-2,0,0,2,2,2]
+      },
+      "samples": [
+        {
+          "parameter": [0,-2]
+        },
+        {
+          "parameter": [0,2]
+        },
+        {
+          "parameter": [0.3,-2]
+        },
+        {
+          "parameter": [0.3,2]
+        },
+        {
+          "parameter": [2.5,-2]
+        },
+        {
+          "parameter": [2.5,2]
+        },
+        {
+          "parameter": [4,-2]
+        },
+        {
+          "parameter": [4,2]
+        }
+      ]
+    }
+  ]
+}

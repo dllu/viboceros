@@ -1798,7 +1798,7 @@ def _curve_surface_command(curves, macro, iterations, prefix, record):
     return _measure(iterations, compute)
 
 
-def _surface_jets(operation, iterations):
+def _surface_jets(operation, iterations, curvature=False):
     surface = _nurbs_surface_from_definition(operation["surface"])
     owned = [surface]
     try:
@@ -1862,6 +1862,9 @@ def _surface_jets(operation, iterations):
         def compute():
             values = []
             for target, uv in prepared:
+                if curvature:
+                    values.append(target.CurvatureAt(uv[0], uv[1]))
+                    continue
                 success, point, derivatives = target.Evaluate(uv[0], uv[1], 2)
                 if not success or derivatives is None or len(derivatives) != 5:
                     raise ValueError("Rhino could not evaluate second surface partials")
@@ -1870,7 +1873,13 @@ def _surface_jets(operation, iterations):
 
         jets, elapsed = _measure(iterations, compute)
         records = []
-        for (_, uv), (point, derivatives) in zip(prepared, jets):
+        for (_, uv), value in zip(prepared, jets):
+            if curvature:
+                record = _surface_curvature_record(value)
+                record["parameter"] = uv
+                records.append(record)
+                continue
+            point, derivatives = value
             record = {"parameter": uv, "point": _xyz(point)}
             for key, derivative in zip(["du", "dv", "duu", "duv", "dvv"], derivatives):
                 record[key] = _xyz(derivative)
@@ -1881,6 +1890,128 @@ def _surface_jets(operation, iterations):
     finally:
         for item in reversed(owned):
             item.Dispose()
+
+
+def _surface_curvature_record(value):
+    if value is None:
+        return {"available": False}
+    principal = [float(value.Kappa(i)) for i in range(2)]
+    directions = [_xyz(value.Direction(i)) for i in range(2)]
+    operator = [[sum(principal[k]*directions[k][i]*directions[k][j] for k in range(2))
+                 for j in range(3)] for i in range(3)]
+    return {"available": True, "point": _xyz(value.Point), "normal": _xyz(value.Normal),
+            "principal": sorted(principal, reverse=True), "gaussian": float(value.Gaussian),
+            "mean": float(value.Mean), "shape_operator": operator}
+
+
+def _curvature_marker(geometry, tolerance):
+    if isinstance(geometry, Rhino.Geometry.Point):
+        return {"kind": "point", "point": _xyz(geometry.Location)}
+    if geometry.IsLinear(tolerance):
+        start, end = _xyz(geometry.PointAtStart), _xyz(geometry.PointAtEnd)
+        chord = [a*0.5-b*0.5 for a,b in zip(start,end)]
+        return {"kind": "line", "center": [a*0.5+b*0.5 for a,b in zip(start,end)],
+                "half_chord_tensor": [[x*y for y in chord] for x in chord]}
+    success, circle = geometry.TryGetCircle(tolerance)
+    if success:
+        normal = _xyz(circle.Plane.Normal)
+        return {"kind": "circle", "center": _xyz(circle.Center), "radius": float(circle.Radius),
+                "plane_tensor": [[x*y for y in normal] for x in normal]}
+    success, arc = geometry.TryGetArc(tolerance)
+    if success:
+        start, end = _xyz(arc.StartPoint), _xyz(arc.EndPoint)
+        chord = [a*0.5-b*0.5 for a,b in zip(start,end)]
+        normal = _xyz(arc.Plane.Normal)
+        return {"kind": "arc", "center": _xyz(arc.Center), "radius": float(arc.Radius),
+                "sweep": float(arc.Angle), "midpoint": _xyz(arc.MidPoint),
+                "end_midpoint": [a*0.5+b*0.5 for a,b in zip(start,end)],
+                "half_chord_tensor": [[x*y for y in chord] for x in chord],
+                "plane_tensor": [[x*y for y in normal] for x in normal]}
+    return {"kind": "other_curve", "samples": [_xyz(geometry.PointAt(geometry.Domain.ParameterAt(i/12.0))) for i in range(13)]}
+
+
+def _curvature_command(operation, iterations, tolerance):
+    curve = "curve" in operation
+    if curve == ("surface" in operation):
+        raise ValueError("curvature command needs exactly one curve or surface")
+    macro = "_Curvature _MarkCurvature=%s %s _Enter" % (
+        "Yes" if operation.get("mark", False) else "No", _command_point(operation["point"]))
+    geometry = (_nurbs_curve_from_definition(operation["curve"]) if curve else
+                _nurbs_surface_from_definition(operation["surface"]))
+    owned = [geometry]
+    brep = operation.get("as_brep", False) or operation.get("reverse_face", False)
+    if brep:
+        try:
+            if curve:
+                raise ValueError("a curve cannot be a curvature B-rep source")
+            geometry = geometry.ToBrep()
+            if geometry is None:
+                raise ValueError("could not create curvature B-rep source")
+            owned.append(geometry)
+            if operation.get("reverse_face", False):
+                geometry.Flip()
+        except Exception:
+            for item in reversed(owned): item.Dispose()
+            raise
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def compute():
+        before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+        try:
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            try:
+                attributes.Name = "curvature-source"
+                source = (document.Objects.AddCurve(geometry, attributes) if curve else
+                          document.Objects.AddBrep(geometry, attributes) if brep else
+                          document.Objects.AddSurface(geometry, attributes))
+            finally:
+                attributes.Dispose()
+            if source == System.Guid.Empty:
+                raise ValueError("could not add curvature source")
+            document.Objects.UnselectAll()
+            document.Objects.Select(source)
+            checksum = document.Objects.FindId(source).Geometry.DataCRC(0)
+            history_marker = "Viboceros curvature probe " + str(System.Guid.NewGuid())
+            Rhino.RhinoApp.WriteLine(history_marker)
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, True))
+            # Rhino bounds its history buffer. Offsetting by its previous
+            # length loses all output once that buffer fills in a long batch.
+            history_parts = Rhino.RhinoApp.CommandHistoryWindowText.split(history_marker, 1)
+            if len(history_parts) != 2:
+                raise ValueError("curvature history marker was not retained")
+            history = history_parts[1]
+            if not succeeded:
+                raise ValueError("curvature command failed: %s" % history[-3000:])
+            reported = ("Curve curvature evaluation at parameter" in history or
+                        "Radius of curvature is infinite." in history) if curve else (
+                        "Surface curvature evaluation at parameter" in history)
+            if not reported:
+                raise ValueError("curvature command produced no measurement: %s" % history[-3000:])
+            outputs = []
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before and obj.Id != source:
+                    value = _curvature_marker(obj.Geometry, tolerance["absolute"])
+                    value.update(selected=bool(obj.IsSelected(False)), name=obj.Attributes.Name,
+                                 group_count=obj.Attributes.GroupCount)
+                    outputs.append(value)
+            outputs.sort(key=lambda x: (x["kind"], x.get("center", x.get("point", [])),
+                                       x.get("half_chord_tensor", []), -x.get("radius", 0.0)))
+            original = document.Objects.FindId(source)
+            value = {"outputs": outputs, "source_present": original is not None,
+                     "reported": reported,
+                     "source_selected": bool(original and original.IsSelected(False)),
+                     "source_name": original.Attributes.Name if original else None,
+                     "source_geometry_unchanged": bool(original and original.Geometry.DataCRC(0) == checksum)}
+            return value
+        finally:
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+    try:
+        return _measure(iterations, compute)
+    finally:
+        for item in reversed(owned): item.Dispose()
 
 
 def _curve_surface_morph(operation, iterations, tolerance):
@@ -2223,6 +2354,10 @@ def _execute(operation, iterations, tolerance):
         return _brep_surface_morph(operation, iterations, tolerance)
     if kind == "surface_jets":
         return _surface_jets(operation, iterations)
+    if kind == "surface_curvature":
+        return _surface_jets(operation, iterations, True)
+    if kind == "curvature_command":
+        return _curvature_command(operation, iterations, tolerance)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "three_dm_brep_interchange":

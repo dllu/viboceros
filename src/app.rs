@@ -221,6 +221,9 @@ enum InteractiveCommand {
         copy: bool,
         output_on_current_layer: bool,
     },
+    Curvature {
+        mark: bool,
+    },
     DupFaceBorder {
         output_on_current_layer: bool,
     },
@@ -366,6 +369,7 @@ impl InteractiveCommand {
             Self::Polygon { .. } => "Polygon",
             Self::SrfPt { .. } => "SrfPt",
             Self::ExtractSrf { .. } => "ExtractSrf",
+            Self::Curvature { .. } => "Curvature",
             Self::DupFaceBorder { .. } => "DupFaceBorder",
             Self::DupEdge { .. } => "DupEdge",
             Self::ExtractMeshFaces { .. } => "ExtractMeshFaces",
@@ -577,6 +581,9 @@ impl InteractiveCommand {
             },
             Self::ExtractSrf { .. } => {
                 "ExtractSrf: pick a face location on a selected surface or B-rep (Esc to cancel)"
+            }
+            Self::Curvature { .. } => {
+                "Curvature: pick a location on the selected curve or surface (Esc to cancel)"
             }
             Self::DupFaceBorder { .. } => {
                 "DupFaceBorder: pick a face location on a selected surface or B-rep (Esc to cancel)"
@@ -822,6 +829,7 @@ impl InteractiveCommand {
                 corners: [None, _, _],
             }
             | Self::ExtractSrf { .. }
+            | Self::Curvature { .. }
             | Self::DupFaceBorder { .. }
             | Self::DupEdge { .. }
             | Self::ExtractMeshFaces { .. }
@@ -1835,6 +1843,27 @@ impl VibocerosApp {
                 sweep_degrees,
                 delete_input,
             }
+        } else if normalized == "curvature" {
+            let mut mark = false;
+            for option in arguments {
+                let Some((name, value)) = option.split_once('=') else {
+                    return false;
+                };
+                if !name
+                    .trim_start_matches(['_', '-'])
+                    .eq_ignore_ascii_case("MarkCurvature")
+                {
+                    return false;
+                }
+                mark = if value.trim_start_matches('_').eq_ignore_ascii_case("Yes") {
+                    true
+                } else if value.trim_start_matches('_').eq_ignore_ascii_case("No") {
+                    false
+                } else {
+                    return false;
+                };
+            }
+            InteractiveCommand::Curvature { mark }
         } else if matches!(normalized.as_str(), "extractsrf" | "extractsurface") {
             let mut copy = false;
             let mut output_on_current_layer = false;
@@ -2597,6 +2626,7 @@ impl VibocerosApp {
                 | InteractiveCommand::ExtrudeCurve { .. }
                 | InteractiveCommand::ExtrudeCurveToPoint { .. }
                 | InteractiveCommand::ExtractSrf { .. }
+                | InteractiveCommand::Curvature { .. }
                 | InteractiveCommand::DupFaceBorder { .. }
                 | InteractiveCommand::DupEdge { .. }
                 | InteractiveCommand::ExtractMeshFaces { .. }
@@ -3668,6 +3698,14 @@ impl VibocerosApp {
                         format_model_point(point)
                     ));
                 }
+            }
+            InteractiveCommand::Curvature { mark } => {
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Curvature MarkCurvature={} {}",
+                    if mark { "Yes" } else { "No" },
+                    format_model_point(point)
+                ));
             }
             InteractiveCommand::ExtractSrf {
                 copy,
@@ -6715,6 +6753,33 @@ mod tests {
         assert_eq!(app.document.undo_label(), Some("ExtractSrf"));
         assert!(!app.try_start_interactive_command("ExtractSrf Copy=Maybe"));
         assert!(!app.try_start_interactive_command("ExtractSrf OutputLayer=Other"));
+    }
+
+    #[test]
+    fn interactive_curvature_evaluates_one_pick_and_can_cancel_without_mutation() {
+        let mut app = test_app();
+        app.execute_command("Circle 0,0,0 2");
+        app.execute_command("SelAll");
+        let before = app.document.objects().cloned().collect::<Vec<_>>();
+        assert!(app.try_start_interactive_command("Curvature MarkCurvature=Yes"));
+        assert_eq!(
+            app.active_command,
+            Some(InteractiveCommand::Curvature { mark: true })
+        );
+        app.cancel_interactive_command(true);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(app.try_start_interactive_command("Curvature"));
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+        assert_eq!(app.active_command, None);
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(app.try_start_interactive_command("Curvature MarkCurvature=Yes"));
+        app.accept_drafting_point(point(2.0, 0.0, 0.0));
+        assert_eq!(app.document.objects().len(), 3);
+        assert_eq!(app.document.undo_label(), Some("Curvature"));
+        app.execute_command("Undo");
+        assert_eq!(app.document.objects().cloned().collect::<Vec<_>>(), before);
+        assert!(!app.try_start_interactive_command("Curvature MarkCurvature=Maybe"));
+        assert!(!app.try_start_interactive_command("Curvature 2,0,0"));
     }
 
     #[test]

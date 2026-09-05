@@ -9,6 +9,80 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_curvature_command_disposes_attributes_and_geometry_and_cleans_only_owned_objects(self):
+        for failure in [None, "add", "command", "report", "record", "point", "marker"]:
+            objects = {100: SimpleNamespace(Id=100)}
+            attributes = []
+            geometry = SimpleNamespace(Dispose=Mock(), DataCRC=lambda seed: 7)
+            def attr():
+                value = SimpleNamespace(Name=None, GroupCount=0, Dispose=Mock())
+                attributes.append(value)
+                return value
+            def add(g, a):
+                if failure == "add": raise ValueError("add failed")
+                objects[1] = SimpleNamespace(Id=1, Geometry=g, Attributes=a, IsSelected=lambda sub: True)
+                return 1
+            def command(macro, echo):
+                self.assertEqual(macro, "_Curvature _MarkCurvature=Yes 2,0,0 _Enter")
+                self.worker.Rhino.RhinoApp.CommandHistoryWindowText += (
+                    "no measurement\n" if failure == "report" else "Radius of curvature is infinite.\n")
+                self.worker.Rhino.RhinoApp.CommandHistoryWindowText = self.worker.Rhino.RhinoApp.CommandHistoryWindowText[-180:]
+                objects[2] = SimpleNamespace(Id=2, Geometry=object(),
+                    Attributes=SimpleNamespace(Name=None, GroupCount=0), IsSelected=lambda sub: False)
+                return failure != "command"
+            self.document.Objects = SimpleNamespace(GetObjectList=lambda settings: list(objects.values()),
+                UnselectAll=lambda: None, AddCurve=add, Select=lambda i: None,
+                FindId=objects.get, Delete=lambda i, quiet: objects.pop(i))
+            self.worker.Rhino.DocObjects = SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace, ObjectAttributes=attr)
+            self.worker.Rhino.RhinoApp.RunScript = command
+            self.worker.Rhino.RhinoApp.CommandHistoryWindowText = "before\n"
+            def write_line(line):
+                if failure != "marker":
+                    self.worker.Rhino.RhinoApp.CommandHistoryWindowText += line + "\n"
+            self.worker.Rhino.RhinoApp.WriteLine = write_line
+            self.worker.System.Guid = SimpleNamespace(Empty=-1, NewGuid=lambda: len(attributes))
+            with patch.object(self.worker, "_nurbs_curve_from_definition", return_value=geometry), patch.object(
+                self.worker, "_command_point", return_value="2,0,0", side_effect=ValueError("bad point") if failure == "point" else None
+            ), patch.object(self.worker, "_curvature_marker", return_value={"kind": "point", "point": [2,0,0]},
+                            side_effect=ValueError("record failed") if failure == "record" else None):
+                operation = {"curve": {}, "point": [2,0,0], "mark": True}
+                if failure:
+                    with self.assertRaises(ValueError): self.worker._curvature_command(operation, 2, {"absolute":1e-9})
+                else:
+                    result, _ = self.worker._curvature_command(operation, 2, {"absolute":1e-9})
+                    self.assertTrue(result["reported"])
+                    self.assertTrue(result["source_geometry_unchanged"])
+                    self.assertTrue(result["source_selected"])
+                    self.assertEqual(result["source_name"], "curvature-source")
+                    self.assertEqual(len(result["outputs"]), 1)
+            self.assertEqual(set(objects), {100})
+            if failure == "point": geometry.Dispose.assert_not_called()
+            else: geometry.Dispose.assert_called_once_with()
+            for value in attributes: value.Dispose.assert_called_once_with()
+
+    def test_curvature_uses_prepared_quadrants_and_sign_invariant_shape_operator(self):
+        vector = lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z)
+        interval = lambda a,b: SimpleNamespace(T0=a,T1=b)
+        self.worker.Rhino.Geometry = SimpleNamespace(Interval=interval)
+        curvature = SimpleNamespace(Point=vector(1,2,3), Normal=vector(0,0,1), Gaussian=-2.0, Mean=0.5,
+            Kappa=lambda i: [2.0,-1.0][i], Direction=lambda i: [vector(-1,0,0),vector(0,-1,0)][i])
+        for failure in [False,True]:
+            piece = SimpleNamespace(Dispose=Mock(), CurvatureAt=Mock(return_value=curvature,
+                side_effect=ValueError("evaluation failed") if failure else None))
+            source = SimpleNamespace(Domain=lambda axis: interval(0.0,2.0), Dispose=Mock(),
+                Trim=Mock(return_value=piece), CurvatureAt=Mock(return_value=None))
+            operation = {"surface":{}, "samples":[{"parameter":[1.0,1.0],"side_u":"left"}, {"parameter":[0.0,0.0]}]}
+            with patch.object(self.worker, "_nurbs_surface_from_definition", return_value=source):
+                if failure:
+                    with self.assertRaises(ValueError): self.worker._surface_jets(operation,1,True)
+                else:
+                    value,_ = self.worker._surface_jets(operation,1,True)
+                    self.assertEqual(value["samples"][0]["shape_operator"], [[2.0,0.0,0.0],[0.0,-1.0,0.0],[0.0,0.0,0.0]])
+                    self.assertEqual(value["samples"][0]["principal"], [2.0,-1.0])
+                    self.assertEqual(value["samples"][1], {"available":False,"parameter":[0.0,0.0]})
+            piece.Dispose.assert_called_once_with()
+            source.Dispose.assert_called_once_with()
+
     def test_point_grid_api_disposes_results_on_success_null_and_failures(self):
         for control in [False, True]:
             for failure in [None, "build", "record", "null"]:

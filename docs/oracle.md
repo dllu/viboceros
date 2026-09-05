@@ -105,6 +105,16 @@ including second partials, parameter-domain changes, continuation, and exact
 quadrant limits. `surface_translated_jets.json` separately diagnoses large-coordinate
 cancellation and is not a passing reference at the ordinary epsilon.
 
+`surface_curvature.json` checks 27 [surface-curvature API cases](curvature.md),
+including one-sided knot limits and singular-pole availability. Spatial shape
+operators avoid arbitrary principal-direction signs and umbilic axes.
+`surface_curvature_umbilic.json` isolates Rhino's roughly `7.45e-9` repeated
+eigenvalue split on a sphere and uses its own `1e-8` absolute comparison limit.
+`curvature_command.json` checks 17 actual command cases, including permanent
+markers, source geometry and attributes, and retained selection. These command
+records verify that a measurement was reported; the API records separately
+check unrounded numerical results.
+
 `curve_surface_morph.json` separates [direct point-map and curve-fit validation](curve-morphing.md).
 Its eight direct maps match at absolute `2e-12`; fitted outputs use `1e-5` because
 Rhino's observed fit error exceeds the requested `1e-9`. Native fits are separately

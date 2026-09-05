@@ -53,6 +53,8 @@ mod point_grid;
 pub use point_grid::PointGridFixture;
 mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
+mod curvature_command;
+pub use curvature_command::CurvatureCommandFixture;
 mod curve_morph;
 pub use curve_morph::CurveMorphFixture;
 mod surface_morph;
@@ -105,6 +107,16 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    CurvatureCommand {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurvatureCommandFixture,
+    },
+    SurfaceCurvature {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceJetsFixture,
+    },
     SurfaceGrid {
         id: String,
         #[serde(flatten)]
@@ -1379,6 +1391,8 @@ impl Operation {
             | Self::Loft { id, .. }
             | Self::EdgeSurface { id, .. }
             | Self::SurfaceGrid { id, .. }
+            | Self::SurfaceCurvature { id, .. }
+            | Self::CurvatureCommand { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
@@ -1685,6 +1699,12 @@ fn execute(
             curve_morph::run(fixture, iterations, tolerance)?
         }
         Operation::SurfaceJets { fixture, .. } => surface_jets::run(fixture, iterations)?,
+        Operation::SurfaceCurvature { fixture, .. } => {
+            surface_jets::run_curvature(fixture, iterations)?
+        }
+        Operation::CurvatureCommand { fixture, .. } => {
+            curvature_command::run(fixture, iterations, tolerance)?
+        }
         Operation::ThreeDmCurveInterchange { fixture, .. } => {
             curve_interchange::run(fixture, iterations, tolerance)?
         }

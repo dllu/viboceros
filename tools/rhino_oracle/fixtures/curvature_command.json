@@ -1,0 +1,784 @@
+{
+  "protocol_version": 1,
+  "iterations": 2,
+  "operations": [
+    {
+      "op": "curvature_command",
+      "id": "line-false",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [5,0,0],
+            "weight": 1
+          }
+        ],
+        "knots": [0,0,1,1]
+      },
+      "point": [2,0,0],
+      "mark": false
+    },
+    {
+      "op": "curvature_command",
+      "id": "line-true",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [5,0,0],
+            "weight": 1
+          }
+        ],
+        "knots": [0,0,1,1]
+      },
+      "point": [2,0,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "surface-false",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": false
+    },
+    {
+      "op": "curvature_command",
+      "id": "surface-true",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "circle-false",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          }
+        ],
+        "knots": [0,0,0,1,1,2,2,3,3,4,4,4]
+      },
+      "point": [2,0,0],
+      "mark": false
+    },
+    {
+      "op": "curvature_command",
+      "id": "plane-false",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": false
+    },
+    {
+      "op": "curvature_command",
+      "id": "cylinder-false",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 9,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,5],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,5,5]
+      },
+      "point": [2,0,2.5],
+      "mark": false
+    },
+    {
+      "op": "curvature_command",
+      "id": "circle-true",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          }
+        ],
+        "knots": [0,0,0,1,1,2,2,3,3,4,4,4]
+      },
+      "point": [2,0,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "plane-true",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "cylinder-true",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 9,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,5],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,5,5]
+      },
+      "point": [2,0,2.5],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "surface-reversed",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.5,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.3333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.2,0.2,0.2],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": true,
+      "reverse_face": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "plane-scaled-0.001",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0.0005,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,0.0003333333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [0.0002,0.0002,0],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "plane-scaled-100",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [50,0,0],
+            "weight": 2
+          },
+          {
+            "point": [0,33.33333333333333,0],
+            "weight": 3
+          },
+          {
+            "point": [20,20,0],
+            "weight": 5
+          }
+        ],
+        "knots_u": [0,0,1,1],
+        "knots_v": [0,0,1,1]
+      },
+      "point": [0,0,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "cylinder-diagonal",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 9,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,5],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,5,5]
+      },
+      "point": [1.4142135623730951,1.4142135623730951,2.5],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "cylinder-reversed",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 9,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,0],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,0],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,2,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [-2,0,5],
+            "weight": 1
+          },
+          {
+            "point": [-2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [0,-2,5],
+            "weight": 1
+          },
+          {
+            "point": [2,-2,5],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,2,2,3,3,4,4,4],
+        "knots_v": [0,0,5,5]
+      },
+      "point": [2,0,2.5],
+      "mark": true,
+      "reverse_face": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "parabola-midpoint",
+      "curve": {
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [1,0,0],
+            "weight": 1
+          },
+          {
+            "point": [2,2,0],
+            "weight": 1
+          }
+        ],
+        "knots": [0,0,0,1,1,1]
+      },
+      "point": [1,0.5,0],
+      "mark": true
+    },
+    {
+      "op": "curvature_command",
+      "id": "parabolic-cylinder-control-bounds",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [0,0,0],
+            "weight": 1
+          },
+          {
+            "point": [1,1,0],
+            "weight": 1
+          },
+          {
+            "point": [2,0,0],
+            "weight": 1
+          },
+          {
+            "point": [0,0,5],
+            "weight": 1
+          },
+          {
+            "point": [1,1,5],
+            "weight": 1
+          },
+          {
+            "point": [2,0,5],
+            "weight": 1
+          }
+        ],
+        "knots_u": [0,0,0,1,1,1],
+        "knots_v": [0,0,5,5]
+      },
+      "point": [1,0.5,2.5],
+      "mark": true
+    }
+  ]
+}
