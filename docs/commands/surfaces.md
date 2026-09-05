@@ -117,6 +117,9 @@ ungrouped objects with fresh attributes on the current layer. `Solid=Yes`
 turns each closed planar profile into an exact closed B-rep with a ruled wall,
 two planar trimmed caps, shared rational rim curves, and one shared wall seam;
 open and nonplanar profiles remain exact NURBS surfaces.
+Profile parameters are retained, including native polyline vertex intervals;
+extrusion does not apply `ToNURBS` chord-length reparameterization. The
+[native extrusion oracle](../curve-cutting.md) verifies the single-surface policy.
 
 `ExtrudeCrvToPoint` creates exact rational NURBS surfaces that taper selected
 curves to one apex. Its U direction runs from the profile to the apex while V

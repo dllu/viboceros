@@ -21,7 +21,12 @@ selected curve, NURBS surface, or rectangular single-face B-rep nearest that
 point as the target and uses every other selected curve, surface, and B-rep as
 an actual 3D cutter; in the UI, enter `Split CuttingObjects` and pick the source
 in a viewport. Finite surface overlaps and exact B-rep trim regions, including
-holes, supply curve split locations. A rectangular surface target is split at
+holes, supply curve split locations. Curve targets retain their native types and
+parameterization. Wrapped closed pieces remain arcs, polylines, or NURBS rather
+than the two-part seam polycurves of point/parameter mode. Closed seam hits count
+once; a single closed cut leaves the source unchanged. See
+[native cutting](../curve-cutting.md) for the parameter correspondence and tests.
+A rectangular surface target is split at
 every complete constant-U or constant-V intersection, with duplicate cuts
 culled and multiple directions forming an exact UV grid. Its fresh single-face
 B-rep results retain the complete underlying surface, the source face

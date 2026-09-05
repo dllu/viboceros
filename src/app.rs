@@ -7715,7 +7715,7 @@ mod tests {
             .document
             .selected_objects()
             .map(|object| match object.geometry() {
-                Geometry::NurbsCurve(curve) => curve.domain(),
+                Geometry::Line(curve) => curve.domain(),
                 geometry => panic!("interactive Split selected unexpected geometry {geometry:?}"),
             })
             .collect::<Vec<_>>();
@@ -7850,8 +7850,8 @@ mod tests {
             .document
             .selected_objects()
             .map(|object| match object.geometry() {
-                Geometry::NurbsCurve(curve) => curve.domain(),
-                _ => panic!("interactive Trim must create exact NURBS pieces"),
+                Geometry::Line(curve) => curve.domain(),
+                _ => panic!("interactive Trim must retain native lines"),
             })
             .collect::<Vec<_>>();
         domains.sort_by(|left, right| left.start().total_cmp(right.start()));

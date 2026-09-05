@@ -24,8 +24,9 @@ Polyline seams within eight machine epsilons of a vertex avoid adding sliver seg
 
 `SubCrv`, point/parameter `Split`, `CrvSeam`, and `Reparameterize` use these native
 operations. Object attributes, source groups, selection policies, and undo remain
-document operations. Cutting-object intersection pipelines still work in rational
-representations and do not yet preserve every source leaf class.
+document operations. [Cutting-object commands](curve-cutting.md) use span-aware
+native/rational parameter correspondence and preserve the source representation,
+including across a closed seam; their output policy differs from low-level split APIs.
 
 ## Numerical safeguards
 

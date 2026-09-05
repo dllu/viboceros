@@ -1,0 +1,88 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_extrude_command",
+      "id": "extrude-native-polyline-default",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              2,
+              4,
+              0
+            ]
+          ]
+        }
+      },
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_command",
+      "id": "extrude-native-polyline-domain",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              1,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ],
+            [
+              2,
+              4,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "distance": 5
+    },
+    {
+      "op": "curve_extrude_command",
+      "id": "extrude-native-line-domain",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            0,
+            0
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "distance": 5
+    }
+  ]
+}

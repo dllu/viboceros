@@ -1,0 +1,2750 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-line-split",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-line-trim",
+      "curve": {
+        "native": {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            10,
+            0,
+            0
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        5,
+        0,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-arc-split",
+      "curve": {
+        "native": {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ],
+            [
+              -5,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-arc-trim",
+      "curve": {
+        "native": {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ],
+            [
+              -5,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        0,
+        5,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-circle-split",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        -5,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-circle-trim",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        -5,
+        0,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-ellipse-split",
+      "curve": {
+        "native": {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        -5,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-ellipse-trim",
+      "curve": {
+        "native": {
+          "type": "ellipse",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius_x": 5,
+          "radius_y": 2,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "y_axis": [
+            0,
+            1,
+            0
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        -5,
+        0,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-polyline-split",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        4,
+        3,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-polyline-trim",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        4,
+        3,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-nurbs-split",
+      "curve": {
+        "native": {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                6,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        5,
+        3,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-nurbs-trim",
+      "curve": {
+        "native": {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                5,
+                6,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                7,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                7,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        5,
+        3,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-polycurve-split",
+      "curve": {
+        "native": {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                -5,
+                0,
+                0
+              ],
+              "end": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  5,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  5,
+                  0
+                ],
+                [
+                  -5,
+                  0,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-polycurve-trim",
+      "curve": {
+        "native": {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                -5,
+                0,
+                0
+              ],
+              "end": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  5,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  5,
+                  0
+                ],
+                [
+                  -5,
+                  0,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        0,
+        5,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-closed-polyline-split",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              -5,
+              -3,
+              0
+            ],
+            [
+              5,
+              -3,
+              0
+            ],
+            [
+              5,
+              3,
+              0
+            ],
+            [
+              -5,
+              3,
+              0
+            ],
+            [
+              -5,
+              -3,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        -5,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-closed-polyline-trim",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              -5,
+              -3,
+              0
+            ],
+            [
+              5,
+              -3,
+              0
+            ],
+            [
+              5,
+              3,
+              0
+            ],
+            [
+              -5,
+              3,
+              0
+            ],
+            [
+              -5,
+              -3,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        -5,
+        0,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-arc-reversed-split",
+      "curve": {
+        "native": {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ],
+            [
+              -5,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ],
+        "reversed": true
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-arc-reversed-trim",
+      "curve": {
+        "native": {
+          "type": "arc",
+          "points": [
+            [
+              5,
+              0,
+              0
+            ],
+            [
+              0,
+              5,
+              0
+            ],
+            [
+              -5,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ],
+        "reversed": true
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        0,
+        5,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-circle-reversed-split",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ],
+        "reversed": true
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        -5,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-circle-reversed-trim",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ],
+        "reversed": true
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        -5,
+        0,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-polycurve-reversed-split",
+      "curve": {
+        "native": {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                -5,
+                0,
+                0
+              ],
+              "end": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  5,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  5,
+                  0
+                ],
+                [
+                  -5,
+                  0,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ],
+        "reversed": true
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-polycurve-reversed-trim",
+      "curve": {
+        "native": {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "line",
+              "start": [
+                -5,
+                0,
+                0
+              ],
+              "end": [
+                5,
+                0,
+                0
+              ]
+            },
+            {
+              "type": "arc",
+              "points": [
+                [
+                  5,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  5,
+                  0
+                ],
+                [
+                  -5,
+                  0,
+                  0
+                ]
+              ]
+            }
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ],
+        "reversed": true
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        0,
+        5,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-circle-surface-split",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  -10,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  2,
+                  10,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  2,
+                  -10,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  2,
+                  10,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "knots_v": [
+              0,
+              0,
+              1,
+              1
+            ]
+          }
+        }
+      ],
+      "source_pick": [
+        -5,
+        0,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-circle-surface-trim",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "surface": {
+            "degree_u": 1,
+            "degree_v": 1,
+            "control_point_count_u": 2,
+            "control_point_count_v": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  -10,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  2,
+                  10,
+                  -2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  2,
+                  -10,
+                  2
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  2,
+                  10,
+                  2
+                ],
+                "weight": 1
+              }
+            ],
+            "knots_u": [
+              0,
+              0,
+              1,
+              1
+            ],
+            "knots_v": [
+              0,
+              0,
+              1,
+              1
+            ]
+          }
+        }
+      ],
+      "pick": [
+        -5,
+        0,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-circle-box-split",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "box": {
+            "x": [
+              -2,
+              2
+            ],
+            "y": [
+              -10,
+              10
+            ],
+            "z": [
+              -2,
+              2
+            ]
+          }
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-circle-box-trim",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "box": {
+            "x": [
+              -2,
+              2
+            ],
+            "y": [
+              -10,
+              10
+            ],
+            "z": [
+              -2,
+              2
+            ]
+          }
+        }
+      ],
+      "pick": [
+        0,
+        5,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-circle-seam-split",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-circle-seam-trim",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -10,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        0,
+        5,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-circle-apparent",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            1
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                2,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        -5,
+        0,
+        1
+      ],
+      "apparent_intersections": true
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-periodic-split",
+      "curve": {
+        "native": {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            8
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "curve_trim_command",
+      "id": "native-cut-periodic-trim",
+      "curve": {
+        "native": {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                2,
+                0
+              ]
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ]
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ]
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            8
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "pick": [
+        0.08333333333333333,
+        1,
+        0
+      ],
+      "apparent_intersections": false
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-unequal-weights-split",
+      "curve": {
+        "native": {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 0.5
+            },
+            {
+              "point": [
+                3,
+                -1,
+                0
+              ],
+              "weight": 1.3
+            },
+            {
+              "point": [
+                5,
+                3,
+                0
+              ],
+              "weight": 0.8
+            },
+            {
+              "point": [
+                0,
+                4,
+                0
+              ],
+              "weight": 1.7
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            4,
+            4,
+            4,
+            5,
+            9,
+            12,
+            12,
+            12
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                1,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-circle-tangent-split",
+      "curve": {
+        "native": {
+          "type": "circle",
+          "center": [
+            0,
+            0,
+            0
+          ],
+          "radius": 5,
+          "x_axis": [
+            1,
+            0,
+            0
+          ],
+          "normal": [
+            0,
+            0,
+            1
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                -5,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        0,
+        5,
+        0
+      ]
+    },
+    {
+      "op": "curve_split_command",
+      "id": "native-cut-retraced-polyline-split",
+      "curve": {
+        "native": {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ]
+          ]
+        },
+        "domain": [
+          -7,
+          13
+        ]
+      },
+      "cutters": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                3,
+                -10,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                10,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "source_pick": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}

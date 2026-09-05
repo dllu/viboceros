@@ -5,6 +5,32 @@ fn point(x: f64, y: f64) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
 }
 
+#[test]
+fn rational_representation_keeps_polyline_parameters_unlike_explicit_conversion() {
+    let source = Polyline3::try_with_parameters(
+        vec![point(0.0, 0.0), point(2.0, 0.0), point(2.0, 3.0)],
+        vec![-7.0, 3.0, 13.0],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let geometry = Geometry::Polyline(source.clone());
+    let native = geometry.nurbs_curve_representation().unwrap().unwrap();
+    assert_eq!(native.knots(), &[-7.0, -7.0, 3.0, 13.0, 13.0]);
+    for i in 0..=64 {
+        let t = -7.0 + 20.0 * i as f64 / 64.0;
+        assert!(
+            native
+                .evaluate(t)
+                .unwrap()
+                .distance_to(source.evaluate(t).unwrap())
+                .unwrap()
+                < 1e-13
+        );
+    }
+    let converted = geometry.converted_to_nurbs_curve().unwrap().unwrap();
+    assert_eq!(converted.knots(), &[0.0, 0.0, 2.0, 5.0, 5.0]);
+}
+
 fn composite() -> PolyCurve3 {
     PolyCurve3::try_with_segment_domains(
         vec![

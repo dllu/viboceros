@@ -1030,7 +1030,18 @@ def _curve_native(operation, iterations, tolerance):
                         raise ValueError("native curve transform failed")
                 edit = operation.get("edit")
                 if edit is None:
-                    return _curve_native_record(curve, tolerance)
+                    value = _curve_native_record(curve, tolerance)
+                    if operation.get("parameter_map"):
+                        mapping = []
+                        for i in range(65):
+                            t = float(curve.Domain.ParameterAt(float(i) / 64.0))
+                            ok_n, n = curve.GetNurbsFormParameterFromCurveParameter(t)
+                            ok_c, c = curve.GetCurveParameterFromNurbsFormParameter(t)
+                            if not ok_n or not ok_c:
+                                raise ValueError("native/rational parameter correspondence failed")
+                            mapping.append({"parameter": t, "nurbs": float(n), "native": float(c)})
+                        value["parameter_map"] = mapping
+                    return value
                 kind = edit["kind"]
                 if kind == "seam":
                     if not curve.ChangeClosedCurveSeam(float(edit["parameter"])):
@@ -1093,6 +1104,30 @@ def _curve_native_record(curve, tolerance):
     return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
             "length": float(curve.GetLength(tolerance["relative"])), "samples": samples, "divisions": divisions,
             "nurbs": _nurbs_curve_definition(curve)}
+
+def _cut_source(definition):
+    if "native" not in definition:
+        return _nurbs_curve_from_definition(definition)
+    curve = _join_close_input(definition["native"])
+    try:
+        if definition.get("domain") is not None:
+            curve.Domain = Rhino.Geometry.Interval(*definition["domain"])
+        if definition.get("reversed") and not curve.Reverse():
+            raise ValueError("cut source reversal failed")
+        return curve
+    except Exception:
+        curve.Dispose()
+        raise
+
+
+def _cut_native_record(curve):
+    kind = ("arc" if isinstance(curve, Rhino.Geometry.ArcCurve) else
+            "line" if isinstance(curve, Rhino.Geometry.LineCurve) else
+            "polyline" if isinstance(curve, Rhino.Geometry.PolylineCurve) else
+            "polycurve" if isinstance(curve, Rhino.Geometry.PolyCurve) else "nurbs")
+    return {"type": kind, "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+            "points": [_xyz(curve.PointAt(curve.Domain.ParameterAt(float(i) / 16.0))) for i in range(17)]}
+
 
 def _polycurve_native_record(curve, tolerance):
     segments = []
@@ -7626,9 +7661,46 @@ def _execute(operation, iterations, tolerance):
             first.Dispose()
             second.Dispose()
 
+    if kind == "curve_extrude_command":
+        document = Rhino.RhinoDoc.ActiveDoc
+        source = _cut_source(operation["curve"])
+        def extrude_native_curve():
+            original_ids = set(item.Id for item in document.Objects)
+            try:
+                document.Objects.UnselectAll()
+                source_id = document.Objects.AddCurve(source)
+                document.Objects.Select(source_id)
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Disable", False)
+                command = "_-ExtrudeCrv _Output=_Surface _Solid=_No %.17g" % float(operation["distance"])
+                if not Rhino.RhinoApp.RunScript(command, False):
+                    raise ValueError("native extrusion command failed")
+                surfaces = []
+                for item in document.Objects:
+                    if item.Id == source_id or item.Id in original_ids:
+                        continue
+                    geometry = item.Geometry
+                    if isinstance(geometry, Rhino.Geometry.Brep) and geometry.Faces.Count == 1:
+                        geometry = geometry.Faces[0].UnderlyingSurface()
+                    if not isinstance(geometry, Rhino.Geometry.Surface):
+                        raise ValueError("native extrusion did not produce one surface")
+                    surfaces.append(_nurbs_surface_definition(geometry))
+                if not surfaces:
+                    raise ValueError("native extrusion left no surfaces")
+                return {"surfaces": surfaces}
+            finally:
+                Rhino.RhinoApp.RunScript("_-CreaseSplitting _Enable", False)
+                document.Objects.UnselectAll()
+                for item in list(document.Objects):
+                    if item.Id not in original_ids:
+                        document.Objects.Delete(item.Id, True)
+        try:
+            return _measure(iterations, extrude_native_curve)
+        finally:
+            source.Dispose()
+
     if kind == "curve_split_command":
         document = Rhino.RhinoDoc.ActiveDoc
-        source = _nurbs_curve_from_definition(operation["curve"])
+        source = _cut_source(operation["curve"])
         cutters = []
         try:
             for definition in operation["cutters"]:
@@ -7706,6 +7778,7 @@ def _execute(operation, iterations, tolerance):
                             == Rhino.DocObjects.ObjectColorSource.ColorFromObject
                         ),
                         "curve": _nurbs_curve_definition(item.Geometry),
+                        "native": _cut_native_record(item.Geometry),
                         "in_source_group": (
                             groups is not None and group_index in groups
                         ),
@@ -7714,7 +7787,7 @@ def _execute(operation, iterations, tolerance):
                     })
                 records.sort(
                     key=lambda record: tuple(
-                        record["curve"]["control_points"][0]["point"]
+                        record["native"]["domain"]
                     )
                 )
                 return {
@@ -8204,7 +8277,7 @@ def _execute(operation, iterations, tolerance):
 
     if kind == "curve_trim_command":
         document = Rhino.RhinoDoc.ActiveDoc
-        source = _nurbs_curve_from_definition(operation["curve"])
+        source = _cut_source(operation["curve"])
         cutters = []
         try:
             for definition in operation["cutters"]:
@@ -8295,6 +8368,7 @@ def _execute(operation, iterations, tolerance):
                             == Rhino.DocObjects.ObjectColorSource.ColorFromObject
                         ),
                         "curve": _nurbs_curve_definition(item.Geometry),
+                        "native": _cut_native_record(item.Geometry),
                         "in_source_group": (
                             groups is not None and group_index in groups
                         ),
@@ -8303,7 +8377,7 @@ def _execute(operation, iterations, tolerance):
                     })
                 records.sort(
                     key=lambda record: tuple(
-                        record["curve"]["control_points"][0]["point"]
+                        record["native"]["domain"]
                     )
                 )
                 return {

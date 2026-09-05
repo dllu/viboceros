@@ -58,10 +58,9 @@ impl Geometry {
 
     /// Returns exact NURBS geometry for a supported non-NURBS curve.
     ///
-    /// The returned domains match Rhino 8: lines and polylines use chord
-    /// length, circles and arcs use arc length, and ellipses use radians.
-    /// Polycurves retain their parameter intervals; the merged control
-    /// structure need not be Rhino's minimal representation.
+    /// Polylines receive chord-length parameters. Other families retain their
+    /// native intervals (by default, length for lines/circular curves and
+    /// radians for ellipses). Polycurve control structure need not be minimal.
     /// Existing NURBS geometry and non-curve objects return `None`.
     pub fn converted_to_nurbs_curve(&self) -> Result<Option<NurbsCurve>, GeometryError> {
         if matches!(self, Self::NurbsCurve(_)) {
@@ -74,12 +73,11 @@ impl Geometry {
     }
 
     /// Returns an exact NURBS representation for every supported curve,
-    /// cloning an object that is already a NURBS curve.
+    /// retaining its native interval and cloning existing NURBS geometry.
+    /// Unlike explicit `ToNURBS`, this does not give polylines new
+    /// chord-length parameters: algorithmic consumers need the original map.
     pub fn nurbs_curve_representation(&self) -> Result<Option<NurbsCurve>, GeometryError> {
-        match self {
-            Self::NurbsCurve(curve) => Ok(Some(curve.clone())),
-            _ => self.converted_to_nurbs_curve(),
-        }
+        self.curve_ref().map(CurveRef::to_nurbs).transpose()
     }
 
     pub fn transformed(

@@ -647,17 +647,21 @@ impl CircularArc3 {
     }
 }
 
-fn circular_nurbs(circle: CircleFrame3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
+pub(crate) fn circular_nurbs_span_count(sweep: Real) -> usize {
     // OpenNURBS uses one, two, or four spans (including four, not three,
     // between 180 and 270 degrees). Keep its sqrt-epsilon quadrant allowance.
     let quadrant_limit = (0.5 + Real::EPSILON.sqrt()) * PI;
-    let span_count = if sweep <= quadrant_limit {
+    if sweep <= quadrant_limit {
         1
     } else if sweep <= 2.0 * quadrant_limit {
         2
     } else {
         4
-    };
+    }
+}
+
+fn circular_nurbs(circle: CircleFrame3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
+    let span_count = circular_nurbs_span_count(sweep);
     let span_angle = sweep / span_count as Real;
     let half_angle = span_angle * 0.5;
     let middle_weight = half_angle.cos();

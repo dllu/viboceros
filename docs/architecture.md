@@ -53,6 +53,9 @@ including analytic derivatives and parameter-bearing arc-length samples. Circula
 support frames are distinct from complete circles and their native domains.
 Native trim, split, closest-point dispatch, and cyclic edits live in `curve_trim`;
 seam, subcurve, and reparameterization commands share the `curve_domain` module.
+The `curve_parameter_map` geometry module supplies exact span-aware correspondence
+with rational representations; the `curve_cut` command module uses it for
+[cutting-object splits and trims](curve-cutting.md).
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

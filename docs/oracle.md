@@ -70,6 +70,14 @@ splits, seam relocation, periodic curves, and unequal rational weights. See
 [domain-editing validation](curve-domain-editing.md) for the separate geometry and
 Rhino length-inversion comparison limits.
 
+`curve_parameter_map.json` adds both native/rational parameter maps to those records.
+`curve_native_cutting.json` tests cutting-object Split and Trim on all curve families,
+including wrapped outputs, seam hits, and projected cuts. `curve_native_extrusion.json`
+checks profile-domain preservation. See [native cutting validation](curve-cutting.md)
+for the 75 cases, numeric limits, and the separate ill-conditioned legacy Trim
+tangent comparison. Curve-cut command records sort by native domain, not rounded
+world-space endpoint coordinates.
+
 `curve_join_close.json` compares 39 mixed joining and closure cases, including
 full NURBS definitions, retained intervals, representation, and length. It tests
 the batch `JoinCurves` API separately from actual `Join`/`CloseCrv` commands.
@@ -224,7 +232,7 @@ tools/rhino_oracle/run_headless.sh compare \
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/curve_trim_command.json \
-  --absolute-epsilon 1e-9 --relative-epsilon 1e-11
+  --absolute-epsilon 5e-6 --relative-epsilon 1e-11
 
 tools/rhino_oracle/run_headless.sh compare \
   tools/rhino_oracle/fixtures/surface_direction_edit.json

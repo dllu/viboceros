@@ -84,6 +84,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    CurveExtrudeCommand {
+        id: String,
+        curve: curve_native::CutSource,
+        distance: f64,
+    },
     CurveNative {
         id: String,
         #[serde(flatten)]
@@ -660,7 +665,7 @@ pub enum Operation {
     },
     CurveSplitCommand {
         id: String,
-        curve: NurbsCurveDefinition,
+        curve: curve_native::CutSource,
         cutters: Vec<CurveExtensionBoundaryDefinition>,
         source_pick: [f64; 3],
     },
@@ -730,7 +735,7 @@ pub enum Operation {
     },
     CurveTrimCommand {
         id: String,
-        curve: NurbsCurveDefinition,
+        curve: curve_native::CutSource,
         cutters: Vec<CurveExtensionBoundaryDefinition>,
         pick: [f64; 3],
         #[serde(default = "default_true")]
@@ -1301,6 +1306,7 @@ impl Operation {
         match self {
             Self::PolycurveGeometry { id, .. }
             | Self::CurveNative { id, .. }
+            | Self::CurveExtrudeCommand { id, .. }
             | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
             | Self::PolycurveDocument { id, .. }
@@ -1580,6 +1586,9 @@ fn execute(
         Operation::PolycurveGeometry { fixture, .. } => {
             polycurve::run(fixture, iterations, tolerance)?
         }
+        Operation::CurveExtrudeCommand {
+            curve, distance, ..
+        } => curve_native::extrude_command(curve, *distance, iterations, tolerance)?,
         Operation::CurveNative { fixture, .. } => {
             curve_native::run(fixture, iterations, tolerance)?
         }
@@ -7759,12 +7768,12 @@ fn intersect_command_with_curve_serializer(
 
 fn curve_split_command(
     iterations: u32,
-    definition: &NurbsCurveDefinition,
+    definition: &curve_native::CutSource,
     cutter_definitions: &[CurveExtensionBoundaryDefinition],
     source_pick: [f64; 3],
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    let source = nurbs_curve_from_definition(definition)?;
+    let source = definition.geometry(tolerance)?;
     let cutters = cutter_definitions
         .iter()
         .map(|definition| curve_cutter_geometry_from_definition(definition, tolerance))
@@ -7775,10 +7784,8 @@ fn curve_split_command(
         let attributes = ObjectAttributes::on_layer(document.current_layer_id())
             .with_name("Viboceros Split Source")
             .with_object_color(ColorRgb::new(12, 34, 56));
-        let source_id = document.add_geometry_with_attributes(
-            Geometry::NurbsCurve(source.clone()),
-            attributes.clone(),
-        )?;
+        let source_id =
+            document.add_geometry_with_attributes(source.clone(), attributes.clone())?;
         let group_id = document.add_group(Some("Viboceros Split Group".to_owned()), [source_id])?;
         let mut cutter_ids = Vec::with_capacity(cutters.len());
         for cutter in &cutters {
@@ -7813,12 +7820,13 @@ fn curve_split_command(
                 .geometry()
                 .nurbs_curve_representation()?
                 .expect("the Split command produces only curve result objects");
-            let first_point = curve.control_points()[0].point().to_array();
+            let start_parameter = *curve.domain().start();
             Ok((
-                first_point,
+                start_parameter,
                 json!({
                     "attributes_match_source": object.attributes() == &attributes,
                     "curve": nurbs_curve_definition_value(&curve),
+                    "native": curve_native::command_record(object.geometry().curve_ref().expect("Split output is a curve"))?,
                     "in_source_group": source_group_members.contains(&object.id()),
                     "original_id": object.id() == source_id,
                     "selected": document.is_selected(object.id()),
@@ -7826,7 +7834,7 @@ fn curve_split_command(
             ))
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
-    records.sort_by(|(left, _), (right, _)| compare_point(left, right));
+    records.sort_by(|(left, _), (right, _)| left.total_cmp(right));
     let value = json!({
         "command_succeeded": true,
         "objects": records.into_iter().map(|(_, value)| value).collect::<Vec<_>>(),
@@ -8214,14 +8222,14 @@ const fn surface_uniform_direction_name(direction: SurfaceUniformDirection) -> &
 
 fn curve_trim_command(
     iterations: u32,
-    definition: &NurbsCurveDefinition,
+    definition: &curve_native::CutSource,
     cutter_definitions: &[CurveExtensionBoundaryDefinition],
     pick: [f64; 3],
     apparent_intersections: bool,
     view_normal: [f64; 3],
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
-    let source = nurbs_curve_from_definition(definition)?;
+    let source = definition.geometry(tolerance)?;
     let cutters = cutter_definitions
         .iter()
         .map(|definition| curve_cutter_geometry_from_definition(definition, tolerance))
@@ -8232,10 +8240,8 @@ fn curve_trim_command(
         let attributes = ObjectAttributes::on_layer(document.current_layer_id())
             .with_name("Viboceros Trim Source")
             .with_object_color(ColorRgb::new(12, 34, 56));
-        let source_id = document.add_geometry_with_attributes(
-            Geometry::NurbsCurve(source.clone()),
-            attributes.clone(),
-        )?;
+        let source_id =
+            document.add_geometry_with_attributes(source.clone(), attributes.clone())?;
         let group_id = document.add_group(Some("Viboceros Trim Group".to_owned()), [source_id])?;
         let mut cutter_ids = Vec::with_capacity(cutters.len());
         for cutter in &cutters {
@@ -8276,12 +8282,13 @@ fn curve_trim_command(
                 .geometry()
                 .nurbs_curve_representation()?
                 .expect("the Trim command produces only curve result objects");
-            let first_point = curve.control_points()[0].point().to_array();
+            let start_parameter = *curve.domain().start();
             Ok((
-                first_point,
+                start_parameter,
                 json!({
                     "attributes_match_source": object.attributes() == &attributes,
                     "curve": nurbs_curve_definition_value(&curve),
+                    "native": curve_native::command_record(object.geometry().curve_ref().expect("Trim output is a curve"))?,
                     "in_source_group": source_group_members.contains(&object.id()),
                     "original_id": object.id() == source_id,
                     "selected": document.is_selected(object.id()),
@@ -8289,7 +8296,7 @@ fn curve_trim_command(
             ))
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
-    records.sort_by(|(left, _), (right, _)| compare_point(left, right));
+    records.sort_by(|(left, _), (right, _)| left.total_cmp(right));
     let value = json!({
         "command_succeeded": true,
         "objects": records.into_iter().map(|(_, value)| value).collect::<Vec<_>>(),
@@ -11465,7 +11472,8 @@ mod tests {
                 [0.0, 0.0, 0.0],
                 [10.0, 0.0, 0.0],
                 vec![0.0, 0.0, 10.0, 10.0],
-            ),
+            )
+            .into(),
             cutters: vec![
                 CurveExtensionBoundaryDefinition::Curve(line(
                     [3.0, -5.0, 0.0],
@@ -11719,7 +11727,8 @@ mod tests {
                 [0.0, 0.0, 0.0],
                 [10.0, 0.0, 0.0],
                 vec![0.0, 0.0, 10.0, 10.0],
-            ),
+            )
+            .into(),
             cutters: vec![
                 CurveExtensionBoundaryDefinition::Curve(line(
                     [3.0, -5.0, 0.0],
@@ -11792,7 +11801,7 @@ mod tests {
         let response = run_request(&request(vec![
             Operation::CurveTrimCommand {
                 id: "trim-line-with-surface".to_owned(),
-                curve: line.clone(),
+                curve: line.clone().into(),
                 cutters: vec![CurveExtensionBoundaryDefinition::Surface { surface }],
                 pick: [5.0, 0.0, 0.0],
                 apparent_intersections: true,
@@ -11800,7 +11809,7 @@ mod tests {
             },
             Operation::CurveTrimCommand {
                 id: "trim-line-with-box".to_owned(),
-                curve: line.clone(),
+                curve: line.clone().into(),
                 cutters: vec![CurveExtensionBoundaryDefinition::Box {
                     box_boundary: AxisAlignedBoxBoundaryDefinition {
                         x: [2.0, 8.0],
@@ -11814,7 +11823,7 @@ mod tests {
             },
             Operation::CurveTrimCommand {
                 id: "trim-line-with-holed-face".to_owned(),
-                curve: line,
+                curve: line.into(),
                 cutters: vec![CurveExtensionBoundaryDefinition::PlanarFace {
                     planar_face: PlanarFaceBoundaryDefinition {
                         outer: closed_polyline(vec![

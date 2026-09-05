@@ -123,10 +123,13 @@ curve target and all cutter geometry orthogonally along world Z unless
 orthogonal approximation in the perspective viewport). Use
 `ApparentIntersections=No` for actual 3D intersections. End trims and
 closed-curve trims retain the source identity.
-Removing a middle interval creates two new exact NURBS objects and deletes the
+Removing a middle interval creates two new native curve objects and deletes the
 source, matching Rhino; both pieces inherit its attributes and groups. Results
 replace the cutter selection and the complete edit is one undo step. Mesh
 cutters and trimming surfaces or B-reps as targets remain future extensions.
+Circular, polyline, and composite outputs preserve their native parameterization;
+closed seam intersections are retained. [Native cutting](../curve-cutting.md)
+documents the rational/native parameter bridge, projected edits, and validation.
 
 ## Extracting points
 
