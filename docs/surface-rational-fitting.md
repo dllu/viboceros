@@ -33,7 +33,7 @@ at most nine. Either axis exceeding the existing 256-control ceiling skips the
 candidate before any candidate point-map calls.
 
 `morph/denominator` builds the scalar source weight function.
-`morph/interpolation/axis` constructs the candidate knot vectors and sided
+`spline_collocation/axis` constructs the candidate knot vectors and sided
 Greville stations. `surface_fit/tensor` interpolates the centered homogeneous
 targets `((mapped_point - origin) W³, W³)`, solving U and V independently.
 Cubic axes keep the shared banded solver; higher-degree axes use bounded faer

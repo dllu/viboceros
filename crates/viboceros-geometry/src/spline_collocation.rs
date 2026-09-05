@@ -6,17 +6,17 @@ use std::ops::RangeInclusive;
 
 mod axis;
 mod banded;
-pub(super) use axis::Axis;
+pub(crate) use axis::Axis;
 
-pub(super) const DEGREE: usize = 3;
+pub(crate) const DEGREE: usize = 3;
 
 #[derive(Clone, Copy)]
-pub(super) struct Break {
+pub(crate) struct Break {
     pub parameter: Real,
     pub multiplicity: usize,
 }
 
-pub(super) fn seed_breaks(
+pub(crate) fn seed_breaks(
     degree: usize,
     knots: &[Real],
     domain: RangeInclusive<Real>,
@@ -42,18 +42,18 @@ pub(super) fn seed_breaks(
     breaks
 }
 
-pub(super) fn control_count(breaks: &[Break]) -> usize {
+pub(crate) fn control_count(breaks: &[Break]) -> usize {
     breaks.iter().map(|b| b.multiplicity).sum::<usize>() - DEGREE - 1
 }
 
-pub(super) fn knots(breaks: &[Break]) -> Vec<Real> {
+pub(crate) fn knots(breaks: &[Break]) -> Vec<Real> {
     breaks
         .iter()
         .flat_map(|b| std::iter::repeat_n(b.parameter, b.multiplicity))
         .collect()
 }
 
-pub(super) fn error_fractions(steps: usize) -> Vec<Real> {
+pub(crate) fn error_fractions(steps: usize) -> Vec<Real> {
     (1..steps)
         .flat_map(|i| {
             let fraction = i as Real / steps as Real;
@@ -66,11 +66,11 @@ pub(super) fn error_fractions(steps: usize) -> Vec<Real> {
         .collect()
 }
 
-pub(super) fn solve(rows: &[[Real; 5]], rhs: Mat<Real>) -> Result<Mat<Real>, GeometryError> {
+pub(crate) fn solve(rows: &[[Real; 5]], rhs: Mat<Real>) -> Result<Mat<Real>, GeometryError> {
     banded::solve(rows, rhs)
 }
 
-pub(super) fn collocation_row(
+pub(crate) fn collocation_row(
     knots: &[Real],
     i: usize,
 ) -> Result<([Real; 5], Real, ParameterSide, bool), GeometryError> {
@@ -114,7 +114,7 @@ fn stable_mean3(first: Real, second: Real, third: Real) -> Result<Real, Geometry
     Ok(mean)
 }
 
-pub(super) fn stable_lerp(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryError> {
+pub(crate) fn stable_lerp(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryError> {
     let parameter = if fraction == 0.0 {
         start
     } else if fraction == 1.0 {

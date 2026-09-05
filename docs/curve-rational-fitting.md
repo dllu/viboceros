@@ -22,7 +22,7 @@ Finite sampling is not a continuous error certificate for a black-box mapping.
 
 ## Shared numerical policy
 
-Curves and surfaces share `morph/denominator` and `morph/interpolation/axis`.
+Curves and surfaces share `morph/denominator` and `spline_collocation/axis`.
 The composition space retains native domains and source knots, increasing
 interior multiplicities from m to `3p - p + m`. Full-order positional jumps have
 independent endpoint rows. Periodic/unclamped sources can become clamped while

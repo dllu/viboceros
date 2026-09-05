@@ -50,6 +50,7 @@ SrfPtGrid DegreeU=1 2 DegreeV=1 3 0,0,0 0,1,1 0,2,0 3,0,0 3,1,2 3,2,0
 SrfControlPtGrid Degree=1 2 Degree=1 3 0,0,0 0,1,1 0,2,0 3,0,0 3,1,2 3,2,0
 PlanarSrf DeleteInput=No
 Loft Type=Normal Closed=No
+Sweep1 RailName=Rail Parameters=0 RefitRail=No
 EdgeSrf
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2

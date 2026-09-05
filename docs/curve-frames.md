@@ -3,9 +3,8 @@
 [Architecture](architecture.md) · [Curve parameters](curve-parameters.md) · [Oracle](oracle.md)
 
 `CurveRef::rotation_minimizing_frames` transports a perpendicular, right-handed
-frame along all seven native curve families. `ArrayCrv` and swept `Spiral`
-share this geometry implementation. It is a foundation for future sweep
-construction; `Sweep1` is not implemented by this module.
+frame along all seven native curve families. `ArrayCrv`, swept `Spiral`, and
+the separate [Sweep1 constructor](sweep1.md) share this geometry implementation.
 
 ## Contract and numerical method
 
@@ -33,18 +32,24 @@ no subtraction of world-space chords and no division by parameter speed.
 Valid stationary endpoints use the evaluator's limiting tangent.
 
 Shortest great-circle rotations on the tangent sphere provide the basic
-second-order method. A four-level Richardson table combines 1, 2, 4, and 8
-steps into an eighth-order candidate. Corrections use signed twist angles
-around the common endpoint tangent, keeping axes orthonormal. The difference
-between the two sixth-order entries estimates error. The total angular
+second-order method. A Richardson table first combines 1, 2, and 4 steps into
+a sixth-order candidate; only when needed does it evaluate the additional
+tangents for an eighth-order candidate using 8 steps. Corrections use signed
+twist angles around the common endpoint tangent, keeping axes orthonormal.
+The preceding two fourth- or sixth-order entries estimate the correction.
+The total angular
 budget is apportioned across native parameter intervals; failed estimates
 trigger bounded bisection. Knot spans, composite joins, and polyline vertices
 are explicit integration boundaries. Natural line/polyline spans need only
 their exact corner rotations, without adaptive integration.
 
 This is an adaptive error estimate, not a certified continuous bound. Evaluation
-and recursion limits, nonrepresentable parameter subdivisions, degenerate
-tangents, and failure to converge return errors. Ill-conditioned rational
+and recursion limits, degenerate tangents, and failure to converge return errors.
+When adjacent floating-point parameters admit no interior sample, minimum
+rotation is accepted only for a positive tangent dot product, a sine of the
+turn no larger than `64 * f64::EPSILON`, and a squared-turn indicator within
+the allocated budget. Other unrepresentable subdivisions fail. This cannot
+certify unobservable sub-ULP tangent excursions. Ill-conditioned rational
 curves and unsampled tangent oscillations remain finite-precision/adaptive
 sampling limitations. Closed spatial paths retain their genuine accumulated
 twist (holonomy); the final frame is not artificially forced to equal the seed.
@@ -59,7 +64,8 @@ stationary endpoints, resource failures, and closed-loop holonomy.
 Scale tests include `1e±140` geometry, large parameter domains, and a
 `[1e12, -2e12, 3e12]` translation with bit-identical native tangents and rotations.
 A regression test prevents rounding differences at an ordinary C2 knot from
-being mistaken for a position jump.
+being mistaken for a position jump. Another checks continuous transport between
+neighboring floating-point queries beside an integration seed.
 
 ## Rhino comparisons and remaining differences
 
@@ -112,7 +118,7 @@ tools/rhino_oracle/run_headless.sh compare tools/rhino_oracle/fixtures/curve_fra
 ```
 
 Release measurements on this ARM host put the 17-frame spatial cubic near
-0.19 ms natively versus 0.24 ms in Rhino under FEX/Wine. These short, separate
+0.23 ms natively versus 0.24 ms in Rhino under FEX/Wine. These short, separate
 runs exclude construction/startup but are not a statistically controlled
 benchmark or a comparison with native Windows Rhino. The existing ordinary
 `ArrayCrv` fixture times only its line-division primitive, not repeated command

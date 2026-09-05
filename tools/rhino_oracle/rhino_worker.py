@@ -1747,6 +1747,73 @@ def _edge_surface_record(brep, comparison_degree):
             "singular_trims": sum(1 for trim in brep.Trims if trim.TrimType == Rhino.Geometry.BrepTrimType.Singular)}
 
 
+def _sweep1(operation, iterations, tolerance):
+    owned, result = [], []
+    try:
+        rail = _join_close_input(operation["rail"])
+        owned.append(rail)
+        for definition in operation["sections"]:
+            owned.append(_join_close_input(definition))
+
+        if operation.get("command", False):
+            if "roadlike_axis" in operation:
+                raise ValueError("roadlike Sweep1 command instrumentation is not implemented")
+            def macro(ids):
+                Rhino.RhinoDoc.ActiveDoc.Objects.UnselectAll()
+                text = "_-Sweep1 '_-SelID %s " % ids[0]
+                text += " ".join("'_-SelID %s" % i for i in ids[1:])
+                text += " _Enter _FrameStyle _Freeform _GlobalShapeBlending=%s _RefitRail=%s _Enter" % (
+                    "Yes" if operation.get("blend", 0) else "No", "Yes" if operation.get("refit_rail", False) else "No")
+                return text
+            value, elapsed = _curve_surface_command(owned, macro, iterations, "sweep",
+                lambda obj: _sweep1_record(obj.Geometry, operation))
+            records = [face for output in value["outputs"] for face in output]
+            return records, 0
+
+        def build():
+            for brep in result:
+                brep.Dispose()
+            del result[:]
+            result.extend(Rhino.Geometry.Brep.CreateFromSweep(
+                rail, owned[1:], Rhino.Geometry.Point3d.Unset, Rhino.Geometry.Point3d.Unset,
+                System.Enum.ToObject(Rhino.Geometry.SweepFrame, 1 if "roadlike_axis" in operation else 0),
+                _vector(operation["roadlike_axis"]) if "roadlike_axis" in operation else Rhino.Geometry.Vector3d.Unset,
+                operation.get("closed", False),
+                System.Enum.ToObject(Rhino.Geometry.SweepBlend, operation.get("blend", 0)),
+                System.Enum.ToObject(Rhino.Geometry.SweepMiter, 0),
+                tolerance["absolute"], System.Enum.ToObject(Rhino.Geometry.SweepRebuild, 0), 0, 0.0,
+            ) or [])
+
+        _, elapsed = _measure(iterations, build)
+        return [face for brep in result for face in _sweep1_record(brep, operation)], elapsed
+    finally:
+        for geometry in result + owned:
+            geometry.Dispose()
+
+
+def _sweep1_record(brep, operation):
+    if not brep.IsValid:
+        raise ValueError("Rhino sweep produced an invalid BRep")
+    surfaces = []
+    for face in brep.Faces:
+        samples = []
+        if operation.get("queries") is not None:
+            for query in operation["queries"]:
+                found, u, v = face.ClosestPoint(_point(query))
+                if not found:
+                    raise ValueError("sweep surface closest point failed")
+                samples.append(_xyz(face.PointAt(u, v)))
+        else:
+            samples = [_xyz(face.PointAt(face.Domain(0).ParameterAt(i/8.0),
+                                        face.Domain(1).ParameterAt(j/8.0)))
+                       for j in range(9) for i in range(9)]
+        record = {"samples": samples}
+        if operation.get("inspect_definition", False):
+            record["definition"] = _nurbs_surface_definition(face)
+        surfaces.append(record)
+    return surfaces
+
+
 def _loft(operation, iterations):
     curves = []
     styles = {
@@ -1826,12 +1893,13 @@ def _curve_surface_command(curves, macro, iterations, prefix, record):
                     raise ValueError("could not add %s profile" % prefix)
                 ids.append(object_id)
                 document.Objects.Select(ids[-1])
-            succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
+            script = macro(ids) if callable(macro) else macro
+            succeeded = bool(Rhino.RhinoApp.RunScript(script, False))
             outputs = [obj for obj in document.Objects.GetObjectList(settings)
                        if obj.Id not in before and obj.Id not in ids]
             if not succeeded or not outputs:
                 raise ValueError("surface command failed: %r; history: %s" % (
-                    macro, Rhino.RhinoApp.CommandHistoryWindowText[-2000:]))
+                    script, Rhino.RhinoApp.CommandHistoryWindowText[-2000:]))
             return {
                 "succeeded": succeeded,
                 "originals_present": [document.Objects.FindId(i) is not None for i in ids],
@@ -2385,6 +2453,8 @@ def _brep_mesh_boundaries(operation, iterations, tolerance):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "sweep1":
+        return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":
         return _curve_frames(operation, iterations)
     if kind == "brep_mesh_boundaries":

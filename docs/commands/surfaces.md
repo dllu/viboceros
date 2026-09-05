@@ -60,6 +60,20 @@ periodic closed lofts. Inputs are retained; output is unselected on the current
 layer. See [Loft geometry, ordering, tests and limits](../loft.md), especially
 the endpoint-weight normalization policy for rational profiles.
 
+## One-rail sweeps
+
+`Sweep1 Parameters=0 RailName=Rail` sweeps selected profiles along a named curve;
+without `RailName`, the last selected curve is the rail. Explicit native rail
+parameters are required, one per profile in selection order. `RefitRail=No`
+(default) currently accepts one profile and retains the rail's rational basis.
+`RefitRail=Yes` adaptively fits transported sections and permits multiple profiles.
+`FrameStyle=Freeform|Roadlike`, `Axis=x,y,z` (Roadlike only), and
+`GlobalShapeBlending=Yes|No` select the frame and blend model. Inputs and selection
+are retained; one unselected B-rep is added on the current layer with atomic undo.
+See [sweep construction and compatibility gaps](../sweep1.md): closed rails,
+miters, automatic section placement, and complete Rhino multi-section blending
+are not implemented.
+
 ## Face and isocurve extraction
 
 `ExtractSrf` separates the nearest exact face at a model-space point, or accepts

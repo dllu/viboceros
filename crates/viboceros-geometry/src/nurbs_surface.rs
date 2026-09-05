@@ -3155,6 +3155,29 @@ impl NurbsSurface {
         let mut best = seeds.first().copied().ok_or(GeometryError::Degenerate {
             context: "NURBS surface closest-point search",
         })?;
+        // Clamping a coupled two-parameter Newton step can stall before the
+        // minimum along an active boundary. Solve all four natural boundary
+        // curves independently, including their endpoints. Singular constant
+        // edges remain represented by the boundary seeds above.
+        for (curve, fixed_u, fixed) in [
+            (self.isocurve_u(v_start), false, v_start),
+            (self.isocurve_u(v_end), false, v_end),
+            (self.isocurve_v(u_start), true, u_start),
+            (self.isocurve_v(u_end), true, u_end),
+        ] {
+            if let Ok(curve) = curve
+                && let Ok(t) = curve.closest_parameter(target, tolerance)
+                && let Ok(point) = curve.evaluate(t)
+                && let Ok(distance) = point.distance_to(target)
+                && distance < best.0
+            {
+                best = if fixed_u {
+                    (distance, fixed, t)
+                } else {
+                    (distance, t, fixed)
+                };
+            }
+        }
         for (_, seed_u, seed_v) in seeds {
             if let Ok((u, v, distance)) = self.refine_closest_parameters(
                 target,
@@ -5017,6 +5040,22 @@ pub(crate) fn tessellation_triangle_is_nondegenerate(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn closest_point_minimizes_along_an_active_skew_surface_boundary() {
+        let surface = NurbsSurface::try_bilinear([
+            point(0., 0., 0.),
+            point(1., 0., 0.),
+            point(3., 1., 0.),
+            point(2., 1., 0.),
+        ])
+        .unwrap();
+        let target = point(2.37, 2., 0.);
+        let (u, v) = surface
+            .closest_parameters(target, Tolerance::DEFAULT)
+            .unwrap();
+        assert_point_near(surface.evaluate(u, v).unwrap(), point(2.37, 1., 0.));
+    }
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()

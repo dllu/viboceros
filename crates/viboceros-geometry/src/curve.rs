@@ -819,6 +819,55 @@ impl<'a> ArcLengthSampler<'a> {
         self.total_length
     }
 
+    pub(crate) fn distance_at_parameter(&self, parameter: Real) -> Result<Real, GeometryError> {
+        let domain = self.curve.domain();
+        if !parameter.is_finite() || !domain.contains(&parameter) {
+            return Err(GeometryError::ParameterOutOfDomain {
+                parameter,
+                domain_start: *domain.start(),
+                domain_end: *domain.end(),
+            });
+        }
+        let index = self
+            .spans
+            .partition_point(|s| s.end < parameter)
+            .min(self.spans.len() - 1);
+        let span = self.spans[index];
+        if parameter <= span.start {
+            return Ok(span.cumulative_start);
+        }
+        if parameter >= span.end {
+            return Ok(span.cumulative_end);
+        }
+        let partial = if span.variable_speed {
+            let table = &self.lookup_tables[index];
+            let node = table
+                .get(
+                    table
+                        .partition_point(|n| n.parameter <= parameter)
+                        .saturating_sub(1),
+                )
+                .copied()
+                .unwrap_or(ArcLengthLookupNode {
+                    parameter: span.start,
+                    length: 0.0,
+                });
+            node.length
+                + if node.parameter == parameter {
+                    0.0
+                } else {
+                    self.partial_parameter_length(
+                        node.parameter,
+                        parameter,
+                        numerical_distance_tolerance(span.length, self.tolerance),
+                    )?
+                }
+        } else {
+            span.length * ((parameter - span.start) / (span.end - span.start))
+        };
+        Ok(span.cumulative_start + partial)
+    }
+
     pub(crate) fn natural_break_distances(&self) -> impl Iterator<Item = Real> + '_ {
         self.spans
             .iter()

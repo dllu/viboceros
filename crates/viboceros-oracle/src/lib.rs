@@ -38,6 +38,8 @@ pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
 mod curve_frames;
+mod sweep;
+pub use sweep::SweepFixture;
 mod curve_join_close;
 mod curve_native;
 pub use curve_frames::CurveFramesFixture;
@@ -109,6 +111,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    Sweep1 {
+        id: String,
+        #[serde(flatten)]
+        fixture: SweepFixture,
+    },
     CurveFrames {
         id: String,
         #[serde(flatten)]
@@ -1404,6 +1411,7 @@ impl Operation {
             | Self::SurfaceCurvature { id, .. }
             | Self::CurvatureCommand { id, .. }
             | Self::CurveFrames { id, .. }
+            | Self::Sweep1 { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
@@ -1714,6 +1722,7 @@ fn execute(
         Operation::CurveFrames { fixture, .. } => {
             curve_frames::run(fixture, iterations, tolerance)?
         }
+        Operation::Sweep1 { fixture, .. } => sweep::run(fixture, iterations, tolerance)?,
         Operation::SurfaceCurvature { fixture, .. } => {
             surface_jets::run_curvature(fixture, iterations)?
         }

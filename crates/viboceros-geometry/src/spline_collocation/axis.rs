@@ -4,13 +4,13 @@ use super::*;
 use faer::prelude::*;
 
 #[derive(Clone, Copy)]
-pub(in crate::morph) struct Station {
+pub(crate) struct Station {
     pub parameter: Real,
     pub side: ParameterSide,
     pub fixed: bool,
 }
 
-pub(in crate::morph) struct Axis {
+pub(crate) struct Axis {
     pub degree: usize,
     pub knots: Vec<Real>,
     pub stations: Vec<Station>,
@@ -48,7 +48,7 @@ impl Axis {
         Self::new(degree, knots).ok()
     }
 
-    fn new(degree: usize, knots: Vec<Real>) -> Result<Self, GeometryError> {
+    pub(crate) fn new(degree: usize, knots: Vec<Real>) -> Result<Self, GeometryError> {
         let count = knots.len() - degree - 1;
         let mut stations = Vec::with_capacity(count);
         let mut bands = (degree == DEGREE).then(|| Vec::with_capacity(count));

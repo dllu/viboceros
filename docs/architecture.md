@@ -70,7 +70,7 @@ for local-coordinate evaluation, degree-one acceleration, and scale-safe seam jo
 The shared [one-sided evaluator](curve-sided-evaluation.md) propagates side choices
 through composite leaves and supplies exact kink checks and stationary tangents.
 The [curve-frame module](curve-frames.md) separates span-aware adaptive tangent
-transport from frame construction. `ArrayCrv` and swept spirals share it;
+transport from frame construction. `ArrayCrv`, swept spirals, and `Sweep1` share it;
 corner-side policy and remaining Rhino corner differences are explicit.
 The `nurbs_surface/evaluate` module shares `ParameterSide` and nonempty knot-span
 selection with curves. Its [surface jets](surface-evaluation.md) use local rational
@@ -81,15 +81,19 @@ command's closest-point selection, reports, and permanent markers.
 The [curve fitter](curve-morphing.md) in `morph/curve_fit` and
 [surface fitter](surface-morphing.md) in `morph/surface_fit` are separate from
 point-map construction. They share sided cubic banded interpolation in
-`morph/interpolation`, retain source knot limits, and explicitly fail when
+`spline_collocation`, retain source knot limits, and explicitly fail when
 sampled fitting tolerance cannot be reached within their resource budgets.
 Both fitters also check bounded rational composition candidates:
 [curves](curve-rational-fitting.md) and [surfaces](surface-rational-fitting.md).
 `nurbs2/evaluate` provides stable, sided UV-trim evaluation independently of
 model-space curves, including exact constant parameter coordinates.
 
-The [loft kernel](loft.md) separates shared section-basis construction from
-homogeneous interpolation. Ordered tensor lofts are independent of command
+The [loft kernel](loft.md) and [one-rail sweep](sweep1.md) share exact degree/knot
+matching in `section_basis`; Loft's later end-weight policy stays separate.
+The sweep separates frame placement and arc-length blending from fitting and
+from the command's document operations. Its unrefitted rail-basis interpolation
+and adaptive refitting share the banded `spline_collocation` solver with morphs.
+Ordered tensor lofts are independent of command
 orientation and crease splitting. `brep/surface_grid` supplies exact shared
 topology for tensor partitions, including closed seams and singular sides.
 The [edge-surface constructor](edge-surfaces.md) separately handles boundary

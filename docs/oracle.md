@@ -108,6 +108,13 @@ differences; it is not a passing reference. `curve_array.json` now records
 unrounded endpoints. `curve_array_corner_diagnostics.json` is a separate,
 untimed actual-command probe exposing Rhino's query-dependent corner twist.
 
+`sweep1.json` and `sweep1_command.json` check 17 [one-rail sweep cases](sweep1.md)
+through Rhino's public refitted API and actual unrefitted/refitted commands.
+Each compares 135 unrounded closest-point results, including 54 off-surface
+queries. Command probes compare output geometry, not full document state, and
+are untimed. `sweep1_curved_blend.json` and `sweep1_diagnostics.json` retain five
+multi-section discrepancies; neither is a passing reference at `1e-6`.
+
 `surface_jets.json` checks 20 [rational surface differential cases](surface-evaluation.md),
 including second partials, parameter-domain changes, continuation, and exact
 quadrant limits. `surface_translated_jets.json` separately diagnoses large-coordinate

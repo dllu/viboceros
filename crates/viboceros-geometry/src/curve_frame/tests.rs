@@ -172,6 +172,17 @@ fn output_density_does_not_set_the_transport_accuracy() {
 }
 
 #[test]
+fn neighboring_float_queries_do_not_fail_at_natural_frame_seeds() {
+    let c = spatial();
+    let t = 1.0_f64 / 3.0;
+    let next = f64::from_bits(t.to_bits() + 1);
+    let actual = frames(CurveRef::NurbsCurve(&c), &[0., t, next, 1.]);
+    let reference = frames(CurveRef::NurbsCurve(&c), &[0., 1.]);
+    assert!(difference(actual[1].x_axis(), actual[2].x_axis()) < 1e-14);
+    assert!(difference(actual[3].x_axis(), reference[1].x_axis()) < 2e-10);
+}
+
+#[test]
 fn tangents_make_transport_translation_invariant_and_scale_independent() {
     let c = spatial();
     let ts = [0., 0.125, 0.25, 0.5, 0.875, 1.];

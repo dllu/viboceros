@@ -37,8 +37,9 @@ impl<'a> Evaluator<'a> {
     /// Richardson extrapolation of symmetric tangent-sphere transports:
     /// shortest great-circle steps have second-order global error. Comparing
     /// one step with two half steps cancels their leading twist error. A
-    /// four-row extrapolation table supplies an eighth-order candidate and
-    /// estimates error conservatively from the two sixth-order entries.
+    /// three-row table first tries a sixth-order candidate; a fourth row
+    /// supplies an eighth-order candidate only if needed. The preceding
+    /// two entries estimate the correction in either case.
     #[allow(clippy::too_many_arguments)]
     pub(super) fn advance(
         &mut self,
@@ -51,12 +52,28 @@ impl<'a> Evaluator<'a> {
         depth: usize,
     ) -> Result<UnitVector3, GeometryError> {
         let m = a * 0.5 + b * 0.5;
-        if depth >= 48 || !(a < m && m < b) {
+        if !(a < m && m < b) {
+            // Requested sites can lie immediately beside a natural seed. At
+            // floating-point resolution there is no interior evaluation. Use
+            // the minimum rotation only for a roundoff-sized turn whose
+            // squared-turn indicator fits the allocated error budget. This
+            // does not certify unobservable sub-ULP tangent excursions.
+            let sine = ta.as_vector().cross(tb.as_vector())?.length()?;
+            if sine <= 64.0 * Real::EPSILON
+                && sine * sine <= budget
+                && ta.as_vector().dot(tb.as_vector())? > 0.0
+            {
+                return minimal_rotation(x, ta, tb)
+                    .ok_or(GeometryError::CurveFrameDidNotConverge)?;
+            }
+            return Err(GeometryError::CurveFrameDidNotConverge);
+        }
+        if depth >= 48 {
             return Err(GeometryError::CurveFrameDidNotConverge);
         }
         let mut nodes = [ta; 9];
         nodes[8] = tb;
-        for (i, node) in nodes.iter_mut().enumerate().take(8).skip(1) {
+        for (i, node) in nodes.iter_mut().enumerate().take(8).skip(2).step_by(2) {
             let fraction = i as Real / 8.0;
             *node = self
                 .sample(a * (1.0 - fraction) + b * fraction, ParameterSide::Right)?
@@ -68,7 +85,17 @@ impl<'a> Evaluator<'a> {
                 .is_ok_and(|dot| dot > 0.9)
         });
         if smooth {
-            let (fine, error) = extrapolate(x, &nodes)?;
+            let (fine, error) = extrapolate(x, &nodes, 3)?;
+            if error <= budget {
+                return Ok(fine);
+            }
+            for i in [1, 3, 5, 7] {
+                let fraction = i as Real / 8.0;
+                nodes[i] = self
+                    .sample(a * (1.0 - fraction) + b * fraction, ParameterSide::Right)?
+                    .tangent();
+            }
+            let (fine, error) = extrapolate(x, &nodes, 4)?;
             if error <= budget {
                 return Ok(fine);
             }
@@ -81,10 +108,10 @@ impl<'a> Evaluator<'a> {
 fn extrapolate(
     x: UnitVector3,
     nodes: &[UnitVector3; 9],
+    levels: usize,
 ) -> Result<(UnitVector3, Real), GeometryError> {
     let mut previous = [x; 4];
-    let mut coarse_sixth = x;
-    for level in 0..4 {
+    for level in 0..levels {
         let stride = 8 >> level;
         let mut result = x;
         for i in (stride..=8).step_by(stride) {
@@ -100,15 +127,16 @@ fn extrapolate(
                 twist(previous[column - 1], row[column - 1], nodes[8])? / divisor,
             )?;
         }
-        if level == 2 {
-            coarse_sixth = row[2];
-        }
-        if level == 3 {
-            return Ok((row[3], twist(coarse_sixth, row[2], nodes[8])?.abs() / 63.0));
+        if level == levels - 1 {
+            let divisor = ((1 << (2 * level)) - 1) as Real;
+            return Ok((
+                row[level],
+                twist(previous[level - 1], row[level - 1], nodes[8])?.abs() / divisor,
+            ));
         }
         previous = row;
     }
-    unreachable!("four extrapolation levels")
+    unreachable!("three or four extrapolation levels")
 }
 
 pub(super) fn minimal_rotation(
@@ -171,7 +199,7 @@ mod tests {
                 let a = end * i as Real / count as Real;
                 let b = end * (i + 1) as Real / count as Real;
                 let nodes = std::array::from_fn(|j| tangent(a + (b - a) * j as Real / 8.0));
-                x = extrapolate(x, &nodes).unwrap().0;
+                x = extrapolate(x, &nodes, 4).unwrap().0;
             }
             let error = x
                 .as_vector()

@@ -9,6 +9,41 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_sweep_probe_disposes_inputs_and_replaced_results_on_every_exit(self):
+        for failure in [None, "input", "build", "record", "empty"]:
+            with self.subTest(failure=failure):
+                curves = [SimpleNamespace(Dispose=Mock()) for _ in range(2)]
+                breps = [SimpleNamespace(Dispose=Mock()) for _ in range(3)]
+                created = []
+                def build(*args):
+                    if failure == "build" and created:
+                        raise ValueError("sweep failed")
+                    if failure == "empty":
+                        return None
+                    brep = breps[len(created)]
+                    created.append(brep)
+                    return [brep]
+                self.worker.Rhino.Geometry = SimpleNamespace(
+                    Brep=SimpleNamespace(CreateFromSweep=build),
+                    Point3d=SimpleNamespace(Unset=None), Vector3d=SimpleNamespace(Unset=None),
+                    SweepFrame=object(), SweepBlend=object(), SweepMiter=object(), SweepRebuild=object())
+                self.worker.System.Enum = SimpleNamespace(ToObject=lambda kind, value: value)
+                inputs = [curves[0], ValueError("bad section")] if failure == "input" else curves
+                with patch.object(self.worker, "_join_close_input", side_effect=inputs), patch.object(
+                    self.worker, "_sweep1_record", return_value=[{"samples": []}],
+                    side_effect=ValueError("bad result") if failure == "record" else None):
+                    operation = {"rail": {}, "sections": [{}]}
+                    if failure in ["input", "build", "record"]:
+                        with self.assertRaises(ValueError):
+                            self.worker._sweep1(operation, 2, {"absolute": 1e-7})
+                    else:
+                        value, _ = self.worker._sweep1(operation, 2, {"absolute": 1e-7})
+                        self.assertEqual(value, [] if failure == "empty" else [{"samples": []}])
+                for curve in curves[:1 if failure == "input" else 2]:
+                    curve.Dispose.assert_called_once_with()
+                for brep in created:
+                    brep.Dispose.assert_called_once_with()
+
     def test_curve_frames_validate_results_and_dispose_sources_on_every_exit(self):
         vector = lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z)
         first = SimpleNamespace(Origin=vector(0,0,0),XAxis=vector(1,0,0),YAxis=vector(0,1,0),ZAxis=vector(0,0,1))

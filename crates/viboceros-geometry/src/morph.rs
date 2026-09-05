@@ -1,6 +1,6 @@
 mod curve_fit;
 mod denominator;
-mod interpolation;
+use crate::spline_collocation as interpolation;
 mod surface_fit;
 
 use crate::{

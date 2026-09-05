@@ -5,6 +5,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("invalid one-rail sweep: {context}")]
+    InvalidSweep { context: &'static str },
     #[error(
         "frame parameters must be nonempty, finite, strictly increasing, and inside the curve domain"
     )]

@@ -1,4 +1,4 @@
-//! Shared curve/surface cubic Greville collocation has two off-diagonals per side.
+//! Shared cubic Greville collocation has two off-diagonals per side.
 //! For a valid nonsingular B-spline collocation matrix, total nonnegativity
 //! permits elimination without pivoting (de Boor/Pinkus). This is deliberately
 //! not a general-purpose banded solver: malformed or singular rows are rejected.

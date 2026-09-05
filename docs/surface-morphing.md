@@ -29,7 +29,7 @@ promised.
 
 `morph/surface_fit/tensor` interpolates mapped source points at sided Greville
 parameters. It solves the two axis systems separately, using the shared cubic
-banded solver in `morph/interpolation` and `faer` multiple-right-hand-side matrices.
+banded solver in `spline_collocation` and `faer` multiple-right-hand-side matrices.
 Higher-degree rational candidates use bounded full-pivot axis solves.
 World coordinates are centered before solving, with a finite fallback for
 overflowing coordinate differences. Interpolated knot-intersection point values
