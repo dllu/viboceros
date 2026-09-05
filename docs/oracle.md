@@ -83,6 +83,11 @@ for analytic checks, observed errors, and remaining kernel limits.
 See [one-sided evaluation](curve-sided-evaluation.md) for the exact-limit contract,
 Rhino probe construction, and native-only full-order knot tests.
 
+`curve_3dm_interchange.json` checks Rhino's reading of actual Viboceros-written
+files, including decomposed full-order knots and all visibility/locking states.
+Unlike independent-construction probes, `compare` supplies shared private artifact
+paths and cleans them after both readers finish. See [curve interchange](curve-3dm-interchange.md).
+
 `curve_parameter_map.json` adds both native/rational parameter maps to those records.
 `curve_native_cutting.json` tests cutting-object Split and Trim on all curve families,
 including wrapped outputs, seam hits, and projected cuts. `curve_native_extrusion.json`

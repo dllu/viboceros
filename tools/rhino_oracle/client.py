@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import math
 import os
@@ -249,8 +250,15 @@ class OracleClient:
     ) -> ComparisonReport:
         """Run both engines and compare every numeric result within epsilon."""
 
-        viboceros = self.run_viboceros(request, timeout)
-        rhino = self.run_rhino(request, timeout)
+        # Cross-reader probes must inspect the same actual file. Keep artifacts
+        # alive through both engines, and never mutate the caller's fixture.
+        with tempfile.TemporaryDirectory(prefix="viboceros-interchange-") as job:
+            prepared = copy.deepcopy(dict(request))
+            for index, operation in enumerate(prepared.get("operations", [])):
+                if operation.get("op") == "three_dm_curve_interchange":
+                    operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
+            viboceros = self.run_viboceros(prepared, timeout)
+            rhino = self.run_rhino(prepared, timeout)
         return compare_responses(
             viboceros,
             rhino,

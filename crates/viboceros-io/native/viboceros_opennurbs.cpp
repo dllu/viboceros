@@ -642,10 +642,19 @@ ON_3dmObjectAttributes* attributes_for(const ViboWriteObject& source,
       return nullptr;
     }
   }
-  if (source.visible == 0) {
-    attributes->SetMode(ON::hidden_object);
-  } else if (source.locked != 0) {
+  if (source.locked != 0) {
     attributes->SetMode(ON::locked_object);
+    if (source.visible == 0) {
+      // Mode and visibility are independent serialized properties, but
+      // SetVisible(false) changes the mode to hidden and discards locking.
+      // The public visibility-only inheritance operation leaves mode intact.
+      ON_3dmObjectAttributes hidden;
+      hidden.SetVisible(false);
+      ON_Layer unused_parent_layer;
+      attributes->ApplyParentalControl(hidden, unused_parent_layer, 0x01U);
+    }
+  } else if (source.visible == 0) {
+    attributes->SetMode(ON::hidden_object);
   } else {
     attributes->SetMode(ON::normal_object);
   }

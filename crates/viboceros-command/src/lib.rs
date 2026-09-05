@@ -20287,13 +20287,20 @@ impl Command for ExportThreeDmCommand {
         }
         let path = arguments.join(" ");
         let model = document_3dm_model(document)?;
-        let object_count = model.objects.len();
         let group_count = model.groups.len();
         let layer_count = model.layers.len();
-        write_3dm_file(&path, &model)?;
-        Ok(format!(
+        let report = write_3dm_file(&path, &model)?;
+        let object_count = report.written_object_count;
+        let mut message = format!(
             "Exported {object_count} objects in {group_count} groups on {layer_count} layers to '{path}'"
-        ))
+        );
+        if report.adapted_curve_count != 0 {
+            message.push_str(&format!(
+                "; adapted {} curve objects from {} source objects",
+                report.adapted_curve_count, report.source_object_count
+            ));
+        }
+        Ok(message)
     }
 }
 
@@ -46561,6 +46568,53 @@ mod tests {
         assert_eq!(document.objects().len(), 0);
         fs::remove_file(path).unwrap();
         fs::remove_file(output).unwrap();
+    }
+
+    #[test]
+    fn full_order_3dm_export_reports_actual_counts_without_document_or_history_edits() {
+        let unique = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "viboceros-{}-{unique}-full-order.3dm",
+            std::process::id()
+        ));
+        let mut document = Document::default();
+        let registry = CommandRegistry::with_builtins();
+        let curve = NurbsCurve::try_new(
+            1,
+            [0.0, 1.0, 3.0, 4.0]
+                .map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+                .to_vec(),
+            vec![0.0, 0.0, 1.0, 1.0, 2.0, 2.0],
+        )
+        .unwrap();
+        let id = document.add_geometry(Geometry::NurbsCurve(curve)).unwrap();
+        document.add_group(Some("Pieces".into()), [id]).unwrap();
+        registry.execute(&mut document, "Point 7,8,9").unwrap();
+        registry.execute(&mut document, "Undo").unwrap();
+        document.select_object(id, SelectionMode::Replace).unwrap();
+        let before = document_3dm_model(&document).unwrap();
+        let history = (
+            document.undo_label().map(str::to_owned),
+            document.redo_label().map(str::to_owned),
+        );
+        let message = registry
+            .execute(&mut document, &format!("Export3dm {}", path.display()))
+            .unwrap();
+        assert!(message.contains("Exported 2 objects in 1 groups"));
+        assert!(message.contains("adapted 1 curve objects from 1 source objects"));
+        assert_eq!(document_3dm_model(&document).unwrap(), before);
+        assert_eq!(document.selected_object_ids().collect::<Vec<_>>(), vec![id]);
+        assert_eq!(document.undo_label(), history.0.as_deref());
+        assert_eq!(document.redo_label(), history.1.as_deref());
+        let file = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(file.objects.len(), 2);
+        assert!(file.objects.iter().all(|o| o.group_indices == vec![0]));
+        registry.execute(&mut document, "Redo").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        std::fs::remove_file(path).unwrap();
     }
 
     #[test]

@@ -28,6 +28,11 @@ The bridge shares a versioned, validated binary codec
 for B-reps and polycurves, checks payload sizes before allocation, and rejects
 malformed or trailing data. The typed polycurve payload is version 2; the reader
 also accepts version 1 NURBS-only payloads. It does not fit curves or average endpoints.
+Free NURBS curves with internal full-order knots are decomposed into valid native
+pieces before export. Connected pieces become PolyCurves; positional gaps produce
+separate objects with the original attributes. Export reports the actual object
+count without editing the document. See [full-order curve interchange](curve-3dm-interchange.md)
+for parameter preservation, cross-reader tests, and remaining limits.
 An independently generated Rhino 8 nested line/arc reference is retained in
 `crates/viboceros-io/tests/fixtures/`, with its generator and provenance documented
 alongside it. Tests check the analytic locus and subsequent round trip.

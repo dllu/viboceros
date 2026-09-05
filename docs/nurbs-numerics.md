@@ -57,11 +57,12 @@ pieces and their independent scales; it does not force endpoint averaging or
 promise Rhino's minimal control structure. Tests cover scales `2^-700` and
 `2^700`, opposite global signs, genuine nonrepresentable common scales, and
 cyclic seam/subcurve edits.
-OpenNURBS rejects internal full-order knot groups; direct 3DM NURBS export of
-these fallback representations currently reports an invalid-curve error.
-Interchange needs a decomposition into valid pieces before these kernel results
-can be written. See [one-sided limits](curve-sided-evaluation.md) for native
-positional-jump tests and the observed Rhino input rejection.
+OpenNURBS rejects internal full-order knot groups in a single NURBS object.
+[3DM export decomposes free curves](curve-3dm-interchange.md) into valid native
+pieces, preserving their parameters and independent scales. Connected pieces
+become PolyCurves; genuine gaps become separate objects. See
+[one-sided limits](curve-sided-evaluation.md) for native positional-jump tests
+and the observed Rhino input rejection.
 
 ## Validation and limits
 

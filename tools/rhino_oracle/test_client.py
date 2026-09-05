@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+import copy
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from .client import (
+    OracleClient,
     OracleError,
     OracleProtocolError,
     _read_optional_text,
@@ -30,6 +33,47 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 
 class OracleClientTests(unittest.TestCase):
+    def test_compare_shares_owned_artifacts_without_mutating_the_request(self):
+        request = {"operations": [{"id": "../../untrusted", "op": "three_dm_curve_interchange"}]}
+        original = copy.deepcopy(request)
+        paths = []
+
+        def native(prepared, timeout):
+            path = Path(prepared["operations"][0]["artifact_path"])
+            self.assertEqual(path.name, "curve-0.3dm")
+            self.assertFalse(path.exists())
+            path.write_bytes(b"native artifact")
+            paths.append(path)
+            return _response("viboceros", 1)
+
+        def rhino(prepared, timeout):
+            self.assertEqual(Path(prepared["operations"][0]["artifact_path"]), paths[0])
+            self.assertEqual(paths[0].read_bytes(), b"native artifact")
+            return _response("rhino", 1)
+
+        client = OracleClient()
+        with patch.object(client, "run_viboceros", side_effect=native), patch.object(
+            client, "run_rhino", side_effect=rhino
+        ):
+            self.assertTrue(client.compare(request).passed)
+        self.assertEqual(request, original)
+        self.assertFalse(paths[0].parent.exists())
+
+    def test_compare_cleans_shared_artifacts_when_rhino_fails(self):
+        paths = []
+
+        def native(prepared, timeout):
+            paths.append(Path(prepared["operations"][0]["artifact_path"]))
+            paths[0].write_bytes(b"native artifact")
+            return _response("viboceros", 1)
+
+        client = OracleClient()
+        with patch.object(client, "run_viboceros", side_effect=native), patch.object(
+            client, "run_rhino", side_effect=OracleError("failed")
+        ), self.assertRaisesRegex(OracleError, "failed"):
+            client.compare({"operations": [{"op": "three_dm_curve_interchange"}]})
+        self.assertFalse(paths[0].parent.exists())
+
     def test_compares_nested_values_and_reports_timings(self) -> None:
         viboceros = _response(
             "viboceros", {"point": [1.0, 2.0, 3.0], "radius": 4.0}, 100

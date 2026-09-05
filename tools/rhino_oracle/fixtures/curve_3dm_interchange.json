@@ -1,0 +1,79 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "id": "file-ordinary-line", "op": "three_dm_curve_interchange",
+      "curve": {"type": "line", "start": [0,0,0], "end": [1,2,3]}
+    },
+    {
+      "id": "file-connected-independent-weights", "op": "three_dm_curve_interchange",
+      "curve": {
+        "type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [0,0,0], "weight": 1e-200},
+          {"point": [1,1,0], "weight": 5e-201},
+          {"point": [2,0,0], "weight": 1e-200},
+          {"point": [2,0,0], "weight": 1e200},
+          {"point": [3,2,0], "weight": 5e199},
+          {"point": [4,0,0], "weight": 1e200}
+        ],
+        "knots": [0,0,0,1,1,1,2,2,2]
+      }
+    },
+    {
+      "id": "file-positional-jump", "op": "three_dm_curve_interchange",
+      "curve": {
+        "type": "nurbs", "degree": 1,
+        "control_points": [
+          {"point": [0,0,0], "weight": 1}, {"point": [1,0,0], "weight": 2},
+          {"point": [3,0,0], "weight": 1}, {"point": [4,0,0], "weight": 2}
+        ],
+        "knots": [-3,-3,1,1,5,5]
+      }
+    },
+    {
+      "id": "file-closed-child", "op": "three_dm_curve_interchange",
+      "curve": {
+        "type": "nurbs", "degree": 1,
+        "control_points": [
+          {"point": [0,0,0], "weight": 1}, {"point": [1,0,0], "weight": 1},
+          {"point": [0,1,0], "weight": 1}, {"point": [0,0,0], "weight": 1},
+          {"point": [0,0,0], "weight": 1}, {"point": [2,2,0], "weight": 1}
+        ],
+        "knots": [0,0,1,2,3,3,4,4]
+      }
+    },
+    {
+      "id": "file-mixed-leaf-types", "op": "three_dm_curve_interchange",
+      "segment_parameters": [-7,0,4,8,15],
+      "curve": {
+        "type": "polycurve", "segments": [
+          {"type": "line", "start": [-1,0,0], "end": [0,0,0]},
+          {
+            "type": "nurbs", "degree": 1,
+            "control_points": [
+              {"point": [0,0,0], "weight": 1e-200}, {"point": [1,0,0], "weight": 1e-200},
+              {"point": [1,0,0], "weight": -1e200}, {"point": [2,0,0], "weight": -1e200}
+            ],
+            "knots": [0,0,1,1,2,2]
+          },
+          {"type": "arc", "points": [[2,0,0],[3,1,0],[4,0,0]]},
+          {"type": "polyline", "vertices": [[4,0,0],[5,-1,0],[6,0,0]]}
+        ]
+      }
+    },
+    {
+      "id": "file-unclamped-active-ends", "op": "three_dm_curve_interchange",
+      "curve": {
+        "type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [0,0,0], "weight": 1}, {"point": [1,1,0], "weight": 1},
+          {"point": [2,0,0], "weight": 1}, {"point": [2,0,0], "weight": 1},
+          {"point": [3,2,0], "weight": 1}, {"point": [4,0,0], "weight": 1}
+        ],
+        "knots": [-2,-1,0,1,1,1,2,3,4]
+      }
+    }
+  ]
+}

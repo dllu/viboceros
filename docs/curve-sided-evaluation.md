@@ -77,7 +77,9 @@ tools/rhino_oracle/run_headless.sh compare \
 
 Internal full-order knot groups exceed OpenNURBS' allowed multiplicity. Rhino's
 input builder rejected the positional-jump case, so full-order tests remain
-native analytic tests, not passing Rhino references. Periodic oracle inputs use
+native analytic tests, not passing single-NURBS Rhino references. The
+[3DM cross-reader probe](curve-3dm-interchange.md) tests exported decompositions
+of these representations instead. Periodic oracle inputs use
 the protocol's duplicated artificial outer knots; those two entries are not
 stored in OpenNURBS' shortened knot array.
 

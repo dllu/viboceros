@@ -1,4 +1,5 @@
 use std::ops::RangeInclusive;
+mod decompose;
 mod evaluate;
 mod weights;
 pub(crate) use weights::rescale_controls;

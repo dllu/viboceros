@@ -1,3 +1,4 @@
+use std::borrow::Cow;
 use std::collections::{BTreeMap, BTreeSet};
 use std::ffi::{CStr, CString, c_char, c_double, c_int};
 use std::path::Path;
@@ -161,8 +162,38 @@ pub fn read_3dm_file(
     decode_model(&handle, tolerance)
 }
 
-pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<(), ThreeDmError> {
+/// Export can expand a discontinuous curve into multiple valid file objects.
+/// Geometry conversion never mutates the supplied model.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct ThreeDmWriteReport {
+    /// Objects in the unmodified input model.
+    pub source_object_count: usize,
+    /// Objects actually written, including any decomposition expansion.
+    pub written_object_count: usize,
+    /// Source curves whose file representation required decomposition.
+    pub adapted_curve_count: usize,
+}
+
+/// Writes through a staging file, replacing the destination only on success.
+/// Full-order free-curve knots are decomposed without editing the input model.
+pub fn write_3dm_file(
+    path: impl AsRef<Path>,
+    model: &ThreeDmModel,
+) -> Result<ThreeDmWriteReport, ThreeDmError> {
     validate_model(model)?;
+    let mut prepared = Vec::new();
+    let mut report = ThreeDmWriteReport {
+        source_object_count: model.objects.len(),
+        written_object_count: 0,
+        adapted_curve_count: 0,
+    };
+    for object in &model.objects {
+        let geometries = crate::three_dm_curves::prepare(&object.geometry)?;
+        report.adapted_curve_count +=
+            usize::from(geometries.iter().any(|c| matches!(c, Cow::Owned(_))));
+        prepared.extend(geometries.into_iter().map(|geometry| (object, geometry)));
+    }
+    report.written_object_count = prepared.len();
     let destination = path.as_ref();
     let parent = destination
         .parent()
@@ -204,10 +235,9 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
         })
         .collect::<Vec<_>>();
 
-    let object_names = model
-        .objects
+    let object_names = prepared
         .iter()
-        .map(|object| {
+        .map(|(object, _)| {
             object
                 .name
                 .as_deref()
@@ -215,17 +245,15 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
                 .transpose()
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let payloads = model
-        .objects
+    let payloads = prepared
         .iter()
-        .map(ObjectPayload::from_object)
+        .map(|(_, geometry)| ObjectPayload::from_geometry(geometry))
         .collect::<Result<Vec<_>, _>>()?;
-    let objects = model
-        .objects
+    let objects = prepared
         .iter()
         .zip(&object_names)
         .zip(&payloads)
-        .map(|((object, name), payload)| ffi::ViboWriteObject {
+        .map(|(((object, _), name), payload)| ffi::ViboWriteObject {
             object_type: payload.object_type,
             layer_index: object.layer_index,
             name: name.as_ref().map_or(std::ptr::null(), |name| name.as_ptr()),
@@ -278,7 +306,7 @@ pub fn write_3dm_file(path: impl AsRef<Path>, model: &ThreeDmModel) -> Result<()
         staged
             .persist(destination)
             .map_err(|error| ThreeDmError::Io(error.error))?;
-        Ok(())
+        Ok(report)
     }
 }
 
@@ -713,8 +741,8 @@ struct ObjectPayload {
 }
 
 impl ObjectPayload {
-    fn from_object(object: &ThreeDmObject) -> Result<Self, ThreeDmError> {
-        Ok(match &object.geometry {
+    fn from_geometry(geometry: &ThreeDmGeometry) -> Result<Self, ThreeDmError> {
+        Ok(match geometry {
             ThreeDmGeometry::Point(point) => Self {
                 object_type: OBJECT_POINT,
                 degree_u: 0,

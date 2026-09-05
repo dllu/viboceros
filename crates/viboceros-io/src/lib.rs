@@ -3,6 +3,7 @@
 mod step;
 mod stl;
 mod three_dm;
+mod three_dm_curves;
 mod three_dm_geometry;
 
 pub use step::{
@@ -12,5 +13,5 @@ pub use step::{
 pub use stl::{StlError, StlFormat, read_stl, read_stl_file, write_stl, write_stl_file};
 pub use three_dm::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
-    ThreeDmObject, read_3dm_file, write_3dm_file,
+    ThreeDmObject, ThreeDmWriteReport, read_3dm_file, write_3dm_file,
 };

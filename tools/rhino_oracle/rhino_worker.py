@@ -1315,8 +1315,83 @@ def _curve_join_close(operation, iterations, tolerance):
             curve.Dispose()
 
 
+def _interchange_curve_record(curve):
+    if not curve.IsValid:
+        raise ValueError("Viboceros exported an invalid Rhino curve")
+    classes = [
+        (Rhino.Geometry.PolyCurve, "polycurve"),
+        (Rhino.Geometry.NurbsCurve, "nurbs"),
+        (Rhino.Geometry.LineCurve, "line"),
+        (Rhino.Geometry.ArcCurve, "arc"),
+        (Rhino.Geometry.PolylineCurve, "polyline"),
+    ]
+    kind = next((name for cls, name in classes if isinstance(curve, cls)), None)
+    if kind is None:
+        raise ValueError("unexpected interchange curve type")
+    value = {
+        "type": kind,
+        "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+        "closed": bool(curve.IsClosed),
+        "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)],
+    }
+    if kind == "nurbs":
+        value["definition"] = _nurbs_curve_definition(curve)
+    if kind == "polycurve":
+        value["parameters"] = [float(curve.SegmentDomain(0).T0)] + [
+            float(curve.SegmentDomain(i).T1) for i in range(curve.SegmentCount)
+        ]
+        value["segments"] = [
+            _interchange_curve_record(curve.SegmentCurve(i)) for i in range(curve.SegmentCount)
+        ]
+    return value
+
+
+def _three_dm_curve_interchange(operation, iterations):
+    path = operation.get("artifact_path")
+    if not path:
+        raise ValueError("three_dm_curve_interchange requires compare mode to create the shared file")
+    if path.startswith("/"):
+        path = "Z:" + path.replace("/", "\\")
+
+    def read():
+        model = Rhino.FileIO.File3dm.Read(path)
+        if model is None:
+            raise ValueError("Rhino could not read the Viboceros-written file")
+        try:
+            objects = []
+            for item in model.Objects:
+                a = item.Attributes
+                color = a.ObjectColor
+                groups = a.GetGroupList()
+                objects.append({
+                    "name": a.Name, "visible": bool(a.Visible),
+                    "locked": a.Mode == Rhino.DocObjects.ObjectMode.Locked,
+                    "color": [int(color.R), int(color.G), int(color.B)],
+                    "color_source": int(a.ColorSource), "wire_density": int(a.WireDensity),
+                    "groups": [] if groups is None else [int(i) for i in groups],
+                    "layer": int(a.LayerIndex), "curve": _interchange_curve_record(item.Geometry),
+                })
+            layers = []
+            for layer in model.AllLayers:
+                color = layer.Color
+                layers.append({
+                    "name": layer.Name, "color": [int(color.R), int(color.G), int(color.B)],
+                    "visible": bool(layer.IsVisible), "locked": bool(layer.IsLocked),
+                })
+            return {
+                "groups": [g.Name for g in model.AllGroups],
+                "layers": layers, "objects": objects,
+            }
+        finally:
+            model.Dispose()
+
+    return _measure(iterations, read)
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "three_dm_curve_interchange":
+        return _three_dm_curve_interchange(operation, iterations)
     if kind == "curve_join_close":
         return _curve_join_close(operation, iterations, tolerance)
     if kind == "polycurve_native":
