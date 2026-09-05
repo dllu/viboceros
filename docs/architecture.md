@@ -82,3 +82,5 @@ Tests cover numerical operations, topology, document state, commands, import/exp
 and UI interactions. Passing the current suite is evidence for those cases,
 not a proof of full Rhino compatibility. The [oracle](oracle.md) checks public
 Rhino outputs and records timing independently of startup and fixture setup.
+The dedicated `brep_interchange` oracle module checks [morphed 3DM exports](brep-3dm-interchange.md)
+through both readers, keeping source fitting, serialization and meshing checks separate.

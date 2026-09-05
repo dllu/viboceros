@@ -34,21 +34,26 @@ def _response(engine: str, value: object, elapsed_ns: int = 100) -> dict:
 
 class OracleClientTests(unittest.TestCase):
     def test_compare_shares_owned_artifacts_without_mutating_the_request(self):
-        request = {"operations": [{"id": "../../untrusted", "op": "three_dm_curve_interchange"}]}
+        request = {"operations": [
+            {"id": "../../untrusted", "op": "three_dm_curve_interchange"},
+            {"id": "../../untrusted-brep", "op": "three_dm_brep_interchange", "artifact_path": "/unowned/model.3dm"},
+        ]}
         original = copy.deepcopy(request)
         paths = []
 
         def native(prepared, timeout):
-            path = Path(prepared["operations"][0]["artifact_path"])
-            self.assertEqual(path.name, "curve-0.3dm")
-            self.assertFalse(path.exists())
-            path.write_bytes(b"native artifact")
-            paths.append(path)
+            for operation, name in zip(prepared["operations"], ["curve-0.3dm", "brep-1.3dm"]):
+                path = Path(operation["artifact_path"])
+                self.assertEqual(path.name, name)
+                self.assertFalse(path.exists())
+                path.write_bytes(b"native artifact")
+                paths.append(path)
             return _response("viboceros", 1)
 
         def rhino(prepared, timeout):
-            self.assertEqual(Path(prepared["operations"][0]["artifact_path"]), paths[0])
-            self.assertEqual(paths[0].read_bytes(), b"native artifact")
+            for operation, path in zip(prepared["operations"], paths):
+                self.assertEqual(Path(operation["artifact_path"]), path)
+                self.assertEqual(path.read_bytes(), b"native artifact")
             return _response("rhino", 1)
 
         client = OracleClient()

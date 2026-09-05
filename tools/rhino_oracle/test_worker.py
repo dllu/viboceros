@@ -9,6 +9,65 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_brep_interchange_disposes_repeated_models_and_failed_recording(self):
+        for fail in [False, True]:
+            models = []
+            class Brep:
+                IsValid = True
+            def read(path):
+                self.assertEqual(path, "Z:\\owned\\brep.3dm")
+                model = SimpleNamespace(Objects=[SimpleNamespace(Geometry=Brep())], Dispose=Mock())
+                models.append(model)
+                return model
+            self.worker.Rhino.Geometry = SimpleNamespace(Brep=Brep)
+            self.worker.Rhino.FileIO = SimpleNamespace(File3dm=SimpleNamespace(Read=read))
+            with patch.object(self.worker, "_interchange_brep_record", return_value={"faces": []}), patch.object(
+                self.worker, "_interchange_brep_mesh_flags", side_effect=ValueError("mesh failed") if fail else None,
+                return_value={"closed": True}
+            ):
+                if fail:
+                    with self.assertRaisesRegex(ValueError, "mesh failed"):
+                        self.worker._three_dm_brep_interchange({"artifact_path": "/owned/brep.3dm"}, 2)
+                else:
+                    value, _ = self.worker._three_dm_brep_interchange({"artifact_path": "/owned/brep.3dm"}, 2)
+                    self.assertEqual(value, {"faces": [], "mesh": {"closed": True}})
+            self.assertEqual(len(models), 3)
+            for model in models:
+                model.Dispose.assert_called_once_with()
+
+    def test_brep_interchange_disposes_invalid_import_without_repairing_it(self):
+        class Brep:
+            IsValid = False
+            IsValidWithLog = Mock(return_value=(False, "invalid trim"))
+        model = SimpleNamespace(Objects=[SimpleNamespace(Geometry=Brep())], Dispose=Mock())
+        self.worker.Rhino.Geometry = SimpleNamespace(Brep=Brep)
+        self.worker.Rhino.FileIO = SimpleNamespace(File3dm=SimpleNamespace(Read=lambda path: model))
+        with self.assertRaisesRegex(ValueError, "invalid trim"):
+            self.worker._three_dm_brep_interchange({"artifact_path": "/owned/brep.3dm"}, 2)
+        model.Dispose.assert_called_once_with()
+
+    def test_brep_interchange_mesh_probe_disposes_partial_results(self):
+        for fail in [False, True]:
+            parts = [SimpleNamespace(Dispose=Mock()), SimpleNamespace(Dispose=Mock())]
+            mesh = SimpleNamespace(IsValid=True, IsClosed=True, Dispose=Mock(),
+                                   GetNakedEdges=lambda: [],
+                                   Append=Mock(side_effect=ValueError("append failed") if fail else None))
+            parameters = SimpleNamespace(Dispose=Mock())
+            def create_mesh():
+                return mesh
+            create_mesh.CreateFromBrep = lambda source, params: parts
+            self.worker.Rhino.Geometry = SimpleNamespace(Mesh=create_mesh, MeshingParameters=lambda density: parameters)
+            with patch.object(self.worker, "_coordinate_welded_mesh_flags", return_value=(True, True, False)):
+                if fail:
+                    with self.assertRaisesRegex(ValueError, "append failed"):
+                        self.worker._interchange_brep_mesh_flags(object())
+                else:
+                    self.assertEqual(self.worker._interchange_brep_mesh_flags(object()),
+                                     {"closed": True, "manifold": True, "oriented": True,
+                                      "boundary_loops": 0, "boundaries_closed": True})
+            for item in parts + [mesh, parameters]:
+                item.Dispose.assert_called_once_with()
+
     def setUp(self):
         self.document = SimpleNamespace(
             ModelAbsoluteTolerance=0.01,

@@ -42,7 +42,9 @@ mod curve_native;
 pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
 pub use polycurve_native::NativePolyCurveFixture;
+mod brep_interchange;
 mod curve_interchange;
+pub use brep_interchange::{BrepInterchangeFixture, BrepInterchangeSource, LiftPrimitive};
 mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
 mod curve_morph;
@@ -97,6 +99,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    ThreeDmBrepInterchange {
+        id: String,
+        #[serde(flatten)]
+        fixture: BrepInterchangeFixture,
+    },
     BrepMeshBoundaries {
         id: String,
         #[serde(flatten)]
@@ -1354,6 +1361,7 @@ impl Operation {
             | Self::BrepMeshBoundaries { id, .. }
             | Self::SurfaceJets { id, .. }
             | Self::ThreeDmCurveInterchange { id, .. }
+            | Self::ThreeDmBrepInterchange { id, .. }
             | Self::CurveNative { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
             | Self::PolycurveNative { id, .. }
@@ -1632,6 +1640,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::ThreeDmBrepInterchange { fixture, .. } => {
+            brep_interchange::run(fixture, iterations, tolerance)?
+        }
         Operation::BrepMeshBoundaries { fixture, .. } => {
             brep_mesh::run(fixture, iterations, tolerance)?
         }

@@ -257,6 +257,8 @@ class OracleClient:
             for index, operation in enumerate(prepared.get("operations", [])):
                 if operation.get("op") == "three_dm_curve_interchange":
                     operation["artifact_path"] = str(Path(job) / f"curve-{index}.3dm")
+                elif operation.get("op") == "three_dm_brep_interchange":
+                    operation["artifact_path"] = str(Path(job) / f"brep-{index}.3dm")
             viboceros = self.run_viboceros(prepared, timeout)
             rhino = self.run_rhino(prepared, timeout)
         return compare_responses(

@@ -19,6 +19,8 @@ Polylines retain their native object type and every vertex parameter;
 degree-one NURBS remain NURBS instead of being classified by a knot-vector heuristic.
 Unsupported object types and specialized B-rep trim forms are
 counted and reported during import.
+Eight [morphed B-rep cross-reader cases](brep-3dm-interchange.md) check actual
+native exports in Rhino, including holes, seams, singular trims and usable meshes.
 
 Polycurves remain composite objects with native line/arc/polyline/NURBS leaves,
 independent parameter intervals, and rational control structure. Nested source

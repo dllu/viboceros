@@ -109,6 +109,9 @@ validates native `Mesh` command results.
 files, including decomposed full-order knots and all visibility/locking states.
 Unlike independent-construction probes, `compare` supplies shared private artifact
 paths and cleans them after both readers finish. See [curve interchange](curve-3dm-interchange.md).
+`brep_3dm_interchange.json` uses the same shared-artifact workflow for eight
+[nonlinearly morphed B-reps](brep-3dm-interchange.md), comparing complete NURBS
+definitions, topology, tolerances, geometry samples and post-import mesh topology.
 `rational_3dm_range.json` checks four extreme-coordinate/weight cases using zero
 absolute epsilon and relative `1e-12`; see [numeric range validation](rational-3dm-range.md).
 

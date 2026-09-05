@@ -173,7 +173,7 @@ fn evaluate(brep: &Brep, sample: Sample) -> Result<Point3, GeometryError> {
     }
 }
 
-fn topology(brep: &Brep) -> Value {
+pub(super) fn topology(brep: &Brep) -> Value {
     json!({
         "vertices": brep.vertices().len(), "solid": brep.is_solid(),
         "edges": brep.edges().iter().map(|e| e.vertices()).collect::<Vec<_>>(),

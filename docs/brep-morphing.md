@@ -104,3 +104,9 @@ strict Clippy, and all 118 native fixtures (1,197 operations). Recorded curve/su
 comparisons retain their documented epsilons; six fresh trimmed mass-property
 comparisons pass at absolute `1e-8`, relative `1e-10` (maximum `1.22e-9`).
 This is bounded regression evidence, not complete Rhino morph compatibility.
+
+Subsequent [3DM cross-reader tests](brep-3dm-interchange.md) verify actual native
+morph exports, including complete NURBS definitions and post-import meshing in
+Rhino. Their serialization tolerance is independent of fitting tolerance. The
+cubically lifted sphere currently fits at `1e-5` but exhausts the surface fitter's
+sample budget at `1e-6`; the interchange check does not resolve that fitting limit.

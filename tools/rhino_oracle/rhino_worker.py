@@ -1398,6 +1398,101 @@ def _three_dm_curve_interchange(operation, iterations):
     return _measure(iterations, read)
 
 
+def _interchange_brep_record(brep):
+    def curve_record(curve):
+        return {"definition": _nurbs_curve_definition(curve),
+                "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)]}
+
+    faces = []
+    for face in brep.Faces:
+        surface = face.UnderlyingSurface()
+        loops = []
+        for loop in face.Loops:
+            trims = []
+            for trim in loop.Trims:
+                lifted = []
+                for i in range(33):
+                    uv = trim.PointAt(trim.Domain.ParameterAt(i / 32.0))
+                    lifted.append(_xyz(surface.PointAt(uv.X, uv.Y)))
+                trims.append({"iso": int(trim.IsoStatus), "tolerance": list(trim.GetTolerances()),
+                              "definition": _nurbs_parameter_curve_definition(trim), "lifted": lifted})
+            loops.append(trims)
+        faces.append({"definition": _nurbs_surface_definition(surface),
+                      "samples": [_xyz(surface.PointAt(surface.Domain(0).ParameterAt(i / 8.0),
+                                                       surface.Domain(1).ParameterAt(j / 8.0)))
+                                  for j in range(9) for i in range(9)], "loops": loops})
+    return {"topology": _brep_morph_topology(brep),
+            "vertices": [{"point": _xyz(v.Location), "tolerance": float(v.Tolerance)} for v in brep.Vertices],
+            "edges": [{"tolerance": float(e.Tolerance), "curve": curve_record(e)} for e in brep.Edges],
+            "faces": faces}
+
+
+def _interchange_brep_mesh_flags(brep):
+    parameters = mesh = None
+    parts = []
+    try:
+        parameters = Rhino.Geometry.MeshingParameters(0.0)
+        parameters.SimplePlanes = False
+        parameters.JaggedSeams = False
+        parts = Rhino.Geometry.Mesh.CreateFromBrep(brep, parameters) or []
+        if not parts:
+            raise ValueError("Rhino could not mesh the imported B-rep")
+        mesh = Rhino.Geometry.Mesh()
+        for part in parts:
+            mesh.Append(part)
+        if not mesh.IsValid:
+            raise ValueError("Rhino meshed the imported B-rep into invalid geometry")
+        manifold, oriented, _has_boundary = _coordinate_welded_mesh_flags(mesh)
+        boundaries = list(mesh.GetNakedEdges() or [])
+        return {"closed": bool(mesh.IsClosed), "manifold": bool(manifold), "oriented": bool(oriented),
+                "boundary_loops": len(boundaries), "boundaries_closed": all(b.IsClosed for b in boundaries)}
+    finally:
+        for item in list(parts) + [mesh, parameters]:
+            if item is not None:
+                item.Dispose()
+
+
+def _three_dm_brep_interchange(operation, iterations):
+    path = operation.get("artifact_path")
+    if not path:
+        raise ValueError("three_dm_brep_interchange requires compare mode to create the shared file")
+    if path.startswith("/"):
+        path = "Z:" + path.replace("/", "\\")
+
+    def read():
+        model = Rhino.FileIO.File3dm.Read(path)
+        if model is None:
+            raise ValueError("Rhino could not read the Viboceros-written file")
+        try:
+            items = list(model.Objects)
+            if len(items) != 1 or not isinstance(items[0].Geometry, Rhino.Geometry.Brep):
+                raise ValueError("interchange must contain exactly one B-rep")
+            brep = items[0].Geometry
+            if not brep.IsValid:
+                raise ValueError("Viboceros exported an invalid Rhino B-rep: %s" % (brep.IsValidWithLog(),))
+        except Exception:
+            model.Dispose()
+            raise
+        return model
+
+    model = None
+    try:
+        model = read()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            model.Dispose()
+            model = None
+            model = read()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        brep = next(iter(model.Objects)).Geometry
+        record = _interchange_brep_record(brep)
+        record["mesh"] = _interchange_brep_mesh_flags(brep)
+        return record, max(0, elapsed)
+    finally:
+        if model is not None:
+            model.Dispose()
+
+
 def _surface_jets(operation, iterations):
     surface = _nurbs_surface_from_definition(operation["surface"])
     owned = [surface]
@@ -1819,6 +1914,8 @@ def _execute(operation, iterations, tolerance):
         return _surface_jets(operation, iterations)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
+    if kind == "three_dm_brep_interchange":
+        return _three_dm_brep_interchange(operation, iterations)
     if kind == "curve_join_close":
         return _curve_join_close(operation, iterations, tolerance)
     if kind == "polycurve_native":
