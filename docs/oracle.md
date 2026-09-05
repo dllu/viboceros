@@ -100,6 +100,10 @@ are independently checked at each case's requested tolerance.
 checking shared topology, direct maps, and fitted geometry separately. Edge
 samples use closest-point correspondence because Rhino changes their parameter
 speeds; native fits additionally retain original-parameter accuracy checks.
+`brep_mesh_boundaries.json` checks [open and closed shared-boundary meshing](brep-meshing.md)
+on five independently refined box-face subsets. It compares boundary geometry
+and incidence properties, not identical mesh element counts, and separately
+validates native `Mesh` command results.
 
 `curve_3dm_interchange.json` checks Rhino's reading of actual Viboceros-written
 files, including decomposed full-order knots and all visibility/locking states.

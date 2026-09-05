@@ -295,6 +295,59 @@ class RhinoWorkerTests(unittest.TestCase):
         edge.ClosestPoint.assert_called_once_with(point)
         edge.PointAt.assert_called_once_with(0.75)
 
+    def test_brep_meshing_disposes_parts_parameters_and_repeated_combined_meshes(self):
+        source = SimpleNamespace(Dispose=Mock())
+        parameters = SimpleNamespace(Dispose=Mock())
+        parts, combined = [], []
+        def create_parts(_source, _parameters):
+            part = SimpleNamespace(Dispose=Mock())
+            parts.append(part)
+            return [part]
+        def create_combined():
+            mesh = SimpleNamespace(Append=Mock(), IsValid=True, Dispose=Mock())
+            combined.append(mesh)
+            return mesh
+        create_combined.CreateFromBrep = create_parts
+        self.worker.Rhino.Geometry = SimpleNamespace(Mesh=create_combined, MeshingParameters=lambda density: parameters)
+        with patch.object(self.worker, "_refined_box_brep", return_value=source), patch.object(
+            self.worker, "_brep_mesh_boundary_record", return_value={"boundary_loops": 1}
+        ):
+            value, _ = self.worker._brep_mesh_boundaries({"density": 0.0, "simple_planes": False}, 2, {"absolute": 1e-9})
+        self.assertEqual(value, {"boundary_loops": 1})
+        self.assertFalse(parameters.JaggedSeams)
+        self.assertEqual(len(combined), 3)
+        for item in parts + combined + [source, parameters]:
+            item.Dispose.assert_called_once_with()
+
+    def test_brep_meshing_disposes_partial_combined_mesh_after_append_failure(self):
+        source = SimpleNamespace(Dispose=Mock())
+        parameters = SimpleNamespace(Dispose=Mock())
+        part = SimpleNamespace(Dispose=Mock())
+        mesh = SimpleNamespace(Append=Mock(side_effect=ValueError("append failed")), Dispose=Mock())
+        def create_combined():
+            return mesh
+        create_combined.CreateFromBrep = lambda source, parameters: [part]
+        self.worker.Rhino.Geometry = SimpleNamespace(Mesh=create_combined, MeshingParameters=lambda density: parameters)
+        with patch.object(self.worker, "_refined_box_brep", return_value=source):
+            with self.assertRaisesRegex(ValueError, "append failed"):
+                self.worker._brep_mesh_boundaries({"density": 0.0, "simple_planes": False}, 1, {"absolute": 1e-9})
+        for item in [source, parameters, part, mesh]:
+            item.Dispose.assert_called_once_with()
+
+    def test_coordinate_topology_probe_rejects_geometry_changes_and_disposes_duplicate(self):
+        for changed in [False, True]:
+            welded = SimpleNamespace(Vertices=SimpleNamespace(CombineIdentical=Mock()),
+                                     IsManifold=Mock(return_value=(True, True, False)), Dispose=Mock())
+            source = SimpleNamespace(DuplicateMesh=lambda: welded)
+            with patch.object(self.worker, "_mesh_polygon_positions", side_effect=[[[1.0]], [[2.0 if changed else 1.0]]]):
+                if changed:
+                    with self.assertRaisesRegex(ValueError, "changed mesh polygon geometry"):
+                        self.worker._coordinate_welded_mesh_flags(source)
+                else:
+                    self.assertEqual(self.worker._coordinate_welded_mesh_flags(source), (True, True, False))
+            welded.Vertices.CombineIdentical.assert_called_once_with(True, True)
+            welded.Dispose.assert_called_once_with()
+
     def test_brep_morph_releases_failed_candidate_and_all_owned_geometry(self):
         candidate = SimpleNamespace(Dispose=Mock())
         source = SimpleNamespace(DuplicateBrep=lambda: candidate, Dispose=Mock())

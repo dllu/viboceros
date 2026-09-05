@@ -1,0 +1,238 @@
+{
+  "protocol_version": 1,
+  "iterations": 3,
+  "operations": [
+    {
+      "op": "brep_mesh_boundaries",
+      "id": "mesh-boundary-open-corner",
+      "faces": [
+        {
+          "center": [
+            0.5,
+            0.5,
+            0
+          ],
+          "knots_u": [
+            0.23
+          ],
+          "knots_v": [
+            0.71
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            0,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": []
+        }
+      ],
+      "density": 0,
+      "simple_planes": false
+    },
+    {
+      "op": "brep_mesh_boundaries",
+      "id": "mesh-boundary-open-box",
+      "faces": [
+        {
+          "center": [
+            0.5,
+            0.5,
+            0
+          ],
+          "knots_u": [
+            0.23
+          ],
+          "knots_v": [
+            0.71
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            0,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": []
+        },
+        {
+          "center": [
+            1,
+            0.5,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": [
+            0.37
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            1,
+            0.5
+          ],
+          "knots_u": [
+            0.41
+          ],
+          "knots_v": []
+        },
+        {
+          "center": [
+            0,
+            0.5,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": []
+        }
+      ],
+      "density": 0,
+      "simple_planes": false
+    },
+    {
+      "op": "brep_mesh_boundaries",
+      "id": "mesh-boundary-closed-box",
+      "faces": [
+        {
+          "center": [
+            0.5,
+            0.5,
+            0
+          ],
+          "knots_u": [
+            0.23
+          ],
+          "knots_v": [
+            0.71
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            0,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": []
+        },
+        {
+          "center": [
+            1,
+            0.5,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": [
+            0.37
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            1,
+            0.5
+          ],
+          "knots_u": [
+            0.41
+          ],
+          "knots_v": []
+        },
+        {
+          "center": [
+            0,
+            0.5,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": []
+        },
+        {
+          "center": [
+            0.5,
+            0.5,
+            1
+          ],
+          "knots_u": [
+            0.63
+          ],
+          "knots_v": [
+            0.18
+          ]
+        }
+      ],
+      "density": 0,
+      "simple_planes": false
+    },
+    {
+      "op": "brep_mesh_boundaries",
+      "id": "mesh-boundary-disjoint-faces",
+      "faces": [
+        {
+          "center": [
+            0.5,
+            0.5,
+            0
+          ],
+          "knots_u": [
+            0.23
+          ],
+          "knots_v": [
+            0.71
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            0.5,
+            1
+          ],
+          "knots_u": [],
+          "knots_v": [
+            0.37
+          ]
+        }
+      ],
+      "density": 0,
+      "simple_planes": false
+    },
+    {
+      "op": "brep_mesh_boundaries",
+      "id": "mesh-boundary-translated-open-corner",
+      "faces": [
+        {
+          "center": [
+            0.5,
+            0.5,
+            0
+          ],
+          "knots_u": [
+            0.23
+          ],
+          "knots_v": [
+            0.71
+          ]
+        },
+        {
+          "center": [
+            0.5,
+            0,
+            0.5
+          ],
+          "knots_u": [],
+          "knots_v": []
+        }
+      ],
+      "density": 0,
+      "simple_planes": false,
+      "origin": [
+        1000,
+        -2000,
+        3000
+      ]
+    }
+  ]
+}

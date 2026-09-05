@@ -29,23 +29,24 @@ finite fit and boundary samples are not continuous error certificates, nor do
 they prove absence of self-intersections. Curve and surface resource limits
 still apply; valid complicated images can fail to fit.
 
-## Closed-solid meshing
+## Shared-boundary meshing
 
 Independently refined faces can have different boundary grids. Snapping their
 existing vertices does not remove T-junctions. If ordinary smooth-seam meshing
-fails the closed/solid topology check, `brep/tessellation` rebuilds a conforming
+fails its boundary/topology audit, `brep/tessellation` rebuilds a conforming
 triangle mesh using one canonical sample table per shared edge. P-curve knot
 corners are included, each incident trim receives corresponding model-space
 samples, and constrained UV triangulation inserts the face's interior grid.
 `brep/trim_image` supplies the same analytic-tangent correspondence search used
 by validation. Samples must follow trim order and lie on the face within its
 allowed boundary tolerance. Collapsed pole triangles are omitted; the final
-mesh must still satisfy the B-rep's closed/solid topology requirements.
+mesh must still satisfy the B-rep's boundary/topology requirements.
 
 This fallback may replace quads with triangles. Jagged-seam meshing does not
-request it, and open multi-face B-reps do not yet have an equivalent global
-shared-boundary conformity guarantee. Ambiguous projection, degenerate samples,
-and triangulation/resource failures remain explicit errors.
+request it. The subsequent [meshing audit](brep-meshing.md) now checks open
+multi-face shells too, tracing naked mesh sides to their original B-rep faces.
+Ambiguous projection, degenerate samples, and triangulation/resource failures
+remain explicit errors.
 The fallback rejects full-order interior surface breaks, even with coincident
 limits: its UV triangulation cannot safely partition positional jumps. A
 regression first demonstrated the incorrect bridging of an interior crack
@@ -98,8 +99,8 @@ translated Rhino. Native fits achieve smaller measured errors, but are slower
 on several cases; performance parity is not established. Startup, fixture
 construction, comparison sampling, and tessellation are outside these timings.
 
-The checkpoint passes 1,318 Rust tests, 23 Python tests, and strict Clippy.
-All 118 native fixtures (1,197 operations) execute. Recorded curve/surface
+The initial B-rep morph checkpoint passed 1,318 Rust tests, 23 Python tests,
+strict Clippy, and all 118 native fixtures (1,197 operations). Recorded curve/surface
 comparisons retain their documented epsilons; six fresh trimmed mass-property
 comparisons pass at absolute `1e-8`, relative `1e-10` (maximum `1.22e-9`).
 This is bounded regression evidence, not complete Rhino morph compatibility.

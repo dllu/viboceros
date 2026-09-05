@@ -11,7 +11,9 @@ groups, matching Rhino's derived-object behavior. `Density=0..1` selects a
 bounded per-knot-span sampling level; `SimplePlanes=Yes` minimizes entirely
 planar inputs, and `JaggedSeams=Yes` disables shared-edge snapping on B-reps.
 Regular surface cells remain quadrilaterals, singular sides and planar trim
-regions use triangles, and smooth-seam closed solids must remain watertight.
+regions use triangles. [Smooth-seam boundary auditing](../brep-meshing.md) checks
+open shells as well as closed solids; incompatible shared grids trigger a
+conforming triangle fallback without capping intended openings.
 General nonplanar trims are constrained-triangulated in parameter space with
 interior knot-span grid samples; outer and inner boundaries remain exact mesh
 constraints instead of being silently filled.

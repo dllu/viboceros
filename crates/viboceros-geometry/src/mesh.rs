@@ -213,6 +213,13 @@ struct MeshTopologyData {
     edges: BTreeMap<(usize, usize), EdgeIncidence>,
 }
 
+/// A single-use polygon side, retaining its raw source face and vertex indices.
+#[derive(Clone, Copy, Debug)]
+pub(crate) struct MeshBoundaryEdge {
+    pub face: usize,
+    pub vertices: [u32; 2],
+}
+
 #[derive(Clone, Copy, Debug)]
 struct MeshHoleTriangulationVertex {
     position: TriangulationPoint2<Real>,
@@ -2489,7 +2496,28 @@ impl TriangleMesh {
     /// exactly equal 3D locations. This recognizes indexed meshes and
     /// triangle-soup imports consistently without applying model tolerance.
     pub fn topology(&self) -> MeshTopology {
+        self.topology_summary(&self.topology_data())
+    }
+
+    /// Computes topology and naked-side provenance with one location-welding pass.
+    pub(crate) fn topology_with_boundary(&self) -> (MeshTopology, Vec<MeshBoundaryEdge>) {
         let data = self.topology_data();
+        let boundary = data
+            .edges
+            .values()
+            .filter(|edge| edge.count == 1)
+            .map(|edge| {
+                let source = edge.first_use.expect("a naked edge has one source side");
+                MeshBoundaryEdge {
+                    face: source.face,
+                    vertices: source.raw_vertices,
+                }
+            })
+            .collect();
+        (self.topology_summary(&data), boundary)
+    }
+
+    fn topology_summary(&self, data: &MeshTopologyData) -> MeshTopology {
         let edges = &data.edges;
         let boundary_edge_count = edges
             .values()
@@ -5288,6 +5316,34 @@ fn union_indices_keep_earlier(parents: &mut [usize], first: usize, second: usize
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn naked_side_provenance_survives_exact_location_welding_of_polygon_soup() {
+        let p = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let mesh = TriangleMesh::try_new_faces(
+            vec![
+                p(0.0, 0.0),
+                p(1.0, 0.0),
+                p(1.0, 1.0),
+                p(0.0, 1.0),
+                p(1.0, 0.0),
+                p(2.0, 0.0),
+                p(2.0, 1.0),
+                p(1.0, 1.0),
+            ],
+            vec![MeshFace::Quad([0, 1, 2, 3]), MeshFace::Quad([4, 5, 6, 7])],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let (topology, boundary) = mesh.topology_with_boundary();
+        assert_eq!(topology, mesh.topology());
+        assert_eq!(boundary.len(), 6);
+        for side in boundary {
+            assert!(side.vertices.iter().all(|&i| (i as usize / 4) == side.face));
+            assert_ne!(side.vertices, [1, 2]);
+            assert_ne!(side.vertices, [4, 7]);
+        }
+    }
     use crate::Vector3;
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {

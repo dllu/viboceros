@@ -1660,8 +1660,155 @@ def _brep_surface_morph(operation, iterations, tolerance):
                 item.Dispose()
 
 
+def _refined_box_brep(operation, tolerance):
+    origin = operation.get("origin", [0.0, 0.0, 0.0])
+    base = Rhino.Geometry.Brep.CreateFromBox(Rhino.Geometry.BoundingBox(
+        _point(origin), _point([x + 1.0 for x in origin])))
+    if base is None:
+        raise ValueError("could not create boundary-meshing box")
+    source = None
+    try:
+        def find_face(brep, center):
+            target = _point([origin[i] + center[i] for i in range(3)])
+            for i, face in enumerate(brep.Faces):
+                middle = face.PointAt(face.Domain(0).Mid, face.Domain(1).Mid)
+                if middle.DistanceTo(target) <= tolerance["absolute"]:
+                    return i
+            raise ValueError("unknown box face center")
+        indices = [find_face(base, face["center"]) for face in operation["faces"]]
+        source = base.DuplicateSubBrep(System.Array[System.Int32](indices))
+        if source is None:
+            raise ValueError("could not duplicate box face subset")
+        for definition in operation["faces"]:
+            face = source.Faces[find_face(source, definition["center"])]
+            surface = face.UnderlyingSurface().ToNurbsSurface()
+            if surface is None:
+                raise ValueError("could not convert box face to NURBS")
+            try:
+                for axis, name in [(0, "knots_u"), (1, "knots_v")]:
+                    knots = surface.KnotsU if axis == 0 else surface.KnotsV
+                    for fraction in definition.get(name, []):
+                        if not 0.0 <= fraction <= 1.0:
+                            raise ValueError("box-face knot fraction is outside its domain")
+                        if not knots.InsertKnot(surface.Domain(axis).ParameterAt(fraction), 1):
+                            raise ValueError("could not refine box-face knots")
+                if not face.ChangeSurface(source.AddSurface(surface)):
+                    raise ValueError("could not replace refined box-face surface")
+            finally:
+                surface.Dispose()
+        source.Compact()
+        if not source.IsValid:
+            raise ValueError("refined box face subset is invalid")
+        result = source
+        source = None
+        return result
+    finally:
+        if source is not None:
+            source.Dispose()
+        base.Dispose()
+
+
+def _mesh_polygon_positions(mesh):
+    record = _polygon_mesh_value(mesh)
+    return [[record["vertices"][i] for i in face] for face in record["faces"]]
+
+
+def _coordinate_welded_mesh_flags(mesh):
+    # Match native exact-location topology. On the tested Rhino build, the
+    # direct topological IsManifold query on appended, unwelded face meshes
+    # disagrees with their public edge incidence. Explicit coordinate welding
+    # resolves that discrepancy without moving or deleting any polygon.
+    expected = _mesh_polygon_positions(mesh)
+    welded = mesh.DuplicateMesh()
+    if welded is None:
+        raise ValueError("could not duplicate mesh for coordinate-topology checks")
+    try:
+        welded.Vertices.CombineIdentical(True, True)
+        if _mesh_polygon_positions(welded) != expected:
+            raise ValueError("coordinate welding changed mesh polygon geometry")
+        return welded.IsManifold(True)
+    finally:
+        welded.Dispose()
+
+
+def _brep_mesh_boundary_record(brep, mesh):
+    loops = list(mesh.GetNakedEdges() or [])
+    lines = [Rhino.Geometry.Line(loop[i], loop[i + 1]) for loop in loops for i in range(loop.Count - 1)]
+    queries = set()
+    for edge in brep.Edges:
+        if str(edge.Valence) == "Naked":
+            for fraction in [0.0, 0.25, 0.5, 0.75, 1.0]:
+                queries.add(tuple(_xyz(edge.PointAt(edge.Domain.ParameterAt(fraction)))))
+    samples = []
+    for query in sorted(queries):
+        target = _point(query)
+        if not lines:
+            raise ValueError("Rhino mesh lost a box boundary")
+        candidates = [line.ClosestPoint(target, True) for line in lines]
+        samples.append(_xyz(min(candidates, key=lambda point: point.DistanceTo(target))))
+    manifold, oriented, _has_boundary = _coordinate_welded_mesh_flags(mesh)
+    properties = Rhino.Geometry.AreaMassProperties.Compute(mesh)
+    if properties is None:
+        raise ValueError("could not measure meshed box faces")
+    try:
+        area = float(properties.Area)
+    finally:
+        properties.Dispose()
+    return {"area": area, "boundary_length": sum(float(line.Length) for line in lines),
+            "boundary_loops": len(loops), "boundaries_closed": all(loop.IsClosed for loop in loops),
+            "closed": bool(mesh.IsClosed), "manifold": bool(manifold), "oriented": bool(oriented),
+            "boundary_samples": samples}
+
+
+def _brep_mesh_boundaries(operation, iterations, tolerance):
+    density = _finite(operation["density"], "B-rep mesh density")
+    if not 0.0 <= density <= 1.0:
+        raise ValueError("B-rep mesh density must lie in [0, 1]")
+    source = _refined_box_brep(operation, tolerance)
+    parameters = mesh = None
+    try:
+        parameters = Rhino.Geometry.MeshingParameters(density)
+        parameters.SimplePlanes = operation["simple_planes"]
+        parameters.JaggedSeams = False
+
+        def compute():
+            parts = Rhino.Geometry.Mesh.CreateFromBrep(source, parameters)
+            if not parts:
+                raise ValueError("Rhino could not mesh refined box faces")
+            combined = None
+            try:
+                combined = Rhino.Geometry.Mesh()
+                for part in parts:
+                    combined.Append(part)
+                if not combined.IsValid:
+                    raise ValueError("Rhino returned an invalid combined mesh")
+                result = combined
+                combined = None
+                return result
+            finally:
+                if combined is not None:
+                    combined.Dispose()
+                for part in parts:
+                    part.Dispose()
+
+        mesh = compute()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            mesh.Dispose()
+            mesh = None
+            mesh = compute()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        return _brep_mesh_boundary_record(source, mesh), max(0, elapsed)
+    finally:
+        for item in [mesh, parameters, source]:
+            if item is not None:
+                item.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "brep_mesh_boundaries":
+        return _brep_mesh_boundaries(operation, iterations, tolerance)
     if kind == "curve_surface_morph":
         return _curve_surface_morph(operation, iterations, tolerance)
     if kind == "surface_surface_morph":

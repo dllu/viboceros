@@ -45,7 +45,9 @@ and bidirectional edge/trim correspondence; matching endpoints alone do not
 establish a valid face boundary.
 The [morph assembler](brep-morphing.md) in `brep/morph` retains shared topology
 and exact UV trims. `brep/trim_image` supplies composed-curve correspondence to
-validation and the closed-solid conforming fallback in `brep/tessellation`.
+validation and [B-rep meshing](brep-meshing.md). `brep/tessellation` separates
+independent face sampling, source-face boundary audits, and conforming
+reconstruction; naked-edge provenance covers open shells as well as solids.
 
 The [polycurve kernel](polycurves.md) preserves independent exact segments and
 parameter maps. Document geometry operations live in their own module, separate
