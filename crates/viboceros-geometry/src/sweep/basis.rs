@@ -60,14 +60,45 @@ pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, Ge
             }
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let sections = sweep.sections_at(&parameters)?;
+    let sample_stations = axis
+        .stations
+        .iter()
+        .map(|s| s.parameter)
+        .collect::<Vec<_>>();
+    let mut sections = sweep.sections_at_stations(
+        &parameters,
+        &sample_stations,
+        &stations,
+        if refit {
+            sweep.blend
+        } else {
+            SweepBlend::Local
+        },
+        if refit {
+            BlendCoordinates::Homogeneous
+        } else {
+            BlendCoordinates::Euclidean
+        },
+    )?;
+    // Retained-basis construction blends raw relative profile weights first,
+    // then applies the common-basis end-weight policy to every placed section.
+    // Normalizing the inputs before blending is a different surface.
+    let normalized_targets = if refit {
+        None
+    } else {
+        sections = crate::section_basis::normalized_end_weights(&sections)?;
+        Some(crate::section_basis::normalized_end_weights(
+            sweep.sections.iter().map(|s| &s.curve),
+        )?)
+    };
     // A common projective scale does not change the rail or the surface.
     // Remove it before combining rail denominators with spatial coordinates.
     let weight_scale = rail
         .control_points()
         .iter()
         .map(|c| c.weight().abs())
-        .fold(0.0, Real::max);
+        .fold(0.0, Real::max)
+        .copysign(rail.control_points()[0].weight());
     let weights = axis
         .stations
         .iter()
@@ -86,12 +117,15 @@ pub(super) fn rail_basis(sweep: &Sweep1, refit: bool) -> Result<NurbsSurface, Ge
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
     let surface = interpolate_sections(axis, &sections, &weights)?;
+    super::weights::require_positive_denominator(&surface)?;
     // Near-equality of parameter sites is only a numerical convenience, not
     // permission to discard a profile (notably on large shifted U domains).
     // Audit complete positive-weight section bases, up to common weight scale.
-    for (section, &station) in sweep.sections.iter().zip(&stations) {
+    for (i, (section, &station)) in sweep.sections.iter().zip(&stations).enumerate() {
         let actual = surface.isocurve_v(station)?;
-        let target = &section.curve;
+        let target = normalized_targets
+            .as_ref()
+            .map_or(&section.curve, |curves| &curves[i]);
         let scale = |curve: &NurbsCurve| {
             curve
                 .control_points()
@@ -207,11 +241,6 @@ pub(super) fn interpolate_sections(
     for j in 0..width {
         for i in 0..count {
             let weight = solution[(i, j * 4 + 3)];
-            if weight <= 0.0 {
-                return Err(invalid(
-                    "surface fit produced a nonpositive rational weight",
-                ));
-            }
             let point = if axis.stations[i].fixed {
                 sections[i].control_points()[j].point()
             } else {

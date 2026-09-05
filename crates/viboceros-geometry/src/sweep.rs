@@ -10,6 +10,7 @@ mod basis;
 mod fit;
 #[cfg(test)]
 mod tests;
+mod weights;
 
 const MAX_SECTIONS: usize = 256;
 const MAX_SECTION_CONTROLS: usize = 512;
@@ -28,6 +29,12 @@ pub enum SweepBlend {
     #[default]
     Local,
     Global,
+}
+
+#[derive(Clone, Copy)]
+enum BlendCoordinates {
+    Homogeneous,
+    Euclidean,
 }
 
 #[derive(Clone, Debug, PartialEq)]
@@ -105,6 +112,7 @@ impl Sweep1 {
             &curves,
             MAX_SECTION_CONTROLS,
             invalid("section control budget exceeded"),
+            crate::section_basis::WeightScale::Common,
         )?;
         let mut radius: Real = tolerance.absolute();
         for section in sections {
@@ -130,13 +138,18 @@ impl Sweep1 {
             domain: start..=end,
             angular_tolerance: (0.05 * (tolerance.absolute() / radius)).min(1e-10),
         };
-        let parameters = result
+        result.prepare_local_controls()?;
+        Ok(result)
+    }
+
+    fn prepare_local_controls(&mut self) -> Result<(), GeometryError> {
+        let parameters = self
             .sections
             .iter()
             .map(|s| s.parameter)
             .collect::<Vec<_>>();
-        let frames = result.frames(&parameters)?;
-        result.local = result
+        let frames = self.frames(&parameters)?;
+        self.local = self
             .sections
             .iter()
             .zip(frames)
@@ -154,7 +167,7 @@ impl Sweep1 {
                     .collect::<Result<Vec<_>, GeometryError>>()
             })
             .collect::<Result<Vec<_>, _>>()?;
-        Ok(result)
+        Ok(())
     }
 
     pub fn domain(&self) -> RangeInclusive<Real> {
@@ -166,7 +179,6 @@ impl Sweep1 {
         if parameters.iter().any(|t| !self.domain.contains(t)) {
             return Err(invalid("sample outside swept interval"));
         }
-        let frames = self.frames(parameters)?;
         let sampler = if self.sections.len() > 1 {
             let mut sampler =
                 crate::curve::ArcLengthSampler::try_new(self.rail.as_ref(), self.tolerance)?;
@@ -186,22 +198,53 @@ impl Sweep1 {
                 })
             })
             .collect::<Result<Vec<_>, GeometryError>>()?;
+        let samples = parameters
+            .iter()
+            .map(|&t| {
+                sampler
+                    .as_ref()
+                    .map_or(Ok(0.0), |s| s.distance_at_parameter(t))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        self.sections_at_stations(
+            parameters,
+            &samples,
+            &distances,
+            self.blend,
+            BlendCoordinates::Homogeneous,
+        )
+    }
+
+    fn sections_at_stations(
+        &self,
+        parameters: &[Real],
+        stations: &[Real],
+        profile_stations: &[Real],
+        blend: SweepBlend,
+        coordinates: BlendCoordinates,
+    ) -> Result<Vec<NurbsCurve>, GeometryError> {
+        if parameters.len() != stations.len() || profile_stations.len() != self.sections.len() {
+            return Err(invalid("section blending station count mismatch"));
+        }
+        let frames = self.frames(parameters)?;
         parameters
             .iter()
+            .zip(stations)
             .zip(frames)
-            .map(|(&t, frame)| {
+            .map(|((&t, &station), frame)| {
                 let index = self
                     .sections
                     .partition_point(|s| s.parameter <= t)
                     .saturating_sub(1);
                 let next = (index + 1).min(self.sections.len() - 1);
-                let mut f = if index == next {
+                let mut f = if index == next || t == self.sections[index].parameter {
                     0.0
                 } else {
-                    (sampler.as_ref().unwrap().distance_at_parameter(t)? - distances[index])
-                        / (distances[next] - distances[index])
+                    ((station - profile_stations[index])
+                        / (profile_stations[next] - profile_stations[index]))
+                        .clamp(0.0, 1.0)
                 };
-                if self.blend == SweepBlend::Local {
+                if blend == SweepBlend::Local {
                     f = f * f * (3.0 - 2.0 * f);
                 }
                 let controls = self.local[index]
@@ -209,10 +252,14 @@ impl Sweep1 {
                     .zip(&self.local[next])
                     .map(|(a, b)| {
                         let weight = a.weight().mul_add(1.0 - f, b.weight() * f);
-                        let a = a.point().to_array().map(|x| x * a.weight());
-                        let b = b.point().to_array().map(|x| x * b.weight());
+                        let (wa, wb, divisor) = match coordinates {
+                            BlendCoordinates::Homogeneous => (a.weight(), b.weight(), weight),
+                            BlendCoordinates::Euclidean => (1.0, 1.0, 1.0),
+                        };
+                        let a = a.point().to_array().map(|x| x * wa);
+                        let b = b.point().to_array().map(|x| x * wb);
                         let coordinates: [Real; 3] =
-                            std::array::from_fn(|i| a[i].mul_add(1.0 - f, b[i] * f) / weight);
+                            std::array::from_fn(|i| a[i].mul_add(1.0 - f, b[i] * f) / divisor);
                         let axes = frame.axes().map(|a| a.as_vector().to_array());
                         let delta = Vector3::try_from(std::array::from_fn(|i| {
                             axes[0][i].mul_add(
@@ -248,6 +295,8 @@ impl Sweep1 {
     /// basis. This preserves the rail basis, not a continuous rigid sweep
     /// between interpolation sites. Interior sections not already at Greville
     /// stations require a refit before adding interpolation sites.
+    /// Retained construction uses Local Euclidean control blending followed
+    /// by the common-basis end-weight policy; forced refits use the refit model.
     pub fn to_rail_basis_surface(&self) -> Result<NurbsSurface, GeometryError> {
         basis::rail_basis(self, false)
     }

@@ -125,5 +125,11 @@ fn interpolate(sweep: &Sweep1, knots: Vec<Real>) -> Result<NurbsSurface, Geometr
         .map(|s| s.parameter)
         .collect::<Vec<_>>();
     let sections = sweep.sections_at(&parameters)?;
-    interpolate_sections(axis, &sections, &vec![1.0; parameters.len()])
+    let surface = interpolate_sections(axis, &sections, &vec![1.0; parameters.len()])?;
+    // This fitter's control-error bound requires positive individual weights,
+    // unlike fixed-basis construction's separate denominator validation.
+    if surface.control_points().iter().any(|c| c.weight() <= 0.0) {
+        return Err(invalid("model fit produced a nonpositive rational weight"));
+    }
+    Ok(surface)
 }

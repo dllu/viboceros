@@ -89,7 +89,11 @@ Both fitters also check bounded rational composition candidates:
 model-space curves, including exact constant parameter coordinates.
 
 The [loft kernel](loft.md) and [one-rail sweep](sweep1.md) share exact degree/knot
-matching in `section_basis`; Loft's later end-weight policy stays separate.
+matching and the explicit common-basis end-weight policy in `section_basis`.
+Loft normalizes each profile's input scale independently; Sweep1 preserves
+relative profile scales and applies end-weight normalization only after
+retained-basis section placement. `sweep/weights` separately checks denominator
+positivity by bounded scalar subdivision, without changing the surface basis.
 The sweep separates frame placement and arc-length blending from fitting and
 from the command's document operations. `sweep/basis` chooses the rail basis,
 adds section interpolation stations, and solves homogeneous profile trajectories;

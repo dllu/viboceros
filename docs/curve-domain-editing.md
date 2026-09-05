@@ -35,6 +35,17 @@ for wide or extreme domains. Reparameterizing to the same interval is a no-op.
 This preserves exact integer/midpoint knots and prevents zero-derivative trim slivers.
 Explicitly integer-uniform curve-through construction creates integer knots directly.
 
+NURBS closest-point searches use bounded multi-start refinement with the exact
+squared-distance curvature term, clamping, and monotone backtracking. A
+projected-tangent step remains available when the Hessian is nonpositive,
+curvature is unrepresentable, or Newton backtracking fails. Derivatives are
+scaled before products to avoid squaring a large or tiny speed. This fixes a
+near-boundary sweep case where tangent-only steps oscillated through the entire
+iteration budget. Independent tests use a parabola with a unique analytically
+known minimum and domains of length `1e±200`, including finite first derivatives
+with unrepresentable second derivatives. These searches are not a certified
+global minimizer on arbitrary curves.
+
 Ellipse NURBS controls use exact quadrant and corner frame coordinates. Arc conversion
 uses Rhino's one-, two-, or four-span rational layout, including four spans above 180°.
 Polycurve conversion averages only coincident junction endpoints and matches homogeneous

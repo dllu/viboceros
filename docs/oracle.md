@@ -108,17 +108,22 @@ differences; it is not a passing reference. `curve_array.json` now records
 unrounded endpoints. `curve_array_corner_diagnostics.json` is a separate,
 untimed actual-command probe exposing Rhino's query-dependent corner twist.
 
-`sweep1.json`, `sweep1_command.json`, and `sweep1_multisection.json` check 27 [one-rail sweep cases](sweep1.md)
+`sweep1.json`, `sweep1_command.json`, `sweep1_multisection.json`, and
+`sweep1_weights.json` check 49 [one-rail sweep cases](sweep1.md)
 through Rhino's public refitted API and actual unrefitted/refitted commands.
 Each compares 135 unrounded closest-point results, including 54 off-surface
 queries. Command probes compare output geometry, not full document state, and
 are untimed. The actual-command macro uses Rhino's script options
 `Style`, `ShapeBlending`, and `RefitRail`, not dialog property labels. It rejects
 new `Unknown command` history even if `RunScript` reports success.
-`sweep1_curved_blend.json`, `sweep1_diagnostics.json`, and
-`sweep1_basis_diagnostics.json` retain 12 discrepancies; these are not passing
-references at `1e-6`. Some are construction differences, others closest-point
+`sweep1_curved_blend.json`, `sweep1_diagnostics.json`,
+`sweep1_basis_diagnostics.json`, and `sweep1_weights_diagnostics.json` retain
+13 discrepancies; these are not passing references at `1e-6`.
+Some are construction differences, others closest-point
 differences, including two independently verified nonminimal Rhino answers.
+Weight probes distinguish raw relative scales, Euclidean versus homogeneous
+placement, and normalization after placement. Signed-control sweeps additionally
+check a sufficient positive-denominator bound; no comparison epsilon was widened.
 
 `surface_jets.json` checks 20 [rational surface differential cases](surface-evaluation.md),
 including second partials, parameter-domain changes, continuation, and exact

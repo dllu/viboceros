@@ -1487,8 +1487,9 @@ impl NurbsCurve {
     ///
     /// Every nonempty knot span contributes endpoint and midpoint seeds, with
     /// an additional bounded uniform seed set for high-span and periodic
-    /// curves. The best candidates are refined by projected-tangent Newton
-    /// steps with clamping and monotone backtracking, so rational and
+    /// curves. The best candidates are refined by curvature-aware Newton
+    /// steps with a projected-tangent fallback, clamping and monotone
+    /// backtracking, so rational and
     /// non-uniform parameterizations do not need to be sampled as polylines.
     pub fn closest_parameter(
         &self,
@@ -1561,7 +1562,16 @@ impl NurbsCurve {
     ) -> Result<(Real, Real), GeometryError> {
         let mut distance = self.evaluate(parameter)?.distance_to(target)?;
         for _ in 0..64 {
-            let (point, derivative) = self.evaluate_with_derivative(parameter)?;
+            let (point, derivative, second) = match self.evaluate_with_second_derivative(parameter)
+            {
+                Ok((point, first, second)) => (point, first, Some(second)),
+                Err(_) => {
+                    // A finite first derivative need not have a representable
+                    // second derivative on an extremely scaled domain.
+                    let (point, first) = self.evaluate_with_derivative(parameter)?;
+                    (point, first, None)
+                }
+            };
             let speed = derivative.length()?;
             if speed == 0.0 {
                 break;
@@ -1571,23 +1581,48 @@ impl NurbsCurve {
             if tangent_projection.abs() <= tolerance.absolute() {
                 break;
             }
-            let delta = tangent_projection / speed;
-            if !delta.is_finite() {
-                break;
-            }
-            let mut step: Real = 1.0;
+            // Hessian of squared distance / 2 is |C'|^2 - residual.C''.
+            // Divide by speed before forming products to avoid squaring it.
+            // The tangent-only step can oscillate almost indefinitely when
+            // curvature makes this Hessian approximately twice |C'|^2.
+            let curvature = second.and_then(|second| {
+                Vector3::try_from(second.to_array().map(|x| x / speed))
+                    .ok()
+                    .and_then(|scaled| residual.dot(scaled).ok())
+            });
+            let hessian_over_speed = curvature.map_or(speed, |c| speed - c);
+            let denominator = if hessian_over_speed.is_finite() && hessian_over_speed > 0.0 {
+                hessian_over_speed
+            } else {
+                speed
+            };
+            let delta = tangent_projection / denominator;
             let mut accepted = None;
-            for _ in 0..24 {
-                let candidate = step.mul_add(delta, parameter).clamp(domain[0], domain[1]);
-                if candidate == parameter {
+            for (attempt, direction) in [delta, tangent_projection / speed].into_iter().enumerate()
+            {
+                if !direction.is_finite() || (attempt == 1 && direction == delta) {
+                    continue;
+                }
+                let mut step: Real = 1.0;
+                for _ in 0..24 {
+                    let candidate = step
+                        .mul_add(direction, parameter)
+                        .clamp(domain[0], domain[1]);
+                    if candidate == parameter {
+                        break;
+                    }
+                    if let Ok(candidate_distance) =
+                        self.evaluate(candidate).and_then(|p| p.distance_to(target))
+                        && candidate_distance <= distance
+                    {
+                        accepted = Some((candidate, candidate_distance));
+                        break;
+                    }
+                    step *= 0.5;
+                }
+                if accepted.is_some() {
                     break;
                 }
-                let candidate_distance = self.evaluate(candidate)?.distance_to(target)?;
-                if candidate_distance <= distance {
-                    accepted = Some((candidate, candidate_distance));
-                    break;
-                }
-                step *= 0.5;
             }
             let Some((next_parameter, next_distance)) = accepted else {
                 break;
@@ -7803,6 +7838,49 @@ mod tests {
     }
 
     #[test]
+    fn closest_parameter_resolves_an_oscillatory_tangent_projection() {
+        // C(t)=(t,t^2), q=(1.998r+2r^3,-0.499). The derivative of squared
+        // distance / 2 is 1.998t+2t^3-q.x, strictly increasing on [0,1].
+        // Thus r is the unique global minimizer, not just a sample witness.
+        let curve = NurbsCurve::try_new(
+            2,
+            vec![point(0., 0.), point(0.5, 0.), point(1., 1.)],
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap();
+        let r: Real = 0.001;
+        let query = point(1.998 * r + 2. * r.powi(3), -0.499);
+        let tolerance = Tolerance::try_new(1e-12, 1e-12, 1e-12).unwrap();
+        let (refined, _) = curve
+            .refine_closest_parameter(query, 0., [0., 1.], tolerance)
+            .unwrap();
+        let parameter = curve.closest_parameter(query, tolerance).unwrap();
+        for actual in [refined, parameter] {
+            assert!((actual - r).abs() < 1e-10, "expected {r}, got {actual}");
+        }
+    }
+
+    #[test]
+    fn closest_parameter_retains_first_derivative_fallback_on_extreme_domains() {
+        for extent in [1e-200, 1e200] {
+            let curve = NurbsCurve::try_new(
+                3,
+                vec![point(0., 0.), point(0.2, 0.), point(0.8, 0.), point(1., 0.)],
+                vec![0., 0., 0., 0., extent, extent, extent, extent],
+            )
+            .unwrap();
+            if extent < 1. {
+                assert!(curve.evaluate_with_derivative(extent * 0.3).is_ok());
+                assert!(curve.evaluate_with_second_derivative(extent * 0.3).is_err());
+            }
+            let t = curve
+                .closest_parameter(point(0.37, 0.2), Tolerance::DEFAULT)
+                .unwrap();
+            assert!((curve.evaluate(t).unwrap().x() - 0.37).abs() < 1e-9);
+        }
+    }
+
+    #[test]
     fn closest_parameter_finds_rational_arc_and_endpoint_minima() {
         let middle_weight = 0.5_f64.sqrt();
         let arc = NurbsCurve::try_new_rational(
@@ -7817,7 +7895,10 @@ mod tests {
         .unwrap();
         let diagonal = 2.0_f64.sqrt();
         let parameter = arc
-            .closest_parameter(point(diagonal, diagonal), Tolerance::DEFAULT)
+            .closest_parameter(
+                point(diagonal, diagonal),
+                Tolerance::try_new(1e-12, 1e-12, 1e-12).unwrap(),
+            )
             .unwrap();
         assert!((parameter - 0.5).abs() <= 1.0e-10, "parameter={parameter}");
         assert_point_near(

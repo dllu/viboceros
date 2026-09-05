@@ -69,6 +69,11 @@ parameters are required, one per profile in selection order. `RefitRail=No`
 Greville sites; otherwise interior profiles trigger a refit. `RefitRail=Yes`
 refits the rail to cubic arc-length form before interpolating transported profiles.
 Both paths permit multiple profiles, with compatibility limits described below.
+Retained-basis construction uses Local blending in rational rail parameters,
+blends Euclidean control positions and raw relative weights, then normalizes
+placed profiles' end weights. Refitted construction instead uses homogeneous
+arc-length blending. The retained path shares Loft's common-knot policy, which
+can change later multi-span profiles when endpoint weight ratios differ.
 `FrameStyle=Freeform|Roadlike`, `Axis=x,y,z` (Roadlike only), and
 `GlobalShapeBlending=Yes|No` select the frame and blend model. Inputs and selection
 are retained; one unselected B-rep is added on the current layer with atomic undo.

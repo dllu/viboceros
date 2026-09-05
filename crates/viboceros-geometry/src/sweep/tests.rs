@@ -8,6 +8,246 @@ fn line(a: Point3, b: Point3) -> crate::LineSegment {
 }
 
 #[test]
+fn refitted_blending_preserves_relative_profile_weight_scales() {
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.));
+    for scale in [1e-280, 1., 1e280] {
+        let sections = [(0., 1., 1.), (5., 3., 2.)].map(|(t, width, weight)| SweepSection {
+            parameter: t,
+            curve: NurbsCurve::try_new_rational(
+                1,
+                [p(0., 0., t), p(width, 0., t)]
+                    .map(|point| WeightedPoint3::try_new(point, weight * scale).unwrap())
+                    .to_vec(),
+                vec![0., 0., 1., 1.],
+            )
+            .unwrap(),
+        });
+        let sweep = Sweep1::try_new(
+            CurveRef::Line(&rail),
+            &sections,
+            Default::default(),
+            SweepBlend::Local,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        // At the first interior Greville, smoothstep is 7/27 and the
+        // homogeneous blend width is (1+5*7/27)/(1+7/27) = 31/17.
+        let expected = p(31. / 17., 0., 5. / 3.);
+        assert!(
+            sweep.sections_at(&[5. / 3.]).unwrap()[0]
+                .evaluate(1.)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 2e-12
+        );
+        assert!(
+            sweep
+                .to_surface()
+                .unwrap()
+                .evaluate(5. / 3., 1.)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                < 2e-12
+        );
+        // Retained line basis independently normalizes both endpoint weights.
+        assert!(
+            sweep
+                .to_rail_basis_surface()
+                .unwrap()
+                .evaluate(2.5, 1.)
+                .unwrap()
+                .distance_to(p(2., 0., 2.5))
+                .unwrap()
+                < 2e-12
+        );
+    }
+}
+
+#[test]
+fn retained_arc_basis_uses_local_rational_parameter_blending_for_both_options() {
+    let circle = crate::Circle3::try_new(
+        p(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let rail = crate::CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2)
+        .unwrap()
+        .to_nurbs()
+        .unwrap()
+        .try_change_degree(3, false)
+        .unwrap();
+    let sections = [(0., 1.), (*rail.domain().end(), 2.)].map(|(parameter, width)| {
+        let origin = rail.evaluate(parameter).unwrap();
+        SweepSection {
+            parameter,
+            curve: line(
+                origin,
+                p(
+                    origin.x() * (1. + width / 3.),
+                    origin.y() * (1. + width / 3.),
+                    0.,
+                ),
+            )
+            .to_nurbs()
+            .unwrap(),
+        }
+    });
+    for blend in [SweepBlend::Local, SweepBlend::Global] {
+        let sweep = Sweep1::try_new(
+            CurveRef::NurbsCurve(&rail),
+            &sections,
+            Default::default(),
+            blend,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let t = rail.parameter_at(1. / 3.).unwrap();
+        let origin = rail.evaluate(t).unwrap();
+        let width = 1. + 7. / 27.;
+        let expected = p(
+            origin.x() * (1. + width / 3.),
+            origin.y() * (1. + width / 3.),
+            0.,
+        );
+        let actual = sweep
+            .to_rail_basis_surface()
+            .unwrap()
+            .evaluate(t, 1.)
+            .unwrap();
+        assert!(actual.distance_to(expected).unwrap() < 3e-12);
+        assert!(
+            sweep.sections_at(&[t]).unwrap()[0]
+                .evaluate(1.)
+                .unwrap()
+                .distance_to(expected)
+                .unwrap()
+                > 1e-4
+        );
+    }
+}
+
+#[test]
+fn retained_basis_blends_euclidean_control_locations_before_normalizing_weights() {
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.))
+        .to_nurbs()
+        .unwrap()
+        .try_change_degree(3, false)
+        .unwrap();
+    let sections = [
+        (
+            0.,
+            [p(0., 0., 0.), p(1., 0.5, 0.), p(2., 0., 0.)],
+            [1., 0.5, 2.],
+        ),
+        (
+            5.,
+            [p(0., 0., 5.), p(0.5, 1., 5.), p(3., 0., 5.)],
+            [2., 1., 1.],
+        ),
+    ]
+    .map(|(parameter, points, weights)| SweepSection {
+        parameter,
+        curve: NurbsCurve::try_new_rational(
+            2,
+            points
+                .into_iter()
+                .zip(weights)
+                .map(|(p, w)| WeightedPoint3::try_new(p, w).unwrap())
+                .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap(),
+    });
+    for blend in [SweepBlend::Local, SweepBlend::Global] {
+        let sweep = Sweep1::try_new(
+            CurveRef::NurbsCurve(&rail),
+            &sections,
+            Default::default(),
+            blend,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let surface = sweep.to_rail_basis_surface().unwrap();
+        let profile = surface.isocurve_v(5. / 3.).unwrap();
+        let actual = profile.control_points()[1].point();
+        // Local fraction 7/27 interpolates the Euclidean control (1,1/2)
+        // toward (1/2,1), independent of their unequal rational weights.
+        assert!(
+            actual
+                .distance_to(p(47. / 54., 17. / 27., 5. / 3.))
+                .unwrap()
+                < 2e-12
+        );
+    }
+}
+
+#[test]
+fn retained_rational_profiles_normalize_end_weights_and_allow_positive_signed_weight_functions() {
+    let rail = NurbsCurve::try_new(
+        5,
+        (0..=5).map(|i| p(0., 0., i as Real)).collect(),
+        vec![0., 0., 0., 0., 0., 0., 1., 1., 1., 1., 1., 1.],
+    )
+    .unwrap();
+    let sections = [
+        (0., [1., 0.5, 2.]),
+        (0.4, [2., 0.8, 1.]),
+        (1., [0.5, 1., 3.]),
+    ]
+    .map(|(t, weights)| SweepSection {
+        parameter: t,
+        curve: NurbsCurve::try_new_rational(
+            2,
+            [p(0., 0., t * 5.), p(1., 0.5, t * 5.), p(2., 0., t * 5.)]
+                .into_iter()
+                .zip(weights)
+                .map(|(point, w)| WeightedPoint3::try_new(point, w).unwrap())
+                .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap(),
+    });
+    let sweep = Sweep1::try_new(
+        CurveRef::NurbsCurve(&rail),
+        &sections,
+        Default::default(),
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = sweep.to_rail_basis_surface().unwrap();
+    assert_eq!(surface.degree_u(), 5);
+    assert_eq!(surface.control_point_count_u(), 6);
+    assert!(surface.control_points().iter().any(|c| c.weight() < 0.));
+    for (u, expected) in [(0.2, 13. / 30.), (0.6, 23. / (43.5_f64 * 41.).sqrt())] {
+        let profile = surface.isocurve_v(u).unwrap();
+        let weights = profile.control_points();
+        assert!((weights[1].weight() / weights[0].weight() - expected).abs() < 2e-12);
+    }
+    for section in sections {
+        let weights = section.curve.control_points();
+        let c = (weights[2].weight() / weights[0].weight()).sqrt();
+        for i in 0..=29 {
+            let v = i as Real / 29.;
+            let original_v = v / (c * (1. - v) + v);
+            let expected = section.curve.evaluate(original_v).unwrap();
+            assert!(
+                surface
+                    .evaluate(section.parameter, v)
+                    .unwrap()
+                    .distance_to(expected)
+                    .unwrap()
+                    < 4e-12
+            );
+        }
+    }
+}
+
+#[test]
 fn multi_section_rail_refit_interpolates_local_blends_in_its_cubic_basis() {
     let rail = line(p(0., 0., 0.), p(0., 0., 5.));
     let sections = [(0., 2.), (2., 1.), (5., 3.)].map(|(t, width)| SweepSection {
@@ -559,7 +799,7 @@ fn unrefitted_arc_with_a_middle_section_preserves_the_rational_rail() {
 #[test]
 fn rational_rail_basis_sweep_is_invariant_to_common_weight_scale() {
     let mut reference = None::<NurbsSurface>;
-    for scale in [1., 1e-280, 1e280] {
+    for scale in [1., 1e-280, 1e280, -1., -1e-280, -1e280] {
         let rail = NurbsCurve::try_new_rational(
             3,
             [
