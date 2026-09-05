@@ -56,11 +56,12 @@ shared edges, seam curves, singular pole trims, and independently fitted faces.
 The disk mesh has one closed boundary; the annulus has two; the six solid meshes
 have none. Face orientation is retained for the inward solid too.
 
-The annulus and sphere use a source fit tolerance of `1e-5`; the other six use
-`1e-6`. The sphere initially requested `1e-6` but exhausted the current fitter's
-one-million-direct-sample budget before serialization. That tighter fit remains
-unsupported for this case. Using the `1e-5` fitted sphere does **not** relax its
-serialization comparison, which still uses the fixed bound above.
+The annulus uses a source fit tolerance of `1e-5`; the other seven use `1e-6`.
+The sphere originally exhausted the one-million-direct-sample budget at `1e-6`
+and was temporarily tested at `1e-5`. The subsequent
+[rational composition candidate](surface-rational-fitting.md) resolves that case
+without changing either resource ceiling: the fixture now requires `1e-6`.
+The independent serialization bound above is unchanged.
 
 On the tested Rhino 8.32 build under isolated Xvfb/Wine/FEX, all eight models
 pass import validity, topology/definition comparison and meshing checks. The
@@ -77,6 +78,6 @@ previous model. Fitting, export, geometry recording and meshing are excluded.
 These small warm-cache fixtures and translated Rhino are not a general IO or
 geometry-kernel performance benchmark. General Rhino compatibility remains incomplete.
 
-This checkpoint passes 1,328 Rust tests, 29 Python tests, strict Clippy, all
+The initial interchange checkpoint passed 1,328 Rust tests, 29 Python tests, strict Clippy, all
 120 native fixtures (1,210 operations), and 369 recorded curve comparisons at
 their existing tolerances, in addition to the eight fresh cross-reader comparisons.

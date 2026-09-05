@@ -77,6 +77,9 @@ The [curve fitter](curve-morphing.md) in `morph/curve_fit` and
 point-map construction. They share sided cubic banded interpolation in
 `morph/interpolation`, retain source knot limits, and explicitly fail when
 sampled fitting tolerance cannot be reached within their resource budgets.
+The surface fitter also checks a bounded [rational composition candidate](surface-rational-fitting.md).
+`nurbs2/evaluate` provides stable, sided UV-trim evaluation independently of
+model-space curves, including exact constant parameter coordinates.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

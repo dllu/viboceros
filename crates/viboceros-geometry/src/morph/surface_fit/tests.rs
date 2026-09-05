@@ -1,4 +1,5 @@
 use super::*;
+mod rational;
 
 fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
@@ -282,6 +283,44 @@ fn periodic_source_keeps_its_seam_and_native_parameters() {
         let end = fitted.evaluate(*source.domain_u().end(), v).unwrap();
         assert!(start.distance_to(end).unwrap() <= 1e-14);
     }
+}
+
+#[test]
+fn cubically_lifted_sphere_fits_at_the_brep_component_tolerance() {
+    struct Lift(std::cell::Cell<usize>);
+    impl PointMorph for Lift {
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            self.0.set(self.0.get() + 1);
+            Point3::try_new(
+                p.x(),
+                p.y(),
+                p.z() + p.x().powi(2) + p.x() * p.y() * 0.25 + p.y().powi(3),
+            )
+        }
+    }
+    let frame = Frame3::try_from_directions(
+        p(0.0, 0.0, 0.0),
+        Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+        Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let source = NurbsSurface::try_sphere(frame, 0.4).unwrap();
+    // B-rep assembly allocates one quarter of its 1e-6 absolute tolerance
+    // to each edge and surface fit; do not increase either resource ceiling.
+    let tolerance = Tolerance::try_new(2.5e-7, 1e-12, 1e-10).unwrap();
+    let morph = Lift(std::cell::Cell::new(0));
+    let fitted = morph.morph_nurbs_surface(&source, tolerance).unwrap();
+    assert!(
+        morph.0.get() < 5_000,
+        "fit used {} point maps",
+        morph.0.get()
+    );
+    assert_eq!([fitted.degree_u(), fitted.degree_v()], [6, 6]);
+    // This particular image is representable in the candidate space, so its
+    // independent accuracy test is much tighter than the requested fit bound.
+    check_image(&source, &fitted, &morph, 2e-12);
+    rational::check_cubic_lift_jets(&source, &fitted);
 }
 
 #[test]

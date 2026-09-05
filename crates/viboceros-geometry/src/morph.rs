@@ -69,7 +69,8 @@ pub trait PointMorph {
         curve_fit::fit(self, curve, tolerance, MAX_MORPH_CURVE_CONTROL_POINTS)
     }
 
-    /// Checks a mapped-control candidate, then adaptively fits a bicubic image
+    /// Checks mapped-control and bounded rational-composition candidates,
+    /// then adaptively fits a bicubic image
     /// in the native U/V domains with independent source knot-side limits.
     /// Accuracy checks are sampled; an exhausted control or sampling budget
     /// returns an error rather than a knowingly inaccurate surface.

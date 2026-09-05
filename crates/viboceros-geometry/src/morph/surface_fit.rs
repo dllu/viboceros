@@ -3,6 +3,7 @@ use super::*;
 use crate::ParameterSide;
 use std::collections::HashMap;
 
+mod denominator;
 mod tensor;
 mod validate;
 
@@ -52,6 +53,17 @@ pub(super) fn fit(
         && errors.deviation <= tolerance.absolute()
     {
         return Ok(candidate);
+    }
+    if let Some(candidate) = tensor::rational_candidate(&mut point_at, source, maximum)? {
+        let errors = validate::errors(
+            &mut point_at,
+            &candidate,
+            &breaks,
+            tolerance.absolute() * 0.8,
+        )?;
+        if errors.deviation <= tolerance.absolute() * 0.8 {
+            return Ok(candidate);
+        }
     }
     loop {
         if breaks.iter().any(|b| control_count(b) > maximum) {

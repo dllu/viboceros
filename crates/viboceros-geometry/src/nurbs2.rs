@@ -1,7 +1,8 @@
 use std::ops::RangeInclusive;
 
-use crate::nurbs::{de_boor, find_span_in_knots, stable_divided_difference, validate_direction};
+use crate::nurbs::validate_direction;
 use crate::{GeometryError, Point2, Real, require_finite};
+mod evaluate;
 
 /// A two-dimensional Euclidean control point with a finite, nonzero weight.
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -142,58 +143,6 @@ impl NurbsCurve2 {
         Ok(parameter)
     }
 
-    pub fn evaluate(&self, parameter: Real) -> Result<Point2, GeometryError> {
-        let span = self.checked_span(parameter)?;
-        let active = self.active_homogeneous_control_points(span)?;
-        let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active)?;
-        project_homogeneous(homogeneous)
-    }
-
-    /// Evaluates the point and exact first derivative of this rational p-curve.
-    pub fn evaluate_with_derivative(
-        &self,
-        parameter: Real,
-    ) -> Result<(Point2, [Real; 2]), GeometryError> {
-        let span = self.checked_span(parameter)?;
-        let active = self.active_homogeneous_control_points(span)?;
-        let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-        let point = project_homogeneous(homogeneous)?;
-
-        let first_control_point = span - self.degree;
-        let mut derivative_controls = Vec::with_capacity(self.degree);
-        for local_index in 0..self.degree {
-            let control_point_index = first_control_point + local_index;
-            let knot_start = self.knots[control_point_index + 1];
-            let knot_end = self.knots[control_point_index + self.degree + 1];
-            let mut derivative = [0.0; 3];
-            for coordinate in 0..3 {
-                derivative[coordinate] = stable_divided_difference(
-                    active[local_index + 1][coordinate],
-                    active[local_index][coordinate],
-                    self.degree,
-                    knot_start,
-                    knot_end,
-                )?;
-            }
-            derivative_controls.push(derivative);
-        }
-        let homogeneous_derivative = de_boor(
-            &self.knots[1..self.knots.len() - 1],
-            self.degree - 1,
-            span - 1,
-            parameter,
-            derivative_controls,
-        )?;
-        let weight = homogeneous[2];
-        let weight_derivative = homogeneous_derivative[2];
-        let derivative = [
-            (-point.x()).mul_add(weight_derivative, homogeneous_derivative[0]) / weight,
-            (-point.y()).mul_add(weight_derivative, homogeneous_derivative[1]) / weight,
-        ];
-        require_finite(derivative, "parameter-space NURBS derivative")?;
-        Ok((point, derivative))
-    }
-
     pub fn start_point(&self) -> Result<Point2, GeometryError> {
         self.evaluate(*self.domain().start())
     }
@@ -208,55 +157,6 @@ impl NurbsCurve2 {
         let knots = self.knots.iter().rev().map(|knot| -*knot).collect();
         Self::try_new_rational(self.degree, control_points, knots)
     }
-
-    fn checked_span(&self, parameter: Real) -> Result<usize, GeometryError> {
-        require_finite([parameter], "parameter-space NURBS parameter")?;
-        let domain = self.domain();
-        let domain_start = *domain.start();
-        let domain_end = *domain.end();
-        if parameter < domain_start || parameter > domain_end {
-            return Err(GeometryError::ParameterOutOfDomain {
-                parameter,
-                domain_start,
-                domain_end,
-            });
-        }
-        Ok(find_span_in_knots(
-            &self.knots,
-            self.degree,
-            self.control_points.len(),
-            parameter,
-        ))
-    }
-
-    fn active_homogeneous_control_points(
-        &self,
-        span: usize,
-    ) -> Result<Vec<[Real; 3]>, GeometryError> {
-        let first = span - self.degree;
-        let active = &self.control_points[first..=span];
-        let weight_scale = active
-            .iter()
-            .map(|control_point| control_point.weight.abs())
-            .fold(0.0, Real::max);
-        let mut homogeneous = Vec::with_capacity(active.len());
-        for control_point in active {
-            let weight = control_point.weight / weight_scale;
-            let point = control_point.point;
-            let value = [point.x() * weight, point.y() * weight, weight];
-            require_finite(value, "homogeneous parameter-space NURBS control point")?;
-            homogeneous.push(value);
-        }
-        Ok(homogeneous)
-    }
-}
-
-fn project_homogeneous(homogeneous: [Real; 3]) -> Result<Point2, GeometryError> {
-    let weight = homogeneous[2];
-    if !weight.is_finite() || weight == 0.0 {
-        return Err(GeometryError::ZeroWeightAtParameter);
-    }
-    Point2::try_new(homogeneous[0] / weight, homogeneous[1] / weight)
 }
 
 #[cfg(test)]

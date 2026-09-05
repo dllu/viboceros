@@ -11,7 +11,15 @@ The map need not be defined at control points outside the actual source surface.
 
 ## Fitting and numerical policy
 
-The adaptive path constructs a non-rational bicubic tensor surface in the source's
+After the mapped-control check, a bounded [rational composition candidate](surface-rational-fitting.md)
+can retain cubic polynomial images of same-sign rational sources without
+approximating their unchanged coordinates. Its source degrees are at most three,
+output degrees are tripled, and the homogeneous denominator is the cube of the
+normalized source denominator. It must pass the same Euclidean error tests; an
+unsuitable, inaccurate or numerically invalid candidate does not replace the
+adaptive path.
+
+The fallback adaptive path constructs a non-rational bicubic tensor surface in the source's
 native U/V domains. Source knot multiplicities retain their structural continuity
 up to C2; full-order jumps have independently evaluated left/right limits in each
 direction. Crossing jumps therefore have four independent point values, with no
@@ -22,6 +30,7 @@ promised.
 `morph/surface_fit/tensor` interpolates mapped source points at sided Greville
 parameters. It solves the two axis systems separately, using the shared cubic
 banded solver in `morph/interpolation` and `faer` multiple-right-hand-side matrices.
+Higher-degree rational candidates use bounded full-pivot axis solves.
 World coordinates are centered before solving, with a finite fallback for
 overflowing coordinate differences. Interpolated knot-intersection point values
 are pinned exactly; constant large-coordinate targets retain their exact controls.
@@ -56,6 +65,9 @@ Native tests cover exact cubic images, quartic refinement in one or both
 directions, retained affine rational nets, maps undefined at off-surface controls,
 four limits at crossing positional jumps, periodic source seams, large-coordinate
 constant targets, aliasing detection, and explicit resource failures.
+Rational-composition tests additionally cover common weight scales and signs,
+retained cubed denominators, rejected non-cubic candidates, and a cubically lifted
+sphere with independently differentiated first/second partials at sided knots.
 `OrientOnSrf` tests additionally check surface interiors at document tolerance
 and preserve copy/in-place group, selection, and undo/redo behavior.
 

@@ -108,5 +108,7 @@ This is bounded regression evidence, not complete Rhino morph compatibility.
 Subsequent [3DM cross-reader tests](brep-3dm-interchange.md) verify actual native
 morph exports, including complete NURBS definitions and post-import meshing in
 Rhino. Their serialization tolerance is independent of fitting tolerance. The
-cubically lifted sphere currently fits at `1e-5` but exhausts the surface fitter's
-sample budget at `1e-6`; the interchange check does not resolve that fitting limit.
+cubically lifted sphere initially exhausted the surface fitter's budget at `1e-6`.
+The subsequent [rational composition candidate](surface-rational-fitting.md)
+resolves that fit without increasing its sample or control limits; the current
+interchange fixture requires `1e-6`.

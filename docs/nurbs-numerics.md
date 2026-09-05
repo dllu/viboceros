@@ -37,6 +37,16 @@ Signed-weight curves can leave their control hull; if a local result overflows,
 evaluation retries without centering because the world-space result may still
 be finite. An actual zero homogeneous denominator remains an error.
 
+UV trim evaluation lives in `nurbs2/evaluate` and applies the same local-coordinate
+and exact endpoint policy. `evaluate_on_side` and
+`evaluate_with_derivative_on_side` expose independent knot limits. Origins are
+chosen per coordinate; constant U/V coordinates remain centered even during an
+overflow retry. This prevents a mathematically constant `v=0.4` trim from rounding
+outside its incident surface's domain during conforming meshing. UV tolerances
+and surface domain checks are not widened to hide that numerical error. Tests
+cover constant coordinates, signed/global weight scales, translated derivatives,
+full-order limits, finite signed images with overflowing offsets and genuine poles.
+
 ## Concatenation and seam relocation
 
 Matching adjacent endpoint weights requires computing `weight * to / from`.
