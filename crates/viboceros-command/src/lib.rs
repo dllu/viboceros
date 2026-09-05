@@ -44577,7 +44577,40 @@ mod tests {
         {
             let curve = oriented_surface_curve(&document, name, original);
             assert_eq!(curve.degree(), 3);
-            assert_eq!(curve.control_points().len(), 4);
+            let Geometry::Line(source_line) = document.object(original).unwrap().geometry() else {
+                panic!("expected original line");
+            };
+            let surface = orient_surface_quarter_cylinder();
+            let frame = Frame3::try_from_directions(
+                Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                document.tolerance(),
+            )
+            .unwrap();
+            let morph = SurfacePointMorph::try_new(
+                frame,
+                &surface,
+                0.3,
+                0.4,
+                1.0,
+                0.0,
+                false,
+                document.tolerance(),
+            )
+            .unwrap();
+            for i in 0..=256 {
+                let fraction = i as f64 / 256.0;
+                let expected = viboceros_geometry::PointMorph::morph_point(
+                    &morph,
+                    source_line.point_at(fraction).unwrap(),
+                )
+                .unwrap();
+                let actual = curve
+                    .evaluate(curve.parameter_at(fraction).unwrap())
+                    .unwrap();
+                assert!(actual.distance_to(expected).unwrap() <= document.tolerance().absolute());
+            }
             assert!(
                 curve
                     .evaluate(*curve.domain().start())

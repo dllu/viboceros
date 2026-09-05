@@ -37,9 +37,9 @@ the first point pair. Both commands default to in-place, unscaled transforms;
 `OrientOnSrf` uses a source base/reference pair and a point nearest the target
 NURBS surface. Name that surface with `SurfaceName=`, or make it the last
 selected object. `Rigid=Yes` (the default) maps a frame without deformation;
-`Rigid=No` applies Rhino's plane-to-surface morph; lines and polylines become
-cubic deformable curves, analytic and NURBS curves receive tolerance-driven
-adaptive cubic fits, and meshes map per vertex. `Scale=` must be positive,
+`Rigid=No` applies the plane-to-surface point map; all supported curves,
+including lines and polylines, receive tolerance-driven adaptive cubic fits,
+and meshes map per vertex. `Scale=` must be positive,
 `Rotation=` is in degrees, `Flip=Yes` reverses surface Y and Z, and
 `SourceNormal=` defaults to world Z. In deformable mode, `ConstrainNormal=Yes`
 keeps normal offsets parallel to `SourceNormal`, the command-line stand-in for
@@ -47,13 +47,11 @@ Rhino's placement-viewport construction-plane normal.
 This command defaults to `Copy=Yes`; originals remain selected and copied group
 topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
 
-Known limitation: the line/polyline helper currently fits one cubic per source
-segment without adaptive error refinement. A fresh `surface_orient.json` audit
-at its `1e-9` document tolerance fails the scaled/rotated line's control-net
-comparison: native output has four controls and Rhino has five. This is not
-evidence of a `0.31`-unit locus error (the compared control nets differ), nor a
-passing command-compatibility result. Tolerance-aware line fitting and a separate
-unrounded sampled-locus comparison remain necessary.
+See [curve morphing](../curve-morphing.md) for native parameter and knot-limit
+preservation, fitting limits, and separate direct-map versus fitted-output
+comparisons. The earlier fixed-cubic line fitting has been replaced. Rhino's
+tested fitted curves differ from its direct point map by more than the requested
+document tolerance, so their comparison epsilon is documented separately.
 
 `Array` takes X/Y/Z counts followed by signed world-axis distances. Its default
 `UnitCell` mode uses those values as successive spacing. `Mode=Fill` treats them

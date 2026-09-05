@@ -212,6 +212,53 @@ class RhinoWorkerTests(unittest.TestCase):
         piece.Dispose.assert_called_once_with()
         surface.Dispose.assert_called_once_with()
 
+    def test_curve_morph_probe_keeps_point_map_separate_and_disposes_all_fits(self):
+        def xyz(x):
+            return SimpleNamespace(X=x, Y=0.0, Z=0.0)
+
+        candidates = []
+        domain = SimpleNamespace(T0=0.0, T1=1.0, ParameterAt=lambda s: s)
+
+        def duplicate():
+            candidate = SimpleNamespace(Domain=domain, IsValid=True, Dispose=Mock(), PointAt=lambda t: xyz(t + 0.25))
+            candidates.append(candidate)
+            return candidate
+
+        source = SimpleNamespace(Domain=domain, PointAt=xyz, DuplicateCurve=duplicate, Dispose=Mock())
+        surface = SimpleNamespace(Dispose=Mock())
+        morph = SimpleNamespace(MorphPoint=lambda p: xyz(p.X + 1.0), Morph=Mock(return_value=True), Dispose=Mock())
+        self.worker.Rhino.Geometry = SimpleNamespace(
+            Plane=lambda *args: SimpleNamespace(IsValid=True), Point2d=lambda *args: args,
+            Morphs=SimpleNamespace(SplopSpaceMorph=lambda *args: morph),
+        )
+        operation = {"curve": {}, "surface": {}, "source_origin": [0.0] * 3,
+                     "source_x": [1.0, 0.0, 0.0], "source_y": [0.0, 1.0, 0.0],
+                     "uv": [0.3, 0.4], "scale": 1.0, "angle": 0.0}
+        with patch.object(self.worker, "_nurbs_curve_from_definition", return_value=source), patch.object(
+            self.worker, "_nurbs_surface_from_definition", return_value=surface
+        ), patch.object(self.worker, "_point", side_effect=lambda x: x), patch.object(
+            self.worker, "_vector", side_effect=lambda x: x
+        ):
+            value, _ = self.worker._curve_surface_morph(operation, 2, {"absolute": 1e-9})
+        self.assertFalse(morph.QuickPreview)
+        self.assertFalse(morph.PreserveStructure)
+        self.assertEqual(morph.Tolerance, 1e-9)
+        self.assertEqual(len(candidates), 3)
+        self.assertEqual(len(value["exact_samples"]), 257)
+        self.assertEqual(value["exact_samples"][0], [1.0, 0.0, 0.0])
+        self.assertEqual(value["fitted_samples"][0], [0.25, 0.0, 0.0])
+        for item in candidates + [source, surface, morph]:
+            item.Dispose.assert_called_once_with()
+
+    def test_curve_morph_probe_releases_source_when_surface_creation_fails(self):
+        source = SimpleNamespace(Dispose=Mock())
+        with patch.object(self.worker, "_nurbs_curve_from_definition", return_value=source), patch.object(
+            self.worker, "_nurbs_surface_from_definition", side_effect=ValueError("surface failed")
+        ):
+            with self.assertRaisesRegex(ValueError, "surface failed"):
+                self.worker._curve_surface_morph({"curve": {}, "surface": {}}, 1, {"absolute": 1e-9})
+        source.Dispose.assert_called_once_with()
+
 
 if __name__ == "__main__":
     unittest.main()

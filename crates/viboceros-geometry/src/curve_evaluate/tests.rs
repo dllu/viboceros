@@ -255,7 +255,7 @@ fn line_morph_preserves_the_native_interval() {
         .unwrap()
         .try_reparameterized(-7.0..=13.0)
         .unwrap();
-    let morphed = Identity.morph_line(line).unwrap();
+    let morphed = Identity.morph_line(line, Tolerance::DEFAULT).unwrap();
     assert_eq!(morphed.domain(), line.domain());
     for i in 0..=64 {
         let t = -7.0 + 20.0 * i as Real / 64.0;

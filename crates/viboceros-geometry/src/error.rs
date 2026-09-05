@@ -248,6 +248,15 @@ pub enum GeometryError {
     #[error("adaptive curve morph supports at most {maximum} control points")]
     TooManyMorphCurveControlPoints { maximum: usize },
 
+    #[error(
+        "curve morph did not reach tolerance {tolerance}; sampled deviation {deviation}, control limit {maximum}"
+    )]
+    CurveMorphDidNotConverge {
+        tolerance: Real,
+        deviation: Real,
+        maximum: usize,
+    },
+
     #[error("an interpolated curve requires at least two points, got {actual}")]
     InsufficientCurveInterpolationPoints { actual: usize },
 

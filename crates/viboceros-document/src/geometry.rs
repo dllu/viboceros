@@ -123,7 +123,7 @@ impl Geometry {
         Ok(match self {
             Self::Point(point) => Self::Point(morph.morph_point(*point)?),
             Self::PointCloud(cloud) => Self::PointCloud(morph.morph_point_cloud(cloud)?),
-            Self::Line(line) => Self::NurbsCurve(morph.morph_line(*line)?),
+            Self::Line(line) => Self::NurbsCurve(morph.morph_line(*line, tolerance)?),
             Self::Circle(circle) => {
                 Self::NurbsCurve(morph.morph_nurbs_curve(&circle.to_nurbs()?, tolerance)?)
             }
@@ -133,16 +133,20 @@ impl Geometry {
             Self::Ellipse(ellipse) => {
                 Self::NurbsCurve(morph.morph_nurbs_curve(&ellipse.to_nurbs()?, tolerance)?)
             }
-            Self::Polyline(polyline) => Self::NurbsCurve(morph.morph_polyline(polyline)?),
+            Self::Polyline(polyline) => {
+                Self::NurbsCurve(morph.morph_polyline(polyline, tolerance)?)
+            }
             Self::NurbsCurve(curve) => Self::NurbsCurve(morph.morph_nurbs_curve(curve, tolerance)?),
             Self::PolyCurve(curve) => Self::PolyCurve(PolyCurve3::try_with_segment_domains(
                 curve
                     .segments()
                     .iter()
                     .map(|segment| match segment {
-                        viboceros_geometry::CurveSegment3::Line(line) => morph.morph_line(*line),
+                        viboceros_geometry::CurveSegment3::Line(line) => {
+                            morph.morph_line(*line, tolerance)
+                        }
                         viboceros_geometry::CurveSegment3::Polyline(polyline) => {
-                            morph.morph_polyline(polyline)
+                            morph.morph_polyline(polyline, tolerance)
                         }
                         _ => morph.morph_nurbs_curve(&segment.to_nurbs()?, tolerance),
                     })

@@ -1,14 +1,12 @@
-use faer::{Mat, prelude::*};
+mod curve_fit;
 
 use crate::{
     Frame3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3,
-    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    nurbs::bspline_basis_values, require_finite,
+    Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
 };
 
-const MORPH_CURVE_DEGREE: usize = 3;
-const MORPH_CURVE_ERROR_SAMPLES: usize = 16;
-const MAX_MORPH_CURVE_CONTROL_POINTS: usize = 100;
+/// Resource ceiling for adaptive cubic fitting and point-map sampling.
+pub const MAX_MORPH_CURVE_CONTROL_POINTS: usize = 512;
 
 /// A deterministic non-affine mapping of finite Euclidean points.
 ///
@@ -28,146 +26,41 @@ pub trait PointMorph {
         )
     }
 
-    fn morph_line(&self, line: LineSegment) -> Result<NurbsCurve, GeometryError> {
-        let samples = [0.0, 1.0 / 3.0, 2.0 / 3.0, 1.0]
-            .into_iter()
-            .map(|parameter| {
-                line.point_at(parameter)
-                    .and_then(|point| self.morph_point(point))
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        let first = samples[0].to_array();
-        let one_third = samples[1].to_array();
-        let two_thirds = samples[2].to_array();
-        let last = samples[3].to_array();
-        let interpolate = |coordinate: usize| {
-            let first_equation = 27.0_f64.mul_add(
-                one_third[coordinate],
-                (-8.0_f64).mul_add(first[coordinate], -last[coordinate]),
-            );
-            let second_equation = 27.0_f64.mul_add(
-                two_thirds[coordinate],
-                -first[coordinate] - 8.0 * last[coordinate],
-            );
-            (
-                (2.0 * first_equation - second_equation) / 18.0,
-                (2.0 * second_equation - first_equation) / 18.0,
-            )
-        };
-        let first_control =
-            Point3::try_from(std::array::from_fn(|coordinate| interpolate(coordinate).0))?;
-        let second_control =
-            Point3::try_from(std::array::from_fn(|coordinate| interpolate(coordinate).1))?;
-        let controls = vec![samples[0], first_control, second_control, samples[3]];
-        NurbsCurve::try_new(3, controls, vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0])?
-            .try_reparameterized(line.domain())
+    /// Fits a nonlinear line image to the document's absolute tolerance.
+    fn morph_line(
+        &self,
+        line: LineSegment,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve, GeometryError> {
+        self.morph_nurbs_curve(&line.to_nurbs()?, tolerance)
     }
 
-    fn morph_polyline(&self, polyline: &Polyline3) -> Result<NurbsCurve, GeometryError> {
-        let segment_count = polyline.vertices().len() - 1;
-        let mut controls = Vec::with_capacity(3 * segment_count + 1);
-        for (segment_index, vertices) in polyline.vertices().windows(2).enumerate() {
-            let line = LineSegment::from_validated(
-                vertices[0],
-                vertices[1],
-                [
-                    polyline.parameters()[segment_index],
-                    polyline.parameters()[segment_index + 1],
-                ],
-            );
-            let segment = self.morph_line(line)?;
-            controls.extend(
-                segment
-                    .control_points()
-                    .iter()
-                    .skip(usize::from(segment_index > 0))
-                    .map(|control| control.point()),
-            );
-        }
-        let mut knots = Vec::with_capacity(controls.len() + 4);
-        knots.extend([polyline.parameters()[0]; 4]);
-        for parameter in &polyline.parameters()[1..segment_count] {
-            knots.extend([*parameter; 3]);
-        }
-        knots.extend([polyline.parameters()[segment_count]; 4]);
-        NurbsCurve::try_new(3, controls, knots)
+    /// Preserves native vertex parameters and C0 joins while refining interiors.
+    fn morph_polyline(
+        &self,
+        polyline: &Polyline3,
+        tolerance: Tolerance,
+    ) -> Result<NurbsCurve, GeometryError> {
+        let parameters = polyline.parameters();
+        let mut knots = Vec::with_capacity(parameters.len() + 2);
+        knots.push(parameters[0]);
+        knots.extend_from_slice(parameters);
+        knots.push(parameters[parameters.len() - 1]);
+        let source = NurbsCurve::try_new(1, polyline.vertices().to_vec(), knots)?;
+        self.morph_nurbs_curve(&source, tolerance)
     }
 
-    /// Approximates a deformed curve with Rhino-style adaptive cubic fitting.
-    ///
-    /// The cubic interpolates the exact morph at its Greville abscissae. Knot
-    /// spans whose sampled error exceeds the absolute tolerance are bisected,
-    /// retaining the source curve's parameter domain and initial span breaks.
-    /// Refinement is bounded at 100 controls to prevent an unbounded dense
-    /// linear solve; at that limit the best fitted curve is returned.
+    /// Adaptive native-parameter cubic fit, retaining source knot continuity
+    /// and exact one-sided endpoint values. Error checks are sampled, not a
+    /// continuous certificate for an arbitrary black-box morph. Exhausted work
+    /// or representable parameter resolution returns an error, never a knowingly
+    /// out-of-tolerance approximation.
     fn morph_nurbs_curve(
         &self,
         curve: &NurbsCurve,
         tolerance: Tolerance,
     ) -> Result<NurbsCurve, GeometryError> {
-        let mut breaks = Vec::new();
-        for (start, end) in curve.spans() {
-            if breaks.last().copied() != Some(start) {
-                breaks.push(start);
-            }
-            breaks.push(end);
-        }
-        debug_assert!(breaks.len() >= 2);
-        if breaks.len() + MORPH_CURVE_DEGREE - 1 > MAX_MORPH_CURVE_CONTROL_POINTS {
-            return Err(GeometryError::TooManyMorphCurveControlPoints {
-                maximum: MAX_MORPH_CURVE_CONTROL_POINTS,
-            });
-        }
-
-        loop {
-            let approximation = interpolate_morphed_curve(self, curve, &breaks)?;
-            let mut refinements = Vec::new();
-            for (index, interval) in breaks.windows(2).enumerate() {
-                let [start, end] = [interval[0], interval[1]];
-                let mut maximum_error = 0.0_f64;
-                for sample in 1..MORPH_CURVE_ERROR_SAMPLES {
-                    let fraction = sample as Real / MORPH_CURVE_ERROR_SAMPLES as Real;
-                    let parameter = stable_lerp(start, end, fraction)?;
-                    let exact = self.morph_point(curve.evaluate(parameter)?)?;
-                    let fitted = approximation.evaluate(parameter)?;
-                    maximum_error = maximum_error.max(exact.distance_to(fitted)?);
-                }
-                if maximum_error > tolerance.absolute() {
-                    refinements.push((index, maximum_error));
-                }
-            }
-            if refinements.is_empty()
-                || approximation.control_points().len() >= MAX_MORPH_CURVE_CONTROL_POINTS
-            {
-                return Ok(approximation);
-            }
-
-            let available = MAX_MORPH_CURVE_CONTROL_POINTS - approximation.control_points().len();
-            refinements.sort_by(|left, right| right.1.total_cmp(&left.1));
-            refinements.truncate(available);
-            refinements.sort_unstable_by_key(|refinement| refinement.0);
-
-            let mut refined = Vec::with_capacity(breaks.len() + refinements.len());
-            let mut next_refinement = refinements.iter().peekable();
-            for (index, interval) in breaks.windows(2).enumerate() {
-                refined.push(interval[0]);
-                if next_refinement
-                    .peek()
-                    .is_some_and(|refinement| refinement.0 == index)
-                {
-                    let midpoint = stable_lerp(interval[0], interval[1], 0.5)?;
-                    if midpoint > interval[0] && midpoint < interval[1] {
-                        refined.push(midpoint);
-                    }
-                    next_refinement.next();
-                }
-            }
-            refined.push(*breaks.last().expect("a NURBS curve has a domain"));
-            if refined.len() == breaks.len() {
-                return Ok(approximation);
-            }
-            breaks = refined;
-        }
+        curve_fit::fit(self, curve, tolerance, MAX_MORPH_CURVE_CONTROL_POINTS)
     }
 
     fn morph_nurbs_surface(&self, surface: &NurbsSurface) -> Result<NurbsSurface, GeometryError> {
@@ -203,61 +96,6 @@ pub trait PointMorph {
             tolerance,
         )
     }
-}
-
-fn interpolate_morphed_curve(
-    morph: &(impl PointMorph + ?Sized),
-    curve: &NurbsCurve,
-    breaks: &[Real],
-) -> Result<NurbsCurve, GeometryError> {
-    debug_assert!(breaks.len() >= 2);
-    let control_count = breaks.len() + MORPH_CURVE_DEGREE - 1;
-    let mut knots = Vec::with_capacity(control_count + MORPH_CURVE_DEGREE + 1);
-    knots.extend([breaks[0]; MORPH_CURVE_DEGREE + 1]);
-    knots.extend_from_slice(&breaks[1..breaks.len() - 1]);
-    knots.extend([breaks[breaks.len() - 1]; MORPH_CURVE_DEGREE + 1]);
-
-    let parameters = (0..control_count)
-        .map(|index| stable_mean3(knots[index + 1], knots[index + 2], knots[index + 3]))
-        .collect::<Result<Vec<_>, _>>()?;
-    let mut basis_rows = Vec::with_capacity(control_count);
-    let mut targets = Vec::with_capacity(control_count);
-    for parameter in parameters {
-        basis_rows.push(bspline_basis_values(
-            &knots,
-            MORPH_CURVE_DEGREE,
-            control_count,
-            parameter,
-        )?);
-        targets.push(morph.morph_point(curve.evaluate(parameter)?)?.to_array());
-    }
-
-    let matrix = Mat::from_fn(control_count, control_count, |row, column| {
-        basis_rows[row][column]
-    });
-    let right_hand_side = Mat::from_fn(control_count, 3, |row, column| targets[row][column]);
-    let solution = matrix.full_piv_lu().solve(&right_hand_side);
-    let controls = (0..control_count)
-        .map(|row| Point3::try_new(solution[(row, 0)], solution[(row, 1)], solution[(row, 2)]))
-        .collect::<Result<Vec<_>, _>>()?;
-    NurbsCurve::try_new(MORPH_CURVE_DEGREE, controls, knots)
-}
-
-fn stable_mean3(first: Real, second: Real, third: Real) -> Result<Real, GeometryError> {
-    let scale = first.abs().max(second.abs()).max(third.abs());
-    if scale == 0.0 {
-        return Ok(0.0);
-    }
-    let normalized_mean = ((first / scale + second / scale) + third / scale) / 3.0;
-    let mean = normalized_mean.clamp(-1.0, 1.0) * scale;
-    require_finite([mean], "cubic morph Greville parameter")?;
-    Ok(mean)
-}
-
-fn stable_lerp(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryError> {
-    let parameter = start.mul_add(1.0 - fraction, end * fraction);
-    require_finite([parameter], "cubic morph sample parameter")?;
-    Ok(parameter)
 }
 
 /// Rhino-compatible plane-to-surface ("splop") point morph.
@@ -496,7 +334,7 @@ mod tests {
     }
 
     #[test]
-    fn line_morph_uses_rhino_style_cubic_deformable_controls() {
+    fn line_morph_refines_the_cylinder_image_to_document_tolerance() {
         let surface = quarter_cylinder();
         let origin = point(1.0, 2.0, 3.0);
         let source = Frame3::try_from_directions(
@@ -523,16 +361,17 @@ mod tests {
             Tolerance::DEFAULT,
         )
         .unwrap();
-        let curve = morph.morph_line(line).unwrap();
+        let curve = morph.morph_line(line, Tolerance::DEFAULT).unwrap();
         assert_eq!(curve.degree(), 3);
-        assert_eq!(curve.control_points().len(), 4);
-        for (actual, expected) in curve.control_points().iter().zip([
-            [9.661579062659536, 2.579513523123856, 4.0],
-            [9.33432420167862, 3.8138176137024753, 4.0],
-            [8.740602340815528, 5.050606206440483, 4.0],
-            [7.901862582717121, 6.128667695662336, 4.0],
-        ]) {
-            assert_point_near(actual.point(), expected);
+        assert!(curve.control_points().len() > 4);
+        // A single cubic interpolates four stations but misses the nonlinear
+        // image between them. Control equality with a loose Rhino fit cannot
+        // establish the requested geometric tolerance.
+        for i in 0..=2048 {
+            let s = i as Real / 2048.0;
+            let actual = curve.evaluate(curve.parameter_at(s).unwrap()).unwrap();
+            let expected = morph.morph_point(line.point_at(s).unwrap()).unwrap();
+            assert!(actual.distance_to(expected).unwrap() <= Tolerance::DEFAULT.absolute());
         }
     }
 
@@ -623,14 +462,9 @@ mod tests {
         let fitted = morph.morph_nurbs_curve(&source, tolerance).unwrap();
         assert_eq!(fitted.degree(), 3);
         assert!(!fitted.is_rational());
-        assert_eq!(fitted.control_points().len(), 25);
         assert_eq!(fitted.domain(), source.domain());
-        for (&actual, expected) in fitted.knots().iter().zip([
-            0.0, 0.0, 0.0, 0.0, 0.0625, 0.125, 0.1875, 0.21875, 0.25, 0.28125, 0.3125, 0.375,
-            0.4375, 0.46875, 0.5, 0.53125, 0.5625, 0.625, 0.6875, 0.71875, 0.75, 0.78125, 0.8125,
-            0.875, 0.9375, 1.0, 1.0, 1.0, 1.0,
-        ]) {
-            assert!((actual - expected * std::f64::consts::TAU).abs() < 1e-12);
+        for (start, _) in source.spans() {
+            assert!(fitted.knots().contains(&start));
         }
         let maximum_error = (0..=1024)
             .map(|sample| {
@@ -666,12 +500,12 @@ mod tests {
 
     #[test]
     fn curve_morph_rejects_an_initial_fit_over_the_control_budget() {
-        let controls = (0..100)
+        let controls = (0..MAX_MORPH_CURVE_CONTROL_POINTS)
             .map(|index| point(index as Real, 0.0, 0.0))
             .collect::<Vec<_>>();
         let mut knots = vec![0.0, 0.0];
-        knots.extend((1..99).map(|index| index as Real));
-        knots.extend([99.0, 99.0]);
+        knots.extend((1..MAX_MORPH_CURVE_CONTROL_POINTS - 1).map(|index| index as Real));
+        knots.extend([(MAX_MORPH_CURVE_CONTROL_POINTS - 1) as Real; 2]);
         let source = NurbsCurve::try_new(1, controls, knots).unwrap();
 
         assert_eq!(

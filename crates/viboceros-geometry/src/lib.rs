@@ -98,7 +98,7 @@ pub use mesh::{
     MeshFaceExtraction, MeshHoleFill, MeshSubdivisionSphereOptions, MeshTopology, MeshTorusOptions,
     MeshTruncatedConeOptions, MeshUvSphereOptions, TriangleMesh,
 };
-pub use morph::{PointMorph, SurfacePointMorph};
+pub use morph::{MAX_MORPH_CURVE_CONTROL_POINTS, PointMorph, SurfacePointMorph};
 pub use nurbs::{
     ControlPointCurveClosure, CurveCurveIntersection, CurveCurveIntersectionEvent,
     CurveCurveOverlap, CurveExtensionBoundary, CurveExtensionSide, CurveExtensionStyle, NurbsCurve,

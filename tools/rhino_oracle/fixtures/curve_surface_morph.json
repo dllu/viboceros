@@ -1,0 +1,1052 @@
+{
+  "protocol_version": 1,
+  "iterations": 3,
+  "operations": [
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 1,
+      "angle": 0,
+      "id": "curve-morph-line",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 2,
+      "angle": 1.5707963267948966,
+      "id": "curve-morph-scale-rotate-line",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              3,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 1,
+      "angle": 0,
+      "id": "curve-morph-long-line",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              -1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 1,
+      "angle": 0,
+      "id": "curve-morph-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -1,
+              1,
+              3.25
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              2.5
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.75,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              3,
+              3.25
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 1,
+      "angle": 0,
+      "id": "curve-morph-loose-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -1,
+              1,
+              3.25
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              2.5
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.75,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              3,
+              3.25
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "fit_tolerance": 0.001
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              0
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 0.7071067811865476
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 1,
+      "angle": 0,
+      "id": "curve-morph-polyline",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -7,
+          -7,
+          -2,
+          13,
+          13
+        ]
+      }
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              20,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 2,
+      "angle": 0,
+      "id": "curve-morph-warped-line",
+      "curve": {
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              2.5,
+              3.25
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_surface_morph",
+      "surface": {
+        "degree_u": 2,
+        "degree_v": 1,
+        "control_point_count_u": 3,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              10,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              20,
+              10
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              10,
+              10,
+              10
+            ],
+            "weight": 1
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "source_origin": [
+        1,
+        2,
+        3
+      ],
+      "source_x": [
+        1,
+        0,
+        0
+      ],
+      "source_y": [
+        0,
+        1,
+        0
+      ],
+      "uv": [
+        0.3,
+        0.4
+      ],
+      "scale": 1,
+      "angle": 0,
+      "id": "curve-morph-warped-cubic",
+      "curve": {
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              -1,
+              1,
+              3.25
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.5,
+              4,
+              2.5
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1.75,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              3,
+              3.25
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

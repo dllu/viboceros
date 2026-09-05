@@ -89,9 +89,9 @@ The broader checkpoint passes 1,277 Rust tests, 16 Python tests, strict Clippy,
 and 115 native fixtures containing 1,180 operations. The 369 previously recorded
 curve comparisons still pass at their documented epsilons; six fresh trimmed
 mass-property comparisons and the surface-array command probe also pass.
-A fresh `OrientOnSrf` command comparison
-exposes the separate [fixed-cubic line-fitting limitation](commands/transforms.md),
-so it is explicitly excluded from passing comparison totals.
+At that checkpoint, a fresh `OrientOnSrf` comparison exposed fixed-cubic line
+fitting and a control-net-only probe. The subsequent [curve-morphing work](curve-morphing.md)
+replaces both and documents direct-map agreement separately from Rhino's fit error.
 
 ```sh
 tools/rhino_oracle/run_headless.sh compare \

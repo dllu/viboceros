@@ -1473,8 +1473,57 @@ def _surface_jets(operation, iterations):
             item.Dispose()
 
 
+def _curve_surface_morph(operation, iterations, tolerance):
+    source = _nurbs_curve_from_definition(operation["curve"])
+    surface = None
+    morph = None
+    fitted = None
+    try:
+        surface = _nurbs_surface_from_definition(operation["surface"])
+        frame = Rhino.Geometry.Plane(_point(operation["source_origin"]),
+                                     _vector(operation["source_x"]), _vector(operation["source_y"]))
+        if not frame.IsValid:
+            raise ValueError("invalid curve-morph source plane")
+        morph = Rhino.Geometry.Morphs.SplopSpaceMorph(frame, surface,
+            Rhino.Geometry.Point2d(*operation["uv"]), float(operation["scale"]), float(operation["angle"]))
+        morph.Tolerance = _finite(operation.get("fit_tolerance", tolerance["absolute"]), "morph tolerance")
+        if morph.Tolerance <= 0.0:
+            raise ValueError("morph tolerance must be positive")
+        morph.QuickPreview = False
+        morph.PreserveStructure = False
+        parameters = [source.Domain.ParameterAt(i / 256.0) for i in range(257)]
+        exact = [_xyz(morph.MorphPoint(source.PointAt(t))) for t in parameters]
+
+        def compute():
+            candidate = source.DuplicateCurve()
+            try:
+                if not morph.Morph(candidate) or not candidate.IsValid:
+                    raise ValueError("Rhino could not morph the curve")
+                return candidate
+            except Exception:
+                candidate.Dispose()
+                raise
+
+        fitted = compute()
+        started = default_timer()
+        for _unused in iteration_range(iterations):
+            fitted.Dispose()
+            fitted = None
+            fitted = compute()
+        elapsed = int(round((default_timer() - started) * 1000000000.0))
+        return {"domain": [float(fitted.Domain.T0), float(fitted.Domain.T1)],
+                "exact_samples": exact,
+                "fitted_samples": [_xyz(fitted.PointAt(t)) for t in parameters]}, max(0, elapsed)
+    finally:
+        for item in [fitted, morph, surface, source]:
+            if item is not None:
+                item.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "curve_surface_morph":
+        return _curve_surface_morph(operation, iterations, tolerance)
     if kind == "surface_jets":
         return _surface_jets(operation, iterations)
     if kind == "three_dm_curve_interchange":
@@ -1686,17 +1735,6 @@ def _execute(operation, iterations, tolerance):
         fixture_group_indices = set()
         target_ids = []
 
-        def fixture_number(value):
-            value = round(float(value), 6)
-            return 0.0 if value == 0.0 else value
-
-        def fixture_point(value):
-            return [
-                fixture_number(value.X),
-                fixture_number(value.Y),
-                fixture_number(value.Z),
-            ]
-
         def fixture_objects():
             return [
                 rhino_object
@@ -1712,26 +1750,20 @@ def _execute(operation, iterations, tolerance):
             nurbs = curve.ToNurbsCurve()
             if nurbs is None:
                 raise ValueError("could not convert surface-orient curve to NURBS")
-            return {
-                "controls": [
-                    {
-                        "point": fixture_point(nurbs.Points[index].Location),
-                        "weight": fixture_number(nurbs.Points[index].Weight),
-                    }
-                    for index in range(nurbs.Points.Count)
-                ],
-                "degree": int(nurbs.Degree),
-                "is_rational": bool(nurbs.IsRational),
-                "name": rhino_object.Attributes.Name[len(scenario_prefix):],
-                "selected": rhino_object.IsSelected(False) > 0,
-            }
+            try:
+                return {
+                    "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+                    "samples": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 256.0))) for i in range(257)],
+                    "degree": int(nurbs.Degree),
+                    "is_rational": bool(nurbs.IsRational),
+                    "name": rhino_object.Attributes.Name[len(scenario_prefix):],
+                    "selected": rhino_object.IsSelected(False) > 0,
+                }
+            finally:
+                nurbs.Dispose()
 
         def record_key(record):
-            first = (
-                record["controls"][0]["point"]
-                if record["controls"]
-                else [0.0, 0.0, 0.0]
-            )
+            first = record["samples"][0]
             return tuple([record["name"], record["degree"]] + first)
 
         def scenario_groups(objects, scenario_prefix):

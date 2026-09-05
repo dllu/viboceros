@@ -44,6 +44,8 @@ pub use polycurve_native::NativePolyCurveFixture;
 mod curve_interchange;
 mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
+mod curve_morph;
+pub use curve_morph::CurveMorphFixture;
 mod polycurve_document;
 pub use curve_interchange::CurveInterchangeFixture;
 pub use curve_join_close::CurveJoinCloseFixture;
@@ -88,6 +90,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    CurveSurfaceMorph {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveMorphFixture,
+    },
     SurfaceJets {
         id: String,
         #[serde(flatten)]
@@ -1319,6 +1326,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceJets { id, .. }
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::CurveNative { id, .. }
@@ -1599,6 +1607,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::CurveSurfaceMorph { fixture, .. } => {
+            curve_morph::run(fixture, iterations, tolerance)?
+        }
         Operation::SurfaceJets { fixture, .. } => surface_jets::run(fixture, iterations)?,
         Operation::ThreeDmCurveInterchange { fixture, .. } => {
             curve_interchange::run(fixture, iterations, tolerance)?
@@ -5467,7 +5478,8 @@ fn document_surface_orient_scenario(
 
 #[derive(Clone)]
 struct SurfaceOrientCurveRecord {
-    controls: Vec<([f64; 3], f64)>,
+    domain: [f64; 2],
+    samples: Vec<[f64; 3]>,
     degree: usize,
     name: String,
     rational: bool,
@@ -5482,20 +5494,12 @@ fn surface_orient_curve_record(
     let object = document
         .object(id)
         .ok_or(DocumentError::ObjectNotFound(id))?;
-    let (degree, rational, controls) = match object.geometry() {
-        Geometry::Line(line) => (
-            1,
-            false,
-            vec![(line.start().to_array(), 1.0), (line.end().to_array(), 1.0)],
-        ),
+    let (degree, rational, curve) = match object.geometry() {
+        Geometry::Line(line) => (1, false, CurveRef::Line(line)),
         Geometry::NurbsCurve(curve) => (
             curve.degree(),
             curve.is_rational(),
-            curve
-                .control_points()
-                .iter()
-                .map(|control| (control.point().to_array(), control.weight()))
-                .collect(),
+            CurveRef::NurbsCurve(curve),
         ),
         _ => {
             return Err(ProbeError::FixtureInvariant(
@@ -5505,7 +5509,14 @@ fn surface_orient_curve_record(
     };
     let name = object.attributes().name().unwrap_or_default();
     Ok(SurfaceOrientCurveRecord {
-        controls,
+        domain: [*curve.domain().start(), *curve.domain().end()],
+        samples: (0..=256)
+            .map(|i| {
+                Ok(curve
+                    .evaluate(curve.parameter_at(i as f64 / 256.0)?)?
+                    .to_array())
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?,
         degree,
         name: name.strip_prefix(prefix).unwrap_or(name).to_owned(),
         rational,
@@ -5520,31 +5531,18 @@ fn compare_surface_orient_curve_records(
     left.name
         .cmp(&right.name)
         .then_with(|| left.degree.cmp(&right.degree))
-        .then_with(|| {
-            let left = left.controls.first().map_or([0.0; 3], |control| control.0);
-            let right = right.controls.first().map_or([0.0; 3], |control| control.0);
-            compare_array_sort_point(&left, &right)
-        })
+        .then_with(|| compare_array_sort_point(&left.samples[0], &right.samples[0]))
 }
 
 fn surface_orient_curve_records_value(records: &[SurfaceOrientCurveRecord]) -> Value {
-    let rounded = |value: f64| {
-        let value = (value * 1.0e6).round() / 1.0e6;
-        if value == 0.0 { 0.0 } else { value }
-    };
     Value::Array(
         records
             .iter()
             .map(|record| {
                 json!({
-                    "controls": record.controls.iter().map(|(point, weight)| json!({
-                        "point": point.map(rounded),
-                        "weight": rounded(*weight),
-                    })).collect::<Vec<_>>(),
-                    "degree": record.degree,
-                    "is_rational": record.rational,
-                    "name": record.name,
-                    "selected": record.selected,
+                    "domain": record.domain, "samples": record.samples,
+                    "degree": record.degree, "is_rational": record.rational,
+                    "name": record.name, "selected": record.selected,
                 })
             })
             .collect(),

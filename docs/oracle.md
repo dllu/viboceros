@@ -88,6 +88,12 @@ including second partials, parameter-domain changes, continuation, and exact
 quadrant limits. `surface_translated_jets.json` separately diagnoses large-coordinate
 cancellation and is not a passing reference at the ordinary epsilon.
 
+`curve_surface_morph.json` separates [direct point-map and curve-fit validation](curve-morphing.md).
+Its eight direct maps match at absolute `2e-12`; fitted outputs use `1e-5` because
+Rhino's observed fit error exceeds the requested `1e-9`. Native fits are separately
+asserted against their direct maps at the requested tolerance. `surface_orient.json`
+now compares unrounded curve samples and document state, not rounded control nets.
+
 `curve_3dm_interchange.json` checks Rhino's reading of actual Viboceros-written
 files, including decomposed full-order knots and all visibility/locking states.
 Unlike independent-construction probes, `compare` supplies shared private artifact
