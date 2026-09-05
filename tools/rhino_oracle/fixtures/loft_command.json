@@ -4,6 +4,7 @@
   "operations": [
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-lines-normal",
       "style": "normal",
       "curves": [
@@ -120,6 +121,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-lines-loose",
       "style": "loose",
       "curves": [
@@ -236,6 +238,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-lines-tight",
       "style": "tight",
       "curves": [
@@ -352,6 +355,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-lines-straight",
       "style": "straight",
       "curves": [
@@ -468,6 +472,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-lines-uniform",
       "style": "uniform",
       "curves": [
@@ -584,6 +589,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-reversed-order",
       "style": "normal",
       "curves": [
@@ -700,6 +706,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles",
       "style": "normal",
       "curves": [
@@ -1072,6 +1079,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-closed",
       "style": "normal",
       "curves": [
@@ -1189,6 +1197,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-down",
       "style": "normal",
       "curves": [
@@ -1561,6 +1570,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-clockwise",
       "style": "normal",
       "curves": [
@@ -1933,6 +1943,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-tilted",
       "style": "normal",
       "curves": [
@@ -2305,6 +2316,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-straight-angle-0",
       "style": "straight",
       "curves": [
@@ -2394,6 +2406,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-straight-angle-0.001",
       "style": "straight",
       "curves": [
@@ -2483,6 +2496,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-straight-angle-0.1",
       "style": "straight",
       "curves": [
@@ -2572,6 +2586,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.25",
       "style": "straight",
       "curves": [
@@ -2661,6 +2676,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.5",
       "style": "straight",
       "curves": [
@@ -2750,6 +2766,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.75",
       "style": "straight",
       "curves": [
@@ -2839,6 +2856,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-1",
       "style": "straight",
       "curves": [
@@ -2928,6 +2946,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-1.25",
       "style": "straight",
       "curves": [
@@ -3017,6 +3036,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-polyline-normal",
       "style": "normal",
       "curves": [
@@ -3187,6 +3207,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-polyline-straight",
       "style": "straight",
       "curves": [
@@ -3357,6 +3378,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-order-2031",
       "style": "normal",
       "curves": [
@@ -3729,6 +3751,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-order-0213",
       "style": "normal",
       "curves": [
@@ -4101,6 +4124,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-order-10",
       "style": "normal",
       "curves": [
@@ -4291,6 +4315,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-order-01",
       "style": "normal",
       "curves": [
@@ -4481,6 +4506,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.05",
       "style": "straight",
       "curves": [
@@ -4570,6 +4596,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.09",
       "style": "straight",
       "curves": [
@@ -4659,6 +4686,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.11",
       "style": "straight",
       "curves": [
@@ -4748,6 +4776,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-angle-degrees-0.15",
       "style": "straight",
       "curves": [
@@ -4837,6 +4866,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-loose",
       "style": "loose",
       "curves": [
@@ -5209,6 +5239,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-tight",
       "style": "tight",
       "curves": [
@@ -5581,6 +5612,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-straight",
       "style": "straight",
       "curves": [
@@ -5953,6 +5985,7 @@
     },
     {
       "op": "loft",
+      "sample_geometry": true,
       "id": "command-circles-uniform",
       "style": "uniform",
       "curves": [

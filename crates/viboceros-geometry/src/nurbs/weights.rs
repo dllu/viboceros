@@ -1,4 +1,7 @@
-//! Homogeneous rescaling without an overflowing intermediate weight ratio.
+//! Homogeneous rescaling and projective endpoint-weight normalization.
+
+mod end_weights;
+pub(super) use end_weights::change_bezier_end_weights;
 
 use super::{GeometryError, NurbsCurve, Point3, Real, WeightedPoint3, finite_midpoint};
 

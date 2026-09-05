@@ -74,8 +74,10 @@ profile weights are required.
 | After placement | Normalize every placed profile's end weights, then retain the first profile's transformed V knots | No end-weight normalization |
 
 The order matters: normalizing inputs *before* blending produces a different
-retained surface. End-weight normalization uses a projective Möbius
-reparameterization and a near-equal-weight numerical shortcut. Retaining the first profile's transformed knots,
+retained surface. End-weight normalization uses a locus-preserving projective
+Möbius reparameterization, including near-equal weights; see the shared
+[normalization policy and Rhino accuracy limit](nurbs-numerics.md#endpoint-weight-normalization).
+Retaining the first profile's transformed knots,
 however, can change later multi-span profiles' geometric images when their
 endpoint weight ratios differ. This measured Rhino policy is shared with Loft;
 it must not be described as unconditional preservation of input profiles.

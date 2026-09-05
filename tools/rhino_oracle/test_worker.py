@@ -9,6 +9,24 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_loft_samples_are_unrounded_and_use_native_domains(self):
+        for enabled in [False, True]:
+            domains = [SimpleNamespace(ParameterAt=lambda s: 2.0 + 3.0 * s),
+                       SimpleNamespace(ParameterAt=lambda s: -7.0 + 13.0 * s)]
+            surface = SimpleNamespace(
+                Domain=lambda axis: domains[axis],
+                PointAt=Mock(side_effect=lambda u, v: SimpleNamespace(X=u, Y=v, Z=0.123456789012345)))
+            with patch.object(self.worker, "_nurbs_surface_definition", return_value={"degree": [1, 2]}):
+                value = self.worker._loft_surface_record(surface, {"sample_geometry": enabled})
+            if enabled:
+                self.assertEqual(len(value["samples"]), 289)
+                self.assertEqual(value["samples"][0], [2.0, -7.0, 0.123456789012345])
+                self.assertEqual(value["samples"][17], [2.1875, -7.0, 0.123456789012345])
+                self.assertEqual(value["samples"][-1], [5.0, 6.0, 0.123456789012345])
+            else:
+                self.assertNotIn("samples", value)
+                surface.PointAt.assert_not_called()
+
     def test_sweep_macro_sets_actual_script_options_instead_of_dialog_labels(self):
         for blend, name in [(0, "Local"), (1, "Global")]:
             for refit, value in [(False, "No"), (True, "Yes")]:

@@ -6,6 +6,50 @@ NURBS point and derivative evaluation lives in `nurbs/evaluate.rs`; homogeneous
 weight matching for concatenation lives in `nurbs/weights.rs`. These operations
 preserve the native parameterization, not just the geometric locus.
 
+## Endpoint-weight normalization
+
+`nurbs/weights/end_weights` implements projective normalization separately from
+ordinary common-weight rescaling. For degree `p`, same-sign endpoint weights
+`w0, wn`, and normalized source parameter `u`, the new parameter is
+
+```text
+c = (wn / w0)^(1/p)
+v = c*u / (1-u+c*u)
+new_weight[i] = (weight[i]/w0) / product(1-u[j]+c*u[j], j=i+1..i+p)
+```
+
+The formula is evaluated through logarithmic ratios, `ln_1p`/`exp_m1` near one,
+scaled denominators, and a logarithmic logistic map when `c` or `1/c` would
+be subnormal; neither `c`, a common reciprocal, nor an intermediate
+endpoint-weight ratio must be representable. Equal endpoints use direct weight
+division. Clamping preserves the active curve; subsequent normalization keeps
+control locations and the domain, maps every knot, and sets endpoint weights to
+exactly one. Unequal endpoints are never approximated as equal. Internal signed
+weights retain their relative signs; normalization does not remove curve poles.
+Unrepresentable resulting weights or collapsed distinct knot intervals return an
+error instead of silently erasing a span.
+
+Piecewise-Bezier trimming uses the same stable logarithmic ratio helper, but
+changes only its first/last spans and retains interior break parameters. Its
+weight formula is `w[i] * (desired_start/w0)^(1-i/p) * (desired_end/wn)^(i/p)`.
+The desired interior endpoint weights need not be one. Failed changes leave
+the control array untouched.
+
+Analytic tests cover degrees 1–6, single/multiple spans, unclamped input,
+near-equal endpoint weights, arbitrary target gauges, negative common scales,
+exact subnormal inputs and interior knots, overflowing endpoint ratios, and rejected nonrepresentable
+outputs. A near-equal multi-span regression uses coordinates up to `6e8`:
+the old approximation missed the exact projective correspondence by `0.0027`
+at the first tested interior station; the corrected 129/65-station tests use
+roundoff-scale absolute bounds rather than the old `sqrt(epsilon)` shortcut.
+
+The vendored, openly licensed OpenNURBS `ChangeEndWeights` routine contains a
+near-equal-scale shortcut that overwrites endpoint homogeneous weights. A public
+Rhino 8 loft probe shows endpoint displacement of 3 units at coordinate `6e8`
+for endpoint weights `1` and `1 ± 1e-8`. Viboceros deliberately retains the input
+endpoints instead. See [Loft diagnostics](loft.md#validation-and-limits): this is
+a documented accuracy/compatibility boundary, not a reason to loosen tolerances.
+
 ## Differential evaluation
 
 For homogeneous coordinates `(H(t), W(t))`, the Euclidean curve is `C = H/W`.

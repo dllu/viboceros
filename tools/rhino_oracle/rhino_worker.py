@@ -1821,6 +1821,17 @@ def _sweep1_record(brep, operation):
     return surfaces
 
 
+def _loft_surface_record(surface, operation):
+    value = _nurbs_surface_definition(surface)
+    if operation.get("sample_geometry", False):
+        du, dv = surface.Domain(0), surface.Domain(1)
+        value["samples"] = [
+            _xyz(surface.PointAt(du.ParameterAt(u / 16.0), dv.ParameterAt(v / 16.0)))
+            for u in range(17) for v in range(17)
+        ]
+    return value
+
+
 def _loft(operation, iterations):
     curves = []
     styles = {
@@ -1852,7 +1863,7 @@ def _loft(operation, iterations):
             if not brep.IsValid:
                 raise ValueError("Rhino loft is invalid")
             for face in brep.Faces:
-                surfaces.append(_nurbs_surface_definition(face))
+                surfaces.append(_loft_surface_record(face, operation))
         return surfaces, elapsed
     finally:
         for brep in result:
@@ -1864,7 +1875,7 @@ def _loft(operation, iterations):
 def _loft_command(operation, iterations, curves):
     def record(obj):
         # Face indices are topology allocation details, not loft geometry.
-        faces = [(_nurbs_surface_definition(face), bool(face.OrientationIsReversed))
+        faces = [(_loft_surface_record(face, operation), bool(face.OrientationIsReversed))
                  for face in obj.Geometry.Faces]
         faces.sort(key=lambda item: (item[0]["domain_v"], item[0]["domain_u"]))
         return {"surfaces": [item[0] for item in faces],

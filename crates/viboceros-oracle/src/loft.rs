@@ -9,6 +9,8 @@ pub struct LoftFixture {
     pub closed: bool,
     #[serde(default)]
     pub command: bool,
+    #[serde(default)]
+    pub sample_geometry: bool,
 }
 
 pub(super) fn run(
@@ -33,7 +35,31 @@ pub(super) fn run(
     }
     let elapsed =
         u64::try_from(started.elapsed().as_nanos()).map_err(|_| ProbeError::TimingOverflow)?;
-    Ok((json!([nurbs_surface_definition_value(&surface)]), elapsed))
+    Ok((
+        json!([surface_record(&surface, fixture.sample_geometry)?]),
+        elapsed,
+    ))
+}
+
+fn surface_record(surface: &NurbsSurface, samples: bool) -> Result<Value, ProbeError> {
+    let mut record = nurbs_surface_definition_value(surface);
+    if samples {
+        let mut points = Vec::with_capacity(289);
+        for u in 0..=16 {
+            for v in 0..=16 {
+                points.push(
+                    surface
+                        .evaluate(
+                            surface.parameter_at_u(f64::from(u) / 16.0)?,
+                            surface.parameter_at_v(f64::from(v) / 16.0)?,
+                        )?
+                        .to_array(),
+                );
+            }
+        }
+        record["samples"] = json!(points);
+    }
+    Ok(record)
 }
 
 fn parse_style(value: &str) -> Result<viboceros_geometry::LoftStyle, ProbeError> {
@@ -111,7 +137,7 @@ fn command(
                  .find(|c| !c.is_eq()).unwrap_or(std::cmp::Ordering::Equal)
             });
             Ok(json!({
-                "surfaces": faces.iter().map(|f| nurbs_surface_definition_value(f.surface())).collect::<Vec<_>>(),
+                "surfaces": faces.iter().map(|f| surface_record(f.surface(), fixture.sample_geometry)).collect::<Result<Vec<_>, _>>()?,
                 "face_reversed": faces.iter().map(|f| f.is_reversed()).collect::<Vec<_>>(),
                 "valid": true, "vertices": brep.vertices().len(), "edges": brep.edges().len(),
                 "selected": document.is_selected(o.id()), "name": o.attributes().name(),
@@ -133,6 +159,51 @@ fn command(
 #[cfg(test)]
 mod tests {
     #[test]
+    fn end_weight_fixtures_preserve_the_original_ruled_profiles() {
+        for fixture in [
+            include_str!("../../../tools/rhino_oracle/fixtures/loft_end_weights.json"),
+            include_str!("../../../tools/rhino_oracle/fixtures/loft_end_weights_diagnostics.json"),
+        ] {
+            let request: crate::ProbeRequest = serde_json::from_str(fixture).unwrap();
+            let response = crate::run_request(&request).unwrap();
+            for (operation, result) in request.operations.iter().zip(&response.results) {
+                let crate::Operation::Loft { fixture, .. } = operation else {
+                    panic!("expected loft");
+                };
+                let source = super::nurbs_curve_from_definition(&fixture.curves[0]).unwrap();
+                let controls = source.control_points();
+                let c = (controls.last().unwrap().weight() / controls[0].weight()).sqrt();
+                let height = fixture.curves[1].control_points[0].point[2];
+                let samples = result.value[0]["samples"].as_array().unwrap();
+                assert_eq!(samples.len(), 289);
+                for u in 0..=16 {
+                    for v in 0..=16 {
+                        let s = f64::from(v) / 16.0;
+                        let t = s / (c * (1.0 - s) + s);
+                        let mut expected = source.evaluate(t).unwrap().to_array();
+                        expected[2] = height * f64::from(u) / 16.0;
+                        for (axis, expected) in expected.into_iter().enumerate() {
+                            let actual = samples[(u * 17 + v) as usize][axis].as_f64().unwrap();
+                            let epsilon = if height > 1e6 { 5e-7 } else { 5e-14 };
+                            assert!(
+                                (actual - expected).abs() < epsilon,
+                                "{}: {actual} != {expected}",
+                                result.id
+                            );
+                        }
+                    }
+                }
+                for (sample, curve, control) in [(0, 0, 0), (16, 0, 3), (272, 1, 0), (288, 1, 3)] {
+                    assert_eq!(
+                        samples[sample],
+                        serde_json::json!(fixture.curves[curve].control_points[control].point)
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
     fn all_permanent_loft_and_document_fixtures_run() {
         for (fixture, count) in [
             (
@@ -151,6 +222,24 @@ mod tests {
             let request: crate::ProbeRequest = serde_json::from_str(fixture).unwrap();
             let response = crate::run_request(&request).unwrap();
             assert_eq!(response.results.len(), count);
+            for (operation, result) in request.operations.iter().zip(&response.results) {
+                if let crate::Operation::Loft { fixture, .. } = operation {
+                    assert!(fixture.sample_geometry);
+                    let surfaces = if fixture.command {
+                        result.value["outputs"]
+                            .as_array()
+                            .unwrap()
+                            .iter()
+                            .flat_map(|o| o["surfaces"].as_array().unwrap())
+                            .collect::<Vec<_>>()
+                    } else {
+                        result.value.as_array().unwrap().iter().collect::<Vec<_>>()
+                    };
+                    for surface in surfaces {
+                        assert_eq!(surface["samples"].as_array().unwrap().len(), 289);
+                    }
+                }
+            }
         }
     }
 }

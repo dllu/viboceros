@@ -125,6 +125,14 @@ Weight probes distinguish raw relative scales, Euclidean versus homogeneous
 placement, and normalization after placement. Signed-control sweeps additionally
 check a sufficient positive-denominator bound; no comparison epsilon was widened.
 
+All `loft.json` and `loft_command.json` cases now enable `sample_geometry`:
+289 unrounded normalized-UV grid points supplement each output face's full
+coefficients. `loft_end_weights.json` adds two normalization checks;
+`loft_end_weights_diagnostics.json` retains three public Rhino endpoint-drift
+cases, not passing references at absolute `1e-9`, relative `1e-12`. Native
+analytic checks preserve the original ruled profiles. See [Loft](loft.md) and
+[endpoint-weight numerics](nurbs-numerics.md#endpoint-weight-normalization).
+
 `surface_jets.json` checks 20 [rational surface differential cases](surface-evaluation.md),
 including second partials, parameter-domain changes, continuation, and exact
 quadrant limits. `surface_translated_jets.json` separately diagnoses large-coordinate

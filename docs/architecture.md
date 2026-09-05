@@ -67,6 +67,10 @@ with rational representations; the `curve_cut` command module uses it for
 NURBS differential evaluation and homogeneous weight matching have separate
 `nurbs/evaluate` and `nurbs/weights` modules. See [rational numerical policy](nurbs-numerics.md)
 for local-coordinate evaluation, degree-one acceleration, and scale-safe seam joins.
+`nurbs/weights/end_weights` owns projective endpoint normalization and
+piecewise-Bezier end-weight changes, including near-equal and extreme gauges.
+Loft and Sweep share its geometry-preserving normalizer; explicit common-profile
+knot policies and Rhino's measured near-equal-weight drift remain separate.
 The shared [one-sided evaluator](curve-sided-evaluation.md) propagates side choices
 through composite leaves and supplies exact kink checks and stationary tangents.
 The [curve-frame module](curve-frames.md) separates span-aware adaptive tangent

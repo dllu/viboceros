@@ -2,6 +2,7 @@ use std::ops::RangeInclusive;
 mod decompose;
 mod evaluate;
 mod weights;
+use weights::change_bezier_end_weights;
 pub(crate) use weights::rescale_controls;
 
 use faer::{Mat, prelude::*};
@@ -864,107 +865,6 @@ impl NurbsCurve {
             Self::try_new_rational(self.degree, self.control_points.clone(), knots)?
                 .with_opennurbs_outer_knots(),
         )
-    }
-
-    /// Projectively reparameterizes a clamped curve so its two end weights are
-    /// exactly one.
-    ///
-    /// The control locations, parameter domain, and geometric locus remain
-    /// unchanged. Interior knots and the correspondence between parameters
-    /// and points generally change according to the same Möbius transform
-    /// used by OpenNURBS' `ChangeEndWeights` operation.
-    pub fn try_normalized_end_weights(&self) -> Result<Self, GeometryError> {
-        let curve = self.clamped_to_active_domain()?;
-        let control_count = curve.control_points.len();
-        let start_weight = curve.control_points[0].weight();
-        let end_weight = curve.control_points[control_count - 1].weight();
-        if start_weight.is_sign_positive() != end_weight.is_sign_positive() {
-            return Err(GeometryError::InvalidControlNet {
-                context: "NURBS endpoint weights must have the same sign",
-            });
-        }
-
-        let start_scale = 1.0 / start_weight;
-        let end_scale = 1.0 / end_weight;
-        require_finite(
-            [start_scale, end_scale],
-            "NURBS endpoint-weight normalization scales",
-        )?;
-        if (start_scale - end_scale).abs() <= end_scale.abs() * Real::EPSILON.sqrt() {
-            let scale = if start_scale == end_scale {
-                end_scale
-            } else {
-                start_scale.mul_add(0.5, end_scale * 0.5)
-            };
-            let mut controls = curve
-                .control_points
-                .iter()
-                .map(|control| WeightedPoint3::try_new(control.point(), control.weight() * scale))
-                .collect::<Result<Vec<_>, _>>()?;
-            controls[0] = WeightedPoint3::try_new(controls[0].point(), 1.0)?;
-            controls[control_count - 1] =
-                WeightedPoint3::try_new(controls[control_count - 1].point(), 1.0)?;
-            return Self::try_new_rational(curve.degree, controls, curve.knots);
-        }
-
-        let degree = curve.degree as Real;
-        let log_c = (end_weight.abs().ln() - start_weight.abs().ln()) / degree;
-        let c = log_c.exp();
-        if !c.is_finite() || c == 0.0 {
-            return Err(GeometryError::NonFinite {
-                context: "NURBS endpoint-weight Möbius factor",
-            });
-        }
-        let domain = curve.domain();
-        let domain_start = *domain.start();
-        let domain_end = *domain.end();
-        let normalized_knots = curve
-            .knots
-            .iter()
-            .map(|knot| {
-                let normalized = reparameterize_value(*knot, domain_start, domain_end, 0.0, 1.0)?;
-                let numerator = c * normalized;
-                let denominator = numerator + (1.0 - normalized);
-                let mapped = numerator / denominator;
-                require_finite([mapped], "NURBS endpoint-weight Möbius knot")?;
-                Ok(mapped)
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        let knots = normalized_knots
-            .iter()
-            .map(|knot| reparameterize_value(*knot, 0.0, 1.0, domain_start, domain_end))
-            .collect::<Result<Vec<_>, _>>()?;
-        let end_log = end_weight.abs().ln();
-        let controls = curve
-            .control_points
-            .iter()
-            .enumerate()
-            .map(|(index, control)| {
-                let weight = if index == 0 || index + 1 == control_count {
-                    1.0
-                } else {
-                    let mut log_magnitude = control.weight().abs().ln() - end_log;
-                    for knot in &normalized_knots[index + 1..index + 1 + curve.degree] {
-                        let factor = (1.0 - *knot).mul_add(c, *knot);
-                        if !factor.is_finite() || factor <= 0.0 {
-                            return Err(GeometryError::NonFinite {
-                                context: "NURBS endpoint-weight Möbius control factor",
-                            });
-                        }
-                        log_magnitude += factor.ln();
-                    }
-                    let sign =
-                        if control.weight().is_sign_positive() == end_weight.is_sign_positive() {
-                            1.0
-                        } else {
-                            -1.0
-                        };
-                    sign * log_magnitude.exp()
-                };
-                WeightedPoint3::try_new(control.point(), weight)
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        Ok(Self::try_new_rational(curve.degree, controls, knots)?.with_opennurbs_outer_knots())
     }
 
     /// Extracts an exact subcurve in Rhino's piecewise-Bezier trim form.
@@ -6390,40 +6290,6 @@ fn blend_homogeneous<const DIMENSION: usize>(
     let result = std::array::from_fn(|index| left[index].mul_add(complement, right[index] * alpha));
     require_finite(result, "homogeneous NURBS evaluation")?;
     Ok(result)
-}
-
-fn change_bezier_end_weights(
-    controls: &mut [WeightedPoint3],
-    desired_start: Real,
-    desired_end: Real,
-) -> Result<(), GeometryError> {
-    debug_assert!(controls.len() >= 2);
-    let last = controls.len() - 1;
-    let start_weight = controls[0].weight();
-    let end_weight = controls[last].weight();
-    if start_weight == desired_start && end_weight == desired_end {
-        return Ok(());
-    }
-    let scale = desired_start / start_weight;
-    let power = (desired_end / end_weight) / scale;
-    if !scale.is_finite() || scale == 0.0 || !power.is_finite() || power <= 0.0 {
-        return Err(GeometryError::InvalidControlNet {
-            context: "Bezier end weights cannot be changed projectively",
-        });
-    }
-    let ratio = power.powf(1.0 / last as Real);
-    if !ratio.is_finite() || ratio <= 0.0 {
-        return Err(GeometryError::NonFinite {
-            context: "Bezier end-weight reparameterization ratio",
-        });
-    }
-    for (index, control) in controls.iter_mut().enumerate() {
-        let weight = control.weight() * scale * ratio.powf(index as Real);
-        *control = WeightedPoint3::try_new(control.point(), weight)?;
-    }
-    controls[0] = WeightedPoint3::try_new(controls[0].point(), desired_start)?;
-    controls[last] = WeightedPoint3::try_new(controls[last].point(), desired_end)?;
-    Ok(())
 }
 
 fn blend_weighted_control_points(
