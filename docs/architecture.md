@@ -23,7 +23,7 @@ The current foundation supports finite 3D points, vectors, line segments,
 analytic circles, circular arcs, and ellipses, validated open and closed
 polylines, planes, bounding boxes, rational NURBS curves with analytic first
 and second derivatives and exact knot refinement, splitting, and interval trimming,
-rational NURBS surfaces with analytic partial derivatives and exact tensor
+rational NURBS surfaces with analytic first/second partial derivatives and exact tensor
 splitting, knot refinement, and rectangular domain trimming,
 validated shared-topology B-reps with exact rational parameter-space trims,
 validated mixed triangle/quad polygon meshes, layers, groups, and bounded
@@ -61,6 +61,9 @@ NURBS differential evaluation and homogeneous weight matching have separate
 for local-coordinate evaluation, degree-one acceleration, and scale-safe seam joins.
 The shared [one-sided evaluator](curve-sided-evaluation.md) propagates side choices
 through composite leaves and supplies exact kink checks and stationary tangents.
+The `nurbs_surface/evaluate` module shares `ParameterSide` and nonempty knot-span
+selection with curves. Its [surface jets](surface-evaluation.md) use local rational
+coordinates and expose exact U/V limits and boundary-span continuation.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

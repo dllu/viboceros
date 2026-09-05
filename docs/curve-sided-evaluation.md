@@ -2,13 +2,15 @@
 
 [Native parameters](curve-parameters.md) · [Rational numerics](nurbs-numerics.md) · [Oracle](oracle.md)
 
-`CurveEvaluationSide::Left` and `Right` select exact limits at a native knot or
+`ParameterSide::Left` and `Right` select exact limits at a native knot or
 junction. All seven `CurveRef` families support `evaluate_on_side`,
 `evaluate_with_derivative_on_side`, `evaluate_with_second_derivative_on_side`,
 and `evaluate_with_tangent_on_side`. The ordinary methods retain their right-side
 default. At either domain endpoint both choices use the interior span, even for
 closed curves; selecting a side does not wrap or extrapolate the parameter.
 Nonfinite and out-of-domain parameters are rejected.
+The same `ParameterSide` enum selects independent U/V limits for
+[rational surfaces](surface-evaluation.md).
 
 NURBS evaluation selects the appropriate nonempty knot span without inserting
 knots, splitting, or replacing the parameter with a nearby floating-point value.

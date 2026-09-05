@@ -1,5 +1,5 @@
 use super::*;
-use crate::{Circle3, CurveEvaluationSide, PolyCurve3};
+use crate::{Circle3, ParameterSide, PolyCurve3};
 use std::f64::consts::{FRAC_1_SQRT_2, FRAC_PI_2};
 
 fn point(x: Real, y: Real) -> Point3 {
@@ -31,7 +31,7 @@ fn native_arc_retains_angular_speed_not_rational_parameterization() {
     for fraction in [0.0, 0.125, 0.375, 0.5, 0.875, 1.0] {
         let t = 10.0 + 4.0 * fraction;
         let (p, d, dd) = native
-            .evaluate_with_second_derivative(t, CurveEvaluationSide::Right)
+            .evaluate_with_second_derivative(t, ParameterSide::Right)
             .unwrap();
         let (s, c) = (fraction * FRAC_PI_2).sin_cos();
         let speed = FRAC_PI_2 / 4.0;

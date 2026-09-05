@@ -2,7 +2,7 @@
 
 use crate::circular::circular_nurbs_span_count;
 use crate::parameter::{checked_parameter, map_parameter};
-use crate::{CurveEvaluationSide, CurveRef, GeometryError, Real};
+use crate::{CurveRef, GeometryError, ParameterSide, Real};
 use std::f64::consts::TAU;
 
 #[cfg(test)]
@@ -35,7 +35,7 @@ impl CurveRef<'_> {
             Self::Circle(_) => TAU,
             Self::Arc(arc) => arc.sweep_radians(),
             Self::PolyCurve(curve) => {
-                let index = curve.segment_index(parameter, CurveEvaluationSide::Right)?;
+                let index = curve.segment_index(parameter, ParameterSide::Right)?;
                 let segment = curve.segments()[index].as_ref();
                 // Non-circular leaves are already parameter equivalent. Avoid
                 // rounding a parameter through two unnecessary affine maps.

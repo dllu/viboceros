@@ -1,8 +1,8 @@
 use std::f64::consts::FRAC_PI_2;
 
 use crate::{
-    Circle3, CircularArc3, CurveEvaluationSide, Ellipse3, GeometryError, LineSegment, NurbsCurve,
-    Point3, PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
+    Circle3, CircularArc3, Ellipse3, GeometryError, LineSegment, NurbsCurve, ParameterSide, Point3,
+    PolyCurve3, Polyline3, Real, Tolerance, UnitVector3, Vector3,
     integration::integrate_adaptive,
     nurbs::{CURVE_COINCIDENCE_ABSOLUTE, curve_points_coincident},
     require_finite,
@@ -367,7 +367,7 @@ impl CurveRef<'_> {
 
     /// Evaluates the native parameter and its oriented unit tangent.
     pub fn evaluate_with_tangent(self, parameter: Real) -> Result<CurveSample, GeometryError> {
-        self.evaluate_with_tangent_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_with_tangent_on_side(parameter, ParameterSide::Right)
     }
 
     /// One-sided oriented tangent at the exact parameter, without a parameter
@@ -376,7 +376,7 @@ impl CurveRef<'_> {
     pub fn evaluate_with_tangent_on_side(
         self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<CurveSample, GeometryError> {
         let point = self.evaluate_on_side(parameter, side)?;
         // Direction is independent of domain width. Avoid overflowing or
@@ -485,7 +485,7 @@ impl CurveRef<'_> {
             }
             Self::PolyCurve(curve) => {
                 let (_, first, second) =
-                    curve.evaluate_with_second_derivative(parameter, CurveEvaluationSide::Right)?;
+                    curve.evaluate_with_second_derivative(parameter, ParameterSide::Right)?;
                 curvature_from_derivatives(first, second)
             }
         }
@@ -901,11 +901,11 @@ impl<'a> ArcLengthSampler<'a> {
             let right = spans[1];
             let left_tangent = self
                 .curve
-                .evaluate_with_tangent_on_side(left.end, CurveEvaluationSide::Left)?
+                .evaluate_with_tangent_on_side(left.end, ParameterSide::Left)?
                 .tangent();
             let right_tangent = self
                 .curve
-                .evaluate_with_tangent_on_side(right.start, CurveEvaluationSide::Right)?
+                .evaluate_with_tangent_on_side(right.start, ParameterSide::Right)?
                 .tangent();
             let dot = left_tangent
                 .as_vector()

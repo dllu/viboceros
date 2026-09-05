@@ -47,6 +47,14 @@ Rhino's placement-viewport construction-plane normal.
 This command defaults to `Copy=Yes`; originals remain selected and copied group
 topology is preserved. Use `Copy=No` for an identity-preserving in-place morph.
 
+Known limitation: the line/polyline helper currently fits one cubic per source
+segment without adaptive error refinement. A fresh `surface_orient.json` audit
+at its `1e-9` document tolerance fails the scaled/rotated line's control-net
+comparison: native output has four controls and Rhino has five. This is not
+evidence of a `0.31`-unit locus error (the compared control nets differ), nor a
+passing command-compatibility result. Tolerance-aware line fitting and a separate
+unrounded sampled-locus comparison remain necessary.
+
 `Array` takes X/Y/Z counts followed by signed world-axis distances. Its default
 `UnitCell` mode uses those values as successive spacing. `Mode=Fill` treats them
 as outside dimensions and accounts for the selected geometry's bounding-box

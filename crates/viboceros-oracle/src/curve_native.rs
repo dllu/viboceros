@@ -471,7 +471,7 @@ fn record(
     if !sided_parameters.is_empty() {
         value["sides"] = Value::Array(sided_parameters.iter().map(|&parameter| {
             let mut sample = json!({"parameter": parameter});
-            for (name, side) in [("left", viboceros_geometry::CurveEvaluationSide::Left), ("right", viboceros_geometry::CurveEvaluationSide::Right)] {
+            for (name, side) in [("left", viboceros_geometry::ParameterSide::Left), ("right", viboceros_geometry::ParameterSide::Right)] {
                 let (p, first, second) = view.evaluate_with_second_derivative_on_side(parameter, side)?;
                 sample[name] = json!({"point": p.to_array(), "first": first.to_array(), "second": second.to_array(),
                     "tangent": view.evaluate_with_tangent_on_side(parameter, side)?.tangent().as_vector().to_array()});

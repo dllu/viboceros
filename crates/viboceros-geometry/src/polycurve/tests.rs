@@ -122,37 +122,27 @@ fn scales_both_derivatives_and_defines_one_sided_junctions() {
     let changed = curve.try_reparameterized(-12.0..=16.0).unwrap();
     for original in [-2.0, 0.0, 2.0, 3.5] {
         let (point_a, first_a, second_a) = curve
-            .evaluate_with_second_derivative(original, CurveEvaluationSide::Right)
+            .evaluate_with_second_derivative(original, ParameterSide::Right)
             .unwrap();
         let (point_b, first_b, second_b) = changed
-            .evaluate_with_second_derivative(original * 4.0, CurveEvaluationSide::Right)
+            .evaluate_with_second_derivative(original * 4.0, ParameterSide::Right)
             .unwrap();
         near(point_a, point_b);
         vector_near(first_a.scaled(0.25).unwrap(), first_b);
         vector_near(second_a.scaled(0.0625).unwrap(), second_b);
     }
     let left = curve
-        .evaluate_with_second_derivative(-1.0, CurveEvaluationSide::Left)
+        .evaluate_with_second_derivative(-1.0, ParameterSide::Left)
         .unwrap();
     let right = curve
-        .evaluate_with_second_derivative(-1.0, CurveEvaluationSide::Right)
+        .evaluate_with_second_derivative(-1.0, ParameterSide::Right)
         .unwrap();
     near(left.0, right.0);
     assert!((left.1.x() - 1.0).abs() < 1e-13);
     assert!((right.1.x() - 0.5_f64.sqrt() / 2.0).abs() < 1e-13);
     assert!(right.2.length().unwrap() > 0.1);
-    assert_eq!(
-        curve
-            .segment_index(-3.0, CurveEvaluationSide::Left)
-            .unwrap(),
-        0
-    );
-    assert_eq!(
-        curve
-            .segment_index(4.0, CurveEvaluationSide::Right)
-            .unwrap(),
-        2
-    );
+    assert_eq!(curve.segment_index(-3.0, ParameterSide::Left).unwrap(), 0);
+    assert_eq!(curve.segment_index(4.0, ParameterSide::Right).unwrap(), 2);
 }
 
 #[test]

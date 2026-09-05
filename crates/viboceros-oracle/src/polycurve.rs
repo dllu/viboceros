@@ -2,7 +2,7 @@
 
 use serde::Deserialize;
 use serde_json::{Value, json};
-use viboceros_geometry::{CurveEvaluationSide, CurveRef, GeometryError, PolyCurve3, Tolerance};
+use viboceros_geometry::{CurveRef, GeometryError, ParameterSide, PolyCurve3, Tolerance};
 
 use super::{
     NurbsCurveDefinition, ProbeError, measure, nurbs_curve_definition_value,
@@ -66,7 +66,7 @@ fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, GeometryErr
     parameters.sort_by(f64::total_cmp);
     parameters.dedup();
     let samples = parameters.iter().map(|&parameter| {
-        let (point, first, second) = curve.evaluate_with_second_derivative(parameter, CurveEvaluationSide::Right)?;
+        let (point, first, second) = curve.evaluate_with_second_derivative(parameter, ParameterSide::Right)?;
         if point.distance_to(nurbs.evaluate(parameter)?)? > 1e-9 {
             return Err(GeometryError::InvalidPolyCurve { context: "polycurve NURBS conversion changed the curve" });
         }

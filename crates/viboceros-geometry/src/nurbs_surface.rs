@@ -1,5 +1,8 @@
 use std::ops::RangeInclusive;
 
+mod evaluate;
+pub use evaluate::SurfaceJet2;
+
 use nalgebra::{Matrix3, Vector3 as NalgebraVector3};
 
 use crate::integration::integrate_adaptive;
@@ -3052,104 +3055,6 @@ impl NurbsSurface {
         normalized_parameter(normalized, self.domain_v())
     }
 
-    /// Evaluates a surface point with the tensor-product homogeneous de Boor
-    /// algorithm.
-    pub fn evaluate(&self, u: Real, v: Real) -> Result<Point3, GeometryError> {
-        self.evaluate_homogeneous(u, v)
-            .and_then(project_homogeneous)
-    }
-
-    /// Evaluates the polynomial/rational continuation of the first or last
-    /// knot span when either parameter lies outside the natural domain.
-    /// Surface space morphs use this continuation for source geometry that
-    /// crosses a target surface edge, matching Rhino's splop behavior.
-    pub fn evaluate_extended(&self, u: Real, v: Real) -> Result<Point3, GeometryError> {
-        let span_u = extended_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
-        let span_v = extended_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
-        self.evaluate_homogeneous_at_spans(u, v, span_u, span_v)
-            .and_then(project_homogeneous)
-    }
-
-    /// Evaluates a point and its exact first partial derivatives.
-    pub fn evaluate_with_derivatives(
-        &self,
-        u: Real,
-        v: Real,
-    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        let span_u = checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
-        let span_v = checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
-        self.evaluate_with_derivatives_at_spans(u, v, span_u, span_v)
-    }
-
-    /// Evaluates a surface continuation and its exact first partial
-    /// derivatives outside the natural parameter domain.
-    pub fn evaluate_extended_with_derivatives(
-        &self,
-        u: Real,
-        v: Real,
-    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        let span_u = extended_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
-        let span_v = extended_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
-        self.evaluate_with_derivatives_at_spans(u, v, span_u, span_v)
-    }
-
-    fn evaluate_with_derivatives_at_spans(
-        &self,
-        u: Real,
-        v: Real,
-        span_u: usize,
-        span_v: usize,
-    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        let active = self.active_homogeneous_control_net(span_u, span_v)?;
-        let homogeneous = evaluate_tensor_product(
-            &active,
-            self.degree_u + 1,
-            &self.knots_u,
-            self.degree_u,
-            span_u,
-            u,
-            &self.knots_v,
-            self.degree_v,
-            span_v,
-            v,
-        )?;
-        let point = project_homogeneous(homogeneous)?;
-
-        let derivative_u_controls =
-            derivative_controls_u(&active, self.degree_u, self.degree_v, span_u, &self.knots_u)?;
-        let homogeneous_u = evaluate_tensor_product(
-            &derivative_u_controls,
-            self.degree_u,
-            &self.knots_u[1..self.knots_u.len() - 1],
-            self.degree_u - 1,
-            span_u - 1,
-            u,
-            &self.knots_v,
-            self.degree_v,
-            span_v,
-            v,
-        )?;
-
-        let derivative_v_controls =
-            derivative_controls_v(&active, self.degree_u, self.degree_v, span_v, &self.knots_v)?;
-        let homogeneous_v = evaluate_tensor_product(
-            &derivative_v_controls,
-            self.degree_u + 1,
-            &self.knots_u,
-            self.degree_u,
-            span_u,
-            u,
-            &self.knots_v[1..self.knots_v.len() - 1],
-            self.degree_v - 1,
-            span_v - 1,
-            v,
-        )?;
-
-        let derivative_u = project_derivative(point, homogeneous, homogeneous_u)?;
-        let derivative_v = project_derivative(point, homogeneous, homogeneous_v)?;
-        Ok((point, derivative_u, derivative_v))
-    }
-
     pub fn normal_at(
         &self,
         u: Real,
@@ -3978,71 +3883,6 @@ impl NurbsSurface {
         TriangleMesh::try_new_faces(vertices, faces, tolerance)
     }
 
-    fn evaluate_homogeneous(&self, u: Real, v: Real) -> Result<[Real; 4], GeometryError> {
-        let span_u = checked_span(self.degree_u, self.control_point_count_u, &self.knots_u, u)?;
-        let span_v = checked_span(self.degree_v, self.control_point_count_v, &self.knots_v, v)?;
-        self.evaluate_homogeneous_at_spans(u, v, span_u, span_v)
-    }
-
-    fn evaluate_homogeneous_at_spans(
-        &self,
-        u: Real,
-        v: Real,
-        span_u: usize,
-        span_v: usize,
-    ) -> Result<[Real; 4], GeometryError> {
-        let active = self.active_homogeneous_control_net(span_u, span_v)?;
-        evaluate_tensor_product(
-            &active,
-            self.degree_u + 1,
-            &self.knots_u,
-            self.degree_u,
-            span_u,
-            u,
-            &self.knots_v,
-            self.degree_v,
-            span_v,
-            v,
-        )
-    }
-
-    fn active_homogeneous_control_net(
-        &self,
-        span_u: usize,
-        span_v: usize,
-    ) -> Result<Vec<[Real; 4]>, GeometryError> {
-        let first_u = span_u - self.degree_u;
-        let first_v = span_v - self.degree_v;
-        let mut weight_scale: Real = 0.0;
-        for local_v in 0..=self.degree_v {
-            for local_u in 0..=self.degree_u {
-                weight_scale = weight_scale.max(
-                    self.control_points[self.control_index(first_u + local_u, first_v + local_v)]
-                        .weight()
-                        .abs(),
-                );
-            }
-        }
-        let mut active = Vec::with_capacity((self.degree_u + 1) * (self.degree_v + 1));
-        for local_v in 0..=self.degree_v {
-            for local_u in 0..=self.degree_u {
-                let control =
-                    self.control_points[self.control_index(first_u + local_u, first_v + local_v)];
-                let weight = control.weight() / weight_scale;
-                let point = control.point();
-                let homogeneous = [
-                    point.x() * weight,
-                    point.y() * weight,
-                    point.z() * weight,
-                    weight,
-                ];
-                require_finite(homogeneous, "homogeneous NURBS surface control point")?;
-                active.push(homogeneous);
-            }
-        }
-        Ok(active)
-    }
-
     fn map_u_control_curves(
         &self,
         mut map: impl FnMut(&crate::NurbsCurve) -> Result<crate::NurbsCurve, GeometryError>,
@@ -4860,101 +4700,6 @@ fn knots_are_clamped_at_end(degree: usize, knots: &[Real]) -> bool {
     knots[control_count] == knots[knots.len() - 2]
 }
 
-#[allow(clippy::too_many_arguments)]
-fn evaluate_tensor_product(
-    controls: &[[Real; 4]],
-    row_width: usize,
-    knots_u: &[Real],
-    degree_u: usize,
-    span_u: usize,
-    u: Real,
-    knots_v: &[Real],
-    degree_v: usize,
-    span_v: usize,
-    v: Real,
-) -> Result<[Real; 4], GeometryError> {
-    debug_assert_eq!(controls.len(), row_width * (degree_v + 1));
-    let mut evaluated_u = Vec::with_capacity(degree_v + 1);
-    for row in controls.chunks_exact(row_width) {
-        evaluated_u.push(de_boor(knots_u, degree_u, span_u, u, row.to_vec())?);
-    }
-    de_boor(knots_v, degree_v, span_v, v, evaluated_u)
-}
-
-fn derivative_controls_u(
-    controls: &[[Real; 4]],
-    degree_u: usize,
-    degree_v: usize,
-    span_u: usize,
-    knots_u: &[Real],
-) -> Result<Vec<[Real; 4]>, GeometryError> {
-    let first_u = span_u - degree_u;
-    let source_width = degree_u + 1;
-    let mut result = Vec::with_capacity(degree_u * (degree_v + 1));
-    for row in controls.chunks_exact(source_width) {
-        for local_u in 0..degree_u {
-            let index = first_u + local_u;
-            let mut derivative = [0.0; 4];
-            for coordinate in 0..4 {
-                derivative[coordinate] = stable_divided_difference(
-                    row[local_u + 1][coordinate],
-                    row[local_u][coordinate],
-                    degree_u,
-                    knots_u[index + 1],
-                    knots_u[index + degree_u + 1],
-                )?;
-            }
-            result.push(derivative);
-        }
-    }
-    Ok(result)
-}
-
-fn derivative_controls_v(
-    controls: &[[Real; 4]],
-    degree_u: usize,
-    degree_v: usize,
-    span_v: usize,
-    knots_v: &[Real],
-) -> Result<Vec<[Real; 4]>, GeometryError> {
-    let first_v = span_v - degree_v;
-    let row_width = degree_u + 1;
-    let mut result = Vec::with_capacity(row_width * degree_v);
-    for local_v in 0..degree_v {
-        let index = first_v + local_v;
-        for local_u in 0..row_width {
-            let lower = controls[local_v * row_width + local_u];
-            let upper = controls[(local_v + 1) * row_width + local_u];
-            let mut derivative = [0.0; 4];
-            for coordinate in 0..4 {
-                derivative[coordinate] = stable_divided_difference(
-                    upper[coordinate],
-                    lower[coordinate],
-                    degree_v,
-                    knots_v[index + 1],
-                    knots_v[index + degree_v + 1],
-                )?;
-            }
-            result.push(derivative);
-        }
-    }
-    Ok(result)
-}
-
-fn project_derivative(
-    point: Point3,
-    homogeneous: [Real; 4],
-    derivative: [Real; 4],
-) -> Result<Vector3, GeometryError> {
-    let weight = homogeneous[3];
-    let weight_derivative = derivative[3];
-    let point = point.to_array();
-    let projected = std::array::from_fn(|coordinate| {
-        (-point[coordinate]).mul_add(weight_derivative, derivative[coordinate]) / weight
-    });
-    Vector3::try_from(projected)
-}
-
 fn homogeneous_curve_derivative_length(
     degree: usize,
     controls: &[WeightedPoint3],
@@ -5032,25 +4777,12 @@ fn extended_span(
     parameter: Real,
 ) -> Result<usize, GeometryError> {
     require_finite([parameter], "NURBS surface parameter")?;
-    let last_control = control_point_count - 1;
-    if parameter >= knots[last_control + 1] {
-        return Ok(last_control);
-    }
-    if parameter <= knots[degree] {
-        return Ok(degree);
-    }
-    let mut low = degree;
-    let mut high = last_control + 1;
-    let mut middle = (low + high) / 2;
-    while parameter < knots[middle] || parameter >= knots[middle + 1] {
-        if parameter < knots[middle] {
-            high = middle;
-        } else {
-            low = middle;
-        }
-        middle = (low + high) / 2;
-    }
-    Ok(middle)
+    Ok(crate::nurbs::find_span_in_knots(
+        knots,
+        degree,
+        control_point_count,
+        parameter,
+    ))
 }
 
 fn nonempty_spans(

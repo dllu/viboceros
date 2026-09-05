@@ -1,5 +1,5 @@
 use super::*;
-use crate::{CurveEvaluationSide, Point3, WeightedPoint3};
+use crate::{ParameterSide, Point3, WeightedPoint3};
 
 fn point(x: Real, y: Real) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
@@ -14,9 +14,9 @@ fn compare_parts(source: &NurbsCurve, expected_domains: &[[Real; 2]]) -> Vec<Nur
         for i in 0..=32 {
             let t = part.parameter_at(i as Real / 32.0).unwrap();
             let side = if i == 32 {
-                CurveEvaluationSide::Left
+                ParameterSide::Left
             } else {
-                CurveEvaluationSide::Right
+                ParameterSide::Right
             };
             let actual = part.evaluate_with_second_derivative(t).unwrap();
             let expected = source

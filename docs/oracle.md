@@ -83,6 +83,11 @@ for analytic checks, observed errors, and remaining kernel limits.
 See [one-sided evaluation](curve-sided-evaluation.md) for the exact-limit contract,
 Rhino probe construction, and native-only full-order knot tests.
 
+`surface_jets.json` checks 20 [rational surface differential cases](surface-evaluation.md),
+including second partials, parameter-domain changes, continuation, and exact
+quadrant limits. `surface_translated_jets.json` separately diagnoses large-coordinate
+cancellation and is not a passing reference at the ordinary epsilon.
+
 `curve_3dm_interchange.json` checks Rhino's reading of actual Viboceros-written
 files, including decomposed full-order knots and all visibility/locking states.
 Unlike independent-construction probes, `compare` supplies shared private artifact

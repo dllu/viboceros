@@ -1,5 +1,5 @@
 use super::*;
-use crate::{CurveEvaluationSide, UnitVector3};
+use crate::{ParameterSide, UnitVector3};
 
 #[cfg(test)]
 mod tests;
@@ -7,14 +7,14 @@ mod tests;
 impl NurbsCurve {
     /// Evaluates the curve with the homogeneous de Boor algorithm.
     pub fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
-        self.evaluate_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_on_side(parameter, ParameterSide::Right)
     }
 
     /// Exact point limit from the requested side of a knot.
     pub fn evaluate_on_side(
         &self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<Point3, GeometryError> {
         let span = self.checked_span_on_side(parameter, side)?;
         if let Some(point) = self.span_endpoint_point(span, parameter) {
@@ -33,13 +33,13 @@ impl NurbsCurve {
         &self,
         parameter: Real,
     ) -> Result<(Point3, Vector3), GeometryError> {
-        self.evaluate_with_derivative_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_with_derivative_on_side(parameter, ParameterSide::Right)
     }
 
     pub fn evaluate_with_derivative_on_side(
         &self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<(Point3, Vector3), GeometryError> {
         let span = self.checked_span_on_side(parameter, side)?;
         self.with_evaluation_controls(span, |origin, active| {
@@ -77,13 +77,13 @@ impl NurbsCurve {
         &self,
         parameter: Real,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        self.evaluate_with_second_derivative_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_with_second_derivative_on_side(parameter, ParameterSide::Right)
     }
 
     pub fn evaluate_with_second_derivative_on_side(
         &self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         let span = self.checked_span_on_side(parameter, side)?;
         self.with_evaluation_controls(span, |origin, active| {
@@ -155,7 +155,7 @@ impl NurbsCurve {
     pub fn tangent_at_on_side(
         &self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<UnitVector3, GeometryError> {
         let (_, first) = self.evaluate_with_derivative_on_side(parameter, side)?;
         if first.to_array() != [0.0; 3] {
@@ -164,7 +164,7 @@ impl NurbsCurve {
         let span = self.checked_span_on_side(parameter, side)?;
         let domain = self.domain();
         let incoming = parameter == *domain.end()
-            || (side == CurveEvaluationSide::Left && parameter > *domain.start());
+            || (side == ParameterSide::Left && parameter > *domain.start());
         self.with_evaluation_controls(span, |_, active| {
             let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
             let point = project_homogeneous(homogeneous)?.to_array();
@@ -229,14 +229,11 @@ impl NurbsCurve {
     fn checked_span_on_side(
         &self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<usize, GeometryError> {
         self.validate_parameter(parameter)?;
         let domain = self.domain();
-        if side == CurveEvaluationSide::Left
-            && parameter > *domain.start()
-            && parameter < *domain.end()
-        {
+        if side == ParameterSide::Left && parameter > *domain.start() && parameter < *domain.end() {
             Ok(self.knots.partition_point(|knot| *knot < parameter) - 1)
         } else {
             Ok(self.find_span(parameter))

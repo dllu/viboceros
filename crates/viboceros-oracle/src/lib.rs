@@ -42,6 +42,8 @@ pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
 pub use polycurve_native::NativePolyCurveFixture;
 mod curve_interchange;
+mod surface_jets;
+pub use surface_jets::SurfaceJetsFixture;
 mod polycurve_document;
 pub use curve_interchange::CurveInterchangeFixture;
 pub use curve_join_close::CurveJoinCloseFixture;
@@ -86,6 +88,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    SurfaceJets {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceJetsFixture,
+    },
     ThreeDmCurveInterchange {
         id: String,
         #[serde(flatten)]
@@ -1312,6 +1319,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::SurfaceJets { id, .. }
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::CurveNative { id, .. }
             | Self::CurveExtrudeCommand { id, .. }
@@ -1591,6 +1599,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::SurfaceJets { fixture, .. } => surface_jets::run(fixture, iterations)?,
         Operation::ThreeDmCurveInterchange { fixture, .. } => {
             curve_interchange::run(fixture, iterations, tolerance)?
         }

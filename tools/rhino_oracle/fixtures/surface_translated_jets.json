@@ -1,0 +1,198 @@
+{
+  "protocol_version": 1,
+  "iterations": 40,
+  "operations": [
+    {
+      "id": "surface-jets-translated-plane",
+      "op": "surface_jets",
+      "surface": {
+        "degree_u": 1,
+        "degree_v": 1,
+        "control_point_count_u": 2,
+        "control_point_count_v": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              0,
+              3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              3,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "translation": [
+        1000000000000,
+        -2000000000000,
+        3000000000000
+      ]
+    },
+    {
+      "id": "surface-jets-translated-constant",
+      "op": "surface_jets",
+      "surface": {
+        "degree_u": 3,
+        "degree_v": 2,
+        "control_point_count_u": 4,
+        "control_point_count_v": 3,
+        "control_points": [
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.75
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.5
+          },
+          {
+            "point": [
+              7,
+              -11,
+              13
+            ],
+            "weight": 1.75
+          }
+        ],
+        "knots_u": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "knots_v": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "translation": [
+        1000000000000,
+        -2000000000000,
+        3000000000000
+      ]
+    }
+  ]
+}

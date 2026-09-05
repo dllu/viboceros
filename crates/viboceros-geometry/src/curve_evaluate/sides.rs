@@ -29,14 +29,9 @@ fn polynomial_and_rational_knots_supply_exact_one_sided_jets() {
     );
     let (left, right) = curve.try_split(1.0).unwrap();
     for (side, piece, first, second) in [
+        (ParameterSide::Left, left, [4.0, 0.0, 0.0], [20.0, 0.0, 0.0]),
         (
-            CurveEvaluationSide::Left,
-            left,
-            [4.0, 0.0, 0.0],
-            [20.0, 0.0, 0.0],
-        ),
-        (
-            CurveEvaluationSide::Right,
+            ParameterSide::Right,
             right,
             [0.0, 2.0, 0.0],
             [6.0, 18.0, 0.0],
@@ -69,13 +64,13 @@ fn full_order_knots_preserve_distinct_point_limits() {
     let view = CurveRef::NurbsCurve(&curve);
     for (side, point, first, second) in [
         (
-            CurveEvaluationSide::Left,
+            ParameterSide::Left,
             p(1.0, 0.0, 0.0),
             [0.5, 0.0, 0.0],
             [-0.5, 0.0, 0.0],
         ),
         (
-            CurveEvaluationSide::Right,
+            ParameterSide::Right,
             p(10.0, 2.0, 0.0),
             [0.0, 8.0, 0.0],
             [0.0, -16.0, 0.0],
@@ -112,8 +107,8 @@ fn polycurve_side_selection_reaches_knots_inside_each_leaf_type() {
     ] {
         let curve = PolyCurve3::try_with_segment_domains(vec![leaf], vec![-7.0, 13.0]).unwrap();
         for (side, expected) in [
-            (CurveEvaluationSide::Left, [0.1, 0.0, 0.0]),
-            (CurveEvaluationSide::Right, [0.0, 0.2, 0.0]),
+            (ParameterSide::Left, [0.1, 0.0, 0.0]),
+            (ParameterSide::Right, [0.0, 0.2, 0.0]),
         ] {
             let jet = curve.evaluate_with_second_derivative(3.0, side).unwrap();
             assert_eq!(jet.0, p(1.0, 0.0, 0.0));
@@ -146,7 +141,7 @@ fn one_sided_limits_do_not_replace_the_parameter_with_a_neighboring_float() {
     )
     .unwrap();
     let left = curve
-        .evaluate_with_derivative_on_side(knot, CurveEvaluationSide::Left)
+        .evaluate_with_derivative_on_side(knot, ParameterSide::Left)
         .unwrap();
     assert_eq!(left.0, p(1.0, 1.0, 0.0));
     assert_eq!(left.1.to_array(), [1.0, 0.0, 0.0]);
@@ -167,7 +162,7 @@ fn ellipse_quarter_knots_use_the_requested_second_derivative() {
         let view = CurveRef::Ellipse(&curve);
         for i in 0..=4 {
             let t = view.parameter_at(i as Real / 4.0).unwrap();
-            for side in [CurveEvaluationSide::Left, CurveEvaluationSide::Right] {
+            for side in [ParameterSide::Left, ParameterSide::Right] {
                 let actual = view
                     .evaluate_with_second_derivative_on_side(t, side)
                     .unwrap();
@@ -197,8 +192,8 @@ fn reversal_swaps_sides_and_changes_only_odd_derivative_signs() {
     );
     let reversed = curve.reversed().unwrap();
     for (side, opposite) in [
-        (CurveEvaluationSide::Left, CurveEvaluationSide::Right),
-        (CurveEvaluationSide::Right, CurveEvaluationSide::Left),
+        (ParameterSide::Left, ParameterSide::Right),
+        (ParameterSide::Right, ParameterSide::Left),
     ] {
         let a = curve
             .evaluate_with_second_derivative_on_side(1.0, side)
@@ -245,10 +240,10 @@ fn sides_at_open_and_closed_domain_endpoints_use_the_interior_span() {
         for t in [*curve.domain().start(), *curve.domain().end()] {
             assert_eq!(
                 curve
-                    .evaluate_with_second_derivative_on_side(t, CurveEvaluationSide::Left)
+                    .evaluate_with_second_derivative_on_side(t, ParameterSide::Left)
                     .unwrap(),
                 curve
-                    .evaluate_with_second_derivative_on_side(t, CurveEvaluationSide::Right)
+                    .evaluate_with_second_derivative_on_side(t, ParameterSide::Right)
                     .unwrap()
             );
         }
@@ -258,7 +253,7 @@ fn sides_at_open_and_closed_domain_endpoints_use_the_interior_span() {
             *curve.domain().start() - 1.0,
             *curve.domain().end() + 1.0,
         ] {
-            for side in [CurveEvaluationSide::Left, CurveEvaluationSide::Right] {
+            for side in [ParameterSide::Left, ParameterSide::Right] {
                 assert!(curve.evaluate_on_side(t, side).is_err());
                 assert!(curve.evaluate_with_derivative_on_side(t, side).is_err());
                 assert!(
@@ -301,7 +296,7 @@ fn stationary_points_distinguish_smooth_stalls_from_cusps() {
         assert_eq!(curve.derivative_at(1.0).unwrap().to_array(), [0.0; 3]);
         let view = CurveRef::NurbsCurve(curve);
         assert_eq!(
-            view.evaluate_with_tangent_on_side(1.0, CurveEvaluationSide::Left)
+            view.evaluate_with_tangent_on_side(1.0, ParameterSide::Left)
                 .unwrap()
                 .tangent()
                 .as_vector()
@@ -309,7 +304,7 @@ fn stationary_points_distinguish_smooth_stalls_from_cusps() {
             [left_x, 0.0, 0.0]
         );
         assert_eq!(
-            view.evaluate_with_tangent_on_side(1.0, CurveEvaluationSide::Right)
+            view.evaluate_with_tangent_on_side(1.0, ParameterSide::Right)
                 .unwrap()
                 .tangent()
                 .as_vector()
@@ -341,7 +336,7 @@ fn limiting_tangents_use_higher_derivatives_and_endpoint_orientation() {
             knots.extend(vec![1.0; degree + 1]);
             let curve = rational(degree, &controls, knots);
             let reversed = curve.reversed().unwrap();
-            for side in [CurveEvaluationSide::Left, CurveEvaluationSide::Right] {
+            for side in [ParameterSide::Left, ParameterSide::Right] {
                 assert_eq!(
                     curve
                         .tangent_at_on_side(0.0, side)
@@ -370,7 +365,7 @@ fn limiting_tangents_use_higher_derivatives_and_endpoint_orientation() {
         ],
         vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
     );
-    for side in [CurveEvaluationSide::Left, CurveEvaluationSide::Right] {
+    for side in [ParameterSide::Left, ParameterSide::Right] {
         assert!(matches!(
             constant.tangent_at_on_side(0.5, side),
             Err(GeometryError::Degenerate { .. })
@@ -386,7 +381,7 @@ fn sided_first_derivatives_and_tangents_do_not_require_a_finite_second_derivativ
         vec![0.0, 0.0, 1e-200, 1e-200],
     );
     let view = CurveRef::NurbsCurve(&curve);
-    for side in [CurveEvaluationSide::Left, CurveEvaluationSide::Right] {
+    for side in [ParameterSide::Left, ParameterSide::Right] {
         for t in [0.0, 0.5e-200, 1e-200] {
             let (_, first) = view.evaluate_with_derivative_on_side(t, side).unwrap();
             assert!(first.x().is_finite() && first.x() > 0.0);

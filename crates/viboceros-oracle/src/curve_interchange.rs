@@ -4,7 +4,7 @@ use super::{OracleTemporaryFile, ProbeError, curve_join_close::CurveInput};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::path::Path;
-use viboceros_geometry::{Curve3, CurveEvaluationSide, CurveRef, Tolerance};
+use viboceros_geometry::{Curve3, CurveRef, ParameterSide, Tolerance};
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject,
     read_3dm_file, write_3dm_file,
@@ -156,9 +156,9 @@ fn validate_source_locus(
         for i in 0..=64 {
             let t = curve.parameter_at(i as f64 / 64.0)?;
             let side = if i == 64 {
-                CurveEvaluationSide::Left
+                ParameterSide::Left
             } else {
-                CurveEvaluationSide::Right
+                ParameterSide::Right
             };
             let expected = source.evaluate_on_side(t, side)?.to_array();
             let actual = curve.evaluate_on_side(t, side)?.to_array();

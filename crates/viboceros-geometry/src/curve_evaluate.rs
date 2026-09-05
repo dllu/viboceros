@@ -1,7 +1,7 @@
 //! Shared native curve domains and allocation-free analytic evaluation.
 
 use crate::parameter::{map_parameter, scaled_ratio};
-use crate::{CurveRef, GeometryError, Point3, Real, Vector3};
+use crate::{CurveRef, GeometryError, ParameterSide, Point3, Real, Vector3};
 use std::f64::consts::{FRAC_1_SQRT_2, TAU};
 use std::ops::RangeInclusive;
 
@@ -9,15 +9,6 @@ use std::ops::RangeInclusive;
 mod sides;
 #[cfg(test)]
 mod tests;
-
-/// Which one-sided limit to evaluate at an exact curve knot or junction.
-/// At domain endpoints both choices use the only available interior side.
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub enum CurveEvaluationSide {
-    Left,
-    #[default]
-    Right,
-}
 
 impl CurveRef<'_> {
     /// The native parameter interval, independent of the current curve length.
@@ -43,14 +34,14 @@ impl CurveRef<'_> {
 
     /// Evaluates a checked native parameter. This does not extrapolate.
     pub fn evaluate(self, parameter: Real) -> Result<Point3, GeometryError> {
-        self.evaluate_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_on_side(parameter, ParameterSide::Right)
     }
 
     /// Exact one-sided point, including positional jumps at full-order knots.
     pub fn evaluate_on_side(
         self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<Point3, GeometryError> {
         match self {
             Self::Line(c) => c.evaluate(parameter),
@@ -69,7 +60,7 @@ impl CurveRef<'_> {
         self,
         parameter: Real,
     ) -> Result<(Point3, Vector3), GeometryError> {
-        self.evaluate_with_derivative_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_with_derivative_on_side(parameter, ParameterSide::Right)
     }
 
     /// Point and first derivative from the requested side, without perturbing
@@ -77,7 +68,7 @@ impl CurveRef<'_> {
     pub fn evaluate_with_derivative_on_side(
         self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<(Point3, Vector3), GeometryError> {
         match self {
             Self::NurbsCurve(c) => return c.evaluate_with_derivative_on_side(parameter, side),
@@ -96,14 +87,14 @@ impl CurveRef<'_> {
         self,
         parameter: Real,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        self.evaluate_with_second_derivative_on_side(parameter, CurveEvaluationSide::Right)
+        self.evaluate_with_second_derivative_on_side(parameter, ParameterSide::Right)
     }
 
     /// Point and first/second native derivatives from an exact one-sided limit.
     pub fn evaluate_with_second_derivative_on_side(
         self,
         parameter: Real,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         match self {
             Self::NurbsCurve(c) => {
@@ -124,7 +115,7 @@ impl CurveRef<'_> {
         self,
         parameter: Real,
         order: usize,
-        side: CurveEvaluationSide,
+        side: ParameterSide,
     ) -> Result<Vector3, GeometryError> {
         let domain = self.domain();
         let width = domain.end() - domain.start();
@@ -215,17 +206,17 @@ pub(crate) fn ellipse_unit_jet(
     parameter: Real,
     domain: RangeInclusive<Real>,
 ) -> Result<[[Real; 2]; 3], GeometryError> {
-    ellipse_unit_jet_on_side(parameter, domain, CurveEvaluationSide::Right)
+    ellipse_unit_jet_on_side(parameter, domain, ParameterSide::Right)
 }
 
 pub(crate) fn ellipse_unit_jet_on_side(
     parameter: Real,
     domain: RangeInclusive<Real>,
-    side: CurveEvaluationSide,
+    side: ParameterSide,
 ) -> Result<[[Real; 2]; 3], GeometryError> {
     let t = map_parameter(parameter, domain, 0.0..=4.0)?;
     let mut quadrant = t.floor() as usize;
-    if side == CurveEvaluationSide::Left && quadrant > 0 && t == quadrant as Real {
+    if side == ParameterSide::Left && quadrant > 0 && t == quadrant as Real {
         quadrant -= 1;
     }
     let quadrant = quadrant.min(3);

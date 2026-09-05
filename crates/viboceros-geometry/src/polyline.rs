@@ -124,13 +124,13 @@ impl Polyline3 {
         &self,
         parameter: Real,
     ) -> Result<(usize, Real), GeometryError> {
-        self.parameter_location_on_side(parameter, crate::CurveEvaluationSide::Right)
+        self.parameter_location_on_side(parameter, crate::ParameterSide::Right)
     }
 
     pub(crate) fn parameter_location_on_side(
         &self,
         parameter: Real,
-        side: crate::CurveEvaluationSide,
+        side: crate::ParameterSide,
     ) -> Result<(usize, Real), GeometryError> {
         let domain = self.domain();
         if !domain.contains(&parameter) {
@@ -143,8 +143,8 @@ impl Polyline3 {
         let index = self
             .parameters
             .partition_point(|value| match side {
-                crate::CurveEvaluationSide::Left => *value < parameter,
-                crate::CurveEvaluationSide::Right => *value <= parameter,
+                crate::ParameterSide::Left => *value < parameter,
+                crate::ParameterSide::Right => *value <= parameter,
             })
             .saturating_sub(1)
             .min(self.segment_count() - 1);

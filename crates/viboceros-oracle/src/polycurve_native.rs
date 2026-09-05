@@ -4,8 +4,7 @@ use super::{ProbeError, curve_join_close::CurveInput, nurbs_curve_definition_val
 use serde::Deserialize;
 use serde_json::{Value, json};
 use viboceros_geometry::{
-    AffineTransform3, CurveEvaluationSide, CurveSegment3, GeometryError, PolyCurve3, Tolerance,
-    Vector3,
+    AffineTransform3, CurveSegment3, GeometryError, ParameterSide, PolyCurve3, Tolerance, Vector3,
 };
 
 #[cfg(test)]
@@ -114,9 +113,9 @@ pub(super) fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, 
                 domain.start() + (domain.end() - domain.start()) * fraction
             };
             let side = if fraction == 1.0 {
-                CurveEvaluationSide::Left
+                ParameterSide::Left
             } else {
-                CurveEvaluationSide::Right
+                ParameterSide::Right
             };
             let (point, first, second) = curve.evaluate_with_second_derivative(parameter, side)?;
             samples.push(json!({"parameter":parameter,"point":point.to_array(),"first":first.to_array(),"second":second.to_array()}));

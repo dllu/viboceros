@@ -2455,12 +2455,12 @@ impl NurbsCurve {
     }
 
     pub(crate) fn kink_angle_at(&self, knot: Real) -> Result<Real, GeometryError> {
-        let incoming = match self.tangent_at_on_side(knot, crate::CurveEvaluationSide::Left) {
+        let incoming = match self.tangent_at_on_side(knot, crate::ParameterSide::Left) {
             Ok(tangent) => tangent,
             Err(GeometryError::Degenerate { .. }) => return Ok(std::f64::consts::PI),
             Err(error) => return Err(error),
         };
-        let outgoing = match self.tangent_at_on_side(knot, crate::CurveEvaluationSide::Right) {
+        let outgoing = match self.tangent_at_on_side(knot, crate::ParameterSide::Right) {
             Ok(tangent) => tangent,
             Err(GeometryError::Degenerate { .. }) => return Ok(std::f64::consts::PI),
             Err(error) => return Err(error),
@@ -5080,6 +5080,28 @@ pub(crate) fn de_boor<const DIMENSION: usize>(
     degree: usize,
     span: usize,
     parameter: Real,
+    work: Vec<[Real; DIMENSION]>,
+) -> Result<[Real; DIMENSION], GeometryError> {
+    de_boor_impl::<DIMENSION, false>(knots, degree, span, parameter, work)
+}
+
+/// Evaluate the polynomial represented by a selected span, including its
+/// continuation outside that span. The caller must select a nonempty span.
+pub(crate) fn de_boor_extended<const DIMENSION: usize>(
+    knots: &[Real],
+    degree: usize,
+    span: usize,
+    parameter: Real,
+    work: Vec<[Real; DIMENSION]>,
+) -> Result<[Real; DIMENSION], GeometryError> {
+    de_boor_impl::<DIMENSION, true>(knots, degree, span, parameter, work)
+}
+
+fn de_boor_impl<const DIMENSION: usize, const EXTENDED: bool>(
+    knots: &[Real],
+    degree: usize,
+    span: usize,
+    parameter: Real,
     mut work: Vec<[Real; DIMENSION]>,
 ) -> Result<[Real; DIMENSION], GeometryError> {
     debug_assert_eq!(work.len(), degree + 1);
@@ -5088,8 +5110,20 @@ pub(crate) fn de_boor<const DIMENSION: usize>(
             let knot_index = span - degree + local_index;
             let left_knot = knots[knot_index];
             let right_knot = knots[knot_index + degree - level + 1];
-            let alpha = interval_fraction(parameter, left_knot, right_knot)?;
-            work[local_index] = blend_homogeneous(work[local_index - 1], work[local_index], alpha)?;
+            let alpha = if EXTENDED {
+                interval_fraction_unbounded(parameter, left_knot, right_knot)?
+            } else {
+                interval_fraction(parameter, left_knot, right_knot)?
+            };
+            work[local_index] = if EXTENDED && !(0.0..=1.0).contains(&alpha) {
+                let result = std::array::from_fn(|i| {
+                    work[local_index - 1][i].mul_add(1.0 - alpha, work[local_index][i] * alpha)
+                });
+                require_finite(result, "homogeneous NURBS continuation")?;
+                result
+            } else {
+                blend_homogeneous(work[local_index - 1], work[local_index], alpha)?
+            };
         }
     }
     Ok(work[degree])

@@ -1388,8 +1388,95 @@ def _three_dm_curve_interchange(operation, iterations):
     return _measure(iterations, read)
 
 
+def _surface_jets(operation, iterations):
+    surface = _nurbs_surface_from_definition(operation["surface"])
+    owned = [surface]
+    try:
+        for axis, name in [(0, "reverse_u"), (1, "reverse_v")]:
+            if operation.get(name, False):
+                result = surface.Reverse(axis)
+                if result is None:
+                    raise ValueError("surface reversal failed")
+                owned.append(result)
+                surface = result
+        if operation.get("swap_uv", False):
+            result = surface.Transpose()
+            if result is None:
+                raise ValueError("surface transpose failed")
+            owned.append(result)
+            surface = result
+        if operation.get("translation") is not None:
+            if not surface.Transform(Rhino.Geometry.Transform.Translation(_vector(operation["translation"]))):
+                raise ValueError("surface translation failed")
+        domains = [surface.Domain(0), surface.Domain(1)]
+        samples = operation.get("samples")
+        if samples is None:
+            samples = [{"parameter": [domains[0].ParameterAt(i / 4.0), domains[1].ParameterAt(j / 4.0)]}
+                       for j in range(5) for i in range(5)]
+        if not samples:
+            raise ValueError("surface jets need samples")
+        prepared = []
+        extended = operation.get("extended", False)
+        for sample in samples:
+            uv = [_finite(t, "surface jet parameter") for t in sample["parameter"]]
+            if len(uv) != 2:
+                raise ValueError("surface jet needs two parameters")
+            intervals = []
+            trim = False
+            explicit_sides = "side_u" in sample or "side_v" in sample
+            for axis, key in [(0, "side_u"), (1, "side_v")]:
+                side = sample.get(key, "right")
+                if side not in ("left", "right") or (extended and side == "left"):
+                    raise ValueError("invalid surface evaluation side")
+                domain = domains[axis]
+                t = uv[axis]
+                if not extended and not domain.T0 <= t <= domain.T1:
+                    raise ValueError("surface parameter is outside its domain")
+                # RhinoCommon Evaluate has no quadrant argument. Exact trimming
+                # makes the selected span the sole interior boundary limit;
+                # no parameter perturbation or finite difference is involved.
+                if explicit_sides and not extended and domain.T0 < t < domain.T1:
+                    intervals.append(Rhino.Geometry.Interval(domain.T0, t) if side == "left"
+                                     else Rhino.Geometry.Interval(t, domain.T1))
+                    trim = True
+                else:
+                    intervals.append(domain)
+            target = surface
+            if trim:
+                target = surface.Trim(intervals[0], intervals[1])
+                if target is None:
+                    raise ValueError("could not isolate surface evaluation quadrant")
+                owned.append(target)
+            prepared.append((target, uv))
+
+        def compute():
+            values = []
+            for target, uv in prepared:
+                success, point, derivatives = target.Evaluate(uv[0], uv[1], 2)
+                if not success or derivatives is None or len(derivatives) != 5:
+                    raise ValueError("Rhino could not evaluate second surface partials")
+                values.append((point, derivatives))
+            return values
+
+        jets, elapsed = _measure(iterations, compute)
+        records = []
+        for (_, uv), (point, derivatives) in zip(prepared, jets):
+            record = {"parameter": uv, "point": _xyz(point)}
+            for key, derivative in zip(["du", "dv", "duu", "duv", "dvv"], derivatives):
+                record[key] = _xyz(derivative)
+            records.append(record)
+        return {"domain_u": [float(domains[0].T0), float(domains[0].T1)],
+                "domain_v": [float(domains[1].T0), float(domains[1].T1)],
+                "samples": records}, elapsed
+    finally:
+        for item in reversed(owned):
+            item.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "surface_jets":
+        return _surface_jets(operation, iterations)
     if kind == "three_dm_curve_interchange":
         return _three_dm_curve_interchange(operation, iterations)
     if kind == "curve_join_close":

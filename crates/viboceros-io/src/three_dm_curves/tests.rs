@@ -3,9 +3,7 @@ use crate::{
     ThreeDmColorSource, ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject, read_3dm_file,
     write_3dm_file,
 };
-use viboceros_geometry::{
-    CurveEvaluationSide, CurveRef, LineSegment, Point3, Tolerance, WeightedPoint3,
-};
+use viboceros_geometry::{CurveRef, LineSegment, ParameterSide, Point3, Tolerance, WeightedPoint3};
 
 fn p(x: f64, y: f64) -> Point3 {
     Point3::try_new(x, y, 0.0).unwrap()
@@ -96,9 +94,9 @@ fn round_trip(source: ThreeDmGeometry, count: usize) -> ThreeDmModel {
         for i in 0..=64 {
             let t = actual.parameter_at(i as f64 / 64.0).unwrap();
             let side = if i == 64 {
-                CurveEvaluationSide::Left
+                ParameterSide::Left
             } else {
-                CurveEvaluationSide::Right
+                ParameterSide::Right
             };
             assert!(
                 actual

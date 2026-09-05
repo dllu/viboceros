@@ -1,6 +1,15 @@
 use crate::{GeometryError, Real, require_finite};
 use std::ops::RangeInclusive;
 
+/// Which one-sided limit to evaluate at a curve knot, composite junction, or
+/// surface knot line. Domain endpoints use the only available interior side.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum ParameterSide {
+    Left,
+    #[default]
+    Right,
+}
+
 pub(crate) fn check_interval(domain: &RangeInclusive<Real>) -> Result<(), GeometryError> {
     let start = *domain.start();
     let end = *domain.end();

@@ -59,7 +59,6 @@ pub use circle_curve::Circle3;
 pub use circular::CircularArc3;
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
 pub use curve_edit::{Curve3, CurveClosure};
-pub use curve_evaluate::CurveEvaluationSide;
 pub use curve_fit::{MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve};
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
 pub use curve_rebuild::{
@@ -105,8 +104,9 @@ pub use nurbs::{
     CurveCurveOverlap, CurveExtensionBoundary, CurveExtensionSide, CurveExtensionStyle, NurbsCurve,
     WeightedPoint3,
 };
-pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceKnotDirection};
+pub use nurbs_surface::{NurbsSurface, SurfaceExtensionEdge, SurfaceJet2, SurfaceKnotDirection};
 pub use nurbs2::{NurbsCurve2, WeightedPoint2};
+pub use parameter::ParameterSide;
 pub use plane::{Plane, intersect_three_planes};
 pub use point::Point3;
 pub use point_cloud::PointCloud3;

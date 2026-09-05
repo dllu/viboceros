@@ -150,6 +150,68 @@ class RhinoWorkerTests(unittest.TestCase):
                 else:
                     curve.Trim.assert_not_called()
 
+    def test_surface_jets_prepare_exact_quadrants_before_timing_and_keep_derivative_order(self):
+        class Interval:
+            def __init__(self, a, b):
+                self.T0, self.T1 = a, b
+
+        self.worker.Rhino.Geometry = SimpleNamespace(Interval=Interval)
+        vector = lambda x: SimpleNamespace(X=float(x), Y=0.0, Z=0.0)
+        domain = Interval(0.0, 2.0)
+        pieces = []
+
+        def trim(u, v):
+            piece = SimpleNamespace(
+                Evaluate=Mock(return_value=(True, vector(len(pieces)), [vector(i) for i in range(1, 6)])),
+                Dispose=Mock(),
+            )
+            pieces.append(piece)
+            return piece
+
+        surface = SimpleNamespace(
+            Domain=lambda axis: domain, Trim=Mock(side_effect=trim), Dispose=Mock(),
+            Evaluate=Mock(return_value=(True, vector(99), [vector(i) for i in range(1, 6)])),
+        )
+        samples = [{"parameter": [1.0, 1.0], "side_u": a, "side_v": b}
+                   for a in ("left", "right") for b in ("left", "right")]
+        samples += [{"parameter": uv} for uv in ([0.0, 0.0], [2.0, 2.0], [0.5, 0.5])]
+
+        def measure(iterations, compute):
+            self.assertEqual(len(pieces), 4)
+            return compute(), 123
+
+        with patch.object(self.worker, "_nurbs_surface_from_definition", return_value=surface), patch.object(
+            self.worker, "_measure", side_effect=measure
+        ):
+            value, elapsed = self.worker._surface_jets({"surface": {}, "samples": samples}, 3)
+        self.assertEqual(elapsed, 123)
+        intervals = [tuple((i.T0, i.T1) for i in call.args) for call in surface.Trim.call_args_list]
+        self.assertEqual(intervals, [((0.0, 1.0), (0.0, 1.0)), ((0.0, 1.0), (1.0, 2.0)),
+                                     ((1.0, 2.0), (0.0, 1.0)), ((1.0, 2.0), (1.0, 2.0))])
+        for index, record in enumerate(value["samples"]):
+            self.assertEqual(record["point"][0], float(index if index < 4 else 99))
+            for derivative, key in enumerate(["du", "dv", "duu", "duv", "dvv"], 1):
+                self.assertEqual(record[key], [float(derivative), 0.0, 0.0])
+        for piece in pieces:
+            piece.Evaluate.assert_called_once_with(1.0, 1.0, 2)
+            piece.Dispose.assert_called_once_with()
+        surface.Dispose.assert_called_once_with()
+        self.assertEqual(surface.Evaluate.call_count, 3)
+
+    def test_surface_jet_evaluation_failure_disposes_the_prepared_quadrant(self):
+        interval = lambda a, b: SimpleNamespace(T0=a, T1=b)
+        self.worker.Rhino.Geometry = SimpleNamespace(Interval=interval)
+        piece = SimpleNamespace(Evaluate=Mock(return_value=(False, None, None)), Dispose=Mock())
+        surface = SimpleNamespace(Domain=lambda axis: interval(0.0, 2.0),
+                                  Trim=Mock(return_value=piece), Dispose=Mock())
+        with patch.object(self.worker, "_nurbs_surface_from_definition", return_value=surface):
+            with self.assertRaisesRegex(ValueError, "second surface partials"):
+                self.worker._surface_jets({"surface": {}, "samples": [
+                    {"parameter": [1.0, 1.0], "side_u": "left"}
+                ]}, 1)
+        piece.Dispose.assert_called_once_with()
+        surface.Dispose.assert_called_once_with()
+
 
 if __name__ == "__main__":
     unittest.main()
