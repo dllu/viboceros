@@ -24,6 +24,8 @@ use crate::viewport::{
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+mod point_input;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum InteractiveScaleKind {
     Uniform,
@@ -995,6 +997,7 @@ pub struct VibocerosApp {
     grid_snap: bool,
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
+    last_point: Option<Point3>,
     curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
 }
@@ -1026,6 +1029,7 @@ impl VibocerosApp {
             grid_snap: true,
             command_focus_requested: false,
             active_command: None,
+            last_point: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
@@ -1040,6 +1044,9 @@ impl VibocerosApp {
             {
                 self.finish_interactive_curve();
             }
+            return;
+        }
+        if self.active_command.is_some() && self.try_continue_point_input(&input) {
             return;
         }
         self.command_input.clear();
@@ -2665,6 +2672,9 @@ impl VibocerosApp {
 
     fn cancel_interactive_command(&mut self, announce: bool) {
         let command = self.active_command.take();
+        if command.is_some() {
+            self.command_input.clear();
+        }
         self.curve_points.clear();
         if let Some(command) = command
             && announce
@@ -2673,9 +2683,9 @@ impl VibocerosApp {
         }
     }
 
-    fn accept_drafting_point(&mut self, point: Point3) {
+    fn apply_drafting_point(&mut self, point: Point3) -> bool {
         let Some(command) = self.active_command else {
-            return;
+            return false;
         };
         match command {
             InteractiveCommand::Point => {
@@ -2694,7 +2704,7 @@ impl VibocerosApp {
             InteractiveCommand::Line { start: Some(start) } => {
                 if start.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: line end must differ from its start".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -2716,7 +2726,7 @@ impl VibocerosApp {
             } => {
                 if same_top_point(center, point, self.document.tolerance()) {
                     self.push_log("Error: circle point must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -2738,7 +2748,7 @@ impl VibocerosApp {
             } => {
                 if center.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: sphere point must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -2753,19 +2763,19 @@ impl VibocerosApp {
                     let Some(center) = points[0] else {
                         self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if center.is_near(point, self.document.tolerance()) {
                         self.push_log(
                             "Error: ellipsoid axis point must differ from its center".to_owned(),
                         );
-                        return;
+                        return false;
                     }
                 } else if point_count == 2 {
                     let [Some(center), Some(first_axis), _] = points else {
                         self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if let Err(error) = Frame3::try_from_points(
                         center,
@@ -2774,7 +2784,7 @@ impl VibocerosApp {
                         self.document.tolerance(),
                     ) {
                         self.push_log(format!("Error: {error}"));
-                        return;
+                        return false;
                     }
                 }
 
@@ -2789,7 +2799,7 @@ impl VibocerosApp {
                     let [Some(center), Some(first_axis), Some(second_axis)] = points else {
                         self.push_log("Error: ellipsoid point state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if !ellipsoid_third_radius_exceeds_tolerance(
                         center,
@@ -2801,7 +2811,7 @@ impl VibocerosApp {
                         self.push_log(
                             "Error: ellipsoid third-axis radius must be positive".to_owned(),
                         );
-                        return;
+                        return false;
                     }
                     self.active_command = None;
                     self.execute_command(&format!(
@@ -2826,14 +2836,14 @@ impl VibocerosApp {
                             "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
                         );
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if center.is_near(point, self.document.tolerance()) {
                         self.push_log(
                             "Error: mesh-ellipsoid axis point must differ from its center"
                                 .to_owned(),
                         );
-                        return;
+                        return false;
                     }
                 } else if point_count == 2 {
                     let [Some(center), Some(first_axis), _] = points else {
@@ -2841,7 +2851,7 @@ impl VibocerosApp {
                             "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
                         );
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if let Err(error) = Frame3::try_from_points(
                         center,
@@ -2850,7 +2860,7 @@ impl VibocerosApp {
                         self.document.tolerance(),
                     ) {
                         self.push_log(format!("Error: {error}"));
-                        return;
+                        return false;
                     }
                 }
 
@@ -2872,7 +2882,7 @@ impl VibocerosApp {
                             "Error: mesh-ellipsoid point state is inconsistent".to_owned(),
                         );
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if !ellipsoid_third_radius_exceeds_tolerance(
                         center,
@@ -2884,7 +2894,7 @@ impl VibocerosApp {
                         self.push_log(
                             "Error: mesh-ellipsoid third-axis radius must be positive".to_owned(),
                         );
-                        return;
+                        return false;
                     }
                     self.active_command = None;
                     let cap_style = match cap_style {
@@ -2909,7 +2919,7 @@ impl VibocerosApp {
                     && previous.is_near(point, self.document.tolerance())
                 {
                     self.push_log("Error: consecutive arc points must differ".to_owned());
-                    return;
+                    return false;
                 }
                 if point_count < points.len() {
                     points[point_count] = Some(point);
@@ -2922,7 +2932,7 @@ impl VibocerosApp {
                     let [Some(start), Some(through)] = points else {
                         self.push_log("Error: arc point state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if let Err(error) = CircularArc3::try_from_three_points(
                         start,
@@ -2931,7 +2941,7 @@ impl VibocerosApp {
                         self.document.tolerance(),
                     ) {
                         self.push_log(format!("Error: {error}"));
-                        return;
+                        return false;
                     }
                     self.active_command = None;
                     self.execute_command(&format!(
@@ -2959,7 +2969,7 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: ellipse axis point must differ from its center".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let command = InteractiveCommand::Ellipse {
                     center: Some(center),
@@ -2980,7 +2990,7 @@ impl VibocerosApp {
                     self.document.tolerance(),
                 ) {
                     self.push_log(format!("Error: {error}"));
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -2995,7 +3005,7 @@ impl VibocerosApp {
                     && previous.is_near(point, self.document.tolerance())
                 {
                     self.push_log("Error: adjacent polyline vertices must differ".to_owned());
-                    return;
+                    return false;
                 }
                 self.curve_points.push(point);
                 self.push_log(format!(
@@ -3010,7 +3020,7 @@ impl VibocerosApp {
                     && previous.is_near(point, self.document.tolerance())
                 {
                     self.push_log("Error: adjacent curve control points must differ".to_owned());
-                    return;
+                    return false;
                 }
                 self.curve_points.push(point);
                 self.push_log(format!(
@@ -3027,7 +3037,7 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: adjacent curve interpolation points must differ".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 self.curve_points.push(point);
                 self.push_log(format!(
@@ -3052,7 +3062,7 @@ impl VibocerosApp {
                         "Error: rectangle width and height must both exceed model tolerance"
                             .to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -3088,7 +3098,7 @@ impl VibocerosApp {
                         "Error: mesh-plane width and height must both exceed model tolerance"
                             .to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -3132,11 +3142,11 @@ impl VibocerosApp {
                         "Error: mesh-box base width and depth must both exceed model tolerance"
                             .to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(opposite) = Point3::try_new(point.x(), point.y(), base.z()) else {
                     self.push_log("Error: mesh-box base corner is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let command = InteractiveCommand::MeshBox {
                     base: Some(base),
@@ -3162,7 +3172,7 @@ impl VibocerosApp {
                 let height = point.z() - base.z();
                 if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
                     self.push_log("Error: mesh-box height must exceed model tolerance".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -3210,11 +3220,11 @@ impl VibocerosApp {
             } => {
                 if same_top_point(center, point, self.document.tolerance()) {
                     self.push_log("Error: mesh-cone radius must exceed model tolerance".to_owned());
-                    return;
+                    return false;
                 }
                 let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
                     self.push_log("Error: mesh-cone radius point is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let command = InteractiveCommand::MeshCone {
                     center: Some(center),
@@ -3242,7 +3252,7 @@ impl VibocerosApp {
                 let height = point.z() - center.z();
                 if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
                     self.push_log("Error: mesh-cone height must exceed model tolerance".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 let cap_style = match cap_style {
@@ -3299,14 +3309,14 @@ impl VibocerosApp {
                         "Error: mesh truncated-cone base radius must exceed model tolerance"
                             .to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(base_radius_point) = Point3::try_new(point.x(), point.y(), center.z())
                 else {
                     self.push_log(
                         "Error: mesh truncated-cone base-radius point is not finite".to_owned(),
                     );
-                    return;
+                    return false;
                 };
                 let command = InteractiveCommand::MeshTruncatedCone {
                     center: Some(center),
@@ -3338,11 +3348,11 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: mesh truncated-cone height must exceed model tolerance".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(end_center) = Point3::try_new(center.x(), center.y(), point.z()) else {
                     self.push_log("Error: mesh truncated-cone end center is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let command = InteractiveCommand::MeshTruncatedCone {
                     center: Some(center),
@@ -3374,18 +3384,18 @@ impl VibocerosApp {
                         "Error: mesh truncated-cone end radius must exceed model tolerance"
                             .to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(end_radius_point) = Point3::try_new(point.x(), point.y(), end_center.z())
                 else {
                     self.push_log(
                         "Error: mesh truncated-cone end-radius point is not finite".to_owned(),
                     );
-                    return;
+                    return false;
                 };
                 let Ok(end_radius) = end_center.distance_to(end_radius_point) else {
                     self.push_log("Error: mesh truncated-cone end radius is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let height = end_center.z() - center.z();
                 self.active_command = None;
@@ -3444,11 +3454,11 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: mesh-cylinder radius must exceed model tolerance".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
                     self.push_log("Error: mesh-cylinder radius point is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let command = InteractiveCommand::MeshCylinder {
                     center: Some(center),
@@ -3480,7 +3490,7 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: mesh-cylinder height must exceed model tolerance".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 let cap_style = match cap_style {
@@ -3523,11 +3533,11 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: mesh-sphere radius must exceed model tolerance".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(radius_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
                     self.push_log("Error: mesh-sphere radius point is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 self.active_command = None;
                 let topology_options = match topology {
@@ -3577,11 +3587,11 @@ impl VibocerosApp {
                     self.push_log(
                         "Error: mesh-torus major radius must exceed model tolerance".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 let Ok(major_point) = Point3::try_new(point.x(), point.y(), center.z()) else {
                     self.push_log("Error: mesh-torus major-radius point is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let command = InteractiveCommand::MeshTorus {
                     center: Some(center),
@@ -3604,24 +3614,24 @@ impl VibocerosApp {
             } => {
                 let Ok(major_radius) = center.distance_to(major_point) else {
                     self.push_log("Error: mesh-torus major radius is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 let Ok(minor_radius) = major_point.distance_to(point) else {
                     self.push_log("Error: mesh-torus tube radius is not finite".to_owned());
-                    return;
+                    return false;
                 };
                 if minor_radius <= self.document.tolerance().absolute() {
                     self.push_log(
                         "Error: mesh-torus tube radius must exceed model tolerance".to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 if minor_radius >= major_radius {
                     self.push_log(
                         "Error: mesh-torus tube radius must be smaller than its major radius"
                             .to_owned(),
                     );
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -3656,7 +3666,7 @@ impl VibocerosApp {
             } => {
                 if same_top_point(center, point, self.document.tolerance()) {
                     self.push_log("Error: polygon vertex must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -3671,7 +3681,7 @@ impl VibocerosApp {
                     && previous.is_near(point, self.document.tolerance())
                 {
                     self.push_log("Error: adjacent surface corners must differ".to_owned());
-                    return;
+                    return false;
                 }
                 if corner_count < corners.len() {
                     corners[corner_count] = Some(point);
@@ -3687,7 +3697,7 @@ impl VibocerosApp {
                     let [Some(first), Some(second), Some(third)] = corners else {
                         self.push_log("Error: surface corner state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     self.active_command = None;
                     self.execute_command(&format!(
@@ -4075,7 +4085,7 @@ impl VibocerosApp {
             } => {
                 if center.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: scale reference must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 let command = InteractiveCommand::Scale {
                     kind,
@@ -4095,7 +4105,7 @@ impl VibocerosApp {
                     && center.is_near(point, self.document.tolerance())
                 {
                     self.push_log("Error: scale target must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -4121,7 +4131,7 @@ impl VibocerosApp {
             } => {
                 if same_top_point(center, point, self.document.tolerance()) {
                     self.push_log("Error: rotate reference must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 let command = InteractiveCommand::Rotate {
                     center: Some(center),
@@ -4137,7 +4147,7 @@ impl VibocerosApp {
             } => {
                 if same_top_point(center, point, self.document.tolerance()) {
                     self.push_log("Error: rotate target must differ from its center".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -4154,19 +4164,19 @@ impl VibocerosApp {
                         .is_some_and(|start| start.is_near(point, self.document.tolerance()))
                 {
                     self.push_log("Error: rotation axis points must differ".to_owned());
-                    return;
+                    return false;
                 }
                 if point_count >= 2 {
                     let [Some(axis_start), Some(axis_end), _] = points else {
                         self.push_log("Error: Rotate3D point state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     if point_is_near_axis(axis_start, axis_end, point, self.document.tolerance()) {
                         self.push_log(
                             "Error: Rotate3D reference points must lie off the axis".to_owned(),
                         );
-                        return;
+                        return false;
                     }
                 }
                 if point_count < points.len() {
@@ -4180,7 +4190,7 @@ impl VibocerosApp {
                     let [Some(axis_start), Some(axis_end), Some(reference)] = points else {
                         self.push_log("Error: Rotate3D point state is inconsistent".to_owned());
                         self.active_command = None;
-                        return;
+                        return false;
                     };
                     self.active_command = None;
                     self.execute_command(&format!(
@@ -4201,7 +4211,7 @@ impl VibocerosApp {
             InteractiveCommand::Mirror { start: Some(start) } => {
                 if same_top_point(start, point, self.document.tolerance()) {
                     self.push_log("Error: mirror axis points must differ".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -4225,7 +4235,7 @@ impl VibocerosApp {
             } => {
                 if same_top_point(origin, point, self.document.tolerance()) {
                     self.push_log("Error: shear reference must differ from its origin".to_owned());
-                    return;
+                    return false;
                 }
                 let command = InteractiveCommand::Shear {
                     origin: Some(origin),
@@ -4241,7 +4251,7 @@ impl VibocerosApp {
             } => {
                 if same_top_point(origin, point, self.document.tolerance()) {
                     self.push_log("Error: shear target must differ from its origin".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -4272,7 +4282,7 @@ impl VibocerosApp {
             } => {
                 if base.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: extrusion direction points must differ".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -4319,7 +4329,7 @@ impl VibocerosApp {
             } => {
                 if axis_start.is_near(point, self.document.tolerance()) {
                     self.push_log("Error: revolve axis points must differ".to_owned());
-                    return;
+                    return false;
                 }
                 self.active_command = None;
                 self.execute_command(&format!(
@@ -4332,6 +4342,7 @@ impl VibocerosApp {
                 ));
             }
         }
+        true
     }
 
     fn finish_interactive_curve(&mut self) {
@@ -5524,6 +5535,7 @@ fn point_is_near_axis(
 
 #[cfg(test)]
 mod tests {
+    mod point_input;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{MeshFace, NurbsCurve, SurfaceExtensionEdge, TriangleMesh};
@@ -5546,6 +5558,7 @@ mod tests {
             grid_snap: true,
             command_focus_requested: false,
             active_command: None,
+            last_point: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }

@@ -9,6 +9,57 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_point_input_script_accepts_coordinates_but_not_commands(self):
+        tokens = ["0", "w1,2,3", "@w2<45", "r3<20<30", "wr1e-3,2.5,0"]
+        self.assertEqual(self.worker._point_input_script(tokens), "_Polyline " + " ".join(tokens) + " _Enter")
+        for invalid in [[], ["0"], ["0"] * 257, ["0", "_Delete"], ["0", "1,2 _Enter"],
+                        ["0", "1,2\n_Delete"], ["0", "1;2"], ["0", "r"], ["0", None], ["0", "1" * 513]]:
+            with self.subTest(invalid=invalid):
+                with self.assertRaises(ValueError):
+                    self.worker._point_input_script(invalid)
+
+    def test_point_input_probe_restores_plane_selection_and_owned_outputs_on_failure(self):
+        for failed in [False, True]:
+            with self.subTest(failed=failed):
+                original_plane = object()
+                current_plane = [original_plane]
+                viewport = SimpleNamespace(
+                    ConstructionPlane=lambda: current_plane[0],
+                    SetConstructionPlane=lambda plane: current_plane.__setitem__(0, plane))
+                selected = {"existing"}
+                existing = SimpleNamespace(Id="existing", IsSelected=lambda _: "existing" in selected)
+                objects = {"existing": existing}
+                table = SimpleNamespace(
+                    GetObjectList=lambda _: list(objects.values()),
+                    UnselectAll=selected.clear, Select=selected.add,
+                    Delete=lambda object_id, _: objects.pop(object_id))
+                self.document.Objects = table
+                self.document.Views = SimpleNamespace(ActiveView=SimpleNamespace(ActiveViewport=viewport))
+                self.worker.Rhino.DocObjects = SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace)
+                self.worker.Rhino.Geometry = SimpleNamespace(Plane=lambda *args: SimpleNamespace(IsValid=True))
+                self.worker.Rhino.RhinoApp.RunScript = Mock()
+                points = [SimpleNamespace(X=0.0,Y=0.0,Z=0.0), SimpleNamespace(X=1.0,Y=2.0,Z=0.0)]
+                def run(script, verify):
+                    self.assertTrue(verify)
+                    objects["created"] = SimpleNamespace(Id="created", Geometry=SimpleNamespace(TryGetPolyline=lambda: (True, points)))
+                    if failed:
+                        raise ValueError("failed coordinate command")
+                    return True
+                operation = {"points": ["0", "1,2"], "origin": [0,0,0], "x_axis": [1,0,0], "y_axis": [0,1,0]}
+                with patch.object(self.worker, "_point", side_effect=lambda value: value), patch.object(
+                    self.worker, "_vector", side_effect=lambda value: value), patch.object(self.worker, "_run_surface_script", side_effect=run):
+                    if failed:
+                        with self.assertRaisesRegex(ValueError, "failed coordinate command"):
+                            self.worker._point_input(operation)
+                    else:
+                        value, elapsed = self.worker._point_input(operation)
+                        self.assertEqual(value, {"points": [[0.0,0.0,0.0],[1.0,2.0,0.0]]})
+                        self.assertEqual(elapsed, 0)
+                self.assertIs(current_plane[0], original_plane)
+                self.assertEqual(set(objects), {"existing"})
+                self.assertEqual(selected, {"existing"})
+                self.worker.Rhino.RhinoApp.RunScript.assert_called_once_with("!", False)
+
     def test_loft_samples_are_unrounded_and_use_native_domains(self):
         for enabled in [False, True]:
             domains = [SimpleNamespace(ParameterAt=lambda s: 2.0 + 3.0 * s),

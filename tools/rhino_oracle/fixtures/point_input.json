@@ -1,0 +1,516 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "point-input-top-cartesian",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "0",
+        "1,2",
+        "r3,4,5",
+        "@-2,1",
+        "w-3,2,7",
+        "wr1,2,3",
+        "rw-4,1,-2",
+        "@w2,0,1"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-top-polar",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "0",
+        "5<30",
+        "r2<120,3",
+        "w4<45",
+        "rw3<-90",
+        "@2<180,-4"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-top-spherical",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "0",
+        "5<30<45",
+        "r3<90<-30",
+        "w4<120<60",
+        "rw2<180<30"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-front-cartesian",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "1,2",
+        "r3,4,5",
+        "@-2,1",
+        "w-3,2,7",
+        "wr1,2,3",
+        "rw-4,1,-2",
+        "@w2,0,1"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-front-polar",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30",
+        "r2<120,3",
+        "w4<45",
+        "rw3<-90",
+        "@2<180,-4"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-front-spherical",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30<45",
+        "r3<90<-30",
+        "w4<120<60",
+        "rw2<180<30"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-right-cartesian",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "1,2",
+        "r3,4,5",
+        "@-2,1",
+        "w-3,2,7",
+        "wr1,2,3",
+        "rw-4,1,-2",
+        "@w2,0,1"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-right-polar",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30",
+        "r2<120,3",
+        "w4<45",
+        "rw3<-90",
+        "@2<180,-4"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-right-spherical",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30<45",
+        "r3<90<-30",
+        "w4<120<60",
+        "rw2<180<30"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-shifted-cartesian",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "1,2",
+        "r3,4,5",
+        "@-2,1",
+        "w-3,2,7",
+        "wr1,2,3",
+        "rw-4,1,-2",
+        "@w2,0,1"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-shifted-polar",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30",
+        "r2<120,3",
+        "w4<45",
+        "rw3<-90",
+        "@2<180,-4"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-shifted-spherical",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30<45",
+        "r3<90<-30",
+        "w4<120<60",
+        "rw2<180<30"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-oblique-cartesian",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "points": [
+        "0",
+        "1,2",
+        "r3,4,5",
+        "@-2,1",
+        "w-3,2,7",
+        "wr1,2,3",
+        "rw-4,1,-2",
+        "@w2,0,1"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-oblique-polar",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30",
+        "r2<120,3",
+        "w4<45",
+        "rw3<-90",
+        "@2<180,-4"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-oblique-spherical",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        1
+      ],
+      "points": [
+        "0",
+        "5<30<45",
+        "r3<90<-30",
+        "w4<120<60",
+        "rw2<180<30"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-uppercase",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "W0",
+        "R1,2,3",
+        "WR2,0,-1",
+        "@W1<90",
+        "rW2<30<45"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-negative-radius",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0",
+        "w-5<30,2",
+        "rw-3<90",
+        "w-4<30<45"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-angle-wrap",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "0",
+        "w4<450",
+        "w3<-450",
+        "w5<810<450"
+      ]
+    },
+    {
+      "op": "point_input",
+      "id": "point-input-scientific",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "0",
+        "w1e-6,2.5e-5,-3e-4",
+        "rw1,0,0"
+      ]
+    }
+  ]
+}

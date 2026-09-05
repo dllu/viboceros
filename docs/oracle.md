@@ -12,6 +12,14 @@ This matters for command macros, which read document settings rather than an API
 tolerance argument. See [Rhino's document tolerance API](https://developer.rhino3d.com/api/rhinocommon/rhino.rhinodoc/modelabsolutetolerance).
 Older command comparisons made before this synchronization need revalidation.
 
+`point_input.json` compares 19 [typed-coordinate sequences](point-input.md)
+against Rhino's actual Polyline prompt in world, Front, Right, shifted, and
+oblique construction planes. It checks unrounded resulting vertices, not a
+second copy of the parser. The probe restores the plane and selection and deletes
+only its own output objects; command execution is untimed.
+`point_input_diagnostics.json` retains a large-scale exact-quadrant discrepancy,
+not a passing Rhino reference at `1e-12`.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

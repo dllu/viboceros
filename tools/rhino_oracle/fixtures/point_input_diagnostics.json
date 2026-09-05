@@ -1,0 +1,30 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "point_input",
+      "id": "point-input-near-axis-large",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "points": [
+        "w0",
+        "w1e16<-1e-14",
+        "w2e16<90"
+      ]
+    }
+  ]
+}

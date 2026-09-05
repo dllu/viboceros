@@ -1,5 +1,8 @@
 //! Precision-drafting queries shared by interactive viewports.
 
+mod point_input;
+pub use point_input::{PointInput, PointInputError};
+
 use thiserror::Error;
 use viboceros_document::{Document, Geometry, ObjectId};
 use viboceros_geometry::{GeometryError, Point3, PointCloud3, Real};

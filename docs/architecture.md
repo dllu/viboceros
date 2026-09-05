@@ -17,6 +17,10 @@ file formats, or command parsing.
 | `viboceros-oracle`, `tools/rhino_oracle/` | Matching native and public Rhino API probes and a Python comparison client. |
 | `third_party/` | Pinned OpenNURBS source and its license. |
 
+Typed coordinates are resolved by `viboceros-drafting/point_input`, independent
+of UI and document edits. `app/point_input` shares the interactive command's
+point-validation and transaction path with mouse picks; see [point input](point-input.md).
+
 ## Current foundation
 
 The current foundation supports finite 3D points, vectors, line segments,

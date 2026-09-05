@@ -11,5 +11,6 @@ serde_json.workspace = true
 thiserror.workspace = true
 viboceros-command.workspace = true
 viboceros-document.workspace = true
+viboceros-drafting.workspace = true
 viboceros-geometry.workspace = true
 viboceros-io.workspace = true

@@ -738,6 +738,13 @@ impl CommandRegistry {
         }
     }
 
+    /// Recognizes canonical names, aliases, script prefixes, and built-in help.
+    /// Interactive input routing can check this without executing a command.
+    pub fn recognizes(&self, name: &str) -> bool {
+        let name = normalize_command_name(name);
+        matches!(name.as_str(), "help" | "?") || self.lookup.contains_key(&name)
+    }
+
     pub fn command_names(&self) -> Vec<&'static str> {
         let mut names: Vec<_> = self.commands.iter().map(|command| command.name()).collect();
         names.sort_unstable_by_key(|name| name.to_ascii_lowercase());

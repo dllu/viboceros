@@ -38,6 +38,7 @@ pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
 mod curve_frames;
+mod point_input;
 mod sweep;
 pub use sweep::SweepFixture;
 mod curve_join_close;
@@ -111,6 +112,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PointInput {
+        id: String,
+        #[serde(flatten)]
+        fixture: point_input::PointInputFixture,
+    },
     Sweep1 {
         id: String,
         #[serde(flatten)]
@@ -1405,6 +1411,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::PointInput { id, .. }
             | Self::Loft { id, .. }
             | Self::EdgeSurface { id, .. }
             | Self::SurfaceGrid { id, .. }
@@ -1698,6 +1705,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::PointInput { fixture, .. } => point_input::run(fixture, tolerance)?,
         Operation::ThreeDmBrepInterchange { fixture, .. } => {
             brep_interchange::run(fixture, iterations, tolerance)?
         }

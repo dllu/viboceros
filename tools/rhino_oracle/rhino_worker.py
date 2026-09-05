@@ -2485,8 +2485,59 @@ def _brep_mesh_boundaries(operation, iterations, tolerance):
                 item.Dispose()
 
 
+def _point_input_script(points):
+    if not 2 <= len(points) <= 256:
+        raise ValueError("point input requires 2-256 points")
+    for token in points:
+        if not isinstance(token, string_types) or not token or len(token) > 512:
+            raise ValueError("invalid point token")
+        body = token.lstrip("rRwW@")
+        if not body or body[0] not in "+-.0123456789" or any(c not in "0123456789eE+-,.<>rRwW@" for c in token):
+            raise ValueError("point tokens cannot contain commands or whitespace")
+    return "_Polyline " + " ".join(points) + " _Enter"
+
+
+def _point_input(operation):
+    script = _point_input_script(operation["points"])
+    document = Rhino.RhinoDoc.ActiveDoc
+    viewport = document.Views.ActiveView.ActiveViewport
+    original_plane = viewport.ConstructionPlane()
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid point-input construction plane")
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    try:
+        viewport.SetConstructionPlane(plane)
+        document.Objects.UnselectAll()
+        if not _run_surface_script(script, True):
+            raise ValueError("point-input Polyline command failed")
+        outputs = [obj for obj in objects() if obj.Id not in before]
+        if len(outputs) != 1:
+            raise ValueError("expected one point-input polyline")
+        success, polyline = outputs[0].Geometry.TryGetPolyline()
+        if not success or len(polyline) != len(operation["points"]):
+            raise ValueError("Polyline did not consume every typed point")
+        return {"points": [_xyz(point) for point in polyline]}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before:
+                document.Objects.Delete(obj.Id, True)
+        viewport.SetConstructionPlane(original_plane)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "point_input":
+        return _point_input(operation)
     if kind == "sweep1":
         return _sweep1(operation, iterations, tolerance)
     if kind == "curve_frames":

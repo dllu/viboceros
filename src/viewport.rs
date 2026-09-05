@@ -313,6 +313,22 @@ impl Viewport {
         Vector3::try_from(direction).expect("viewport directions are finite")
     }
 
+    /// Fixed drafting plane; camera orbit and pan do not rotate its axes.
+    pub(crate) fn construction_plane(&self) -> viboceros_geometry::Frame3 {
+        let (x, y) = match self.kind {
+            ViewKind::Top | ViewKind::Perspective => ([1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
+            ViewKind::Front => ([1.0, 0.0, 0.0], [0.0, 0.0, 1.0]),
+            ViewKind::Right => ([0.0, 1.0, 0.0], [0.0, 0.0, 1.0]),
+        };
+        viboceros_geometry::Frame3::try_from_directions(
+            Point3::try_new(0.0, 0.0, 0.0).expect("finite origin"),
+            Vector3::try_from(x).expect("finite plane axis"),
+            Vector3::try_from(y).expect("finite plane axis"),
+            Tolerance::DEFAULT,
+        )
+        .expect("orthogonal construction-plane axes")
+    }
+
     pub fn show(
         &mut self,
         ui: &mut egui::Ui,
