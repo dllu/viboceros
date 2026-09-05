@@ -23,6 +23,9 @@ point-validation and transaction path with mouse picks; see [point input](point-
 `CommandContext` carries an explicit construction plane separately from document
 history. The [plane-primitives module](construction-planes.md) handles orientation,
 projection, and native parameter policy for six primitive commands.
+The separate [plane-transforms module](plane-transforms.md) handles reference
+interpretation and affine maps for five transforms, sharing document mutation
+and copy/group transactions with the other transform commands.
 
 ## Current foundation
 

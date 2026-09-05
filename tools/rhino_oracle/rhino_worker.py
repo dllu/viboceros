@@ -2597,6 +2597,79 @@ def _plane_primitive_record(geometry, raw_representation=False, primitive=None):
     return _cut_native_record(geometry)
 
 
+def _plane_transform_script(operation):
+    name = operation["command"]
+    refs, value = operation["references"], operation.get("value")
+    expected = {"Rotate": 1 if value is not None else 3,
+                "Scale2D": 1 if value is not None else 3,
+                "Mirror": 2, "Shear": 2 if value is not None else 3,
+                "ProjectToCPlane": 0}
+    if name not in expected or len(refs) != expected[name]:
+        raise ValueError("unsupported plane transform or reference count")
+    if name in ("Mirror", "ProjectToCPlane") and value is not None:
+        raise ValueError("unexpected transform value")
+    copy = operation["copy"]
+    if not isinstance(copy, bool):
+        raise ValueError("copy must be boolean")
+    if name == "ProjectToCPlane":
+        return "_ProjectToCPlane _" + ("No" if copy else "Yes")
+    script = "_" + name + " _Copy=" + ("Yes" if copy else "No")
+    if name == "Shear":
+        script += " _Rigid=No"
+    script += " " + " ".join("w" + _command_point(p) for p in refs)
+    if value is not None:
+        script += " %.17g" % _finite(value, "transform value")
+    if copy and name in ("Rotate", "Scale2D", "Shear"):
+        script += " _Enter"
+    return script
+
+
+def _plane_transform(operation):
+    script = _plane_transform_script(operation)
+    if not 1 <= len(operation["sources"]) <= 256:
+        raise ValueError("expected 1 to 256 transform witnesses")
+    document = Rhino.RhinoDoc.ActiveDoc
+    viewport = document.Views.ActiveView.ActiveViewport
+    original_plane = viewport.ConstructionPlane()
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid transform construction plane")
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    source_ids = []
+    try:
+        viewport.SetConstructionPlane(plane)
+        document.Objects.UnselectAll()
+        for index, point in enumerate(operation["sources"]):
+            attributes = Rhino.DocObjects.ObjectAttributes()
+            attributes.Name = str(index)
+            object_id = document.Objects.AddPoint(_point(point), attributes)
+            if object_id == System.Guid.Empty:
+                raise ValueError("failed transform witness insertion")
+            source_ids.append(object_id)
+            document.Objects.Select(object_id)
+        if not source_ids or not _run_surface_script(script, True):
+            raise ValueError("plane transform command failed")
+        records = [{"source": int(obj.Attributes.Name), "point": _xyz(obj.Geometry.Location),
+                    "original": obj.Id in source_ids, "selected": bool(obj.IsSelected(False))}
+                   for obj in objects() if obj.Id not in before]
+        records.sort(key=lambda r: (r["source"], not r["original"]))
+        return {"objects": records}, 0
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for obj in objects():
+            if obj.Id not in before:
+                document.Objects.Delete(obj.Id, True)
+        viewport.SetConstructionPlane(original_plane)
+        document.Objects.UnselectAll()
+        for object_id in selected:
+            document.Objects.Select(object_id)
+
+
 def _point_input(operation):
     script = _point_input_script(operation["points"])
     return _in_construction_plane(operation, script, None)
@@ -2642,6 +2715,8 @@ def _in_construction_plane(operation, script, record):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "plane_transform":
+        return _plane_transform(operation)
     if kind == "plane_primitive":
         return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
     if kind == "point_input":

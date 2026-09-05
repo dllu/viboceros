@@ -151,3 +151,99 @@ fn boxes_use_plane_height_and_one_undo_transaction_in_every_view() {
         }
     }
 }
+
+#[test]
+fn front_view_transform_prompts_use_their_plane_and_undo_atomically() {
+    for (inputs, expected) in [
+        (vec!["Rotate", "0", "0,1", "1,0"], point(3.0, 2.0, -1.0)),
+        (vec!["Mirror", "0", "0,1"], point(-1.0, 2.0, 3.0)),
+        (vec!["Scale2D", "0", "0,1", "0,2"], point(2.0, 2.0, 6.0)),
+        (vec!["Shear", "0", "0,1", "1,1"], point(4.0, 2.0, 3.0)),
+        (
+            vec!["ProjectToCPlane DeleteInput=Yes"],
+            point(1.0, 0.0, 3.0),
+        ),
+    ] {
+        let mut app = test_app();
+        app.active_viewport = 2;
+        enter(&mut app, "Point 1,2,3");
+        enter(&mut app, "SelAll");
+        let id = app.document.objects().next().unwrap().id();
+        for input in inputs {
+            enter(&mut app, input);
+        }
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+        let Geometry::Point(actual) = app.document.object(id).unwrap().geometry() else {
+            panic!("point")
+        };
+        assert!(
+            actual.distance_to(expected).unwrap() < 1e-12,
+            "{:?}",
+            app.command_log
+        );
+        enter(&mut app, "Undo");
+        assert_eq!(
+            app.document.object(id).unwrap().geometry(),
+            &Geometry::Point(point(1.0, 2.0, 3.0))
+        );
+        enter(&mut app, "Redo");
+        assert!(app.drafting_plane.is_none());
+    }
+}
+
+#[test]
+fn normal_only_angle_and_mirror_references_remain_correctable_in_front_view() {
+    for name in ["Rotate", "Mirror", "Shear"] {
+        let mut app = test_app();
+        app.active_viewport = 2;
+        for input in ["Point 1,2,3", "SelAll", name, "0", "w0,5,0"] {
+            enter(&mut app, input);
+        }
+        assert!(app.active_command.is_some(), "{name}");
+        assert_eq!(app.command_input, "w0,5,0");
+        assert_eq!(app.last_point, Some(point(0.0, 0.0, 0.0)));
+        enter(&mut app, "0,1");
+        if name != "Mirror" {
+            enter(&mut app, "1,1");
+        }
+        assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    }
+}
+
+#[test]
+fn scale2d_uses_full_reference_distances_and_the_finishing_viewport() {
+    let mut app = test_app();
+    app.active_viewport = 2;
+    for input in ["Point 1,2,3", "SelAll", "Scale2D", "0", "0,1"] {
+        enter(&mut app, input);
+    }
+    app.active_viewport = 0;
+    enter(&mut app, "w0,0,2");
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    assert_eq!(
+        app.document.objects().next().unwrap().geometry(),
+        &Geometry::Point(point(2.0, 4.0, 3.0))
+    );
+    assert!(app.drafting_plane.is_none());
+}
+
+#[test]
+fn shear_accepts_a_normal_target_with_a_tilted_reference() {
+    let mut app = test_app();
+    for input in ["Point 3,4,7", "SelAll", "Shear", "0", "3,4,5", "0,0,5"] {
+        enter(&mut app, input);
+    }
+    assert!(app.active_command.is_none(), "{:?}", app.command_log);
+    let Geometry::Point(p) = app.document.objects().next().unwrap().geometry() else {
+        panic!("point")
+    };
+    assert!(
+        p.distance_to(point(
+            3.0 - 4.0 * 2.0_f64.sqrt(),
+            4.0 + 3.0 * 2.0_f64.sqrt(),
+            7.0
+        ))
+        .unwrap()
+            < 1e-12
+    );
+}

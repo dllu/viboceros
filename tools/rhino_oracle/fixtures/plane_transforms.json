@@ -1,0 +1,8021 @@
+{
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-7,
+    "relative": 1e-12,
+    "angular": 1e-12
+  },
+  "operations": [
+    {
+      "op": "plane_transform",
+      "id": "top-rotate-angle-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "value": 37,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-rotate-angle-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "value": 37,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-rotate-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          1,
+          7,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-rotate-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          2,
+          3
+        ],
+        [
+          1,
+          7,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-factor-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "value": 2.5,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-factor-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ]
+      ],
+      "value": 2.5,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ],
+        [
+          7,
+          10,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ],
+        [
+          7,
+          10,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-mirror-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-mirror-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-shear-angle-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-shear-angle-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ]
+      ],
+      "value": 25,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-shear-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          3,
+          6,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-shear-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          6,
+          3
+        ],
+        [
+          3,
+          6,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-project-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-project-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-rotate-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          2,
+          8
+        ],
+        [
+          1,
+          7,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-rotate-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          5,
+          2,
+          8
+        ],
+        [
+          1,
+          7,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          10,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          10,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-mirror-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-mirror-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-shear-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          1,
+          8,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-shear-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          1,
+          8,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-rotate-angle-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ]
+      ],
+      "value": 37,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-rotate-angle-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ]
+      ],
+      "value": 37,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-rotate-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          5,
+          -3,
+          2
+        ],
+        [
+          1,
+          -3,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-rotate-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          5,
+          -3,
+          2
+        ],
+        [
+          1,
+          -3,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-scale-factor-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ]
+      ],
+      "value": 2.5,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-scale-factor-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ]
+      ],
+      "value": 2.5,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-scale-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -3,
+          6
+        ],
+        [
+          7,
+          -3,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-scale-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -3,
+          6
+        ],
+        [
+          7,
+          -3,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-mirror-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -3,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-mirror-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -3,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-shear-angle-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -3,
+          6
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-shear-angle-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -3,
+          6
+        ]
+      ],
+      "value": 25,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-shear-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          1,
+          -3,
+          6
+        ],
+        [
+          3,
+          -3,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-shear-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          1,
+          -3,
+          6
+        ],
+        [
+          3,
+          -3,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-project-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-project-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-rotate-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          5,
+          -8,
+          2
+        ],
+        [
+          1,
+          2,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-rotate-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          5,
+          -8,
+          2
+        ],
+        [
+          1,
+          2,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-scale-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -8,
+          6
+        ],
+        [
+          7,
+          2,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-scale-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -8,
+          6
+        ],
+        [
+          7,
+          2,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-mirror-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          2,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-mirror-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          2,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-shear-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -8,
+          6
+        ],
+        [
+          1,
+          -5,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "front-shear-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          -3,
+          2
+        ],
+        [
+          4,
+          -8,
+          6
+        ],
+        [
+          1,
+          -5,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          -4,
+          3
+        ],
+        [
+          -1,
+          -2,
+          5
+        ],
+        [
+          7,
+          -9,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-rotate-angle-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ]
+      ],
+      "value": 37,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-rotate-angle-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ]
+      ],
+      "value": 37,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-rotate-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          5,
+          2
+        ],
+        [
+          3,
+          1,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-rotate-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          5,
+          2
+        ],
+        [
+          3,
+          1,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-scale-factor-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ]
+      ],
+      "value": 2.5,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-scale-factor-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ]
+      ],
+      "value": 2.5,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-scale-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          6
+        ],
+        [
+          3,
+          7,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-scale-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          6
+        ],
+        [
+          3,
+          7,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-mirror-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-mirror-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-shear-angle-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          6
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-shear-angle-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          4,
+          6
+        ]
+      ],
+      "value": 25,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-shear-picked-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          3,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-shear-picked-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          3,
+          1,
+          6
+        ],
+        [
+          3,
+          3,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-project-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-project-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-rotate-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          8,
+          5,
+          2
+        ],
+        [
+          -2,
+          1,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-rotate-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          8,
+          5,
+          2
+        ],
+        [
+          -2,
+          1,
+          7
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-scale-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          8,
+          4,
+          6
+        ],
+        [
+          -2,
+          7,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-scale-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          8,
+          4,
+          6
+        ],
+        [
+          -2,
+          7,
+          10
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-mirror-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          -2,
+          4,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-mirror-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          -2,
+          4,
+          6
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-shear-off-inplace",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          8,
+          4,
+          6
+        ],
+        [
+          5,
+          1,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "right-shear-off-copy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          3,
+          1,
+          2
+        ],
+        [
+          8,
+          4,
+          6
+        ],
+        [
+          5,
+          1,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          4,
+          2,
+          3
+        ],
+        [
+          2,
+          -1,
+          5
+        ],
+        [
+          9,
+          7,
+          -2
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-rotate-angle-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ]
+      ],
+      "value": 37,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-rotate-angle-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ]
+      ],
+      "value": 37,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-rotate-picked-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          15,
+          -23,
+          32
+        ],
+        [
+          11,
+          -23,
+          37
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-rotate-picked-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          15,
+          -23,
+          32
+        ],
+        [
+          11,
+          -23,
+          37
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-scale-factor-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ]
+      ],
+      "value": 2.5,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-scale-factor-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ]
+      ],
+      "value": 2.5,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-scale-picked-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -23,
+          36
+        ],
+        [
+          17,
+          -23,
+          40
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-scale-picked-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -23,
+          36
+        ],
+        [
+          17,
+          -23,
+          40
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-mirror-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -23,
+          36
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-mirror-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -23,
+          36
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-shear-angle-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -23,
+          36
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-shear-angle-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -23,
+          36
+        ]
+      ],
+      "value": 25,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-shear-picked-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          11,
+          -23,
+          36
+        ],
+        [
+          13,
+          -23,
+          36
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-shear-picked-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          11,
+          -23,
+          36
+        ],
+        [
+          13,
+          -23,
+          36
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-project-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-project-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-rotate-off-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          15,
+          -28,
+          32
+        ],
+        [
+          11,
+          -18,
+          37
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-rotate-off-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          15,
+          -28,
+          32
+        ],
+        [
+          11,
+          -18,
+          37
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-scale-off-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -28,
+          36
+        ],
+        [
+          17,
+          -18,
+          40
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-scale-off-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -28,
+          36
+        ],
+        [
+          17,
+          -18,
+          40
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-mirror-off-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -18,
+          36
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-mirror-off-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -18,
+          36
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-shear-off-inplace",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -28,
+          36
+        ],
+        [
+          11,
+          -25,
+          38
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "shifted-shear-off-copy",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          11,
+          -23,
+          32
+        ],
+        [
+          14,
+          -28,
+          36
+        ],
+        [
+          11,
+          -25,
+          38
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          10,
+          -20,
+          30
+        ],
+        [
+          12,
+          -24,
+          33
+        ],
+        [
+          9,
+          -22,
+          35
+        ],
+        [
+          17,
+          -29,
+          28
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-rotate-angle-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ]
+      ],
+      "value": 37,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-rotate-angle-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ]
+      ],
+      "value": 37,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-rotate-picked-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          9.4,
+          7.2,
+          8
+        ],
+        [
+          7,
+          4,
+          13
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-rotate-picked-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          9.4,
+          7.2,
+          8
+        ],
+        [
+          7,
+          4,
+          13
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-factor-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ]
+      ],
+      "value": 2.5,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-factor-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ]
+      ],
+      "value": 2.5,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-picked-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ],
+        [
+          10.6,
+          8.8,
+          16
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-picked-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ],
+        [
+          10.6,
+          8.8,
+          16
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-mirror-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-mirror-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-shear-angle-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-shear-angle-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ]
+      ],
+      "value": 25,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-shear-picked-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          7,
+          4,
+          12
+        ],
+        [
+          8.2,
+          5.6000000000000005,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-shear-picked-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          7,
+          4,
+          12
+        ],
+        [
+          8.2,
+          5.6000000000000005,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-project-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-project-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "ProjectToCPlane",
+      "references": [],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-rotate-off-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          13.4,
+          4.2,
+          8
+        ],
+        [
+          2.9999999999999996,
+          7,
+          13
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-rotate-off-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Rotate",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          13.4,
+          4.2,
+          8
+        ],
+        [
+          2.9999999999999996,
+          7,
+          13
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-off-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          6.6,
+          11.8,
+          16
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-off-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          6.6,
+          11.8,
+          16
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-mirror-off-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          4.800000000000001,
+          9.399999999999999,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-mirror-off-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Mirror",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          4.800000000000001,
+          9.399999999999999,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-shear-off-inplace",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          8.6,
+          2.8,
+          14
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-shear-off-copy",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          8.6,
+          2.8,
+          14
+        ]
+      ],
+      "value": null,
+      "copy": true,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-ref-tilted-numeric",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-ref-negative-tilt-numeric",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          -2
+        ]
+      ],
+      "value": -25,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-target-planar",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          1,
+          8,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-target-positive",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ],
+        [
+          1,
+          8,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-target-negative",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ],
+        [
+          1,
+          8,
+          -2
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-both-neg",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          -2
+        ],
+        [
+          1,
+          8,
+          1
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-opposite-turn",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          7,
+          2,
+          5
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-off-axial-target",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          8
+        ],
+        [
+          1,
+          2,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-normal-ref",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          1,
+          2,
+          8
+        ],
+        [
+          4,
+          6,
+          3
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "top-scale-normal-target",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          6,
+          3
+        ],
+        [
+          1,
+          2,
+          13
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          2,
+          3,
+          4
+        ],
+        [
+          -1,
+          5,
+          2
+        ],
+        [
+          7,
+          -2,
+          9
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-ref-tilted-numeric",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ]
+      ],
+      "value": 25,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-ref-negative-tilt-numeric",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          4.800000000000001,
+          9.399999999999999,
+          12
+        ]
+      ],
+      "value": -25,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-target-planar",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          7,
+          4,
+          14
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-target-positive",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ],
+        [
+          11,
+          1,
+          14
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-target-negative",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ],
+        [
+          2.9999999999999996,
+          7,
+          14
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-both-neg",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          4.800000000000001,
+          9.399999999999999,
+          12
+        ],
+        [
+          5.3999999999999995,
+          5.2,
+          14
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-opposite-turn",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          12.2,
+          7.600000000000001,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-off-axial-target",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Shear",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          12.8,
+          3.3999999999999995,
+          12
+        ],
+        [
+          11,
+          1,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-normal-ref",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          11,
+          1,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    },
+    {
+      "op": "plane_transform",
+      "id": "oblique-scale-normal-target",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "command": "Scale2D",
+      "references": [
+        [
+          7,
+          4,
+          8
+        ],
+        [
+          8.8,
+          6.3999999999999995,
+          12
+        ],
+        [
+          15,
+          -2,
+          8
+        ]
+      ],
+      "value": null,
+      "copy": false,
+      "sources": [
+        [
+          4,
+          5,
+          6
+        ],
+        [
+          8.4,
+          4.199999999999999,
+          9
+        ],
+        [
+          5,
+          3,
+          11
+        ],
+        [
+          15.399999999999999,
+          5.200000000000002,
+          4
+        ]
+      ]
+    }
+  ],
+  "protocol_version": 1
+}

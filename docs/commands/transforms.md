@@ -4,26 +4,26 @@
 
 ## Interactive transforms
 
-`Polygon`
-defaults to four sides, or accepts a side count such as `Polygon 6`. With
-objects selected, enter `Move` or `Copy`
+With objects selected, enter `Move` or `Copy`
 to pick a base and destination point, `Scale`, `Scale1D`, `Scale2D`, or
-
 `Rotate` to pick center/reference/target points, `Mirror` to pick a two-point
 axis, or `ArrayLinear 4` to pick its two spacing references. `ScaleNU` accepts
 independent world x/y/z factors; all scale variants accept `Copy=Yes`.
 
 `Rotate3D` picks an axis start/end followed by angle reference/target points;
-
 `Rotate`, `Rotate3D`, and `Mirror` also accept `Copy=Yes`.
 
-`Shear` picks a fixed origin, reference direction, and target angle in the top
-view; its third argument can instead be a numeric angle, and it accepts
+`Shear` picks a fixed origin, reference direction, and target angle;
+its third argument can instead be a numeric angle, and it accepts
 `Copy=Yes`.
 
-`ProjectToCPlane` flattens onto the current construction plane (World XY in the
-current UI). It retains the inputs by default; use `DeleteInput=Yes` to project
+`ProjectToCPlane` flattens onto the current construction plane.
+It retains the inputs by default; use `DeleteInput=Yes` to project
 them in place.
+
+Rotate, Mirror, Scale2D, Shear, and ProjectToCPlane are construction-plane aware.
+Their off-plane reference rules differ: see [plane transforms](../plane-transforms.md)
+for geometry policy, viewport changes, verification, and remaining limitations.
 
 ## Orientation and arrays
 

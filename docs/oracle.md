@@ -25,6 +25,11 @@ command results on construction planes. Complete boundary geometry is checked
 independently of Box/MeshBox layout; ten raw layout probes remain in
 `plane_primitives_representation.json`. See [comparison details](construction-planes.md).
 
+`plane_transforms.json` checks 140 actual transform commands using four affinely
+independent point witnesses per operation, including copied/original identity
+and selection. Four parallel-reference Shear cases remain explicit diagnostics
+in `plane_transform_diagnostics.json`; see [plane transforms](plane-transforms.md).
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

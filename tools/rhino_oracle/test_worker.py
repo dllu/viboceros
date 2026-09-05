@@ -9,6 +9,66 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_plane_transform_scripts_validate_arguments_and_finish_repeat_copy_prompts(self):
+        operation = {"command": "Rotate", "references": [[1,2,3]], "value": 37, "copy": True}
+        with patch.object(self.worker, "_command_point", return_value="1,2,3"):
+            self.assertEqual(self.worker._plane_transform_script(operation), "_Rotate _Copy=Yes w1,2,3 37 _Enter")
+            self.assertEqual(self.worker._plane_transform_script(dict(operation, copy=False)), "_Rotate _Copy=No w1,2,3 37")
+            self.assertEqual(self.worker._plane_transform_script(dict(operation, command="Mirror", value=None, references=[[0,0,0],[1,0,0]])), "_Mirror _Copy=Yes w1,2,3 w1,2,3")
+        for copy, option in [(True, "No"), (False, "Yes")]:
+            self.assertEqual(self.worker._plane_transform_script(dict(operation, command="ProjectToCPlane", value=None, references=[], copy=copy)), "_ProjectToCPlane _" + option)
+        for invalid in [dict(operation, command="Rotate _Delete"), dict(operation, references=[]),
+                        dict(operation, copy="Yes"), dict(operation, command="Mirror"),
+                        dict(operation, value=float("nan"))]:
+            with patch.object(self.worker, "_command_point", return_value="1,2,3"), self.assertRaises(ValueError):
+                self.worker._plane_transform_script(invalid)
+
+    def test_plane_transform_probe_cleans_sources_copies_and_restores_view_state_on_every_exit(self):
+        for failure in [None, "input", "command", "record"]:
+            with self.subTest(failure=failure):
+                original_plane = object()
+                current_plane = [original_plane]
+                viewport = SimpleNamespace(ConstructionPlane=lambda: current_plane[0], SetConstructionPlane=lambda p: current_plane.__setitem__(0, p))
+                selected = {"existing"}
+                objects = {"existing": SimpleNamespace(Id="existing", IsSelected=lambda _: "existing" in selected)}
+                def add(point, attributes):
+                    if failure == "input" and len(objects) == 2:
+                        raise ValueError("input failure")
+                    object_id = str(len(objects))
+                    objects[object_id] = SimpleNamespace(Id=object_id, Attributes=attributes, Geometry=SimpleNamespace(Location=point), IsSelected=lambda _: object_id in selected)
+                    return object_id
+                table = SimpleNamespace(GetObjectList=lambda _: list(objects.values()), UnselectAll=selected.clear, Select=selected.add,
+                                        Delete=lambda object_id, _: objects.pop(object_id), AddPoint=add)
+                self.document.Objects = table
+                self.document.Views = SimpleNamespace(ActiveView=SimpleNamespace(ActiveViewport=viewport))
+                self.worker.System = SimpleNamespace(Guid=SimpleNamespace(Empty="empty"))
+                self.worker.Rhino.DocObjects = SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace, ObjectAttributes=SimpleNamespace)
+                self.worker.Rhino.Geometry = SimpleNamespace(Plane=lambda *args: SimpleNamespace(IsValid=True))
+                self.worker.Rhino.RhinoApp.RunScript = Mock()
+                def run(script, verify):
+                    self.assertTrue(verify)
+                    for obj in list(objects.values()):
+                        if obj.Id != "existing": add(obj.Geometry.Location, obj.Attributes)
+                    if failure == "command": raise ValueError("command failure")
+                    return True
+                operation = {"command":"Rotate", "references":[[0,0,0]], "value":30, "copy":True,
+                             "origin":[0,0,0], "x_axis":[1,0,0], "y_axis":[0,1,0], "sources":[[1,2,3],[4,5,6]]}
+                with patch.object(self.worker, "_point", side_effect=lambda p:p), patch.object(self.worker, "_vector", side_effect=lambda p:p), \
+                     patch.object(self.worker, "_command_point", return_value="0,0,0"), patch.object(self.worker, "_run_surface_script", side_effect=run), \
+                     patch.object(self.worker, "_xyz", side_effect=ValueError("record failure") if failure == "record" else lambda p:p):
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure + " failure"):
+                            self.worker._plane_transform(operation)
+                    else:
+                        value, elapsed = self.worker._plane_transform(operation)
+                        self.assertEqual(len(value["objects"]), 4)
+                        self.assertEqual([r["original"] for r in value["objects"]], [True,False,True,False])
+                        self.assertEqual(elapsed, 0)
+                self.assertIs(current_plane[0], original_plane)
+                self.assertEqual(set(objects), {"existing"})
+                self.assertEqual(selected, {"existing"})
+                self.worker.Rhino.RhinoApp.RunScript.assert_called_once_with("!", False)
+
     def test_canonical_mesh_record_preserves_winding_duplicates_and_unrounded_points(self):
         original = {"vertices": [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,0]], "faces": [[0,1,2,3]]}
         reordered = {"vertices": list(reversed(original["vertices"])), "faces": [[2,1,4,3]]}

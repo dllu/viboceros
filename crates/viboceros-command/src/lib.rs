@@ -3,6 +3,13 @@
 mod context;
 mod curve_cut;
 mod plane_primitives;
+mod plane_transforms;
+use plane_transforms::{
+    MirrorCommand, ProjectToConstructionPlaneCommand, RotateCommand, ScaleTwoDimensionalCommand,
+    ShearCommand,
+};
+#[cfg(test)]
+mod plane_transform_tests;
 pub use context::CommandContext;
 use plane_primitives::{
     BoxCommand, CircleCommand, MeshBoxCommand, MeshPlaneCommand, PolygonCommand, RectangleCommand,
@@ -18601,39 +18608,6 @@ impl Command for ScaleOneDimensionalCommand {
     }
 }
 
-struct ScaleTwoDimensionalCommand;
-
-impl Command for ScaleTwoDimensionalCommand {
-    fn name(&self) -> &'static str {
-        "Scale2D"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SCALE_2D_USAGE)?;
-        let (center, consumed) = parse_point(&positional)?;
-        let remaining = &positional[consumed..];
-        let factor = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_nonzero_scale(remaining[0])?
-        } else {
-            let (reference, reference_consumed) = parse_point(remaining)?;
-            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
-            require_consumed(
-                remaining,
-                reference_consumed + target_consumed,
-                SCALE_2D_USAGE,
-            )?;
-            top_view_scale_factor_from_reference(center, reference, target, document.tolerance())?
-        };
-        let transform = AffineTransform3::try_nonuniform_scale(center, [factor, factor, 1.0])?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
-        Ok(format!(
-            "Scaled {transformed} object(s) in two dimensions by {factor:.6}, creating {copied} copy object(s)"
-        ))
-    }
-}
-
 struct ScaleNonUniformCommand;
 
 impl Command for ScaleNonUniformCommand {
@@ -18668,41 +18642,6 @@ const ROTATE_3D_USAGE: &str =
     "Rotate3D axis-start axis-end degrees | axis-start axis-end reference target [Copy=Yes|No]";
 const MIRROR_USAGE: &str = "Mirror axis-start axis-end [Copy=Yes|No]";
 const SHEAR_USAGE: &str = "Shear origin reference degrees | origin reference target [Copy=Yes|No]";
-
-struct RotateCommand;
-
-impl Command for RotateCommand {
-    fn name(&self) -> &'static str {
-        "Rotate"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, ROTATE_USAGE)?;
-        let (center, consumed) = parse_point(&positional)?;
-        let remaining = &positional[consumed..];
-        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?.to_radians()
-        } else {
-            let (reference, reference_consumed) = parse_point(remaining)?;
-            let (target, target_consumed) = parse_point(&remaining[reference_consumed..])?;
-            require_consumed(
-                remaining,
-                reference_consumed + target_consumed,
-                ROTATE_USAGE,
-            )?;
-            top_view_angle(center, reference, target, document.tolerance())?
-        };
-        let axis = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
-        let transform = AffineTransform3::try_rotation(center, axis, angle_radians)?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
-        Ok(format!(
-            "Rotated {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
-            angle_radians.to_degrees(),
-        ))
-    }
-}
 
 struct RotateThreeDimensionalCommand;
 
@@ -18739,99 +18678,6 @@ impl Command for RotateThreeDimensionalCommand {
         Ok(format!(
             "Rotated {transformed} object(s) around a 3D axis by {:.6} degrees, creating {copied} copy object(s)",
             angle_radians.to_degrees(),
-        ))
-    }
-}
-
-struct MirrorCommand;
-
-impl Command for MirrorCommand {
-    fn name(&self) -> &'static str {
-        "Mirror"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, MIRROR_USAGE)?;
-        let (axis_start, consumed) = parse_point(&positional)?;
-        let (axis_end, end_consumed) = parse_point(&positional[consumed..])?;
-        require_consumed(&positional, consumed + end_consumed, MIRROR_USAGE)?;
-        let normal = top_view_mirror_normal(axis_start, axis_end, document.tolerance())?;
-        let transform = AffineTransform3::try_reflection(axis_start, normal)?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
-        Ok(format!(
-            "Mirrored {transformed} object(s), creating {copied} copy object(s)"
-        ))
-    }
-}
-
-struct ShearCommand;
-
-impl Command for ShearCommand {
-    fn name(&self) -> &'static str {
-        "Shear"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let (positional, copy) = parse_transform_copy_arguments(arguments, SHEAR_USAGE)?;
-        let (origin, origin_consumed) = parse_point(&positional)?;
-        let (reference, reference_consumed) = parse_point(&positional[origin_consumed..])?;
-        let consumed = origin_consumed + reference_consumed;
-        let remaining = &positional[consumed..];
-        let angle_radians = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?.to_radians()
-        } else {
-            let (target, target_consumed) = parse_point(remaining)?;
-            require_consumed(remaining, target_consumed, SHEAR_USAGE)?;
-            top_view_angle(origin, reference, target, document.tolerance())?
-        };
-        let reference_direction =
-            top_view_vector(origin, reference)?.normalized(document.tolerance())?;
-        let shear_direction = UnitVector3::try_new(
-            -reference_direction.y(),
-            reference_direction.x(),
-            0.0,
-            document.tolerance(),
-        )?;
-        let factor = angle_radians.tan();
-        let transform = AffineTransform3::try_shear(
-            origin,
-            reference_direction,
-            shear_direction,
-            factor,
-            document.tolerance(),
-        )?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, copy)?;
-        Ok(format!(
-            "Sheared {transformed} object(s) by {:.6} degrees, creating {copied} copy object(s)",
-            angle_radians.to_degrees()
-        ))
-    }
-}
-
-const PROJECT_TO_CPLANE_USAGE: &str = "ProjectToCPlane [DeleteInput=Yes|No]";
-
-struct ProjectToConstructionPlaneCommand;
-
-impl Command for ProjectToConstructionPlaneCommand {
-    fn name(&self) -> &'static str {
-        "ProjectToCPlane"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let delete_input =
-            parse_delete_input(arguments, PROJECT_TO_CPLANE_USAGE, &["DeleteInput"])?;
-        let origin = Point3::try_new(0.0, 0.0, 0.0)?;
-        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
-        let transform = AffineTransform3::try_planar_projection(Plane::new(origin, normal))?;
-        let (transformed, copied) =
-            apply_transform_or_copy(document, selected.as_slice(), transform, !delete_input)?;
-        Ok(format!(
-            "Projected {transformed} object(s) to the construction plane, creating {copied} copy object(s)"
         ))
     }
 }
@@ -19625,40 +19471,6 @@ fn scale_factor_from_reference_impl(
     }
 }
 
-fn top_view_scale_factor_from_reference(
-    center: Point3,
-    reference: Point3,
-    target: Point3,
-    tolerance: Tolerance,
-) -> Result<Real, CommandError> {
-    let reference_distance = top_view_vector(center, reference)?.length()?;
-    if reference_distance <= tolerance.absolute() {
-        return Err(GeometryError::Degenerate {
-            context: "scale reference",
-        }
-        .into());
-    }
-    let factor = top_view_vector(center, target)?.length()? / reference_distance;
-    if factor.is_finite() && factor > 0.0 {
-        Ok(factor)
-    } else {
-        Err(CommandError::InvalidScaleFactor(format!("{factor}")))
-    }
-}
-
-fn top_view_angle(
-    center: Point3,
-    reference: Point3,
-    target: Point3,
-    tolerance: Tolerance,
-) -> Result<Real, CommandError> {
-    let from = top_view_vector(center, reference)?.normalized(tolerance)?;
-    let to = top_view_vector(center, target)?.normalized(tolerance)?;
-    let cosine = from.as_vector().dot(to.as_vector())?.clamp(-1.0, 1.0);
-    let sine = from.as_vector().cross(to.as_vector())?.z();
-    Ok(sine.atan2(cosine))
-}
-
 fn axis_rotation_angle(
     axis_origin: Point3,
     axis: UnitVector3,
@@ -19679,19 +19491,6 @@ fn axis_rotation_angle(
         .dot(from.as_vector().cross(to.as_vector())?)?
         .clamp(-1.0, 1.0);
     Ok(sine.atan2(cosine))
-}
-
-fn top_view_mirror_normal(
-    axis_start: Point3,
-    axis_end: Point3,
-    tolerance: Tolerance,
-) -> Result<UnitVector3, CommandError> {
-    let axis = top_view_vector(axis_start, axis_end)?;
-    Ok(Vector3::try_new(-axis.y(), axis.x(), 0.0)?.normalized(tolerance)?)
-}
-
-fn top_view_vector(origin: Point3, target: Point3) -> Result<Vector3, GeometryError> {
-    Vector3::try_new(target.x() - origin.x(), target.y() - origin.y(), 0.0)
 }
 
 struct ClearCommand;

@@ -39,6 +39,7 @@ mod polycurve;
 pub use polycurve::PolyCurveFixture;
 mod curve_frames;
 mod plane_primitives;
+mod plane_transforms;
 mod point_input;
 mod sweep;
 pub use sweep::SweepFixture;
@@ -113,6 +114,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PlaneTransform {
+        id: String,
+        #[serde(flatten)]
+        fixture: plane_transforms::PlaneTransformFixture,
+    },
     PlanePrimitive {
         id: String,
         #[serde(flatten)]
@@ -1419,6 +1425,7 @@ impl Operation {
             Self::PolycurveGeometry { id, .. }
             | Self::PointInput { id, .. }
             | Self::PlanePrimitive { id, .. }
+            | Self::PlaneTransform { id, .. }
             | Self::Loft { id, .. }
             | Self::EdgeSurface { id, .. }
             | Self::SurfaceGrid { id, .. }
@@ -1714,6 +1721,7 @@ fn execute(
     let (value, elapsed_ns) = match operation {
         Operation::PointInput { fixture, .. } => point_input::run(fixture, tolerance)?,
         Operation::PlanePrimitive { fixture, .. } => plane_primitives::run(fixture, tolerance)?,
+        Operation::PlaneTransform { fixture, .. } => plane_transforms::run(fixture, tolerance)?,
         Operation::ThreeDmBrepInterchange { fixture, .. } => {
             brep_interchange::run(fixture, iterations, tolerance)?
         }

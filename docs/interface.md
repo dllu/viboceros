@@ -34,6 +34,10 @@ Circle, Polygon, Rectangle, MeshPlane, Box, and MeshBox capture their constructi
 plane on the first accepted pick. `Box` now supports the first corner, opposite
 base corner, and height-point workflow. See [construction-plane primitives](construction-planes.md).
 
+Rotate, Mirror, Scale2D, Shear, and ProjectToCPlane also honor construction planes.
+Scale2D takes its orientation from the finishing viewport; see
+[plane transforms](plane-transforms.md) for the distinct reference rules.
+
 With a curve or surface selected, `Curvature` starts a one-pick measurement.
 `Curvature MarkCurvature=Yes` also adds permanent osculating markers; Esc cancels
 without changing the document. Continuous hover analysis is not yet implemented.

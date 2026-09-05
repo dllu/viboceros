@@ -40,7 +40,9 @@ mapping without dropping small components at mixed floating-point scales.
 
 This is not full CPlane-command support: custom viewport planes, named planes,
 scalar constraints during point prompts, and adapting all remaining primitives,
-transforms, and `BoundingBox CoordinateSystem=CPlane` are still pending.
+arrays, and `BoundingBox CoordinateSystem=CPlane` are still pending.
+Rotate, Mirror, Scale2D, Shear, and ProjectToCPlane now have their own
+[construction-plane transform policy](plane-transforms.md).
 
 ## Verification
 

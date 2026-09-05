@@ -1077,7 +1077,13 @@ impl VibocerosApp {
 
     fn execute_command(&mut self, input: &str) {
         let active_plane = self.viewports[self.active_viewport].construction_plane();
-        let construction_plane = if self.active_command.is_none() {
+        // Scale2D uses the viewport where the scale factor is supplied, not
+        // the one where its center/reference was picked.
+        let finishing_plane = input.split_whitespace().next().is_some_and(|name| {
+            name.trim_start_matches(['_', '-'])
+                .eq_ignore_ascii_case("Scale2D")
+        });
+        let construction_plane = if self.active_command.is_none() && !finishing_plane {
             self.drafting_plane.unwrap_or(active_plane)
         } else {
             active_plane
@@ -4182,7 +4188,8 @@ impl VibocerosApp {
                 center: Some(center),
                 reference: None,
             } => {
-                if same_top_point(center, point, self.document.tolerance()) {
+                if !plane_radius_exceeds_tolerance(plane, center, point, self.document.tolerance())
+                {
                     self.push_log("Error: rotate reference must differ from its center".to_owned());
                     return false;
                 }
@@ -4198,7 +4205,8 @@ impl VibocerosApp {
                 center: Some(center),
                 reference: Some(reference),
             } => {
-                if same_top_point(center, point, self.document.tolerance()) {
+                if !plane_radius_exceeds_tolerance(plane, center, point, self.document.tolerance())
+                {
                     self.push_log("Error: rotate target must differ from its center".to_owned());
                     return false;
                 }
@@ -4262,7 +4270,7 @@ impl VibocerosApp {
                 self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::Mirror { start: Some(start) } => {
-                if same_top_point(start, point, self.document.tolerance()) {
+                if !plane_radius_exceeds_tolerance(plane, start, point, self.document.tolerance()) {
                     self.push_log("Error: mirror axis points must differ".to_owned());
                     return false;
                 }
@@ -4286,7 +4294,8 @@ impl VibocerosApp {
                 origin: Some(origin),
                 reference: None,
             } => {
-                if same_top_point(origin, point, self.document.tolerance()) {
+                if !plane_radius_exceeds_tolerance(plane, origin, point, self.document.tolerance())
+                {
                     self.push_log("Error: shear reference must differ from its origin".to_owned());
                     return false;
                 }
@@ -4302,7 +4311,10 @@ impl VibocerosApp {
                 origin: Some(origin),
                 reference: Some(reference),
             } => {
-                if same_top_point(origin, point, self.document.tolerance()) {
+                if !origin
+                    .distance_to(point)
+                    .is_ok_and(|d| d > self.document.tolerance().absolute())
+                {
                     self.push_log("Error: shear target must differ from its origin".to_owned());
                     return false;
                 }
@@ -4926,11 +4938,11 @@ impl VibocerosApp {
                     .clicked();
                 mirror_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Mirror"))
-                    .on_hover_text("Mirror selected objects across a two-point top-view axis")
+                    .on_hover_text("Mirror selected objects across a construction-plane axis")
                     .clicked();
                 shear_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Shear"))
-                    .on_hover_text("Shear selected objects using three top-view points")
+                    .on_hover_text("Shear selected objects using three construction-plane points")
                     .clicked();
                 project_to_cplane_clicked = ui
                     .add_enabled(selected > 0, egui::Button::new("Project CPlane"))
@@ -8600,7 +8612,7 @@ mod tests {
             })
         );
         app.accept_drafting_point(point(1.0, 0.0, 0.0));
-        app.accept_drafting_point(point(0.0, 0.0, 2.0));
+        app.accept_drafting_point(point(0.0, 0.0, 0.0));
         assert!(matches!(
             app.active_command,
             Some(InteractiveCommand::Shear {
