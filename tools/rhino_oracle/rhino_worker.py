@@ -1030,7 +1030,7 @@ def _curve_native(operation, iterations, tolerance):
                         raise ValueError("native curve transform failed")
                 edit = operation.get("edit")
                 if edit is None:
-                    value = _curve_native_record(curve, tolerance)
+                    value = _curve_native_record(curve, tolerance, operation.get("differential_only", False))
                     if operation.get("parameter_map"):
                         mapping = []
                         for i in range(65):
@@ -1065,7 +1065,7 @@ def _curve_native(operation, iterations, tolerance):
                     curves = [result]
                 records = []
                 for result in curves:
-                    value = _curve_native_record(result, tolerance)
+                    value = _curve_native_record(result, tolerance, operation.get("differential_only", False))
                     value["type"] = ("arc" if isinstance(result, Rhino.Geometry.ArcCurve) else
                                      "line" if isinstance(result, Rhino.Geometry.LineCurve) else
                                      "polyline" if isinstance(result, Rhino.Geometry.PolylineCurve) else
@@ -1080,7 +1080,7 @@ def _curve_native(operation, iterations, tolerance):
         source.Dispose()
 
 
-def _curve_native_record(curve, tolerance):
+def _curve_native_record(curve, tolerance, differential_only=False):
     samples = []
     for i in range(33):
         parameter = float(curve.Domain.ParameterAt(float(i) / 32.0))
@@ -1090,6 +1090,10 @@ def _curve_native_record(curve, tolerance):
         samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
                         "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2]),
                         "tangent": _xyz(curve.TangentAt(parameter))})
+    value = {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
+             "samples": samples, "nurbs": _nurbs_curve_definition(curve)}
+    if differential_only:
+        return value
     divisions = []
     for i in range(18):
         if i == 0:
@@ -1101,9 +1105,9 @@ def _curve_native_record(curve, tolerance):
             if not success:
                 raise ValueError("native curve length inversion failed")
         divisions.append({"parameter": float(parameter), "point": _xyz(curve.PointAt(parameter)), "tangent": _xyz(curve.TangentAt(parameter))})
-    return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
-            "length": float(curve.GetLength(tolerance["relative"])), "samples": samples, "divisions": divisions,
-            "nurbs": _nurbs_curve_definition(curve)}
+    value["length"] = float(curve.GetLength(tolerance["relative"]))
+    value["divisions"] = divisions
+    return value
 
 def _cut_source(definition):
     if "native" not in definition:

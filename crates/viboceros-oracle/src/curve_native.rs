@@ -9,6 +9,91 @@ use viboceros_geometry::{AffineTransform3, Curve3, CurveRef, Tolerance, Vector3}
 #[cfg(test)]
 mod tests {
     #[test]
+    fn permanent_rational_jets_fixture_checks_nonuniform_speed() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/nurbs_rational_jets.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 23);
+        let line = &response.results[0];
+        assert_eq!(line.id, "rational-jets-line-default");
+        assert_eq!(
+            line.value["samples"][0]["second"],
+            serde_json::json!([-16.0, 0.0, 0.0])
+        );
+        for result in response.results {
+            let records = result.value["curves"]
+                .as_array()
+                .cloned()
+                .unwrap_or_else(|| vec![result.value]);
+            for record in records {
+                assert_eq!(record["samples"].as_array().unwrap().len(), 33);
+                assert_eq!(record["divisions"].as_array().unwrap().len(), 18);
+            }
+        }
+    }
+
+    #[test]
+    fn translated_jets_fixture_isolates_differential_evaluation() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/nurbs_translated_jets.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 3);
+        for result in &response.results {
+            assert_eq!(result.value["samples"].as_array().unwrap().len(), 33);
+            assert!(result.value.get("divisions").is_none());
+            assert!(result.value.get("length").is_none());
+        }
+        // Unlike the observed Rhino length inversion, native arc-length
+        // sampling remains well defined at these translated coordinates.
+        let base_request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/nurbs_rational_jets.json"
+        ))
+        .unwrap();
+        for operation in &request.operations {
+            let crate::Operation::CurveNative { id, fixture } = operation else {
+                panic!("expected native curve fixture");
+            };
+            let base_id = id.replace("-translated", "-domain");
+            let base = base_request
+                .operations
+                .iter()
+                .find_map(|operation| match operation {
+                    crate::Operation::CurveNative { id, fixture } if id == &base_id => {
+                        Some(fixture)
+                    }
+                    _ => None,
+                })
+                .unwrap();
+            let tolerance = request.tolerance.geometry().unwrap();
+            let (base_value, _) = super::run(base, 1, tolerance).unwrap();
+            let mut complete = fixture.clone();
+            complete.differential_only = false;
+            let (value, _) = super::run(&complete, 1, tolerance).unwrap();
+            assert_eq!(value["divisions"].as_array().unwrap().len(), 18);
+            assert_eq!(value["length"], base_value["length"]);
+            for (actual, base) in value["divisions"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .zip(base_value["divisions"].as_array().unwrap())
+            {
+                assert_eq!(actual["parameter"], base["parameter"]);
+                assert_eq!(actual["tangent"], base["tangent"]);
+                for (axis, offset) in [1e12, -2e12, 3e12].into_iter().enumerate() {
+                    assert_eq!(
+                        actual["point"][axis].as_f64().unwrap(),
+                        base["point"][axis].as_f64().unwrap() + offset
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
     fn permanent_parameter_correspondence_fixture_checks_both_maps() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/curve_parameter_map.json"
@@ -107,6 +192,9 @@ pub struct NativeCurveFixture {
     pub edit: Option<NativeCurveEdit>,
     #[serde(default)]
     pub parameter_map: bool,
+    /// Isolate differential evaluation from arc-length integration/inversion.
+    #[serde(default)]
+    pub differential_only: bool,
 }
 
 pub(super) fn run(
@@ -156,7 +244,7 @@ pub(super) fn run(
             let records = curves
                 .iter()
                 .map(|curve| {
-                    let mut value = record(curve.as_ref(), tolerance)?;
+                    let mut value = record(curve.as_ref(), tolerance, fixture.differential_only)?;
                     value["type"] = json!(match curve {
                         Curve3::Line(_) => "line",
                         Curve3::Circle(_) | Curve3::Arc(_) => "arc",
@@ -169,7 +257,7 @@ pub(super) fn run(
                 .collect::<Result<Vec<_>, ProbeError>>()?;
             Ok(json!({"curves": records}))
         } else {
-            let mut value = record(curve.as_ref(), tolerance)?;
+            let mut value = record(curve.as_ref(), tolerance, fixture.differential_only)?;
             if fixture.parameter_map {
                 value["parameter_map"] = Value::Array(
                     (0..=64)
@@ -322,7 +410,11 @@ pub enum NativeCurveEdit {
     Seam { parameter: f64 },
 }
 
-fn record(view: CurveRef<'_>, tolerance: Tolerance) -> Result<Value, ProbeError> {
+fn record(
+    view: CurveRef<'_>,
+    tolerance: Tolerance,
+    differential_only: bool,
+) -> Result<Value, ProbeError> {
     let mut samples = Vec::new();
     for i in 0..=32 {
         let t = view.parameter_at(i as f64 / 32.0)?;
@@ -335,6 +427,15 @@ fn record(view: CurveRef<'_>, tolerance: Tolerance) -> Result<Value, ProbeError>
             "tangent": view.evaluate_with_tangent(t)?.tangent().as_vector().to_array(),
         }));
     }
+    let mut value = json!({
+        "domain": [*view.domain().start(), *view.domain().end()],
+        "closed": view.is_closed()?,
+        "samples": samples,
+        "nurbs": nurbs_curve_definition_value(&view.to_nurbs()?),
+    });
+    if differential_only {
+        return Ok(value);
+    }
     let divisions = view
         .divide_by_count_samples(17, true, tolerance)?
         .iter()
@@ -346,12 +447,7 @@ fn record(view: CurveRef<'_>, tolerance: Tolerance) -> Result<Value, ProbeError>
             })
         })
         .collect::<Vec<_>>();
-    Ok(json!({
-        "domain": [*view.domain().start(), *view.domain().end()],
-        "closed": view.is_closed()?,
-        "length": view.length(tolerance)?,
-        "samples": samples,
-        "divisions": divisions,
-        "nurbs": nurbs_curve_definition_value(&view.to_nurbs()?),
-    }))
+    value["length"] = json!(view.length(tolerance)?);
+    value["divisions"] = json!(divisions);
+    Ok(value)
 }

@@ -1,0 +1,1160 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-10,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_native",
+      "id": "rational-jets-line-default",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-line-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-line-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-multi-line-default",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          -4,
+          -4,
+          2,
+          9,
+          20,
+          20
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-multi-line-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          -4,
+          -4,
+          2,
+          9,
+          20,
+          20
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-multi-line-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              0,
+              4,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          -4,
+          -4,
+          2,
+          9,
+          20,
+          20
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-closed-line-default",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-closed-line-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-closed-line-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-quadratic-default",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              5,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-quadratic-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              5,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-quadratic-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              5,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-cubic-default",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              0
+            ],
+            "weight": 0.25
+          },
+          {
+            "point": [
+              5,
+              -2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              0
+            ],
+            "weight": 0.5
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-cubic-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              0
+            ],
+            "weight": 0.25
+          },
+          {
+            "point": [
+              5,
+              -2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              0
+            ],
+            "weight": 0.5
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-cubic-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              3,
+              0
+            ],
+            "weight": 0.25
+          },
+          {
+            "point": [
+              5,
+              -2,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              7,
+              1,
+              0
+            ],
+            "weight": 0.5
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-line-tiny-weights",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 2.409919865102884e-181
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 4.819839730205768e-181
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-jets-line-huge-weights",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4.149515568880993e+180
+          },
+          {
+            "point": [
+              4,
+              0,
+              0
+            ],
+            "weight": 8.299031137761986e+180
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-seam-closed-line-1",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "edit": {
+        "kind": "seam",
+        "parameter": 1
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-seam-closed-line-10",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "edit": {
+        "kind": "seam",
+        "parameter": 10
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-seam-closed-line-31",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 3
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 4
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "edit": {
+        "kind": "seam",
+        "parameter": 31
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-seam-closed-cubic-1",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "edit": {
+        "kind": "seam",
+        "parameter": 1
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-seam-closed-cubic-10",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "edit": {
+        "kind": "seam",
+        "parameter": 10
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "rational-seam-closed-cubic-31",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 0.5
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1.25
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.75
+          },
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 2
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "edit": {
+        "kind": "seam",
+        "parameter": 31
+      }
+    }
+  ]
+}

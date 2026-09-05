@@ -4,7 +4,7 @@ import importlib.util
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
@@ -70,6 +70,32 @@ class RhinoWorkerTests(unittest.TestCase):
         execute.assert_not_called()
         self.assertIn("did not accept", response["error"])
         self.assertEqual(vars(document), self.original)
+
+    def test_differential_only_records_do_not_invoke_length_solvers(self):
+        point = SimpleNamespace(X=0.0, Y=0.0, Z=0.0)
+        tangent = SimpleNamespace(X=1.0, Y=0.0, Z=0.0)
+        curve = SimpleNamespace(
+            Domain=SimpleNamespace(T0=0.0, T1=1.0, ParameterAt=lambda t: t),
+            IsClosed=False,
+            PointAt=lambda t: point,
+            DerivativeAt=lambda t, order: [point, tangent, point],
+            TangentAt=lambda t: tangent,
+            GetLength=Mock(return_value=1.0),
+            NormalizedLengthParameter=Mock(side_effect=lambda t, tolerance: (True, t)),
+        )
+        with patch.object(self.worker, "_nurbs_curve_definition", return_value={}):
+            differential = self.worker._curve_native_record(curve, {"relative": 1e-12}, True)
+            self.assertEqual(len(differential["samples"]), 33)
+            self.assertNotIn("length", differential)
+            self.assertNotIn("divisions", differential)
+            curve.GetLength.assert_not_called()
+            curve.NormalizedLengthParameter.assert_not_called()
+
+            complete = self.worker._curve_native_record(curve, {"relative": 1e-12})
+            self.assertEqual(complete["length"], 1.0)
+            self.assertEqual(len(complete["divisions"]), 18)
+            curve.GetLength.assert_called_once_with(1e-12)
+            self.assertEqual(curve.NormalizedLengthParameter.call_count, 16)
 
 
 if __name__ == "__main__":

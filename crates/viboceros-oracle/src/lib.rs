@@ -9551,7 +9551,7 @@ mod tests {
     }
 
     #[test]
-    fn reports_exact_nurbs_curve_closest_point() {
+    fn reports_nurbs_curve_closest_point_to_numerical_precision() {
         let response = run_request(&request(vec![Operation::NurbsCurveClosestPoint {
             id: "closest".to_owned(),
             degree: 2,
@@ -9564,7 +9564,10 @@ mod tests {
             target: [2.0_f64.sqrt(), 2.0_f64.sqrt(), 0.0],
         }]))
         .unwrap();
-        assert_eq!(response.results[0].value["parameter"], json!(0.5));
+        assert!(
+            (response.results[0].value["parameter"].as_f64().unwrap() - 0.5).abs()
+                <= 2.0 * f64::EPSILON
+        );
         let point = response.results[0].value["point"].as_array().unwrap();
         assert!(
             (point[0].as_f64().unwrap() - 0.5_f64.sqrt()).abs() <= 1.0e-15

@@ -56,6 +56,9 @@ seam, subcurve, and reparameterization commands share the `curve_domain` module.
 The `curve_parameter_map` geometry module supplies exact span-aware correspondence
 with rational representations; the `curve_cut` command module uses it for
 [cutting-object splits and trims](curve-cutting.md).
+NURBS differential evaluation and homogeneous weight matching have separate
+`nurbs/evaluate` and `nurbs/weights` modules. See [rational numerical policy](nurbs-numerics.md)
+for local-coordinate evaluation, degree-one acceleration, and scale-safe seam joins.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

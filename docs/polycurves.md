@@ -74,6 +74,8 @@ movement is bounded by the fixed curve-coincidence predicate. If rescaling would
 or erase a nonzero weight, full-order knots preserve independent scales. No overflowing
 ratio is required merely to rescale representable weights. This fallback need not match
 Rhino's minimal control structure.
+The rescaling helper is shared with NURBS concatenation and seam relocation;
+see [rational curve numerics](nurbs-numerics.md) for differential and weight-range limits.
 
 ## Division and validation
 

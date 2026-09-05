@@ -480,23 +480,12 @@ impl PolyCurve3 {
                 {
                     return None;
                 }
-                segment
-                    .control_points()
-                    .iter()
-                    .map(|control| {
-                        let weight = if control.weight() == first.weight() {
-                            previous.weight()
-                        } else {
-                            crate::parameter::scaled_ratio(
-                                control.weight(),
-                                previous.weight(),
-                                first.weight(),
-                            )?
-                        };
-                        crate::WeightedPoint3::try_new(control.point(), weight)
-                    })
-                    .collect::<Result<Vec<_>, GeometryError>>()
-                    .ok()
+                crate::nurbs::rescale_controls(
+                    segment.control_points(),
+                    first.weight(),
+                    previous.weight(),
+                )
+                .ok()
             });
             let segment_controls = scaled_controls
                 .as_deref()

@@ -70,6 +70,14 @@ splits, seam relocation, periodic curves, and unequal rational weights. See
 [domain-editing validation](curve-domain-editing.md) for the separate geometry and
 Rhino length-inversion comparison limits.
 
+`nurbs_rational_jets.json` adds 23 degree-one and higher rational derivative,
+weight-scale, and seam comparisons. `nurbs_translated_jets.json` is a separate
+diagnostic exposing Rhino's large-coordinate cancellation, not a passing reference
+at the ordinary epsilon. Its `curve_native` operations set `differential_only=true`
+to omit length/division calls, isolating derivative evaluation from Rhino's failed
+translated length inversion. See [rational numerical validation](nurbs-numerics.md)
+for analytic checks, observed errors, and remaining kernel limits.
+
 `curve_parameter_map.json` adds both native/rational parameter maps to those records.
 `curve_native_cutting.json` tests cutting-object Split and Trim on all curve families,
 including wrapped outputs, seam hits, and projected cuts. `curve_native_extrusion.json`

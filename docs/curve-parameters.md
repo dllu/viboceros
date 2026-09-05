@@ -59,6 +59,9 @@ weight is representable. Coincident endpoints share their midpoint and a degree-
 junction knot, matching OpenNURBS within the fixed curve-coincidence tolerance.
 If a scaled weight would overflow or vanish, full-order knots preserve independent
 scales. The multiplication/division order avoids forming overflowing weight ratios.
+NURBS seam relocation and wrapped subcurves share that rescaling policy.
+[Rational numerical policy](nurbs-numerics.md) describes local-coordinate evaluation,
+nonzero degree-one rational acceleration, and within-span floating-point limits.
 
 Native [trimming, splitting, seam relocation, and command reparameterization](curve-domain-editing.md)
 retain this parameter contract. NURBS affine maps preserve exact interior knots when

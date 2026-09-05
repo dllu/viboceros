@@ -1,4 +1,7 @@
 use std::ops::RangeInclusive;
+mod evaluate;
+mod weights;
+pub(crate) use weights::rescale_controls;
 
 use faer::{Mat, prelude::*};
 
@@ -1473,155 +1476,6 @@ impl NurbsCurve {
         Ok(parameter)
     }
 
-    /// Evaluates the curve with the homogeneous de Boor algorithm.
-    pub fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
-        let span = self.checked_span(parameter)?;
-        let work = self.active_homogeneous_control_points(span)?;
-        let homogeneous = de_boor(&self.knots, self.degree, span, parameter, work)?;
-        project_homogeneous(homogeneous)
-    }
-
-    /// Evaluates the point and exact first derivative using the derivative
-    /// control polygon in homogeneous coordinates and the rational quotient
-    /// rule.
-    pub fn evaluate_with_derivative(
-        &self,
-        parameter: Real,
-    ) -> Result<(Point3, Vector3), GeometryError> {
-        let span = self.checked_span(parameter)?;
-        let active = self.active_homogeneous_control_points(span)?;
-        let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-        let point = project_homogeneous(homogeneous)?;
-
-        let first_control_point = span - self.degree;
-        let mut derivative_controls = Vec::with_capacity(self.degree);
-        for local_index in 0..self.degree {
-            let control_point_index = first_control_point + local_index;
-            let knot_start = self.knots[control_point_index + 1];
-            let knot_end = self.knots[control_point_index + self.degree + 1];
-            let mut derivative = [0.0; 4];
-            for coordinate in 0..4 {
-                derivative[coordinate] = stable_divided_difference(
-                    active[local_index + 1][coordinate],
-                    active[local_index][coordinate],
-                    self.degree,
-                    knot_start,
-                    knot_end,
-                )?;
-            }
-            derivative_controls.push(derivative);
-        }
-
-        let homogeneous_derivative = de_boor(
-            &self.knots[1..self.knots.len() - 1],
-            self.degree - 1,
-            span - 1,
-            parameter,
-            derivative_controls,
-        )?;
-        let weight = homogeneous[3];
-        let weight_derivative = homogeneous_derivative[3];
-        let point_coordinates = point.to_array();
-        let derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-            (-point_coordinates[coordinate])
-                .mul_add(weight_derivative, homogeneous_derivative[coordinate])
-                / weight
-        });
-        Ok((point, Vector3::try_from(derivative)?))
-    }
-
-    /// Evaluates the point and exact first and second derivatives using
-    /// homogeneous derivative control polygons and the rational quotient
-    /// rule.
-    pub fn evaluate_with_second_derivative(
-        &self,
-        parameter: Real,
-    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        let span = self.checked_span(parameter)?;
-        let active = self.active_homogeneous_control_points(span)?;
-        let homogeneous = de_boor(&self.knots, self.degree, span, parameter, active.clone())?;
-        let point = project_homogeneous(homogeneous)?;
-
-        let first_control_point = span - self.degree;
-        let mut derivative_controls = Vec::with_capacity(self.degree);
-        for local_index in 0..self.degree {
-            let control_point_index = first_control_point + local_index;
-            let knot_start = self.knots[control_point_index + 1];
-            let knot_end = self.knots[control_point_index + self.degree + 1];
-            let mut derivative = [0.0; 4];
-            for coordinate in 0..4 {
-                derivative[coordinate] = stable_divided_difference(
-                    active[local_index + 1][coordinate],
-                    active[local_index][coordinate],
-                    self.degree,
-                    knot_start,
-                    knot_end,
-                )?;
-            }
-            derivative_controls.push(derivative);
-        }
-
-        let homogeneous_derivative = de_boor(
-            &self.knots[1..self.knots.len() - 1],
-            self.degree - 1,
-            span - 1,
-            parameter,
-            derivative_controls.clone(),
-        )?;
-        let weight = homogeneous[3];
-        let weight_derivative = homogeneous_derivative[3];
-        let point_coordinates = point.to_array();
-        let first_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-            (-point_coordinates[coordinate])
-                .mul_add(weight_derivative, homogeneous_derivative[coordinate])
-                / weight
-        });
-        let first_derivative = Vector3::try_from(first_derivative)?;
-
-        if self.degree == 1 {
-            return Ok((point, first_derivative, Vector3::try_new(0.0, 0.0, 0.0)?));
-        }
-
-        let mut second_derivative_controls = Vec::with_capacity(self.degree - 1);
-        for local_index in 0..self.degree - 1 {
-            let derivative_control_index = first_control_point + local_index;
-            let knot_start = self.knots[derivative_control_index + 2];
-            let knot_end = self.knots[derivative_control_index + self.degree + 1];
-            let mut derivative = [0.0; 4];
-            for coordinate in 0..4 {
-                derivative[coordinate] = stable_divided_difference(
-                    derivative_controls[local_index + 1][coordinate],
-                    derivative_controls[local_index][coordinate],
-                    self.degree - 1,
-                    knot_start,
-                    knot_end,
-                )?;
-            }
-            second_derivative_controls.push(derivative);
-        }
-        let homogeneous_second_derivative = de_boor(
-            &self.knots[2..self.knots.len() - 2],
-            self.degree - 2,
-            span - 2,
-            parameter,
-            second_derivative_controls,
-        )?;
-        let weight_second_derivative = homogeneous_second_derivative[3];
-        let first_coordinates = first_derivative.to_array();
-        let second_derivative: [Real; 3] = std::array::from_fn(|coordinate| {
-            let quotient_terms = (2.0 * weight_derivative).mul_add(
-                first_coordinates[coordinate],
-                weight_second_derivative * point_coordinates[coordinate],
-            );
-            (homogeneous_second_derivative[coordinate] - quotient_terms) / weight
-        });
-        Ok((
-            point,
-            first_derivative,
-            Vector3::try_from(second_derivative)?,
-        ))
-    }
-
     pub fn derivative_at(&self, parameter: Real) -> Result<Vector3, GeometryError> {
         self.evaluate_with_derivative(parameter)
             .map(|(_, derivative)| derivative)
@@ -1636,6 +1490,27 @@ impl NurbsCurve {
     /// steps with clamping and monotone backtracking, so rational and
     /// non-uniform parameterizations do not need to be sampled as polylines.
     pub fn closest_parameter(
+        &self,
+        target: Point3,
+        tolerance: Tolerance,
+    ) -> Result<Real, GeometryError> {
+        // Keep distance comparisons and tangent residuals in one local frame.
+        // Restoring a large world origin before subtracting the target can
+        // quantize the objective and stop refinement before stationarity.
+        let origin = self.control_points[0].point;
+        if origin.to_array() != [0.0; 3] {
+            let offset = Vector3::try_new(-origin.x(), -origin.y(), -origin.z())?;
+            if let (Ok(local), Ok(target)) = (
+                self.transformed(AffineTransform3::from_translation(offset)),
+                target.translated(offset),
+            ) {
+                return local.closest_parameter_in_frame(target, tolerance);
+            }
+        }
+        self.closest_parameter_in_frame(target, tolerance)
+    }
+
+    fn closest_parameter_in_frame(
         &self,
         target: Point3,
         tolerance: Tolerance,
@@ -2216,49 +2091,8 @@ impl NurbsCurve {
         let (left, right) =
             self.try_split_with_periodic_topology(parameter, refine_periodic_topology)?;
         let shifted_left = left.translate_parameterization_by_period(old_start, old_end, 1)?;
-        let scale = right.control_points[right.control_points.len() - 1].weight
-            / shifted_left.control_points[0].weight;
-        require_finite([scale], "closed curve seam weight scale")?;
-
-        let output_control_count = right
-            .control_points
-            .len()
-            .checked_add(shifted_left.control_points.len())
-            .and_then(|count| count.checked_sub(1))
-            .ok_or(GeometryError::InvalidKnotVector {
-                context: "the seam-relocated control count overflowed usize",
-            })?;
-        let mut controls = Vec::new();
-        controls
-            .try_reserve_exact(output_control_count)
-            .map_err(|_| GeometryError::InvalidKnotVector {
-                context: "the seam-relocated control count exceeds addressable memory",
-            })?;
-        controls.extend_from_slice(&right.control_points);
-        for control in shifted_left.control_points.iter().skip(1) {
-            controls.push(WeightedPoint3::try_new(
-                control.point,
-                control.weight * scale,
-            )?);
-        }
-
-        let output_knot_count = output_control_count
-            .checked_add(self.degree)
-            .and_then(|count| count.checked_add(1))
-            .ok_or(GeometryError::InvalidKnotVector {
-                context: "the seam-relocated knot count overflowed usize",
-            })?;
-        let mut knots = Vec::new();
-        knots.try_reserve_exact(output_knot_count).map_err(|_| {
-            GeometryError::InvalidKnotVector {
-                context: "the seam-relocated knot count exceeds addressable memory",
-            }
-        })?;
-        knots.extend_from_slice(&right.knots[..right.knots.len() - 1]);
-        knots.extend_from_slice(&shifted_left.knots[self.degree + 1..]);
-        debug_assert_eq!(controls.len(), output_control_count);
-        debug_assert_eq!(knots.len(), output_knot_count);
-        Self::try_new_rational(self.degree, controls, knots)
+        let join = right.control_points[right.control_points.len() - 1].point;
+        right.try_append_clamped_at_join(&shifted_left, join)
     }
 
     /// Returns the exact full-knot-vector multiplicity of `parameter`.
@@ -4329,55 +4163,6 @@ impl NurbsCurve {
         left.try_append_clamped(&right)
     }
 
-    fn try_append_clamped(&self, next: &Self) -> Result<Self, GeometryError> {
-        if self.degree != next.degree {
-            return Err(GeometryError::InvalidCurveTrimInterval);
-        }
-        let degree = self.degree;
-        let left_end = *self.domain().end();
-        let right_start = *next.domain().start();
-        if left_end != right_start
-            || !self.knots[self.knots.len() - degree - 1..]
-                .iter()
-                .all(|knot| *knot == left_end)
-            || !next.knots[..=degree]
-                .iter()
-                .all(|knot| *knot == right_start)
-        {
-            return Err(GeometryError::InvalidCurveTrimInterval);
-        }
-
-        let left_control = self.control_points[self.control_points.len() - 1];
-        let right_control = next.control_points[0];
-        let left_point = left_control.point();
-        let right_point = right_control.point();
-        let join = Point3::try_new(
-            0.5 * left_point.x() + 0.5 * right_point.x(),
-            0.5 * left_point.y() + 0.5 * right_point.y(),
-            0.5 * left_point.z() + 0.5 * right_point.z(),
-        )?;
-        let mut controls = self.control_points.clone();
-        *controls
-            .last_mut()
-            .expect("a validated NURBS curve has a final control") =
-            WeightedPoint3::try_new(join, left_control.weight())?;
-        let weight_scale = left_control.weight() / right_control.weight();
-        require_finite([weight_scale], "appended NURBS curve weight scale")?;
-        controls.extend(
-            next.control_points
-                .iter()
-                .skip(1)
-                .map(|control| {
-                    WeightedPoint3::try_new(control.point(), control.weight() * weight_scale)
-                })
-                .collect::<Result<Vec<_>, _>>()?,
-        );
-
-        let mut knots = self.knots[..self.knots.len() - 1].to_vec();
-        knots.extend_from_slice(&next.knots[degree + 1..]);
-        Self::try_new_rational(degree, controls, knots)
-    }
-
     pub fn transformed(&self, transform: AffineTransform3) -> Result<Self, GeometryError> {
         let control_points = self
             .control_points
@@ -4650,32 +4435,6 @@ impl NurbsCurve {
         }
         right.reverse();
         Ok((left, right))
-    }
-
-    fn active_homogeneous_control_points(
-        &self,
-        span: usize,
-    ) -> Result<Vec<[Real; 4]>, GeometryError> {
-        let first_control_point = span - self.degree;
-        let active = &self.control_points[first_control_point..=span];
-        let weight_scale = active
-            .iter()
-            .map(|control_point| control_point.weight.abs())
-            .fold(0.0, Real::max);
-        let mut homogeneous = Vec::with_capacity(active.len());
-        for control_point in active {
-            let weight = control_point.weight / weight_scale;
-            let point = control_point.point;
-            let value = [
-                point.x() * weight,
-                point.y() * weight,
-                point.z() * weight,
-                weight,
-            ];
-            require_finite(value, "homogeneous NURBS control point")?;
-            homogeneous.push(value);
-        }
-        Ok(homogeneous)
     }
 
     fn find_span(&self, parameter: Real) -> usize {
