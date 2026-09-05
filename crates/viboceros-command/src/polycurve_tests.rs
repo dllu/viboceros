@@ -19,6 +19,84 @@ fn composite() -> PolyCurve3 {
 }
 
 #[test]
+fn explode_retains_native_leaf_classes_and_global_parameter_intervals() {
+    use viboceros_geometry::{Curve3, CurveSegment3};
+    let p = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+    let arc = CircularArc3::try_from_three_points(
+        p(1.0, 0.0),
+        p(
+            std::f64::consts::FRAC_1_SQRT_2,
+            std::f64::consts::FRAC_1_SQRT_2,
+        ),
+        p(0.0, 1.0),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let curve = PolyCurve3::try_with_segment_domains(
+        vec![
+            CurveSegment3::Line(
+                LineSegment::try_new(p(3.0, 0.0), arc.start().unwrap(), Tolerance::DEFAULT)
+                    .unwrap(),
+            ),
+            CurveSegment3::Arc(arc),
+            CurveSegment3::Polyline(
+                Polyline3::try_new(
+                    vec![arc.end().unwrap(), p(0.0, 3.0), p(1.0, 3.0)],
+                    Tolerance::DEFAULT,
+                )
+                .unwrap(),
+            ),
+        ],
+        vec![-9.0, -3.0, 4.0, 12.0],
+    )
+    .unwrap();
+    let mut document = Document::default();
+    let source = document
+        .add_geometry(Geometry::PolyCurve(curve.clone()))
+        .unwrap();
+    document
+        .select_object(source, SelectionMode::Replace)
+        .unwrap();
+    let registry = CommandRegistry::with_builtins();
+    registry.execute(&mut document, "Explode").unwrap();
+    let mut parts = document
+        .objects()
+        .map(|o| {
+            let curve = o.geometry().curve_ref().unwrap().to_owned();
+            assert!(!matches!(curve, Curve3::PolyCurve(_)));
+            CurveSegment3::try_from_curve(&curve).unwrap()
+        })
+        .collect::<Vec<_>>();
+    parts.sort_by(|a, b| a.domain().start().total_cmp(b.domain().start()));
+    assert_eq!(parts.len(), 4);
+    assert!(matches!(parts[0], CurveSegment3::Line(_)));
+    assert!(matches!(parts[1], CurveSegment3::Arc(_)));
+    assert!(matches!(parts[2], CurveSegment3::Line(_)));
+    assert!(matches!(parts[3], CurveSegment3::Line(_)));
+    for (index, part) in parts.iter().enumerate() {
+        assert_eq!(
+            part.domain(),
+            [-9.0..=-3.0, -3.0..=4.0, 4.0..=8.0, 8.0..=12.0][index]
+        );
+        for i in 0..16 {
+            let t = part.parameter_at(i as f64 / 16.0).unwrap();
+            assert!(
+                part.evaluate(t)
+                    .unwrap()
+                    .distance_to(curve.evaluate(t).unwrap())
+                    .unwrap()
+                    < 1e-12
+            );
+        }
+    }
+    registry.execute(&mut document, "Undo").unwrap();
+    assert_eq!(
+        document.object(source).unwrap().geometry(),
+        &Geometry::PolyCurve(curve)
+    );
+}
+
+#[test]
 fn explode_preserves_segment_domains_attributes_groups_and_undo() {
     let curve = composite();
     let mut document = Document::default();
@@ -162,7 +240,8 @@ fn close_curve_appends_to_open_composites_and_keeps_closed_ones() {
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
             ],
         )
-        .unwrap(),
+        .unwrap()
+        .into(),
     );
     let closed = Geometry::PolyCurve(PolyCurve3::try_new(segments).unwrap());
     document

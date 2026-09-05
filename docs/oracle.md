@@ -53,6 +53,15 @@ rules separately, including the `include_ends=false` case.
 duplicate comparison, and 3DM round-trip segment definitions; the native side also
 checks undo. See [polycurve documentation](polycurves.md) for compatibility boundaries.
 
+`polycurve_native.json` checks native analytic evaluation and segment classes
+through reversal, trim/split, and transforms. `polycurve_analytic_editing.json`
+checks analytic endpoint policy inside composites. These fixtures include both
+native derivative samples and NURBS definitions: rational conversion alone cannot
+verify angular parameterization. Exact nonuniform transforms explicitly prepare
+Rhino's polycurve with `MakeDeformable`; direct API shear has different behavior.
+`polycurve_native_document.json` compares extraction, recursive Explode, duplicate
+checks, and 3DM round trips on native mixed composites in both directions.
+
 `curve_join_close.json` compares 39 mixed joining and closure cases, including
 full NURBS definitions, retained intervals, representation, and length. It tests
 the batch `JoinCurves` API separately from actual `Join`/`CloseCrv` commands.

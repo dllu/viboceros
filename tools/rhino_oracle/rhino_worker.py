@@ -483,7 +483,7 @@ def _polycurve_document_record(curve):
         if not reversed_curve.Reverse():
             raise ValueError("could not reverse polycurve")
         reparameterized.Domain = Rhino.Geometry.Interval(0.0, 1.0)
-        return {"extract_points": sorted(points), "control_polygons": sorted(polygons),
+        return {"extract_points": sorted(points, key=lambda p: tuple(round(v * 1e9) for v in p)), "control_polygons": sorted(polygons),
                 "exploded": exploded, "round_trip_segments": segments,
                 "reversed_duplicate": bool(Rhino.Geometry.GeometryBase.GeometryEquals(curve, reversed_curve)),
                 "reparameterized_duplicate": bool(Rhino.Geometry.GeometryBase.GeometryEquals(curve, reparameterized))}
@@ -966,7 +966,7 @@ def _join_close_input(definition):
     raise ValueError("unsupported join/close curve type")
 
 
-def _join_close_record(curve):
+def _join_close_record(curve, inspect_native=False):
     if isinstance(curve, Rhino.Geometry.PolyCurve):
         curve.RemoveNesting()
         segments = []
@@ -987,8 +987,91 @@ def _join_close_record(curve):
             kind = "arc"
         elif isinstance(curve, Rhino.Geometry.PolylineCurve):
             kind = "polyline"
-    return {"type": kind, "closed": bool(curve.IsClosed), "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+    value = {"type": kind, "closed": bool(curve.IsClosed), "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
             "segments": segments, "length": float(curve.GetLength(1e-12))}
+    if inspect_native:
+        value["native"] = _polycurve_native_record(curve, {"relative": 1e-12})
+    return value
+
+
+def _polycurve_native_record(curve, tolerance):
+    segments = []
+    count = curve.SegmentCount if isinstance(curve, Rhino.Geometry.PolyCurve) else 1
+    for index in range(count):
+        segment = curve.SegmentCurve(index).DuplicateCurve() if isinstance(curve, Rhino.Geometry.PolyCurve) else curve.DuplicateCurve()
+        try:
+            domain = curve.SegmentDomain(index) if isinstance(curve, Rhino.Geometry.PolyCurve) else curve.Domain
+            segment.Domain = domain
+            kind = "nurbs"
+            if isinstance(segment, Rhino.Geometry.LineCurve):
+                kind = "line"
+            elif isinstance(segment, Rhino.Geometry.ArcCurve):
+                kind = "arc"
+            elif isinstance(segment, Rhino.Geometry.PolylineCurve):
+                kind = "polyline"
+            samples = []
+            for fraction in [0.0, 0.125, 0.375, 0.5, 0.875, 1.0]:
+                parameter = float(domain.T1) if fraction == 1.0 else float(domain.T0 + domain.Length * fraction)
+                derivatives = segment.DerivativeAt(parameter, 2)
+                if derivatives is None or len(derivatives) != 3:
+                    raise ValueError("could not evaluate native segment derivatives")
+                samples.append({"parameter": parameter, "point": _xyz(segment.PointAt(parameter)),
+                                "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2])})
+            segments.append({"type": kind, "domain": [float(domain.T0), float(domain.T1)],
+                             "samples": samples, "nurbs": _nurbs_curve_definition(segment)})
+        finally:
+            segment.Dispose()
+    return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
+            "length": float(curve.GetLength(tolerance["relative"])), "segments": segments}
+
+
+def _polycurve_native(operation, iterations, tolerance):
+    source = _join_close_input(operation["curve"])
+    try:
+        if not isinstance(source, Rhino.Geometry.PolyCurve) or not source.IsValid:
+            raise ValueError("native polycurve fixture requires a valid composite")
+        source.RemoveNesting()
+        def compute():
+            owned = [source.DuplicateCurve()]
+            try:
+                curve = owned[0]
+                if operation.get("domain") is not None:
+                    curve.Domain = Rhino.Geometry.Interval(*operation["domain"])
+                if operation.get("reversed") and not curve.Reverse():
+                    raise ValueError("native reverse failed")
+                if operation.get("trim") is not None:
+                    curve = curve.Trim(*operation["trim"])
+                    if curve is None:
+                        raise ValueError("native trim failed")
+                    owned.append(curve)
+                if operation.get("deformable") and not curve.MakeDeformable():
+                    raise ValueError("could not make native polycurve deformable")
+                if operation.get("transform") is not None:
+                    transform = Rhino.Geometry.Transform.Identity
+                    for row, values in enumerate(operation["transform"]):
+                        for column, value in enumerate(values):
+                            transform[row, column] = float(value)
+                    if not curve.Transform(transform):
+                        raise ValueError("native transform failed")
+                curves = [curve]
+                if operation.get("split") is not None:
+                    curves = curve.Split(float(operation["split"]))
+                    if curves is None or len(curves) != 2:
+                        raise ValueError("native split failed")
+                    owned.extend(curves)
+                results = []
+                for c in curves:
+                    value = _polycurve_native_record(c, tolerance)
+                    if operation.get("document_checks"):
+                        value["document"] = _polycurve_document_record(c)
+                    results.append(value)
+                return {"curves": results}
+            finally:
+                for curve in reversed(owned):
+                    curve.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
 
 
 def _curve_join_close(operation, iterations, tolerance):
@@ -1002,7 +1085,7 @@ def _curve_join_close(operation, iterations, tolerance):
                 if results is None:
                     raise ValueError("JoinCurves failed")
                 try:
-                    return [_join_close_record(curve) for curve in results]
+                    return [_join_close_record(curve, operation.get("inspect_native", False)) for curve in results]
                 finally:
                     for curve in results:
                         curve.Dispose()
@@ -1041,7 +1124,7 @@ def _curve_join_close(operation, iterations, tolerance):
                         if obj.Id not in before:
                             duplicate = obj.Geometry.DuplicateCurve()
                             try:
-                                value = _join_close_record(duplicate)
+                                value = _join_close_record(duplicate, operation.get("inspect_native", False))
                                 if operation["action"] == "join_command":
                                     value["name"] = obj.Attributes.Name
                                     value["source_index"] = ids.index(obj.Id) if obj.Id in ids else None
@@ -1069,6 +1152,8 @@ def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "curve_join_close":
         return _curve_join_close(operation, iterations, tolerance)
+    if kind == "polycurve_native":
+        return _polycurve_native(operation, iterations, tolerance)
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":

@@ -144,8 +144,12 @@ impl Polyline3 {
 
     pub fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
         let (index, fraction) = self.parameter_location(parameter)?;
-        LineSegment::from_validated(self.vertices[index], self.vertices[index + 1])
-            .point_at(fraction)
+        LineSegment::from_validated(
+            self.vertices[index],
+            self.vertices[index + 1],
+            [self.parameters[index], self.parameters[index + 1]],
+        )
+        .point_at(fraction)
     }
 
     /// Exact NURBS form without the chord-length reparameterization performed
@@ -183,7 +187,10 @@ impl Polyline3 {
     pub fn segments(&self) -> impl ExactSizeIterator<Item = LineSegment> + '_ {
         self.vertices
             .windows(2)
-            .map(|points| LineSegment::from_validated(points[0], points[1]))
+            .zip(self.parameters.windows(2))
+            .map(|(points, parameters)| {
+                LineSegment::from_validated(points[0], points[1], [parameters[0], parameters[1]])
+            })
     }
 
     pub fn bounds(&self) -> BoundingBox3 {

@@ -10,8 +10,8 @@ use viboceros_drafting::{
     orthogonal_track,
 };
 use viboceros_geometry::{
-    Brep, Circle3, CircularArc3, Ellipse3, NurbsCurve, NurbsSurface, Point3, Polyline3, Real,
-    Tolerance, TriangleMesh, Vector3,
+    Brep, Circle3, CircularArc3, CurveSegment3, Ellipse3, GeometryError, NurbsCurve, NurbsSurface,
+    Point3, Polyline3, Real, Tolerance, TriangleMesh, Vector3,
 };
 
 use crate::viewport_gpu::{
@@ -21,6 +21,47 @@ use crate::viewport_gpu::{
 };
 
 const OSNAP_CAPTURE_PIXELS: f32 = 12.0;
+
+/// Borrow native span evaluators without allocating a NURBS copy each frame.
+trait ViewportCurve {
+    fn domain(&self) -> std::ops::RangeInclusive<Real>;
+    fn spans(&self) -> impl Iterator<Item = (Real, Real)>;
+    fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError>;
+    fn samples_per_span(&self) -> usize {
+        CURVE_SAMPLES_PER_SPAN
+    }
+}
+
+impl ViewportCurve for NurbsCurve {
+    fn domain(&self) -> std::ops::RangeInclusive<Real> {
+        self.domain()
+    }
+    fn spans(&self) -> impl Iterator<Item = (Real, Real)> {
+        self.spans()
+    }
+    fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
+        self.evaluate(parameter)
+    }
+}
+
+impl ViewportCurve for CurveSegment3 {
+    fn samples_per_span(&self) -> usize {
+        match self {
+            Self::Line(_) | Self::Polyline(_) => 1,
+            Self::Arc(arc) => circular_arc_samples(*arc),
+            Self::NurbsCurve(_) => CURVE_SAMPLES_PER_SPAN,
+        }
+    }
+    fn domain(&self) -> std::ops::RangeInclusive<Real> {
+        self.domain()
+    }
+    fn spans(&self) -> impl Iterator<Item = (Real, Real)> {
+        self.spans()
+    }
+    fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
+        self.evaluate(parameter)
+    }
+}
 const TRACK_CAPTURE_PIXELS: f32 = 8.0;
 const PICK_CAPTURE_PIXELS: f32 = 8.0;
 const CURVE_SAMPLES_PER_SPAN: usize = 16;
@@ -892,15 +933,16 @@ impl Viewport {
         &self,
         projected: &mut ProjectedPrimitives,
         rect: Rect,
-        curve: &NurbsCurve,
+        curve: &impl ViewportCurve,
     ) {
         let domain_end = *curve.domain().end();
+        let samples = curve.samples_per_span();
         for (span_start, span_end) in curve.spans() {
             let mut previous = None;
-            for sample in 0..=CURVE_SAMPLES_PER_SPAN {
-                let fraction = sample as Real / CURVE_SAMPLES_PER_SPAN as Real;
+            for sample in 0..=samples {
+                let fraction = sample as Real / samples as Real;
                 let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
-                if sample == CURVE_SAMPLES_PER_SPAN && span_end < domain_end {
+                if sample == samples && span_end < domain_end {
                     parameter = span_end.next_down().max(span_start);
                 }
                 let point = curve
@@ -972,15 +1014,16 @@ impl Viewport {
         }
     }
 
-    fn nurbs_pick_distance(&self, pointer: Pos2, rect: Rect, curve: &NurbsCurve) -> f32 {
+    fn nurbs_pick_distance(&self, pointer: Pos2, rect: Rect, curve: &impl ViewportCurve) -> f32 {
         let domain_end = *curve.domain().end();
+        let samples = curve.samples_per_span();
         let mut nearest = f32::INFINITY;
         for (span_start, span_end) in curve.spans() {
             let mut previous = None;
-            for sample in 0..=CURVE_SAMPLES_PER_SPAN {
-                let fraction = sample as Real / CURVE_SAMPLES_PER_SPAN as Real;
+            for sample in 0..=samples {
+                let fraction = sample as Real / samples as Real;
                 let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
-                if sample == CURVE_SAMPLES_PER_SPAN && span_end < domain_end {
+                if sample == samples && span_end < domain_end {
                     parameter = span_end.next_down().max(span_start);
                 }
                 let projected = curve
@@ -1415,20 +1458,21 @@ impl Viewport {
         &self,
         scene: &mut GpuSceneBuilder,
         rect: Rect,
-        curve: &NurbsCurve,
+        curve: &impl ViewportCurve,
         width: f32,
         color: Color32,
     ) {
         let domain_end = *curve.domain().end();
+        let samples = curve.samples_per_span();
         for (span_start, span_end) in curve.spans() {
             let mut previous = None;
-            for sample in 0..=CURVE_SAMPLES_PER_SPAN {
-                let fraction = sample as Real / CURVE_SAMPLES_PER_SPAN as Real;
+            for sample in 0..=samples {
+                let fraction = sample as Real / samples as Real;
                 let mut parameter = span_start.mul_add(1.0 - fraction, span_end * fraction);
                 // At a fully multiple interior knot, the curve has distinct
                 // left and right limits. Keep this span on its left side and
                 // begin the next polyline separately on the right side.
-                if sample == CURVE_SAMPLES_PER_SPAN && span_end < domain_end {
+                if sample == samples && span_end < domain_end {
                     parameter = span_end.next_down().max(span_start);
                 }
 

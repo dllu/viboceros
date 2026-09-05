@@ -23,7 +23,11 @@ fn polyline_closure_preserves_native_parameters_and_representation() {
     assert!(curve.is_closed().unwrap());
     assert_eq!(curve.segments().len(), 2);
     assert_eq!(curve.parameters(), &[0.0, 2.0, 2.0 + 13.0_f64.sqrt()]);
-    assert_eq!(curve.segments()[0].knots(), &[0.0, 0.0, 1.0, 2.0, 2.0]);
+    let crate::CurveSegment3::Polyline(polyline) = &curve.segments()[0] else {
+        panic!("the original polyline stays native")
+    };
+    assert_eq!(polyline.parameters(), &[0.0, 1.0, 2.0]);
+    assert!(matches!(curve.segments()[1], crate::CurveSegment3::Line(_)));
     assert_eq!(
         source.close(1e-9, false, Tolerance::DEFAULT).unwrap(),
         (source.clone(), CurveClosure::GapTooWide)

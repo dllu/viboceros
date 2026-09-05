@@ -1,12 +1,14 @@
 use viboceros_geometry::{
-    Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,
-    GeometryError, MAX_POLYCURVE_SEGMENTS, NurbsCurve, NurbsCurve2, NurbsSurface, Point2, Point3,
-    PolyCurve3, SurfaceIso, Tolerance, WeightedPoint2, WeightedPoint3,
+    Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex, Circle3,
+    CircularArc3, CurveSegment3, GeometryError, LineSegment, MAX_POLYCURVE_SEGMENTS, NurbsCurve,
+    NurbsCurve2, NurbsSurface, Point2, Point3, PolyCurve3, Polyline3, SurfaceIso, Tolerance,
+    Vector3, WeightedPoint2, WeightedPoint3,
 };
 
 const MAGIC: &[u8; 8] = b"VIBOBRP\0";
 const POLYCURVE_MAGIC: &[u8; 8] = b"VIBOPLY\0";
 const VERSION: u32 = 1;
+const POLYCURVE_VERSION: u32 = 2;
 const NO_EDGE: u64 = u64::MAX;
 
 #[derive(Debug)]
@@ -25,20 +27,45 @@ impl From<GeometryError> for GeometryCodecError {
 pub(crate) fn encode_polycurve(curve: &PolyCurve3) -> Result<Vec<u8>, GeometryCodecError> {
     let mut writer = Writer::default();
     writer.bytes.extend_from_slice(POLYCURVE_MAGIC);
-    writer.u32(VERSION);
+    writer.u32(POLYCURVE_VERSION);
     writer.len(curve.segments().len())?;
     for parameter in curve.parameters() {
         writer.f64(*parameter);
     }
     for segment in curve.segments() {
-        writer.curve3(segment)?;
+        writer.segment(segment)?;
     }
     Ok(writer.bytes)
 }
 
+pub(crate) fn encode_arc(arc: CircularArc3) -> Result<Vec<u8>, GeometryCodecError> {
+    let mut writer = Writer::default();
+    writer.u32(VERSION);
+    writer.segment(&CurveSegment3::Arc(arc))?;
+    Ok(writer.bytes)
+}
+
+pub(crate) fn decode_arc(bytes: &[u8]) -> Result<CircularArc3, GeometryCodecError> {
+    let mut reader = Reader { bytes, position: 0 };
+    if reader.u32()? != VERSION {
+        return Err(GeometryCodecError::Malformed);
+    }
+    let CurveSegment3::Arc(arc) = reader.segment()? else {
+        return Err(GeometryCodecError::Malformed);
+    };
+    if reader.position != bytes.len() {
+        return Err(GeometryCodecError::Malformed);
+    }
+    Ok(arc)
+}
+
 pub(crate) fn decode_polycurve(bytes: &[u8]) -> Result<PolyCurve3, GeometryCodecError> {
     let mut reader = Reader { bytes, position: 0 };
-    if reader.take(POLYCURVE_MAGIC.len())? != POLYCURVE_MAGIC || reader.u32()? != VERSION {
+    if reader.take(POLYCURVE_MAGIC.len())? != POLYCURVE_MAGIC {
+        return Err(GeometryCodecError::Malformed);
+    }
+    let version = reader.u32()?;
+    if version != 1 && version != POLYCURVE_VERSION {
         return Err(GeometryCodecError::Malformed);
     }
     let count = reader.len()?;
@@ -49,7 +76,13 @@ pub(crate) fn decode_polycurve(bytes: &[u8]) -> Result<PolyCurve3, GeometryCodec
         .map(|_| reader.f64())
         .collect::<Result<Vec<_>, _>>()?;
     let segments = (0..count)
-        .map(|_| reader.curve3())
+        .map(|_| {
+            if version == 1 {
+                reader.curve3().map(CurveSegment3::NurbsCurve)
+            } else {
+                reader.segment()
+            }
+        })
         .collect::<Result<Vec<_>, _>>()?;
     if reader.position != bytes.len() {
         return Err(GeometryCodecError::Malformed);
@@ -257,6 +290,47 @@ impl Writer {
         Ok(())
     }
 
+    fn segment(&mut self, segment: &CurveSegment3) -> Result<(), GeometryCodecError> {
+        match segment {
+            CurveSegment3::Line(line) => {
+                self.u8(1);
+                self.point3(line.start());
+                self.point3(line.end());
+                self.f64(*line.domain().start());
+                self.f64(*line.domain().end());
+            }
+            CurveSegment3::Arc(arc) => {
+                self.u8(2);
+                self.point3(arc.center());
+                for value in arc.x_axis().as_vector().to_array() {
+                    self.f64(value);
+                }
+                for value in arc.normal()?.as_vector().to_array() {
+                    self.f64(value);
+                }
+                self.f64(arc.radius());
+                self.f64(arc.sweep_radians());
+                self.f64(*arc.domain().start());
+                self.f64(*arc.domain().end());
+            }
+            CurveSegment3::Polyline(polyline) => {
+                self.u8(3);
+                self.len(polyline.vertices().len())?;
+                for point in polyline.vertices() {
+                    self.point3(*point);
+                }
+                for parameter in polyline.parameters() {
+                    self.f64(*parameter);
+                }
+            }
+            CurveSegment3::NurbsCurve(curve) => {
+                self.u8(4);
+                self.curve3(curve)?;
+            }
+        }
+        Ok(())
+    }
+
     fn curve2(&mut self, curve: &NurbsCurve2) -> Result<(), GeometryCodecError> {
         self.u32(u32::try_from(curve.degree()).map_err(|_| GeometryCodecError::SizeOverflow)?);
         self.len(curve.control_points().len())?;
@@ -394,6 +468,49 @@ impl Reader<'_> {
         Ok(NurbsCurve::try_new_rational(degree, controls, knots)?)
     }
 
+    fn segment(&mut self) -> Result<CurveSegment3, GeometryCodecError> {
+        let tolerance = Tolerance::try_new(
+            f64::MIN_POSITIVE,
+            Tolerance::DEFAULT.relative(),
+            Tolerance::DEFAULT.angular(),
+        )?;
+        Ok(match self.u8()? {
+            1 => {
+                let line = LineSegment::try_new(self.point3()?, self.point3()?, tolerance)?;
+                CurveSegment3::Line(line.try_reparameterized(self.f64()?..=self.f64()?)?)
+            }
+            2 => {
+                let center = self.point3()?;
+                let x = Vector3::try_new(self.f64()?, self.f64()?, self.f64()?)?
+                    .normalized_nonzero()?;
+                let normal = Vector3::try_new(self.f64()?, self.f64()?, self.f64()?)?
+                    .normalized_nonzero()?;
+                let circle = Circle3::try_from_frame(center, self.f64()?, x, normal, tolerance)?;
+                let arc = CircularArc3::try_from_circle_sweep(circle, self.f64()?)?;
+                CurveSegment3::Arc(arc.try_reparameterized(self.f64()?..=self.f64()?)?)
+            }
+            3 => {
+                let count = self.len()?;
+                self.require_f64s(
+                    count
+                        .checked_mul(4)
+                        .ok_or(GeometryCodecError::SizeOverflow)?,
+                )?;
+                let points = (0..count)
+                    .map(|_| self.point3())
+                    .collect::<Result<Vec<_>, _>>()?;
+                let parameters = (0..count)
+                    .map(|_| self.f64())
+                    .collect::<Result<Vec<_>, _>>()?;
+                CurveSegment3::Polyline(Polyline3::try_with_parameters(
+                    points, parameters, tolerance,
+                )?)
+            }
+            4 => CurveSegment3::NurbsCurve(self.curve3()?),
+            _ => return Err(GeometryCodecError::Malformed),
+        })
+    }
+
     fn curve2(&mut self) -> Result<NurbsCurve2, GeometryCodecError> {
         let degree = usize::try_from(self.u32()?).map_err(|_| GeometryCodecError::SizeOverflow)?;
         let control_count = self.len()?;
@@ -451,6 +568,50 @@ impl Reader<'_> {
 mod tests {
     use super::*;
     use viboceros_geometry::{Frame3, Vector3};
+
+    #[test]
+    fn legacy_polycurve_payload_remains_readable_and_arc_payload_is_strict() {
+        let line = LineSegment::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .to_nurbs()
+        .unwrap();
+        let mut writer = Writer::default();
+        writer.bytes.extend_from_slice(POLYCURVE_MAGIC);
+        writer.u32(1);
+        writer.len(1).unwrap();
+        writer.f64(-3.0);
+        writer.f64(9.0);
+        writer.curve3(&line).unwrap();
+        let decoded = decode_polycurve(&writer.bytes).unwrap();
+        assert_eq!(decoded.parameters(), &[-3.0, 9.0]);
+        assert_eq!(decoded.segments(), &[CurveSegment3::NurbsCurve(line)]);
+        let circle = Circle3::try_new(
+            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+            2.0,
+            Vector3::try_new(0.0, 0.0, 1.0)
+                .unwrap()
+                .normalized_nonzero()
+                .unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let arc = CircularArc3::try_from_circle_sweep(circle, 1.0).unwrap();
+        let bytes = encode_arc(arc).unwrap();
+        assert_eq!(decode_arc(&bytes).unwrap(), arc);
+        for length in 0..bytes.len() {
+            assert!(decode_arc(&bytes[..length]).is_err());
+        }
+        let mut trailing = bytes.clone();
+        trailing.push(0);
+        assert!(decode_arc(&trailing).is_err());
+        let mut wrong_type = bytes;
+        wrong_type[4] = 99;
+        assert!(decode_arc(&wrong_type).is_err());
+    }
 
     #[test]
     fn polycurve_codec_preserves_local_domains_and_rejects_malformed_data() {

@@ -29,9 +29,10 @@ These differences were observed separately in Rhino's public `JoinCurves` API
 and interactive command. Endpoints of two flexible curves move to their midpoint.
 An analytic arc stays fixed against a flexible curve. Two analytic arcs meet at
 the midpoint, each retaining its opposite endpoint and tangent through exact
-supporting-circle reconstruction. Mixed outputs retain exact NURBS segments and
+supporting-circle reconstruction. Mixed outputs retain native segment types and
 original interval widths; endpoint edits can change physical length without
-changing those intervals.
+changing those intervals. The same arc endpoint policy applies inside imported,
+joined, or nested-and-flattened polycurves.
 
 The command creates new joined object IDs, inherits the earliest source's
 attributes and group memberships, deletes consumed inputs, and leaves disconnected
@@ -68,11 +69,13 @@ definitions, domains, orientation, short/wide closure, branch and shuffled input
 two-arc matching, native polyline parameters, and command identity/group behavior.
 Unit tests additionally check unclamped and weighted endpoint edits, bounds,
 resource guards, exact-zero matching, parameterized evaluation, and history.
-3DM tests distinguish native parameterized polylines from degree-one NURBS.
+3DM tests distinguish native parameterized polylines from degree-one NURBS,
+and retain analytic arcs both inside composites and after Explode.
+The eight-case `polycurve_analytic_editing.json` fixture additionally compares
+analytic polycurve endpoint joins and closure, native classes, and first/second
+derivatives. Its observed maximum numeric difference is below `2.5e-14`.
 
 This is bounded compatibility evidence, not full equivalence for arbitrary curves.
-Polycurve segments are currently stored in NURBS form, so an imported or previously
-joined analytic arc no longer carries its original analytic endpoint-edit policy.
 Rhino's full simplification, high-degree polyline recognition, tiny-segment removal,
 and all ambiguous/degenerate join cases remain incomplete. Higher-level joining of
 surfaces, B-reps, and meshes is not implemented by this command.

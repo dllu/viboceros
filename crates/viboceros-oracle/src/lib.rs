@@ -37,6 +37,8 @@ pub use mass_properties::{MassBoundary, TrimmedMassFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
 mod curve_join_close;
+mod polycurve_native;
+pub use polycurve_native::NativePolyCurveFixture;
 mod polycurve_document;
 pub use curve_join_close::CurveJoinCloseFixture;
 
@@ -80,6 +82,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    PolycurveNative {
+        id: String,
+        #[serde(flatten)]
+        fixture: NativePolyCurveFixture,
+    },
     CurveJoinClose {
         id: String,
         #[serde(flatten)]
@@ -1286,6 +1293,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::PolycurveNative { id, .. }
             | Self::CurveJoinClose { id, .. }
             | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
@@ -1563,6 +1571,9 @@ fn execute(
     let (value, elapsed_ns) = match operation {
         Operation::PolycurveGeometry { fixture, .. } => {
             polycurve::run(fixture, iterations, tolerance)?
+        }
+        Operation::PolycurveNative { fixture, .. } => {
+            polycurve_native::run(fixture, iterations, tolerance)?
         }
         Operation::CurveJoinClose { fixture, .. } => {
             curve_join_close::run(fixture, iterations, tolerance)?

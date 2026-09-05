@@ -57,7 +57,7 @@ impl Circle3 {
         Self::try_from_frame(center, radius, x_axis, normal, tolerance)
     }
 
-    fn try_from_frame(
+    pub fn try_from_frame(
         center: Point3,
         radius: Real,
         x_axis: UnitVector3,
@@ -327,7 +327,15 @@ impl CircularArc3 {
         Self::try_from_circle_sweep(circle, sweep_radians)
     }
 
-    fn try_from_circle_sweep(circle: Circle3, sweep_radians: Real) -> Result<Self, GeometryError> {
+    pub fn try_from_circle_sweep(
+        circle: Circle3,
+        sweep_radians: Real,
+    ) -> Result<Self, GeometryError> {
+        if !(sweep_radians > 0.0 && sweep_radians <= TAU) {
+            return Err(GeometryError::Degenerate {
+                context: "arc sweep",
+            });
+        }
         let length = circle.radius() * sweep_radians;
         require_finite([length], "arc parameter interval")?;
         if length <= 0.0 {
@@ -360,6 +368,58 @@ impl CircularArc3 {
     /// Native curve interval, independent of the angular geometric parameter.
     pub fn domain(self) -> std::ops::RangeInclusive<Real> {
         self.domain[0]..=self.domain[1]
+    }
+
+    pub fn x_axis(self) -> UnitVector3 {
+        self.circle.x_axis()
+    }
+    pub fn y_axis(self) -> UnitVector3 {
+        self.circle.y_axis()
+    }
+
+    pub fn try_reparameterized(
+        self,
+        domain: std::ops::RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        crate::parameter::check_interval(&domain)?;
+        Ok(Self {
+            domain: [*domain.start(), *domain.end()],
+            ..self
+        })
+    }
+
+    pub fn evaluate(self, parameter: Real) -> Result<Point3, GeometryError> {
+        self.point_at(crate::parameter::map_parameter(
+            parameter,
+            self.domain(),
+            0.0..=1.0,
+        )?)
+    }
+
+    pub fn try_trimmed(
+        self,
+        domain: std::ops::RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        crate::parameter::check_interval(&domain)?;
+        if domain == self.domain() {
+            return Ok(self);
+        }
+        let first = crate::parameter::map_parameter(*domain.start(), self.domain(), 0.0..=1.0)?;
+        let last = crate::parameter::map_parameter(*domain.end(), self.domain(), 0.0..=1.0)?;
+        let x_axis = self.radial_direction(first * self.sweep_radians)?;
+        let circle = Circle3::try_from_frame(
+            self.center(),
+            self.radius(),
+            x_axis,
+            self.normal()?,
+            Tolerance::try_new(
+                Real::MIN_POSITIVE,
+                Tolerance::DEFAULT.relative(),
+                Tolerance::DEFAULT.angular(),
+            )?,
+        )?;
+        Self::try_from_circle_sweep(circle, (last - first) * self.sweep_radians)?
+            .try_reparameterized(domain)
     }
 
     /// Completes the supporting circle while retaining the original interval.
@@ -479,8 +539,11 @@ impl CircularArc3 {
 
     /// Reverses the arc while retaining its sweep magnitude.
     pub fn reversed(self, tolerance: Tolerance) -> Result<Self, GeometryError> {
-        let end = self.end()?;
-        let x_axis = self.center().vector_to(end)?.normalized_nonzero()?;
+        let x_axis = self.radial_direction(if self.is_closed() {
+            0.0
+        } else {
+            self.sweep_radians
+        })?;
         let normal = self.normal()?.opposite();
         let circle =
             Circle3::try_from_frame(self.center(), self.radius(), x_axis, normal, tolerance)?;
@@ -489,6 +552,14 @@ impl CircularArc3 {
             sweep_radians: self.sweep_radians,
             domain: [-self.domain[1], -self.domain[0]],
         })
+    }
+
+    fn radial_direction(self, angle: Real) -> Result<UnitVector3, GeometryError> {
+        let (sine, cosine) = angle.sin_cos();
+        let x = self.x_axis().as_vector().to_array();
+        let y = self.y_axis().as_vector().to_array();
+        Vector3::try_from(std::array::from_fn(|i| x[i].mul_add(cosine, y[i] * sine)))?
+            .normalized_nonzero()
     }
 
     pub fn bounds(self) -> BoundingBox3 {

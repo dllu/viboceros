@@ -1,0 +1,1296 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-8,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "polycurve_native",
+      "id": "native-four-classes",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-reparameterized",
+      "domain": [
+        -7,
+        13
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-reversed",
+      "reversed": true,
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-reparameterized-reversed",
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true,
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-trim-two-arclength-segments",
+      "trim": [
+        0.5,
+        3
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-trim-arc-interior",
+      "trim": [
+        2.2,
+        3.4
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-trim-polyline-interior",
+      "trim": [
+        3.8,
+        4.8
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-split-arc",
+      "split": 2.6,
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-split-polyline",
+      "split": 4.4,
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-similarity",
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-reflection",
+      "transform": [
+        [
+          -1,
+          0,
+          0,
+          2
+        ],
+        [
+          0,
+          1,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          1,
+          -4
+        ]
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "polycurve_native",
+      "id": "native-shear",
+      "deformable": true,
+      "transform": [
+        [
+          1,
+          0.4,
+          0,
+          2
+        ],
+        [
+          0,
+          2,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          1,
+          -4
+        ]
+      ],
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              -2,
+              0,
+              0
+            ],
+            "end": [
+              0,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0.7071067811865476,
+                0.2928932188134524,
+                0
+              ],
+              [
+                1,
+                1,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "polyline",
+            "vertices": [
+              [
+                1,
+                1,
+                0
+              ],
+              [
+                2,
+                1,
+                0
+              ],
+              [
+                2,
+                3,
+                0
+              ]
+            ]
+          },
+          {
+            "type": "nurbs",
+            "degree": 2,
+            "control_points": [
+              {
+                "point": [
+                  2,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  3,
+                  0
+                ],
+                "weight": 1
+              },
+              {
+                "point": [
+                  4,
+                  5,
+                  0
+                ],
+                "weight": 1
+              }
+            ],
+            "knots": [
+              -4,
+              -4,
+              -4,
+              2,
+              2,
+              2
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

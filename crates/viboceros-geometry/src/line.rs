@@ -1,15 +1,18 @@
+use crate::parameter::{check_interval, map_parameter};
 use crate::{AffineTransform3, GeometryError, NurbsCurve, Point3, Real, Tolerance, UnitVector3};
+use std::ops::RangeInclusive;
 
 /// A non-degenerate finite line segment.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct LineSegment {
     start: Point3,
     end: Point3,
+    domain: [Real; 2],
 }
 
 impl LineSegment {
-    pub(crate) const fn from_validated(start: Point3, end: Point3) -> Self {
-        Self { start, end }
+    pub(crate) const fn from_validated(start: Point3, end: Point3, domain: [Real; 2]) -> Self {
+        Self { start, end, domain }
     }
 
     pub fn try_new(
@@ -23,8 +26,12 @@ impl LineSegment {
             })
         } else {
             // Force overflow detection for extreme endpoint differences.
-            start.vector_to(end)?;
-            Ok(Self { start, end })
+            let length = start.distance_to(end)?;
+            Ok(Self {
+                start,
+                end,
+                domain: [0.0, length],
+            })
         }
     }
 
@@ -47,8 +54,44 @@ impl LineSegment {
     }
 
     pub fn point_at(self, parameter: Real) -> Result<Point3, GeometryError> {
+        if parameter == 0.0 {
+            return Ok(self.start);
+        }
+        if parameter == 1.0 {
+            return Ok(self.end);
+        }
         let offset = self.start.vector_to(self.end)?.scaled(parameter)?;
         self.start.translated(offset)
+    }
+
+    pub fn domain(self) -> RangeInclusive<Real> {
+        self.domain[0]..=self.domain[1]
+    }
+
+    pub fn try_reparameterized(self, domain: RangeInclusive<Real>) -> Result<Self, GeometryError> {
+        check_interval(&domain)?;
+        Ok(Self {
+            domain: [*domain.start(), *domain.end()],
+            ..self
+        })
+    }
+
+    pub fn evaluate(self, parameter: Real) -> Result<Point3, GeometryError> {
+        self.point_at(map_parameter(parameter, self.domain(), 0.0..=1.0)?)
+    }
+
+    pub fn try_with_endpoints(
+        self,
+        start: Option<Point3>,
+        end: Option<Point3>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        Self::try_new(
+            start.unwrap_or(self.start),
+            end.unwrap_or(self.end),
+            tolerance,
+        )?
+        .try_reparameterized(self.domain())
     }
 
     /// Returns the normalized parameter of the point on this finite segment
@@ -72,13 +115,18 @@ impl LineSegment {
         self.point_at(self.closest_parameter(target, tolerance)?)
     }
 
-    /// Returns Rhino's exact degree-one, arc-length-parameterized NURBS form.
+    /// Returns an exact degree-one NURBS curve retaining the native interval.
+    /// Newly constructed lines start with an arc-length parameterization.
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
-        let domain_end = self.length()?;
         NurbsCurve::try_new(
             1,
             vec![self.start, self.end],
-            vec![0.0, 0.0, domain_end, domain_end],
+            vec![
+                self.domain[0],
+                self.domain[0],
+                self.domain[1],
+                self.domain[1],
+            ],
         )
     }
 
@@ -87,6 +135,7 @@ impl LineSegment {
         Self {
             start: self.end,
             end: self.start,
+            domain: [-self.domain[1], -self.domain[0]],
         }
     }
 
@@ -99,7 +148,8 @@ impl LineSegment {
             transform.transform_point(self.start)?,
             transform.transform_point(self.end)?,
             tolerance,
-        )
+        )?
+        .try_reparameterized(self.domain())
     }
 }
 

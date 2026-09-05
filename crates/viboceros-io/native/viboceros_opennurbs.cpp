@@ -90,7 +90,7 @@ bool finite_coordinates(const double* values, size_t count) {
 constexpr uint8_t kBrepMagic[8] = {'V', 'I', 'B', 'O', 'B', 'R', 'P', 0};
 constexpr uint32_t kBrepVersion = 1;
 constexpr uint8_t kPolyCurveMagic[8] = {'V', 'I', 'B', 'O', 'P', 'L', 'Y', 0};
-constexpr uint32_t kPolyCurveVersion = 1;
+constexpr uint32_t kPolyCurveVersion = 2;
 constexpr size_t kMaxPolyCurveSegments = 65536;
 constexpr uint64_t kNoEdge = std::numeric_limits<uint64_t>::max();
 
@@ -244,6 +244,7 @@ bool append_line(const ON_LineCurve& line, BridgeObject& output) {
   }
   output.object_type = VIBO_OBJECT_LINE;
   output.coordinates = {start.x, start.y, start.z, end.x, end.y, end.z};
+  output.knots_u = {line.Domain()[0], line.Domain()[1]};
   return true;
 }
 
@@ -375,6 +376,33 @@ bool append_polyline(const ON_PolylineCurve& curve, BridgeObject& output) {
   return true;
 }
 
+bool write_curve_segment(const ON_Curve& source, ByteWriter& writer) {
+  auto point = [&writer](const ON_3dPoint& p) {
+    writer.Double(p.x); writer.Double(p.y); writer.Double(p.z);
+  };
+  if (const auto* line = ON_LineCurve::Cast(&source)) {
+    writer.U8(1);
+    point(line->PointAtStart()); point(line->PointAtEnd());
+    writer.Double(line->Domain()[0]); writer.Double(line->Domain()[1]);
+  } else if (const auto* curve = ON_ArcCurve::Cast(&source)) {
+    writer.U8(2);
+    const ON_Arc& arc = curve->m_arc;
+    const double start = arc.Domain()[0];
+    const ON_3dVector x = std::cos(start) * arc.plane.xaxis + std::sin(start) * arc.plane.yaxis;
+    point(arc.Center()); point(ON_3dPoint(x)); point(ON_3dPoint(arc.plane.zaxis));
+    writer.Double(arc.Radius()); writer.Double(arc.AngleRadians());
+    writer.Double(curve->Domain()[0]); writer.Double(curve->Domain()[1]);
+  } else if (const auto* polyline = ON_PolylineCurve::Cast(&source)) {
+    writer.U8(3); writer.U64(static_cast<uint64_t>(polyline->m_pline.Count()));
+    for (int i = 0; i < polyline->m_pline.Count(); ++i) point(polyline->m_pline[i]);
+    for (int i = 0; i < polyline->m_t.Count(); ++i) writer.Double(polyline->m_t[i]);
+  } else {
+    writer.U8(4);
+    return write_nurbs_curve(source, 3, writer);
+  }
+  return true;
+}
+
 bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
   // Flatten a private copy: never alter geometry owned by the source model.
   ON_PolyCurve curve(source);
@@ -395,7 +423,7 @@ bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
   for (int index = 0; index < curve.Count(); ++index) {
     const ON_Curve* segment = curve.SegmentCurve(index);
     if (segment == nullptr || ON_PolyCurve::Cast(segment) != nullptr ||
-        !write_nurbs_curve(*segment, 3, writer)) {
+        !write_curve_segment(*segment, writer)) {
       return false;
     }
   }
@@ -950,6 +978,57 @@ ON_Brep* brep_for(const uint8_t* bytes, size_t count, std::string& error) {
   return brep.release();
 }
 
+std::unique_ptr<ON_Curve> read_curve_segment(ByteReader& reader, std::string& error) {
+  uint8_t kind = 0;
+  if (!reader.U8(kind)) { error = "missing curve segment type"; return nullptr; }
+  if (kind == 4) return read_nurbs_curve(reader, 3, error);
+  auto point = [&reader](ON_3dPoint& p) {
+    return reader.Double(p.x) && reader.Double(p.y) && reader.Double(p.z) && p.IsValid();
+  };
+  std::unique_ptr<ON_Curve> curve;
+  if (kind == 1) {
+    ON_3dPoint start, end;
+    if (!point(start) || !point(end)) { error = "invalid line segment"; return nullptr; }
+    curve = std::make_unique<ON_LineCurve>(start, end);
+  } else if (kind == 2) {
+    ON_3dPoint center, x, normal;
+    double radius = 0, sweep = 0;
+    if (!point(center) || !point(x) || !point(normal) || !reader.Double(radius) ||
+        !reader.Double(sweep) || !std::isfinite(radius) || !std::isfinite(sweep)) {
+      error = "invalid arc segment"; return nullptr;
+    }
+    const ON_3dVector xv(x), z(normal);
+    ON_Plane plane(center, xv, ON_CrossProduct(z, xv));
+    ON_Arc arc(ON_Circle(plane, radius), sweep);
+    if (!arc.IsValid()) { error = "invalid arc frame"; return nullptr; }
+    curve = std::make_unique<ON_ArcCurve>(arc);
+  } else if (kind == 3) {
+    size_t count = 0;
+    if (!reader.Count(count) || count < 2 || count > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+        count > reader.Remaining() / (4 * sizeof(double))) {
+      error = "invalid polyline segment size"; return nullptr;
+    }
+    auto polyline = std::make_unique<ON_PolylineCurve>();
+    for (size_t i = 0; i < count; ++i) {
+      ON_3dPoint p;
+      if (!point(p)) { error = "invalid polyline vertex"; return nullptr; }
+      polyline->m_pline.Append(p);
+    }
+    for (size_t i = 0; i < count; ++i) {
+      double t = 0;
+      if (!reader.Double(t)) { error = "missing polyline parameter"; return nullptr; }
+      polyline->m_t.Append(t);
+    }
+    if (!polyline->IsValid()) { error = "invalid polyline segment"; return nullptr; }
+    return polyline;
+  } else { error = "unknown curve segment type"; return nullptr; }
+  double start = 0, end = 0;
+  if (!reader.Double(start) || !reader.Double(end) || !curve->SetDomain(start, end) || !curve->IsValid()) {
+    error = "invalid curve segment domain"; return nullptr;
+  }
+  return curve;
+}
+
 ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
                            std::string& error) {
   if (bytes == nullptr || count == 0) {
@@ -960,7 +1039,7 @@ ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
   uint32_t version = 0;
   size_t segment_count = 0;
   if (!reader.Bytes(kPolyCurveMagic, sizeof(kPolyCurveMagic)) ||
-      !reader.U32(version) || version != kPolyCurveVersion ||
+      !reader.U32(version) || (version != 1 && version != kPolyCurveVersion) ||
       !reader.Count(segment_count) || segment_count == 0 ||
       segment_count > kMaxPolyCurveSegments ||
       segment_count + 1 > reader.Remaining() / sizeof(double)) {
@@ -977,7 +1056,8 @@ ON_PolyCurve* polycurve_for(const uint8_t* bytes, size_t count,
   }
   auto curve = std::make_unique<ON_PolyCurve>();
   for (size_t index = 0; index < segment_count; ++index) {
-    auto segment = read_nurbs_curve(reader, 3, error);
+    std::unique_ptr<ON_Curve> segment = version == 1
+        ? read_nurbs_curve(reader, 3, error) : read_curve_segment(reader, error);
     if (!segment) {
       return nullptr;
     }
@@ -1013,7 +1093,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
                           source.coordinates[2]);
     }
     case VIBO_OBJECT_LINE: {
-      if (source.coordinate_count != 6) {
+      if (source.coordinate_count != 6 || (source.knot_u_count != 0 && source.knot_u_count != 2)) {
         error = "a line must contain six coordinates";
         return nullptr;
       }
@@ -1022,7 +1102,7 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       const ON_3dPoint end(source.coordinates[3], source.coordinates[4],
                           source.coordinates[5]);
       auto* line = new ON_LineCurve(start, end);
-      if (!line->IsValid()) {
+      if ((source.knot_u_count == 2 && !line->SetDomain(source.knots_u[0], source.knots_u[1])) || !line->IsValid()) {
         delete line;
         error = "line endpoints are degenerate";
         return nullptr;
@@ -1176,7 +1256,8 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       return surface;
     }
     case VIBO_OBJECT_BREP:
-    case VIBO_OBJECT_POLYCURVE: {
+    case VIBO_OBJECT_POLYCURVE:
+    case VIBO_OBJECT_ARC: {
       if (source.degree_u != 0 || source.degree_v != 0 ||
           source.control_point_count_u != 0 ||
           source.control_point_count_v != 0 || source.coordinate_count != 0 ||
@@ -1188,6 +1269,16 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       }
       if (source.object_type == VIBO_OBJECT_POLYCURVE) {
         return polycurve_for(source.geometry_data, source.geometry_data_count, error);
+      }
+      if (source.object_type == VIBO_OBJECT_ARC) {
+        ByteReader reader(source.geometry_data, source.geometry_data_count);
+        uint32_t version = 0;
+        if (!reader.U32(version) || version != 1) { error = "invalid arc header"; return nullptr; }
+        auto arc = read_curve_segment(reader, error);
+        if (!arc || ON_ArcCurve::Cast(arc.get()) == nullptr || !reader.Finished()) {
+          error = "invalid native arc payload"; return nullptr;
+        }
+        return arc.release();
       }
       return brep_for(source.geometry_data, source.geometry_data_count, error);
     }
@@ -1373,6 +1464,11 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         supported = append_polycurve(*curve, object);
       } else if (const ON_PolylineCurve* curve = ON_PolylineCurve::Cast(geometry)) {
         supported = append_polyline(*curve, object);
+      } else if (const ON_ArcCurve* curve = ON_ArcCurve::Cast(geometry)) {
+        object.object_type = VIBO_OBJECT_ARC;
+        ByteWriter writer(object.geometry_data);
+        writer.U32(1);
+        supported = curve->IsValid() && write_curve_segment(*curve, writer);
       } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
         supported = append_nurbs(*curve, object);
       } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {

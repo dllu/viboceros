@@ -260,13 +260,13 @@ fn assemble(
             if let Some(partner) = partners[endpoint] {
                 let first = endpoints[endpoint];
                 let second = endpoints[partner];
-                let point = if matches!(curves[first.curve], Curve3::Arc(_))
-                    && matches!(curves[second.curve], Curve3::Arc(_))
-                {
+                let first_arc = endpoint_is_arc(&curves[first.curve], first.start);
+                let second_arc = endpoint_is_arc(&curves[second.curve], second.start);
+                let point = if first_arc && second_arc {
                     midpoint(first.point, second.point)?
-                } else if matches!(curves[first.curve], Curve3::Arc(_)) {
+                } else if first_arc {
                     first.point
-                } else if matches!(curves[second.curve], Curve3::Arc(_)) {
+                } else if second_arc {
                     second.point
                 } else {
                     midpoint(first.point, second.point)?
@@ -364,10 +364,28 @@ fn assemble(
     }
 }
 
+fn endpoint_is_arc(curve: &Curve3, start: bool) -> bool {
+    match curve {
+        Curve3::Arc(_) => true,
+        Curve3::PolyCurve(curve) => matches!(
+            if start {
+                curve.segments().first()
+            } else {
+                curve.segments().last()
+            },
+            Some(crate::CurveSegment3::Arc(_))
+        ),
+        _ => false,
+    }
+}
+
 fn linear_form(curve: &Curve3, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
     match curve {
-        Curve3::Line(line) => Polyline3::try_new(vec![line.start(), line.end()], tolerance)?
-            .try_chord_length_parameterized(),
+        Curve3::Line(line) => Polyline3::try_with_parameters(
+            vec![line.start(), line.end()],
+            vec![*line.domain().start(), *line.domain().end()],
+            tolerance,
+        ),
         Curve3::Polyline(line) => Ok(line.clone()),
         Curve3::NurbsCurve(curve) => Polyline3::try_with_parameters(
             curve

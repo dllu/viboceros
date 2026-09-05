@@ -78,7 +78,9 @@ fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, GeometryErr
         .enumerate()
         .map(|(index, segment)| {
             Ok(nurbs_curve_definition_value(
-                &segment.try_reparameterized(curve.segment_domain(index)?)?,
+                &segment
+                    .try_reparameterized(curve.segment_domain(index)?)?
+                    .to_nurbs()?,
             ))
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;

@@ -13,6 +13,7 @@ mod curve_edit;
 mod curve_fit;
 mod curve_join;
 mod curve_rebuild;
+mod curve_segment;
 mod curve_through;
 mod curve_tween;
 mod ellipse;
@@ -27,6 +28,7 @@ mod morph;
 mod nurbs;
 mod nurbs2;
 mod nurbs_surface;
+mod parameter;
 mod plane;
 mod point;
 mod point2;
@@ -57,6 +59,7 @@ pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves
 pub use curve_rebuild::{
     MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT, try_rebuild_curve,
 };
+pub use curve_segment::CurveSegment3;
 pub use curve_through::{
     CurveThroughConstruction, MAX_CURVE_THROUGH_DEGREE, sort_and_cull_points,
     try_curve_through_points,

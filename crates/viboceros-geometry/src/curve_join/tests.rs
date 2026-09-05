@@ -142,10 +142,7 @@ fn arc_flexible_join_keeps_the_arc_but_two_arcs_retain_opposite_tangents() {
     let Curve3::PolyCurve(curve) = result[0].curve() else {
         panic!("expected exact mixed curve")
     };
-    assert_eq!(
-        &curve.segments()[0],
-        &CurveRef::Arc(&arc).to_nurbs().unwrap()
-    );
+    assert_eq!(&curve.segments()[0], &crate::CurveSegment3::Arc(arc));
     assert_eq!(
         curve.segments()[1]
             .evaluate(*curve.segments()[1].domain().start())

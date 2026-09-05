@@ -66,7 +66,14 @@ pub trait PointMorph {
         let segment_count = polyline.vertices().len() - 1;
         let mut controls = Vec::with_capacity(3 * segment_count + 1);
         for (segment_index, vertices) in polyline.vertices().windows(2).enumerate() {
-            let line = LineSegment::from_validated(vertices[0], vertices[1]);
+            let line = LineSegment::from_validated(
+                vertices[0],
+                vertices[1],
+                [
+                    polyline.parameters()[segment_index],
+                    polyline.parameters()[segment_index + 1],
+                ],
+            );
             let segment = self.morph_line(line)?;
             controls.extend(
                 segment
@@ -77,11 +84,11 @@ pub trait PointMorph {
             );
         }
         let mut knots = Vec::with_capacity(controls.len() + 4);
-        knots.extend([0.0; 4]);
-        for segment in 1..segment_count {
-            knots.extend([segment as Real; 3]);
+        knots.extend([polyline.parameters()[0]; 4]);
+        for parameter in &polyline.parameters()[1..segment_count] {
+            knots.extend([*parameter; 3]);
         }
-        knots.extend([segment_count as Real; 4]);
+        knots.extend([polyline.parameters()[segment_count]; 4]);
         NurbsCurve::try_new(3, controls, knots)
     }
 

@@ -2,8 +2,9 @@
 
 [Architecture](architecture.md) · [Curve commands](commands/curves.md)
 
-`PolyCurve3` is the kernel's flat, exact piecewise NURBS representation. Segments
-retain their degrees, rational weights, control points, knots, and local domains.
+`PolyCurve3` is the kernel's flat, exact piecewise curve representation.
+`CurveSegment3` retains native lines, circular arcs, polylines, and NURBS curves,
+including their local domains, vertex parameters, and rational control structure.
 An independent increasing array assigns each segment its interval in the composite.
 There is no fitting, tessellation, or endpoint averaging during construction.
 
@@ -18,10 +19,11 @@ snaps include interior junctions. 3DM interchange retains the composite object t
 or append an exact closing line while retaining the original segment intervals.
 
 `Length`, `Divide`, curve selection, `Flip`, and `ToNURBS` accept polycurves.
-`ExtractPt` shares exactly duplicated junction grips; `ExtractControlPolygon` creates
+`ExtractPt` shares coincident junction grips; `ExtractControlPolygon` creates
 one connected polygon through the original segment controls without degree elevation.
-`Explode` returns exact NURBS segments in composite parameter intervals, preserving
-attributes, group membership, and undo. Closed polycurves are unchanged by `CloseCrv`.
+`Explode` returns native segment types in composite parameter intervals, preserving
+attributes, group membership, and undo. Polyline leaves are further exploded into
+native lines with their corresponding intervals. Closed polycurves are unchanged by `CloseCrv`.
 
 Duplicate comparison retains segment structure and relative parameter intervals.
 Affine changes to the overall domain are ignored; length-based redistribution can
@@ -37,6 +39,17 @@ the intervals. Derivatives acquire factors `(d-c)/(b-a)` and its square. Endpoin
 maps are exact; interior maps use the nearer endpoint to reduce rounding error.
 Nonfinite intervals, collapsed parameter spans, noncoincident adjacent endpoints,
 invalid indices, and out-of-domain evaluation return errors.
+
+Analytic arcs use angular parameterization. Their exact rational NURBS forms
+generally evaluate to different interior points at the same numeric parameter;
+conversion preserves the locus, not angular speed. Arc trims, reversals, and
+similarity transforms retain the analytic frame and native interval. Arbitrary
+affine transforms promote only the arcs that cannot remain circular to NURBS.
+`try_deformable` explicitly converts all arc leaves, like Rhino's `MakeDeformable`.
+This is distinct from directly calling Rhino's polycurve `Transform` under a
+shear: that API approximates circular segments and can adjust neighboring
+endpoints. Viboceros' affine operation preserves the exact transformed locus;
+the shear oracle explicitly uses `MakeDeformable` before Rhino's transform.
 
 Two reparameterizations are deliberately distinct:
 
@@ -73,6 +86,20 @@ scales spanning `1e-200` to `1e200`, and large translations. The permanent
 samples, length, closure, and division through reversed, trimmed, split, closed,
 and nonplanar mixed-degree cases. Sampling is evidence at those stations, not a
 continuous error proof.
+
+`polycurve_native.json` additionally checks all four native leaf types, native
+point/derivative samples, analytic trims/splits, reversal, similarity/reflection,
+and exact shear. The Rhino Domain setter's internal segment-length estimates
+produce about `1.1e-8` of interval drift in the curved mixed fixture; this batch
+uses absolute comparison epsilon `2e-8`, relative `1e-10`. The kernel's requested
+length tolerance is not relaxed. Analytic endpoint editing is covered separately
+by `polycurve_analytic_editing.json`.
+`polycurve_native_document.json` compares actual extraction, recursive Explode,
+duplicate checks, and 3DM round trips in both directions. It passes at absolute
+epsilon `1e-8`, relative `1e-10`, with maximum observed difference below `1.6e-12`.
+Unordered extracted points are sorted using rounded keys to prevent floating-point
+noise from swapping nominally equal X coordinates; the compared coordinates
+themselves are never rounded.
 
 The oracle checks `DivideByCount` point counts directly. Coordinate comparisons
 use the exact NURBS form and the public tolerance-bearing length solver, because

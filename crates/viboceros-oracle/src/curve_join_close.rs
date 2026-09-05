@@ -68,7 +68,7 @@ pub enum CurveInput {
 }
 
 impl CurveInput {
-    fn geometry(&self) -> Result<Curve3, GeometryError> {
+    pub(super) fn geometry(&self) -> Result<Curve3, GeometryError> {
         Ok(match self {
             Self::Line { start, end } => Curve3::Line(LineSegment::try_new(
                 point(*start)?,
@@ -121,6 +121,8 @@ pub struct CurveJoinCloseFixture {
     pub preserve_direction: bool,
     #[serde(default = "super::default_true")]
     pub close_wide_gaps_with_line: bool,
+    #[serde(default)]
+    pub inspect_native: bool,
 }
 
 pub(super) fn run(
@@ -148,7 +150,7 @@ pub(super) fn run(
                 json!(
                     curves
                         .iter()
-                        .map(|curve| record(curve.curve(), tolerance))
+                        .map(|curve| record(curve.curve(), tolerance, fixture.inspect_native))
                         .collect::<Result<Vec<_>, _>>()?
                 )
             }
@@ -210,7 +212,7 @@ fn command(
                 .curve_ref()
                 .expect("the command returns curves")
                 .to_owned();
-            let mut value = record(&curve, tolerance)?;
+            let mut value = record(&curve, tolerance, fixture.inspect_native)?;
             if matches!(fixture.action, Action::JoinCommand) {
                 value["name"] = json!(object.attributes().name());
                 value["source_index"] = json!(ids.iter().position(|id| *id == object.id()));
@@ -231,7 +233,11 @@ fn command(
     Ok(json!({"succeeded":true,"curves":curves}))
 }
 
-fn record(curve: &Curve3, tolerance: Tolerance) -> Result<Value, GeometryError> {
+fn record(
+    curve: &Curve3,
+    tolerance: Tolerance,
+    inspect_native: bool,
+) -> Result<Value, GeometryError> {
     let tolerance = Tolerance::try_new(
         tolerance.absolute().min(1e-10),
         tolerance.relative().min(1e-12),
@@ -245,7 +251,11 @@ fn record(curve: &Curve3, tolerance: Tolerance) -> Result<Value, GeometryError> 
         Curve3::Polyline(_) => "polyline",
         Curve3::PolyCurve(curve) => {
             for (index, segment) in curve.segments().iter().enumerate() {
-                segments.push(segment.try_reparameterized(curve.segment_domain(index)?)?);
+                segments.push(
+                    segment
+                        .try_reparameterized(curve.segment_domain(index)?)?
+                        .to_nurbs()?,
+                );
             }
             "polycurve"
         }
@@ -253,9 +263,13 @@ fn record(curve: &Curve3, tolerance: Tolerance) -> Result<Value, GeometryError> 
     if segments.is_empty() {
         segments.push(curve.as_ref().to_nurbs()?);
     }
-    Ok(json!({"type":kind,"closed":curve.as_ref().is_closed()?,
+    let mut value = json!({"type":kind,"closed":curve.as_ref().is_closed()?,
         "domain":[*segments[0].domain().start(), *segments.last().unwrap().domain().end()],
         "segments":segments.iter().map(nurbs_curve_definition_value).collect::<Vec<_>>(),
         "length":curve.as_ref().length(tolerance)?,
-    }))
+    });
+    if inspect_native {
+        value["native"] = super::polycurve_native::record(&curve.to_polycurve()?, tolerance)?;
+    }
+    Ok(value)
 }

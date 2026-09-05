@@ -105,8 +105,11 @@ fn duplicate_detection_ignores_global_domain_and_whole_curve_direction() {
         .unwrap();
     assert!(!geometry.geometrically_equals(&shifted).unwrap());
     let mut segments = source.segments().to_vec();
-    segments
-        .push(NurbsCurve::try_clamped_uniform(1, vec![point(4.0, 3.0), point(0.0, 0.0)]).unwrap());
+    segments.push(
+        NurbsCurve::try_clamped_uniform(1, vec![point(4.0, 3.0), point(0.0, 0.0)])
+            .unwrap()
+            .into(),
+    );
     let closed = PolyCurve3::try_new(segments).unwrap();
     assert!(
         !Geometry::PolyCurve(closed.clone())

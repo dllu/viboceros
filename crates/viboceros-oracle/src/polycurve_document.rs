@@ -84,13 +84,15 @@ fn segment_definitions(curve: &PolyCurve3) -> Result<Vec<Value>, GeometryError> 
         .enumerate()
         .map(|(index, segment)| {
             Ok(nurbs_curve_definition_value(
-                &segment.try_reparameterized(curve.segment_domain(index)?)?,
+                &segment
+                    .try_reparameterized(curve.segment_domain(index)?)?
+                    .to_nurbs()?,
             ))
         })
         .collect()
 }
 
-fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, ProbeError> {
+pub(super) fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, ProbeError> {
     let mut points = command_outputs(curve, tolerance, "ExtractPt Output=Points")?
         .into_iter()
         .map(|geometry| match geometry {
@@ -100,7 +102,12 @@ fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, ProbeError>
             )),
         })
         .collect::<Result<Vec<_>, _>>()?;
-    points.sort_by(compare_point);
+    // The command's object order is unspecified. Bucket sorting prevents
+    // sub-ulp arc-coordinate noise from swapping widely separated points
+    // that share a nominal X coordinate; reported coordinates stay untouched.
+    points.sort_by(|a, b| {
+        compare_point(&a.map(|v| (v * 1e9).round()), &b.map(|v| (v * 1e9).round()))
+    });
     let mut polygons = command_outputs(curve, tolerance, "ExtractControlPolygon")?
         .into_iter()
         .map(|geometry| match geometry {
@@ -119,8 +126,10 @@ fn record(curve: &PolyCurve3, tolerance: Tolerance) -> Result<Value, ProbeError>
         .into_iter()
         .map(|geometry| {
             geometry
-                .nurbs_curve_representation()?
-                .ok_or(ProbeError::FixtureInvariant("Explode returned a non-curve"))
+                .curve_ref()
+                .ok_or(ProbeError::FixtureInvariant("Explode returned a non-curve"))?
+                .to_nurbs()
+                .map_err(ProbeError::from)
         })
         .collect::<Result<Vec<_>, _>>()?;
     exploded.sort_by(|a, b| a.domain().start().total_cmp(b.domain().start()));

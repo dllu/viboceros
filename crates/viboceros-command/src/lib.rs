@@ -17597,7 +17597,7 @@ struct ExplodeCommand;
 
 enum ExplodedParts {
     Lines(Vec<LineSegment>),
-    Curves(Vec<NurbsCurve>),
+    Curves(Vec<viboceros_geometry::CurveSegment3>),
     Points(Vec<Point3>),
     Surfaces(Vec<Brep>),
     Meshes(Vec<TriangleMesh>),
@@ -17621,7 +17621,10 @@ impl ExplodedParts {
     fn into_geometries(self) -> Vec<Geometry> {
         match self {
             Self::Lines(parts) => parts.into_iter().map(Geometry::Line).collect(),
-            Self::Curves(parts) => parts.into_iter().map(Geometry::NurbsCurve).collect(),
+            Self::Curves(parts) => parts
+                .into_iter()
+                .map(|part| Geometry::from(part.into_curve()))
+                .collect(),
             Self::Points(parts) => parts.into_iter().map(Geometry::Point).collect(),
             Self::Surfaces(parts) => parts.into_iter().map(Geometry::Brep).collect(),
             Self::Meshes(parts) => parts.into_iter().map(Geometry::Mesh).collect(),
@@ -17658,14 +17661,19 @@ impl Command for ExplodeCommand {
         for (id, geometry, attributes) in &selected {
             let parts = match geometry {
                 Geometry::PolyCurve(curve) => {
-                    let mut parts = curve
-                        .segments()
-                        .iter()
-                        .enumerate()
-                        .map(|(index, segment)| {
-                            segment.try_reparameterized(curve.segment_domain(index)?)
-                        })
-                        .collect::<Result<Vec<_>, GeometryError>>()?;
+                    let mut parts = Vec::new();
+                    for (index, segment) in curve.segments().iter().enumerate() {
+                        let segment = segment.try_reparameterized(curve.segment_domain(index)?)?;
+                        if let viboceros_geometry::CurveSegment3::Polyline(polyline) = segment {
+                            parts.extend(
+                                polyline
+                                    .segments()
+                                    .map(viboceros_geometry::CurveSegment3::Line),
+                            );
+                        } else {
+                            parts.push(segment);
+                        }
+                    }
                     parts.reverse();
                     Some(ExplodedParts::Curves(parts))
                 }
@@ -21100,7 +21108,7 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError>
         Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
-        Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(CurveRef::Arc(arc).to_nurbs()?),
+        Geometry::Arc(arc) => ThreeDmGeometry::Arc(*arc),
         Geometry::Ellipse(ellipse) => ThreeDmGeometry::NurbsCurve(ellipse.to_nurbs()?),
         Geometry::Polyline(polyline) => ThreeDmGeometry::Polyline(polyline.clone()),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
@@ -21116,6 +21124,7 @@ fn document_geometry_from_3dm(geometry: ThreeDmGeometry, _tolerance: Tolerance) 
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
         ThreeDmGeometry::PointCloud(cloud) => Geometry::PointCloud(cloud),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
+        ThreeDmGeometry::Arc(arc) => Geometry::Arc(arc),
         ThreeDmGeometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve),
         ThreeDmGeometry::Polyline(curve) => Geometry::Polyline(curve),
         ThreeDmGeometry::PolyCurve(curve) => Geometry::PolyCurve(curve),
@@ -25879,11 +25888,7 @@ mod tests {
         assert!(closed.is_closed().unwrap());
         assert_eq!(closed.segments().len(), 2);
         assert_eq!(
-            closed.segments()[0]
-                .control_points()
-                .iter()
-                .map(|control| control.point())
-                .collect::<Vec<_>>(),
+            closed.segments()[0].extract_point_locations().unwrap(),
             vec![
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(4.0, 0.0, 0.0).unwrap(),
@@ -47413,7 +47418,14 @@ mod tests {
                 .objects()
                 .filter(|object| matches!(object.geometry(), Geometry::NurbsCurve(_)))
                 .count(),
-            3
+            2
+        );
+        assert_eq!(
+            imported
+                .objects()
+                .filter(|object| matches!(object.geometry(), Geometry::Arc(_)))
+                .count(),
+            1
         );
         assert_eq!(
             imported

@@ -80,7 +80,7 @@ fn mixed_join_preserves_seed_attributes_groups_and_atomic_history() {
     };
     assert_eq!(curve.segments().len(), 2);
     assert_eq!(
-        curve.segments()[0].control_points().last().unwrap().point(),
+        curve.segments()[0].as_ref().end_point().unwrap(),
         point(1.002, 1.0)
     );
     assert_eq!(

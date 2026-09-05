@@ -141,8 +141,16 @@ impl Geometry {
                 curve
                     .segments()
                     .iter()
-                    .map(|segment| morph.morph_nurbs_curve(segment, tolerance))
-                    .collect::<Result<_, _>>()?,
+                    .map(|segment| match segment {
+                        viboceros_geometry::CurveSegment3::Line(line) => {
+                            morph.morph_line(*line)?.try_reparameterized(line.domain())
+                        }
+                        viboceros_geometry::CurveSegment3::Polyline(polyline) => {
+                            morph.morph_polyline(polyline)
+                        }
+                        _ => morph.morph_nurbs_curve(&segment.to_nurbs()?, tolerance),
+                    })
+                    .collect::<Result<Vec<_>, _>>()?,
                 curve.parameters().to_vec(),
             )?),
             Self::NurbsSurface(surface) => Self::NurbsSurface(morph.morph_nurbs_surface(surface)?),
@@ -170,18 +178,7 @@ impl Geometry {
                 points
             }
             Self::NurbsCurve(curve) => curve.extract_point_locations()?,
-            Self::PolyCurve(curve) => {
-                let mut points = Vec::new();
-                for segment in curve.segments() {
-                    let locations = segment.extract_point_locations()?;
-                    let skip = usize::from(points.last() == locations.first());
-                    points.extend_from_slice(&locations[skip..]);
-                }
-                if curve.is_closed()? && points.first() == points.last() {
-                    points.pop();
-                }
-                points
-            }
+            Self::PolyCurve(curve) => curve.extract_point_locations()?,
             Self::NurbsSurface(surface) => surface.extract_point_locations(),
             Self::Brep(brep) => brep
                 .vertices()

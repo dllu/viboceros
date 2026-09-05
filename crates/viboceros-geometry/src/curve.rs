@@ -104,12 +104,16 @@ impl CurveRef<'_> {
             ),
             Self::NurbsCurve(curve) => curve.is_planar(tolerance),
             Self::PolyCurve(curve) => {
-                let controls = curve
-                    .segments()
-                    .iter()
-                    .flat_map(|s| s.control_points())
-                    .map(|c| c.point())
-                    .collect::<Vec<_>>();
+                let mut controls = Vec::new();
+                for segment in curve.segments() {
+                    controls.extend(
+                        segment
+                            .to_nurbs()?
+                            .control_points()
+                            .iter()
+                            .map(|c| c.point()),
+                    );
+                }
                 control_polygon_is_planar(
                     controls.len(),
                     |index| controls[index],
@@ -361,7 +365,10 @@ impl CurveRef<'_> {
         Ok(samples)
     }
 
-    /// Evaluates a point and a unit tangent in the natural curve domain.
+    /// Evaluates a point and a unit tangent in the sampling domain: normalized
+    /// `[0,1]` for lines/arcs, angles for circles/ellipses, and native parameters
+    /// for polylines/NURBS/polycurves. [`crate::CurveSegment3`] exposes native
+    /// parameter evaluation for analytic leaves as well.
     pub fn evaluate_with_tangent(self, parameter: Real) -> Result<CurveSample, GeometryError> {
         let point = match self {
             Self::Line(line) => line.point_at(parameter)?,

@@ -1,10 +1,11 @@
 //! Exact piecewise rational curves with independent segment parameterizations.
 
+use crate::parameter::{checked_parameter, map_parameter, scaled_ratio};
 use std::ops::RangeInclusive;
 
 use crate::{
-    AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Polyline3, Real, Tolerance,
-    Vector3, nurbs::curve_points_coincident, require_finite,
+    AffineTransform3, BoundingBox3, CurveSegment3, GeometryError, NurbsCurve, Point3, Polyline3,
+    Real, Tolerance, Vector3, nurbs::curve_points_coincident, require_finite,
 };
 
 #[cfg(test)]
@@ -21,22 +22,40 @@ pub enum CurveEvaluationSide {
     Right,
 }
 
-/// A flat sequence of exact NURBS segments, without fitting or endpoint edits.
+/// A flat sequence of native curve segments, without fitting or endpoint edits.
 ///
 /// The outer parameter intervals need not equal the segments' natural domains.
 /// Both are retained explicitly, so a reparameterization never changes segment
-/// controls, weights, or knots. Analytic curves can be added in their exact
-/// rational forms. Nested composites can be flattened with [`Self::concatenate`].
+/// controls, weights, knots, or analytic curve classes. Nested composites can
+/// be flattened with [`Self::concatenate`].
 /// Junctions must be coincident under the kernel's fixed curve-coincidence
 /// predicate; closing model-tolerance gaps is a separate editing operation.
 #[derive(Clone, Debug, PartialEq)]
 pub struct PolyCurve3 {
-    segments: Vec<NurbsCurve>,
+    segments: Vec<CurveSegment3>,
     parameters: Vec<Real>,
     bounds: BoundingBox3,
 }
 
 impl PolyCurve3 {
+    /// Converts analytic arcs to exact rational curves so arbitrary affine
+    /// deformations can act on their controls. Other leaf classes are retained.
+    pub fn try_deformable(&self) -> Result<Self, GeometryError> {
+        Self::try_with_segment_domains(
+            self.segments
+                .iter()
+                .map(|segment| {
+                    if matches!(segment, CurveSegment3::Arc(_)) {
+                        Ok(CurveSegment3::NurbsCurve(segment.to_nurbs()?))
+                    } else {
+                        Ok(segment.clone())
+                    }
+                })
+                .collect::<Result<Vec<_>, GeometryError>>()?,
+            self.parameters.clone(),
+        )
+    }
+
     /// One connected control polygon through the original segment controls,
     /// removing duplicated junction controls without elevating degrees.
     pub fn control_polygon(&self, tolerance: Tolerance) -> Result<Polyline3, GeometryError> {
@@ -44,15 +63,45 @@ impl PolyCurve3 {
         for segment in &self.segments {
             let polygon = segment.control_polygon(tolerance)?;
             let vertices = polygon.vertices();
-            let skip = usize::from(points.last() == vertices.first());
+            let skip = usize::from(
+                points
+                    .last()
+                    .zip(vertices.first())
+                    .is_some_and(|(&a, &b)| curve_points_coincident(a, b)),
+            );
             points.extend_from_slice(&vertices[skip..]);
         }
         Polyline3::try_new(points, tolerance)
     }
 
+    /// Unique segment grips in traversal order, sharing coincident junctions.
+    pub fn extract_point_locations(&self) -> Result<Vec<Point3>, GeometryError> {
+        let mut points = Vec::new();
+        for segment in &self.segments {
+            let locations = segment.extract_point_locations()?;
+            let skip = usize::from(
+                points
+                    .last()
+                    .zip(locations.first())
+                    .is_some_and(|(&a, &b)| curve_points_coincident(a, b)),
+            );
+            points.extend_from_slice(&locations[skip..]);
+        }
+        if self.is_closed()?
+            && points
+                .first()
+                .zip(points.last())
+                .is_some_and(|(&a, &b)| curve_points_coincident(a, b))
+        {
+            points.pop();
+        }
+        Ok(points)
+    }
+
     /// Appends segments in the supplied order. The first natural domain starts
     /// the composite, and each later segment contributes its natural span.
-    pub fn try_new(segments: Vec<NurbsCurve>) -> Result<Self, GeometryError> {
+    pub fn try_new<S: Into<CurveSegment3>>(segments: Vec<S>) -> Result<Self, GeometryError> {
+        let segments = segments.into_iter().map(Into::into).collect::<Vec<_>>();
         check_count(segments.len())?;
         let mut parameters = Vec::with_capacity(segments.len() + 1);
         parameters.push(*segments[0].domain().start());
@@ -65,10 +114,11 @@ impl PolyCurve3 {
 
     /// Constructs a composite with one strictly increasing outer break per
     /// segment endpoint. Local segment domains are kept unchanged.
-    pub fn try_with_segment_domains(
-        segments: Vec<NurbsCurve>,
+    pub fn try_with_segment_domains<S: Into<CurveSegment3>>(
+        segments: Vec<S>,
         parameters: Vec<Real>,
     ) -> Result<Self, GeometryError> {
+        let segments = segments.into_iter().map(Into::into).collect::<Vec<_>>();
         check_count(segments.len())?;
         if parameters.len() != segments.len() + 1 {
             return Err(invalid(
@@ -107,7 +157,7 @@ impl PolyCurve3 {
         })
     }
 
-    pub fn segments(&self) -> &[NurbsCurve] {
+    pub fn segments(&self) -> &[CurveSegment3] {
         &self.segments
     }
 
@@ -254,7 +304,7 @@ impl PolyCurve3 {
             self.segments
                 .iter()
                 .rev()
-                .map(NurbsCurve::reversed)
+                .map(CurveSegment3::reversed)
                 .collect::<Result<_, _>>()?,
             self.parameters.iter().rev().map(|t| -*t).collect(),
         )
@@ -390,19 +440,20 @@ impl PolyCurve3 {
     /// Converts to one exact piecewise NURBS curve. Full-order junction knots
     /// keep each segment's homogeneous scale independent: no averaging of
     /// endpoints, ratio of unrelated weights, or geometric fitting is needed.
-    /// This preserves parameterization but need not produce Rhino's minimal
-    /// control-point/knot representation.
+    /// Arc spans change from angular to rational parameterization. Other leaf
+    /// types retain their parameterization. This need not produce Rhino's
+    /// minimal control-point/knot representation.
     pub fn to_nurbs(&self) -> Result<NurbsCurve, GeometryError> {
         let degree = self
             .segments
             .iter()
-            .map(NurbsCurve::degree)
+            .map(CurveSegment3::degree)
             .max()
             .expect("segments exist");
         let mut controls = Vec::new();
         let mut knots = Vec::new();
         for (index, source) in self.segments.iter().enumerate() {
-            let source = source.clamped_to_active_domain()?;
+            let source = source.to_nurbs()?.clamped_to_active_domain()?;
             let delta = degree - source.degree();
             let extra = source
                 .spans()
@@ -430,7 +481,7 @@ impl PolyCurve3 {
         NurbsCurve::try_new_rational(degree, controls, knots)
     }
 
-    fn segment(&self, index: usize) -> Result<&NurbsCurve, GeometryError> {
+    fn segment(&self, index: usize) -> Result<&CurveSegment3, GeometryError> {
         self.segments
             .get(index)
             .ok_or(invalid("segment index is out of range"))
@@ -477,70 +528,4 @@ fn append_end(start: Real, domain: RangeInclusive<Real>) -> Result<Real, Geometr
         ));
     }
     Ok(end)
-}
-
-fn checked_parameter(parameter: Real, domain: RangeInclusive<Real>) -> Result<(), GeometryError> {
-    require_finite([parameter], "polycurve parameter")?;
-    if domain.contains(&parameter) {
-        Ok(())
-    } else {
-        Err(GeometryError::ParameterOutOfDomain {
-            parameter,
-            domain_start: *domain.start(),
-            domain_end: *domain.end(),
-        })
-    }
-}
-
-fn map_parameter(
-    value: Real,
-    source: RangeInclusive<Real>,
-    target: RangeInclusive<Real>,
-) -> Result<Real, GeometryError> {
-    checked_parameter(value, source.clone())?;
-    if value == *source.start() {
-        return Ok(*target.start());
-    }
-    if value == *source.end() {
-        return Ok(*target.end());
-    }
-    let from_start = value - *source.start();
-    let from_end = *source.end() - value;
-    let numerator = *target.end() - *target.start();
-    let denominator = *source.end() - *source.start();
-    let result = if from_start <= from_end {
-        *target.start() + scaled_ratio(from_start, numerator, denominator)?
-    } else {
-        *target.end() - scaled_ratio(from_end, numerator, denominator)?
-    };
-    require_finite([result], "polycurve parameter mapping")?;
-    Ok(result.clamp(*target.start(), *target.end()))
-}
-
-fn scaled_ratio(value: Real, numerator: Real, denominator: Real) -> Result<Real, GeometryError> {
-    if value == 0.0 {
-        return Ok(0.0);
-    }
-    let ratio = numerator / denominator;
-    let product = value * numerator;
-    let quotient = value / denominator;
-    let orders = [
-        (ratio, value * ratio),
-        (product, product / denominator),
-        (quotient, quotient * numerator),
-    ];
-    // Prefer a normal intermediate so its subnormal rounding is not magnified
-    // later. Try every ordering before rejecting a representable final value.
-    let result = orders
-        .iter()
-        .find(|(intermediate, result)| {
-            intermediate.is_normal() && result.is_finite() && *result != 0.0
-        })
-        .or_else(|| orders.iter().find(|(_, result)| result.is_finite()))
-        .map(|(_, result)| *result)
-        .ok_or(GeometryError::NonFinite {
-            context: "polycurve derivative",
-        })?;
-    require_finite([result], "polycurve derivative")?;
-    Ok(result)
 }

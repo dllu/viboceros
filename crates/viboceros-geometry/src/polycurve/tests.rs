@@ -63,7 +63,7 @@ fn control_polygon_preserves_mixed_degrees_and_closes_the_seam() {
         &expected
     );
     let mut segments = source.segments().to_vec();
-    segments.push(line([1.0, 2.0], [-2.0, 0.0], 0.0..=1.0));
+    segments.push(line([1.0, 2.0], [-2.0, 0.0], 0.0..=1.0).into());
     let closed = PolyCurve3::try_new(segments).unwrap();
     let polygon = closed.control_polygon(Tolerance::DEFAULT).unwrap();
     assert!(polygon.is_closed());
@@ -260,6 +260,7 @@ fn conversion_keeps_independent_extreme_homogeneous_scales() {
         .iter()
         .enumerate()
         .map(|(index, s)| {
+            let s = s.to_nurbs().unwrap();
             let factor = [1e-200, 1e200, -1.0][index];
             NurbsCurve::try_new_rational(
                 s.degree(),
@@ -271,7 +272,7 @@ fn conversion_keeps_independent_extreme_homogeneous_scales() {
             )
             .unwrap()
         })
-        .collect();
+        .collect::<Vec<_>>();
     let scaled =
         PolyCurve3::try_with_segment_domains(segments, curve.parameters().to_vec()).unwrap();
     let nurbs = scaled.to_nurbs().unwrap();
@@ -289,6 +290,8 @@ fn affine_transform_keeps_segment_structure_and_large_translation() {
     let translated = curve.transformed(transform).unwrap();
     assert_eq!(curve.parameters(), translated.parameters());
     for (a, b) in curve.segments().iter().zip(translated.segments()) {
+        let a = a.to_nurbs().unwrap();
+        let b = b.to_nurbs().unwrap();
         assert_eq!(a.knots(), b.knots());
         for (a, b) in a.control_points().iter().zip(b.control_points()) {
             assert_eq!(a.weight(), b.weight());
@@ -300,7 +303,7 @@ fn affine_transform_keeps_segment_structure_and_large_translation() {
 
 #[test]
 fn rejects_bad_domains_gaps_counts_indices_and_nonfinite_parameters() {
-    assert!(PolyCurve3::try_new(vec![]).is_err());
+    assert!(PolyCurve3::try_new::<CurveSegment3>(vec![]).is_err());
     assert!(PolyCurve3::concatenate(&[]).is_err());
     let curve = example();
     for breaks in [
@@ -400,7 +403,10 @@ fn single_periodic_segment_and_unclamped_segments_preserve_the_active_locus() {
     assert!(periodic.is_periodic());
     let curve = PolyCurve3::try_new(vec![periodic.clone()]).unwrap();
     assert!(curve.is_closed().unwrap());
-    assert_eq!(curve.segments()[0], periodic);
+    assert_eq!(
+        curve.segments()[0],
+        CurveSegment3::NurbsCurve(periodic.clone())
+    );
     for source in [
         periodic,
         NurbsCurve::try_new(

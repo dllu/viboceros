@@ -6,8 +6,8 @@ use std::slice;
 
 use thiserror::Error;
 use viboceros_geometry::{
-    Brep, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    PolyCurve3, Polyline3, Tolerance, TriangleMesh, WeightedPoint3,
+    Brep, CircularArc3, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3,
+    PointCloud3, PolyCurve3, Polyline3, Tolerance, TriangleMesh, WeightedPoint3,
 };
 
 use crate::three_dm_geometry::{self, GeometryCodecError};
@@ -22,6 +22,7 @@ const OBJECT_POINT_CLOUD: c_int = 6;
 const OBJECT_BREP: c_int = 7;
 const OBJECT_POLYCURVE: c_int = 8;
 const OBJECT_POLYLINE: c_int = 9;
+const OBJECT_ARC: c_int = 10;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -50,6 +51,7 @@ pub enum ThreeDmGeometry {
     Point(Point3),
     PointCloud(PointCloud3),
     Line(LineSegment),
+    Arc(CircularArc3),
     NurbsCurve(NurbsCurve),
     PolyCurve(PolyCurve3),
     Polyline(Polyline3),
@@ -451,16 +453,21 @@ fn decode_object(
         }
         OBJECT_LINE
             if coordinates.len() == 6
-                && knots_u.is_empty()
+                && (knots_u.is_empty() || knots_u.len() == 2)
                 && knots_v.is_empty()
                 && indices.is_empty()
                 && geometry_data.is_empty() =>
         {
-            ThreeDmGeometry::Line(LineSegment::try_new(
+            let line = LineSegment::try_new(
                 point(&coordinates[..3])?,
                 point(&coordinates[3..])?,
                 tolerance,
-            )?)
+            )?;
+            ThreeDmGeometry::Line(if knots_u.is_empty() {
+                line
+            } else {
+                line.try_reparameterized(knots_u[0]..=knots_u[1])?
+            })
         }
         OBJECT_POINT_CLOUD
             if info.degree_u == 0
@@ -592,7 +599,7 @@ fn decode_object(
                 .collect();
             ThreeDmGeometry::Mesh(TriangleMesh::try_new_faces(vertices, faces, tolerance)?)
         }
-        OBJECT_BREP | OBJECT_POLYCURVE
+        OBJECT_BREP | OBJECT_POLYCURVE | OBJECT_ARC
             if info.degree_u == 0
                 && info.degree_v == 0
                 && info.control_point_count_u == 0
@@ -605,6 +612,8 @@ fn decode_object(
         {
             let decoded = if info.object_type == OBJECT_BREP {
                 three_dm_geometry::decode_brep(geometry_data, tolerance).map(ThreeDmGeometry::Brep)
+            } else if info.object_type == OBJECT_ARC {
+                three_dm_geometry::decode_arc(geometry_data).map(ThreeDmGeometry::Arc)
             } else {
                 three_dm_geometry::decode_polycurve(geometry_data).map(ThreeDmGeometry::PolyCurve)
             };
@@ -730,7 +739,7 @@ impl ObjectPayload {
                     .into_iter()
                     .chain(line.end().to_array())
                     .collect(),
-                knots_u: Vec::new(),
+                knots_u: vec![*line.domain().start(), *line.domain().end()],
                 knots_v: Vec::new(),
                 indices: Vec::new(),
                 geometry_data: Vec::new(),
@@ -852,6 +861,23 @@ impl ObjectPayload {
                         }
                     }
                 })?,
+            },
+            ThreeDmGeometry::Arc(arc) => Self {
+                object_type: OBJECT_ARC,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: Vec::new(),
+                knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: three_dm_geometry::encode_arc(*arc).map_err(
+                    |error| match error {
+                        GeometryCodecError::Geometry(error) => ThreeDmError::Geometry(error),
+                        _ => ThreeDmError::InvalidModel("invalid native arc payload".into()),
+                    },
+                )?,
             },
             ThreeDmGeometry::Mesh(mesh) => Self {
                 object_type: OBJECT_TRIANGLE_MESH,
@@ -1339,10 +1365,13 @@ mod tests {
         }
         let arc = &curve.segments()[1];
         assert_eq!(arc.degree(), 2);
-        assert_eq!(arc.control_points().len(), 3);
+        assert!(matches!(arc, viboceros_geometry::CurveSegment3::Arc(_)));
+        let nurbs = arc.to_nurbs().unwrap();
+        assert_eq!(nurbs.control_points().len(), 3);
         assert!(
-            (arc.control_points()[1].weight() / arc.control_points()[0].weight() - 0.5_f64.sqrt())
-                .abs()
+            (nurbs.control_points()[1].weight() / nurbs.control_points()[0].weight()
+                - 0.5_f64.sqrt())
+            .abs()
                 < 2e-12
         );
         let center = Point3::try_new(0.0, 1.0, 0.0).unwrap();
@@ -1361,7 +1390,15 @@ mod tests {
         };
         assert_eq!(curve.parameters(), decoded.parameters());
         for (expected, actual) in curve.segments().iter().zip(decoded.segments()) {
-            assert_curve_near(actual, expected, 2e-12);
+            assert_eq!(
+                std::mem::discriminant(actual),
+                std::mem::discriminant(expected)
+            );
+            assert_curve_near(
+                &actual.to_nurbs().unwrap(),
+                &expected.to_nurbs().unwrap(),
+                2e-12,
+            );
         }
         fs::remove_file(output).unwrap();
     }
@@ -1409,7 +1446,15 @@ mod tests {
         assert_eq!(actual.parameters(), curve.parameters());
         assert_eq!(actual.segments().len(), 2);
         for (actual, expected) in actual.segments().iter().zip(curve.segments()) {
-            assert_curve_near(actual, expected, 2e-12);
+            assert_eq!(
+                std::mem::discriminant(actual),
+                std::mem::discriminant(expected)
+            );
+            assert_curve_near(
+                &actual.to_nurbs().unwrap(),
+                &expected.to_nurbs().unwrap(),
+                2e-12,
+            );
         }
         for i in 0..=100 {
             let t = curve.parameter_at(i as f64 / 100.0).unwrap();
@@ -1455,6 +1500,109 @@ mod tests {
                     assert_brep_near(decoded, original)
                 }
                 (decoded, original) => assert_eq!(decoded, original),
+            }
+        }
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn native_polycurve_and_exploded_leaf_types_survive_3dm_round_trip() {
+        use viboceros_geometry::CurveSegment3;
+        let p = |x, y| Point3::try_new(x, y, 0.0).unwrap();
+        let line = LineSegment::try_new(p(3.0, 0.0), p(1.0, 0.0), Tolerance::DEFAULT)
+            .unwrap()
+            .try_reparameterized(7.0..=11.0)
+            .unwrap();
+        let arc = CircularArc3::try_from_three_points(
+            p(1.0, 0.0),
+            p(
+                std::f64::consts::FRAC_1_SQRT_2,
+                std::f64::consts::FRAC_1_SQRT_2,
+            ),
+            p(0.0, 1.0),
+            Tolerance::DEFAULT,
+        )
+        .unwrap()
+        .try_reparameterized(-5.0..=2.0)
+        .unwrap();
+        let polyline = Polyline3::try_with_parameters(
+            vec![arc.end().unwrap(), p(0.0, 3.0), p(1.0, 3.0)],
+            vec![-2.0, 0.0, 9.0],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let nurbs = NurbsCurve::try_new(
+            1,
+            vec![p(1.0, 3.0), p(4.0, 3.0)],
+            vec![5.0, 5.0, 11.0, 11.0],
+        )
+        .unwrap();
+        let composite = PolyCurve3::try_with_segment_domains(
+            vec![
+                CurveSegment3::Line(line),
+                CurveSegment3::Arc(arc),
+                CurveSegment3::Polyline(polyline.clone()),
+                CurveSegment3::NurbsCurve(nurbs.clone()),
+            ],
+            vec![-7.0, -4.0, 0.0, 3.0, 8.0],
+        )
+        .unwrap();
+        let geometries = vec![
+            ThreeDmGeometry::PolyCurve(composite),
+            ThreeDmGeometry::Line(line.reversed()),
+            ThreeDmGeometry::Arc(arc.reversed(Tolerance::DEFAULT).unwrap()),
+            ThreeDmGeometry::Polyline(polyline),
+            ThreeDmGeometry::NurbsCurve(nurbs),
+            ThreeDmGeometry::Arc(arc.closed()),
+        ];
+        let mut model = sample_model();
+        model.objects = geometries
+            .into_iter()
+            .map(|g| ThreeDmObject::new(g, 0))
+            .collect();
+        let path = temporary_path("native-leaf-classes.3dm");
+        write_3dm_file(&path, &model).unwrap();
+        let decoded = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(decoded.unsupported_object_count(), 0);
+        assert_eq!(decoded.objects.len(), model.objects.len());
+        let segments = |geometry: &ThreeDmGeometry| match geometry {
+            ThreeDmGeometry::PolyCurve(c) => c.segments().to_vec(),
+            ThreeDmGeometry::Line(c) => vec![CurveSegment3::Line(*c)],
+            ThreeDmGeometry::Arc(c) => vec![CurveSegment3::Arc(*c)],
+            ThreeDmGeometry::Polyline(c) => vec![CurveSegment3::Polyline(c.clone())],
+            ThreeDmGeometry::NurbsCurve(c) => vec![CurveSegment3::NurbsCurve(c.clone())],
+            _ => panic!("unexpected native curve type"),
+        };
+        for (expected, actual) in model.objects.iter().zip(&decoded.objects) {
+            assert_eq!(
+                std::mem::discriminant(&expected.geometry),
+                std::mem::discriminant(&actual.geometry)
+            );
+            if let (ThreeDmGeometry::PolyCurve(a), ThreeDmGeometry::PolyCurve(b)) =
+                (&expected.geometry, &actual.geometry)
+            {
+                assert_eq!(a.parameters(), b.parameters());
+            }
+            for (expected, actual) in segments(&expected.geometry)
+                .iter()
+                .zip(segments(&actual.geometry))
+            {
+                assert_eq!(
+                    std::mem::discriminant(expected),
+                    std::mem::discriminant(&actual)
+                );
+                assert_eq!(expected.domain(), actual.domain());
+                for i in 0..=32 {
+                    let t = expected.parameter_at(i as f64 / 32.0).unwrap();
+                    assert!(
+                        expected
+                            .evaluate(t)
+                            .unwrap()
+                            .distance_to(actual.evaluate(t).unwrap())
+                            .unwrap()
+                            < 2e-12
+                    );
+                }
             }
         }
         fs::remove_file(path).unwrap();

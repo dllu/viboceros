@@ -175,7 +175,15 @@ fn polycurve_values_equal(left: &PolyCurve3, right: &PolyCurve3) -> bool {
             .segments()
             .iter()
             .zip(right.segments())
-            .all(|(left, right)| directed_nurbs_curve_key(left) == directed_nurbs_curve_key(right))
+            .all(|(left, right)| {
+                std::mem::discriminant(left) == std::mem::discriminant(right)
+                    && match (left.to_nurbs(), right.to_nurbs()) {
+                        (Ok(left), Ok(right)) => {
+                            directed_nurbs_curve_key(&left) == directed_nurbs_curve_key(&right)
+                        }
+                        _ => false,
+                    }
+            })
 }
 
 fn points_equal_with_fixed_zero_policy(left: Point3, right: Point3) -> bool {

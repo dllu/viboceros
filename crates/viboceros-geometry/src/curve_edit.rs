@@ -4,8 +4,8 @@
 mod tests;
 
 use crate::{
-    Circle3, CircularArc3, CurveRef, Ellipse3, GeometryError, LineSegment, NurbsCurve, Point3,
-    PolyCurve3, Polyline3, Real, Tolerance, WeightedPoint3,
+    Circle3, CircularArc3, CurveRef, CurveSegment3, Ellipse3, GeometryError, LineSegment,
+    NurbsCurve, Point3, PolyCurve3, Polyline3, Real, Tolerance, WeightedPoint3,
 };
 
 /// Owned counterpart of [`CurveRef`], used by operations that can change a
@@ -88,7 +88,7 @@ impl Curve3 {
     pub fn to_polycurve(&self) -> Result<PolyCurve3, GeometryError> {
         match self {
             Self::PolyCurve(curve) => Ok(curve.clone()),
-            _ => PolyCurve3::try_new(vec![self.as_ref().to_nurbs()?]),
+            _ => PolyCurve3::try_new(vec![CurveSegment3::try_from_curve(self)?]),
         }
     }
 
@@ -166,10 +166,8 @@ impl Curve3 {
             start,
             Tolerance::try_new(f64::MIN_POSITIVE, tolerance.relative(), tolerance.angular())?,
         )?;
-        let appended = PolyCurve3::concatenate(&[
-            self.to_polycurve()?,
-            PolyCurve3::try_new(vec![segment.to_nurbs()?])?,
-        ])?;
+        let appended =
+            PolyCurve3::concatenate(&[self.to_polycurve()?, PolyCurve3::try_new(vec![segment])?])?;
         Ok((Self::PolyCurve(appended), CurveClosure::SegmentAdded))
     }
 }
