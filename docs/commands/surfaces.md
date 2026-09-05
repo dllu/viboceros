@@ -37,6 +37,14 @@ or report-only `None`. World-plane selections produce a rectangle or mesh plane.
 analytic bounds are tight, while NURBS bounds use their control geometry and
 can be non-conservative for negative-weight projective inputs.
 
+## Lofting
+
+`Loft Type=Normal Closed=No` creates one shared-topology B-rep from selected
+curves. Normal, Loose, Tight, Straight and Uniform styles are supported, as are
+periodic closed lofts. Inputs are retained; output is unselected on the current
+layer. See [Loft geometry, ordering, tests and limits](../loft.md), especially
+the endpoint-weight normalization policy for rational profiles.
+
 ## Face and isocurve extraction
 
 `ExtractSrf` separates the nearest exact face at a model-space point, or accepts

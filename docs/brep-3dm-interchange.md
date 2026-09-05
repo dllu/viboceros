@@ -25,8 +25,13 @@ The fixed native serialization bound is `2e-12 + 1e-14 * max(|a|, |b|)` for
 floating-point values; integer topology and record structure must agree exactly.
 It is independent of the source morph fitting tolerance. Coefficient checks
 complement finite geometric sampling, which alone is not a continuous error
-certificate. These fixtures use clamped NURBS; they do not establish interchange
-for every possible B-rep representation or knot discontinuity.
+certificate. OpenNURBS omits the two mathematically unused outer knots of a full
+NURBS knot vector. Records canonicalize only those two entries by repeating the
+first/last stored knot, as Rhino's oracle representation does. Every stored knot,
+control, weight and active domain is still compared. This handles periodic lofts
+without treating unrecorded representation padding as geometry corruption.
+The fixtures do not establish interchange for every possible B-rep representation
+or knot discontinuity.
 
 After import, both engines must produce a valid smooth-seam mesh at density zero
 with `SimplePlanes=false`. The comparison checks closedness, manifoldness,
@@ -48,6 +53,10 @@ to overwrite an existing artifact. Standalone native probes remove their own
 temporary files; standalone Rhino probes need an existing native artifact.
 
 ## Cases and limits
+
+`loft_3dm_interchange.json` additionally covers smooth circular profiles, a
+periodic closed loft, ruled circular spans, and a straight polyline loft split
+in both parameter directions. These retain shared crease edges and profile seams.
 
 `brep_3dm_interchange.json` contains eight cases: a disk, warped annulus,
 outward/inward capped faces, and cubically lifted box, cylinder, cone and sphere.

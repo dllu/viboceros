@@ -13,8 +13,10 @@ use crate::{
     WeightedPoint2, WeightedPoint3, require_finite,
 };
 
+mod loft;
 mod mass_properties;
 mod morph;
+mod surface_grid;
 mod tessellation;
 mod trim_image;
 mod validate;

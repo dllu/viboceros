@@ -27,6 +27,7 @@ mod integration;
 mod interpolation;
 mod intersection;
 mod line;
+mod loft;
 mod mesh;
 mod morph;
 mod nurbs;
@@ -90,6 +91,7 @@ pub use intersection::{
     transformed_curve_brep_intersection_events,
 };
 pub use line::LineSegment;
+pub use loft::{LoftStyle, MAX_LOFT_SECTION_CONTROLS, MAX_LOFT_SECTIONS, try_loft_nurbs_curves};
 pub use mesh::{
     MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
     MAX_MESH_ICO_SPHERE_SUBDIVISIONS, MAX_MESH_PLANE_FACES, MAX_MESH_QUAD_SPHERE_SUBDIVISIONS,

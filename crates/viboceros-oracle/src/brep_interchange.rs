@@ -24,6 +24,10 @@ pub struct BrepInterchangeFixture {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "kind", rename_all = "snake_case")]
 pub enum BrepInterchangeSource {
+    Loft {
+        #[serde(flatten)]
+        fixture: Box<super::LoftFixture>,
+    },
     SurfaceMorph {
         #[serde(flatten)]
         fixture: Box<BrepMorphFixture>,
@@ -57,6 +61,7 @@ impl PointMorph for CubicLift {
 impl BrepInterchangeSource {
     fn tolerance(&self, tolerance: Tolerance) -> Result<Tolerance, GeometryError> {
         let absolute = match self {
+            Self::Loft { .. } => tolerance.absolute(),
             Self::SurfaceMorph { fixture } => fixture.fit_tolerance,
             Self::CubicLift { fit_tolerance, .. } => *fit_tolerance,
         };
@@ -65,6 +70,7 @@ impl BrepInterchangeSource {
 
     fn build(&self, tolerance: Tolerance) -> Result<Brep, ProbeError> {
         Ok(match self {
+            Self::Loft { fixture } => super::loft::build_brep(fixture, tolerance)?,
             Self::SurfaceMorph { fixture } => {
                 let source = trimmed_brep::build(&fixture.source, tolerance)?;
                 let target = super::nurbs_surface_from_definition(&fixture.surface)?;
@@ -185,7 +191,9 @@ fn curve_record(curve: &NurbsCurve) -> Result<Value, GeometryError> {
                 .map(|p| p.to_array())
         })
         .collect::<Result<Vec<_>, _>>()?;
-    Ok(json!({"definition": super::nurbs_curve_definition_value(curve), "samples": samples}))
+    Ok(
+        json!({"definition": serialized_definition(super::nurbs_curve_definition_value(curve)), "samples": samples}),
+    )
 }
 
 fn geometry_record(brep: &Brep) -> Result<Value, GeometryError> {
@@ -235,7 +243,7 @@ fn face_record(face: &BrepFace) -> Result<Value, GeometryError> {
         })
         .collect::<Result<Vec<_>, _>>()?;
     Ok(
-        json!({"definition": super::nurbs_surface_definition_value(surface), "samples": samples, "loops": loops}),
+        json!({"definition": serialized_definition(super::nurbs_surface_definition_value(surface)), "samples": samples, "loops": loops}),
     )
 }
 
@@ -257,7 +265,23 @@ fn trim_record(trim: &BrepTrim, surface: &NurbsSurface) -> Result<Value, Geometr
         SurfaceIso::North => 6,
     };
     Ok(json!({"iso": iso, "tolerance": trim.tolerance(),
-        "definition": super::nurbs_curve2_definition_value(trim.curve()), "lifted": lifted}))
+        "definition": serialized_definition(super::nurbs_curve2_definition_value(trim.curve())), "lifted": lifted}))
+}
+
+// OpenNURBS stores the interior N+p-1 knot entries, omitting the two
+// mathematically unused outer entries in our full vector. Its reader can
+// reconstruct those entries differently for unclamped/periodic surfaces.
+// Match Rhino's oracle representation (repeat first/last stored knot), without
+// discarding ANY serialized coefficient, active domain, or geometric sample.
+fn serialized_definition(mut definition: Value) -> Value {
+    for key in ["knots", "knots_u", "knots_v"] {
+        if let Some(knots) = definition.get_mut(key).and_then(Value::as_array_mut) {
+            let last = knots.len() - 1;
+            knots[0] = knots[1].clone();
+            knots[last] = knots[last - 1].clone();
+        }
+    }
+    definition
 }
 
 // Serialize/deserialize may round Euclidean rational control coordinates by a
@@ -284,6 +308,23 @@ fn roundtrip_equal(actual: &Value, expected: &Value) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn interchange_canonicalizes_only_the_two_unstored_outer_knots() {
+        let source = json!({"knots": [-3.0, -2.0, -1.0, 0.0, 1.0, 2.0, 3.0], "degree": 2});
+        let serialized = serialized_definition(source.clone());
+        assert_eq!(
+            serialized["knots"],
+            json!([-2.0, -2.0, -1.0, 0.0, 1.0, 2.0, 2.0])
+        );
+        assert_eq!(serialized["degree"], source["degree"]);
+        let mut changed = source;
+        changed["knots"][3] = json!(0.01);
+        assert!(!roundtrip_equal(
+            &serialized,
+            &serialized_definition(changed)
+        ));
+    }
 
     #[test]
     fn interchange_never_overwrites_an_existing_artifact() {

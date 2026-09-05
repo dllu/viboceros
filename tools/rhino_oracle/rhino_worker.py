@@ -1493,6 +1493,100 @@ def _three_dm_brep_interchange(operation, iterations):
             model.Dispose()
 
 
+def _loft(operation, iterations):
+    curves = []
+    styles = {
+        "normal": Rhino.Geometry.LoftType.Normal,
+        "loose": Rhino.Geometry.LoftType.Loose,
+        "tight": Rhino.Geometry.LoftType.Tight,
+        "straight": Rhino.Geometry.LoftType.Straight,
+        "uniform": Rhino.Geometry.LoftType.Uniform,
+    }
+    result = []
+    def build():
+        for brep in result:
+            brep.Dispose()
+        del result[:]
+        result.extend(Rhino.Geometry.Brep.CreateFromLoft(
+            curves, Rhino.Geometry.Point3d.Unset, Rhino.Geometry.Point3d.Unset,
+            styles[operation.get("style", "normal")], operation.get("closed", False)
+        ) or [])
+        if not result:
+            raise ValueError("Rhino could not create the loft")
+    try:
+        for definition in operation["curves"]:
+            curves.append(_nurbs_curve_from_definition(definition))
+        if operation.get("command", False):
+            return _loft_command(operation, iterations, curves)
+        _unused, elapsed = _measure(iterations, build)
+        surfaces = []
+        for brep in result:
+            if not brep.IsValid:
+                raise ValueError("Rhino loft is invalid")
+            for face in brep.Faces:
+                surfaces.append(_nurbs_surface_definition(face))
+        return surfaces, elapsed
+    finally:
+        for brep in result:
+            brep.Dispose()
+        for curve in curves:
+            curve.Dispose()
+
+
+def _loft_command(operation, iterations, curves):
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def record(obj):
+        # Face indices are topology allocation details, not loft geometry.
+        faces = [(_nurbs_surface_definition(face), bool(face.OrientationIsReversed))
+                 for face in obj.Geometry.Faces]
+        faces.sort(key=lambda item: (item[0]["domain_v"], item[0]["domain_u"]))
+        return {"surfaces": [item[0] for item in faces],
+                "face_reversed": [item[1] for item in faces],
+                "valid": bool(obj.Geometry.IsValid),
+                "vertices": obj.Geometry.Vertices.Count, "edges": obj.Geometry.Edges.Count,
+                "selected": bool(obj.IsSelected(False)), "name": obj.Attributes.Name,
+                "group_count": obj.Attributes.GroupCount}
+    def compute():
+        before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+        ids = []
+        try:
+            document.Objects.UnselectAll()
+            for i, curve in enumerate(curves):
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = "loft-source-%d" % i
+                    object_id = document.Objects.AddCurve(curve, attributes)
+                finally:
+                    attributes.Dispose()
+                if object_id == System.Guid.Empty:
+                    raise ValueError("could not add Loft profile")
+                ids.append(object_id)
+                document.Objects.Select(ids[-1])
+            seam = "_Enter " if all(curve.IsClosed for curve in curves) else ""
+            macro = "_-Loft %s_Type=%s _Closed=%s _Enter" % (
+                seam, operation.get("style", "normal"),
+                "Yes" if operation.get("closed", False) else "No")
+            succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
+            outputs = [obj for obj in document.Objects.GetObjectList(settings)
+                       if obj.Id not in before and obj.Id not in ids]
+            if not succeeded or not outputs:
+                raise ValueError("Loft command failed: %r; history: %s" % (
+                    macro, Rhino.RhinoApp.CommandHistoryWindowText[-2000:]))
+            return {
+                "succeeded": succeeded,
+                "originals_present": [document.Objects.FindId(i) is not None for i in ids],
+                "originals_selected": [bool(document.Objects.FindId(i) and document.Objects.FindId(i).IsSelected(False)) for i in ids],
+                "outputs": [record(obj) for obj in outputs],
+            }
+        finally:
+            for obj in document.Objects.GetObjectList(settings):
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+    return _measure(iterations, compute)
+
+
 def _surface_jets(operation, iterations):
     surface = _nurbs_surface_from_definition(operation["surface"])
     owned = [surface]
@@ -1904,6 +1998,8 @@ def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "brep_mesh_boundaries":
         return _brep_mesh_boundaries(operation, iterations, tolerance)
+    if kind == "loft":
+        return _loft(operation, iterations)
     if kind == "curve_surface_morph":
         return _curve_surface_morph(operation, iterations, tolerance)
     if kind == "surface_surface_morph":

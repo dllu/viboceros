@@ -45,7 +45,9 @@ pub use polycurve_native::NativePolyCurveFixture;
 mod brep_interchange;
 mod curve_interchange;
 pub use brep_interchange::{BrepInterchangeFixture, BrepInterchangeSource, LiftPrimitive};
+mod loft;
 mod surface_jets;
+pub use loft::LoftFixture;
 pub use surface_jets::SurfaceJetsFixture;
 mod curve_morph;
 pub use curve_morph::CurveMorphFixture;
@@ -99,6 +101,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    Loft {
+        id: String,
+        #[serde(flatten)]
+        fixture: LoftFixture,
+    },
     ThreeDmBrepInterchange {
         id: String,
         #[serde(flatten)]
@@ -1355,6 +1362,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::Loft { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
@@ -1652,6 +1660,7 @@ fn execute(
         Operation::SurfaceSurfaceMorph { fixture, .. } => {
             surface_morph::run(fixture, iterations, tolerance)?
         }
+        Operation::Loft { fixture, .. } => loft::run(fixture, iterations, tolerance)?,
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?
         }

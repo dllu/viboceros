@@ -1,0 +1,6327 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "loft",
+      "id": "command-lines-normal",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-lines-loose",
+      "style": "loose",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-lines-tight",
+      "style": "tight",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-lines-straight",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-lines-uniform",
+      "style": "uniform",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-reversed-order",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-closed",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            -7,
+            -7,
+            13,
+            13
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -1,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            8,
+            8
+          ]
+        },
+        {
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                3,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true,
+      "closed": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-down",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-clockwise",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-tilted",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                0,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                0,
+                -1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                -1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                2
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                1,
+                2
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                1,
+                -2
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                -2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                -2
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                3,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                3,
+                0.5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                3,
+                0.5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                3,
+                0.5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                3,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                3,
+                -0.5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                3,
+                -0.5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                3,
+                -0.5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                3,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                6,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                6,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                6,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                6,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                6,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                6,
+                -1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                6,
+                -1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                6,
+                -1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                6,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-straight-angle-0",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-straight-angle-0.001",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.001,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.001,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-straight-angle-0.1",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.1,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.1,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.25",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.008726701641403134,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.008726701641403134,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.5",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.01745373558151758,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.01745373558151758,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.75",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.02618143416967017,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.02618143416967017,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-1",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.03491012985643517,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.03491012985643517,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-1.25",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.04364015524429895,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.04364015524429895,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-polyline-normal",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                4
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-polyline-straight",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                2,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                2
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            0.25,
+            0.5,
+            0.75,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0,
+                4
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-order-2031",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-order-0213",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-order-10",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-order-01",
+      "style": "normal",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.05",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0017453296950425425,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.0017453296950425425,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.09",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0031415952374487335,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.0031415952374487335,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.11",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.0038397290719704128,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.0038397290719704128,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-angle-degrees-0.15",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ]
+        },
+        {
+          "degree": 1,
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "control_points": [
+            {
+              "point": [
+                0,
+                0.005235999718313886,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                0.005235999718313886,
+                3
+              ],
+              "weight": 1
+            }
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-loose",
+      "style": "loose",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-tight",
+      "style": "tight",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-straight",
+      "style": "straight",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    },
+    {
+      "op": "loft",
+      "id": "command-circles-uniform",
+      "style": "uniform",
+      "curves": [
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                0
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -2,
+                0,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -2,
+                1
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                -2,
+                1
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                0,
+                1
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -0.5,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                -0.5,
+                3
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                3
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -1,
+                0,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                0,
+                -1,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                -1,
+                6
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                1,
+                0,
+                6
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0.25,
+            0.25,
+            0.5,
+            0.5,
+            0.75,
+            0.75,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": true
+    }
+  ]
+}

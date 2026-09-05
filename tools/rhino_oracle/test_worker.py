@@ -9,6 +9,91 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_loft_command_cleans_only_owned_objects_and_disposes_attributes(self):
+        for failure in [None, "add", "command", "record"]:
+            objects = {0: SimpleNamespace(Id=0)}
+            attributes = []
+            next_id = [1]
+            def attrs():
+                value = SimpleNamespace(Name=None, GroupCount=0, Dispose=Mock())
+                attributes.append(value)
+                return value
+            def add(curve, attribute):
+                if failure == "add" and len(attributes) == 2:
+                    raise ValueError("add failed")
+                index = next_id[0]
+                next_id[0] += 1
+                objects[index] = SimpleNamespace(Id=index, IsSelected=lambda sub: True)
+                return index
+            def command(macro, echo):
+                index = next_id[0]
+                next_id[0] += 1
+                objects[index] = SimpleNamespace(
+                    Id=index, IsSelected=lambda sub: False,
+                    Attributes=SimpleNamespace(Name=None, GroupCount=0),
+                    Geometry=SimpleNamespace(IsValid=True, Vertices=SimpleNamespace(Count=4),
+                        Edges=SimpleNamespace(Count=4), Faces=[SimpleNamespace(OrientationIsReversed=False)]))
+                return failure != "command"
+            self.document.Objects = SimpleNamespace(
+                GetObjectList=lambda settings: list(objects.values()), UnselectAll=lambda: None,
+                AddCurve=add, Select=lambda index: None, FindId=objects.get,
+                Delete=lambda index, quiet: objects.pop(index))
+            self.worker.Rhino.DocObjects = SimpleNamespace(
+                ObjectEnumeratorSettings=SimpleNamespace, ObjectAttributes=attrs)
+            self.worker.Rhino.RhinoApp.RunScript = command
+            self.worker.Rhino.RhinoApp.CommandHistoryWindowText = "failed test command"
+            self.worker.System.Guid = SimpleNamespace(Empty=-1)
+            sources = [SimpleNamespace(IsClosed=False, Dispose=Mock()) for _ in range(2)]
+            with patch.object(self.worker, "_nurbs_surface_definition",
+                              return_value={"domain_u": [0, 1], "domain_v": [0, 1]},
+                              side_effect=ValueError("record failed") if failure == "record" else None):
+                if failure:
+                    with self.assertRaises(ValueError):
+                        self.worker._loft_command({}, 2, sources)
+                else:
+                    value, _ = self.worker._loft_command({}, 2, sources)
+                    self.assertTrue(value["succeeded"])
+                    self.assertEqual(value["originals_selected"], [True, True])
+                    self.assertEqual(len(attributes), 6)
+            self.assertEqual(set(objects), {0})
+            for attribute in attributes:
+                attribute.Dispose.assert_called_once_with()
+            for source in sources:
+                source.Dispose.assert_not_called()  # The _loft caller owns inputs.
+
+    def test_loft_disposes_all_owned_inputs_and_results_on_success_and_failure(self):
+        for failure in [None, "source", "build", "validity", "record"]:
+            sources = []
+            results = []
+            def source(definition):
+                if failure == "source" and sources:
+                    raise ValueError("source failed")
+                curve = SimpleNamespace(Dispose=Mock())
+                sources.append(curve)
+                return curve
+            def build(*args):
+                if failure == "build" and results:
+                    raise ValueError("build failed")
+                brep = SimpleNamespace(Faces=[object()], IsValid=failure != "validity", Dispose=Mock())
+                results.append(brep)
+                return [brep]
+            self.worker.Rhino.Geometry = SimpleNamespace(
+                LoftType=SimpleNamespace(Normal=0, Loose=1, Tight=2, Straight=3, Uniform=4),
+                Point3d=SimpleNamespace(Unset=None), Brep=SimpleNamespace(CreateFromLoft=build))
+            with patch.object(self.worker, "_nurbs_curve_from_definition", side_effect=source), patch.object(
+                self.worker, "_nurbs_surface_definition", side_effect=ValueError("record failed") if failure == "record" else None,
+                return_value={"surface": True}
+            ):
+                if failure:
+                    with self.assertRaises(ValueError):
+                        self.worker._loft({"curves": [{}, {}]}, 2)
+                else:
+                    value, _ = self.worker._loft({"curves": [{}, {}]}, 2)
+                    self.assertEqual(value, [{"surface": True}])
+                    self.assertEqual(len(results), 3)
+            for item in sources + results:
+                item.Dispose.assert_called_once_with()
+
     def test_brep_interchange_disposes_repeated_models_and_failed_recording(self):
         for fail in [False, True]:
             models = []

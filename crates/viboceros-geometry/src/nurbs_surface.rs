@@ -2252,6 +2252,51 @@ impl NurbsSurface {
         Ok(removals)
     }
 
+    /// Interior fully multiple knots whose sampled one-sided isocurve tangents
+    /// differ by more than `angle_radians`. Tests transverse span endpoints and
+    /// midpoints, like the OpenNURBS discontinuity predicate; this is not a
+    /// continuous maximum-angle certificate. Smooth rational circle knots are
+    /// not creases merely because their multiplicity equals the degree.
+    pub fn sampled_kink_parameters(
+        &self,
+        angle_radians: Real,
+    ) -> Result<[Vec<Real>; 2], GeometryError> {
+        if !angle_radians.is_finite() || !(0.0..=std::f64::consts::PI).contains(&angle_radians) {
+            return Err(GeometryError::Degenerate {
+                context: "surface kink angle",
+            });
+        }
+        let mut result = [Vec::new(), Vec::new()];
+        for (axis, degree, knots, domain, direction) in [
+            (
+                0,
+                self.degree_u,
+                &self.knots_u,
+                self.domain_u(),
+                SurfaceKnotDirection::U,
+            ),
+            (
+                1,
+                self.degree_v,
+                &self.knots_v,
+                self.domain_v(),
+                SurfaceKnotDirection::V,
+            ),
+        ] {
+            for group in knots.chunk_by(|a, b| a == b) {
+                let knot = group[0];
+                if group.len() >= degree
+                    && knot > *domain.start()
+                    && knot < *domain.end()
+                    && self.maximum_kink_angle_at(direction, knot)? > angle_radians
+                {
+                    result[axis].push(knot);
+                }
+            }
+        }
+        Ok(result)
+    }
+
     fn maximum_kink_angle_at(
         &self,
         direction: SurfaceKnotDirection,

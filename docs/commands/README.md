@@ -47,6 +47,7 @@ RemoveControlPoint 3 Direction=U
 RemoveMultiKnot RemoveFullyMultipleKnots=Yes MaxKinkAngle=5
 SrfPt 0,0,0 8,0,0 8,5,2 0,5,2
 PlanarSrf DeleteInput=No
+Loft Type=Normal Closed=No
 Mesh Density=0.5 JaggedSeams=No SimplePlanes=No
 MeshBox 0,0,0 8,5,0 3 XCount=4 YCount=3 ZCount=2
 MeshCone 0,0,0 3 8 VerticalFaces=4 AroundFaces=16 Solid=Yes CapFaceStyle=Quad
