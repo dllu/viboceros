@@ -62,6 +62,10 @@ Rhino's polycurve with `MakeDeformable`; direct API shear has different behavior
 `polycurve_native_document.json` compares extraction, recursive Explode, duplicate
 checks, and 3DM round trips on native mixed composites in both directions.
 
+`curve_native_parameters.json` covers the shared [native parameter contract](curve-parameters.md)
+for all seven curve families. It compares domains, first/second derivatives,
+tangents, equal-length division parameters, reversal, transforms, and NURBS definitions.
+
 `curve_join_close.json` compares 39 mixed joining and closure cases, including
 full NURBS definitions, retained intervals, representation, and length. It tests
 the batch `JoinCurves` API separately from actual `Join`/`CloseCrv` commands.

@@ -142,9 +142,7 @@ impl Geometry {
                     .segments()
                     .iter()
                     .map(|segment| match segment {
-                        viboceros_geometry::CurveSegment3::Line(line) => {
-                            morph.morph_line(*line)?.try_reparameterized(line.domain())
-                        }
+                        viboceros_geometry::CurveSegment3::Line(line) => morph.morph_line(*line),
                         viboceros_geometry::CurveSegment3::Polyline(polyline) => {
                             morph.morph_polyline(polyline)
                         }

@@ -53,6 +53,8 @@ impl LineSegment {
         self.start.vector_to(self.end)?.normalized(tolerance)
     }
 
+    /// Geometric interpolation with normalized coordinates; values outside
+    /// `[0,1]` extrapolate. Use [`Self::evaluate`] for checked native parameters.
     pub fn point_at(self, parameter: Real) -> Result<Point3, GeometryError> {
         if parameter == 0.0 {
             return Ok(self.start);

@@ -67,11 +67,15 @@ The constructor uses the kernel's fixed curve-coincidence predicate, not documen
 model tolerance. Bridging or editing larger gaps belongs to a joining operation.
 Composites allow up to 65,536 segments; NURBS conversion allows at most one million
 output controls. A closed segment may only be the entire composite, matching
-OpenNURBS validity rules. Conversion elevates degrees and uses full-order junction knots,
-preserving independent homogeneous scales without dividing adjacent weights. Its
+OpenNURBS validity rules. Conversion elevates degrees and shares identical homogeneous
+endpoint controls; otherwise full-order knots preserve independent scales without
+dividing adjacent weights. Its
 control structure need not be Rhino's minimal merged NURBS structure.
 
 ## Division and validation
+
+Shared evaluation and returned sampling parameters follow the
+[native curve parameter contract](curve-parameters.md).
 
 `CurveRef::divide_by_count` follows Rhino's endpoint topology: `include_ends=true`
 includes both open endpoints or one closed seam; false returns only the interior

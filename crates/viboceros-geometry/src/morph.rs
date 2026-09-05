@@ -59,7 +59,8 @@ pub trait PointMorph {
         let second_control =
             Point3::try_from(std::array::from_fn(|coordinate| interpolate(coordinate).1))?;
         let controls = vec![samples[0], first_control, second_control, samples[3]];
-        NurbsCurve::try_new(3, controls, vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0])
+        NurbsCurve::try_new(3, controls, vec![0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0])?
+            .try_reparameterized(line.domain())
     }
 
     fn morph_polyline(&self, polyline: &Polyline3) -> Result<NurbsCurve, GeometryError> {
@@ -623,17 +624,17 @@ mod tests {
         assert_eq!(fitted.degree(), 3);
         assert!(!fitted.is_rational());
         assert_eq!(fitted.control_points().len(), 25);
-        assert_eq!(
-            fitted.knots(),
-            &[
-                0.0, 0.0, 0.0, 0.0, 0.0625, 0.125, 0.1875, 0.21875, 0.25, 0.28125, 0.3125, 0.375,
-                0.4375, 0.46875, 0.5, 0.53125, 0.5625, 0.625, 0.6875, 0.71875, 0.75, 0.78125,
-                0.8125, 0.875, 0.9375, 1.0, 1.0, 1.0, 1.0,
-            ]
-        );
+        assert_eq!(fitted.domain(), source.domain());
+        for (&actual, expected) in fitted.knots().iter().zip([
+            0.0, 0.0, 0.0, 0.0, 0.0625, 0.125, 0.1875, 0.21875, 0.25, 0.28125, 0.3125, 0.375,
+            0.4375, 0.46875, 0.5, 0.53125, 0.5625, 0.625, 0.6875, 0.71875, 0.75, 0.78125, 0.8125,
+            0.875, 0.9375, 1.0, 1.0, 1.0, 1.0,
+        ]) {
+            assert!((actual - expected * std::f64::consts::TAU).abs() < 1e-12);
+        }
         let maximum_error = (0..=1024)
             .map(|sample| {
-                let parameter = sample as Real / 1024.0;
+                let parameter = source.parameter_at(sample as Real / 1024.0).unwrap();
                 let exact = morph
                     .morph_point(source.evaluate(parameter).unwrap())
                     .unwrap();

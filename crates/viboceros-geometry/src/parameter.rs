@@ -59,6 +59,11 @@ pub(crate) fn scaled_ratio(
     if value == 0.0 {
         return Ok(0.0);
     }
+    if numerator == 1.0 {
+        let result = value / denominator;
+        require_finite([result], "curve derivative")?;
+        return Ok(result);
+    }
     let ratio = numerator / denominator;
     let product = value * numerator;
     let quotient = value / denominator;

@@ -1,0 +1,1369 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-10,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_native",
+      "id": "native-line-default",
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          4,
+          6,
+          15
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-line-domain",
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          4,
+          6,
+          15
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-line-reversed",
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          4,
+          6,
+          15
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-line-domain-reversed",
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          4,
+          6,
+          15
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-line-similarity",
+      "curve": {
+        "type": "line",
+        "start": [
+          1,
+          2,
+          3
+        ],
+        "end": [
+          4,
+          6,
+          15
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-arc-default",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-arc-domain",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-arc-reversed",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-arc-domain-reversed",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-arc-similarity",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-circle-default",
+      "curve": {
+        "type": "circle",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-circle-domain",
+      "curve": {
+        "type": "circle",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-circle-reversed",
+      "curve": {
+        "type": "circle",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-circle-domain-reversed",
+      "curve": {
+        "type": "circle",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-circle-similarity",
+      "curve": {
+        "type": "circle",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-ellipse-default",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius_x": 5,
+        "radius_y": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-ellipse-domain",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius_x": 5,
+        "radius_y": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-ellipse-reversed",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius_x": 5,
+        "radius_y": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-ellipse-domain-reversed",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius_x": 5,
+        "radius_y": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-ellipse-similarity",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius_x": 5,
+        "radius_y": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polyline-default",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            8,
+            6,
+            0
+          ]
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polyline-domain",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            8,
+            6,
+            0
+          ]
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polyline-reversed",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            8,
+            6,
+            0
+          ]
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polyline-domain-reversed",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            8,
+            6,
+            0
+          ]
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polyline-similarity",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            1,
+            2,
+            0
+          ],
+          [
+            4,
+            2,
+            0
+          ],
+          [
+            4,
+            6,
+            0
+          ],
+          [
+            8,
+            6,
+            0
+          ]
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-nurbs-default",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.6
+          },
+          {
+            "point": [
+              6,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -2,
+          -2,
+          8,
+          8,
+          8
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-nurbs-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.6
+          },
+          {
+            "point": [
+              6,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -2,
+          -2,
+          8,
+          8,
+          8
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-nurbs-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.6
+          },
+          {
+            "point": [
+              6,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -2,
+          -2,
+          8,
+          8,
+          8
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-nurbs-domain-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.6
+          },
+          {
+            "point": [
+              6,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -2,
+          -2,
+          8,
+          8,
+          8
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-nurbs-similarity",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              0
+            ],
+            "weight": 0.6
+          },
+          {
+            "point": [
+              6,
+              1,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -2,
+          -2,
+          -2,
+          8,
+          8,
+          8
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polycurve-default",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              3,
+              -2,
+              0
+            ],
+            "end": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                -3,
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polycurve-domain",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              3,
+              -2,
+              0
+            ],
+            "end": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                -3,
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polycurve-reversed",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              3,
+              -2,
+              0
+            ],
+            "end": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                -3,
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polycurve-domain-reversed",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              3,
+              -2,
+              0
+            ],
+            "end": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                -3,
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "reversed": true
+    },
+    {
+      "op": "curve_native",
+      "id": "native-polycurve-similarity",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              3,
+              -2,
+              0
+            ],
+            "end": [
+              3,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "arc",
+            "points": [
+              [
+                3,
+                0,
+                0
+              ],
+              [
+                0,
+                3,
+                0
+              ],
+              [
+                -3,
+                0,
+                0
+              ]
+            ]
+          }
+        ]
+      },
+      "transform": [
+        [
+          0,
+          -2,
+          0,
+          10
+        ],
+        [
+          2,
+          0,
+          0,
+          -7
+        ],
+        [
+          0,
+          0,
+          2,
+          3
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-circle-exact-shear",
+      "curve": {
+        "type": "circle",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius": 3,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "transform": [
+        [
+          1,
+          0.4,
+          0,
+          2
+        ],
+        [
+          0,
+          2,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          1,
+          -4
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-arc-exact-shear",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            3,
+            0,
+            0
+          ],
+          [
+            0,
+            3,
+            0
+          ],
+          [
+            -3,
+            0,
+            0
+          ]
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "transform": [
+        [
+          1,
+          0.4,
+          0,
+          2
+        ],
+        [
+          0,
+          2,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          1,
+          -4
+        ]
+      ]
+    },
+    {
+      "op": "curve_native",
+      "id": "native-ellipse-exact-shear",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          2,
+          -3,
+          4
+        ],
+        "radius_x": 5,
+        "radius_y": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "transform": [
+        [
+          1,
+          0.4,
+          0,
+          2
+        ],
+        [
+          0,
+          2,
+          0,
+          3
+        ],
+        [
+          0,
+          0,
+          1,
+          -4
+        ]
+      ]
+    }
+  ]
+}

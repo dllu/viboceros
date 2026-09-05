@@ -21998,6 +21998,9 @@ pub enum CommandError {
 mod polycurve_tests;
 
 #[cfg(test)]
+mod curve_parameter_tests;
+
+#[cfg(test)]
 mod tests {
     use super::*;
     use viboceros_document::SelectionMode;

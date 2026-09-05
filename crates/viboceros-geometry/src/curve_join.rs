@@ -626,13 +626,7 @@ fn endpoint_tangent(
     curve: CurveRef<'_>,
     start: bool,
 ) -> Result<Option<UnitVector3>, GeometryError> {
-    let domain = match curve {
-        CurveRef::Line(_) | CurveRef::Arc(_) => 0.0..=1.0,
-        CurveRef::Circle(_) | CurveRef::Ellipse(_) => 0.0..=std::f64::consts::TAU,
-        CurveRef::Polyline(curve) => curve.domain(),
-        CurveRef::NurbsCurve(curve) => curve.domain(),
-        CurveRef::PolyCurve(curve) => curve.domain(),
-    };
+    let domain = curve.domain();
     match curve.evaluate_with_tangent(if start {
         *domain.start()
     } else {

@@ -437,9 +437,10 @@ impl PolyCurve3 {
         Self::try_with_segment_domains(segments, parameters)
     }
 
-    /// Converts to one exact piecewise NURBS curve. Full-order junction knots
-    /// keep each segment's homogeneous scale independent: no averaging of
-    /// endpoints, ratio of unrelated weights, or geometric fitting is needed.
+    /// Converts to one exact piecewise NURBS curve. Identical homogeneous
+    /// junction controls are shared with degree-multiple knots. Otherwise
+    /// full-order knots keep homogeneous scales independent without averaging
+    /// endpoints, dividing unrelated weights, or fitting geometry.
     /// Arc spans change from angular to rational parameterization. Other leaf
     /// types retain their parameterization. This need not produce Rhino's
     /// minimal control-point/knot representation.
@@ -471,7 +472,11 @@ impl PolyCurve3 {
             let segment = source
                 .try_change_degree(degree, false)?
                 .try_reparameterized(self.segment_domain(index)?)?;
-            controls.extend_from_slice(segment.control_points());
+            let shared = index > 0 && controls.last() == segment.control_points().first();
+            if shared {
+                knots.pop();
+            }
+            controls.extend_from_slice(&segment.control_points()[usize::from(shared)..]);
             if index == 0 {
                 knots.extend_from_slice(segment.knots());
             } else {

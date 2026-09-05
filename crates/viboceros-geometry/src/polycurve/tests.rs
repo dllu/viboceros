@@ -228,7 +228,7 @@ fn exact_nurbs_conversion_preserves_rational_segments_and_parameterization() {
     assert_eq!(nurbs.degree(), 2);
     assert_eq!(nurbs.domain(), curve.domain());
     for &junction in &curve.parameters()[1..3] {
-        assert_eq!(nurbs.knot_multiplicity(junction).unwrap(), 3);
+        assert_eq!(nurbs.knot_multiplicity(junction).unwrap(), 2);
     }
     for step in 0..=128 {
         let t = curve.parameter_at(step as Real / 128.0).unwrap();
@@ -276,6 +276,9 @@ fn conversion_keeps_independent_extreme_homogeneous_scales() {
     let scaled =
         PolyCurve3::try_with_segment_domains(segments, curve.parameters().to_vec()).unwrap();
     let nurbs = scaled.to_nurbs().unwrap();
+    for &junction in &scaled.parameters()[1..3] {
+        assert_eq!(nurbs.knot_multiplicity(junction).unwrap(), 3);
+    }
     for step in 0..=128 {
         let t = curve.parameter_at(step as Real / 128.0).unwrap();
         near(curve.evaluate(t).unwrap(), nurbs.evaluate(t).unwrap());

@@ -48,6 +48,9 @@ picking, endpoint snapping, extraction, explode, and 3DM interchange.
 Representation-aware ownership, endpoint editing, and joining live in separate
 geometry modules; `Join` and `CloseCrv` share a dedicated command module.
 See [curve joining and closure](curve-editing.md) for tested policies and limits.
+All seven curve families share [native parameter evaluation](curve-parameters.md),
+including analytic derivatives and parameter-bearing arc-length samples. Circular
+support frames are distinct from complete circles and their native domains.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

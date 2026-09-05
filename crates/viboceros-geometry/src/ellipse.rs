@@ -14,6 +14,7 @@ pub struct Ellipse3 {
     radius_y: Real,
     x_axis: UnitVector3,
     y_axis: UnitVector3,
+    domain: [Real; 2],
 }
 
 impl Ellipse3 {
@@ -45,6 +46,7 @@ impl Ellipse3 {
             radius_y,
             x_axis,
             y_axis,
+            domain: [0.0, std::f64::consts::TAU],
         };
         ellipse.checked_bounds()?;
         Ok(ellipse)
@@ -110,6 +112,27 @@ impl Ellipse3 {
         self.frame_point(cosine, sine, 1.0)
     }
 
+    pub fn domain(self) -> std::ops::RangeInclusive<Real> {
+        self.domain[0]..=self.domain[1]
+    }
+
+    pub fn try_reparameterized(
+        self,
+        domain: std::ops::RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        crate::parameter::check_interval(&domain)?;
+        Ok(Self {
+            domain: [*domain.start(), *domain.end()],
+            ..self
+        })
+    }
+
+    /// Native rational-quadratic parameterization, not the drafting angle.
+    pub fn evaluate(self, parameter: Real) -> Result<Point3, GeometryError> {
+        let jet = crate::curve_evaluate::ellipse_unit_jet(parameter, self.domain())?;
+        self.frame_point(jet[0][0], jet[0][1], 1.0)
+    }
+
     pub fn quadrants(self) -> Result<[Point3; 4], GeometryError> {
         Ok([
             self.frame_point(1.0, 0.0, 1.0)?,
@@ -157,6 +180,7 @@ impl Ellipse3 {
     pub fn reversed(self) -> Self {
         Self {
             y_axis: self.y_axis.opposite(),
+            domain: [-self.domain[1], -self.domain[0]],
             ..self
         }
     }
@@ -211,7 +235,8 @@ impl Ellipse3 {
             vec![
                 0.0, 0.0, 0.0, 0.25, 0.25, 0.5, 0.5, 0.75, 0.75, 1.0, 1.0, 1.0,
             ],
-        )
+        )?
+        .try_reparameterized(self.domain())
     }
 
     /// Preserves the analytic representation if transformed axes remain
@@ -240,6 +265,7 @@ impl Ellipse3 {
             y_axis,
             tolerance,
         )
+        .and_then(|ellipse| ellipse.try_reparameterized(self.domain()))
         .map(Some)
     }
 
@@ -350,7 +376,9 @@ mod tests {
         assert_eq!(curve.degree(), 2);
         assert_eq!(curve.control_points().len(), 9);
         for sample in 0..=256 {
-            let point = curve.evaluate(sample as Real / 256.0).unwrap();
+            let point = curve
+                .evaluate(curve.parameter_at(sample as Real / 256.0).unwrap())
+                .unwrap();
             let x = (point.x() - 1.0) / 5.0;
             let y = (point.y() + 2.0) / 2.0;
             assert!(Tolerance::DEFAULT.approx_eq(x.mul_add(x, y * y), 1.0));

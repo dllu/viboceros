@@ -10,14 +10,14 @@ use crate::{
 /// The orthonormal in-plane axes retain a stable parameterization, which is
 /// useful for quadrant snaps and exact rational NURBS conversion.
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub struct Circle3 {
+pub(crate) struct CircleFrame3 {
     center: Point3,
     radius: Real,
     x_axis: UnitVector3,
     y_axis: UnitVector3,
 }
 
-impl Circle3 {
+impl CircleFrame3 {
     /// Constructs a circle with a deterministic in-plane frame.
     pub fn try_new(
         center: Point3,
@@ -219,7 +219,7 @@ impl Circle3 {
 /// A finite circular arc with a positive sweep no greater than one revolution.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub struct CircularArc3 {
-    circle: Circle3,
+    circle: CircleFrame3,
     sweep_radians: Real,
     domain: [Real; 2],
 }
@@ -269,7 +269,7 @@ impl CircularArc3 {
         let center_x = chord * 0.5;
         let center_y = end_x.mul_add(end_x - chord, end_y * end_y) / (2.0 * end_y);
         let local_center = frame_point(start, local_x, local_y, scale, center_x, center_y)?;
-        let circle = Circle3::try_from_center_point(local_center, start, normal, tolerance)?;
+        let circle = CircleFrame3::try_from_center_point(local_center, start, normal, tolerance)?;
         let through_angle = circle_angle(circle, through)?;
         let sweep_radians = circle_angle(circle, end)?;
         if !(through_angle > 0.0 && through_angle < sweep_radians && sweep_radians < TAU) {
@@ -277,7 +277,7 @@ impl CircularArc3 {
                 context: "circular arc",
             });
         }
-        Self::try_from_circle_sweep(circle, sweep_radians)
+        Self::try_from_frame_sweep(circle, sweep_radians)
     }
 
     /// Constructs the osculating arc that starts at `start`, follows
@@ -323,12 +323,19 @@ impl CircularArc3 {
             .as_vector()
             .cross(tangent.as_vector())?
             .normalized_nonzero()?;
-        let circle = Circle3::try_from_frame(center, radius, x_axis, normal, tolerance)?;
-        Self::try_from_circle_sweep(circle, sweep_radians)
+        let circle = CircleFrame3::try_from_frame(center, radius, x_axis, normal, tolerance)?;
+        Self::try_from_frame_sweep(circle, sweep_radians)
     }
 
     pub fn try_from_circle_sweep(
-        circle: Circle3,
+        circle: crate::Circle3,
+        sweep_radians: Real,
+    ) -> Result<Self, GeometryError> {
+        Self::try_from_frame_sweep(circle.frame(), sweep_radians)
+    }
+
+    fn try_from_frame_sweep(
+        circle: CircleFrame3,
         sweep_radians: Real,
     ) -> Result<Self, GeometryError> {
         if !(sweep_radians > 0.0 && sweep_radians <= TAU) {
@@ -407,7 +414,7 @@ impl CircularArc3 {
         let first = crate::parameter::map_parameter(*domain.start(), self.domain(), 0.0..=1.0)?;
         let last = crate::parameter::map_parameter(*domain.end(), self.domain(), 0.0..=1.0)?;
         let x_axis = self.radial_direction(first * self.sweep_radians)?;
-        let circle = Circle3::try_from_frame(
+        let circle = CircleFrame3::try_from_frame(
             self.center(),
             self.radius(),
             x_axis,
@@ -418,7 +425,7 @@ impl CircularArc3 {
                 Tolerance::DEFAULT.angular(),
             )?,
         )?;
-        Self::try_from_circle_sweep(circle, (last - first) * self.sweep_radians)?
+        Self::try_from_frame_sweep(circle, (last - first) * self.sweep_radians)?
             .try_reparameterized(domain)
     }
 
@@ -484,7 +491,8 @@ impl CircularArc3 {
         let sine = direction.as_vector().dot(inward.as_vector())?;
         let radius = (0.5 * length) / sine;
         let center = start.translated(inward.as_vector().scaled(radius)?)?;
-        let circle = Circle3::try_from_frame(center, radius, inward.opposite(), normal, tolerance)?;
+        let circle =
+            CircleFrame3::try_from_frame(center, radius, inward.opposite(), normal, tolerance)?;
         let sweep_radians = 2.0 * sine.atan2(direction.as_vector().dot(tangent.as_vector())?);
         require_finite([sweep_radians], "edited arc sweep")?;
         if !(0.0 < sweep_radians && sweep_radians < TAU) {
@@ -546,7 +554,7 @@ impl CircularArc3 {
         })?;
         let normal = self.normal()?.opposite();
         let circle =
-            Circle3::try_from_frame(self.center(), self.radius(), x_axis, normal, tolerance)?;
+            CircleFrame3::try_from_frame(self.center(), self.radius(), x_axis, normal, tolerance)?;
         Ok(Self {
             circle,
             sweep_radians: self.sweep_radians,
@@ -585,7 +593,7 @@ impl CircularArc3 {
     }
 
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
-        circular_nurbs(self.circle, self.sweep_radians)
+        circular_nurbs(self.circle, self.sweep_radians)?.try_reparameterized(self.domain())
     }
 
     pub fn transformed_similarity(
@@ -604,7 +612,7 @@ impl CircularArc3 {
     }
 }
 
-fn circular_nurbs(circle: Circle3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
+fn circular_nurbs(circle: CircleFrame3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
     // Three-point construction can put an exact quadrant a few ulps above
     // pi/2. Keep the canonical span count across that roundoff boundary.
     let quadrants = sweep / FRAC_PI_2;
@@ -678,7 +686,7 @@ fn transformed_frame(
     Ok(Some((x_length * 0.5 + y_length * 0.5, x_axis, y_axis)))
 }
 
-fn circle_angle(circle: Circle3, point: Point3) -> Result<Real, GeometryError> {
+fn circle_angle(circle: CircleFrame3, point: Point3) -> Result<Real, GeometryError> {
     let radial = circle.center.vector_to(point)?;
     let x = radial.dot(circle.x_axis.as_vector())?;
     let y = radial.dot(circle.y_axis.as_vector())?;
@@ -732,6 +740,7 @@ fn frame_point(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::Circle3;
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
@@ -793,7 +802,9 @@ mod tests {
         assert_eq!(curve.control_points().len(), 9);
         assert_eq!(curve.knots().len(), 12);
         for sample in 0..=64 {
-            let point = curve.evaluate(sample as Real / 64.0).unwrap();
+            let point = curve
+                .evaluate(curve.parameter_at(sample as Real / 64.0).unwrap())
+                .unwrap();
             assert!(
                 Tolerance::DEFAULT
                     .approx_eq(point.distance_to(circle.center()).unwrap(), circle.radius())
@@ -893,7 +904,9 @@ mod tests {
         );
         let curve = arc.to_nurbs().unwrap();
         for sample in 0..=32 {
-            let point = curve.evaluate(sample as Real / 32.0).unwrap();
+            let point = curve
+                .evaluate(curve.parameter_at(sample as Real / 32.0).unwrap())
+                .unwrap();
             assert!(
                 Tolerance::DEFAULT
                     .approx_eq(point.distance_to(arc.center()).unwrap(), arc.radius())

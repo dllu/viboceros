@@ -41,13 +41,26 @@ use std::time::Instant;
 use viboceros_command::CommandRegistry;
 use viboceros_document::{Document, Geometry, ObjectAttributes, SelectionMode};
 use viboceros_geometry::{
-    CircularArc3, Curve3, CurveJoinOptions, GeometryError, LineSegment, NurbsCurve, PolyCurve3,
-    Polyline3, Tolerance, join_curves,
+    Circle3, CircularArc3, Curve3, CurveJoinOptions, Ellipse3, GeometryError, LineSegment,
+    NurbsCurve, PolyCurve3, Polyline3, Tolerance, Vector3, join_curves,
 };
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum CurveInput {
+    Circle {
+        center: [f64; 3],
+        radius: f64,
+        x_axis: [f64; 3],
+        normal: [f64; 3],
+    },
+    Ellipse {
+        center: [f64; 3],
+        radius_x: f64,
+        radius_y: f64,
+        x_axis: [f64; 3],
+        y_axis: [f64; 3],
+    },
     Line {
         start: [f64; 3],
         end: [f64; 3],
@@ -70,6 +83,32 @@ pub enum CurveInput {
 impl CurveInput {
     pub(super) fn geometry(&self) -> Result<Curve3, GeometryError> {
         Ok(match self {
+            Self::Circle {
+                center,
+                radius,
+                x_axis,
+                normal,
+            } => Curve3::Circle(Circle3::try_from_frame(
+                point(*center)?,
+                *radius,
+                Vector3::try_from(*x_axis)?.normalized_nonzero()?,
+                Vector3::try_from(*normal)?.normalized_nonzero()?,
+                Tolerance::DEFAULT,
+            )?),
+            Self::Ellipse {
+                center,
+                radius_x,
+                radius_y,
+                x_axis,
+                y_axis,
+            } => Curve3::Ellipse(Ellipse3::try_new(
+                point(*center)?,
+                *radius_x,
+                *radius_y,
+                Vector3::try_from(*x_axis)?.normalized_nonzero()?,
+                Vector3::try_from(*y_axis)?.normalized_nonzero()?,
+                Tolerance::DEFAULT,
+            )?),
             Self::Line { start, end } => Curve3::Line(LineSegment::try_new(
                 point(*start)?,
                 point(*end)?,

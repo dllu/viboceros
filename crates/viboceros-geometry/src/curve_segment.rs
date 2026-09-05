@@ -1,6 +1,6 @@
 //! Non-composite native curve segments and their parameterized operations.
 
-use crate::parameter::{check_interval, checked_parameter, map_parameter, scaled_ratio};
+use crate::parameter::{check_interval, checked_parameter, map_parameter};
 use crate::{
     AffineTransform3, BoundingBox3, CircularArc3, Curve3, CurveRef, GeometryError, LineSegment,
     NurbsCurve, Point3, Polyline3, Real, Tolerance, Vector3,
@@ -46,10 +46,10 @@ impl CurveSegment3 {
         Ok(match curve {
             Curve3::Line(curve) => Self::Line(*curve),
             Curve3::Arc(curve) => Self::Arc(*curve),
-            Curve3::Circle(curve) => Self::Arc(CircularArc3::try_from_circle_sweep(
-                *curve,
-                std::f64::consts::TAU,
-            )?),
+            Curve3::Circle(curve) => Self::Arc(
+                CircularArc3::try_from_circle_sweep(*curve, std::f64::consts::TAU)?
+                    .try_reparameterized(curve.domain())?,
+            ),
             Curve3::Polyline(curve) => Self::Polyline(curve.clone()),
             Curve3::NurbsCurve(curve) => Self::NurbsCurve(curve.clone()),
             Curve3::Ellipse(_) => Self::NurbsCurve(curve.as_ref().to_nurbs()?),
@@ -89,7 +89,7 @@ impl CurveSegment3 {
     }
 
     pub fn parameter_at(&self, normalized: Real) -> Result<Real, GeometryError> {
-        map_parameter(normalized, 0.0..=1.0, self.domain())
+        self.as_ref().parameter_at(normalized)
     }
 
     pub fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
@@ -105,45 +105,7 @@ impl CurveSegment3 {
         &self,
         parameter: Real,
     ) -> Result<(Point3, Vector3), GeometryError> {
-        // Do not compute the second derivative here: it can overflow even
-        // when the requested first derivative is perfectly representable.
-        if let Self::NurbsCurve(curve) = self {
-            return curve.evaluate_with_derivative(parameter);
-        }
-        let point = self.evaluate(parameter)?;
-        let first = match self {
-            Self::NurbsCurve(_) => unreachable!(),
-            Self::Line(curve) => scale(
-                curve.start().vector_to(curve.end())?,
-                1.0,
-                curve.domain().end() - curve.domain().start(),
-            )?,
-            Self::Polyline(curve) => {
-                let (index, _) = curve.parameter_location(parameter)?;
-                scale(
-                    curve.vertices()[index].vector_to(curve.vertices()[index + 1])?,
-                    1.0,
-                    curve.parameters()[index + 1] - curve.parameters()[index],
-                )?
-            }
-            Self::Arc(curve) => {
-                let angle = map_parameter(parameter, curve.domain(), 0.0..=curve.sweep_radians())?;
-                let (sine, cosine) = angle.sin_cos();
-                let angular = combine(
-                    curve.x_axis().as_vector(),
-                    -sine,
-                    curve.y_axis().as_vector(),
-                    cosine,
-                )?
-                .scaled(curve.radius())?;
-                scale(
-                    angular,
-                    curve.sweep_radians(),
-                    curve.domain().end() - curve.domain().start(),
-                )?
-            }
-        };
-        Ok((point, first))
+        self.as_ref().evaluate_with_derivative(parameter)
     }
 
     pub fn derivative_at(&self, parameter: Real) -> Result<Vector3, GeometryError> {
@@ -154,50 +116,7 @@ impl CurveSegment3 {
         &self,
         parameter: Real,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
-        if let Self::NurbsCurve(curve) = self {
-            return curve.evaluate_with_second_derivative(parameter);
-        }
-        let point = self.evaluate(parameter)?;
-        let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
-        let (first, second) = match self {
-            Self::Line(curve) => (
-                scale(
-                    curve.start().vector_to(curve.end())?,
-                    1.0,
-                    curve.domain().end() - curve.domain().start(),
-                )?,
-                zero,
-            ),
-            Self::Polyline(curve) => {
-                let (index, _) = curve.parameter_location(parameter)?;
-                (
-                    scale(
-                        curve.vertices()[index].vector_to(curve.vertices()[index + 1])?,
-                        1.0,
-                        curve.parameters()[index + 1] - curve.parameters()[index],
-                    )?,
-                    zero,
-                )
-            }
-            Self::Arc(curve) => {
-                let angle = map_parameter(parameter, curve.domain(), 0.0..=curve.sweep_radians())?;
-                let (sine, cosine) = angle.sin_cos();
-                let x = curve.x_axis().as_vector();
-                let y = curve.y_axis().as_vector();
-                let radial = combine(x, cosine, y, sine)?.scaled(curve.radius())?;
-                let angular = combine(x, -sine, y, cosine)?.scaled(curve.radius())?;
-                let width = curve.domain().end() - curve.domain().start();
-                let first = scale(angular, curve.sweep_radians(), width)?;
-                let second = scale(
-                    scale(radial.scaled(-1.0)?, curve.sweep_radians(), width)?,
-                    curve.sweep_radians(),
-                    width,
-                )?;
-                (first, second)
-            }
-            Self::NurbsCurve(_) => unreachable!(),
-        };
-        Ok((point, first, second))
+        self.as_ref().evaluate_with_second_derivative(parameter)
     }
 
     pub fn spans(&self) -> impl Iterator<Item = (Real, Real)> + '_ {
@@ -392,19 +311,4 @@ fn validation() -> Tolerance {
         Tolerance::DEFAULT.angular(),
     )
     .expect("positive internal tolerance")
-}
-fn combine(x: Vector3, a: Real, y: Vector3, b: Real) -> Result<Vector3, GeometryError> {
-    Vector3::try_new(
-        x.x().mul_add(a, y.x() * b),
-        x.y().mul_add(a, y.y() * b),
-        x.z().mul_add(a, y.z() * b),
-    )
-}
-fn scale(vector: Vector3, numerator: Real, denominator: Real) -> Result<Vector3, GeometryError> {
-    let c = vector.to_array();
-    Vector3::try_new(
-        scaled_ratio(c[0], numerator, denominator)?,
-        scaled_ratio(c[1], numerator, denominator)?,
-        scaled_ratio(c[2], numerator, denominator)?,
-    )
 }

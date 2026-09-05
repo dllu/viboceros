@@ -941,6 +941,15 @@ def _mesh_unweld_value(mesh):
 
 def _join_close_input(definition):
     kind = definition["type"]
+    if kind == "circle":
+        x = Rhino.Geometry.Vector3d(*definition["x_axis"])
+        normal = Rhino.Geometry.Vector3d(*definition["normal"])
+        y = Rhino.Geometry.Vector3d.CrossProduct(normal, x)
+        plane = Rhino.Geometry.Plane(_point(definition["center"]), x, y)
+        return Rhino.Geometry.ArcCurve(Rhino.Geometry.Circle(plane, float(definition["radius"])))
+    if kind == "ellipse":
+        plane = Rhino.Geometry.Plane(_point(definition["center"]), Rhino.Geometry.Vector3d(*definition["x_axis"]), Rhino.Geometry.Vector3d(*definition["y_axis"]))
+        return Rhino.Geometry.Ellipse(plane, float(definition["radius_x"]), float(definition["radius_y"])).ToNurbsCurve()
     if kind == "line":
         return Rhino.Geometry.LineCurve(_point(definition["start"]), _point(definition["end"]))
     if kind == "polyline":
@@ -992,6 +1001,62 @@ def _join_close_record(curve, inspect_native=False):
     if inspect_native:
         value["native"] = _polycurve_native_record(curve, {"relative": 1e-12})
     return value
+
+
+def _curve_native(operation, iterations, tolerance):
+    source = _join_close_input(operation["curve"])
+    try:
+        def compute():
+            owned = [source.DuplicateCurve()]
+            try:
+                curve = owned[0]
+                if operation.get("domain") is not None:
+                    curve.Domain = Rhino.Geometry.Interval(*operation["domain"])
+                if operation.get("reversed") and not curve.Reverse():
+                    raise ValueError("native curve reversal failed")
+                if operation.get("transform") is not None:
+                    transform = Rhino.Geometry.Transform.Identity
+                    for row, values in enumerate(operation["transform"]):
+                        for column, value in enumerate(values):
+                            transform[row, column] = float(value)
+                    # Explicitly prepare exact deformation for maps that do
+                    # not preserve circles; direct ArcCurve.Transform fits a circle.
+                    if transform.SimilarityType == Rhino.Geometry.TransformSimilarityType.NotSimilarity:
+                        curve = curve.ToNurbsCurve()
+                        if curve is None:
+                            raise ValueError("could not prepare exact affine deformation")
+                        owned.append(curve)
+                    if not curve.Transform(transform):
+                        raise ValueError("native curve transform failed")
+                samples = []
+                for i in range(33):
+                    parameter = float(curve.Domain.ParameterAt(float(i) / 32.0))
+                    derivatives = curve.DerivativeAt(parameter, 2)
+                    if derivatives is None or len(derivatives) != 3:
+                        raise ValueError("native curve derivatives failed")
+                    samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
+                                    "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2]),
+                                    "tangent": _xyz(curve.TangentAt(parameter))})
+                divisions = []
+                for i in range(18):
+                    if i == 0:
+                        parameter = float(curve.Domain.T0)
+                    elif i == 17:
+                        parameter = float(curve.Domain.T1)
+                    else:
+                        success, parameter = curve.NormalizedLengthParameter(float(i) / 17.0, tolerance["relative"])
+                        if not success:
+                            raise ValueError("native curve length inversion failed")
+                    divisions.append({"parameter": float(parameter), "point": _xyz(curve.PointAt(parameter)), "tangent": _xyz(curve.TangentAt(parameter))})
+                return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
+                        "length": float(curve.GetLength(tolerance["relative"])), "samples": samples, "divisions": divisions,
+                        "nurbs": _nurbs_curve_definition(curve)}
+            finally:
+                for curve in reversed(owned):
+                    curve.Dispose()
+        return _measure(iterations, compute)
+    finally:
+        source.Dispose()
 
 
 def _polycurve_native_record(curve, tolerance):
@@ -1154,6 +1219,8 @@ def _execute(operation, iterations, tolerance):
         return _curve_join_close(operation, iterations, tolerance)
     if kind == "polycurve_native":
         return _polycurve_native(operation, iterations, tolerance)
+    if kind == "curve_native":
+        return _curve_native(operation, iterations, tolerance)
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":

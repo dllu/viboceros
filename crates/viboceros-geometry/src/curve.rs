@@ -365,58 +365,53 @@ impl CurveRef<'_> {
         Ok(samples)
     }
 
-    /// Evaluates a point and a unit tangent in the sampling domain: normalized
-    /// `[0,1]` for lines/arcs, angles for circles/ellipses, and native parameters
-    /// for polylines/NURBS/polycurves. [`crate::CurveSegment3`] exposes native
-    /// parameter evaluation for analytic leaves as well.
+    /// Evaluates the native parameter and its oriented unit tangent.
     pub fn evaluate_with_tangent(self, parameter: Real) -> Result<CurveSample, GeometryError> {
-        let point = match self {
-            Self::Line(line) => line.point_at(parameter)?,
-            Self::Circle(circle) => {
-                require_periodic_parameter(parameter, std::f64::consts::TAU)?;
-                circle.point_at_angle(parameter)?
-            }
-            Self::Arc(arc) => arc.point_at(parameter)?,
-            Self::Ellipse(ellipse) => {
-                require_periodic_parameter(parameter, std::f64::consts::TAU)?;
-                ellipse.point_at_angle(parameter)?
-            }
-            Self::Polyline(polyline) => polyline.evaluate(parameter)?,
-            Self::NurbsCurve(curve) => curve.evaluate(parameter)?,
-            Self::PolyCurve(curve) => curve.evaluate(parameter)?,
-        };
+        let point = self.evaluate(parameter)?;
+        // Direction is independent of domain width. Avoid overflowing or
+        // underflowing a derivative solely to normalize it immediately.
         let derivative = match self {
-            Self::Line(line) => line.start().vector_to(line.end())?,
-            Self::Circle(circle) => periodic_derivative(
-                circle.x_axis().as_vector(),
-                circle.y_axis().as_vector(),
-                circle.radius(),
-                circle.radius(),
-                parameter,
+            Self::Line(c) => c.start().vector_to(c.end())?,
+            Self::Circle(c) => angular_tangent(
+                c.x_axis(),
+                c.y_axis(),
+                crate::parameter::map_parameter(
+                    parameter,
+                    c.domain(),
+                    0.0..=std::f64::consts::TAU,
+                )?,
             )?,
-            Self::Arc(arc) => arc
-                .normal()?
-                .as_vector()
-                .cross(arc.center().vector_to(point)?)?,
-            Self::Ellipse(ellipse) => periodic_derivative(
-                ellipse.x_axis().as_vector(),
-                ellipse.y_axis().as_vector(),
-                ellipse.radius_x(),
-                ellipse.radius_y(),
-                parameter,
+            Self::Arc(c) => angular_tangent(
+                c.x_axis(),
+                c.y_axis(),
+                crate::parameter::map_parameter(parameter, c.domain(), 0.0..=c.sweep_radians())?,
             )?,
-            Self::Polyline(polyline) => {
-                let (index, _) = polyline.parameter_location(parameter)?;
-                polyline.vertices()[index].vector_to(polyline.vertices()[index + 1])?
+            Self::Ellipse(c) => {
+                let jet = crate::curve_evaluate::ellipse_unit_jet(parameter, c.domain())?;
+                combine_vectors(
+                    c.x_axis().as_vector(),
+                    c.y_axis().as_vector(),
+                    c.radius_x() * jet[1][0],
+                    c.radius_y() * jet[1][1],
+                )?
             }
-            Self::NurbsCurve(curve) => curve.derivative_at(parameter)?,
-            Self::PolyCurve(curve) => curve.evaluate_with_derivative(parameter)?.1,
+            Self::Polyline(c) => {
+                let (i, _) = c.parameter_location(parameter)?;
+                c.vertices()[i].vector_to(c.vertices()[i + 1])?
+            }
+            Self::NurbsCurve(c) => c.derivative_at(parameter)?,
+            Self::PolyCurve(c) => {
+                let index = c.segment_index(parameter, CurveEvaluationSide::Right)?;
+                c.segments()[index]
+                    .as_ref()
+                    .evaluate_with_tangent(c.segment_parameter(index, parameter)?)?
+                    .tangent()
+                    .as_vector()
+            }
         };
         Ok(CurveSample {
             parameter,
             point,
-            // A derivative's magnitude depends on parameter scaling, so model
-            // distance tolerance must not decide whether its direction exists.
             tangent: derivative.normalized_nonzero()?,
         })
     }
@@ -427,24 +422,42 @@ impl CurveRef<'_> {
     /// the interior of a polyline segment it is zero; vertices have no unique
     /// curvature and deterministically use the active segment's zero value.
     pub(crate) fn curvature_vector(self, parameter: Real) -> Result<Vector3, GeometryError> {
-        let point = self.evaluate_with_tangent(parameter)?.point();
+        self.evaluate(parameter)?;
         match self {
             Self::Line(_) | Self::Polyline(_) => Vector3::try_new(0.0, 0.0, 0.0),
-            Self::Circle(circle) => radial_curvature(point, circle.center(), circle.radius()),
-            Self::Arc(arc) => radial_curvature(point, arc.center(), arc.radius()),
+            Self::Circle(circle) => radial_curvature(
+                circle.x_axis(),
+                circle.y_axis(),
+                circle.radius(),
+                crate::parameter::map_parameter(
+                    parameter,
+                    circle.domain(),
+                    0.0..=std::f64::consts::TAU,
+                )?,
+            ),
+            Self::Arc(arc) => radial_curvature(
+                arc.x_axis(),
+                arc.y_axis(),
+                arc.radius(),
+                crate::parameter::map_parameter(
+                    parameter,
+                    arc.domain(),
+                    0.0..=arc.sweep_radians(),
+                )?,
+            ),
             Self::Ellipse(ellipse) => {
-                let (sine, cosine) = parameter.sin_cos();
+                let jet = crate::curve_evaluate::ellipse_unit_jet(parameter, ellipse.domain())?;
                 let first = combine_vectors(
                     ellipse.x_axis().as_vector(),
                     ellipse.y_axis().as_vector(),
-                    -ellipse.radius_x() * sine,
-                    ellipse.radius_y() * cosine,
+                    ellipse.radius_x() * jet[1][0],
+                    ellipse.radius_y() * jet[1][1],
                 )?;
                 let second = combine_vectors(
                     ellipse.x_axis().as_vector(),
                     ellipse.y_axis().as_vector(),
-                    -ellipse.radius_x() * cosine,
-                    -ellipse.radius_y() * sine,
+                    ellipse.radius_x() * jet[2][0],
+                    ellipse.radius_y() * jet[2][1],
                 )?;
                 curvature_from_derivatives(first, second)
             }
@@ -461,12 +474,23 @@ impl CurveRef<'_> {
     }
 }
 
-fn radial_curvature(point: Point3, center: Point3, radius: Real) -> Result<Vector3, GeometryError> {
-    point
-        .vector_to(center)?
-        .normalized_nonzero()?
-        .as_vector()
-        .scaled(1.0 / radius)
+fn angular_tangent(x: UnitVector3, y: UnitVector3, angle: Real) -> Result<Vector3, GeometryError> {
+    let (sine, cosine) = angle.sin_cos();
+    combine_vectors(x.as_vector(), y.as_vector(), -sine, cosine)
+}
+
+fn radial_curvature(
+    x: UnitVector3,
+    y: UnitVector3,
+    radius: Real,
+    angle: Real,
+) -> Result<Vector3, GeometryError> {
+    let (sine, cosine) = angle.sin_cos();
+    crate::curve_evaluate::scale(
+        combine_vectors(x.as_vector(), y.as_vector(), -cosine, -sine)?,
+        1.0,
+        radius,
+    )
 }
 
 fn combine_vectors(
@@ -502,32 +526,6 @@ fn curvature_from_derivatives(first: Vector3, second: Vector3) -> Result<Vector3
     )?
     .scaled(1.0 / speed)?
     .scaled(1.0 / speed)
-}
-
-fn require_periodic_parameter(parameter: Real, domain_end: Real) -> Result<(), GeometryError> {
-    require_finite([parameter], "curve parameter")?;
-    if (0.0..=domain_end).contains(&parameter) {
-        Ok(())
-    } else {
-        Err(GeometryError::ParameterOutOfDomain {
-            parameter,
-            domain_start: 0.0,
-            domain_end,
-        })
-    }
-}
-
-fn periodic_derivative(
-    x_axis: Vector3,
-    y_axis: Vector3,
-    radius_x: Real,
-    radius_y: Real,
-    parameter: Real,
-) -> Result<Vector3, GeometryError> {
-    let (sine, cosine) = parameter.sin_cos();
-    let x = x_axis.scaled(-radius_x * sine)?;
-    let y = y_axis.scaled(radius_y * cosine)?;
-    Vector3::try_new(x.x() + y.x(), x.y() + y.y(), x.z() + y.z())
 }
 
 impl NurbsCurve {
@@ -1119,36 +1117,11 @@ impl<'a> ArcLengthSampler<'a> {
     }
 
     fn speed(&self, parameter: Real) -> Result<Real, GeometryError> {
-        let speed = match self.curve {
-            CurveRef::Line(line) => line.length()?,
-            CurveRef::Circle(circle) => circle.radius(),
-            CurveRef::Arc(arc) => arc.length()?,
-            CurveRef::Ellipse(ellipse) => {
-                let (sine, cosine) = parameter.sin_cos();
-                (ellipse.radius_x() * sine).hypot(ellipse.radius_y() * cosine)
-            }
-            CurveRef::Polyline(polyline) => {
-                let (index, _) = polyline.parameter_location(parameter)?;
-                polyline.vertices()[index].distance_to(polyline.vertices()[index + 1])?
-                    / (polyline.parameters()[index + 1] - polyline.parameters()[index])
-            }
-            CurveRef::NurbsCurve(curve) => curve.derivative_at(parameter)?.length()?,
-            CurveRef::PolyCurve(curve) => curve.evaluate_with_derivative(parameter)?.1.length()?,
-        };
-        require_finite([speed], "curve parameter speed")?;
-        Ok(speed)
+        self.curve.evaluate_with_derivative(parameter)?.1.length()
     }
 
     fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
-        match self.curve {
-            CurveRef::Line(line) => line.point_at(parameter),
-            CurveRef::Circle(circle) => circle.point_at_angle(parameter),
-            CurveRef::Arc(arc) => arc.point_at(parameter),
-            CurveRef::Ellipse(ellipse) => ellipse.point_at_angle(parameter),
-            CurveRef::Polyline(polyline) => polyline.evaluate(parameter),
-            CurveRef::NurbsCurve(curve) => curve.evaluate(parameter),
-            CurveRef::PolyCurve(curve) => curve.evaluate(parameter),
-        }
+        self.curve.evaluate(parameter)
     }
 }
 
@@ -1157,17 +1130,31 @@ fn raw_spans(
     tolerance: Tolerance,
 ) -> Result<Vec<(Real, Real, Real, bool)>, GeometryError> {
     Ok(match curve {
-        CurveRef::Line(line) => vec![(0.0, 1.0, line.length()?, false)],
+        CurveRef::Line(line) => vec![(
+            *line.domain().start(),
+            *line.domain().end(),
+            line.length()?,
+            false,
+        )],
         CurveRef::Circle(circle) => {
             let quadrant_length = circle.length()? * 0.25;
             (0..4)
                 .map(|quadrant| {
-                    let start = quadrant as Real * FRAC_PI_2;
-                    (start, start + FRAC_PI_2, quadrant_length, false)
+                    Ok((
+                        curve.parameter_at(quadrant as Real * 0.25)?,
+                        curve.parameter_at((quadrant + 1) as Real * 0.25)?,
+                        quadrant_length,
+                        false,
+                    ))
                 })
-                .collect()
+                .collect::<Result<Vec<_>, GeometryError>>()?
         }
-        CurveRef::Arc(arc) => vec![(0.0, 1.0, arc.length()?, false)],
+        CurveRef::Arc(arc) => vec![(
+            *arc.domain().start(),
+            *arc.domain().end(),
+            arc.length()?,
+            false,
+        )],
         CurveRef::Ellipse(ellipse) => {
             let quadrant_length = integrate_speed(0.0, FRAC_PI_2, tolerance, |angle| {
                 let (sine, cosine) = angle.sin_cos();
@@ -1177,10 +1164,14 @@ fn raw_spans(
             })?;
             (0..4)
                 .map(|quadrant| {
-                    let start = quadrant as Real * FRAC_PI_2;
-                    (start, start + FRAC_PI_2, quadrant_length, true)
+                    Ok((
+                        curve.parameter_at(quadrant as Real * 0.25)?,
+                        curve.parameter_at((quadrant + 1) as Real * 0.25)?,
+                        quadrant_length,
+                        true,
+                    ))
                 })
-                .collect()
+                .collect::<Result<Vec<_>, GeometryError>>()?
         }
         CurveRef::Polyline(polyline) => polyline
             .segments()
@@ -1206,15 +1197,13 @@ fn raw_spans(
         CurveRef::PolyCurve(curve) => {
             let mut spans = Vec::new();
             for (index, segment) in curve.segments().iter().enumerate() {
-                for (start, end) in segment.spans() {
-                    let length = integrate_speed(start, end, tolerance, |parameter| {
-                        segment.derivative_at(parameter)?.length()
-                    })?;
+                for (start, end, length, variable_speed) in raw_spans(segment.as_ref(), tolerance)?
+                {
                     spans.push((
                         curve.polycurve_parameter(index, start)?,
                         curve.polycurve_parameter(index, end)?,
                         length,
-                        true,
+                        variable_speed,
                     ));
                 }
             }

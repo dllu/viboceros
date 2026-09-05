@@ -48,11 +48,9 @@ impl CurveRef<'_> {
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
         match self {
             Self::Line(curve) => curve.to_nurbs(),
-            Self::Circle(curve) => curve.to_nurbs()?.try_reparameterized(0.0..=curve.length()?),
-            Self::Arc(curve) => curve.to_nurbs()?.try_reparameterized(curve.domain()),
-            Self::Ellipse(curve) => curve
-                .to_nurbs()?
-                .try_reparameterized(0.0..=std::f64::consts::TAU),
+            Self::Circle(curve) => curve.to_nurbs(),
+            Self::Arc(curve) => curve.to_nurbs(),
+            Self::Ellipse(curve) => curve.to_nurbs(),
             Self::Polyline(curve) => curve.to_native_nurbs(),
             Self::NurbsCurve(curve) => Ok(curve.clone()),
             Self::PolyCurve(curve) => curve.to_nurbs(),
@@ -61,6 +59,25 @@ impl CurveRef<'_> {
 }
 
 impl Curve3 {
+    /// Affinely changes the native parameter interval without changing the
+    /// locus. Polycurve length redistribution remains an explicit operation.
+    pub fn try_reparameterized(
+        &self,
+        domain: std::ops::RangeInclusive<Real>,
+    ) -> Result<Self, GeometryError> {
+        Ok(match self {
+            Self::Line(c) => Self::Line(c.try_reparameterized(domain)?),
+            Self::Circle(c) => Self::Circle(c.try_reparameterized(domain)?),
+            Self::Arc(c) => Self::Arc(c.try_reparameterized(domain)?),
+            Self::Ellipse(c) => Self::Ellipse(c.try_reparameterized(domain)?),
+            Self::Polyline(c) => CurveSegment3::Polyline(c.clone())
+                .try_reparameterized(domain)?
+                .into_curve(),
+            Self::NurbsCurve(c) => Self::NurbsCurve(c.try_reparameterized(domain)?),
+            Self::PolyCurve(c) => Self::PolyCurve(c.try_reparameterized(domain)?),
+        })
+    }
+
     pub fn as_ref(&self) -> CurveRef<'_> {
         match self {
             Self::Line(curve) => CurveRef::Line(curve),
