@@ -32,8 +32,8 @@ periodic sources may become clamped, as in the existing fitter. Output degree is
 at most nine. Either axis exceeding the existing 256-control ceiling skips the
 candidate before any candidate point-map calls.
 
-`surface_fit/denominator` builds the scalar source weight function.
-`surface_fit/tensor/axis` constructs the candidate knot vectors and sided
+`morph/denominator` builds the scalar source weight function.
+`morph/interpolation/axis` constructs the candidate knot vectors and sided
 Greville stations. `surface_fit/tensor` interpolates the centered homogeneous
 targets `((mapped_point - origin) W³, W³)`, solving U and V independently.
 Cubic axes keep the shared banded solver; higher-degree axes use bounded faer
@@ -76,9 +76,11 @@ meshing: an exactly constant trim coordinate `0.4` could evaluate just outside
 the surface domain. The [local-coordinate UV evaluator](nurbs-numerics.md) fixes
 that arithmetic, without clamping invalid inputs or changing domain tolerance.
 Cylinder and cone meshes retain their trims and shared boundaries, and the
-sphere's 3DM fixture now requires `1e-6` instead of its temporary `1e-5`.
+sphere's 3DM fixture advanced from its temporary `1e-5` to `1e-6`. The subsequent
+[rational curve candidate](curve-rational-fitting.md) removes the next edge-fit
+bottleneck, and the fixture now requires `1e-11`.
 
-The combined checkpoint passes 1,339 Rust tests, 29 Python tests and strict
+The surface-fitting checkpoint passed 1,339 Rust tests, 29 Python tests and strict
 Clippy. All 120 native fixtures (1,210 operations), 369 recorded curve comparisons,
 and the existing curve/surface/B-rep morph, surface-jet and mesh comparisons retain
 their documented tolerances. Eight fresh Rhino 3DM comparisons pass at absolute

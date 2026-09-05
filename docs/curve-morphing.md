@@ -3,13 +3,19 @@
 [Transforms](commands/transforms.md) · [Surface evaluation](surface-evaluation.md) · [Oracle](oracle.md)
 
 `PointMorph` defines a deterministic point mapping. Its line, polyline, and
-NURBS helpers share a tolerance-driven native-parameter cubic fitter in
+NURBS helpers share a tolerance-driven native-parameter spline fitter in
 `morph/curve_fit`. `morph_line` and `morph_polyline` explicitly take the document
 tolerance, including when called on polycurve leaves. Native vertex parameters
 are preserved; explicit polyline-to-NURBS conversion's chord-length map is not
 used for fitting.
 
-The initial knot vector retains source span boundaries and their guaranteed
+Rational curves of degree at most three first check the original mapped control
+net and a bounded [rational composition candidate](curve-rational-fitting.md).
+Accepted candidates may retain the original degree or use degree up to nine;
+degree and rationality are not accuracy guarantees. Both are validated against
+direct point maps. Other inputs and rejected candidates use adaptive cubics.
+
+The adaptive initial knot vector retains source span boundaries and their guaranteed
 continuity, up to the cubic approximation's C2 limit. Corners remain C0 joins,
 C1 knots retain their acceleration breaks, and full-order positional jumps have
 independent point limits. Endpoints and interpolated joins are fixed exactly to
@@ -61,7 +67,8 @@ Unsampled sharp features can still evade detection; arbitrary discontinuities
 introduced by the mapping itself are not located analytically. Extremely narrow
 native spans, ill-conditioned rational sources, or tolerances below representable
 coordinate resolution can prevent a fit. A separate [surface fitter](surface-morphing.md)
-now handles untrimmed NURBS surfaces and shares the banded interpolation helpers;
+now handles untrimmed NURBS surfaces and shares the sided axis collocation and
+banded interpolation helpers;
 [B-rep morph assembly](brep-morphing.md) combines both fitters with shared topology
 and exact UV trim preservation.
 

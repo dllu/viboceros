@@ -1,10 +1,12 @@
-//! Shared cubic knot structure and tensor-axis interpolation primitives.
+//! Shared adaptive cubic knots and sided curve/tensor-axis collocation.
 
 use crate::{GeometryError, ParameterSide, Real, nurbs::bspline_basis_values, require_finite};
 use faer::Mat;
 use std::ops::RangeInclusive;
 
+mod axis;
 mod banded;
+pub(super) use axis::Axis;
 
 pub(super) const DEGREE: usize = 3;
 

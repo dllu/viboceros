@@ -1,4 +1,5 @@
 mod curve_fit;
+mod denominator;
 mod interpolation;
 mod surface_fit;
 
@@ -7,7 +8,7 @@ use crate::{
     Polyline3, Real, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3, require_finite,
 };
 
-/// Resource ceiling for adaptive cubic fitting and point-map sampling.
+/// Control ceiling for curve morph candidates and adaptive cubic fitting.
 pub const MAX_MORPH_CURVE_CONTROL_POINTS: usize = 512;
 
 /// Per-axis control limit for adaptive surface morphs.
@@ -56,8 +57,9 @@ pub trait PointMorph {
         self.morph_nurbs_curve(&source, tolerance)
     }
 
-    /// Adaptive native-parameter cubic fit, retaining source knot continuity
-    /// and exact one-sided endpoint values. Error checks are sampled, not a
+    /// Checks bounded rational candidates, then adaptively fits a native-parameter
+    /// cubic image, retaining source knot continuity and sided limits.
+    /// Adaptive interpolation pins endpoint values. Error checks are sampled, not a
     /// continuous certificate for an arbitrary black-box morph. Exhausted work
     /// or representable parameter resolution returns an error, never a knowingly
     /// out-of-tolerance approximation.
@@ -443,7 +445,7 @@ mod tests {
     }
 
     #[test]
-    fn rational_circle_morph_refines_source_spans_to_tolerance() {
+    fn rational_circle_morph_keeps_source_spans_and_meets_geometric_tolerance() {
         let tolerance = Tolerance::try_new(1.0e-3, 1.0e-12, 1.0e-10).unwrap();
         let surface = quarter_cylinder();
         let origin = point(1.0, 2.0, 3.0);
@@ -472,15 +474,20 @@ mod tests {
             .unwrap();
 
         let fitted = morph.morph_nurbs_curve(&source, tolerance).unwrap();
-        assert_eq!(fitted.degree(), 3);
-        assert!(!fitted.is_rational());
+        // Degree and rationality are fitting choices, not accuracy guarantees.
+        assert!(fitted.control_points().len() <= MAX_MORPH_CURVE_CONTROL_POINTS);
         assert_eq!(fitted.domain(), source.domain());
         for (start, _) in source.spans() {
             assert!(fitted.knots().contains(&start));
         }
         let maximum_error = (0..=1024)
             .map(|sample| {
-                let parameter = source.parameter_at(sample as Real / 1024.0).unwrap();
+                let fraction = match sample {
+                    0 => 0.0,
+                    1024 => 1.0,
+                    _ => (sample as Real - 0.3819660112501051) / 1024.0,
+                };
+                let parameter = source.parameter_at(fraction).unwrap();
                 let exact = morph
                     .morph_point(source.evaluate(parameter).unwrap())
                     .unwrap();

@@ -3,7 +3,7 @@ use super::*;
 use crate::ParameterSide;
 use std::collections::HashMap;
 
-mod denominator;
+use super::denominator;
 mod tensor;
 mod validate;
 
@@ -47,12 +47,11 @@ pub(super) fn fit(
     // nonlinear images. It is only a candidate, checked against the actual
     // mapped surface before it can be returned. A map need not be defined at
     // off-surface controls, so failure here does not preclude a valid fit.
-    if let Ok(candidate) = mapped_controls(morph, source)
-        && let Ok(errors) =
-            validate::errors(&mut point_at, &candidate, &breaks, tolerance.absolute())
-        && errors.deviation <= tolerance.absolute()
-    {
-        return Ok(candidate);
+    if let Ok(candidate) = mapped_controls(morph, source) {
+        let errors = validate::errors(&mut point_at, &candidate, &breaks, tolerance.absolute())?;
+        if errors.deviation <= tolerance.absolute() {
+            return Ok(candidate);
+        }
     }
     if let Some(candidate) = tensor::rational_candidate(&mut point_at, source, maximum)? {
         let errors = validate::errors(

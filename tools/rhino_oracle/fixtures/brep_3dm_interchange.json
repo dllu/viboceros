@@ -1862,7 +1862,7 @@
       "id": "brep-3dm-cubic-sphere",
       "kind": "cubic_lift",
       "primitive": "sphere",
-      "fit_tolerance": 0.000001
+      "fit_tolerance": 1e-11
     }
   ]
 }

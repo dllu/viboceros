@@ -56,11 +56,13 @@ shared edges, seam curves, singular pole trims, and independently fitted faces.
 The disk mesh has one closed boundary; the annulus has two; the six solid meshes
 have none. Face orientation is retained for the inward solid too.
 
-The annulus uses a source fit tolerance of `1e-5`; the other seven use `1e-6`.
+The annulus uses a source fit tolerance of `1e-5`, the sphere `1e-11`, and the
+other six `1e-6`.
 The sphere originally exhausted the one-million-direct-sample budget at `1e-6`
 and was temporarily tested at `1e-5`. The subsequent
-[rational composition candidate](surface-rational-fitting.md) resolves that case
-without changing either resource ceiling: the fixture now requires `1e-6`.
+[rational surface candidate](surface-rational-fitting.md) resolved that case at
+`1e-6`; the [rational curve candidate](curve-rational-fitting.md) now fits the
+shared sphere edge at `1e-11` too, without changing either resource ceiling.
 The independent serialization bound above is unchanged.
 
 On the tested Rhino 8.32 build under isolated Xvfb/Wine/FEX, all eight models

@@ -71,6 +71,30 @@ fn check_image(
 }
 
 #[test]
+fn mapped_control_validation_propagates_source_map_failures_without_retry() {
+    struct Hole(std::cell::Cell<usize>);
+    impl PointMorph for Hole {
+        fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError> {
+            if point.x() == 0.125 && point.y() == 0.125 {
+                self.0.set(self.0.get() + 1);
+                return Err(GeometryError::Degenerate {
+                    context: "map has a hole",
+                });
+            }
+            Ok(point)
+        }
+    }
+    let morph = Hole(std::cell::Cell::new(0));
+    assert!(matches!(
+        morph.morph_nurbs_surface(&unit_patch(), Tolerance::DEFAULT),
+        Err(GeometryError::Degenerate {
+            context: "map has a hole"
+        })
+    ));
+    assert_eq!(morph.0.get(), 1);
+}
+
+#[test]
 fn cubic_surface_image_is_not_the_bilinear_image_of_its_controls() {
     let source = unit_patch();
     let fitted = Cubic

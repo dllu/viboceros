@@ -1,6 +1,5 @@
 use super::interpolation::{
-    Break, DEGREE, collocation_row, control_count, error_fractions, knots, seed_breaks, solve,
-    stable_lerp,
+    Axis, Break, control_count, error_fractions, knots, seed_breaks, stable_lerp,
 };
 use super::*;
 use crate::ParameterSide;
@@ -11,6 +10,8 @@ use std::collections::HashMap;
 mod tests;
 
 const ERROR_SAMPLES: usize = 16;
+mod rational;
+mod validate;
 
 pub(super) fn fit(
     morph: &(impl PointMorph + ?Sized),
@@ -33,6 +34,38 @@ pub(super) fn fit(
     };
     let mut breaks = seed_breaks(source.degree(), source.knots(), source.domain());
     let fractions = error_fractions(ERROR_SAMPLES);
+    // Rational sources need not lose their exact representation just because
+    // their point map is nonlinear. These optional bounded candidates still
+    // pass the same native-parameter, sided Euclidean validation as refinement.
+    if source.is_rational() && source.degree() <= 3 {
+        if source.control_points().len() <= maximum
+            && let Ok(candidate) = rational::mapped_controls(morph, source)
+            && validate::errors(
+                &mut point_at,
+                &candidate,
+                &breaks,
+                &fractions,
+                tolerance.absolute(),
+            )?
+            .deviation
+                <= tolerance.absolute()
+        {
+            return Ok(candidate);
+        }
+        if let Some(candidate) = rational::candidate(&mut point_at, source, maximum)?
+            && validate::errors(
+                &mut point_at,
+                &candidate,
+                &breaks,
+                &fractions,
+                tolerance.absolute() * 0.8,
+            )?
+            .deviation
+                <= tolerance.absolute() * 0.8
+        {
+            return Ok(candidate);
+        }
+    }
     loop {
         let count = control_count(&breaks);
         if count > maximum {
@@ -40,28 +73,16 @@ pub(super) fn fit(
         }
         let knots = knots(&breaks);
         let approximation = interpolate(&mut point_at, knots)?;
-        let mut refinements = Vec::new();
-        let mut deviation: Real = 0.0;
-        for (index, interval) in breaks.windows(2).enumerate() {
-            let (start, end) = (interval[0].parameter, interval[1].parameter);
-            let mut error: Real = 0.0;
-            for &fraction in &fractions {
-                let t = stable_lerp(start, end, fraction)?;
-                let side = if t == end {
-                    ParameterSide::Left
-                } else {
-                    ParameterSide::Right
-                };
-                let exact = point_at(t, side)?;
-                let actual = approximation.evaluate_on_side(t, side)?;
-                error = error.max(exact.distance_to(actual)?);
-            }
-            deviation = deviation.max(error);
-            // Modest sampling headroom; this is not a continuous error proof.
-            if error > tolerance.absolute() * 0.8 {
-                refinements.push((index, error));
-            }
-        }
+        let validate::Errors {
+            deviation,
+            mut refinements,
+        } = validate::errors(
+            &mut point_at,
+            &approximation,
+            &breaks,
+            &fractions,
+            tolerance.absolute() * 0.8,
+        )?;
         if refinements.is_empty() {
             return Ok(approximation);
         }
@@ -104,15 +125,11 @@ fn interpolate(
     point_at: &mut impl FnMut(Real, ParameterSide) -> Result<Point3, GeometryError>,
     knots: Vec<Real>,
 ) -> Result<NurbsCurve, GeometryError> {
-    let count = knots.len() - DEGREE - 1;
-    let mut rows = Vec::with_capacity(count);
+    let axis = Axis::cubic(knots)?;
+    let count = axis.stations.len();
     let mut targets = Vec::with_capacity(count);
-    let mut fixed = Vec::with_capacity(count);
-    for i in 0..count {
-        let (basis, t, side, is_fixed) = collocation_row(&knots, i)?;
-        rows.push(basis);
-        targets.push(point_at(t, side)?);
-        fixed.push(is_fixed);
+    for station in &axis.stations {
+        targets.push(point_at(station.parameter, station.side)?);
     }
     let candidate = targets[0].to_array();
     let origin = if targets.iter().all(|p| {
@@ -128,10 +145,10 @@ fn interpolate(
     let rhs = Mat::from_fn(count, 3, |row, column| {
         targets[row].to_array()[column] - origin[column]
     });
-    let solution = solve(&rows, rhs)?;
+    let solution = axis.solve(rhs)?;
     let controls = (0..count)
         .map(|i| {
-            if fixed[i] {
+            if axis.stations[i].fixed {
                 Ok(targets[i])
             } else {
                 Point3::try_from(std::array::from_fn(|axis| {
@@ -140,5 +157,5 @@ fn interpolate(
             }
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
-    NurbsCurve::try_new(DEGREE, controls, knots)
+    NurbsCurve::try_new(axis.degree, controls, axis.knots)
 }

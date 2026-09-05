@@ -98,7 +98,7 @@ fn composition_keeps_cubed_denominator_and_ignores_common_weight_sign_and_scale(
         assert_eq!(fitted.degree_u(), source.degree_u() * 3);
         assert_eq!(fitted.degree_v(), source.degree_v() * 3);
         check_image(&source, &fitted, &Cubic, 2e-12);
-        let expected_weights = denominator::source_weights(&source).unwrap();
+        let expected_weights = denominator::surface_weights(&source).unwrap();
         let actual_weights = weight_field(&fitted);
         for j in 0..=12 {
             for i in 0..=12 {

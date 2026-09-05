@@ -11,19 +11,27 @@ use viboceros_geometry::{Frame3, Point3, PointMorph, SurfacePointMorph, Toleranc
 #[cfg(test)]
 mod tests {
     #[test]
-    fn permanent_fixture_checks_native_fits_against_the_direct_point_map() {
-        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
-            "../../../tools/rhino_oracle/fixtures/curve_surface_morph.json"
-        ))
-        .unwrap();
-        let response = crate::run_request(&request).unwrap();
-        assert_eq!(response.results.len(), 8);
-        for result in response.results {
-            assert_eq!(result.value["exact_samples"].as_array().unwrap().len(), 257);
-            assert_eq!(
-                result.value["fitted_samples"].as_array().unwrap().len(),
-                257
-            );
+    fn permanent_fixtures_check_native_fits_against_the_direct_point_map() {
+        for (fixture, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/curve_surface_morph.json"),
+                8,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/curve_rational_morph.json"),
+                7,
+            ),
+        ] {
+            let request: crate::ProbeRequest = serde_json::from_str(fixture).unwrap();
+            let response = crate::run_request(&request).unwrap();
+            assert_eq!(response.results.len(), count);
+            for result in response.results {
+                assert_eq!(result.value["exact_samples"].as_array().unwrap().len(), 257);
+                assert_eq!(
+                    result.value["fitted_samples"].as_array().unwrap().len(),
+                    257
+                );
+            }
         }
     }
 

@@ -1,6 +1,55 @@
 use super::*;
 use crate::{LineSegment, Polyline3};
 
+mod rational;
+
+#[test]
+fn cubic_lift_of_a_rational_circle_fits_without_spending_the_control_budget() {
+    struct Lift(std::cell::Cell<usize>);
+    impl PointMorph for Lift {
+        fn morph_point(&self, p: Point3) -> Result<Point3, GeometryError> {
+            self.0.set(self.0.get() + 1);
+            Point3::try_new(
+                p.x(),
+                p.y(),
+                p.z() + p.x().powi(2) + 0.25 * p.x() * p.y() + p.y().powi(3),
+            )
+        }
+    }
+    let source = crate::Circle3::try_new(
+        point(0.0, 0.0, 0.0),
+        0.4,
+        crate::UnitVector3::try_new(0.0, 0.0, 1.0, Tolerance::DEFAULT).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap()
+    .to_nurbs()
+    .unwrap();
+    let morph = Lift(std::cell::Cell::new(0));
+    let fitted = morph
+        .morph_nurbs_curve(&source, Tolerance::try_new(2.5e-12, 1e-12, 1e-10).unwrap())
+        .unwrap();
+    assert!(
+        morph.0.get() < 1_000,
+        "fit used {} point maps",
+        morph.0.get()
+    );
+    assert!(fitted.control_points().len() < 64);
+    assert_eq!(fitted.domain(), source.domain());
+    for i in 0..=1024 {
+        let fraction = if i == 0 {
+            0.0
+        } else if i == 1024 {
+            1.0
+        } else {
+            (i as Real - 0.3819660112501051) / 1024.0
+        };
+        let t = source.parameter_at(fraction).unwrap();
+        let expected = morph.morph_point(source.evaluate(t).unwrap()).unwrap();
+        assert!(fitted.evaluate(t).unwrap().distance_to(expected).unwrap() <= 2.5e-12);
+    }
+}
+
 fn point(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }

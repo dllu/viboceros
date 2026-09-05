@@ -111,4 +111,6 @@ Rhino. Their serialization tolerance is independent of fitting tolerance. The
 cubically lifted sphere initially exhausted the surface fitter's budget at `1e-6`.
 The subsequent [rational composition candidate](surface-rational-fitting.md)
 resolves that fit without increasing its sample or control limits; the current
-interchange fixture requires `1e-6`.
+interchange fixture reached `1e-6`. The subsequent
+[rational curve candidate](curve-rational-fitting.md) resolves its edge-fitting
+limit too; the fixture now requires `1e-11` without raising the resource ceilings.
