@@ -1760,13 +1760,9 @@ def _sweep1(operation, iterations, tolerance):
                 raise ValueError("roadlike Sweep1 command instrumentation is not implemented")
             def macro(ids):
                 Rhino.RhinoDoc.ActiveDoc.Objects.UnselectAll()
-                text = "_-Sweep1 '_-SelID %s " % ids[0]
-                text += " ".join("'_-SelID %s" % i for i in ids[1:])
-                text += " _Enter _FrameStyle _Freeform _GlobalShapeBlending=%s _RefitRail=%s _Enter" % (
-                    "Yes" if operation.get("blend", 0) else "No", "Yes" if operation.get("refit_rail", False) else "No")
-                return text
+                return _sweep1_macro(operation, ids)
             value, elapsed = _curve_surface_command(owned, macro, iterations, "sweep",
-                lambda obj: _sweep1_record(obj.Geometry, operation))
+                lambda obj: _sweep1_record(obj.Geometry, operation), verify_script=True)
             records = [face for output in value["outputs"] for face in output]
             return records, 0
 
@@ -1789,6 +1785,17 @@ def _sweep1(operation, iterations, tolerance):
     finally:
         for geometry in result + owned:
             geometry.Dispose()
+
+
+def _sweep1_macro(operation, ids):
+    # Rhino's script options differ from the labels in the sweep dialog.
+    # Set all supported sticky choices explicitly, independent of prior runs.
+    text = "_-Sweep1 '_-SelID %s " % ids[0]
+    text += " ".join("'_-SelID %s" % i for i in ids[1:])
+    text += " _Enter _Style=_Freeform _Simplify=_None _Closed=_No _ShapeBlending=_%s _RefitRail=_%s _Enter" % (
+        "Global" if operation.get("blend", 0) else "Local",
+        "Yes" if operation.get("refit_rail", False) else "No")
+    return text
 
 
 def _sweep1_record(brep, operation):
@@ -1873,7 +1880,23 @@ def _loft_command(operation, iterations, curves):
     return _curve_surface_command(curves, macro, iterations, "loft", record)
 
 
-def _curve_surface_command(curves, macro, iterations, prefix, record):
+def _run_surface_script(script, verify):
+    before = Rhino.RhinoApp.CommandHistoryWindowText if verify else ""
+    succeeded = bool(Rhino.RhinoApp.RunScript(script, verify))
+    if verify:
+        after = Rhino.RhinoApp.CommandHistoryWindowText
+        if after.startswith(before):
+            history = after[len(before):]
+        else:
+            # The history window may have discarded its oldest entries.
+            marker = "Command: " + script.split()[0]
+            history = after.rsplit(marker, 1)[-1]
+        if "unknown command:" in history.lower():
+            raise ValueError("surface command rejected an option: %s" % history[-2000:])
+    return succeeded
+
+
+def _curve_surface_command(curves, macro, iterations, prefix, record, verify_script=False):
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = True
@@ -1894,7 +1917,7 @@ def _curve_surface_command(curves, macro, iterations, prefix, record):
                 ids.append(object_id)
                 document.Objects.Select(ids[-1])
             script = macro(ids) if callable(macro) else macro
-            succeeded = bool(Rhino.RhinoApp.RunScript(script, False))
+            succeeded = _run_surface_script(script, verify_script)
             outputs = [obj for obj in document.Objects.GetObjectList(settings)
                        if obj.Id not in before and obj.Id not in ids]
             if not succeeded or not outputs:

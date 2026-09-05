@@ -48,6 +48,12 @@ tangents, and polyline/NURBS kinks above `AngleTolerance` (in degrees) are
 preserved. `Tolerance` defaults to the document absolute tolerance.
 Kink and endpoint tangents use [exact one-sided limits](../curve-sided-evaluation.md),
 including stationary points with a nonzero higher derivative.
+Failing spans are bisected rather than inserting knots at their worst sampled
+point, which could cluster knots and leave large gaps unresolved. Cubic fits use
+a banded solve with exact endpoint/kink handle constraints; other degrees use
+dense full-pivot solves. Repeated error checks cache exact floating-point source
+distances locally (at most 16,384 points), without quantization. Accuracy remains
+sampled, with a 512-control budget; exhaustion is an error, not a relaxed tolerance.
 `DeleteInput=Yes` and `OutputLayer=InputObject` are the Rhino-compatible
 defaults and replace each result in place; `DeleteInput=No` retains the source,
 while `OutputLayer=CurrentLayer` puts fresh results on the current layer.

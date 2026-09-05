@@ -145,7 +145,7 @@ mod tests {
     }
 
     #[test]
-    fn multiple_selected_sections_require_refitting_and_obey_blend_options() {
+    fn multiple_selected_sections_obey_refit_and_blend_options() {
         let registry = CommandRegistry::with_builtins();
         for (blend, width) in [("No", 1.84375), ("Yes", 1.75)] {
             for style in ["FrameStyle=Freeform", "FrameStyle=Roadlike Axis=1,0,0"] {
@@ -166,14 +166,23 @@ mod tests {
                     .selected_objects()
                     .map(|o| o.id())
                     .collect::<Vec<_>>();
-                assert!(
-                    registry
-                        .execute(
-                            &mut document,
-                            "Sweep1 RailName=Rail Parameters=0,5 RefitRail=No"
-                        )
-                        .is_err()
-                );
+                registry
+                    .execute(
+                        &mut document,
+                        "Sweep1 RailName=Rail Parameters=0,5 RefitRail=No",
+                    )
+                    .unwrap();
+                let output = document
+                    .objects()
+                    .find(|o| matches!(o.geometry(), Geometry::Brep(_)))
+                    .unwrap();
+                let Geometry::Brep(brep) = output.geometry() else {
+                    unreachable!()
+                };
+                let point = brep.faces()[0].surface().evaluate(1.25, 1.).unwrap();
+                assert_eq!(brep.faces()[0].surface().degree_u(), 1);
+                assert!((point.x() - 1.75).abs() < 1e-12);
+                registry.execute(&mut document, "Undo").unwrap();
                 assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
                 registry.execute(&mut document, &format!(
                     "Sweep1 RailName=Rail Parameters=0,5 RefitRail=Yes GlobalShapeBlending={blend} {style}"

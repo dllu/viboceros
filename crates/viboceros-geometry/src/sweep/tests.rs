@@ -8,6 +8,173 @@ fn line(a: Point3, b: Point3) -> crate::LineSegment {
 }
 
 #[test]
+fn multi_section_rail_refit_interpolates_local_blends_in_its_cubic_basis() {
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.));
+    let sections = [(0., 2.), (2., 1.), (5., 3.)].map(|(t, width)| SweepSection {
+        parameter: t,
+        curve: line(p(0., 0., t), p(width, 0., t)).to_nurbs().unwrap(),
+    });
+    let sweep = Sweep1::try_new(
+        CurveRef::Line(&rail),
+        &sections,
+        Default::default(),
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let refitted = sweep.to_surface().unwrap();
+    let implicit = sweep.to_rail_basis_surface().unwrap();
+    assert_eq!(refitted, implicit);
+    assert_eq!(
+        refitted.knots_u(),
+        &[0., 0., 0., 0., 1., 2., 3., 5., 5., 5., 5.]
+    );
+    for t in [0., 1. / 3., 1., 2., 10. / 3., 13. / 3., 5.] {
+        let (f, a, b) = if t <= 2. {
+            (t / 2., 2., 1.)
+        } else {
+            ((t - 2.) / 3., 1., 3.)
+        };
+        let width = a + (b - a) * f * f * (3. - 2. * f);
+        for v in [0., 0.17, 0.51, 1.] {
+            assert!(
+                refitted
+                    .evaluate(t, v)
+                    .unwrap()
+                    .distance_to(p(width * v, 0., t))
+                    .unwrap()
+                    < 1e-12
+            );
+        }
+    }
+    // The fixed basis interpolant is not the continuous piecewise smoothstep.
+    let model = sweep.sections_at(&[2.5]).unwrap();
+    assert!(
+        refitted
+            .evaluate(2.5, 1.)
+            .unwrap()
+            .distance_to(model[0].evaluate(1.).unwrap())
+            .unwrap()
+            > 1e-4
+    );
+}
+
+#[test]
+fn neighboring_profile_stations_keep_distinct_symmetric_knot_neighborhoods() {
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.));
+    let sections = [(0., 2.), (1., 1.), (2., 3.), (5., 1.5)].map(|(t, width)| SweepSection {
+        parameter: t,
+        curve: line(p(0., 0., t), p(width, 0., t)).to_nurbs().unwrap(),
+    });
+    let sweep = Sweep1::try_new(
+        CurveRef::Line(&rail),
+        &sections,
+        Default::default(),
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = sweep.to_surface().unwrap();
+    assert_eq!(
+        surface.knots_u(),
+        &[0., 0., 0., 0., 0.5, 1., 1.5, 1.75, 2., 2.25, 5., 5., 5., 5.]
+    );
+    for section in sections {
+        for v in [0., 0.37, 1.] {
+            let expected = section
+                .curve
+                .evaluate(section.curve.parameter_at(v).unwrap())
+                .unwrap();
+            assert!(
+                surface
+                    .evaluate(section.parameter, v)
+                    .unwrap()
+                    .distance_to(expected)
+                    .unwrap()
+                    < 1e-12
+            );
+        }
+    }
+}
+
+#[test]
+fn shifted_parameter_roundoff_cannot_silently_discard_an_interior_profile() {
+    let start = 1e12;
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.))
+        .to_nurbs()
+        .unwrap()
+        .try_reparameterized(start..=start + 5.)
+        .unwrap();
+    let sections =
+        [(start, 2.), (start + 0.005, 1.), (start + 5., 3.)].map(|(parameter, width)| {
+            let origin = rail.evaluate(parameter).unwrap();
+            SweepSection {
+                parameter,
+                curve: line(origin, p(width, 0., origin.z())).to_nurbs().unwrap(),
+            }
+        });
+    let sweep = Sweep1::try_new(
+        CurveRef::NurbsCurve(&rail),
+        &sections,
+        Default::default(),
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    // A near-Greville classification must never erase a supplied constraint.
+    assert!(matches!(
+        sweep.to_rail_basis_surface(),
+        Err(GeometryError::InvalidSweep {
+            context: "section interpolation lost a supplied profile"
+        })
+    ));
+}
+
+#[test]
+fn rational_sweep_boundary_search_attains_the_half_space_distance_bound() {
+    let rail = line(p(0., 0., 0.), p(0., 0., 5.));
+    let sections = [(0., [1., 0.5, 2.]), (5., [2., 1., 1.])].map(|(t, weights)| SweepSection {
+        parameter: t,
+        curve: NurbsCurve::try_new_rational(
+            2,
+            [p(0., 0., t), p(1., 0.5, t), p(2., 0., t)]
+                .into_iter()
+                .zip(weights)
+                .map(|(point, weight)| WeightedPoint3::try_new(point, weight).unwrap())
+                .collect(),
+            vec![0., 0., 0., 1., 1., 1.],
+        )
+        .unwrap(),
+    });
+    let sweep = Sweep1::try_new(
+        CurveRef::Line(&rail),
+        &sections,
+        Default::default(),
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = sweep.to_surface().unwrap();
+    // Positive weights and nonnegative control Y bound the entire surface by
+    // Y >= 0. A point directly across that plane is a certified minimum.
+    assert!(
+        surface
+            .control_points()
+            .iter()
+            .all(|c| c.point().y() >= 0. && c.weight() > 0.)
+    );
+    for (x, z) in [(0., 2.5462962962962963), (2., 2.4537037037037033)] {
+        let query = p(x, -0.2, z);
+        let (u, v) = surface
+            .closest_parameters(query, Tolerance::DEFAULT)
+            .unwrap();
+        let closest = surface.evaluate(u, v).unwrap();
+        assert!(closest.distance_to(p(x, 0., z)).unwrap() < 1e-12);
+        assert!((closest.distance_to(query).unwrap() - 0.2).abs() < 1e-14);
+    }
+}
+
+#[test]
 fn straight_sweeps_interpolate_local_and_global_section_blending() {
     let rail = line(p(0., 0., 0.), p(0., 0., 5.));
     let sections = [
@@ -29,24 +196,28 @@ fn straight_sweeps_interpolate_local_and_global_section_blending() {
             Tolerance::DEFAULT,
         )
         .unwrap();
-        let surface = sweep.to_surface().unwrap();
-        for i in 0..=64 {
-            let f = i as Real / 64.;
-            let g = if blend == SweepBlend::Local {
-                f * f * (3. - 2. * f)
-            } else {
-                f
-            };
-            for j in 0..=8 {
-                let v = j as Real / 8.;
-                assert!(
-                    surface
-                        .evaluate(f * 5., v)
-                        .unwrap()
-                        .distance_to(p((2. - g) * v, 0., f * 5.))
-                        .unwrap()
-                        < 1e-12
-                );
+        for surface in [
+            sweep.to_surface().unwrap(),
+            sweep.fit_model_surface().unwrap(),
+        ] {
+            for i in 0..=64 {
+                let f = i as Real / 64.;
+                let g = if blend == SweepBlend::Local {
+                    f * f * (3. - 2. * f)
+                } else {
+                    f
+                };
+                for j in 0..=8 {
+                    let v = j as Real / 8.;
+                    assert!(
+                        surface
+                            .evaluate(f * 5., v)
+                            .unwrap()
+                            .distance_to(p((2. - g) * v, 0., f * 5.))
+                            .unwrap()
+                            < 1e-12
+                    );
+                }
             }
         }
     }
@@ -76,27 +247,31 @@ fn curved_sweep_fits_analytic_radial_sections() {
         Tolerance::DEFAULT,
     )
     .unwrap();
-    let surface = sweep.to_surface().unwrap();
-    for i in 0..=97 {
-        let t = *arc.domain().end() * i as Real / 97.;
-        let rail_point = arc.evaluate(t).unwrap();
-        for j in 0..=11 {
-            let ratio = 1. + j as Real / 33.;
-            let expected = p(rail_point.x() * ratio, rail_point.y() * ratio, 0.);
-            assert!(
-                surface
-                    .evaluate(t, j as Real / 11.)
-                    .unwrap()
-                    .distance_to(expected)
-                    .unwrap()
-                    < 1e-9
-            );
+    for surface in [
+        sweep.to_surface().unwrap(),
+        sweep.fit_model_surface().unwrap(),
+    ] {
+        for i in 0..=97 {
+            let t = *arc.domain().end() * i as Real / 97.;
+            let rail_point = arc.evaluate(t).unwrap();
+            for j in 0..=11 {
+                let ratio = 1. + j as Real / 33.;
+                let expected = p(rail_point.x() * ratio, rail_point.y() * ratio, 0.);
+                assert!(
+                    surface
+                        .evaluate(t, j as Real / 11.)
+                        .unwrap()
+                        .distance_to(expected)
+                        .unwrap()
+                        < 1e-9
+                );
+            }
         }
     }
 }
 
 #[test]
-fn two_section_arc_blending_matches_an_independent_analytic_surface() {
+fn continuous_model_two_section_arc_blending_matches_an_independent_analytic_surface() {
     let circle = crate::Circle3::try_new(
         p(0., 0., 0.),
         3.,
@@ -131,7 +306,7 @@ fn two_section_arc_blending_matches_an_independent_analytic_surface() {
             Tolerance::DEFAULT,
         )
         .unwrap();
-        let surface = sweep.to_surface().unwrap();
+        let surface = sweep.fit_model_surface().unwrap();
         for i in 0..=97 {
             let f = i as Real / 97.;
             let t = *arc.domain().end() * f;
@@ -219,7 +394,10 @@ fn mixed_section_bases_and_weights_retain_every_input_section() {
     )
     .unwrap();
     let output = sweep.sections_at(&[0., 2., 5.]).unwrap();
-    let surface = sweep.to_surface().unwrap();
+    let surfaces = [
+        sweep.to_surface().unwrap(),
+        sweep.fit_model_surface().unwrap(),
+    ];
     for (source, target) in sections.iter().zip(output) {
         for i in 0..=32 {
             let f = i as Real / 32.;
@@ -228,20 +406,22 @@ fn mixed_section_bases_and_weights_retain_every_input_section() {
                 .evaluate(source.curve.parameter_at(f).unwrap())
                 .unwrap();
             assert!(target.evaluate(f).unwrap().distance_to(expected).unwrap() < 1e-12);
-            assert!(
-                surface
-                    .evaluate(source.parameter, f)
-                    .unwrap()
-                    .distance_to(expected)
-                    .unwrap()
-                    < 1e-9
-            );
+            for surface in &surfaces {
+                assert!(
+                    surface
+                        .evaluate(source.parameter, f)
+                        .unwrap()
+                        .distance_to(expected)
+                        .unwrap()
+                        < 1e-9
+                );
+            }
         }
     }
 }
 
 #[test]
-fn spatial_roadlike_sections_keep_their_horizontal_witness() {
+fn continuous_model_spatial_roadlike_sections_keep_their_horizontal_witness() {
     let rail = NurbsCurve::try_new(
         3,
         [p(0., 0., 0.), p(2., 0., 4.), p(3., 4., -2.), p(5., 2., 3.)].to_vec(),
@@ -259,7 +439,7 @@ fn spatial_roadlike_sections_keep_their_horizontal_witness() {
         Tolerance::DEFAULT,
     )
     .unwrap();
-    let surface = sweep.to_surface().unwrap();
+    let surface = sweep.fit_model_surface().unwrap();
     for i in 0..=47 {
         let t = i as Real / 47.;
         let point = surface.evaluate(t, 1.).unwrap();
@@ -330,6 +510,50 @@ fn sweep_rejects_invalid_stations_unimplemented_miters_and_axis_degeneracy() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn unrefitted_arc_with_a_middle_section_preserves_the_rational_rail() {
+    let circle = crate::Circle3::try_new(
+        p(0., 0., 0.),
+        3.,
+        UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let arc =
+        crate::CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2).unwrap();
+    let sections = [0., 0.5, 1.].map(|f| {
+        let t = *arc.domain().end() * f;
+        let a = arc.evaluate(t).unwrap();
+        SweepSection {
+            parameter: t,
+            curve: line(a, p(a.x() * 4. / 3., a.y() * 4. / 3., 0.))
+                .to_nurbs()
+                .unwrap(),
+        }
+    });
+    let sweep = Sweep1::try_new(
+        CurveRef::Arc(&arc),
+        &sections,
+        Default::default(),
+        Default::default(),
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let surface = sweep.to_rail_basis_surface().unwrap();
+    for i in 0..=97 {
+        let t = *arc.domain().end() * i as Real / 97.;
+        let u = CurveRef::Arc(&arc).nurbs_parameter(t).unwrap();
+        assert!(
+            surface
+                .evaluate(u, 0.)
+                .unwrap()
+                .distance_to(arc.evaluate(t).unwrap())
+                .unwrap()
+                < 1e-12
+        );
+    }
 }
 
 #[test]

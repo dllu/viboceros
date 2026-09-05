@@ -1,4 +1,5 @@
 use faer::{Mat, prelude::*};
+use std::collections::HashMap;
 
 use crate::{
     CurveRef, GeometryError, NurbsCurve, Point3, Real, Tolerance,
@@ -9,10 +10,11 @@ use crate::{
 /// Largest degree accepted by Rhino's `FitCrv` command.
 pub const MAX_CURVE_FIT_DEGREE: usize = 11;
 
-/// Resource ceiling for the dense interpolation solve used by curve fitting.
+/// Resource ceiling for adaptive curve fitting (cubic banded, otherwise dense).
 pub const MAX_CURVE_FIT_CONTROL_POINTS: usize = 512;
 
 const CURVE_FIT_ERROR_SAMPLES_PER_SPAN: usize = 16;
+const MAX_CACHED_FIT_POINTS: usize = MAX_CURVE_FIT_CONTROL_POINTS * 32;
 
 #[derive(Clone, Copy, Debug)]
 struct FitBreak {
@@ -26,8 +28,8 @@ struct FitBreak {
 /// Natural source-span boundaries seed the adaptive approximation. Boundaries
 /// whose one-sided tangents differ by more than `angle_tolerance_radians` are
 /// retained as C0 knots; the output also preserves one-sided tangents there and
-/// at the natural endpoints. Smooth spans are refined at their largest sampled
-/// error until `fit_tolerance` is reached or the resource ceiling is met.
+/// at the natural endpoints. Failing spans are bisected, prioritized by their
+/// sampled errors, until the tolerance or resource ceiling is reached.
 pub fn try_fit_curve(
     source: CurveRef<'_>,
     degree: usize,
@@ -93,6 +95,10 @@ pub fn try_fit_curve(
         breaks.sort_by(|left, right| left.distance.total_cmp(&right.distance));
     }
 
+    // Balanced refinement revisits many identical source distances. Cache
+    // exact floating-point keys, without quantizing stations or changing the
+    // integration tolerance. The cache is local to this fit and bounded.
+    let mut points = HashMap::new();
     loop {
         let control_count = fit_control_count(degree, &breaks)?;
         if control_count > MAX_CURVE_FIT_CONTROL_POINTS {
@@ -102,7 +108,8 @@ pub fn try_fit_curve(
         }
         let knots = fit_knots(degree, total_length, &breaks, control_count);
         let approximation = interpolate_fit(&sampler, degree, &knots, &kinks)?;
-        let errors = sampled_span_errors(&sampler, &approximation, total_length, &breaks)?;
+        let errors =
+            sampled_span_errors(&sampler, &approximation, total_length, &breaks, &mut points)?;
         let maximum_deviation = errors
             .iter()
             .map(|error| error.deviation)
@@ -125,11 +132,11 @@ pub fn try_fit_curve(
             .collect::<Vec<_>>();
         refinements.sort_by(|left, right| right.deviation.total_cmp(&left.deviation));
         refinements.truncate(available);
-        refinements.sort_by(|left, right| left.parameter.total_cmp(&right.parameter));
+        refinements.sort_by(|left, right| left.refinement.total_cmp(&right.refinement));
 
         let previous_len = breaks.len();
         for refinement in refinements {
-            insert_smooth_break(&mut breaks, refinement.parameter);
+            insert_smooth_break(&mut breaks, refinement.refinement);
         }
         if breaks.len() == previous_len {
             return Err(GeometryError::CurveFitDidNotConverge {
@@ -187,6 +194,60 @@ fn interpolate_fit(
         constrain_kink_handles(sampler, degree, knots, kink, &mut controls)?;
     }
 
+    if degree == 3 {
+        solve_cubic_fit_controls(sampler, knots, &mut controls)?;
+    } else {
+        solve_dense_fit_controls(sampler, degree, knots, &mut controls)?;
+    }
+
+    NurbsCurve::try_new(
+        degree,
+        controls
+            .into_iter()
+            .map(|point| point.expect("all curve-fit controls are constrained or solved"))
+            .collect(),
+        knots.to_vec(),
+    )
+}
+
+fn solve_cubic_fit_controls(
+    sampler: &ArcLengthSampler<'_>,
+    knots: &[Real],
+    controls: &mut [Option<Point3>],
+) -> Result<(), GeometryError> {
+    let origin = controls[0].unwrap().to_array();
+    let mut rows = Vec::with_capacity(controls.len());
+    let mut targets: Vec<[Real; 3]> = Vec::with_capacity(controls.len());
+    for (i, fixed) in controls.iter().enumerate() {
+        let (row, point) = if let Some(point) = fixed {
+            ([0.0, 0.0, 1.0, 0.0, 0.0], *point)
+        } else {
+            let (row, parameter, _, _) = crate::spline_collocation::collocation_row(knots, i)?;
+            (row, sampler.point_at_distance(parameter)?)
+        };
+        rows.push(row);
+        targets.push(std::array::from_fn(|k| point.to_array()[k] - origin[k]));
+    }
+    let rhs = Mat::from_fn(controls.len(), 3, |i, k| targets[i][k]);
+    let solution = crate::spline_collocation::solve(&rows, rhs)?;
+    for (i, control) in controls.iter_mut().enumerate() {
+        if control.is_none() {
+            *control = Some(Point3::try_from(std::array::from_fn(|k| {
+                solution[(i, k)] + origin[k]
+            }))?);
+        }
+    }
+    Ok(())
+}
+
+fn solve_dense_fit_controls(
+    sampler: &ArcLengthSampler<'_>,
+    degree: usize,
+    knots: &[Real],
+    controls: &mut [Option<Point3>],
+) -> Result<(), GeometryError> {
+    let control_count = controls.len();
+
     let unknown = controls
         .iter()
         .enumerate()
@@ -230,14 +291,7 @@ fn interpolate_fit(
         }
     }
 
-    NurbsCurve::try_new(
-        degree,
-        controls
-            .into_iter()
-            .map(|point| point.expect("all curve-fit controls are constrained or solved"))
-            .collect(),
-        knots.to_vec(),
-    )
+    Ok(())
 }
 
 fn constrain_endpoint_handles(
@@ -309,7 +363,7 @@ fn greville_parameter(
 #[derive(Clone, Copy, Debug)]
 struct SpanError {
     deviation: Real,
-    parameter: Real,
+    refinement: Real,
 }
 
 fn sampled_span_errors(
@@ -317,6 +371,7 @@ fn sampled_span_errors(
     approximation: &NurbsCurve,
     total_length: Real,
     breaks: &[FitBreak],
+    points: &mut HashMap<u64, Point3>,
 ) -> Result<Vec<SpanError>, GeometryError> {
     let mut boundaries = Vec::with_capacity(breaks.len() + 2);
     boundaries.push(0.0);
@@ -328,19 +383,24 @@ fn sampled_span_errors(
         .map(|interval| {
             let mut largest = SpanError {
                 deviation: 0.0,
-                parameter: stable_midpoint(interval[0], interval[1]),
+                refinement: stable_midpoint(interval[0], interval[1]),
             };
             for sample_index in 1..CURVE_FIT_ERROR_SAMPLES_PER_SPAN {
                 let fraction = sample_index as Real / CURVE_FIT_ERROR_SAMPLES_PER_SPAN as Real;
                 let parameter = interval[0].mul_add(1.0 - fraction, interval[1] * fraction);
-                let exact = sampler.point_at_distance(parameter)?;
+                let exact = if let Some(&point) = points.get(&parameter.to_bits()) {
+                    point
+                } else {
+                    let point = sampler.point_at_distance(parameter)?;
+                    if points.len() < MAX_CACHED_FIT_POINTS {
+                        points.insert(parameter.to_bits(), point);
+                    }
+                    point
+                };
                 let fitted = approximation.evaluate(parameter)?;
                 let deviation = exact.distance_to(fitted)?;
                 if deviation > largest.deviation {
-                    largest = SpanError {
-                        deviation,
-                        parameter,
-                    };
+                    largest.deviation = deviation;
                 }
             }
             Ok(largest)
@@ -370,6 +430,109 @@ mod tests {
     use super::*;
     use crate::{LineSegment, Polyline3, WeightedPoint3};
 
+    #[test]
+    fn cubic_banded_fit_matches_dense_elimination_with_fixed_kink_handles() {
+        let spatial = NurbsCurve::try_new(
+            3,
+            vec![
+                point(1., 2., 0.),
+                point(2., 0., 4.),
+                point(3., 4., -2.),
+                point(5., 2., 3.),
+            ],
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        )
+        .unwrap();
+        let kinked = Polyline3::try_new(
+            vec![
+                point(0., 0., 0.),
+                point(1., 0., 0.),
+                point(1., 2., 0.),
+                point(2., 2., 1.),
+            ],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        for source in [CurveRef::NurbsCurve(&spatial), CurveRef::Polyline(&kinked)] {
+            let sampler = ArcLengthSampler::try_new(source, Tolerance::DEFAULT).unwrap();
+            let kinks = sampler.kinks(1e-10).unwrap();
+            let mut breaks = kinks
+                .iter()
+                .map(|k| FitBreak {
+                    distance: k.distance,
+                    multiplicity: 3,
+                })
+                .collect::<Vec<_>>();
+            for f in [0.03, 0.07, 0.23, 0.31, 0.44, 0.67, 0.88, 0.99] {
+                insert_smooth_break(&mut breaks, f * sampler.total_length());
+            }
+            let n = fit_control_count(3, &breaks).unwrap();
+            let knots = fit_knots(3, sampler.total_length(), &breaks, n);
+            let mut banded = vec![None; n];
+            constrain_endpoint_handles(&sampler, 3, &knots, &mut banded).unwrap();
+            for kink in &kinks {
+                constrain_kink_handles(&sampler, 3, &knots, kink, &mut banded).unwrap();
+            }
+            let mut dense = banded.clone();
+            solve_cubic_fit_controls(&sampler, &knots, &mut banded).unwrap();
+            solve_dense_fit_controls(&sampler, 3, &knots, &mut dense).unwrap();
+            for (a, b) in banded.into_iter().zip(dense) {
+                assert!(a.unwrap().distance_to(b.unwrap()).unwrap() < 2e-13);
+            }
+        }
+    }
+
+    #[test]
+    fn cubic_spatial_refit_reaches_a_tight_geometric_tolerance() {
+        let rail = NurbsCurve::try_new(
+            3,
+            [[0., 0., 0.], [2., 0., 4.], [3., 4., -2.], [5., 2., 3.]]
+                .map(|p| Point3::try_from(p).unwrap())
+                .to_vec(),
+            vec![0., 0., 0., 0., 1., 1., 1., 1.],
+        )
+        .unwrap();
+        let fit = try_fit_curve(
+            CurveRef::NurbsCurve(&rail),
+            3,
+            2.5e-8,
+            1e-10,
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let sampler =
+            ArcLengthSampler::try_new(CurveRef::NurbsCurve(&rail), Tolerance::DEFAULT).unwrap();
+        for i in 0..=257 {
+            let s = sampler.total_length() * i as Real / 257.;
+            assert!(
+                fit.evaluate(s)
+                    .unwrap()
+                    .distance_to(sampler.point_at_distance(s).unwrap())
+                    .unwrap()
+                    < 3e-8
+            );
+        }
+    }
+
+    #[test]
+    fn cubic_quarter_arc_refit_reaches_a_tight_geometric_tolerance() {
+        let circle = crate::Circle3::try_new(
+            Point3::try_new(0., 0., 0.).unwrap(),
+            3.,
+            crate::UnitVector3::try_new(0., 0., 1., Tolerance::DEFAULT).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let arc = crate::CircularArc3::try_from_circle_sweep(circle, std::f64::consts::FRAC_PI_2)
+            .unwrap();
+        let fit = try_fit_curve(CurveRef::Arc(&arc), 3, 2.5e-8, 1e-10, Tolerance::DEFAULT).unwrap();
+        for i in 0..=257 {
+            let f = i as Real / 257.;
+            let expected = arc.evaluate(*arc.domain().end() * f).unwrap();
+            let actual = fit.evaluate(*fit.domain().end() * f).unwrap();
+            assert!(expected.distance_to(actual).unwrap() < 3e-8);
+        }
+    }
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
     }

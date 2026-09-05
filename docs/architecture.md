@@ -91,8 +91,11 @@ model-space curves, including exact constant parameter coordinates.
 The [loft kernel](loft.md) and [one-rail sweep](sweep1.md) share exact degree/knot
 matching in `section_basis`; Loft's later end-weight policy stays separate.
 The sweep separates frame placement and arc-length blending from fitting and
-from the command's document operations. Its unrefitted rail-basis interpolation
-and adaptive refitting share the banded `spline_collocation` solver with morphs.
+from the command's document operations. `sweep/basis` chooses the rail basis,
+adds section interpolation stations, and solves homogeneous profile trajectories;
+`sweep/fit` separately approximates the continuous transport/blend model.
+The shared `curve_fit` kernel refits rails before section interpolation. Cubic
+curve fits, sweep collocation, and morph fits reuse banded `spline_collocation`.
 Ordered tensor lofts are independent of command
 orientation and crease splitting. `brep/surface_grid` supplies exact shared
 topology for tensor partitions, including closed seams and singular sides.

@@ -17,11 +17,19 @@ mod tests {
             ),
             (
                 include_str!("../../../tools/rhino_oracle/fixtures/sweep1_diagnostics.json"),
-                3,
+                2,
             ),
             (
                 include_str!("../../../tools/rhino_oracle/fixtures/sweep1_command.json"),
                 6,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/sweep1_multisection.json"),
+                10,
+            ),
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/sweep1_basis_diagnostics.json"),
+                8,
             ),
         ] {
             let request = serde_json::from_str(source).unwrap();

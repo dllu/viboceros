@@ -1,58 +1,8 @@
+use super::basis::interpolate_sections;
 use super::*;
 use crate::spline_collocation::{
     Axis, Break, control_count, error_fractions, knots, seed_breaks, stable_lerp,
 };
-use faer::Mat;
-
-const MAX_AXIS_CONTROLS: usize = 1024;
-const MAX_SURFACE_CONTROLS: usize = 262_144;
-
-pub(super) fn rail_basis(sweep: &Sweep1) -> Result<NurbsSurface, GeometryError> {
-    if sweep.sections.len() != 1 {
-        return Err(invalid(
-            "unrefitted multi-section sweep basis is not implemented",
-        ));
-    }
-    let native = sweep.rail.try_trimmed(sweep.domain())?;
-    let rail = native.as_ref().to_nurbs()?.clamped_to_active_domain()?;
-    if rail.control_points().len() > MAX_AXIS_CONTROLS
-        || rail.control_points().len() * sweep.local[0].len() > MAX_SURFACE_CONTROLS
-    {
-        return Err(invalid("rail basis control budget exceeded"));
-    }
-    let axis = Axis::new(rail.degree(), rail.knots().to_vec())?;
-    let parameters = axis
-        .stations
-        .iter()
-        .map(|s| native.as_ref().parameter_from_nurbs(s.parameter))
-        .collect::<Result<Vec<_>, _>>()?;
-    let sections = sweep.sections_at(&parameters)?;
-    // A common projective scale does not change the rail or the surface.
-    // Remove it before combining rail denominators with spatial coordinates.
-    let weight_scale = rail
-        .control_points()
-        .iter()
-        .map(|c| c.weight().abs())
-        .fold(0.0, Real::max);
-    let weights = axis
-        .stations
-        .iter()
-        .map(|s| {
-            let basis = crate::nurbs::bspline_basis_values(
-                rail.knots(),
-                rail.degree(),
-                rail.control_points().len(),
-                s.parameter,
-            )?;
-            Ok(basis
-                .iter()
-                .zip(rail.control_points())
-                .map(|(b, c)| b * (c.weight() / weight_scale))
-                .sum::<Real>())
-        })
-        .collect::<Result<Vec<_>, GeometryError>>()?;
-    interpolate_sections(axis, &sections, &weights)
-}
 
 pub(super) fn fit(sweep: &Sweep1) -> Result<NurbsSurface, GeometryError> {
     let rail = sweep
@@ -176,51 +126,4 @@ fn interpolate(sweep: &Sweep1, knots: Vec<Real>) -> Result<NurbsSurface, Geometr
         .collect::<Vec<_>>();
     let sections = sweep.sections_at(&parameters)?;
     interpolate_sections(axis, &sections, &vec![1.0; parameters.len()])
-}
-
-fn interpolate_sections(
-    axis: Axis,
-    sections: &[NurbsCurve],
-    weights: &[Real],
-) -> Result<NurbsSurface, GeometryError> {
-    let count = axis.stations.len();
-    let origin = sections[0].control_points()[0].point().to_array();
-    let width = sections[0].control_points().len();
-    let rhs = Mat::from_fn(count, width * 4, |row, column| {
-        let c = sections[row].control_points()[column / 4];
-        if column % 4 == 3 {
-            c.weight() * weights[row]
-        } else {
-            (c.point().to_array()[column % 4] - origin[column % 4]) * c.weight() * weights[row]
-        }
-    });
-    let solution = axis.solve(rhs)?;
-    let mut controls = Vec::with_capacity(count * width);
-    for j in 0..width {
-        for i in 0..count {
-            let weight = solution[(i, j * 4 + 3)];
-            if weight <= 0.0 {
-                return Err(invalid(
-                    "surface fit produced a nonpositive rational weight",
-                ));
-            }
-            let point = if axis.stations[i].fixed {
-                sections[i].control_points()[j].point()
-            } else {
-                Point3::try_from(std::array::from_fn(|k| {
-                    solution[(i, j * 4 + k)] / weight + origin[k]
-                }))?
-            };
-            controls.push(WeightedPoint3::try_new(point, weight)?);
-        }
-    }
-    NurbsSurface::try_new_rational(
-        axis.degree,
-        sections[0].degree(),
-        count,
-        width,
-        controls,
-        axis.knots,
-        sections[0].knots().to_vec(),
-    )
 }

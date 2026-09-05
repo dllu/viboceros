@@ -9,6 +9,35 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_sweep_macro_sets_actual_script_options_instead_of_dialog_labels(self):
+        for blend, name in [(0, "Local"), (1, "Global")]:
+            for refit, value in [(False, "No"), (True, "Yes")]:
+                script = self.worker._sweep1_macro({"blend": blend, "refit_rail": refit}, ["rail", "a", "b"])
+                self.assertTrue(script.startswith("_-Sweep1 '_-SelID rail '_-SelID a '_-SelID b _Enter"))
+                for expected in ["_Style=_Freeform", "_Simplify=_None", "_Closed=_No",
+                                 "_ShapeBlending=_" + name, "_RefitRail=_" + value]:
+                    self.assertIn(expected, script)
+                self.assertNotIn("FrameStyle", script)
+                self.assertNotIn("GlobalShapeBlending", script)
+
+    def test_surface_script_verification_rejects_ignored_options_even_on_success(self):
+        for rejected in [False, True]:
+            for truncated in [False, True]:
+                with self.subTest(rejected=rejected, truncated=truncated):
+                    app = SimpleNamespace(CommandHistoryWindowText="old Unknown command: unrelated\n")
+                    def run(script, echo):
+                        self.assertTrue(echo)
+                        app.CommandHistoryWindowText = ("" if truncated else app.CommandHistoryWindowText) + (
+                            "Command: _-Sweep1\n" + ("Unknown command: _BadOption\n" if rejected else "Sweep complete\n"))
+                        return True
+                    app.RunScript = run
+                    self.worker.Rhino.RhinoApp = app
+                    if rejected:
+                        with self.assertRaisesRegex(ValueError, "rejected an option"):
+                            self.worker._run_surface_script("_-Sweep1 _Enter", True)
+                    else:
+                        self.assertTrue(self.worker._run_surface_script("_-Sweep1 _Enter", True))
+
     def test_sweep_probe_disposes_inputs_and_replaced_results_on_every_exit(self):
         for failure in [None, "input", "build", "record", "empty"]:
             with self.subTest(failure=failure):

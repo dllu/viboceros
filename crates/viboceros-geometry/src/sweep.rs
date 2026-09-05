@@ -6,12 +6,15 @@ use crate::{
 };
 use std::ops::RangeInclusive;
 
+mod basis;
 mod fit;
 #[cfg(test)]
 mod tests;
 
 const MAX_SECTIONS: usize = 256;
 const MAX_SECTION_CONTROLS: usize = 512;
+const MAX_AXIS_CONTROLS: usize = 1024;
+const MAX_SURFACE_CONTROLS: usize = 262_144;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq)]
 pub enum SweepFrameStyle {
@@ -229,17 +232,24 @@ impl Sweep1 {
             .collect()
     }
 
-    /// Fits a tensor surface, U along the native rail and V along the sections.
-    /// Error checks are sampled and bounded; exhausted accuracy is an error.
+    /// Refits the rail to a cubic arc-length parameterization, then
+    /// interpolates transported profiles at its Greville stations.
     pub fn to_surface(&self) -> Result<NurbsSurface, GeometryError> {
+        basis::rail_basis(self, true)
+    }
+
+    /// Fits the continuous frame/blending model, not Rhino's fixed-basis sweep.
+    /// U follows native rail parameters. Audits are sampled and bounded.
+    pub fn fit_model_surface(&self) -> Result<NurbsSurface, GeometryError> {
         fit::fit(self)
     }
 
     /// Interpolates transported sections in the rail's existing rational
     /// basis. This preserves the rail basis, not a continuous rigid sweep
-    /// between interpolation sites. Currently accepts one supplied section.
+    /// between interpolation sites. Interior sections not already at Greville
+    /// stations require a refit before adding interpolation sites.
     pub fn to_rail_basis_surface(&self) -> Result<NurbsSurface, GeometryError> {
-        fit::rail_basis(self)
+        basis::rail_basis(self, false)
     }
 
     fn frames(&self, parameters: &[Real]) -> Result<Vec<Frame3>, GeometryError> {
