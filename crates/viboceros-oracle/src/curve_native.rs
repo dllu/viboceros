@@ -9,6 +9,27 @@ use viboceros_geometry::{AffineTransform3, Curve3, CurveRef, Tolerance, Vector3}
 #[cfg(test)]
 mod tests {
     #[test]
+    fn permanent_sided_fixture_checks_native_knots_and_composite_children() {
+        let request: crate::ProbeRequest = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/curve_sided_evaluation.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 45);
+        for result in &response.results {
+            assert!(result.value["sides"].as_array().unwrap().len() >= 3);
+        }
+        let polycurve = response
+            .results
+            .iter()
+            .find(|r| r.id == "sided-polycurve-polyline-domain")
+            .unwrap();
+        let knot = &polycurve.value["sides"][1];
+        assert_eq!(knot["parameter"], 2.0);
+        assert_eq!(knot["left"]["first"], serde_json::json!([0.5, 0.0, 0.0]));
+        assert_eq!(knot["right"]["first"], serde_json::json!([0.0, 1.0, 0.0]));
+    }
+    #[test]
     fn permanent_rational_jets_fixture_checks_nonuniform_speed() {
         let request: crate::ProbeRequest = serde_json::from_str(include_str!(
             "../../../tools/rhino_oracle/fixtures/nurbs_rational_jets.json"
@@ -195,6 +216,9 @@ pub struct NativeCurveFixture {
     /// Isolate differential evaluation from arc-length integration/inversion.
     #[serde(default)]
     pub differential_only: bool,
+    /// Exact native parameters at which both one-sided jets are recorded.
+    #[serde(default)]
+    pub sided_parameters: Vec<f64>,
 }
 
 pub(super) fn run(
@@ -244,7 +268,12 @@ pub(super) fn run(
             let records = curves
                 .iter()
                 .map(|curve| {
-                    let mut value = record(curve.as_ref(), tolerance, fixture.differential_only)?;
+                    let mut value = record(
+                        curve.as_ref(),
+                        tolerance,
+                        fixture.differential_only,
+                        &fixture.sided_parameters,
+                    )?;
                     value["type"] = json!(match curve {
                         Curve3::Line(_) => "line",
                         Curve3::Circle(_) | Curve3::Arc(_) => "arc",
@@ -257,7 +286,12 @@ pub(super) fn run(
                 .collect::<Result<Vec<_>, ProbeError>>()?;
             Ok(json!({"curves": records}))
         } else {
-            let mut value = record(curve.as_ref(), tolerance, fixture.differential_only)?;
+            let mut value = record(
+                curve.as_ref(),
+                tolerance,
+                fixture.differential_only,
+                &fixture.sided_parameters,
+            )?;
             if fixture.parameter_map {
                 value["parameter_map"] = Value::Array(
                     (0..=64)
@@ -414,6 +448,7 @@ fn record(
     view: CurveRef<'_>,
     tolerance: Tolerance,
     differential_only: bool,
+    sided_parameters: &[f64],
 ) -> Result<Value, ProbeError> {
     let mut samples = Vec::new();
     for i in 0..=32 {
@@ -433,6 +468,17 @@ fn record(
         "samples": samples,
         "nurbs": nurbs_curve_definition_value(&view.to_nurbs()?),
     });
+    if !sided_parameters.is_empty() {
+        value["sides"] = Value::Array(sided_parameters.iter().map(|&parameter| {
+            let mut sample = json!({"parameter": parameter});
+            for (name, side) in [("left", viboceros_geometry::CurveEvaluationSide::Left), ("right", viboceros_geometry::CurveEvaluationSide::Right)] {
+                let (p, first, second) = view.evaluate_with_second_derivative_on_side(parameter, side)?;
+                sample[name] = json!({"point": p.to_array(), "first": first.to_array(), "second": second.to_array(),
+                    "tangent": view.evaluate_with_tangent_on_side(parameter, side)?.tangent().as_vector().to_array()});
+            }
+            Ok(sample)
+        }).collect::<Result<Vec<_>, viboceros_geometry::GeometryError>>()?);
+    }
     if differential_only {
         return Ok(value);
     }

@@ -367,7 +367,18 @@ impl CurveRef<'_> {
 
     /// Evaluates the native parameter and its oriented unit tangent.
     pub fn evaluate_with_tangent(self, parameter: Real) -> Result<CurveSample, GeometryError> {
-        let point = self.evaluate(parameter)?;
+        self.evaluate_with_tangent_on_side(parameter, CurveEvaluationSide::Right)
+    }
+
+    /// One-sided oriented tangent at the exact parameter, without a parameter
+    /// perturbation. NURBS stationary points use the first nonzero higher
+    /// derivative; locally constant spans return a degeneracy error.
+    pub fn evaluate_with_tangent_on_side(
+        self,
+        parameter: Real,
+        side: CurveEvaluationSide,
+    ) -> Result<CurveSample, GeometryError> {
+        let point = self.evaluate_on_side(parameter, side)?;
         // Direction is independent of domain width. Avoid overflowing or
         // underflowing a derivative solely to normalize it immediately.
         let derivative = match self {
@@ -387,7 +398,8 @@ impl CurveRef<'_> {
                 crate::parameter::map_parameter(parameter, c.domain(), 0.0..=c.sweep_radians())?,
             )?,
             Self::Ellipse(c) => {
-                let jet = crate::curve_evaluate::ellipse_unit_jet(parameter, c.domain())?;
+                let jet =
+                    crate::curve_evaluate::ellipse_unit_jet_on_side(parameter, c.domain(), side)?;
                 combine_vectors(
                     c.x_axis().as_vector(),
                     c.y_axis().as_vector(),
@@ -396,15 +408,21 @@ impl CurveRef<'_> {
                 )?
             }
             Self::Polyline(c) => {
-                let (i, _) = c.parameter_location(parameter)?;
+                let (i, _) = c.parameter_location_on_side(parameter, side)?;
                 c.vertices()[i].vector_to(c.vertices()[i + 1])?
             }
-            Self::NurbsCurve(c) => c.derivative_at(parameter)?,
+            Self::NurbsCurve(c) => {
+                return Ok(CurveSample {
+                    parameter,
+                    point,
+                    tangent: c.tangent_at_on_side(parameter, side)?,
+                });
+            }
             Self::PolyCurve(c) => {
-                let index = c.segment_index(parameter, CurveEvaluationSide::Right)?;
+                let index = c.segment_index(parameter, side)?;
                 c.segments()[index]
                     .as_ref()
-                    .evaluate_with_tangent(c.segment_parameter(index, parameter)?)?
+                    .evaluate_with_tangent_on_side(c.segment_parameter(index, parameter)?, side)?
                     .tangent()
                     .as_vector()
             }
@@ -877,21 +895,27 @@ impl<'a> ArcLengthSampler<'a> {
             return Err(GeometryError::InvalidCurveFitAngleTolerance);
         }
 
-        let minimum_dot = angle_tolerance_radians.cos();
-        let roundoff = 128.0 * Real::EPSILON;
         let mut distances = Vec::new();
         for spans in self.spans.windows(2) {
             let left = spans[0];
             let right = spans[1];
-            let left_parameter = left.end.next_down().max(left.start);
-            let right_parameter = right.start.next_up().min(right.end);
-            let left_tangent = self.curve.evaluate_with_tangent(left_parameter)?.tangent();
-            let right_tangent = self.curve.evaluate_with_tangent(right_parameter)?.tangent();
+            let left_tangent = self
+                .curve
+                .evaluate_with_tangent_on_side(left.end, CurveEvaluationSide::Left)?
+                .tangent();
+            let right_tangent = self
+                .curve
+                .evaluate_with_tangent_on_side(right.start, CurveEvaluationSide::Right)?
+                .tangent();
             let dot = left_tangent
                 .as_vector()
                 .dot(right_tangent.as_vector())?
                 .clamp(-1.0, 1.0);
-            if dot < minimum_dot - roundoff {
+            let sine = left_tangent
+                .as_vector()
+                .cross(right_tangent.as_vector())?
+                .length()?;
+            if sine.atan2(dot) > angle_tolerance_radians {
                 distances.push(ArcLengthKink {
                     distance: left.cumulative_end,
                     incoming_tangent: left_tangent,
@@ -1562,8 +1586,8 @@ mod tests {
             Err(GeometryError::ParameterOutOfDomain { .. })
         ));
 
-        // Point-only division remains valid at a stationary curve endpoint;
-        // only the tangent-bearing API requires a regular sample there.
+        // C(t)=2t^2 has zero first derivative at the start, but its oriented
+        // limiting tangent exists and is supplied by the second derivative.
         let stationary_start = clamped_curve(
             2,
             vec![
@@ -1578,10 +1602,13 @@ mod tests {
                 .unwrap(),
             vec![point(0.0, 0.0, 0.0), point(2.0, 0.0, 0.0)]
         );
-        assert!(matches!(
-            CurveRef::NurbsCurve(&stationary_start).start_sample(Tolerance::DEFAULT),
-            Err(GeometryError::Degenerate { .. })
-        ));
+        assert_eq!(
+            CurveRef::NurbsCurve(&stationary_start)
+                .start_sample(Tolerance::DEFAULT)
+                .unwrap()
+                .tangent(),
+            axis(1.0, 0.0, 0.0)
+        );
 
         let slowly_parameterized = NurbsCurve::try_new(
             1,

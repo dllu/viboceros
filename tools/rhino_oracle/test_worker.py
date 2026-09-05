@@ -1,6 +1,7 @@
 """Test the worker's host-independent orchestration with a simulated document."""
 
 import importlib.util
+import math
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -96,6 +97,58 @@ class RhinoWorkerTests(unittest.TestCase):
             self.assertEqual(len(complete["divisions"]), 18)
             curve.GetLength.assert_called_once_with(1e-12)
             self.assertEqual(curve.NormalizedLengthParameter.call_count, 16)
+
+    def test_sided_records_use_derivative_points_and_restrict_stationary_tangents(self):
+        class Vector:
+            def __init__(self, source):
+                self.X, self.Y, self.Z = source.X, source.Y, source.Z
+
+            def Unitize(self):
+                length = math.hypot(self.X, self.Y, self.Z)
+                if length == 0:
+                    return False
+                self.X, self.Y, self.Z = self.X / length, self.Y / length, self.Z / length
+                return True
+
+        def xyz(x, y=0.0, z=0.0):
+            return SimpleNamespace(X=x, Y=y, Z=z)
+
+        self.worker.Rhino.Geometry = SimpleNamespace(
+            CurveEvaluationSide=SimpleNamespace(Below=-1, Above=1), Vector3d=Vector,
+            Interval=lambda a, b: SimpleNamespace(T0=a, T1=b),
+        )
+        for stationary in [False, True]:
+            with self.subTest(stationary=stationary):
+                pieces = []
+
+                def trim(interval):
+                    piece = SimpleNamespace(
+                        TangentAt=Mock(return_value=Vector(xyz(-1.0 if interval.T1 == 1.0 else 1.0))),
+                        Dispose=Mock(),
+                    )
+                    pieces.append(piece)
+                    return piece
+
+                curve = SimpleNamespace(
+                    Domain=SimpleNamespace(T0=0.0, T1=2.0, ParameterAt=lambda t: 2.0 * t),
+                    IsClosed=False, PointAt=lambda t: xyz(42.0), TangentAt=lambda t: xyz(1.0),
+                    DerivativeAt=lambda t, order, side=0: [xyz(10.0 + side), xyz(0.0 if stationary else 1.0), xyz(0.0)],
+                    Trim=Mock(side_effect=trim),
+                )
+                with patch.object(self.worker, "_nurbs_curve_definition", return_value={}):
+                    value = self.worker._curve_native_record(curve, {"relative": 1e-12}, True, [1.0])
+                self.assertEqual(value["sides"][0]["left"]["point"], [9.0, 0.0, 0.0])
+                self.assertEqual(value["sides"][0]["right"]["point"], [11.0, 0.0, 0.0])
+                if stationary:
+                    intervals = [call.args[0] for call in curve.Trim.call_args_list]
+                    self.assertEqual([(i.T0, i.T1) for i in intervals], [(0.0, 1.0), (1.0, 2.0)])
+                    self.assertEqual(value["sides"][0]["left"]["tangent"], [-1.0, 0.0, 0.0])
+                    self.assertEqual(value["sides"][0]["right"]["tangent"], [1.0, 0.0, 0.0])
+                    for piece in pieces:
+                        piece.TangentAt.assert_called_once_with(1.0)
+                        piece.Dispose.assert_called_once_with()
+                else:
+                    curve.Trim.assert_not_called()
 
 
 if __name__ == "__main__":

@@ -2454,13 +2454,12 @@ impl NurbsCurve {
     }
 
     pub(crate) fn kink_angle_at(&self, knot: Real) -> Result<Real, GeometryError> {
-        let (left, right) = self.try_split(knot)?;
-        let incoming = match left.derivative_at(knot)?.normalized_nonzero() {
+        let incoming = match self.tangent_at_on_side(knot, crate::CurveEvaluationSide::Left) {
             Ok(tangent) => tangent,
             Err(GeometryError::Degenerate { .. }) => return Ok(std::f64::consts::PI),
             Err(error) => return Err(error),
         };
-        let outgoing = match right.derivative_at(knot)?.normalized_nonzero() {
+        let outgoing = match self.tangent_at_on_side(knot, crate::CurveEvaluationSide::Right) {
             Ok(tangent) => tangent,
             Err(GeometryError::Degenerate { .. }) => return Ok(std::f64::consts::PI),
             Err(error) => return Err(error),

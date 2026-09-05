@@ -59,6 +59,8 @@ with rational representations; the `curve_cut` command module uses it for
 NURBS differential evaluation and homogeneous weight matching have separate
 `nurbs/evaluate` and `nurbs/weights` modules. See [rational numerical policy](nurbs-numerics.md)
 for local-coordinate evaluation, degree-one acceleration, and scale-safe seam joins.
+The shared [one-sided evaluator](curve-sided-evaluation.md) propagates side choices
+through composite leaves and supplies exact kink checks and stationary tangents.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

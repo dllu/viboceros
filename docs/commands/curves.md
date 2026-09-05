@@ -46,6 +46,8 @@ polyline, or NURBS curve with a non-rational NURBS curve of degree 1 through
 11. Output parameters approximate source arc length; endpoints, endpoint
 tangents, and polyline/NURBS kinks above `AngleTolerance` (in degrees) are
 preserved. `Tolerance` defaults to the document absolute tolerance.
+Kink and endpoint tangents use [exact one-sided limits](../curve-sided-evaluation.md),
+including stationary points with a nonzero higher derivative.
 `DeleteInput=Yes` and `OutputLayer=InputObject` are the Rhino-compatible
 defaults and replace each result in place; `DeleteInput=No` retains the source,
 while `OutputLayer=CurrentLayer` puts fresh results on the current layer.

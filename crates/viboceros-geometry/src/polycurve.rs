@@ -4,8 +4,8 @@ use crate::parameter::{checked_parameter, map_parameter, scaled_ratio};
 use std::ops::RangeInclusive;
 
 use crate::{
-    AffineTransform3, BoundingBox3, CurveSegment3, GeometryError, NurbsCurve, Point3, Polyline3,
-    Real, Tolerance, Vector3, nurbs::curve_points_coincident, require_finite,
+    AffineTransform3, BoundingBox3, CurveEvaluationSide, CurveSegment3, GeometryError, NurbsCurve,
+    Point3, Polyline3, Real, Tolerance, Vector3, nurbs::curve_points_coincident, require_finite,
 };
 
 #[cfg(test)]
@@ -13,14 +13,6 @@ mod tests;
 
 pub const MAX_POLYCURVE_SEGMENTS: usize = 65_536;
 const MAX_CONVERSION_CONTROLS: usize = 1_000_000;
-
-/// Which segment supplies a derivative at a polycurve junction.
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub enum CurveEvaluationSide {
-    Left,
-    #[default]
-    Right,
-}
 
 /// A flat sequence of native curve segments, without fitting or endpoint edits.
 ///
@@ -213,17 +205,36 @@ impl PolyCurve3 {
     }
 
     pub fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
-        let index = self.segment_index(parameter, CurveEvaluationSide::Right)?;
-        self.segments[index].evaluate(self.segment_parameter(index, parameter)?)
+        self.evaluate_on_side(parameter, CurveEvaluationSide::Right)
+    }
+
+    pub fn evaluate_on_side(
+        &self,
+        parameter: Real,
+        side: CurveEvaluationSide,
+    ) -> Result<Point3, GeometryError> {
+        let index = self.segment_index(parameter, side)?;
+        self.segments[index]
+            .as_ref()
+            .evaluate_on_side(self.segment_parameter(index, parameter)?, side)
     }
 
     pub fn evaluate_with_derivative(
         &self,
         parameter: Real,
     ) -> Result<(Point3, Vector3), GeometryError> {
-        let index = self.segment_index(parameter, CurveEvaluationSide::Right)?;
+        self.evaluate_with_derivative_on_side(parameter, CurveEvaluationSide::Right)
+    }
+
+    pub fn evaluate_with_derivative_on_side(
+        &self,
+        parameter: Real,
+        side: CurveEvaluationSide,
+    ) -> Result<(Point3, Vector3), GeometryError> {
+        let index = self.segment_index(parameter, side)?;
         let (point, derivative) = self.segments[index]
-            .evaluate_with_derivative(self.segment_parameter(index, parameter)?)?;
+            .as_ref()
+            .evaluate_with_derivative_on_side(self.segment_parameter(index, parameter)?, side)?;
         Ok((point, self.scale_derivative(index, derivative)?))
     }
 
@@ -234,7 +245,11 @@ impl PolyCurve3 {
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         let index = self.segment_index(parameter, side)?;
         let (point, first, second) = self.segments[index]
-            .evaluate_with_second_derivative(self.segment_parameter(index, parameter)?)?;
+            .as_ref()
+            .evaluate_with_second_derivative_on_side(
+                self.segment_parameter(index, parameter)?,
+                side,
+            )?;
         Ok((
             point,
             self.scale_derivative(index, first)?,

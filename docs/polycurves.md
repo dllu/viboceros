@@ -5,6 +5,8 @@
 `PolyCurve3` is the kernel's flat, exact piecewise curve representation.
 `CurveSegment3` retains native lines, circular arcs, polylines, and NURBS curves,
 including their local domains, vertex parameters, and rational control structure.
+Explicit [side selection](curve-sided-evaluation.md) reaches interior leaf knots
+as well as composite junctions.
 An independent increasing array assigns each segment its interval in the composite.
 There is no fitting, tessellation, or endpoint averaging during construction.
 

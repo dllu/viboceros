@@ -7,6 +7,8 @@
 owns the same representations; `try_reparameterized` changes their intervals
 without changing the locus. `CurveSample::parameter()` belongs to the source
 curve's native interval, including negative reversed intervals.
+[One-sided evaluation](curve-sided-evaluation.md) selects exact left/right limits
+at knots, including knots inside composite leaves and stationary limiting tangents.
 
 | Curve | Initial native interval | Parameterization |
 | --- | --- | --- |
@@ -42,7 +44,7 @@ between the two parameterizations, including independent polycurve leaf domains.
 See [native curve cutting](curve-cutting.md) for numerical policy and oracle evidence.
 
 Analytic derivatives use oriented frames, not world-space subtraction from a
-rounded evaluated point. Tangents do not divide by parameter-span width, so an
+rounded evaluated point. Analytic and polyline tangents do not divide by parameter-span width, so an
 extremely small interval need not invalidate a well-defined direction. Requesting
 a first derivative does not require a representable second derivative.
 Line/arc/circle/polyline spans have direct arc-length inversion, including inside

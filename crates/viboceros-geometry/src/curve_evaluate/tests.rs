@@ -5,7 +5,7 @@ use crate::{
 };
 use std::f64::consts::{FRAC_PI_2, TAU};
 
-fn p(x: Real, y: Real, z: Real) -> Point3 {
+pub(super) fn p(x: Real, y: Real, z: Real) -> Point3 {
     Point3::try_new(x, y, z).unwrap()
 }
 fn axis(x: Real, y: Real, z: Real) -> UnitVector3 {
@@ -23,7 +23,7 @@ fn circle() -> Circle3 {
     )
     .unwrap()
 }
-fn ellipse() -> Ellipse3 {
+pub(super) fn ellipse() -> Ellipse3 {
     Ellipse3::try_new(
         p(1.0, 2.0, 3.0),
         5.0,
@@ -34,10 +34,10 @@ fn ellipse() -> Ellipse3 {
     )
     .unwrap()
 }
-fn near(a: Point3, b: Point3) {
+pub(super) fn near(a: Point3, b: Point3) {
     assert!(a.distance_to(b).unwrap() < 2e-11, "{a:?} != {b:?}");
 }
-fn near_vector(a: Vector3, b: Vector3) {
+pub(super) fn near_vector(a: Vector3, b: Vector3) {
     for (a, b) in a.to_array().into_iter().zip(b.to_array()) {
         assert!((a - b).abs() < 2e-11, "{a} != {b}");
     }

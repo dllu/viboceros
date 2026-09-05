@@ -1,12 +1,23 @@
 //! Shared native curve domains and allocation-free analytic evaluation.
 
 use crate::parameter::{map_parameter, scaled_ratio};
-use crate::{CurveEvaluationSide, CurveRef, GeometryError, Point3, Real, Vector3};
+use crate::{CurveRef, GeometryError, Point3, Real, Vector3};
 use std::f64::consts::{FRAC_1_SQRT_2, TAU};
 use std::ops::RangeInclusive;
 
 #[cfg(test)]
+mod sides;
+#[cfg(test)]
 mod tests;
+
+/// Which one-sided limit to evaluate at an exact curve knot or junction.
+/// At domain endpoints both choices use the only available interior side.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum CurveEvaluationSide {
+    Left,
+    #[default]
+    Right,
+}
 
 impl CurveRef<'_> {
     /// The native parameter interval, independent of the current curve length.
@@ -32,14 +43,23 @@ impl CurveRef<'_> {
 
     /// Evaluates a checked native parameter. This does not extrapolate.
     pub fn evaluate(self, parameter: Real) -> Result<Point3, GeometryError> {
+        self.evaluate_on_side(parameter, CurveEvaluationSide::Right)
+    }
+
+    /// Exact one-sided point, including positional jumps at full-order knots.
+    pub fn evaluate_on_side(
+        self,
+        parameter: Real,
+        side: CurveEvaluationSide,
+    ) -> Result<Point3, GeometryError> {
         match self {
             Self::Line(c) => c.evaluate(parameter),
             Self::Circle(c) => c.evaluate(parameter),
             Self::Arc(c) => c.evaluate(parameter),
             Self::Ellipse(c) => c.evaluate(parameter),
             Self::Polyline(c) => c.evaluate(parameter),
-            Self::NurbsCurve(c) => c.evaluate(parameter),
-            Self::PolyCurve(c) => c.evaluate(parameter),
+            Self::NurbsCurve(c) => c.evaluate_on_side(parameter, side),
+            Self::PolyCurve(c) => c.evaluate_on_side(parameter, side),
         }
     }
 
@@ -49,14 +69,24 @@ impl CurveRef<'_> {
         self,
         parameter: Real,
     ) -> Result<(Point3, Vector3), GeometryError> {
+        self.evaluate_with_derivative_on_side(parameter, CurveEvaluationSide::Right)
+    }
+
+    /// Point and first derivative from the requested side, without perturbing
+    /// the parameter or requiring a representable second derivative.
+    pub fn evaluate_with_derivative_on_side(
+        self,
+        parameter: Real,
+        side: CurveEvaluationSide,
+    ) -> Result<(Point3, Vector3), GeometryError> {
         match self {
-            Self::NurbsCurve(c) => return c.evaluate_with_derivative(parameter),
-            Self::PolyCurve(c) => return c.evaluate_with_derivative(parameter),
+            Self::NurbsCurve(c) => return c.evaluate_with_derivative_on_side(parameter, side),
+            Self::PolyCurve(c) => return c.evaluate_with_derivative_on_side(parameter, side),
             _ => {}
         }
         Ok((
-            self.evaluate(parameter)?,
-            self.analytic_derivative(parameter, 1)?,
+            self.evaluate_on_side(parameter, side)?,
+            self.analytic_derivative(parameter, 1, side)?,
         ))
     }
 
@@ -66,20 +96,36 @@ impl CurveRef<'_> {
         self,
         parameter: Real,
     ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
+        self.evaluate_with_second_derivative_on_side(parameter, CurveEvaluationSide::Right)
+    }
+
+    /// Point and first/second native derivatives from an exact one-sided limit.
+    pub fn evaluate_with_second_derivative_on_side(
+        self,
+        parameter: Real,
+        side: CurveEvaluationSide,
+    ) -> Result<(Point3, Vector3, Vector3), GeometryError> {
         match self {
-            Self::NurbsCurve(c) => return c.evaluate_with_second_derivative(parameter),
+            Self::NurbsCurve(c) => {
+                return c.evaluate_with_second_derivative_on_side(parameter, side);
+            }
             Self::PolyCurve(c) => {
-                return c.evaluate_with_second_derivative(parameter, CurveEvaluationSide::Right);
+                return c.evaluate_with_second_derivative(parameter, side);
             }
             _ => {}
         }
         Ok((
-            self.evaluate(parameter)?,
-            self.analytic_derivative(parameter, 1)?,
-            self.analytic_derivative(parameter, 2)?,
+            self.evaluate_on_side(parameter, side)?,
+            self.analytic_derivative(parameter, 1, side)?,
+            self.analytic_derivative(parameter, 2, side)?,
         ))
     }
-    fn analytic_derivative(self, parameter: Real, order: usize) -> Result<Vector3, GeometryError> {
+    fn analytic_derivative(
+        self,
+        parameter: Real,
+        order: usize,
+        side: CurveEvaluationSide,
+    ) -> Result<Vector3, GeometryError> {
         let domain = self.domain();
         let width = domain.end() - domain.start();
         let zero = Vector3::try_new(0.0, 0.0, 0.0)?;
@@ -92,7 +138,7 @@ impl CurveRef<'_> {
                 }
             }
             Self::Polyline(c) => {
-                let (i, _) = c.parameter_location(parameter)?;
+                let (i, _) = c.parameter_location_on_side(parameter, side)?;
                 if order == 1 {
                     scale(
                         c.vertices()[i].vector_to(c.vertices()[i + 1])?,
@@ -104,7 +150,7 @@ impl CurveRef<'_> {
                 }
             }
             Self::Ellipse(c) => {
-                let jet = ellipse_unit_jet(parameter, domain)?;
+                let jet = ellipse_unit_jet_on_side(parameter, domain, side)?;
                 let mut vector = combine(
                     c.x_axis().as_vector(),
                     c.y_axis().as_vector(),
@@ -169,8 +215,20 @@ pub(crate) fn ellipse_unit_jet(
     parameter: Real,
     domain: RangeInclusive<Real>,
 ) -> Result<[[Real; 2]; 3], GeometryError> {
+    ellipse_unit_jet_on_side(parameter, domain, CurveEvaluationSide::Right)
+}
+
+pub(crate) fn ellipse_unit_jet_on_side(
+    parameter: Real,
+    domain: RangeInclusive<Real>,
+    side: CurveEvaluationSide,
+) -> Result<[[Real; 2]; 3], GeometryError> {
     let t = map_parameter(parameter, domain, 0.0..=4.0)?;
-    let quadrant = (t.floor() as usize).min(3);
+    let mut quadrant = t.floor() as usize;
+    if side == CurveEvaluationSide::Left && quadrant > 0 && t == quadrant as Real {
+        quadrant -= 1;
+    }
+    let quadrant = quadrant.min(3);
     let u = t - quadrant as Real;
     let v = 1.0 - u;
     let w = FRAC_1_SQRT_2;

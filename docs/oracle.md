@@ -78,6 +78,11 @@ to omit length/division calls, isolating derivative evaluation from Rhino's fail
 translated length inversion. See [rational numerical validation](nurbs-numerics.md)
 for analytic checks, observed errors, and remaining kernel limits.
 
+`curve_sided_evaluation.json` compares 45 native left/right limit cases via
+`sided_parameters`, including composite child knots and stationary endpoints.
+See [one-sided evaluation](curve-sided-evaluation.md) for the exact-limit contract,
+Rhino probe construction, and native-only full-order knot tests.
+
 `curve_parameter_map.json` adds both native/rational parameter maps to those records.
 `curve_native_cutting.json` tests cutting-object Split and Trim on all curve families,
 including wrapped outputs, seam hits, and projected cuts. `curve_native_extrusion.json`

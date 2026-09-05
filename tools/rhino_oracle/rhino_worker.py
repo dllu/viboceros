@@ -1030,7 +1030,7 @@ def _curve_native(operation, iterations, tolerance):
                         raise ValueError("native curve transform failed")
                 edit = operation.get("edit")
                 if edit is None:
-                    value = _curve_native_record(curve, tolerance, operation.get("differential_only", False))
+                    value = _curve_native_record(curve, tolerance, operation.get("differential_only", False), operation.get("sided_parameters", []))
                     if operation.get("parameter_map"):
                         mapping = []
                         for i in range(65):
@@ -1065,7 +1065,7 @@ def _curve_native(operation, iterations, tolerance):
                     curves = [result]
                 records = []
                 for result in curves:
-                    value = _curve_native_record(result, tolerance, operation.get("differential_only", False))
+                    value = _curve_native_record(result, tolerance, operation.get("differential_only", False), operation.get("sided_parameters", []))
                     value["type"] = ("arc" if isinstance(result, Rhino.Geometry.ArcCurve) else
                                      "line" if isinstance(result, Rhino.Geometry.LineCurve) else
                                      "polyline" if isinstance(result, Rhino.Geometry.PolylineCurve) else
@@ -1080,7 +1080,7 @@ def _curve_native(operation, iterations, tolerance):
         source.Dispose()
 
 
-def _curve_native_record(curve, tolerance, differential_only=False):
+def _curve_native_record(curve, tolerance, differential_only=False, sided_parameters=()):
     samples = []
     for i in range(33):
         parameter = float(curve.Domain.ParameterAt(float(i) / 32.0))
@@ -1092,6 +1092,34 @@ def _curve_native_record(curve, tolerance, differential_only=False):
                         "tangent": _xyz(curve.TangentAt(parameter))})
     value = {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
              "samples": samples, "nurbs": _nurbs_curve_definition(curve)}
+    if sided_parameters:
+        sides = []
+        for parameter in sided_parameters:
+            sample = {"parameter": float(parameter)}
+            for name, side in [("left", Rhino.Geometry.CurveEvaluationSide.Below), ("right", Rhino.Geometry.CurveEvaluationSide.Above)]:
+                derivatives = curve.DerivativeAt(float(parameter), 2, side)
+                if derivatives is None or len(derivatives) != 3:
+                    raise ValueError("one-sided curve derivatives failed")
+                tangent = Rhino.Geometry.Vector3d(derivatives[1])
+                if not tangent.Unitize():
+                    # TangentAt has no public side argument. Restrict its
+                    # domain to the selected side at a stationary point.
+                    below = parameter == curve.Domain.T1 or (name == "left" and parameter > curve.Domain.T0)
+                    interval = (Rhino.Geometry.Interval(curve.Domain.T0, parameter) if below else
+                                Rhino.Geometry.Interval(parameter, curve.Domain.T1))
+                    piece = curve.Trim(interval)
+                    if piece is None:
+                        raise ValueError("could not restrict stationary tangent to one side")
+                    try:
+                        tangent = piece.TangentAt(float(parameter))
+                        if not tangent.Unitize():
+                            raise ValueError("one-sided curve tangent is degenerate")
+                    finally:
+                        piece.Dispose()
+                sample[name] = {"point": _xyz(derivatives[0]), "first": _xyz(derivatives[1]),
+                                "second": _xyz(derivatives[2]), "tangent": _xyz(tangent)}
+            sides.append(sample)
+        value["sides"] = sides
     if differential_only:
         return value
     divisions = []
