@@ -87,6 +87,8 @@ Rhino probe construction, and native-only full-order knot tests.
 files, including decomposed full-order knots and all visibility/locking states.
 Unlike independent-construction probes, `compare` supplies shared private artifact
 paths and cleans them after both readers finish. See [curve interchange](curve-3dm-interchange.md).
+`rational_3dm_range.json` checks four extreme-coordinate/weight cases using zero
+absolute epsilon and relative `1e-12`; see [numeric range validation](rational-3dm-range.md).
 
 `curve_parameter_map.json` adds both native/rational parameter maps to those records.
 `curve_native_cutting.json` tests cutting-object Split and Trim on all curve families,

@@ -1,6 +1,7 @@
 #include "viboceros_opennurbs.h"
 
 #include "opennurbs_public.h"
+#include "rational_coordinates.h"
 
 #include <algorithm>
 #include <cmath>
@@ -260,12 +261,12 @@ bool append_nurbs(const ON_Curve& source, BridgeObject& output) {
   output.control_point_count_u = static_cast<size_t>(curve.CVCount());
   output.coordinates.reserve(output.control_point_count_u * 4);
   for (int index = 0; index < curve.CVCount(); ++index) {
+    ON_4dPoint homogeneous;
     ON_3dPoint point;
-    const double weight = curve.Weight(index);
-    if (!curve.GetCV(index, point) || !point.IsValid() ||
-        !std::isfinite(weight) || weight == 0.0) {
+    if (!curve.GetCV(index, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
       return false;
     }
+    const double weight = homogeneous.w;
     output.coordinates.insert(output.coordinates.end(),
                               {point.x, point.y, point.z, weight});
   }
@@ -302,12 +303,12 @@ bool append_nurbs_surface(const ON_Surface& source, BridgeObject& output) {
                              output.control_point_count_v * 4);
   for (int v = 0; v < surface.CVCount(1); ++v) {
     for (int u = 0; u < surface.CVCount(0); ++u) {
+      ON_4dPoint homogeneous;
       ON_3dPoint point;
-      const double weight = surface.Weight(u, v);
-      if (!surface.GetCV(u, v, point) || !point.IsValid() ||
-          !std::isfinite(weight) || weight == 0.0) {
+      if (!surface.GetCV(u, v, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
         return false;
       }
+      const double weight = homogeneous.w;
       output.coordinates.insert(output.coordinates.end(),
                                 {point.x, point.y, point.z, weight});
     }
@@ -342,12 +343,12 @@ bool write_nurbs_curve(const ON_Curve& source, int dimension,
   writer.U64(static_cast<uint64_t>(curve.CVCount()));
   writer.U64(static_cast<uint64_t>(curve.KnotCount()) + 2);
   for (int index = 0; index < curve.CVCount(); ++index) {
+    ON_4dPoint homogeneous;
     ON_3dPoint point;
-    const double weight = curve.Weight(index);
-    if (!curve.GetCV(index, point) || !point.IsValid() ||
-        !std::isfinite(weight) || weight == 0.0) {
+    if (!curve.GetCV(index, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
       return false;
     }
+    const double weight = homogeneous.w;
     writer.Double(point.x);
     writer.Double(point.y);
     if (dimension == 3) {
@@ -446,12 +447,12 @@ bool write_nurbs_surface(const ON_Surface& source, ByteWriter& writer) {
   writer.U64(static_cast<uint64_t>(surface.KnotCount(1)) + 2);
   for (int v = 0; v < surface.CVCount(1); ++v) {
     for (int u = 0; u < surface.CVCount(0); ++u) {
+      ON_4dPoint homogeneous;
       ON_3dPoint point;
-      const double weight = surface.Weight(u, v);
-      if (!surface.GetCV(u, v, point) || !point.IsValid() ||
-          !std::isfinite(weight) || weight == 0.0) {
+      if (!surface.GetCV(u, v, homogeneous) || !vibo::EuclideanControl(homogeneous, point)) {
         return false;
       }
+      const double weight = homogeneous.w;
       writer.Double(point.x);
       writer.Double(point.y);
       writer.Double(point.z);
@@ -690,19 +691,26 @@ std::unique_ptr<ON_NurbsCurve> read_nurbs_curve(ByteReader& reader,
     return nullptr;
   }
 
+  std::vector<double> controls(coordinate_count);
+  for (double& value : controls) {
+    if (!reader.Double(value) || !std::isfinite(value)) {
+      error = "NURBS curve has invalid control data";
+      return nullptr;
+    }
+  }
+  const auto control = [&](size_t index) {
+    return controls.data() + index * static_cast<size_t>(dimension + 1);
+  };
+  int shift = 0;
+  if (!vibo::RationalScale(control_count, dimension, control, shift, error))
+    return nullptr;
   auto curve = std::make_unique<ON_NurbsCurve>(
       dimension, true, static_cast<int>(degree) + 1,
       static_cast<int>(control_count));
   for (size_t index = 0; index < control_count; ++index) {
-    double values[4] = {0.0, 0.0, 0.0, 0.0};
-    bool valid = true;
-    for (int coordinate = 0; coordinate <= dimension; ++coordinate) {
-      valid = valid && reader.Double(values[coordinate]) &&
-              std::isfinite(values[coordinate]);
-    }
-    if (!valid || values[dimension] == 0.0 ||
-        !curve->SetCV(static_cast<int>(index), ON::euclidean_rational,
-                      values)) {
+    double values[4] = {};
+    if (!vibo::HomogeneousControl(control(index), dimension, shift, values) ||
+        !curve->SetCV(static_cast<int>(index), ON::homogeneous_rational, values)) {
       error = "B-rep NURBS curve has an invalid control point";
       return nullptr;
     }
@@ -756,6 +764,17 @@ std::unique_ptr<ON_NurbsSurface> read_nurbs_surface(ByteReader& reader,
     return nullptr;
   }
 
+  std::vector<double> controls(coordinate_count);
+  for (double& value : controls) {
+    if (!reader.Double(value) || !std::isfinite(value)) {
+      error = "NURBS surface has invalid control data";
+      return nullptr;
+    }
+  }
+  const auto control = [&](size_t index) { return controls.data() + index * 4; };
+  int shift = 0;
+  if (!vibo::RationalScale(count_u * count_v, 3, control, shift, error))
+    return nullptr;
   auto surface = std::make_unique<ON_NurbsSurface>(
       3, true, static_cast<int>(degree_u) + 1,
       static_cast<int>(degree_v) + 1, static_cast<int>(count_u),
@@ -763,15 +782,10 @@ std::unique_ptr<ON_NurbsSurface> read_nurbs_surface(ByteReader& reader,
   for (size_t v = 0; v < count_v; ++v) {
     for (size_t u = 0; u < count_u; ++u) {
       double values[4] = {};
-      bool valid = true;
-      for (double& value : values) {
-        valid = valid && reader.Double(value) && std::isfinite(value);
-      }
-      if (!valid || values[3] <= 0.0 ||
+      if (!vibo::HomogeneousControl(control(v * count_u + u), 3, shift, values) ||
           !surface->SetCV(
               static_cast<int>(u), static_cast<int>(v),
-              ON_4dPoint(values[0] * values[3], values[1] * values[3],
-                         values[2] * values[3], values[3]))) {
+              ON_4dPoint(values[0], values[1], values[2], values[3]))) {
         error = "B-rep NURBS surface has an invalid control point";
         return nullptr;
       }
@@ -1174,16 +1188,17 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         error = "NURBS curve dimensions are inconsistent";
         return nullptr;
       }
+      const auto control = [&](size_t index) { return source.coordinates + index * 4; };
+      int shift = 0;
+      if (!vibo::RationalScale(source.control_point_count_u, 3, control, shift, error))
+        return nullptr;
       auto* curve = new ON_NurbsCurve(
           3, true, static_cast<int>(source.degree_u) + 1,
           static_cast<int>(source.control_point_count_u));
       for (size_t index = 0; index < source.control_point_count_u; ++index) {
-        const double* point = source.coordinates + index * 4;
-        const double weight = point[3];
-        if (weight == 0.0 ||
-            !curve->SetCV(static_cast<int>(index),
-                          ON_4dPoint(point[0] * weight, point[1] * weight,
-                                     point[2] * weight, weight))) {
+        double values[4] = {};
+        if (!vibo::HomogeneousControl(control(index), 3, shift, values) ||
+            !curve->SetCV(static_cast<int>(index), ON::homogeneous_rational, values)) {
           delete curve;
           error = "NURBS curve has an invalid control point weight";
           return nullptr;
@@ -1224,6 +1239,11 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
         error = "NURBS surface dimensions are inconsistent";
         return nullptr;
       }
+      const auto control = [&](size_t index) { return source.coordinates + index * 4; };
+      int shift = 0;
+      if (!vibo::RationalScale(source.control_point_count_u * source.control_point_count_v,
+                              3, control, shift, error))
+        return nullptr;
       auto* surface = new ON_NurbsSurface(
           3, true, static_cast<int>(source.degree_u) + 1,
           static_cast<int>(source.degree_v) + 1,
@@ -1232,13 +1252,11 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       for (size_t v = 0; v < source.control_point_count_v; ++v) {
         for (size_t u = 0; u < source.control_point_count_u; ++u) {
           const size_t index = v * source.control_point_count_u + u;
-          const double* point = source.coordinates + index * 4;
-          const double weight = point[3];
-          if (weight == 0.0 ||
+          double values[4] = {};
+          if (!vibo::HomogeneousControl(control(index), 3, shift, values) ||
               !surface->SetCV(
                   static_cast<int>(u), static_cast<int>(v),
-                  ON_4dPoint(point[0] * weight, point[1] * weight,
-                             point[2] * weight, weight))) {
+                  ON_4dPoint(values[0], values[1], values[2], values[3]))) {
             delete surface;
             error = "NURBS surface has an invalid control point weight";
             return nullptr;

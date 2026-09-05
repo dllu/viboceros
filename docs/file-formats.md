@@ -33,6 +33,9 @@ pieces before export. Connected pieces become PolyCurves; positional gaps produc
 separate objects with the original attributes. Export reports the actual object
 count without editing the document. See [full-order curve interchange](curve-3dm-interchange.md)
 for parameter preservation, cross-reader tests, and remaining limits.
+The [rational range adapter](rational-3dm-range.md) prevents silent homogeneous
+coordinate underflow, chooses safe common weight scales when needed, and imports
+subnormal-weight curves and surfaces through direct homogeneous division.
 An independently generated Rhino 8 nested line/arc reference is retained in
 `crates/viboceros-io/tests/fixtures/`, with its generator and provenance documented
 alongside it. Tests check the analytic locus and subsequent round trip.

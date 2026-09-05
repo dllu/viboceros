@@ -13,6 +13,7 @@ fn main() {
     println!("cargo:rerun-if-changed=native/CMakeLists.txt");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.cpp");
     println!("cargo:rerun-if-changed=native/viboceros_opennurbs.h");
+    println!("cargo:rerun-if-changed=native/rational_coordinates.h");
     println!("cargo:rerun-if-changed={}", open_nurbs.display());
 
     let destination = cmake::Config::new(crate_dir.join("native"))

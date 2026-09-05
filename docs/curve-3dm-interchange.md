@@ -52,6 +52,9 @@ counts and unchanged selection, geometry, groups, and usable undo/redo history.
 `curve_3dm_interchange.json` is a cross-reader probe, not two independent exporters.
 The Python client's `compare` mode allocates private temporary paths. Viboceros
 writes each file; both native and Rhino readers then inspect that same file.
+The native probe first validates 65 parameter-matched samples per written curve
+against its source, using exact one-sided limits at decomposed endpoints and
+relative `1e-12` without an absolute floor.
 Rhino checks curve validity and records native types, domains, 33 samples per
 curve and leaf, NURBS definitions, and file attributes. Six cases cover ordinary
 lines, connected extreme-weight blocks, positional jumps, closed children, mixed
@@ -77,8 +80,8 @@ All six cases passed in Rhino 8 on 2026-09-04 at absolute `1e-10`, relative
 ## Remaining limits
 
 This adapter handles free curves, not B-rep edges/trims or full-order surface
-knots. Those require topology-aware decomposition. It also does not solve all
-floating-point serialization limits: OpenNURBS stores homogeneous `point * weight`
-coordinates, whose products must remain representable. Kernel active-weight
-normalization limits still apply. Sampled reader agreement is bounded evidence,
+knots. Those require topology-aware decomposition. A separate
+[numeric range adapter](rational-3dm-range.md) now chooses safe common binary
+weight scales before storing homogeneous coordinates and rejects unrecoverable
+controls. Kernel active-weight normalization limits still apply. Sampled reader agreement is bounded evidence,
 not a proof for every possible curve or floating-point input.

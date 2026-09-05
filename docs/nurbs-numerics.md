@@ -64,6 +64,12 @@ become PolyCurves; genuine gaps become separate objects. See
 [one-sided limits](curve-sided-evaluation.md) for native positional-jump tests
 and the observed Rhino input rejection.
 
+The [3DM numeric adapter](rational-3dm-range.md) additionally rescales complete
+control polygons/nets when their Euclidean-to-homogeneous products would lose
+coordinates or overflow. Import divides homogeneous coordinates directly rather
+than forming an overflowing reciprocal. This file-boundary policy does not change
+the kernel's evaluation algorithms or within-span normalization limits.
+
 ## Validation and limits
 
 `nurbs_rational_jets.json` contains 23 public Rhino API comparisons: unequal-weight

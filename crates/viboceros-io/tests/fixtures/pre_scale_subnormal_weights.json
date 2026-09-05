@@ -1,0 +1,18 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [{
+    "op": "three_dm_curve_interchange",
+    "id": "pre-scale-subnormal-weights",
+    "artifact_path": "crates/viboceros-io/tests/fixtures/pre_scale_subnormal_weights.3dm",
+    "curve": {
+      "type": "nurbs", "degree": 2,
+      "control_points": [
+        {"point": [1,1,0], "weight": 1e-320},
+        {"point": [2,3,1], "weight": 5e-321},
+        {"point": [3,1,0], "weight": 1e-320}
+      ],
+      "knots": [0,0,0,1,1,1]
+    }
+  }]
+}

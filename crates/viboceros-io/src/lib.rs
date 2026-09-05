@@ -5,6 +5,8 @@ mod stl;
 mod three_dm;
 mod three_dm_curves;
 mod three_dm_geometry;
+#[cfg(test)]
+mod three_dm_rational_tests;
 
 pub use step::{
     StepError, StepImport, StepImportReport, StepObject, read_step, read_step_file, write_step,

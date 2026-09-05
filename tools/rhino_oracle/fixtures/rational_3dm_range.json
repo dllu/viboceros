@@ -1,0 +1,50 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "three_dm_curve_interchange", "id": "file-underflowing-homogeneous-products",
+      "curve": {
+        "type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [1e-200,1e-200,0], "weight": 1e-200},
+          {"point": [2e-200,3e-200,1e-200], "weight": 5e-201},
+          {"point": [3e-200,1e-200,0], "weight": 1e-200}
+        ], "knots": [0,0,0,1,1,1]
+      }
+    },
+    {
+      "op": "three_dm_curve_interchange", "id": "file-overflowing-homogeneous-products",
+      "curve": {
+        "type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [1e200,1e200,0], "weight": 1e200},
+          {"point": [2e200,3e200,1e200], "weight": 5e199},
+          {"point": [3e200,1e200,0], "weight": 1e200}
+        ], "knots": [0,0,0,1,1,1]
+      }
+    },
+    {
+      "op": "three_dm_curve_interchange", "id": "file-subnormal-projective-weights",
+      "curve": {
+        "type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [1,1,0], "weight": 1e-320},
+          {"point": [2,3,1], "weight": 5e-321},
+          {"point": [3,1,0], "weight": 1e-320}
+        ], "knots": [0,0,0,1,1,1]
+      }
+    },
+    {
+      "op": "three_dm_curve_interchange", "id": "file-negative-overflowing-weights",
+      "curve": {
+        "type": "nurbs", "degree": 2,
+        "control_points": [
+          {"point": [1,1,0], "weight": -1e308},
+          {"point": [2,3,1], "weight": -5e307},
+          {"point": [3,1,0], "weight": -1e308}
+        ], "knots": [0,0,0,1,1,1]
+      }
+    }
+  ]
+}

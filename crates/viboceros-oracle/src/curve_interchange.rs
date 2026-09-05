@@ -4,7 +4,7 @@ use super::{OracleTemporaryFile, ProbeError, curve_join_close::CurveInput};
 use serde::Deserialize;
 use serde_json::{Value, json};
 use std::path::Path;
-use viboceros_geometry::{Curve3, CurveRef, Tolerance};
+use viboceros_geometry::{Curve3, CurveEvaluationSide, CurveRef, Tolerance};
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel, ThreeDmObject,
     read_3dm_file, write_3dm_file,
@@ -89,6 +89,7 @@ pub(super) fn run(
         .open(path)?;
     drop(reservation);
     write_3dm_file(path, &model)?;
+    validate_source_locus(path, &geometry, tolerance)?;
     // Timing compares readers only, not Viboceros export against Rhino import.
     let mut value = record(path, tolerance)?;
     let started = std::time::Instant::now();
@@ -111,14 +112,7 @@ fn record(path: &Path, tolerance: Tolerance) -> Result<Value, ProbeError> {
         .objects
         .iter()
         .map(|object| {
-            let curve = match &object.geometry {
-                ThreeDmGeometry::Line(c) => CurveRef::Line(c),
-                ThreeDmGeometry::Arc(c) => CurveRef::Arc(c),
-                ThreeDmGeometry::Polyline(c) => CurveRef::Polyline(c),
-                ThreeDmGeometry::NurbsCurve(c) => CurveRef::NurbsCurve(c),
-                ThreeDmGeometry::PolyCurve(c) => CurveRef::PolyCurve(c),
-                _ => return Err(ProbeError::FixtureInvariant("expected curve")),
-            };
+            let curve = curve_view(&object.geometry)?;
             Ok(json!({
                 "name": object.name, "visible": object.visible, "locked": object.locked,
                 "color": object.object_color, "color_source": object.color_source as u32,
@@ -134,6 +128,52 @@ fn record(path: &Path, tolerance: Tolerance) -> Result<Value, ProbeError> {
         })).collect::<Vec<_>>(),
         "objects": objects,
     }))
+}
+
+fn curve_view(geometry: &ThreeDmGeometry) -> Result<CurveRef<'_>, ProbeError> {
+    Ok(match geometry {
+        ThreeDmGeometry::Line(c) => CurveRef::Line(c),
+        ThreeDmGeometry::Arc(c) => CurveRef::Arc(c),
+        ThreeDmGeometry::Polyline(c) => CurveRef::Polyline(c),
+        ThreeDmGeometry::NurbsCurve(c) => CurveRef::NurbsCurve(c),
+        ThreeDmGeometry::PolyCurve(c) => CurveRef::PolyCurve(c),
+        _ => return Err(ProbeError::FixtureInvariant("expected curve")),
+    })
+}
+
+fn validate_source_locus(
+    path: &Path,
+    source: &ThreeDmGeometry,
+    tolerance: Tolerance,
+) -> Result<(), ProbeError> {
+    let source = curve_view(source)?;
+    let decoded = read_3dm_file(path, tolerance)?;
+    if decoded.unsupported_object_count() != 0 || decoded.objects.is_empty() {
+        return Err(ProbeError::FixtureInvariant("exported curves disappeared"));
+    }
+    for object in &decoded.objects {
+        let curve = curve_view(&object.geometry)?;
+        for i in 0..=64 {
+            let t = curve.parameter_at(i as f64 / 64.0)?;
+            let side = if i == 64 {
+                CurveEvaluationSide::Left
+            } else {
+                CurveEvaluationSide::Right
+            };
+            let expected = source.evaluate_on_side(t, side)?.to_array();
+            let actual = curve.evaluate_on_side(t, side)?.to_array();
+            for (a, e) in actual.into_iter().zip(expected) {
+                // No absolute floor: agreeing readers must not conceal an
+                // export that replaced a tiny source coordinate with zero.
+                if a != e && (a - e).abs() / a.abs().max(e.abs()) > 1e-12 {
+                    return Err(ProbeError::FixtureInvariant(
+                        "3DM export changed the source curve's native-parameter locus",
+                    ));
+                }
+            }
+        }
+    }
+    Ok(())
 }
 
 fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
@@ -173,6 +213,66 @@ fn curve_record(curve: CurveRef<'_>) -> Result<Value, ProbeError> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn source_validation_rejects_agreeing_readers_of_an_erased_tiny_curve() {
+        use super::*;
+        use viboceros_geometry::{NurbsCurve, Point3, WeightedPoint3};
+        let source = ThreeDmGeometry::NurbsCurve(
+            NurbsCurve::try_new(
+                1,
+                [1e-200, 2e-200]
+                    .map(|x| Point3::try_new(x, 0.0, 0.0).unwrap())
+                    .to_vec(),
+                vec![0.0, 0.0, 1.0, 1.0],
+            )
+            .unwrap(),
+        );
+        let erased = ThreeDmGeometry::NurbsCurve(
+            NurbsCurve::try_new_rational(
+                2,
+                [1.0, 0.5, 1.0]
+                    .map(|weight| {
+                        WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), weight)
+                            .unwrap()
+                    })
+                    .to_vec(),
+                vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+            )
+            .unwrap(),
+        );
+        let model = ThreeDmModel::new(
+            vec![ThreeDmLayer {
+                name: "Erased".into(),
+                color: [0, 0, 0],
+                visible: true,
+                locked: false,
+            }],
+            vec![],
+            vec![ThreeDmObject::new(erased, 0)],
+        );
+        let path = OracleTemporaryFile::new("erased-source");
+        write_3dm_file(&path.path, &model).unwrap();
+        assert!(matches!(
+            validate_source_locus(&path.path, &source, Tolerance::DEFAULT),
+            Err(ProbeError::FixtureInvariant(
+                "3DM export changed the source curve's native-parameter locus"
+            ))
+        ));
+    }
+
+    #[test]
+    fn permanent_range_fixture_checks_exported_locus_against_its_source() {
+        let request = serde_json::from_str(include_str!(
+            "../../../tools/rhino_oracle/fixtures/rational_3dm_range.json"
+        ))
+        .unwrap();
+        let response = crate::run_request(&request).unwrap();
+        assert_eq!(response.results.len(), 4);
+        for result in response.results {
+            assert_eq!(result.value["objects"].as_array().unwrap().len(), 4);
+        }
+    }
+
     #[test]
     fn explicitly_supplied_artifact_paths_never_overwrite_existing_files() {
         let path = crate::OracleTemporaryFile::new("protected-artifact");
