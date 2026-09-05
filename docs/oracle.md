@@ -53,6 +53,13 @@ rules separately, including the `include_ends=false` case.
 duplicate comparison, and 3DM round-trip segment definitions; the native side also
 checks undo. See [polycurve documentation](polycurves.md) for compatibility boundaries.
 
+`edge_surface.json` and `edge_surface_command.json` compare [Coons edge surfaces](edge-surfaces.md)
+through both the geometry API and document command, including full NURBS
+coefficients, direct samples and singular-side topology. The zero-weight-control
+case uses exact comparison-degree elevation while retaining original-surface
+samples. `edge_surface_3dm_interchange.json` separately checks both readers of the
+same native-written files, without changing the serialized basis.
+
 `polycurve_native.json` checks native analytic evaluation and segment classes
 through reversal, trim/split, and transforms. `polycurve_analytic_editing.json`
 checks analytic endpoint policy inside composites. These fixtures include both

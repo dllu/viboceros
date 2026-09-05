@@ -1493,6 +1493,71 @@ def _three_dm_brep_interchange(operation, iterations):
             model.Dispose()
 
 
+def _edge_surface(operation, iterations):
+    curves = []
+    result = []
+    def build():
+        for brep in result:
+            brep.Dispose()
+        del result[:]
+        brep = Rhino.Geometry.Brep.CreateEdgeSurface(curves)
+        if brep is not None:
+            result.append(brep)
+    try:
+        for definition in operation["curves"]:
+            curves.append(_nurbs_curve_from_definition(definition))
+        if operation.get("command", False):
+            def record(obj):
+                result = _edge_surface_record(obj.Geometry, operation.get("comparison_degree"))
+                result.update(selected=bool(obj.IsSelected(False)), name=obj.Attributes.Name,
+                              group_count=obj.Attributes.GroupCount)
+                return result
+            return _curve_surface_command(curves, "_-EdgeSrf _Enter", iterations, "edge-surface", record)
+        _unused, elapsed = _measure(iterations, build)
+        if not result:
+            return None, elapsed
+        brep = result[0]
+        return _edge_surface_record(brep, operation.get("comparison_degree")), elapsed
+    finally:
+        for brep in result:
+            brep.Dispose()
+        for curve in curves:
+            curve.Dispose()
+
+
+def _edge_surface_record(brep, comparison_degree):
+    definitions, samples = [], []
+    for face in brep.Faces:
+        points, parameters = [], []
+        for j in range(13):
+            for i in range(13):
+                uv = (face.Domain(0).ParameterAt(i/12.0), face.Domain(1).ParameterAt(j/12.0))
+                parameters.append(uv)
+                points.append(_xyz(face.PointAt(*uv)))
+        canonical = face.ToNurbsSurface()
+        if canonical is None:
+            raise ValueError("could not convert edge surface to NURBS")
+        try:
+            if comparison_degree is not None:
+                u, v = comparison_degree
+                if u < canonical.Degree(0) or v < canonical.Degree(1):
+                    raise ValueError("comparison degree must not lower the edge surface degree")
+                if not canonical.IncreaseDegreeU(u) or not canonical.IncreaseDegreeV(v):
+                    raise ValueError("edge surface comparison degree elevation failed")
+            for uv, p in zip(parameters, points):
+                q = _xyz(canonical.PointAt(*uv))
+                if any(abs(a-b)>2e-12+1e-14*max(abs(a),abs(b)) for a,b in zip(p,q)):
+                    raise ValueError("comparison degree elevation changed edge surface geometry")
+            definitions.append(_nurbs_surface_definition(canonical))
+        finally:
+            canonical.Dispose()
+        samples.append(points)
+    return {"surfaces": definitions, "samples": samples,
+            "face_reversed": [bool(face.OrientationIsReversed) for face in brep.Faces],
+            "valid": bool(brep.IsValid), "vertices": brep.Vertices.Count, "edges": brep.Edges.Count,
+            "singular_trims": sum(1 for trim in brep.Trims if trim.TrimType == Rhino.Geometry.BrepTrimType.Singular)}
+
+
 def _loft(operation, iterations):
     curves = []
     styles = {
@@ -1534,9 +1599,6 @@ def _loft(operation, iterations):
 
 
 def _loft_command(operation, iterations, curves):
-    document = Rhino.RhinoDoc.ActiveDoc
-    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
-    settings.NormalObjects = True
     def record(obj):
         # Face indices are topology allocation details, not loft geometry.
         faces = [(_nurbs_surface_definition(face), bool(face.OrientationIsReversed))
@@ -1548,6 +1610,17 @@ def _loft_command(operation, iterations, curves):
                 "vertices": obj.Geometry.Vertices.Count, "edges": obj.Geometry.Edges.Count,
                 "selected": bool(obj.IsSelected(False)), "name": obj.Attributes.Name,
                 "group_count": obj.Attributes.GroupCount}
+    seam = "_Enter " if all(curve.IsClosed for curve in curves) else ""
+    macro = "_-Loft %s_Type=%s _Closed=%s _Enter" % (
+        seam, operation.get("style", "normal"),
+        "Yes" if operation.get("closed", False) else "No")
+    return _curve_surface_command(curves, macro, iterations, "loft", record)
+
+
+def _curve_surface_command(curves, macro, iterations, prefix, record):
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
     def compute():
         before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
         ids = []
@@ -1556,23 +1629,19 @@ def _loft_command(operation, iterations, curves):
             for i, curve in enumerate(curves):
                 attributes = Rhino.DocObjects.ObjectAttributes()
                 try:
-                    attributes.Name = "loft-source-%d" % i
+                    attributes.Name = "%s-source-%d" % (prefix, i)
                     object_id = document.Objects.AddCurve(curve, attributes)
                 finally:
                     attributes.Dispose()
                 if object_id == System.Guid.Empty:
-                    raise ValueError("could not add Loft profile")
+                    raise ValueError("could not add %s profile" % prefix)
                 ids.append(object_id)
                 document.Objects.Select(ids[-1])
-            seam = "_Enter " if all(curve.IsClosed for curve in curves) else ""
-            macro = "_-Loft %s_Type=%s _Closed=%s _Enter" % (
-                seam, operation.get("style", "normal"),
-                "Yes" if operation.get("closed", False) else "No")
             succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
             outputs = [obj for obj in document.Objects.GetObjectList(settings)
                        if obj.Id not in before and obj.Id not in ids]
             if not succeeded or not outputs:
-                raise ValueError("Loft command failed: %r; history: %s" % (
+                raise ValueError("surface command failed: %r; history: %s" % (
                     macro, Rhino.RhinoApp.CommandHistoryWindowText[-2000:]))
             return {
                 "succeeded": succeeded,
@@ -2000,6 +2069,8 @@ def _execute(operation, iterations, tolerance):
         return _brep_mesh_boundaries(operation, iterations, tolerance)
     if kind == "loft":
         return _loft(operation, iterations)
+    if kind == "edge_surface":
+        return _edge_surface(operation, iterations)
     if kind == "curve_surface_morph":
         return _curve_surface_morph(operation, iterations, tolerance)
     if kind == "surface_surface_morph":

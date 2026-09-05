@@ -86,6 +86,11 @@ The [loft kernel](loft.md) separates shared section-basis construction from
 homogeneous interpolation. Ordered tensor lofts are independent of command
 orientation and crease splitting. `brep/surface_grid` supplies exact shared
 topology for tensor partitions, including closed seams and singular sides.
+The [edge-surface constructor](edge-surfaces.md) separately handles boundary
+ordering, pairwise parameter compatibility and homogeneous Coons blending.
+Unlike Loft's common-basis policy, three/four-edge endpoint-weight normalization
+precedes pair matching. Exact degree elevation retains finite patches whose
+original Coons basis contains a projective control at infinity.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

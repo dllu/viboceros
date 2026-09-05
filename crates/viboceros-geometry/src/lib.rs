@@ -20,6 +20,7 @@ mod curve_segment;
 mod curve_through;
 mod curve_trim;
 mod curve_tween;
+mod edge_surface;
 mod ellipse;
 mod error;
 mod frame;

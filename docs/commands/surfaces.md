@@ -37,6 +37,14 @@ or report-only `None`. World-plane selections produce a rectangle or mesh plane.
 analytic bounds are tight, while NURBS bounds use their control geometry and
 can be non-conservative for negative-weight projective inputs.
 
+## Edge surfaces
+
+`EdgeSrf` creates a ruled, triangular, or four-sided Coons face from two, three,
+or four selected open curves. Inputs remain unchanged and selected; the result
+is an unselected B-rep on the current layer. See [edge-surface construction and
+limits](../edge-surfaces.md), including how gaps can displace boundary geometry
+and how homogeneous controls at infinity are handled.
+
 ## Lofting
 
 `Loft Type=Normal Closed=No` creates one shared-topology B-rep from selected

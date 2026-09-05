@@ -1,8 +1,8 @@
-# Morphed B-rep 3DM interchange
+# Constructed and morphed B-rep 3DM interchange
 
 [File formats](file-formats.md) · [B-rep morphing](brep-morphing.md) · [Oracle](oracle.md)
 
-`three_dm_brep_interchange` fits a native B-rep, writes it through the OpenNURBS
+`three_dm_brep_interchange` constructs a native B-rep, writes it through the OpenNURBS
 bridge, and has both Viboceros and Rhino read that **same file**. Rhino does not
 independently recreate or re-morph the input. This isolates serialization and
 reader differences from the different approximation choices of the two fitters.
@@ -53,6 +53,11 @@ to overwrite an existing artifact. Standalone native probes remove their own
 temporary files; standalone Rhino probes need an existing native artifact.
 
 ## Cases and limits
+
+`edge_surface_3dm_interchange.json` covers a rational Coons quadrilateral,
+an exactly elevated projective-control case, a singular triangle, and shifted
+native domains. These files retain the native result's actual basis; the oracle's
+optional comparison-degree normalization is not applied to serialized geometry.
 
 `loft_3dm_interchange.json` additionally covers smooth circular profiles, a
 periodic closed loft, ruled circular spans, and a straight polyline loft split

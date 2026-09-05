@@ -9,6 +9,65 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_edge_surface_disposes_owned_geometry_on_success_null_and_failure(self):
+        for failure in [None, "source", "build", "record", "null"]:
+            sources, results = [], []
+            def source(definition):
+                if failure == "source" and sources:
+                    raise ValueError("source failed")
+                curve = SimpleNamespace(Dispose=Mock())
+                sources.append(curve)
+                return curve
+            def build(curves):
+                if failure == "build" and results:
+                    raise ValueError("build failed")
+                if failure == "null":
+                    return None
+                brep = SimpleNamespace(Dispose=Mock())
+                results.append(brep)
+                return brep
+            self.worker.Rhino.Geometry = SimpleNamespace(Brep=SimpleNamespace(CreateEdgeSurface=build))
+            with patch.object(self.worker, "_nurbs_curve_from_definition", side_effect=source), patch.object(
+                self.worker, "_edge_surface_record", return_value={"valid": True},
+                side_effect=ValueError("record failed") if failure == "record" else None
+            ):
+                if failure in ["source", "build", "record"]:
+                    with self.assertRaises(ValueError):
+                        self.worker._edge_surface({"curves": [{}, {}]}, 2)
+                else:
+                    value, _ = self.worker._edge_surface({"curves": [{}, {}]}, 2)
+                    self.assertEqual(value, None if failure == "null" else {"valid": True})
+                    self.assertEqual(len(results), 0 if failure == "null" else 3)
+            for item in sources + results:
+                item.Dispose.assert_called_once_with()
+
+    def test_edge_surface_comparison_owns_its_copy_and_checks_original_geometry(self):
+        for failure in [None, "lower", "elevate", "geometry", "record"]:
+            def point(u, v, shift=0.0):
+                return SimpleNamespace(X=u, Y=v, Z=u*v+shift)
+            canonical = SimpleNamespace(
+                Dispose=Mock(), Degree=lambda axis: 2,
+                IncreaseDegreeU=Mock(return_value=failure != "elevate"),
+                IncreaseDegreeV=Mock(return_value=True),
+                PointAt=lambda u,v: point(u,v,1e-4 if failure == "geometry" else 0.0))
+            face = SimpleNamespace(
+                Domain=lambda axis: SimpleNamespace(ParameterAt=lambda t: t),
+                PointAt=point, OrientationIsReversed=False,
+                ToNurbsSurface=Mock(return_value=canonical))
+            brep = SimpleNamespace(Faces=[face], IsValid=True,
+                                   Vertices=SimpleNamespace(Count=4), Edges=SimpleNamespace(Count=4), Trims=[])
+            with patch.object(self.worker, "_nurbs_surface_definition", return_value={"degree": [3, 2]},
+                              side_effect=ValueError("record failed") if failure == "record" else None):
+                if failure:
+                    with self.assertRaises(ValueError):
+                        self.worker._edge_surface_record(brep, [1, 2] if failure == "lower" else [3, 2])
+                else:
+                    result = self.worker._edge_surface_record(brep, [3, 2])
+                    self.assertEqual(len(result["samples"][0]), 169)
+                    self.assertEqual(result["surfaces"], [{"degree": [3, 2]}])
+            face.ToNurbsSurface.assert_called_once_with()
+            canonical.Dispose.assert_called_once_with()
+
     def test_loft_command_cleans_only_owned_objects_and_disposes_attributes(self):
         for failure in [None, "add", "command", "record"]:
             objects = {0: SimpleNamespace(Id=0)}
