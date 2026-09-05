@@ -17,6 +17,7 @@ mod curve_join;
 mod curve_rebuild;
 mod curve_segment;
 mod curve_through;
+mod curve_trim;
 mod curve_tween;
 mod ellipse;
 mod error;

@@ -87,3 +87,31 @@ pub(crate) fn scaled_ratio(
     require_finite([result], "curve derivative")?;
     Ok(result)
 }
+
+pub(crate) fn shifted_parameter(
+    parameter: Real,
+    domain: &RangeInclusive<Real>,
+) -> Result<Real, GeometryError> {
+    let result = parameter + (domain.end() - domain.start());
+    require_finite([result], "shifted curve parameter")?;
+    Ok(result)
+}
+
+pub(crate) fn wrapped_parameter(
+    parameter: Real,
+    domain: &RangeInclusive<Real>,
+) -> Result<Real, GeometryError> {
+    require_finite([parameter], "curve seam parameter")?;
+    check_interval(domain)?;
+    if domain.contains(&parameter) {
+        return Ok(parameter);
+    }
+    let width = domain.end() - domain.start();
+    let difference = parameter - domain.start();
+    let offset = if difference.is_finite() {
+        difference.rem_euclid(width)
+    } else {
+        (parameter.rem_euclid(width) - domain.start().rem_euclid(width)).rem_euclid(width)
+    };
+    Ok((domain.start() + offset).clamp(*domain.start(), *domain.end()))
+}

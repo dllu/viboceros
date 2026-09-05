@@ -2,6 +2,10 @@
 
 mod curve_edit;
 use curve_edit::{CloseCrvCommand, JoinCommand};
+mod curve_domain;
+#[cfg(test)]
+use curve_domain::{CURVE_SEAM_USAGE, REPARAMETERIZE_USAGE, SUBCURVE_USAGE};
+use curve_domain::{CurveSeamCommand, ReparameterizeCommand, SubcurveCommand};
 
 use std::collections::{BTreeMap, BTreeSet};
 
@@ -11020,81 +11024,6 @@ fn parse_yes_no(value: &str) -> Option<bool> {
     }
 }
 
-const CURVE_SEAM_USAGE: &str = "CrvSeam point | CrvSeam Parameter=value";
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum CurveSeamLocation {
-    Point(Point3),
-    Parameter(Real),
-}
-
-struct CurveSeamCommand;
-
-impl Command for CurveSeamCommand {
-    fn name(&self) -> &'static str {
-        "CrvSeam"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let location = parse_curve_seam_location(arguments)?;
-        let mut candidates = Vec::new();
-        for object in document.selected_objects() {
-            let Some(curve_ref) = geometry_curve_ref(object.geometry()) else {
-                continue;
-            };
-            if !curve_ref.is_closed()? {
-                continue;
-            }
-            let curve = object
-                .geometry()
-                .nurbs_curve_representation()?
-                .expect("a supported curve has an exact NURBS representation");
-            candidates.push((object.id(), curve));
-        }
-        if candidates.len() != 1 {
-            return Err(CommandError::CurveSeamRequiresOneClosedCurve {
-                actual: candidates.len(),
-            });
-        }
-
-        let (id, curve) = candidates
-            .pop()
-            .expect("one closed curve candidate was required");
-        let parameter = match location {
-            CurveSeamLocation::Point(point) => {
-                curve.closest_parameter(point, document.tolerance())?
-            }
-            CurveSeamLocation::Parameter(parameter) => parameter,
-        };
-        let relocated = curve.try_change_closed_seam(parameter)?;
-        document.replace_object_geometries([(id, Geometry::NurbsCurve(relocated))])?;
-        Ok(format!(
-            "Set the selected closed curve seam at parameter {parameter}"
-        ))
-    }
-}
-
-fn parse_curve_seam_location(arguments: &[&str]) -> Result<CurveSeamLocation, CommandError> {
-    let Some(first) = arguments.first() else {
-        return Err(CommandError::Usage(CURVE_SEAM_USAGE));
-    };
-    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
-    if option_name_eq(first_name, "Parameter") {
-        let (name, value, consumed) = orient_option(arguments, 0, CURVE_SEAM_USAGE)?;
-        if !option_name_eq(name, "Parameter") || consumed != arguments.len() {
-            return Err(CommandError::Usage(CURVE_SEAM_USAGE));
-        }
-        return Ok(CurveSeamLocation::Parameter(parse_finite_real(value)?));
-    }
-
-    let (point, consumed) = parse_point(arguments).map_err(|error| match error {
-        CommandError::Usage(_) => CommandError::Usage(CURVE_SEAM_USAGE),
-        error => error,
-    })?;
-    require_consumed(arguments, consumed, CURVE_SEAM_USAGE)?;
-    Ok(CurveSeamLocation::Point(point))
-}
-
 const SURFACE_SEAM_USAGE: &str =
     "SrfSeam point [Direction=U|V|Both] | SrfSeam Parameter=u[,v] [Direction=U|V|Both]";
 
@@ -11213,127 +11142,6 @@ fn parse_surface_seam_options(arguments: &[&str]) -> Result<SurfaceSeamOptions, 
         location,
         direction,
     })
-}
-
-const REPARAMETERIZE_USAGE: &str = "Reparameterize Automatic | Reparameterize start end | Reparameterize u_start u_end v_start v_end";
-
-#[derive(Clone, Debug, PartialEq)]
-enum ReparameterizeOptions {
-    Automatic,
-    Explicit(Vec<Real>),
-}
-
-enum ReparameterizeTarget {
-    Curve(NurbsCurve),
-    Surface(NurbsSurface),
-}
-
-struct ReparameterizeCommand;
-
-impl Command for ReparameterizeCommand {
-    fn name(&self) -> &'static str {
-        "Reparameterize"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_reparameterize_options(arguments)?;
-        let mut candidates = document
-            .selected_objects()
-            .filter_map(|object| {
-                let target = match object.geometry() {
-                    Geometry::NurbsSurface(surface) => {
-                        Ok(Some(ReparameterizeTarget::Surface(surface.clone())))
-                    }
-                    geometry => geometry
-                        .nurbs_curve_representation()
-                        .map(|curve| curve.map(ReparameterizeTarget::Curve)),
-                };
-                target
-                    .transpose()
-                    .map(|target| target.map(|target| (object.id(), target)))
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        if candidates.len() != 1 {
-            return Err(CommandError::ReparameterizeRequiresOneObject {
-                actual: candidates.len(),
-            });
-        }
-        let (id, target) = candidates
-            .pop()
-            .expect("one reparameterization target was required");
-
-        let (geometry, description) = match (target, options) {
-            (ReparameterizeTarget::Curve(curve), ReparameterizeOptions::Automatic) => {
-                let domain_end = curve.length(document.tolerance())?;
-                let curve = curve.try_reparameterized(0.0..=domain_end)?;
-                (
-                    Geometry::NurbsCurve(curve),
-                    format!("curve domain to 0..{domain_end}"),
-                )
-            }
-            (ReparameterizeTarget::Curve(curve), ReparameterizeOptions::Explicit(values))
-                if values.len() == 2 =>
-            {
-                let [start, end] = [values[0], values[1]];
-                let curve = curve.try_reparameterized(start..=end)?;
-                (
-                    Geometry::NurbsCurve(curve),
-                    format!("curve domain to {start}..{end}"),
-                )
-            }
-            (ReparameterizeTarget::Surface(surface), ReparameterizeOptions::Automatic) => {
-                let [width, height] = surface.estimated_size()?;
-                let surface = surface.try_reparameterized(0.0..=width, 0.0..=height)?;
-                (
-                    Geometry::NurbsSurface(surface),
-                    format!("surface domains to U 0..{width}, V 0..{height}"),
-                )
-            }
-            (ReparameterizeTarget::Surface(surface), ReparameterizeOptions::Explicit(values))
-                if values.len() == 4 =>
-            {
-                let [u_start, u_end, v_start, v_end] = [values[0], values[1], values[2], values[3]];
-                let surface = surface.try_reparameterized(u_start..=u_end, v_start..=v_end)?;
-                (
-                    Geometry::NurbsSurface(surface),
-                    format!("surface domains to U {u_start}..{u_end}, V {v_start}..{v_end}"),
-                )
-            }
-            _ => return Err(CommandError::Usage(REPARAMETERIZE_USAGE)),
-        };
-        document.replace_object_geometries([(id, geometry)])?;
-        Ok(format!("Reparameterized the selected {description}"))
-    }
-}
-
-fn parse_reparameterize_options(arguments: &[&str]) -> Result<ReparameterizeOptions, CommandError> {
-    if let [argument] = arguments {
-        let automatic = argument.trim_start_matches(['_', '-']);
-        if automatic.eq_ignore_ascii_case("Automatic") {
-            return Ok(ReparameterizeOptions::Automatic);
-        }
-    }
-    if arguments.iter().any(|argument| {
-        argument
-            .trim_start_matches(['_', '-'])
-            .eq_ignore_ascii_case("Automatic")
-    }) {
-        return Err(CommandError::Usage(REPARAMETERIZE_USAGE));
-    }
-
-    let raw_values = arguments
-        .iter()
-        .flat_map(|argument| argument.split(','))
-        .collect::<Vec<_>>();
-    if !matches!(raw_values.len(), 2 | 4) || raw_values.iter().any(|value| value.is_empty()) {
-        return Err(CommandError::Usage(REPARAMETERIZE_USAGE));
-    }
-    Ok(ReparameterizeOptions::Explicit(
-        raw_values
-            .into_iter()
-            .map(parse_finite_real)
-            .collect::<Result<_, _>>()?,
-    ))
 }
 
 const EXTEND_CURVE_USAGE: &str = "Extend point [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Length=value [Side=Start|End|Both] [Type=Natural|Arc|Line|Smooth] [Join=Merge|Yes|No] | Extend Domain=start,end [Type=Natural] [Join=Merge]";
@@ -12159,121 +11967,6 @@ fn separate_surface_extension(
     }
 }
 
-const SUBCURVE_USAGE: &str =
-    "SubCrv Parameter=start,end [Copy=Yes|No] | SubCrv start_point end_point [Copy=Yes|No]";
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-enum SubcurveLocation {
-    Parameters([Real; 2]),
-    Points([Point3; 2]),
-}
-
-#[derive(Clone, Copy, Debug, PartialEq)]
-struct SubcurveOptions {
-    location: SubcurveLocation,
-    copy: bool,
-}
-
-struct SubcurveCommand;
-
-impl Command for SubcurveCommand {
-    fn name(&self) -> &'static str {
-        "SubCrv"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_subcurve_options(arguments)?;
-        let mut candidates = document
-            .selected_objects()
-            .filter_map(|object| {
-                object
-                    .geometry()
-                    .nurbs_curve_representation()
-                    .transpose()
-                    .map(|curve| curve.map(|curve| (object.id(), curve)))
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        if candidates.len() != 1 {
-            return Err(CommandError::SubcurveRequiresOneCurve {
-                actual: candidates.len(),
-            });
-        }
-        let (id, curve) = candidates.pop().expect("one subcurve source was required");
-        let [start, end] = match options.location {
-            SubcurveLocation::Parameters(parameters) => parameters,
-            SubcurveLocation::Points(points) => [
-                curve.closest_parameter(points[0], document.tolerance())?,
-                curve.closest_parameter(points[1], document.tolerance())?,
-            ],
-        };
-        let geometry = Geometry::NurbsCurve(curve.try_subcurve(start, end)?);
-        if options.copy {
-            document.copy_object_geometries_into_source_groups([(id, geometry)])?;
-        } else {
-            document.replace_object_geometries([(id, geometry)])?;
-        }
-        Ok(format!(
-            "Created a directed subcurve from parameter {start} to {end}, {} the input",
-            if options.copy {
-                "retaining"
-            } else {
-                "replacing"
-            }
-        ))
-    }
-}
-
-fn parse_subcurve_options(arguments: &[&str]) -> Result<SubcurveOptions, CommandError> {
-    let Some(first) = arguments.first() else {
-        return Err(CommandError::Usage(SUBCURVE_USAGE));
-    };
-    let first_name = first.split_once('=').map_or(*first, |(name, _)| name);
-    let (location, mut index) = if option_name_eq(first_name, "Parameter") {
-        let (name, value, consumed) = orient_option(arguments, 0, SUBCURVE_USAGE)?;
-        if !option_name_eq(name, "Parameter") {
-            return Err(CommandError::Usage(SUBCURVE_USAGE));
-        }
-        let values = value.split(',').collect::<Vec<_>>();
-        if values.len() != 2 || values.iter().any(|value| value.is_empty()) {
-            return Err(CommandError::Usage(SUBCURVE_USAGE));
-        }
-        (
-            SubcurveLocation::Parameters([
-                parse_finite_real(values[0])?,
-                parse_finite_real(values[1])?,
-            ]),
-            consumed,
-        )
-    } else {
-        let (start, start_consumed) = parse_point(arguments).map_err(|error| match error {
-            CommandError::Usage(_) => CommandError::Usage(SUBCURVE_USAGE),
-            error => error,
-        })?;
-        let (end, end_consumed) =
-            parse_point(&arguments[start_consumed..]).map_err(|error| match error {
-                CommandError::Usage(_) => CommandError::Usage(SUBCURVE_USAGE),
-                error => error,
-            })?;
-        (
-            SubcurveLocation::Points([start, end]),
-            start_consumed + end_consumed,
-        )
-    };
-
-    let mut copy = false;
-    let mut copy_seen = false;
-    while index < arguments.len() {
-        let (name, value, consumed) = orient_option(arguments, index, SUBCURVE_USAGE)?;
-        if !option_name_eq(name, "Copy") || copy_seen {
-            return Err(CommandError::Usage(SUBCURVE_USAGE));
-        }
-        copy = parse_yes_no(value).ok_or(CommandError::Usage(SUBCURVE_USAGE))?;
-        copy_seen = true;
-        index += consumed;
-    }
-    Ok(SubcurveOptions { location, copy })
-}
-
 const SPLIT_CURVE_USAGE: &str = "Split point [point ...] | Split Parameter=value[,value...] | Split CuttingObjects=source_point | Split Isocurve=point [Direction=U|V|Both] [Shrink=Yes|No]";
 
 #[derive(Clone, Copy, Debug, PartialEq)]
@@ -12311,11 +12004,10 @@ impl Command for SplitCurveCommand {
             .filter_map(|object| {
                 object
                     .geometry()
-                    .nurbs_curve_representation()
-                    .transpose()
-                    .map(|curve| curve.map(|curve| (object.id(), curve)))
+                    .curve_ref()
+                    .map(|curve| (object.id(), curve.to_owned()))
             })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
+            .collect::<Vec<_>>();
         if candidates.len() != 1 {
             return Err(CommandError::SplitRequiresOneCurve {
                 actual: candidates.len(),
@@ -12328,7 +12020,11 @@ impl Command for SplitCurveCommand {
             CurveSplitLocation::Parameters(parameters) => parameters,
             CurveSplitLocation::Points(points) => points
                 .into_iter()
-                .map(|point| curve.closest_parameter(point, document.tolerance()))
+                .map(|point| {
+                    curve
+                        .as_ref()
+                        .closest_parameter(point, document.tolerance())
+                })
                 .collect::<Result<Vec<_>, _>>()?,
             CurveSplitLocation::CuttingObjects(_) => {
                 unreachable!("cutting-object Split is handled before single-curve validation")
@@ -12340,7 +12036,7 @@ impl Command for SplitCurveCommand {
         split_curve_at_parameters(
             document,
             id,
-            &curve,
+            curve.as_ref(),
             parameters,
             CurveSplitReplacement::RetainFirst,
         )
@@ -12356,14 +12052,14 @@ enum CurveSplitReplacement {
 fn split_curve_at_parameters(
     document: &mut Document,
     id: ObjectId,
-    curve: &NurbsCurve,
+    curve: CurveRef<'_>,
     parameters: Vec<Real>,
     replacement: CurveSplitReplacement,
 ) -> Result<String, CommandError> {
     if parameters.len() >= MAX_SPAN_OUTPUT_OBJECTS {
         return Err(too_many_span_outputs("Split"));
     }
-    let pieces = curve.try_split_at_parameters(&parameters)?;
+    let pieces = curve.to_owned().try_split_at_parameters(&parameters)?;
     let piece_count = pieces.len();
     let source = document
         .object(id)
@@ -12382,12 +12078,12 @@ fn split_curve_at_parameters(
     let mut pieces = pieces.into_iter();
     if matches!(replacement, CurveSplitReplacement::RetainFirst) {
         let first = pieces.next().expect("a split produces at least one piece");
-        document.replace_object_geometries([(id, Geometry::NurbsCurve(first))])?;
+        document.replace_object_geometries([(id, Geometry::from(first))])?;
         output_ids.push(id);
     }
     for piece in pieces {
-        let piece_id = document
-            .add_geometry_with_attributes(Geometry::NurbsCurve(piece), attributes.clone())?;
+        let piece_id =
+            document.add_geometry_with_attributes(Geometry::from(piece), attributes.clone())?;
         output_ids.push(piece_id);
         added_ids.push(piece_id);
     }
@@ -12399,7 +12095,7 @@ fn split_curve_at_parameters(
     }
     document.select_objects_direct(output_ids, SelectionMode::Replace)?;
     Ok(format!(
-        "Split the selected curve at {} location(s) into {piece_count} exact NURBS piece(s)",
+        "Split the selected curve at {} location(s) into {piece_count} exact curve piece(s)",
         parameters.len()
     ))
 }
@@ -13049,7 +12745,7 @@ fn split_curve_with_cutters(
     split_curve_at_parameters(
         document,
         source_id,
-        source,
+        CurveRef::NurbsCurve(source),
         parameters,
         CurveSplitReplacement::ReplaceAll,
     )
@@ -26071,12 +25767,11 @@ mod tests {
         registry
             .execute(&mut polyline_document, "CrvSeam 4,1")
             .unwrap();
-        let Geometry::NurbsCurve(polyline) =
+        let Geometry::Polyline(polyline) =
             polyline_document.object(polyline_id).unwrap().geometry()
         else {
-            panic!("expected an exact degree-one NURBS polyline")
+            panic!("seam editing must preserve the native polyline")
         };
-        assert_eq!(polyline.degree(), 1);
         assert!(
             polyline
                 .evaluate(*polyline.domain().start())
@@ -26086,7 +25781,7 @@ mod tests {
                     polyline_document.tolerance(),
                 )
         );
-        assert!(polyline.is_closed().unwrap());
+        assert!(polyline.is_closed());
 
         let mut circle_document = Document::default();
         registry
@@ -26097,16 +25792,14 @@ mod tests {
         registry
             .execute(&mut circle_document, "CrvSeam 0,5")
             .unwrap();
-        let Geometry::NurbsCurve(circle) = circle_document.object(circle_id).unwrap().geometry()
-        else {
-            panic!("expected an exact rational circle NURBS")
+        let Geometry::Circle(circle) = circle_document.object(circle_id).unwrap().geometry() else {
+            panic!("seam editing must preserve the analytic circle")
         };
-        assert!(circle.is_rational());
         assert!(circle.evaluate(*circle.domain().start()).unwrap().is_near(
             Point3::try_new(0.0, 5.0, 0.0).unwrap(),
             circle_document.tolerance(),
         ));
-        assert!(circle.is_closed().unwrap());
+        assert_eq!(*circle.domain().start(), 5.0 * std::f64::consts::FRAC_PI_2);
     }
 
     #[test]
@@ -26159,12 +25852,21 @@ mod tests {
         multiple
             .select_object(circle_id, SelectionMode::Replace)
             .unwrap();
-        assert!(matches!(
-            registry.execute(&mut multiple, "CrvSeam Parameter=99"),
-            Err(CommandError::Geometry(
-                GeometryError::ParameterOutOfDomain { .. }
-            ))
-        ));
+        registry
+            .execute(&mut multiple, "CrvSeam Parameter=99")
+            .unwrap();
+        assert_eq!(
+            *multiple
+                .object(circle_id)
+                .unwrap()
+                .geometry()
+                .curve_ref()
+                .unwrap()
+                .domain()
+                .start(),
+            99.0
+        );
+        registry.execute(&mut multiple, "Undo").unwrap();
         assert_eq!(
             multiple.objects().collect::<Vec<_>>(),
             before.iter().collect::<Vec<_>>()
@@ -26388,8 +26090,8 @@ mod tests {
                 .unwrap(),
             "Reparameterized the selected curve domain to 0..5"
         );
-        let Geometry::NurbsCurve(line) = document.object(line_id).unwrap().geometry() else {
-            panic!("a reparameterized line must use NURBS geometry")
+        let Geometry::Line(line) = document.object(line_id).unwrap().geometry() else {
+            panic!("reparameterization must retain the native line")
         };
         assert_eq!(line.domain(), 0.0..=5.0);
 
@@ -26521,7 +26223,7 @@ mod tests {
         assert!(matches!(
             registry.execute(&mut document, "Reparameterize 2 1"),
             Err(CommandError::Geometry(
-                GeometryError::InvalidKnotVector { .. }
+                GeometryError::InvalidCurveParameterInterval
             ))
         ));
         assert_eq!(
@@ -27520,12 +27222,14 @@ mod tests {
             .unwrap();
         registry.execute(&mut document, "Group Directed").unwrap();
         let before = document.object(id).unwrap().clone();
-        let source = before
-            .geometry()
-            .nurbs_curve_representation()
-            .unwrap()
-            .unwrap();
-        let expected = source.try_subcurve(0.2, 0.8).unwrap();
+        let expected = LineSegment::try_new(
+            Point3::try_new(0.2, 0.0, 0.0).unwrap(),
+            Point3::try_new(0.8, 0.0, 0.0).unwrap(),
+            document.tolerance(),
+        )
+        .unwrap()
+        .try_reparameterized(0.2..=0.8)
+        .unwrap();
 
         assert_eq!(
             registry
@@ -27534,7 +27238,7 @@ mod tests {
             "Created a directed subcurve from parameter 0.2 to 0.8, replacing the input"
         );
         let object = document.object(id).unwrap();
-        assert_eq!(object.geometry(), &Geometry::NurbsCurve(expected.clone()));
+        assert_eq!(object.geometry(), &Geometry::Line(expected));
         assert_eq!(object.attributes(), before.attributes());
         assert!(document.is_selected(id));
         assert!(
@@ -27551,7 +27255,7 @@ mod tests {
         registry.execute(&mut document, "Redo").unwrap();
         assert_eq!(
             document.object(id).unwrap().geometry(),
-            &Geometry::NurbsCurve(expected)
+            &Geometry::Line(expected)
         );
     }
 
@@ -27583,8 +27287,8 @@ mod tests {
             .unwrap();
         let copy_id = copy.id();
         assert_eq!(copy.attributes(), source.attributes());
-        let Geometry::NurbsCurve(curve) = copy.geometry() else {
-            panic!("SubCrv must create exact NURBS geometry")
+        let Geometry::Line(curve) = copy.geometry() else {
+            panic!("SubCrv must retain the native line")
         };
         assert!(curve.evaluate(*curve.domain().start()).unwrap().is_near(
             Point3::try_new(8.0, 0.0, 0.0).unwrap(),
@@ -27616,22 +27320,33 @@ mod tests {
         registry.execute(&mut document, "Circle 0,0 5").unwrap();
         let id = document.objects().next().unwrap().id();
         document.select_object(id, SelectionMode::Replace).unwrap();
-        let source = document
-            .object(id)
-            .unwrap()
-            .geometry()
-            .nurbs_curve_representation()
-            .unwrap()
-            .unwrap();
-        let expected = source.try_subcurve(5.0, 1.0).unwrap();
 
         registry
             .execute(&mut document, "SubCrv Parameter=5,1 Copy=No")
             .unwrap();
-        assert_eq!(
-            document.object(id).unwrap().geometry(),
-            &Geometry::NurbsCurve(expected)
+        let Geometry::PolyCurve(curve) = document.object(id).unwrap().geometry() else {
+            panic!("a seam-crossing SubCrv must retain both native arc pieces");
+        };
+        assert_eq!(curve.segments().len(), 2);
+        assert!(
+            curve
+                .segments()
+                .iter()
+                .all(|s| matches!(s, viboceros_geometry::CurveSegment3::Arc(_)))
         );
+        assert_eq!(curve.domain(), 5.0..=5.0 * std::f64::consts::TAU + 1.0);
+        for (t, angle) in [(5.0, 1.0_f64), (*curve.domain().end(), 0.2_f64)] {
+            assert!(
+                curve
+                    .evaluate(t)
+                    .unwrap()
+                    .distance_to(
+                        Point3::try_new(5.0 * angle.cos(), 5.0 * angle.sin(), 0.0).unwrap()
+                    )
+                    .unwrap()
+                    < 1e-12
+            );
+        }
     }
 
     #[test]
@@ -27720,7 +27435,7 @@ mod tests {
             registry
                 .execute(&mut document, &format!("Split Parameter={parameter}"))
                 .unwrap(),
-            "Split the selected curve at 1 location(s) into 2 exact NURBS piece(s)"
+            "Split the selected curve at 1 location(s) into 2 exact curve piece(s)"
         );
         assert_eq!(document.objects().count(), 2);
         let left = document.object(source_id).unwrap();
@@ -27753,7 +27468,7 @@ mod tests {
     }
 
     #[test]
-    fn split_curve_accepts_a_model_point_and_converts_analytic_curves() {
+    fn split_curve_accepts_a_model_point_and_preserves_analytic_curves() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         registry.execute(&mut document, "Circle 0,0 5").unwrap();
@@ -27767,9 +27482,11 @@ mod tests {
             .unwrap();
         assert_eq!(document.objects().count(), 2);
         for object in document.objects() {
-            let Geometry::NurbsCurve(curve) = object.geometry() else {
-                panic!("Split must convert analytic curves to exact NURBS pieces")
-            };
+            assert!(matches!(
+                object.geometry(),
+                Geometry::Arc(_) | Geometry::PolyCurve(_)
+            ));
+            let curve = object.geometry().curve_ref().unwrap();
             let start = curve.evaluate(*curve.domain().start()).unwrap();
             let end = curve.evaluate(*curve.domain().end()).unwrap();
             let top = Point3::try_new(0.0, 5.0, 0.0).unwrap();
@@ -27788,15 +27505,15 @@ mod tests {
         single.select_object(id, SelectionMode::Replace).unwrap();
         assert_eq!(
             registry.execute(&mut single, "Split Parameter=1").unwrap(),
-            "Split the selected curve at 1 location(s) into 1 exact NURBS piece(s)"
+            "Split the selected curve at 1 location(s) into 1 exact curve piece(s)"
         );
         assert_eq!(single.objects().count(), 1);
         assert!(single.object(id).is_some());
-        let Geometry::NurbsCurve(curve) = single.object(id).unwrap().geometry() else {
-            panic!("a singly split closed curve must use exact NURBS geometry")
+        let Geometry::PolyCurve(curve) = single.object(id).unwrap().geometry() else {
+            panic!("a singly split closed curve must retain both seam pieces")
         };
         assert!(curve.is_closed().unwrap());
-        assert!(!curve.is_periodic());
+        assert_eq!(curve.segments().len(), 2);
         assert_eq!(*curve.domain().start(), 1.0);
     }
 
@@ -27814,13 +27531,13 @@ mod tests {
             registry
                 .execute(&mut document, "Split Parameter=8,2,5")
                 .unwrap(),
-            "Split the selected curve at 3 location(s) into 4 exact NURBS piece(s)"
+            "Split the selected curve at 3 location(s) into 4 exact curve piece(s)"
         );
         let domains = document
             .objects()
             .map(|object| match object.geometry() {
-                Geometry::NurbsCurve(curve) => curve.domain(),
-                _ => panic!("Split must create exact NURBS pieces"),
+                Geometry::Line(curve) => curve.domain(),
+                _ => panic!("Split must retain native line pieces"),
             })
             .collect::<Vec<_>>();
         assert_eq!(domains, vec![0.0..=2.0, 2.0..=5.0, 5.0..=8.0, 8.0..=10.0]);
@@ -27868,7 +27585,7 @@ mod tests {
             registry
                 .execute(&mut document, "Split CuttingObjects=5,0,0")
                 .unwrap(),
-            "Split the selected curve at 2 location(s) into 3 exact NURBS piece(s)"
+            "Split the selected curve at 2 location(s) into 3 exact curve piece(s)"
         );
         for (id, cutter) in cutters {
             assert_eq!(document.object(id).unwrap(), &cutter);
@@ -27973,7 +27690,7 @@ mod tests {
             registry
                 .execute(&mut brep_document, "Split CuttingObjects=1,0,0")
                 .unwrap(),
-            "Split the selected curve at 4 location(s) into 5 exact NURBS piece(s)"
+            "Split the selected curve at 4 location(s) into 5 exact curve piece(s)"
         );
         let brep_domains = brep_document
             .selected_objects()

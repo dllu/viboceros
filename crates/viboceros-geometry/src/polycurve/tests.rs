@@ -253,7 +253,7 @@ fn exact_nurbs_conversion_preserves_rational_segments_and_parameterization() {
 }
 
 #[test]
-fn conversion_keeps_independent_extreme_homogeneous_scales() {
+fn conversion_matches_extreme_homogeneous_scales_without_forming_an_overflowing_ratio() {
     let curve = example();
     let segments = curve
         .segments()
@@ -277,11 +277,44 @@ fn conversion_keeps_independent_extreme_homogeneous_scales() {
         PolyCurve3::try_with_segment_domains(segments, curve.parameters().to_vec()).unwrap();
     let nurbs = scaled.to_nurbs().unwrap();
     for &junction in &scaled.parameters()[1..3] {
-        assert_eq!(nurbs.knot_multiplicity(junction).unwrap(), 3);
+        assert_eq!(nurbs.knot_multiplicity(junction).unwrap(), 2);
     }
     for step in 0..=128 {
         let t = curve.parameter_at(step as Real / 128.0).unwrap();
         near(curve.evaluate(t).unwrap(), nurbs.evaluate(t).unwrap());
+    }
+}
+
+#[test]
+fn conversion_keeps_independent_scales_when_a_matched_weight_would_underflow() {
+    let first = NurbsCurve::try_new_rational(
+        2,
+        [point(0.0, 0.0), point(1.0, 0.0), point(2.0, 0.0)]
+            .map(|p| WeightedPoint3::try_new(p, 1e-200).unwrap())
+            .to_vec(),
+        vec![0.0, 0.0, 0.0, 1.0, 1.0, 1.0],
+    )
+    .unwrap();
+    let second = NurbsCurve::try_new_rational(
+        2,
+        [
+            (point(2.0, 0.0), 1e200),
+            (point(3.0, 1.0), 1e-200),
+            (point(4.0, 0.0), 1e200),
+        ]
+        .map(|(p, w)| WeightedPoint3::try_new(p, w).unwrap())
+        .to_vec(),
+        vec![1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+    )
+    .unwrap();
+    let source = PolyCurve3::try_new(vec![first, second]).unwrap();
+    let converted = source.to_nurbs().unwrap();
+    assert_eq!(converted.knot_multiplicity(1.0).unwrap(), 3);
+    assert_eq!(converted.control_points()[2].weight(), 1e-200);
+    assert_eq!(converted.control_points()[3].weight(), 1e200);
+    for i in 0..=128 {
+        let t = 2.0 * i as Real / 128.0;
+        near(source.evaluate(t).unwrap(), converted.evaluate(t).unwrap());
     }
 }
 

@@ -437,10 +437,11 @@ impl PolyCurve3 {
         Self::try_with_segment_domains(segments, parameters)
     }
 
-    /// Converts to one exact piecewise NURBS curve. Identical homogeneous
-    /// junction controls are shared with degree-multiple knots. Otherwise
-    /// full-order knots keep homogeneous scales independent without averaging
-    /// endpoints, dividing unrelated weights, or fitting geometry.
+    /// Converts to one piecewise NURBS curve. Coincident junction endpoints
+    /// share their midpoint, as OpenNURBS does. The change is bounded by the
+    /// kernel's fixed curve-coincidence predicate. A segment's homogeneous
+    /// scale is matched when every resulting weight is representable; otherwise
+    /// full-order knots preserve its independent scale.
     /// Arc spans change from angular to rational parameterization. Other leaf
     /// types retain their parameterization. This need not produce Rhino's
     /// minimal control-point/knot representation.
@@ -451,7 +452,7 @@ impl PolyCurve3 {
             .map(CurveSegment3::degree)
             .max()
             .expect("segments exist");
-        let mut controls = Vec::new();
+        let mut controls: Vec<crate::WeightedPoint3> = Vec::new();
         let mut knots = Vec::new();
         for (index, source) in self.segments.iter().enumerate() {
             let source = source.to_nurbs()?.clamped_to_active_domain()?;
@@ -472,11 +473,55 @@ impl PolyCurve3 {
             let segment = source
                 .try_change_degree(degree, false)?
                 .try_reparameterized(self.segment_domain(index)?)?;
-            let shared = index > 0 && controls.last() == segment.control_points().first();
+            let scaled_controls = controls.last().and_then(|previous| {
+                let first = segment.control_points()[0];
+                if previous.weight() == first.weight()
+                    || !curve_points_coincident(previous.point(), first.point())
+                {
+                    return None;
+                }
+                segment
+                    .control_points()
+                    .iter()
+                    .map(|control| {
+                        let weight = if control.weight() == first.weight() {
+                            previous.weight()
+                        } else {
+                            crate::parameter::scaled_ratio(
+                                control.weight(),
+                                previous.weight(),
+                                first.weight(),
+                            )?
+                        };
+                        crate::WeightedPoint3::try_new(control.point(), weight)
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()
+                    .ok()
+            });
+            let segment_controls = scaled_controls
+                .as_deref()
+                .unwrap_or(segment.control_points());
+            let shared = if let Some(previous) = controls.last_mut() {
+                let first = segment_controls[0];
+                if previous.weight() == first.weight()
+                    && curve_points_coincident(previous.point(), first.point())
+                {
+                    let a = previous.point().to_array();
+                    let b = first.point().to_array();
+                    let midpoint =
+                        Point3::try_from(std::array::from_fn(|i| a[i] + (b[i] - a[i]) * 0.5))?;
+                    *previous = crate::WeightedPoint3::try_new(midpoint, previous.weight())?;
+                    true
+                } else {
+                    false
+                }
+            } else {
+                false
+            };
             if shared {
                 knots.pop();
             }
-            controls.extend_from_slice(&segment.control_points()[usize::from(shared)..]);
+            controls.extend_from_slice(&segment_controls[usize::from(shared)..]);
             if index == 0 {
                 knots.extend_from_slice(segment.knots());
             } else {

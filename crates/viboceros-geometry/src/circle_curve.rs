@@ -114,6 +114,19 @@ impl Circle3 {
             domain: [-self.domain[1], -self.domain[0]],
         }
     }
+
+    pub fn try_change_closed_seam(self, parameter: Real) -> Result<Self, GeometryError> {
+        let domain = self.domain();
+        let wrapped = crate::parameter::wrapped_parameter(parameter, &domain)?;
+        let angle = map_parameter(wrapped, domain.clone(), 0.0..=std::f64::consts::TAU)?;
+        let end = crate::parameter::shifted_parameter(parameter, &domain)?;
+        let frame = if wrapped == *domain.start() || wrapped == *domain.end() {
+            self.frame
+        } else {
+            self.frame.rotated_seam(angle)?
+        };
+        Self { frame, ..self }.try_reparameterized(parameter..=end)
+    }
     /// Exact rational locus in the native interval; angular speed is not
     /// retained by rational quadratic parameterization.
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {

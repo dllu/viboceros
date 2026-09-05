@@ -51,10 +51,15 @@ use a larger supporting circle when its own interval is representable. Supportin
 circle frames are separate from complete circular curves. Existing NURBS evaluation
 and normalized parameter mapping retain support for wider finite-endpoint domains.
 
-Polycurve NURBS conversion shares identical homogeneous endpoint controls with
-degree-multiple junction knots. Otherwise it retains full-order knots and independent
-weights: no endpoint averaging or potentially overflowing ratio of unrelated weights.
-General minimal-knot simplification remains incomplete.
+Polycurve NURBS conversion matches adjacent homogeneous scales when every resulting
+weight is representable. Coincident endpoints share their midpoint and a degree-multiple
+junction knot, matching OpenNURBS within the fixed curve-coincidence tolerance.
+If a scaled weight would overflow or vanish, full-order knots preserve independent
+scales. The multiplication/division order avoids forming overflowing weight ratios.
+
+Native [trimming, splitting, seam relocation, and command reparameterization](curve-domain-editing.md)
+retain this parameter contract. NURBS affine maps preserve exact interior knots when
+representable, preventing collapsed trim slivers caused by needless normalization.
 
 ## Evidence
 

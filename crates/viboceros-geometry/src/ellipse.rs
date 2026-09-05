@@ -207,28 +207,26 @@ impl Ellipse3 {
 
     /// Returns the exact four-span rational quadratic representation.
     pub fn to_nurbs(self) -> Result<NurbsCurve, GeometryError> {
-        let mut controls = Vec::with_capacity(9);
-        for quadrant in 0..4 {
-            let start_angle = quadrant as Real * FRAC_PI_2;
-            if quadrant == 0 {
-                controls.push(WeightedPoint3::try_new(
-                    self.point_at_angle(start_angle)?,
-                    1.0,
-                )?);
-            }
-            let middle_angle = start_angle + FRAC_PI_2 * 0.5;
-            let (middle_sine, middle_cosine) = middle_angle.sin_cos();
-            controls.push(WeightedPoint3::try_new(
-                self.frame_point(middle_cosine, middle_sine, FRAC_1_SQRT_2)?,
-                FRAC_1_SQRT_2,
-            )?);
-            let endpoint = if quadrant == 3 {
-                self.point_at_angle(0.0)?
-            } else {
-                self.point_at_angle(start_angle + FRAC_PI_2)?
-            };
-            controls.push(WeightedPoint3::try_new(endpoint, 1.0)?);
-        }
+        let controls = [
+            (1.0, 0.0),
+            (1.0, 1.0),
+            (0.0, 1.0),
+            (-1.0, 1.0),
+            (-1.0, 0.0),
+            (-1.0, -1.0),
+            (0.0, -1.0),
+            (1.0, -1.0),
+            (1.0, 0.0),
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(i, (x, y))| {
+            WeightedPoint3::try_new(
+                self.frame_point(x, y, 1.0)?,
+                if i % 2 == 0 { 1.0 } else { FRAC_1_SQRT_2 },
+            )
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
         NurbsCurve::try_new_rational(
             2,
             controls,

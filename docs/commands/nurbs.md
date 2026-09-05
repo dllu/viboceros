@@ -126,7 +126,8 @@ whose stored homogeneous seam controls do not close is rejected as Rhino does.
 `Reparameterize start end` changes one selected curve's domain, while four
 values set the U and V domains of one selected untrimmed NURBS surface. Commas
 between values are also accepted. `Reparameterize Automatic` uses curve length
-or OpenNURBS' longest-control-polygon surface size. Analytic curves are changed
-to exact NURBS form so the new domain can be retained; geometry, orientation,
+or OpenNURBS' longest-control-polygon surface size. Curves retain their native
+representations. Polycurves redistribute outer intervals by segment length, matching
+Rhino's Domain setter; other curves use affine parameter maps. Geometry, orientation,
 periodicity, object identity, attributes, groups, selection, and undo are
 preserved.

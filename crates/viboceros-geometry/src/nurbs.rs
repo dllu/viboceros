@@ -838,6 +838,9 @@ impl NurbsCurve {
         }
 
         let source = self.domain();
+        if source == domain {
+            return Ok(self.clone());
+        }
         let source_start = *source.start();
         let source_end = *source.end();
         let knots = self
@@ -2031,11 +2034,29 @@ impl NurbsCurve {
     /// when the new seam is already a multiple knot. Non-periodic curves are
     /// split exactly and cyclically appended, retaining rational weights.
     pub fn try_change_closed_seam(&self, parameter: Real) -> Result<Self, GeometryError> {
-        self.validate_parameter(parameter)?;
+        require_finite([parameter], "curve seam parameter")?;
         if !self.is_closed()? {
             return Err(GeometryError::CurveSeamMustBeClosed);
         }
-
+        let domain = self.domain();
+        if !domain.contains(&parameter) {
+            let wrapped = crate::parameter::wrapped_parameter(parameter, &domain)?;
+            // OpenNURBS' periodic seam mover receives the original parameter
+            // and falls back to clamped split/append outside the old interval.
+            let relocated = if wrapped > *domain.start() && wrapped < *domain.end() {
+                self.change_non_periodic_seam(
+                    wrapped,
+                    *domain.start(),
+                    *domain.end(),
+                    self.is_periodic(),
+                )?
+            } else {
+                self.clone()
+            };
+            return relocated.try_reparameterized(
+                parameter..=crate::parameter::shifted_parameter(parameter, &domain)?,
+            );
+        }
         self.change_closed_seam_with_periodic_topology(parameter, self.is_periodic())
     }
 
@@ -4771,6 +4792,27 @@ fn reparameterize_value(
     target_start: Real,
     target_end: Real,
 ) -> Result<Real, GeometryError> {
+    // Preserve exactly representable affine maps before resorting to scaled
+    // endpoints. Unconditional normalization can move an exact interior knot
+    // by one ulp and create a zero-derivative sliver when trimming there.
+    let source_width = source_end - source_start;
+    let target_width = target_end - target_start;
+    if source_width.is_finite() && source_width > 0.0 && target_width.is_finite() {
+        let left = value - source_start;
+        let right = source_end - value;
+        let direct = if left.abs() <= right.abs() {
+            crate::parameter::scaled_ratio(left, target_width, source_width)
+                .map(|offset| target_start + offset)
+        } else {
+            crate::parameter::scaled_ratio(right, target_width, source_width)
+                .map(|offset| target_end - offset)
+        };
+        if let Ok(mapped) = direct
+            && mapped.is_finite()
+        {
+            return Ok(mapped);
+        }
+    }
     let source_scale = value.abs().max(source_start.abs()).max(source_end.abs());
     debug_assert!(source_scale > 0.0);
     let scaled_source_start = source_start / source_scale;
@@ -7601,7 +7643,7 @@ mod tests {
     }
 
     #[test]
-    fn closed_curve_seam_relocation_rejects_open_or_out_of_domain_curves() {
+    fn closed_curve_seam_relocation_rejects_open_curves_and_wraps_finite_parameters() {
         let open = NurbsCurve::try_new(
             2,
             vec![point(0.0, 0.0), point(2.0, 3.0), point(5.0, 0.0)],
@@ -7627,10 +7669,17 @@ mod tests {
             closed.try_change_closed_seam(f64::NAN),
             Err(GeometryError::NonFinite { .. })
         ));
-        assert!(matches!(
-            closed.try_change_closed_seam(*closed.domain().end() + 1.0),
-            Err(GeometryError::ParameterOutOfDomain { .. })
-        ));
+        let t = *closed.domain().end() + 1.0;
+        let shifted = closed.try_change_closed_seam(t).unwrap();
+        assert_eq!(*shifted.domain().start(), t);
+        assert!(
+            shifted
+                .evaluate(t)
+                .unwrap()
+                .distance_to(closed.evaluate(*closed.domain().start() + 1.0).unwrap())
+                .unwrap()
+                < 1e-12
+        );
     }
 
     #[test]

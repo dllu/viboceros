@@ -127,9 +127,10 @@ retaining its original parameter interval. See [closure rules and limits](../cur
 
 `CrvSeam point` relocates exactly one selected closed curve's start/end seam to
 the closest curve location; omit the point to pick that location in a viewport,
-or use `CrvSeam Parameter=value` for an exact parameter. Supported analytic
-curves, closed polylines, and NURBS curves are converted to their exact NURBS
-representation as needed. Shape and parameter-span length are preserved, and
+or use `CrvSeam Parameter=value` for a native parameter. Circles, closed arcs,
+polylines, and polycurves retain their native representations; ellipses use their
+parameter-equivalent NURBS form. Finite parameters outside the old interval wrap
+around the closed curve. Shape and parameter-span length are preserved, and
 the output domain starts at the chosen parameter. Smooth periodic seams remain
 periodic and gain a control point when required, while an existing
 multiple-knot seam becomes Rhino's equivalent clamped form. Rational geometry,
@@ -187,7 +188,9 @@ directed portion between the closest curve locations; omit both points for two
 viewport picks, or use `Parameter=start,end` for exact parameters. Reversing
 the point order reverses an open result and crosses the existing seam on a
 closed curve, matching Rhino/OpenNURBS trim behavior. `Copy=Yes` retains the
-source and adds an attribute-preserving result to its groups. Lines, analytic
-curves, polylines, and NURBS curves are converted to exact rational NURBS form
-as needed; replacement preserves identity, attributes, groups, selection, and
-undo.
+source and adds an attribute-preserving result to its groups. Numeric parameters
+refer to the native source, without changing angular parameterization first.
+Lines, arcs, polylines, and polycurves retain native leaves; partial circles become
+arcs and ellipses use their parameter-equivalent NURBS form. A seam-crossing result
+is a polycurve containing both trimmed portions. Replacement preserves identity,
+attributes, groups, selection, and undo. See [native domain editing](../curve-domain-editing.md).

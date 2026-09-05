@@ -1028,29 +1028,39 @@ def _curve_native(operation, iterations, tolerance):
                         owned.append(curve)
                     if not curve.Transform(transform):
                         raise ValueError("native curve transform failed")
-                samples = []
-                for i in range(33):
-                    parameter = float(curve.Domain.ParameterAt(float(i) / 32.0))
-                    derivatives = curve.DerivativeAt(parameter, 2)
-                    if derivatives is None or len(derivatives) != 3:
-                        raise ValueError("native curve derivatives failed")
-                    samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
-                                    "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2]),
-                                    "tangent": _xyz(curve.TangentAt(parameter))})
-                divisions = []
-                for i in range(18):
-                    if i == 0:
-                        parameter = float(curve.Domain.T0)
-                    elif i == 17:
-                        parameter = float(curve.Domain.T1)
-                    else:
-                        success, parameter = curve.NormalizedLengthParameter(float(i) / 17.0, tolerance["relative"])
-                        if not success:
-                            raise ValueError("native curve length inversion failed")
-                    divisions.append({"parameter": float(parameter), "point": _xyz(curve.PointAt(parameter)), "tangent": _xyz(curve.TangentAt(parameter))})
-                return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
-                        "length": float(curve.GetLength(tolerance["relative"])), "samples": samples, "divisions": divisions,
-                        "nurbs": _nurbs_curve_definition(curve)}
+                edit = operation.get("edit")
+                if edit is None:
+                    return _curve_native_record(curve, tolerance)
+                kind = edit["kind"]
+                if kind == "seam":
+                    if not curve.ChangeClosedCurveSeam(float(edit["parameter"])):
+                        raise ValueError("native seam relocation failed")
+                    curves = [curve]
+                elif kind == "split":
+                    curves = curve.Split(System.Array[System.Double](edit["parameters"]))
+                    if curves is None:
+                        raise ValueError("native multiple split failed")
+                    owned.extend(curves)
+                else:
+                    start, end = edit["domain"]
+                    reverse = kind == "subcurve" and start > end and not curve.IsClosed
+                    interval = Rhino.Geometry.Interval(end, start) if reverse else Rhino.Geometry.Interval(start, end)
+                    result = curve.Trim(interval)
+                    if result is None:
+                        raise ValueError("native curve trim failed")
+                    owned.append(result)
+                    if reverse and not result.Reverse():
+                        raise ValueError("native subcurve reversal failed")
+                    curves = [result]
+                records = []
+                for result in curves:
+                    value = _curve_native_record(result, tolerance)
+                    value["type"] = ("arc" if isinstance(result, Rhino.Geometry.ArcCurve) else
+                                     "line" if isinstance(result, Rhino.Geometry.LineCurve) else
+                                     "polyline" if isinstance(result, Rhino.Geometry.PolylineCurve) else
+                                     "polycurve" if isinstance(result, Rhino.Geometry.PolyCurve) else "nurbs")
+                    records.append(value)
+                return {"curves": records}
             finally:
                 for curve in reversed(owned):
                     curve.Dispose()
@@ -1058,6 +1068,31 @@ def _curve_native(operation, iterations, tolerance):
     finally:
         source.Dispose()
 
+
+def _curve_native_record(curve, tolerance):
+    samples = []
+    for i in range(33):
+        parameter = float(curve.Domain.ParameterAt(float(i) / 32.0))
+        derivatives = curve.DerivativeAt(parameter, 2)
+        if derivatives is None or len(derivatives) != 3:
+            raise ValueError("native curve derivatives failed")
+        samples.append({"parameter": parameter, "point": _xyz(curve.PointAt(parameter)),
+                        "first": _xyz(derivatives[1]), "second": _xyz(derivatives[2]),
+                        "tangent": _xyz(curve.TangentAt(parameter))})
+    divisions = []
+    for i in range(18):
+        if i == 0:
+            parameter = float(curve.Domain.T0)
+        elif i == 17:
+            parameter = float(curve.Domain.T1)
+        else:
+            success, parameter = curve.NormalizedLengthParameter(float(i) / 17.0, tolerance["relative"])
+            if not success:
+                raise ValueError("native curve length inversion failed")
+        divisions.append({"parameter": float(parameter), "point": _xyz(curve.PointAt(parameter)), "tangent": _xyz(curve.TangentAt(parameter))})
+    return {"domain": [float(curve.Domain.T0), float(curve.Domain.T1)], "closed": bool(curve.IsClosed),
+            "length": float(curve.GetLength(tolerance["relative"])), "samples": samples, "divisions": divisions,
+            "nurbs": _nurbs_curve_definition(curve)}
 
 def _polycurve_native_record(curve, tolerance):
     segments = []

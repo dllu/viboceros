@@ -9,8 +9,11 @@ locations; omit the points to collect viewport picks and press Enter, or use
 
 `Split Parameter=value[,value...]` for exact parameters. Open-curve pieces
 remain in natural order. Closed curves produce cyclic pieces between the split
-locations, including Rhino's clamped full-loop result for a single location.
-Lines, analytic curves, polylines, and NURBS curves are supported. In these
+locations; a single location creates a full-loop polycurve containing both seam
+pieces. Lines, arcs, polylines, and existing polycurve leaves retain their native
+representations. Circles trim to arcs, while ellipses use parameter-equivalent
+NURBS. Numeric locations use the [native source domain](../curve-domain-editing.md).
+In these
 point/parameter modes the first piece retains the source identity; every piece
 retains its attributes and group membership, becomes selected, and participates
 in one undo step. `Split CuttingObjects=source_point` instead chooses the

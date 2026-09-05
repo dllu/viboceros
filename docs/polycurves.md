@@ -10,7 +10,8 @@ There is no fitting, tessellation, or endpoint averaging during construction.
 
 The kernel supports evaluation and first/second derivatives, explicit left/right
 segment choice at junctions, length, trimming, splitting, reversal, affine transforms,
-flattened concatenation, and exact conversion to a single piecewise NURBS curve.
+flattened concatenation, and conversion to a single piecewise NURBS curve with
+the bounded junction policy described below.
 `CurveRef::PolyCurve` enables shared arc-length sampling, planarity checks, curvature,
 and curve-rebuilding/fitting algorithms. Document objects preserve segments through
 affine transforms and nonlinear morphs. Viewports draw and pick each segment; endpoint
@@ -67,10 +68,12 @@ The constructor uses the kernel's fixed curve-coincidence predicate, not documen
 model tolerance. Bridging or editing larger gaps belongs to a joining operation.
 Composites allow up to 65,536 segments; NURBS conversion allows at most one million
 output controls. A closed segment may only be the entire composite, matching
-OpenNURBS validity rules. Conversion elevates degrees and shares identical homogeneous
-endpoint controls; otherwise full-order knots preserve independent scales without
-dividing adjacent weights. Its
-control structure need not be Rhino's minimal merged NURBS structure.
+OpenNURBS validity rules. Conversion elevates degrees, matches representable homogeneous
+scales, and shares coincident endpoint midpoints with degree-multiple knots. Endpoint
+movement is bounded by the fixed curve-coincidence predicate. If rescaling would overflow
+or erase a nonzero weight, full-order knots preserve independent scales. No overflowing
+ratio is required merely to rescale representable weights. This fallback need not match
+Rhino's minimal control structure.
 
 ## Division and validation
 

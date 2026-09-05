@@ -89,7 +89,17 @@ pub fn try_curve_through_points(
             } else {
                 curve.control_points().len() - curve.degree()
             };
-            curve.try_reparameterized(0.0..=domain_length as Real)
+            if curve.is_periodic() {
+                curve.try_reparameterized(0.0..=domain_length as Real)
+            } else {
+                // This construction explicitly requests integer uniform spans.
+                // Do not round-trip through the control-polygon-length domain.
+                let degree = curve.degree();
+                let mut knots = vec![0.0; degree];
+                knots.extend((0..=domain_length).map(|i| i as Real));
+                knots.extend(std::iter::repeat_n(domain_length as Real, degree));
+                NurbsCurve::try_new_rational(degree, curve.control_points().to_vec(), knots)
+            }
         }
         CurveThroughConstruction::Interpolated(knot_spacing) => {
             let closure = if closed {

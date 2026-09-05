@@ -65,6 +65,10 @@ checks, and 3DM round trips on native mixed composites in both directions.
 `curve_native_parameters.json` covers the shared [native parameter contract](curve-parameters.md)
 for all seven curve families. It compares domains, first/second derivatives,
 tangents, equal-length division parameters, reversal, transforms, and NURBS definitions.
+`curve_native_editing.json` extends those records with native trims, cyclic subcurves,
+splits, seam relocation, periodic curves, and unequal rational weights. See
+[domain-editing validation](curve-domain-editing.md) for the separate geometry and
+Rhino length-inversion comparison limits.
 
 `curve_join_close.json` compares 39 mixed joining and closure cases, including
 full NURBS definitions, retained intervals, representation, and length. It tests

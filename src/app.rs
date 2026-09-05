@@ -7363,12 +7363,9 @@ mod tests {
         app.accept_drafting_point(point(0.0, 5.0, 0.0));
 
         assert_eq!(app.active_command, None);
-        let Geometry::NurbsCurve(relocated) = app.document.object(source).unwrap().geometry()
-        else {
-            panic!("expected an exact rational NURBS circle")
+        let Geometry::Circle(relocated) = app.document.object(source).unwrap().geometry() else {
+            panic!("seam relocation must retain the analytic circle")
         };
-        assert!(relocated.is_rational());
-        assert!(relocated.is_closed().unwrap());
         assert!(
             relocated
                 .evaluate(*relocated.domain().start())
@@ -7605,8 +7602,8 @@ mod tests {
             .objects()
             .find(|object| object.id() != source_id)
             .unwrap();
-        let Geometry::NurbsCurve(curve) = output.geometry() else {
-            panic!("interactive SubCrv must create exact NURBS geometry")
+        let Geometry::Line(curve) = output.geometry() else {
+            panic!("interactive SubCrv must retain the native line")
         };
         assert!(
             curve
@@ -7656,8 +7653,8 @@ mod tests {
         assert_eq!(app.document.objects().count(), 3);
         assert_eq!(app.document.selected_object_count(), 3);
         for object in app.document.objects() {
-            let Geometry::NurbsCurve(curve) = object.geometry() else {
-                panic!("interactive Split must create exact NURBS pieces")
+            let Geometry::Line(curve) = object.geometry() else {
+                panic!("interactive Split must retain native line pieces")
             };
             let first_split = point(4.0, 0.0, 0.0);
             let second_split = point(7.0, 0.0, 0.0);

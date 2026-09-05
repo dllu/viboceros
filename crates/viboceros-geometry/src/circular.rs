@@ -1,4 +1,4 @@
-use std::f64::consts::{FRAC_PI_2, PI, TAU};
+use std::f64::consts::{PI, TAU};
 
 use crate::{
     AffineTransform3, BoundingBox3, GeometryError, NurbsCurve, Point3, Real, Tolerance,
@@ -166,6 +166,25 @@ impl CircleFrame3 {
             y_axis: self.y_axis.opposite(),
             ..self
         }
+    }
+
+    pub(crate) fn rotated_seam(self, angle: Real) -> Result<Self, GeometryError> {
+        let (sine, cosine) = angle.sin_cos();
+        let x = self.x_axis.as_vector().to_array();
+        let y = self.y_axis.as_vector().to_array();
+        let axis = Vector3::try_from(std::array::from_fn(|i| x[i].mul_add(cosine, y[i] * sine)))?
+            .normalized_nonzero()?;
+        let frame = Self {
+            x_axis: axis,
+            y_axis: self
+                .normal()?
+                .as_vector()
+                .cross(axis.as_vector())?
+                .normalized_nonzero()?,
+            ..self
+        };
+        frame.checked_bounds()?;
+        Ok(frame)
     }
 
     pub fn bounds(self) -> BoundingBox3 {
@@ -511,6 +530,22 @@ impl CircularArc3 {
         self.circle.normal()
     }
 
+    pub fn try_change_closed_seam(self, parameter: Real) -> Result<Self, GeometryError> {
+        let domain = self.domain();
+        let wrapped = crate::parameter::wrapped_parameter(parameter, &domain)?;
+        let angle = crate::parameter::map_parameter(wrapped, domain.clone(), 0.0..=TAU)?;
+        if !self.is_closed() {
+            return Err(GeometryError::CurveSeamMustBeClosed);
+        }
+        let end = crate::parameter::shifted_parameter(parameter, &domain)?;
+        let circle = if wrapped == *domain.start() || wrapped == *domain.end() {
+            self.circle
+        } else {
+            self.circle.rotated_seam(angle)?
+        };
+        Self { circle, ..self }.try_reparameterized(parameter..=end)
+    }
+
     pub fn start(self) -> Result<Point3, GeometryError> {
         self.circle.point_at_angle(0.0)
     }
@@ -613,12 +648,16 @@ impl CircularArc3 {
 }
 
 fn circular_nurbs(circle: CircleFrame3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
-    // Three-point construction can put an exact quadrant a few ulps above
-    // pi/2. Keep the canonical span count across that roundoff boundary.
-    let quadrants = sweep / FRAC_PI_2;
-    let span_count = (quadrants - 8.0 * Real::EPSILON * quadrants)
-        .ceil()
-        .max(1.0) as usize;
+    // OpenNURBS uses one, two, or four spans (including four, not three,
+    // between 180 and 270 degrees). Keep its sqrt-epsilon quadrant allowance.
+    let quadrant_limit = (0.5 + Real::EPSILON.sqrt()) * PI;
+    let span_count = if sweep <= quadrant_limit {
+        1
+    } else if sweep <= 2.0 * quadrant_limit {
+        2
+    } else {
+        4
+    };
     let span_angle = sweep / span_count as Real;
     let half_angle = span_angle * 0.5;
     let middle_weight = half_angle.cos();
@@ -741,6 +780,7 @@ fn frame_point(
 mod tests {
     use super::*;
     use crate::Circle3;
+    use std::f64::consts::FRAC_PI_2;
 
     fn point(x: Real, y: Real, z: Real) -> Point3 {
         Point3::try_new(x, y, z).unwrap()
