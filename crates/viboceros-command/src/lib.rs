@@ -44635,6 +44635,92 @@ mod tests {
     }
 
     #[test]
+    fn orient_on_surface_fits_surface_interiors_and_restores_copy_and_in_place_history() {
+        use viboceros_geometry::PointMorph;
+        let registry = CommandRegistry::with_builtins();
+        let source = NurbsSurface::try_bilinear([
+            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+            Point3::try_new(2.0, 2.0, 3.0).unwrap(),
+            Point3::try_new(2.0, 3.0, 3.2).unwrap(),
+            Point3::try_new(1.0, 3.0, 3.0).unwrap(),
+        ])
+        .unwrap();
+        let surface = orient_surface_quarter_cylinder();
+        for copy in [false, true] {
+            let mut document = Document::default();
+            let original = add_named_surface(&mut document, source.clone(), "Source");
+            let target = add_named_surface(&mut document, surface.clone(), "Target");
+            document
+                .add_group(Some("Shared".into()), [original])
+                .unwrap();
+            document
+                .select_objects_direct([original], SelectionMode::Replace)
+                .unwrap();
+            let before = document.objects().cloned().collect::<Vec<_>>();
+            registry
+                .execute(
+                    &mut document,
+                    &format!(
+                        "OrientOnSrf 1,2,3 2,2,3 8.973756499953726,4.412674277525846,4 \
+                 Copy={} Rigid=No SurfaceName=Target",
+                        if copy { "Yes" } else { "No" },
+                    ),
+                )
+                .unwrap();
+            assert_eq!(document.objects().len(), if copy { 3 } else { 2 });
+            assert_eq!(document.groups().len(), if copy { 2 } else { 1 });
+            assert_eq!(document.undo_label(), Some("OrientOnSrf"));
+            assert!(document.is_selected(original));
+            assert!(!document.is_selected(target));
+            let result = document
+                .objects()
+                .find(|object| object.id() != target && (!copy || object.id() != original))
+                .unwrap();
+            let Geometry::NurbsSurface(fitted) = result.geometry() else {
+                panic!("expected fitted NURBS surface");
+            };
+            assert_eq!(fitted.domain_u(), source.domain_u());
+            assert_eq!(fitted.domain_v(), source.domain_v());
+            let frame = Frame3::try_from_directions(
+                Point3::try_new(1.0, 2.0, 3.0).unwrap(),
+                Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+                Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+                document.tolerance(),
+            )
+            .unwrap();
+            let morph = SurfacePointMorph::try_new(
+                frame,
+                &surface,
+                0.3,
+                0.4,
+                1.0,
+                0.0,
+                false,
+                document.tolerance(),
+            )
+            .unwrap();
+            for j in 0..=32 {
+                for i in 0..=32 {
+                    let u = source.parameter_at_u(i as f64 / 32.0).unwrap();
+                    let v = source.parameter_at_v(j as f64 / 32.0).unwrap();
+                    let expected = morph.morph_point(source.evaluate(u, v).unwrap()).unwrap();
+                    let actual = fitted.evaluate(u, v).unwrap();
+                    assert!(
+                        actual.distance_to(expected).unwrap() <= document.tolerance().absolute()
+                    );
+                }
+            }
+            let after = document.objects().cloned().collect::<Vec<_>>();
+            registry.execute(&mut document, "Undo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), before);
+            assert_eq!(document.groups().len(), 1);
+            registry.execute(&mut document, "Redo").unwrap();
+            assert_eq!(document.objects().cloned().collect::<Vec<_>>(), after);
+            assert_eq!(document.groups().len(), if copy { 2 } else { 1 });
+        }
+    }
+
+    #[test]
     fn orient_on_surface_rigid_flip_constrained_normal_and_errors_are_atomic() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();

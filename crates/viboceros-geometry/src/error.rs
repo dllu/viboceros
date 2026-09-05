@@ -257,6 +257,21 @@ pub enum GeometryError {
         maximum: usize,
     },
 
+    #[error("adaptive surface morph exceeds {maximum} controls in one direction")]
+    TooManyMorphSurfaceControlPoints { maximum: usize },
+
+    #[error("adaptive surface morph exceeds {maximum} direct point-map samples")]
+    TooManyMorphSurfaceSamples { maximum: usize },
+
+    #[error(
+        "surface morph did not reach tolerance {tolerance}; sampled deviation {deviation}, per-axis control limit {maximum}"
+    )]
+    SurfaceMorphDidNotConverge {
+        tolerance: Real,
+        deviation: Real,
+        maximum: usize,
+    },
+
     #[error("an interpolated curve requires at least two points, got {actual}")]
     InsufficientCurveInterpolationPoints { actual: usize },
 

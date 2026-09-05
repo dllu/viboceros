@@ -60,8 +60,9 @@ For a black-box mapping these finite samples are not a continuous error proof.
 Unsampled sharp features can still evade detection; arbitrary discontinuities
 introduced by the mapping itself are not located analytically. Extremely narrow
 native spans, ill-conditioned rational sources, or tolerances below representable
-coordinate resolution can prevent a fit. Surface helpers still move surface
-controls; adaptive surface/B-rep morph fitting is not supplied by this module.
+coordinate resolution can prevent a fit. A separate [surface fitter](surface-morphing.md)
+now handles untrimmed NURBS surfaces and shares the banded interpolation helpers;
+trimmed B-rep morph fitting remains unsupported.
 
 ## Rhino validation
 

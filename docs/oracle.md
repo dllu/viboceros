@@ -93,6 +93,9 @@ Its eight direct maps match at absolute `2e-12`; fitted outputs use `1e-5` becau
 Rhino's observed fit error exceeds the requested `1e-9`. Native fits are separately
 asserted against their direct maps at the requested tolerance. `surface_orient.json`
 now compares unrounded curve samples and document state, not rounded control nets.
+`surface_surface_morph.json` adds five [surface-fitting cases](surface-morphing.md)
+with 1,089 offset-grid direct-map and fitted samples per case; native fit errors
+are independently checked at each case's requested tolerance.
 
 `curve_3dm_interchange.json` checks Rhino's reading of actual Viboceros-written
 files, including decomposed full-order knots and all visibility/locking states.

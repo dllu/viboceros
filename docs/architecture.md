@@ -64,9 +64,11 @@ through composite leaves and supplies exact kink checks and stationary tangents.
 The `nurbs_surface/evaluate` module shares `ParameterSide` and nonempty knot-span
 selection with curves. Its [surface jets](surface-evaluation.md) use local rational
 coordinates and expose exact U/V limits and boundary-span continuation.
-The [curve morph fitter](curve-morphing.md) lives in `morph/curve_fit`, separate
-from point-map construction, with banded interpolation, exact source knot limits,
-and explicit failure when sampled fitting tolerance cannot be reached.
+The [curve fitter](curve-morphing.md) in `morph/curve_fit` and
+[surface fitter](surface-morphing.md) in `morph/surface_fit` are separate from
+point-map construction. They share sided cubic banded interpolation in
+`morph/interpolation`, retain source knot limits, and explicitly fail when
+sampled fitting tolerance cannot be reached within their resource budgets.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

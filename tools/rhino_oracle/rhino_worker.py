@@ -1474,7 +1474,16 @@ def _surface_jets(operation, iterations):
 
 
 def _curve_surface_morph(operation, iterations, tolerance):
-    source = _nurbs_curve_from_definition(operation["curve"])
+    return _geometry_surface_morph(operation, iterations, tolerance, False)
+
+
+def _surface_surface_morph(operation, iterations, tolerance):
+    return _geometry_surface_morph(operation, iterations, tolerance, True)
+
+
+def _geometry_surface_morph(operation, iterations, tolerance, is_surface):
+    source = (_nurbs_surface_from_definition(operation["source"]) if is_surface
+              else _nurbs_curve_from_definition(operation["curve"]))
     surface = None
     morph = None
     fitted = None
@@ -1483,7 +1492,7 @@ def _curve_surface_morph(operation, iterations, tolerance):
         frame = Rhino.Geometry.Plane(_point(operation["source_origin"]),
                                      _vector(operation["source_x"]), _vector(operation["source_y"]))
         if not frame.IsValid:
-            raise ValueError("invalid curve-morph source plane")
+            raise ValueError("invalid morph source plane")
         morph = Rhino.Geometry.Morphs.SplopSpaceMorph(frame, surface,
             Rhino.Geometry.Point2d(*operation["uv"]), float(operation["scale"]), float(operation["angle"]))
         morph.Tolerance = _finite(operation.get("fit_tolerance", tolerance["absolute"]), "morph tolerance")
@@ -1491,14 +1500,25 @@ def _curve_surface_morph(operation, iterations, tolerance):
             raise ValueError("morph tolerance must be positive")
         morph.QuickPreview = False
         morph.PreserveStructure = False
-        parameters = [source.Domain.ParameterAt(i / 256.0) for i in range(257)]
-        exact = [_xyz(morph.MorphPoint(source.PointAt(t))) for t in parameters]
+        if is_surface:
+            domains = [source.Domain(axis) for axis in range(2)]
+            # Offset interior samples from dyadic interpolation/refinement knots.
+            fractions = [0.0] + [(i - 0.3819660112501051) / 32.0 for i in range(1, 32)] + [1.0]
+            parameters = [(domains[0].ParameterAt(u), domains[1].ParameterAt(v))
+                          for v in fractions for u in fractions]
+        else:
+            parameters = [(source.Domain.ParameterAt(i / 256.0),) for i in range(257)]
+        exact = [_xyz(morph.MorphPoint(source.PointAt(*uv))) for uv in parameters]
 
         def compute():
-            candidate = source.DuplicateCurve()
+            # Use the single-face B-rep surface-fitting path, rather than
+            # applying the morph directly to raw NURBS controls.
+            candidate = source.ToBrep() if is_surface else source.DuplicateCurve()
+            if candidate is None:
+                raise ValueError("could not prepare morph geometry")
             try:
                 if not morph.Morph(candidate) or not candidate.IsValid:
-                    raise ValueError("Rhino could not morph the curve")
+                    raise ValueError("Rhino could not morph the geometry")
                 return candidate
             except Exception:
                 candidate.Dispose()
@@ -1511,9 +1531,18 @@ def _curve_surface_morph(operation, iterations, tolerance):
             fitted = None
             fitted = compute()
         elapsed = int(round((default_timer() - started) * 1000000000.0))
-        return {"domain": [float(fitted.Domain.T0), float(fitted.Domain.T1)],
-                "exact_samples": exact,
-                "fitted_samples": [_xyz(fitted.PointAt(t)) for t in parameters]}, max(0, elapsed)
+        if is_surface and fitted.Faces.Count != 1:
+            raise ValueError("surface morph did not retain a single face")
+        evaluated = fitted.Faces[0] if is_surface else fitted
+        result = {"exact_samples": exact,
+                  "fitted_samples": [_xyz(evaluated.PointAt(*uv)) for uv in parameters]}
+        if is_surface:
+            for axis, name in enumerate(["domain_u", "domain_v"]):
+                domain = evaluated.Domain(axis)
+                result[name] = [float(domain.T0), float(domain.T1)]
+        else:
+            result["domain"] = [float(fitted.Domain.T0), float(fitted.Domain.T1)]
+        return result, max(0, elapsed)
     finally:
         for item in [fitted, morph, surface, source]:
             if item is not None:
@@ -1524,6 +1553,8 @@ def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "curve_surface_morph":
         return _curve_surface_morph(operation, iterations, tolerance)
+    if kind == "surface_surface_morph":
+        return _surface_surface_morph(operation, iterations, tolerance)
     if kind == "surface_jets":
         return _surface_jets(operation, iterations)
     if kind == "three_dm_curve_interchange":

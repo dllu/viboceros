@@ -153,7 +153,9 @@ impl Geometry {
                     .collect::<Result<Vec<_>, _>>()?,
                 curve.parameters().to_vec(),
             )?),
-            Self::NurbsSurface(surface) => Self::NurbsSurface(morph.morph_nurbs_surface(surface)?),
+            Self::NurbsSurface(surface) => {
+                Self::NurbsSurface(morph.morph_nurbs_surface(surface, tolerance)?)
+            }
             Self::Brep(_) => return Err(GeometryError::UnsupportedBrepMorph),
             Self::Mesh(mesh) => Self::Mesh(morph.morph_mesh(mesh, tolerance)?),
         })

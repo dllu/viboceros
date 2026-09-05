@@ -1,4 +1,6 @@
 mod curve_fit;
+mod interpolation;
+mod surface_fit;
 
 use crate::{
     Frame3, GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, Polyline3,
@@ -8,11 +10,15 @@ use crate::{
 /// Resource ceiling for adaptive cubic fitting and point-map sampling.
 pub const MAX_MORPH_CURVE_CONTROL_POINTS: usize = 512;
 
+/// Per-axis control limit for adaptive surface morphs.
+pub const MAX_MORPH_SURFACE_AXIS_CONTROLS: usize = 256;
+/// Bound on cached direct point-map samples during one surface fit.
+pub const MAX_MORPH_SURFACE_SAMPLES: usize = 1_000_000;
+
 /// A deterministic non-affine mapping of finite Euclidean points.
 ///
-/// Default helpers preserve mesh and surface control-net topology. Curves are
-/// made deformable as cubic NURBS curves, following Rhino's space-morph
-/// behavior rather than reducing a nonlinear result to mapped controls.
+/// Meshes retain their topology; curves and surfaces use sampled,
+/// tolerance-driven spline fitting for nonlinear images.
 pub trait PointMorph {
     fn morph_point(&self, point: Point3) -> Result<Point3, GeometryError>;
 
@@ -63,22 +69,21 @@ pub trait PointMorph {
         curve_fit::fit(self, curve, tolerance, MAX_MORPH_CURVE_CONTROL_POINTS)
     }
 
-    fn morph_nurbs_surface(&self, surface: &NurbsSurface) -> Result<NurbsSurface, GeometryError> {
-        let controls = surface
-            .control_points()
-            .iter()
-            .map(|control| {
-                WeightedPoint3::try_new(self.morph_point(control.point())?, control.weight())
-            })
-            .collect::<Result<Vec<_>, _>>()?;
-        NurbsSurface::try_new_rational(
-            surface.degree_u(),
-            surface.degree_v(),
-            surface.control_point_count_u(),
-            surface.control_point_count_v(),
-            controls,
-            surface.knots_u().to_vec(),
-            surface.knots_v().to_vec(),
+    /// Checks a mapped-control candidate, then adaptively fits a bicubic image
+    /// in the native U/V domains with independent source knot-side limits.
+    /// Accuracy checks are sampled; an exhausted control or sampling budget
+    /// returns an error rather than a knowingly inaccurate surface.
+    fn morph_nurbs_surface(
+        &self,
+        surface: &NurbsSurface,
+        tolerance: Tolerance,
+    ) -> Result<NurbsSurface, GeometryError> {
+        surface_fit::fit(
+            self,
+            surface,
+            tolerance,
+            MAX_MORPH_SURFACE_AXIS_CONTROLS,
+            MAX_MORPH_SURFACE_SAMPLES,
         )
     }
 

@@ -1,21 +1,16 @@
+use super::interpolation::{
+    Break, DEGREE, collocation_row, control_count, error_fractions, knots, seed_breaks, solve,
+    stable_lerp,
+};
 use super::*;
-use crate::{ParameterSide, nurbs::bspline_basis_values};
+use crate::ParameterSide;
 use faer::Mat;
 use std::collections::HashMap;
-
-mod banded;
 
 #[cfg(test)]
 mod tests;
 
-const DEGREE: usize = 3;
 const ERROR_SAMPLES: usize = 16;
-
-#[derive(Clone, Copy)]
-struct Break {
-    parameter: Real,
-    multiplicity: usize,
-}
 
 pub(super) fn fit(
     morph: &(impl PointMorph + ?Sized),
@@ -36,48 +31,14 @@ pub(super) fn fit(
         cache.insert(key, point);
         Ok::<_, GeometryError>(point)
     };
-    let domain = source.domain();
-    let mut breaks = vec![Break {
-        parameter: *domain.start(),
-        multiplicity: DEGREE + 1,
-    }];
-    for group in source.knots().chunk_by(|a, b| a == b) {
-        if group[0] > *domain.start() && group[0] < *domain.end() {
-            // Never smooth over a structural corner, acceleration break, or
-            // positional jump. Smooth refinements retain simple cubic knots.
-            breaks.push(Break {
-                parameter: group[0],
-                multiplicity: (DEGREE + group.len())
-                    .saturating_sub(source.degree())
-                    .clamp(1, DEGREE + 1),
-            });
-        }
-    }
-    breaks.push(Break {
-        parameter: *domain.end(),
-        multiplicity: DEGREE + 1,
-    });
-    let fractions = (1..ERROR_SAMPLES)
-        .flat_map(|i| {
-            let fraction = i as Real / ERROR_SAMPLES as Real;
-            // An independent nonuniform grid reduces aliasing with both the
-            // interpolation abscissae and the uniformly spaced validation grid.
-            [
-                fraction,
-                0.5 * (1.0 - (std::f64::consts::PI * fraction).cos()),
-            ]
-        })
-        .chain([0.0, 1.0])
-        .collect::<Vec<_>>();
+    let mut breaks = seed_breaks(source.degree(), source.knots(), source.domain());
+    let fractions = error_fractions(ERROR_SAMPLES);
     loop {
-        let count = breaks.iter().map(|b| b.multiplicity).sum::<usize>() - DEGREE - 1;
+        let count = control_count(&breaks);
         if count > maximum {
             return Err(GeometryError::TooManyMorphCurveControlPoints { maximum });
         }
-        let knots = breaks
-            .iter()
-            .flat_map(|b| std::iter::repeat_n(b.parameter, b.multiplicity))
-            .collect::<Vec<_>>();
+        let knots = knots(&breaks);
         let approximation = interpolate(&mut point_at, knots)?;
         let mut refinements = Vec::new();
         let mut deviation: Real = 0.0;
@@ -167,7 +128,7 @@ fn interpolate(
     let rhs = Mat::from_fn(count, 3, |row, column| {
         targets[row].to_array()[column] - origin[column]
     });
-    let solution = banded::solve(&rows, rhs)?;
+    let solution = solve(&rows, rhs)?;
     let controls = (0..count)
         .map(|i| {
             if fixed[i] {
@@ -180,60 +141,4 @@ fn interpolate(
         })
         .collect::<Result<Vec<_>, GeometryError>>()?;
     NurbsCurve::try_new(DEGREE, controls, knots)
-}
-
-fn collocation_row(
-    knots: &[Real],
-    i: usize,
-) -> Result<([Real; 5], Real, ParameterSide, bool), GeometryError> {
-    let fixed = knots[i + 1] == knots[i + DEGREE];
-    let t = if fixed {
-        knots[i + 1]
-    } else {
-        stable_mean3(knots[i + 1], knots[i + 2], knots[i + 3])?
-    };
-    let side = if fixed && knots[i] < t {
-        ParameterSide::Left
-    } else {
-        ParameterSide::Right
-    };
-    let mut row = [0.0; 5];
-    if fixed {
-        // Full-order knots have independent endpoint rows at the same t.
-        row[2] = 1.0;
-    } else {
-        let values = bspline_basis_values(knots, DEGREE, knots.len() - DEGREE - 1, t)?;
-        for (j, value) in values.into_iter().enumerate() {
-            if i.abs_diff(j) <= 2 {
-                row[j + 2 - i] = value;
-            } else if value != 0.0 {
-                return Err(GeometryError::Degenerate {
-                    context: "cubic morph collocation bandwidth",
-                });
-            }
-        }
-    }
-    Ok((row, t, side, fixed))
-}
-
-fn stable_mean3(first: Real, second: Real, third: Real) -> Result<Real, GeometryError> {
-    let scale = first.abs().max(second.abs()).max(third.abs());
-    if scale == 0.0 {
-        return Ok(0.0);
-    }
-    let mean = (((first / scale + second / scale) + third / scale) / 3.0).clamp(-1.0, 1.0) * scale;
-    require_finite([mean], "cubic morph Greville parameter")?;
-    Ok(mean)
-}
-
-fn stable_lerp(start: Real, end: Real, fraction: Real) -> Result<Real, GeometryError> {
-    let parameter = if fraction == 0.0 {
-        start
-    } else if fraction == 1.0 {
-        end
-    } else {
-        start.mul_add(1.0 - fraction, end * fraction)
-    };
-    require_finite([parameter], "cubic morph sample parameter")?;
-    Ok(parameter)
 }

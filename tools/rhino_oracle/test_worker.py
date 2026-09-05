@@ -259,6 +259,61 @@ class RhinoWorkerTests(unittest.TestCase):
                 self.worker._curve_surface_morph({"curve": {}, "surface": {}}, 1, {"absolute": 1e-9})
         source.Dispose.assert_called_once_with()
 
+    def test_surface_morph_probe_uses_native_uv_and_disposes_successful_and_failed_fits(self):
+        def xyz(x, y=0.0):
+            return SimpleNamespace(X=x, Y=y, Z=0.0)
+
+        domains = [SimpleNamespace(T0=-7.0, T1=13.0, ParameterAt=lambda s: -7.0 + 20.0 * s),
+                   SimpleNamespace(T0=2.0, T1=6.0, ParameterAt=lambda s: 2.0 + 4.0 * s)]
+        candidates = []
+
+        def duplicate():
+            face = SimpleNamespace(Domain=lambda axis: domains[axis],
+                                   PointAt=lambda u, v: xyz(u + 0.25, v))
+            class Faces(list):
+                Count = 1
+            candidate = SimpleNamespace(Faces=Faces([face]), IsValid=True, Dispose=Mock())
+            candidates.append(candidate)
+            return candidate
+
+        source = SimpleNamespace(Domain=lambda axis: domains[axis], PointAt=xyz,
+                                 ToBrep=duplicate, Dispose=Mock())
+        surface = SimpleNamespace(Dispose=Mock())
+        morph = SimpleNamespace(MorphPoint=lambda p: xyz(p.X + 1.0, p.Y),
+                                Morph=Mock(return_value=True), Dispose=Mock())
+        self.worker.Rhino.Geometry = SimpleNamespace(
+            Plane=lambda *args: SimpleNamespace(IsValid=True), Point2d=lambda *args: args,
+            Morphs=SimpleNamespace(SplopSpaceMorph=lambda *args: morph))
+        operation = {"source": {}, "surface": {}, "source_origin": [0.0] * 3,
+                     "source_x": [1.0, 0.0, 0.0], "source_y": [0.0, 1.0, 0.0],
+                     "uv": [0.3, 0.4], "scale": 1.0, "angle": 0.0, "fit_tolerance": 1e-7}
+        with patch.object(self.worker, "_nurbs_surface_from_definition", side_effect=[source, surface]), patch.object(
+            self.worker, "_point", side_effect=lambda x: x
+        ), patch.object(self.worker, "_vector", side_effect=lambda x: x):
+            value, _ = self.worker._surface_surface_morph(operation, 2, {"absolute": 1e-9})
+        self.assertFalse(morph.QuickPreview)
+        self.assertFalse(morph.PreserveStructure)
+        self.assertEqual(morph.Tolerance, 1e-7)
+        self.assertEqual(value["domain_u"], [-7.0, 13.0])
+        self.assertEqual(value["domain_v"], [2.0, 6.0])
+        self.assertEqual(len(value["exact_samples"]), 1089)
+        self.assertEqual(value["exact_samples"][0], [-6.0, 2.0, 0.0])
+        self.assertEqual(value["fitted_samples"][0], [-6.75, 2.0, 0.0])
+        self.assertEqual(value["exact_samples"][-1], [14.0, 6.0, 0.0])
+        self.assertEqual(len(candidates), 3)
+        for item in candidates + [source, surface, morph]:
+            item.Dispose.assert_called_once_with()
+            item.Dispose.reset_mock()
+
+        morph.Morph.return_value = False
+        with patch.object(self.worker, "_nurbs_surface_from_definition", side_effect=[source, surface]), patch.object(
+            self.worker, "_point", side_effect=lambda x: x
+        ), patch.object(self.worker, "_vector", side_effect=lambda x: x):
+            with self.assertRaisesRegex(ValueError, "could not morph"):
+                self.worker._surface_surface_morph(operation, 1, {"absolute": 1e-9})
+        for item in [candidates[-1], source, surface, morph]:
+            item.Dispose.assert_called_once_with()
+
 
 if __name__ == "__main__":
     unittest.main()

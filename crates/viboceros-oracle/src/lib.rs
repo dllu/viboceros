@@ -46,6 +46,8 @@ mod surface_jets;
 pub use surface_jets::SurfaceJetsFixture;
 mod curve_morph;
 pub use curve_morph::CurveMorphFixture;
+mod surface_morph;
+pub use surface_morph::SurfaceMorphFixture;
 mod polycurve_document;
 pub use curve_interchange::CurveInterchangeFixture;
 pub use curve_join_close::CurveJoinCloseFixture;
@@ -90,6 +92,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    SurfaceSurfaceMorph {
+        id: String,
+        #[serde(flatten)]
+        fixture: SurfaceMorphFixture,
+    },
     CurveSurfaceMorph {
         id: String,
         #[serde(flatten)]
@@ -1327,6 +1334,7 @@ impl Operation {
         match self {
             Self::PolycurveGeometry { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
+            | Self::SurfaceSurfaceMorph { id, .. }
             | Self::SurfaceJets { id, .. }
             | Self::ThreeDmCurveInterchange { id, .. }
             | Self::CurveNative { id, .. }
@@ -1607,6 +1615,9 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::SurfaceSurfaceMorph { fixture, .. } => {
+            surface_morph::run(fixture, iterations, tolerance)?
+        }
         Operation::CurveSurfaceMorph { fixture, .. } => {
             curve_morph::run(fixture, iterations, tolerance)?
         }

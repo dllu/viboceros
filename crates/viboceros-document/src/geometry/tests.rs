@@ -6,7 +6,7 @@ fn point(x: f64, y: f64) -> Point3 {
 }
 
 #[test]
-fn failed_curve_fit_leaves_in_place_and_copy_document_edits_atomic() {
+fn failed_curve_and_surface_fits_leave_in_place_and_copy_document_edits_atomic() {
     use crate::{Document, ObjectAttributes, SelectionMode};
     struct CannotFit;
     impl PointMorph for CannotFit {
@@ -24,42 +24,67 @@ fn failed_curve_fit_leaves_in_place_and_copy_document_edits_atomic() {
                 maximum: 512,
             })
         }
+        fn morph_nurbs_surface(
+            &self,
+            _: &NurbsSurface,
+            tolerance: Tolerance,
+        ) -> Result<NurbsSurface, GeometryError> {
+            Err(GeometryError::SurfaceMorphDidNotConverge {
+                tolerance: tolerance.absolute(),
+                deviation: 1.0,
+                maximum: 256,
+            })
+        }
     }
-    let mut document = Document::default();
-    let first = document
-        .add_geometry(Geometry::Point(point(0.0, 0.0)))
-        .unwrap();
-    let line = document
-        .add_geometry_with_attributes(
-            Geometry::Line(
-                LineSegment::try_new(point(0.0, 0.0), point(1.0, 0.0), Tolerance::DEFAULT).unwrap(),
-            ),
-            ObjectAttributes::on_layer(document.current_layer_id()).with_name("Source"),
-        )
-        .unwrap();
-    let group = document
-        .add_group(Some("Shared".into()), [first, line])
-        .unwrap();
-    document
-        .select_objects_direct([first, line], SelectionMode::Replace)
-        .unwrap();
-    let before_objects = document.objects().cloned().collect::<Vec<_>>();
-    let before_group = document.group(group).unwrap().clone();
-    let before_history = document.undo_label().map(str::to_owned);
-    assert!(document.morph_objects([first, line], &CannotFit).is_err());
-    assert!(
+    let sources = [
+        Geometry::Line(
+            LineSegment::try_new(point(0.0, 0.0), point(1.0, 0.0), Tolerance::DEFAULT).unwrap(),
+        ),
+        Geometry::NurbsSurface(
+            NurbsSurface::try_bilinear([
+                point(0.0, 0.0),
+                point(1.0, 0.0),
+                point(1.0, 1.0),
+                point(0.0, 1.0),
+            ])
+            .unwrap(),
+        ),
+    ];
+    for source in sources {
+        let mut document = Document::default();
+        let first = document
+            .add_geometry(Geometry::Point(point(0.0, 0.0)))
+            .unwrap();
+        let shape = document
+            .add_geometry_with_attributes(
+                source,
+                ObjectAttributes::on_layer(document.current_layer_id()).with_name("Source"),
+            )
+            .unwrap();
+        let group = document
+            .add_group(Some("Shared".into()), [first, shape])
+            .unwrap();
         document
-            .copy_objects_morphed([first, line], &CannotFit)
-            .is_err()
-    );
-    assert_eq!(
-        document.objects().cloned().collect::<Vec<_>>(),
-        before_objects
-    );
-    assert_eq!(document.group(group).unwrap(), &before_group);
-    assert_eq!(document.undo_label(), before_history.as_deref());
-    assert!(document.is_selected(first) && document.is_selected(line));
-    assert_eq!(document.groups().len(), 1);
+            .select_objects_direct([first, shape], SelectionMode::Replace)
+            .unwrap();
+        let before_objects = document.objects().cloned().collect::<Vec<_>>();
+        let before_group = document.group(group).unwrap().clone();
+        let before_history = document.undo_label().map(str::to_owned);
+        assert!(document.morph_objects([first, shape], &CannotFit).is_err());
+        assert!(
+            document
+                .copy_objects_morphed([first, shape], &CannotFit)
+                .is_err()
+        );
+        assert_eq!(
+            document.objects().cloned().collect::<Vec<_>>(),
+            before_objects
+        );
+        assert_eq!(document.group(group).unwrap(), &before_group);
+        assert_eq!(document.undo_label(), before_history.as_deref());
+        assert!(document.is_selected(first) && document.is_selected(shape));
+        assert_eq!(document.groups().len(), 1);
+    }
 }
 
 #[test]
