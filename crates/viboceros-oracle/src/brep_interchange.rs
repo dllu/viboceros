@@ -208,7 +208,7 @@ fn curve_record(curve: &NurbsCurve) -> Result<Value, GeometryError> {
     )
 }
 
-fn geometry_record(brep: &Brep) -> Result<Value, GeometryError> {
+pub(super) fn geometry_record(brep: &Brep) -> Result<Value, GeometryError> {
     let edges = brep
         .edges()
         .iter()

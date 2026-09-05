@@ -117,7 +117,7 @@ fn rejected_geometric_pick_does_not_replace_the_relative_origin() {
     let mut app = test_app();
     enter(&mut app, "Circle");
     enter(&mut app, "1,2,3");
-    enter(&mut app, "1,2,4"); // No XY radius.
+    enter(&mut app, "1,2,3"); // A coincident radius point is rejected.
     assert_eq!(app.last_point, Some(point(1.0, 2.0, 3.0)));
     assert!(app.active_command.is_some());
     enter(&mut app, "r2,0");

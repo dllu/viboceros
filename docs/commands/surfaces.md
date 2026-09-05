@@ -25,9 +25,11 @@ radii in World XY, or center and three axis-radius points for an oriented
 ellipsoid; entering it without arguments starts the four-pick viewport workflow.
 
 `Box` follows Rhino's default two-opposite-base-corners and height workflow in
-World XY. The height may be a signed number or a point, and the result is one
+the active construction plane. The height may be a signed number or a point, and the result is one
 closed B-rep with eight shared vertices, twelve shared edges, six outward
 bilinear faces, and exact rational parameter-space trims.
+Entering `Box` without arguments starts a three-point interactive workflow;
+see [construction planes](../construction-planes.md) for projection and height rules.
 
 `BoundingBox` creates one cumulative World-coordinate enclosure of the selected
 objects by default; `Cumulative=No` creates one per object. `Output=` supports

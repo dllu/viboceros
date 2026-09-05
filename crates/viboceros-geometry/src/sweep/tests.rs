@@ -8,6 +8,65 @@ fn line(a: Point3, b: Point3) -> crate::LineSegment {
 }
 
 #[test]
+fn sweep_snaps_only_endpoint_roundoff_and_rechecks_section_order() {
+    let rail = line(p(0.0, 0.0, 0.0), p(0.0, 0.0, 5.0));
+    let mut sections = [0.0, 5.0].map(|z| SweepSection {
+        parameter: z,
+        curve: line(p(0.0, 0.0, z), p(1.0, 0.0, z)).to_nurbs().unwrap(),
+    });
+    sections[0].parameter = 0.0_f64.next_down();
+    sections[1].parameter = 5.0_f64.next_up();
+    let sweep = Sweep1::try_new(
+        CurveRef::Line(&rail),
+        &sections,
+        Default::default(),
+        SweepBlend::Local,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    assert_eq!(sweep.sections[0].parameter, 0.0);
+    assert_eq!(sweep.sections[1].parameter, 5.0);
+    for outside in [5.0 + 1e-7, f64::NAN, f64::INFINITY] {
+        sections[1].parameter = outside;
+        assert!(
+            Sweep1::try_new(
+                CurveRef::Line(&rail),
+                &sections,
+                Default::default(),
+                SweepBlend::Local,
+                Tolerance::DEFAULT
+            )
+            .is_err()
+        );
+    }
+    sections[0].parameter = 5.0;
+    sections[1].parameter = 5.0_f64.next_up();
+    assert!(
+        Sweep1::try_new(
+            CurveRef::Line(&rail),
+            &sections,
+            Default::default(),
+            SweepBlend::Local,
+            Tolerance::DEFAULT
+        )
+        .is_err()
+    );
+    let shifted = rail.try_reparameterized(1e12..=1e12 + 5.0).unwrap();
+    sections[0].parameter = 1e12;
+    sections[1].parameter = (1e12 + 5.0_f64).next_up();
+    assert!(
+        Sweep1::try_new(
+            CurveRef::Line(&shifted),
+            &sections,
+            Default::default(),
+            SweepBlend::Local,
+            Tolerance::DEFAULT
+        )
+        .is_err()
+    );
+}
+
+#[test]
 fn refitted_blending_preserves_relative_profile_weight_scales() {
     let rail = line(p(0., 0., 0.), p(0., 0., 5.));
     for scale in [1e-280, 1., 1e280] {

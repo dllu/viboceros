@@ -67,6 +67,36 @@ impl Sweep1 {
         if sections.is_empty() || sections.len() > MAX_SECTIONS {
             return Err(invalid("expected 1 to 256 sections"));
         }
+        // Analytic rail domains are computed lengths. A serialized endpoint
+        // can differ by a few ulps after reconstructing the same rail. Snap
+        // only roundoff outside the domain, bounded by its parameter span;
+        // meaningful extrapolation and collapsed section ordering still fail.
+        let rail_domain = rail.domain();
+        let roundoff = 8.0 * Real::EPSILON * (rail_domain.end() - rail_domain.start());
+        let sections = if sections.iter().any(|s| !rail_domain.contains(&s.parameter)) {
+            std::borrow::Cow::Owned(
+                sections
+                    .iter()
+                    .map(|s| {
+                        let endpoint = s.parameter.clamp(*rail_domain.start(), *rail_domain.end());
+                        let parameter = if s.parameter.is_finite()
+                            && (s.parameter - endpoint).abs() <= roundoff
+                        {
+                            endpoint
+                        } else {
+                            s.parameter
+                        };
+                        SweepSection {
+                            parameter,
+                            curve: s.curve.clone(),
+                        }
+                    })
+                    .collect::<Vec<_>>(),
+            )
+        } else {
+            std::borrow::Cow::Borrowed(sections)
+        };
+        let sections = sections.as_ref();
         if sections
             .iter()
             .any(|s| !s.parameter.is_finite() || !rail.domain().contains(&s.parameter))

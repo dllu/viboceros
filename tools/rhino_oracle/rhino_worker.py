@@ -2497,8 +2497,112 @@ def _point_input_script(points):
     return "_Polyline " + " ".join(points) + " _Enter"
 
 
+def _plane_primitive_script(operation):
+    primitive = operation["primitive"]
+    points = operation["points"]
+    value = operation.get("value")
+    if primitive in ("Circle", "Polygon"):
+        expected = 1 if value is not None else 2
+    elif primitive in ("Box", "MeshBox"):
+        expected = 2 if value is not None else 3
+    elif primitive in ("Rectangle", "MeshPlane") and value is None:
+        expected = 2
+    else:
+        raise ValueError("unsupported plane primitive")
+    if len(points) != expected:
+        raise ValueError("incorrect primitive arguments")
+    script = "_" + primitive + " "
+    if primitive == "Polygon":
+        script += "_NumSides=5 _Mode=_Inscribed "
+    if primitive == "MeshPlane":
+        script += "_XCount=2 _YCount=3 "
+    if primitive == "MeshBox":
+        script += "_XCount=2 _YCount=3 _ZCount=2 "
+    script += " ".join("w" + _command_point(p) for p in points)
+    if value is not None:
+        script += " %.17g" % _finite(value, "primitive size")
+        if primitive == "Polygon":
+            # A numeric polygon radius constrains the next pick; choose the
+            # positive construction-plane X direction explicitly.
+            axis = _vector(operation["x_axis"])
+            if not axis.Unitize():
+                raise ValueError("invalid polygon plane axis")
+            center = _point(points[0])
+            target = center + float(value) * axis
+            script += " w" + _command_point(_xyz(target))
+    return script
+
+
+def _canonical_box_record(record):
+    def key(p):
+        return tuple(round(v * 1e6) for v in p)
+    vertices = sorted([v["point"] for v in record["vertices"]], key=key)
+    edges = []
+    for edge in record["edges"]:
+        points = list(edge["curve"]["samples"])
+        if key(points[0]) > key(points[-1]):
+            points.reverse()
+        edges.append(points)
+    edges.sort(key=lambda e: (key(e[0]), key(e[-1])))
+    faces = []
+    for face, topology in zip(record["faces"], record["topology"]["faces"]):
+        points = face["samples"]
+        a = [x-y for x,y in zip(points[8], points[0])]
+        b = [x-y for x,y in zip(points[72], points[0])]
+        normal = [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]]
+        length = math.sqrt(sum(v*v for v in normal))
+        normal = [v / length * (-1 if topology["reversed"] else 1) for v in normal]
+        loops = []
+        for boundary in face["loops"]:
+            trims = [list(trim["lifted"]) for trim in boundary]
+            if topology["reversed"]:
+                trims = [list(reversed(t)) for t in reversed(trims)]
+            start = min(range(len(trims)), key=lambda i: key(trims[i][0]))
+            loops.append(trims[start:] + trims[:start])
+        faces.append({"samples":sorted(points, key=key), "normal":normal, "loops":loops})
+    faces.sort(key=lambda f: key([sum(p[i] for p in f["samples"])/len(f["samples"]) for i in range(3)]))
+    return {"solid":record["topology"]["solid"], "vertices":vertices, "edges":edges, "faces":faces}
+
+
+def _canonical_mesh_record(record):
+    def key(p):
+        return tuple(round(v * 1e6) for v in p)
+    vertices = sorted(record["vertices"], key=key)
+    faces = []
+    for face in record["faces"]:
+        points = [record["vertices"][i] for i in face]
+        start = min(range(len(points)), key=lambda i: key(points[i]))
+        faces.append(points[start:] + points[:start])
+    faces.sort(key=lambda f: tuple(key(p) for p in f))
+    return {"vertices":vertices,"faces":faces}
+
+
+def _plane_primitive_record(geometry, raw_representation=False, primitive=None):
+    if not geometry.IsValid:
+        raise ValueError("invalid primitive output")
+    if isinstance(geometry, Rhino.Geometry.Extrusion):
+        brep = geometry.ToBrep()
+        try:
+            record = _interchange_brep_record(brep)
+            return record if raw_representation else _canonical_box_record(record)
+        finally:
+            if brep is not None:
+                brep.Dispose()
+    if isinstance(geometry, Rhino.Geometry.Brep):
+        record = _interchange_brep_record(geometry)
+        return record if raw_representation else _canonical_box_record(record)
+    if isinstance(geometry, Rhino.Geometry.Mesh):
+        record = _polygon_mesh_value(geometry)
+        return _canonical_mesh_record(record) if primitive == "MeshBox" and not raw_representation else record
+    return _cut_native_record(geometry)
+
+
 def _point_input(operation):
     script = _point_input_script(operation["points"])
+    return _in_construction_plane(operation, script, None)
+
+
+def _in_construction_plane(operation, script, record):
     document = Rhino.RhinoDoc.ActiveDoc
     viewport = document.Views.ActiveView.ActiveViewport
     original_plane = viewport.ConstructionPlane()
@@ -2519,6 +2623,8 @@ def _point_input(operation):
         outputs = [obj for obj in objects() if obj.Id not in before]
         if len(outputs) != 1:
             raise ValueError("expected one point-input polyline")
+        if record is not None:
+            return record(outputs[0].Geometry), 0
         success, polyline = outputs[0].Geometry.TryGetPolyline()
         if not success or len(polyline) != len(operation["points"]):
             raise ValueError("Polyline did not consume every typed point")
@@ -2536,6 +2642,8 @@ def _point_input(operation):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "plane_primitive":
+        return _in_construction_plane(operation, _plane_primitive_script(operation), lambda g: _plane_primitive_record(g, operation.get("raw_representation", False), operation["primitive"]))
     if kind == "point_input":
         return _point_input(operation)
     if kind == "sweep1":

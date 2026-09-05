@@ -24,7 +24,9 @@ use crate::viewport::{
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+mod plane_primitives;
 mod point_input;
+use point_input::{plane_radius_exceeds_tolerance, plane_rectangle_exceeds_tolerance};
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum InteractiveScaleKind {
@@ -157,6 +159,10 @@ enum InteractiveCommand {
     InterpCrv,
     Rectangle {
         first: Option<Point3>,
+    },
+    Box {
+        base: Option<Point3>,
+        opposite: Option<Point3>,
     },
     MeshPlane {
         first: Option<Point3>,
@@ -360,6 +366,7 @@ impl InteractiveCommand {
             Self::Curve { .. } => "Curve",
             Self::InterpCrv => "InterpCrv",
             Self::Rectangle { .. } => "Rectangle",
+            Self::Box { .. } => "Box",
             Self::MeshPlane { .. } => "MeshPlane",
             Self::MeshBox { .. } => "MeshBox",
             Self::MeshCone { .. } => "MeshCone",
@@ -492,6 +499,14 @@ impl InteractiveCommand {
             Self::MeshBox {
                 opposite: Some(_), ..
             } => "MeshBox: pick the height in the viewport (Esc to cancel)",
+            Self::Box { base: None, .. } => "Box: pick the first base corner (Esc to cancel)",
+            Self::Box {
+                base: Some(_),
+                opposite: None,
+            } => "Box: pick the opposite base corner (Esc to cancel)",
+            Self::Box {
+                opposite: Some(_), ..
+            } => "Box: pick a height point (Esc to cancel)",
             Self::MeshCone { center: None, .. } => {
                 "MeshCone: pick the base center in the viewport (Esc to cancel)"
             }
@@ -815,6 +830,7 @@ impl InteractiveCommand {
             | Self::Curve { .. }
             | Self::InterpCrv
             | Self::Rectangle { first: None }
+            | Self::Box { base: None, .. }
             | Self::MeshPlane { first: None, .. }
             | Self::MeshBox { base: None, .. }
             | Self::MeshCone { center: None, .. }
@@ -878,6 +894,7 @@ impl InteractiveCommand {
             | Self::Circle { center: start }
             | Self::Sphere { center: start }
             | Self::Rectangle { first: start }
+            | Self::Box { base: start, .. }
             | Self::MeshPlane { first: start, .. }
             | Self::MeshBox { base: start, .. }
             | Self::MeshCone { center: start, .. }
@@ -998,6 +1015,7 @@ pub struct VibocerosApp {
     command_focus_requested: bool,
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
+    drafting_plane: Option<Frame3>,
     curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
 }
@@ -1030,6 +1048,7 @@ impl VibocerosApp {
             command_focus_requested: false,
             active_command: None,
             last_point: None,
+            drafting_plane: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
@@ -1057,9 +1076,19 @@ impl VibocerosApp {
     }
 
     fn execute_command(&mut self, input: &str) {
+        let active_plane = self.viewports[self.active_viewport].construction_plane();
+        let construction_plane = if self.active_command.is_none() {
+            self.drafting_plane.unwrap_or(active_plane)
+        } else {
+            active_plane
+        };
         self.cancel_interactive_command(false);
         self.push_log(format!("> {input}"));
-        match self.commands.execute(&mut self.document, input) {
+        match self.commands.execute_in_context(
+            &mut self.document,
+            input,
+            viboceros_command::CommandContext { construction_plane },
+        ) {
             Ok(message) => self.push_log(message),
             Err(error) => self.push_log(format!("Error: {error}")),
         }
@@ -2581,6 +2610,10 @@ impl VibocerosApp {
                 "polyline" | "pline" => InteractiveCommand::Polyline,
                 "interpcrv" | "interpcurve" => InteractiveCommand::InterpCrv,
                 "rectangle" | "rect" => InteractiveCommand::Rectangle { first: None },
+                "box" => InteractiveCommand::Box {
+                    base: None,
+                    opposite: None,
+                },
                 "srfpt" | "surfacefromcorners" => InteractiveCommand::SrfPt { corners: [None; 3] },
                 "crvseam" => InteractiveCommand::CrvSeam,
                 "split" => InteractiveCommand::SplitCurve,
@@ -2672,6 +2705,7 @@ impl VibocerosApp {
 
     fn cancel_interactive_command(&mut self, announce: bool) {
         let command = self.active_command.take();
+        self.drafting_plane = None;
         if command.is_some() {
             self.command_input.clear();
         }
@@ -2687,6 +2721,9 @@ impl VibocerosApp {
         let Some(command) = self.active_command else {
             return false;
         };
+        let plane = self
+            .drafting_plane
+            .unwrap_or_else(|| self.viewports[self.active_viewport].construction_plane());
         match command {
             InteractiveCommand::Point => {
                 self.active_command = None;
@@ -2724,7 +2761,10 @@ impl VibocerosApp {
             InteractiveCommand::Circle {
                 center: Some(center),
             } => {
-                if same_top_point(center, point, self.document.tolerance()) {
+                if !center
+                    .distance_to(point)
+                    .is_ok_and(|radius| radius > self.document.tolerance().absolute())
+                {
                     self.push_log("Error: circle point must differ from its center".to_owned());
                     return false;
                 }
@@ -3054,10 +3094,12 @@ impl VibocerosApp {
                 self.push_log(command.prompt().to_owned());
             }
             InteractiveCommand::Rectangle { first: Some(first) } => {
-                let tolerance = self.document.tolerance().absolute();
-                if (first.x() - point.x()).abs() <= tolerance
-                    || (first.y() - point.y()).abs() <= tolerance
-                {
+                if !plane_rectangle_exceeds_tolerance(
+                    plane,
+                    first,
+                    point,
+                    self.document.tolerance(),
+                ) {
                     self.push_log(
                         "Error: rectangle width and height must both exceed model tolerance"
                             .to_owned(),
@@ -3090,10 +3132,12 @@ impl VibocerosApp {
                 x_count,
                 y_count,
             } => {
-                let tolerance = self.document.tolerance().absolute();
-                if (first.x() - point.x()).abs() <= tolerance
-                    || (first.y() - point.y()).abs() <= tolerance
-                {
+                if !plane_rectangle_exceeds_tolerance(
+                    plane,
+                    first,
+                    point,
+                    self.document.tolerance(),
+                ) {
                     self.push_log(
                         "Error: mesh-plane width and height must both exceed model tolerance"
                             .to_owned(),
@@ -3134,9 +3178,7 @@ impl VibocerosApp {
                 y_count,
                 z_count,
             } => {
-                let tolerance = self.document.tolerance().absolute();
-                if (base.x() - point.x()).abs() <= tolerance
-                    || (base.y() - point.y()).abs() <= tolerance
+                if !plane_rectangle_exceeds_tolerance(plane, base, point, self.document.tolerance())
                 {
                     self.push_log(
                         "Error: mesh-box base width and depth must both exceed model tolerance"
@@ -3144,7 +3186,11 @@ impl VibocerosApp {
                     );
                     return false;
                 }
-                let Ok(opposite) = Point3::try_new(point.x(), point.y(), base.z()) else {
+                let local_plane = plane.with_origin(base);
+                let Ok(opposite) = local_plane
+                    .coordinates_of(point)
+                    .and_then(|[x, y, _]| local_plane.point_at([x, y, 0.0]))
+                else {
                     self.push_log("Error: mesh-box base corner is not finite".to_owned());
                     return false;
                 };
@@ -3169,8 +3215,11 @@ impl VibocerosApp {
                 y_count,
                 z_count,
             } => {
-                let height = point.z() - base.z();
-                if !height.is_finite() || height.abs() <= self.document.tolerance().absolute() {
+                if !plane
+                    .with_origin(base)
+                    .coordinates_of(point)
+                    .is_ok_and(|p| p[2].abs() > self.document.tolerance().absolute())
+                {
                     self.push_log("Error: mesh-box height must exceed model tolerance".to_owned());
                     return false;
                 }
@@ -3190,6 +3239,9 @@ impl VibocerosApp {
                 opposite: Some(_),
                 ..
             } => unreachable!("mesh-box opposite corner requires a base corner"),
+            InteractiveCommand::Box { base, opposite } => {
+                return self.apply_box_point(plane, base, opposite, point);
+            }
             InteractiveCommand::MeshCone {
                 center: None,
                 radius_point: None,
@@ -3664,7 +3716,8 @@ impl VibocerosApp {
                 side_count,
                 center: Some(center),
             } => {
-                if same_top_point(center, point, self.document.tolerance()) {
+                if !plane_radius_exceeds_tolerance(plane, center, point, self.document.tolerance())
+                {
                     self.push_log("Error: polygon vertex must differ from its center".to_owned());
                     return false;
                 }
@@ -5535,6 +5588,7 @@ fn point_is_near_axis(
 
 #[cfg(test)]
 mod tests {
+    mod construction_plane;
     mod point_input;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
@@ -5559,6 +5613,7 @@ mod tests {
             command_focus_requested: false,
             active_command: None,
             last_point: None,
+            drafting_plane: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
@@ -5840,7 +5895,7 @@ mod tests {
         assert!(app.try_start_interactive_command("Circle"));
         let center = point(0.0, 0.0, 2.0);
         app.accept_drafting_point(center);
-        app.accept_drafting_point(point(0.0, 0.0, 9.0));
+        app.accept_drafting_point(center);
         assert_eq!(
             app.active_command,
             Some(InteractiveCommand::Circle {
@@ -6128,8 +6183,8 @@ mod tests {
         };
         assert_eq!(mesh.vertices().len(), 66);
         assert_eq!(mesh.face_count(), 32);
-        assert_eq!(mesh.vertices()[0], point(1.0, 8.0, -1.0));
-        assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 1, 4, 3]));
+        assert_eq!(mesh.vertices()[0], point(1.0, 8.0, 3.0));
+        assert_eq!(mesh.faces()[0], MeshFace::Quad([0, 3, 4, 1]));
         assert_eq!(mesh.bounds().min(), point(1.0, 2.0, -1.0));
         assert_eq!(mesh.bounds().max(), point(5.0, 8.0, 3.0));
         assert!(mesh.topology().is_solid());

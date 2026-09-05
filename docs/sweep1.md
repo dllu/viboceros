@@ -24,6 +24,11 @@ supply one finite, strictly increasing **native rail parameter** per profile,
 not normalized fractions or distances unless that is the rail's actual domain.
 Profile directions and seams are retained; they are not automatically flipped.
 
+Parameters just outside a rail endpoint are snapped only within eight machine
+epsilons of the rail's domain length, accommodating endpoint reconstruction
+roundoff. Meaningful extrapolation, nonfinite values, and section parameters
+that cease to be strictly increasing after snapping are rejected.
+
 The sweep runs from the first profile's station to the last profile's station.
 A single profile instead sweeps forward from its station to the rail's end.
 Inputs, attributes, groups, and selection remain unchanged. The new unselected

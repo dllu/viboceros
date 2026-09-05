@@ -489,7 +489,7 @@ pub enum GeometryError {
         z_count: usize,
     },
 
-    #[error("mesh-box intervals must be strictly increasing")]
+    #[error("mesh-box X/Y intervals must increase and height endpoints must differ")]
     InvalidMeshBoxInterval,
 
     #[error(

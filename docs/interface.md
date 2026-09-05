@@ -30,6 +30,10 @@ For example: enter `Line`, then `0`, then `r4,3`. Invalid coordinates keep the
 prompt active and remain editable. See [typed point input](point-input.md) for
 construction planes, supported syntax, and current limits.
 
+Circle, Polygon, Rectangle, MeshPlane, Box, and MeshBox capture their construction
+plane on the first accepted pick. `Box` now supports the first corner, opposite
+base corner, and height-point workflow. See [construction-plane primitives](construction-planes.md).
+
 With a curve or surface selected, `Curvature` starts a one-pick measurement.
 `Curvature MarkCurvature=Yes` also adds permanent osculating markers; Esc cancels
 without changing the document. Continuous hover analysis is not yet implemented.

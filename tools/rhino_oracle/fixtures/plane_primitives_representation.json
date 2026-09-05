@@ -1,0 +1,346 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_primitive",
+      "id": "cplane-top-box-picked-raw",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "primitive": "Box",
+      "points": [
+        [
+          2,
+          -1,
+          3
+        ],
+        [
+          -2,
+          5,
+          3
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-top-meshbox-picked-raw",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "primitive": "MeshBox",
+      "points": [
+        [
+          2,
+          -1,
+          3
+        ],
+        [
+          -2,
+          5,
+          3
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-front-box-picked-raw",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "Box",
+      "points": [
+        [
+          2,
+          -3,
+          -1
+        ],
+        [
+          -2,
+          -3,
+          5
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-front-meshbox-picked-raw",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "MeshBox",
+      "points": [
+        [
+          2,
+          -3,
+          -1
+        ],
+        [
+          -2,
+          -3,
+          5
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-right-box-picked-raw",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "Box",
+      "points": [
+        [
+          3,
+          2,
+          -1
+        ],
+        [
+          3,
+          -2,
+          5
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-right-meshbox-picked-raw",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "MeshBox",
+      "points": [
+        [
+          3,
+          2,
+          -1
+        ],
+        [
+          3,
+          -2,
+          5
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-shifted-box-picked-raw",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "Box",
+      "points": [
+        [
+          13,
+          -18,
+          29
+        ],
+        [
+          13,
+          -22,
+          35
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-shifted-meshbox-picked-raw",
+      "origin": [
+        10,
+        -20,
+        30
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "MeshBox",
+      "points": [
+        [
+          13,
+          -18,
+          29
+        ],
+        [
+          13,
+          -22,
+          35
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-oblique-box-picked-raw",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "Box",
+      "points": [
+        [
+          7.6000000000000005,
+          4.8,
+          5
+        ],
+        [
+          5.2,
+          1.6,
+          11
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    },
+    {
+      "op": "plane_primitive",
+      "id": "cplane-oblique-meshbox-picked-raw",
+      "origin": [
+        4,
+        5,
+        6
+      ],
+      "x_axis": [
+        0.6,
+        0.8,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "primitive": "MeshBox",
+      "points": [
+        [
+          7.6000000000000005,
+          4.8,
+          5
+        ],
+        [
+          5.2,
+          1.6,
+          11
+        ]
+      ],
+      "value": -4,
+      "raw_representation": true
+    }
+  ]
+}

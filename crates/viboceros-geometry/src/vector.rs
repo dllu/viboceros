@@ -39,6 +39,26 @@ impl Vector3 {
     }
 
     pub fn dot(self, other: Self) -> Result<Real, GeometryError> {
+        // Common-scale normalization can erase a small component even when
+        // the large component is multiplied by zero. Prefer fused evaluation
+        // when the individual products and the result are representable.
+        let left_components = self.to_array();
+        let right_components = other.to_array();
+        let ordinary_products = left_components
+            .into_iter()
+            .zip(right_components)
+            .all(|(a, b)| {
+                let product = a * b;
+                product.is_finite() && (product != 0.0 || a == 0.0 || b == 0.0)
+            });
+        if ordinary_products {
+            let direct = self
+                .x()
+                .mul_add(other.x(), self.y().mul_add(other.y(), self.z() * other.z()));
+            if direct.is_finite() {
+                return Ok(direct);
+            }
+        }
         let left_scale = self.x().abs().max(self.y().abs()).max(self.z().abs());
         let right_scale = other.x().abs().max(other.y().abs()).max(other.z().abs());
         if left_scale == 0.0 || right_scale == 0.0 {
@@ -275,6 +295,18 @@ mod tests {
         let left = Vector3::try_new(1.0e-200, 0.0, 0.0).unwrap();
         let right = Vector3::try_new(1.0e-108, 0.0, 0.0).unwrap();
         assert_eq!(left.dot(right).unwrap(), 1.0e-308);
+    }
+
+    #[test]
+    fn dot_product_preserves_small_components_orthogonal_to_large_ones() {
+        let left = Vector3::try_new(1e300, 1e-30, -2.0).unwrap();
+        let right = Vector3::try_new(0.0, 1.0, 0.0).unwrap();
+        assert_eq!(left.dot(right).unwrap(), 1e-30);
+        assert_eq!(right.dot(left).unwrap(), 1e-30);
+        assert_eq!(
+            left.dot(Vector3::try_new(0.0, 0.0, 1.0).unwrap()).unwrap(),
+            -2.0
+        );
     }
 
     #[test]

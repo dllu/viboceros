@@ -153,11 +153,66 @@ impl Frame3 {
     pub const fn axes(self) -> [UnitVector3; 3] {
         [self.x_axis, self.y_axis, self.z_axis]
     }
+
+    /// Retains the exact orthonormal axes at a new finite origin.
+    pub const fn with_origin(self, origin: Point3) -> Self {
+        Self { origin, ..self }
+    }
+
+    /// Coordinates relative to this frame's origin, with scale-safe dot products.
+    pub fn coordinates_of(self, point: Point3) -> Result<[f64; 3], GeometryError> {
+        let delta = self.origin.vector_to(point)?;
+        Ok([
+            delta.dot(self.x_axis.as_vector())?,
+            delta.dot(self.y_axis.as_vector())?,
+            delta.dot(self.z_axis.as_vector())?,
+        ])
+    }
+
+    /// Evaluates finite local coordinates without forming huge world-space axes.
+    pub fn point_at(self, coordinates: [f64; 3]) -> Result<Point3, GeometryError> {
+        let coordinates = Vector3::try_from(coordinates)?;
+        let axes = self.axes().map(|axis| axis.as_vector().to_array());
+        let component = |i| coordinates.dot(Vector3::try_new(axes[0][i], axes[1][i], axes[2][i])?);
+        self.origin.translated(Vector3::try_new(
+            component(0)?,
+            component(1)?,
+            component(2)?,
+        )?)
+    }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn frame_coordinates_retain_small_components_and_translated_origins() {
+        let world = Frame3::try_from_directions(
+            point(0.0, 0.0, 0.0),
+            Vector3::try_new(1.0, 0.0, 0.0).unwrap(),
+            Vector3::try_new(0.0, 1.0, 0.0).unwrap(),
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let coordinates = [1e300, 1e-30, -2.0];
+        assert_eq!(world.point_at(coordinates).unwrap().to_array(), coordinates);
+        assert_eq!(
+            world
+                .coordinates_of(Point3::try_from(coordinates).unwrap())
+                .unwrap(),
+            coordinates
+        );
+        let shifted = world.with_origin(point(1e12, -2e12, 3e12));
+        assert_eq!(
+            shifted
+                .coordinates_of(shifted.point_at([3.0, 4.0, 5.0]).unwrap())
+                .unwrap(),
+            [3.0, 4.0, 5.0]
+        );
+        assert!(world.point_at([f64::NAN, 0.0, 0.0]).is_err());
+        assert!(world.point_at([f64::INFINITY, 0.0, 0.0]).is_err());
+    }
 
     fn point(x: f64, y: f64, z: f64) -> Point3 {
         Point3::try_new(x, y, z).unwrap()

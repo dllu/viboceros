@@ -20,6 +20,9 @@ file formats, or command parsing.
 Typed coordinates are resolved by `viboceros-drafting/point_input`, independent
 of UI and document edits. `app/point_input` shares the interactive command's
 point-validation and transaction path with mouse picks; see [point input](point-input.md).
+`CommandContext` carries an explicit construction plane separately from document
+history. The [plane-primitives module](construction-planes.md) handles orientation,
+projection, and native parameter policy for six primitive commands.
 
 ## Current foundation
 

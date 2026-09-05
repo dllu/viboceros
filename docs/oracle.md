@@ -20,6 +20,11 @@ only its own output objects; command execution is untimed.
 `point_input_diagnostics.json` retains a large-scale exact-quadrant discrepancy,
 not a passing Rhino reference at `1e-12`.
 
+`plane_primitives.json` checks 57 Circle/Polygon/Rectangle/MeshPlane/Box/MeshBox
+command results on construction planes. Complete boundary geometry is checked
+independently of Box/MeshBox layout; ten raw layout probes remain in
+`plane_primitives_representation.json`. See [comparison details](construction-planes.md).
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

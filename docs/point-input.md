@@ -38,8 +38,8 @@ remembered point is rejected.
 The current fixed planes are XY for Top/Perspective, XZ for Front (normal -Y),
 and YZ for Right (normal +X). Camera navigation does not rotate these planes.
 One-line commands such as `Line 0,0,0 4,5,0` still use their documented world
-coordinate arguments. Resolving a typed point does not change a command's
-geometry constraints: for example, the current Circle construction is world-XY.
+coordinate arguments. See [construction-plane primitives](construction-planes.md)
+for Circle/Polygon orientation, rectangle projection, and signed box heights.
 
 Not yet implemented: custom construction planes, scalar distance/angle
 constraints, unit expressions, surveyor/DMS notation, `x,y<elevation`, and

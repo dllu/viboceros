@@ -487,6 +487,8 @@ impl TriangleMesh {
     /// The bottom, top, front, right, back, and left grids are appended in
     /// that order. Their raw vertices remain separate while exact-location
     /// topology forms one closed, outward-oriented shell.
+    /// X and Y intervals increase; Z endpoints retain their supplied order.
+    /// A decreasing height reverses face winding without reordering vertices.
     pub fn try_box_grid(
         frame: Frame3,
         intervals: [[Real; 2]; 3],
@@ -509,7 +511,7 @@ impl TriangleMesh {
         }
         if x_interval[0] >= x_interval[1]
             || y_interval[0] >= y_interval[1]
-            || z_interval[0] >= z_interval[1]
+            || z_interval[0] == z_interval[1]
         {
             return Err(GeometryError::InvalidMeshBoxInterval);
         }
@@ -626,6 +628,11 @@ impl TriangleMesh {
         })?;
         debug_assert_eq!(vertices.len(), vertex_count);
         debug_assert_eq!(faces.len(), face_count);
+        if z_interval[0] > z_interval[1] {
+            for face in &mut faces {
+                *face = face.reversed();
+            }
+        }
         Self::try_new_faces(vertices, faces, tolerance)
     }
 

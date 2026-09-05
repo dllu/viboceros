@@ -9,6 +9,40 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_canonical_mesh_record_preserves_winding_duplicates_and_unrounded_points(self):
+        original = {"vertices": [[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,0]], "faces": [[0,1,2,3]]}
+        reordered = {"vertices": list(reversed(original["vertices"])), "faces": [[2,1,4,3]]}
+        a = self.worker._canonical_mesh_record(original)
+        self.assertEqual(a, self.worker._canonical_mesh_record(reordered))
+        reversed_face = dict(original, faces=[[0,3,2,1]])
+        self.assertNotEqual(a, self.worker._canonical_mesh_record(reversed_face))
+        changed = dict(original, vertices=[[0,0,1e-12]] + original["vertices"][1:])
+        self.assertNotEqual(a, self.worker._canonical_mesh_record(changed))
+        self.assertEqual(len(a["vertices"]), 5)
+
+    def test_plane_primitive_macros_use_world_points_and_actual_option_names(self):
+        operation = {"points": [[1,2,3],[4,5,6]], "value": None}
+        with patch.object(self.worker, "_command_point", side_effect=lambda p: ",".join(str(x) for x in p)):
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Circle")), "_Circle w1,2,3 w4,5,6")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="Polygon")), "_Polygon _NumSides=5 _Mode=_Inscribed w1,2,3 w4,5,6")
+            self.assertEqual(self.worker._plane_primitive_script(dict(operation, primitive="MeshBox", value=-4)), "_MeshBox _XCount=2 _YCount=3 _ZCount=2 w1,2,3 w4,5,6 -4")
+        for invalid in [dict(operation, primitive="Delete"), dict(operation, primitive="Circle _Delete"),
+                        dict(operation, primitive="Rectangle", value=3), dict(operation, primitive="Circle", points=[])]:
+            with self.assertRaises(ValueError):
+                self.worker._plane_primitive_script(invalid)
+
+    def test_plane_primitive_extrusion_record_disposes_its_temporary_brep(self):
+        class Extrusion:
+            IsValid = True
+            def ToBrep(self):
+                return brep
+        brep = SimpleNamespace(Dispose=Mock())
+        self.worker.Rhino.Geometry = SimpleNamespace(Extrusion=Extrusion)
+        with patch.object(self.worker, "_interchange_brep_record", side_effect=ValueError("record failed")):
+            with self.assertRaisesRegex(ValueError, "record failed"):
+                self.worker._plane_primitive_record(Extrusion())
+        brep.Dispose.assert_called_once_with()
+
     def test_point_input_script_accepts_coordinates_but_not_commands(self):
         tokens = ["0", "w1,2,3", "@w2<45", "r3<20<30", "wr1e-3,2.5,0"]
         self.assertEqual(self.worker._point_input_script(tokens), "_Polyline " + " ".join(tokens) + " _Enter")

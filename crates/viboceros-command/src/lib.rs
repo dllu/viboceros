@@ -1,6 +1,12 @@
 //! Extensible command registry and the first model-editing commands.
 
+mod context;
 mod curve_cut;
+mod plane_primitives;
+pub use context::CommandContext;
+use plane_primitives::{
+    BoxCommand, CircleCommand, MeshBoxCommand, MeshPlaneCommand, PolygonCommand, RectangleCommand,
+};
 mod curve_edit;
 #[cfg(test)]
 mod curve_frame_tests;
@@ -83,6 +89,15 @@ pub trait Command: Send + Sync {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError>;
+
+    fn run_in_context(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        self.run(document, arguments)
+    }
 }
 
 #[derive(Default)]
@@ -706,6 +721,15 @@ impl CommandRegistry {
     }
 
     pub fn execute(&self, document: &mut Document, input: &str) -> Result<String, CommandError> {
+        self.execute_in_context(document, input, CommandContext::default())
+    }
+
+    pub fn execute_in_context(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
         let mut tokens = input.split_whitespace();
         let name = tokens.next().ok_or(CommandError::EmptyInput)?;
         let name = normalize_command_name(name);
@@ -722,11 +746,11 @@ impl CommandRegistry {
         let arguments: Vec<_> = tokens.collect();
         let command = &self.commands[index];
         if !command.records_history() {
-            return command.run(document, &arguments);
+            return command.run_in_context(document, &arguments, context);
         }
 
         document.begin_transaction(command.name())?;
-        match command.run(document, &arguments) {
+        match command.run_in_context(document, &arguments, context) {
             Ok(message) => {
                 document.commit_transaction()?;
                 Ok(message)
@@ -794,39 +818,6 @@ impl Command for LineCommand {
         let length = line.length()?;
         let id = document.add_geometry(Geometry::Line(line))?;
         Ok(format!("Added line {id} (length {length:.6})"))
-    }
-}
-
-struct CircleCommand;
-
-impl Command for CircleCommand {
-    fn name(&self) -> &'static str {
-        "Circle"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["C"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (center, consumed) = parse_point(arguments)?;
-        let remaining = &arguments[consumed..];
-        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
-        let circle = if remaining.len() == 1 && !remaining[0].contains(',') {
-            let radius = parse_finite_real(remaining[0])?;
-            Circle3::try_new(center, radius, normal, document.tolerance())?
-        } else {
-            let (point_on_circle, point_consumed) = parse_point(remaining)?;
-            require_consumed(
-                remaining,
-                point_consumed,
-                "Circle center radius | center point-on-circle",
-            )?;
-            Circle3::try_from_center_point(center, point_on_circle, normal, document.tolerance())?
-        };
-        let radius = circle.radius();
-        let id = document.add_geometry(Geometry::Circle(circle))?;
-        Ok(format!("Added circle {id} (radius {radius:.6})"))
     }
 }
 
@@ -936,99 +927,6 @@ impl Command for PolylineCommand {
         Ok(format!(
             "Added {}polyline {id} ({vertex_count} vertices, {segment_count} segments)",
             if closed { "closed " } else { "" }
-        ))
-    }
-}
-
-struct RectangleCommand;
-
-impl Command for RectangleCommand {
-    fn name(&self) -> &'static str {
-        "Rectangle"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Rect"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (first, first_consumed) = parse_point(arguments)?;
-        let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
-        require_consumed(
-            arguments,
-            first_consumed + opposite_consumed,
-            "Rectangle first-corner opposite-corner",
-        )?;
-        let polyline = top_view_rectangle(first, opposite, document.tolerance())?;
-        let width = polyline.vertices()[0].distance_to(polyline.vertices()[1])?;
-        let height = polyline.vertices()[1].distance_to(polyline.vertices()[2])?;
-        let id = document.add_geometry(Geometry::Polyline(polyline))?;
-        Ok(format!("Added rectangle {id} ({width:.6} × {height:.6})"))
-    }
-}
-
-fn top_view_rectangle(
-    first: Point3,
-    opposite: Point3,
-    tolerance: Tolerance,
-) -> Result<Polyline3, GeometryError> {
-    let second = Point3::try_new(opposite.x(), first.y(), first.z())?;
-    let opposite = Point3::try_new(opposite.x(), opposite.y(), first.z())?;
-    let fourth = Point3::try_new(first.x(), opposite.y(), first.z())?;
-    Polyline3::try_new(vec![first, second, opposite, fourth, first], tolerance)
-}
-
-struct PolygonCommand;
-
-impl Command for PolygonCommand {
-    fn name(&self) -> &'static str {
-        "Polygon"
-    }
-
-    fn aliases(&self) -> &'static [&'static str] {
-        &["Poly"]
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let side_text = arguments.first().ok_or(CommandError::Usage(
-            "Polygon sides center radius | sides center first-vertex",
-        ))?;
-        let side_count = side_text
-            .parse::<usize>()
-            .map_err(|_| CommandError::InvalidInteger((*side_text).to_owned()))?;
-        if !(3..=MAX_REGULAR_POLYGON_SIDES).contains(&side_count) {
-            return Err(GeometryError::InvalidRegularPolygonSides {
-                actual: side_count,
-                maximum: MAX_REGULAR_POLYGON_SIDES,
-            }
-            .into());
-        }
-        let (center, center_consumed) = parse_point(&arguments[1..])?;
-        let remaining = &arguments[1 + center_consumed..];
-        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance())?;
-        let first_vertex = if remaining.len() == 1 && !remaining[0].contains(',') {
-            let radius = parse_finite_real(remaining[0])?;
-            Circle3::try_new(center, radius, normal, document.tolerance())?.point_at_angle(0.0)?
-        } else {
-            let (first_vertex, consumed) = parse_point(remaining)?;
-            require_consumed(
-                remaining,
-                consumed,
-                "Polygon sides center radius | sides center first-vertex",
-            )?;
-            first_vertex
-        };
-        let polygon = Polyline3::try_regular_polygon(
-            side_count,
-            center,
-            first_vertex,
-            normal,
-            document.tolerance(),
-        )?;
-        let perimeter = polygon.length()?;
-        let id = document.add_geometry(Geometry::Polyline(polygon))?;
-        Ok(format!(
-            "Added {side_count}-sided polygon {id} (perimeter {perimeter:.6})"
         ))
     }
 }
@@ -3625,55 +3523,6 @@ struct MeshPlaneCommandOptions {
     y_count: usize,
 }
 
-struct MeshPlaneCommand;
-
-impl Command for MeshPlaneCommand {
-    fn name(&self) -> &'static str {
-        "MeshPlane"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let leading_options = mesh_plane_leading_option_count(arguments);
-        let (first, opposite, options) = if leading_options == 0 {
-            let (first, first_consumed) = parse_point(arguments)?;
-            let (opposite, opposite_consumed) = parse_point(&arguments[first_consumed..])?;
-            let options =
-                parse_mesh_plane_arguments(&arguments[first_consumed + opposite_consumed..])?;
-            (first, opposite, options)
-        } else {
-            let options = parse_mesh_plane_arguments(&arguments[..leading_options])?;
-            let (first, first_consumed) = parse_point(&arguments[leading_options..])?;
-            let point_start = leading_options + first_consumed;
-            let (opposite, opposite_consumed) = parse_point(&arguments[point_start..])?;
-            require_consumed(arguments, point_start + opposite_consumed, MESH_PLANE_USAGE)?;
-            (first, opposite, options)
-        };
-        let min_x = first.x().min(opposite.x());
-        let max_x = first.x().max(opposite.x());
-        let min_y = first.y().min(opposite.y());
-        let max_y = first.y().max(opposite.y());
-        let frame = Frame3::try_from_directions(
-            Point3::try_new(0.0, 0.0, first.z())?,
-            Vector3::try_new(1.0, 0.0, 0.0)?,
-            Vector3::try_new(0.0, 1.0, 0.0)?,
-            document.tolerance(),
-        )?;
-        let mesh = TriangleMesh::try_plane_grid(
-            frame,
-            [min_x, max_x],
-            [min_y, max_y],
-            options.x_count,
-            options.y_count,
-            document.tolerance(),
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added mesh plane {id} ({} × {} faces)",
-            options.x_count, options.y_count
-        ))
-    }
-}
-
 fn mesh_plane_leading_option_count(arguments: &[&str]) -> usize {
     let mut index = 0;
     while let Some(argument) = arguments.get(index) {
@@ -3746,68 +3595,6 @@ struct MeshBoxCommandOptions {
     z_count: usize,
 }
 
-struct MeshBoxCommand;
-
-impl Command for MeshBoxCommand {
-    fn name(&self) -> &'static str {
-        "MeshBox"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let leading_options = mesh_box_leading_option_count(arguments);
-        let (base_corner, opposite_corner, height, options) = if leading_options == 0 {
-            let (base_corner, base_consumed) = parse_point(arguments)?;
-            let (opposite_corner, opposite_consumed) = parse_point(&arguments[base_consumed..])?;
-            let height_start = base_consumed + opposite_consumed;
-            let (height, height_consumed) =
-                parse_mesh_box_height(&arguments[height_start..], base_corner)?;
-            let options = parse_mesh_box_arguments(&arguments[height_start + height_consumed..])?;
-            (base_corner, opposite_corner, height, options)
-        } else {
-            let options = parse_mesh_box_arguments(&arguments[..leading_options])?;
-            let (base_corner, base_consumed) = parse_point(&arguments[leading_options..])?;
-            let opposite_start = leading_options + base_consumed;
-            let (opposite_corner, opposite_consumed) = parse_point(&arguments[opposite_start..])?;
-            let height_start = opposite_start + opposite_consumed;
-            let (height, height_consumed) =
-                parse_mesh_box_height(&arguments[height_start..], base_corner)?;
-            require_consumed(arguments, height_start + height_consumed, MESH_BOX_USAGE)?;
-            (base_corner, opposite_corner, height, options)
-        };
-        if !document
-            .tolerance()
-            .approx_eq(base_corner.z(), opposite_corner.z())
-        {
-            return Err(CommandError::BoxBaseCornersNotCoplanar);
-        }
-        let base_delta = base_corner.vector_to(opposite_corner)?;
-        let frame = Frame3::try_from_directions(
-            base_corner,
-            Vector3::try_new(1.0, 0.0, 0.0)?,
-            Vector3::try_new(0.0, 1.0, 0.0)?,
-            document.tolerance(),
-        )?;
-        let increasing_interval = |value: Real| [value.min(0.0), value.max(0.0)];
-        let mesh = TriangleMesh::try_box_grid(
-            frame,
-            [
-                increasing_interval(base_delta.x()),
-                increasing_interval(base_delta.y()),
-                increasing_interval(height),
-            ],
-            options.x_count,
-            options.y_count,
-            options.z_count,
-            document.tolerance(),
-        )?;
-        let id = document.add_geometry(Geometry::Mesh(mesh))?;
-        Ok(format!(
-            "Added closed mesh box {id} ({} × {} × {} side divisions)",
-            options.x_count, options.y_count, options.z_count
-        ))
-    }
-}
-
 fn is_mesh_box_option_name(argument: &str) -> bool {
     let name = argument.split_once('=').map_or(argument, |(name, _)| name);
     option_name_eq(name, "XCount")
@@ -3832,17 +3619,28 @@ fn mesh_box_leading_option_count(arguments: &[&str]) -> usize {
 fn parse_mesh_box_height(
     arguments: &[&str],
     base_corner: Point3,
+    normal: UnitVector3,
 ) -> Result<(Real, usize), CommandError> {
     let first = arguments
         .first()
         .ok_or(CommandError::Usage(MESH_BOX_USAGE))?;
     if first.contains(',') {
         let (height_point, consumed) = parse_point(arguments)?;
-        return Ok((base_corner.vector_to(height_point)?.z(), consumed));
+        return Ok((
+            base_corner
+                .vector_to(height_point)?
+                .dot(normal.as_vector())?,
+            consumed,
+        ));
     }
     if arguments.len() >= 3 && !is_mesh_box_option_name(arguments[1]) {
         let (height_point, consumed) = parse_point(arguments)?;
-        return Ok((base_corner.vector_to(height_point)?.z(), consumed));
+        return Ok((
+            base_corner
+                .vector_to(height_point)?
+                .dot(normal.as_vector())?,
+            consumed,
+        ));
     }
     Ok((parse_finite_real(first)?, 1))
 }
@@ -3918,53 +3716,6 @@ fn parse_mesh_box_arguments(arguments: &[&str]) -> Result<MeshBoxCommandOptions,
 }
 
 const BOX_USAGE: &str = "Box base-corner opposite-base-corner height | Box base-corner opposite-base-corner height-point";
-
-struct BoxCommand;
-
-impl Command for BoxCommand {
-    fn name(&self) -> &'static str {
-        "Box"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let (base_corner, base_consumed) = parse_point(arguments)?;
-        let (opposite_corner, opposite_consumed) = parse_point(&arguments[base_consumed..])?;
-        let option_start = base_consumed + opposite_consumed;
-        let remaining = &arguments[option_start..];
-        let height = if remaining.len() == 1 && !remaining[0].contains(',') {
-            parse_finite_real(remaining[0])?
-        } else {
-            let (height_point, height_consumed) = parse_point(remaining)?;
-            require_consumed(remaining, height_consumed, BOX_USAGE)?;
-            base_corner.vector_to(height_point)?.z()
-        };
-        if !document
-            .tolerance()
-            .approx_eq(base_corner.z(), opposite_corner.z())
-        {
-            return Err(CommandError::BoxBaseCornersNotCoplanar);
-        }
-        let base_delta = base_corner.vector_to(opposite_corner)?;
-        let frame = Frame3::try_from_directions(
-            base_corner,
-            Vector3::try_new(1.0, 0.0, 0.0)?,
-            Vector3::try_new(0.0, 1.0, 0.0)?,
-            document.tolerance(),
-        )?;
-        let increasing_interval = |value: Real| [value.min(0.0), value.max(0.0)];
-        let brep = Brep::try_box(
-            frame,
-            [
-                increasing_interval(base_delta.x()),
-                increasing_interval(base_delta.y()),
-                increasing_interval(height),
-            ],
-            document.tolerance(),
-        )?;
-        let id = document.add_geometry(Geometry::Brep(brep))?;
-        Ok(format!("Added closed B-rep box {id}"))
-    }
-}
 
 const BOUNDING_BOX_USAGE: &str = "BoundingBox [CoordinateSystem=World|CPlane] [Cumulative=Yes|No] [Output=Solids|Meshes|Curves|None]";
 
@@ -39048,7 +38799,6 @@ mod tests {
 
         registry.execute(&mut document, "Undo").unwrap();
         for invalid in [
-            "Box 0,0,0 2,3,1 4",
             "Box 0,0,0 0,3,0 4",
             "Box 0,0,0 2,3,0 0",
             "Box 0,0,0 2,3,0 4 extra",
@@ -39096,30 +38846,30 @@ mod tests {
         };
         assert_eq!(mesh.vertices().len(), 66);
         assert_eq!(mesh.face_count(), 32);
-        assert_eq!(mesh.vertices()[0], Point3::try_new(1.0, 8.0, -1.0).unwrap());
+        assert_eq!(mesh.vertices()[0], Point3::try_new(1.0, 8.0, 3.0).unwrap());
         assert_eq!(
             mesh.faces()[0],
-            viboceros_geometry::MeshFace::Quad([0, 1, 4, 3])
+            viboceros_geometry::MeshFace::Quad([0, 3, 4, 1])
         );
         assert_eq!(
             mesh.faces()[6],
-            viboceros_geometry::MeshFace::Quad([12, 13, 16, 15])
+            viboceros_geometry::MeshFace::Quad([12, 15, 16, 13])
         );
         assert_eq!(
             mesh.faces()[12],
-            viboceros_geometry::MeshFace::Quad([24, 25, 28, 27])
+            viboceros_geometry::MeshFace::Quad([24, 27, 28, 25])
         );
         assert_eq!(
             mesh.faces()[16],
-            viboceros_geometry::MeshFace::Quad([33, 34, 38, 37])
+            viboceros_geometry::MeshFace::Quad([33, 37, 38, 34])
         );
         assert_eq!(
             mesh.faces()[22],
-            viboceros_geometry::MeshFace::Quad([45, 46, 49, 48])
+            viboceros_geometry::MeshFace::Quad([45, 48, 49, 46])
         );
         assert_eq!(
             mesh.faces()[26],
-            viboceros_geometry::MeshFace::Quad([54, 55, 59, 58])
+            viboceros_geometry::MeshFace::Quad([54, 58, 59, 55])
         );
         assert_eq!(
             mesh.bounds().min(),
@@ -39165,7 +38915,6 @@ mod tests {
             "MeshBox 0,0,0 2,3,0 4 ZCount=2 ZCount=3",
             "MeshBox 0,0,0 2,3,0 4 Unknown=2",
             "MeshBox 0,0,0 2,3,0 4 XCount=500001 YCount=1 ZCount=1",
-            "MeshBox 0,0,0 2,3,1 4",
             "MeshBox 0,0,0 0,3,0 4",
             "MeshBox 0,0,0 2,0,0 4",
             "MeshBox 0,0,0 2,3,0 0",
