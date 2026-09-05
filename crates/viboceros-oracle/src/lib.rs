@@ -37,8 +37,10 @@ mod trimmed_brep;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
+mod curve_frames;
 mod curve_join_close;
 mod curve_native;
+pub use curve_frames::CurveFramesFixture;
 pub use curve_native::NativeCurveFixture;
 mod polycurve_native;
 pub use polycurve_native::NativePolyCurveFixture;
@@ -107,6 +109,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    CurveFrames {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveFramesFixture,
+    },
     CurvatureCommand {
         id: String,
         #[serde(flatten)]
@@ -239,6 +246,9 @@ pub enum Operation {
         id: String,
     },
     DocumentCurveArrayCycle {
+        id: String,
+    },
+    DocumentCurveArrayCornerCycle {
         id: String,
     },
     DocumentSurfaceArrayCycle {
@@ -1393,6 +1403,7 @@ impl Operation {
             | Self::SurfaceGrid { id, .. }
             | Self::SurfaceCurvature { id, .. }
             | Self::CurvatureCommand { id, .. }
+            | Self::CurveFrames { id, .. }
             | Self::CurveSurfaceMorph { id, .. }
             | Self::SurfaceSurfaceMorph { id, .. }
             | Self::BrepSurfaceMorph { id, .. }
@@ -1418,6 +1429,7 @@ impl Operation {
             | Self::DocumentLinearArrayCycle { id }
             | Self::DocumentRectangularArrayCycle { id }
             | Self::DocumentCurveArrayCycle { id }
+            | Self::DocumentCurveArrayCornerCycle { id }
             | Self::DocumentSurfaceArrayCycle { id }
             | Self::DocumentPolarArrayCycle { id }
             | Self::DocumentDuplicateSelectionCycle { id }
@@ -1699,6 +1711,9 @@ fn execute(
             curve_morph::run(fixture, iterations, tolerance)?
         }
         Operation::SurfaceJets { fixture, .. } => surface_jets::run(fixture, iterations)?,
+        Operation::CurveFrames { fixture, .. } => {
+            curve_frames::run(fixture, iterations, tolerance)?
+        }
         Operation::SurfaceCurvature { fixture, .. } => {
             surface_jets::run_curvature(fixture, iterations)?
         }
@@ -1762,6 +1777,17 @@ fn execute(
         Operation::DocumentCurveArrayCycle { .. } => {
             document_curve_array_cycle(iterations, tolerance)?
         }
+        Operation::DocumentCurveArrayCornerCycle { .. } => (
+            document_curve_array_scenario(
+                tolerance,
+                &CommandRegistry::with_builtins(),
+                "freeform-polyline",
+                CurveArrayFixturePath::SpatialPolyline,
+                [0.0; 3],
+                "ArrayCrv 4 Orientation=Freeform PathName=Rail",
+            )?,
+            0,
+        ),
         Operation::DocumentSurfaceArrayCycle { .. } => {
             document_surface_array_cycle(iterations, tolerance)?
         }
@@ -5930,11 +5956,24 @@ enum CurveArrayFixturePath {
     Line,
     TiltedArc,
     SpatialNurbs,
+    SpatialPolyline,
 }
 
 impl CurveArrayFixturePath {
     fn geometry(self, tolerance: Tolerance) -> Result<Geometry, GeometryError> {
         match self {
+            Self::SpatialPolyline => Ok(Geometry::Polyline(Polyline3::try_new(
+                [
+                    [0.0, 0.0, 0.0],
+                    [1.0, 0.0, 0.0],
+                    [1.0, 1.0, 0.0],
+                    [1.0, 1.0, 1.0],
+                ]
+                .map(Point3::try_from)
+                .into_iter()
+                .collect::<Result<Vec<_>, _>>()?,
+                tolerance,
+            )?)),
             Self::Line => Ok(Geometry::Line(LineSegment::try_new(
                 Point3::try_new(0.0, 0.0, 0.0)?,
                 Point3::try_new(10.0, 0.0, 0.0)?,
@@ -5975,12 +6014,7 @@ fn document_curve_array_scenario(
     let mut document = Document::new(tolerance);
     let layer = document.current_layer_id();
     let anchor = Point3::try_from(source_anchor)?;
-    // Keep the spatial-frame endpoints away from half-micro rounding
-    // boundaries while retaining a longer-than-unit orientation witness.
-    let source_axis_length = match path {
-        CurveArrayFixturePath::SpatialNurbs => 1.25,
-        CurveArrayFixturePath::Line | CurveArrayFixturePath::TiltedArc => 1.0,
-    };
+    let source_axis_length = 1.0;
     let mut original_ids = Vec::with_capacity(3);
     for (axis, offset) in [
         ("x", [source_axis_length, 0.0, 0.0]),
@@ -6047,9 +6081,9 @@ fn document_curve_array_scenario(
         "command_succeeded": true,
         "groups": groups
             .iter()
-            .map(|records| curve_array_line_records_value(records))
+            .map(|records| array_line_records_value(records))
             .collect::<Vec<_>>(),
-        "objects": curve_array_line_records_value(&objects),
+        "objects": array_line_records_value(&objects),
         "originals_selected": original_ids
             .iter()
             .enumerate()
@@ -9395,6 +9429,15 @@ mod tests {
         }]))
         .unwrap();
         let value = &response.results[0].value;
+        assert!(
+            value["freeform_nurbs"]["objects"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .flat_map(|record| record["end"].as_array().unwrap())
+                .map(|coordinate| coordinate.as_f64().unwrap())
+                .any(|coordinate| (coordinate - (coordinate * 1e6).round() / 1e6).abs() > 1e-10)
+        );
         for (scenario, object_count, group_count) in [
             ("base_point", 15, 5),
             ("freeform", 12, 4),

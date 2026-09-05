@@ -1,0 +1,90 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_frames",
+      "id": "frames-multispan",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -3,
+              5
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              -1
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              4,
+              -2,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              1,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          2,
+          3,
+          3,
+          3,
+          3
+        ]
+      },
+      "parameters": [
+        0,
+        0.5,
+        1,
+        1.5,
+        2,
+        2.5,
+        3
+      ]
+    }
+  ]
+}

@@ -13,6 +13,7 @@ mod curve;
 mod curve_edit;
 mod curve_evaluate;
 mod curve_fit;
+mod curve_frame;
 mod curve_join;
 mod curve_parameter_map;
 mod curve_rebuild;
@@ -64,6 +65,7 @@ pub use circular::CircularArc3;
 pub use curve::{CurveRef, CurveSample, MAX_CURVE_DIVISION_POINTS};
 pub use curve_edit::{Curve3, CurveClosure};
 pub use curve_fit::{MAX_CURVE_FIT_CONTROL_POINTS, MAX_CURVE_FIT_DEGREE, try_fit_curve};
+pub use curve_frame::FrameTransportOptions;
 pub use curve_join::{CurveJoinOptions, CurveJoinStyle, JoinedCurve3, join_curves};
 pub use curve_rebuild::{
     MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_REBUILD_POINT_COUNT, try_rebuild_curve,

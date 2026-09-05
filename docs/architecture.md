@@ -69,6 +69,9 @@ NURBS differential evaluation and homogeneous weight matching have separate
 for local-coordinate evaluation, degree-one acceleration, and scale-safe seam joins.
 The shared [one-sided evaluator](curve-sided-evaluation.md) propagates side choices
 through composite leaves and supplies exact kink checks and stationary tangents.
+The [curve-frame module](curve-frames.md) separates span-aware adaptive tangent
+transport from frame construction. `ArrayCrv` and swept spirals share it;
+corner-side policy and remaining Rhino corner differences are explicit.
 The `nurbs_surface/evaluate` module shares `ParameterSide` and nonempty knot-span
 selection with curves. Its [surface jets](surface-evaluation.md) use local rational
 coordinates and expose exact U/V limits and boundary-span continuation.

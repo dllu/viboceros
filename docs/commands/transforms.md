@@ -80,7 +80,10 @@ only, and `NoRotation` translates without rotating. `BasePoint=` uses an
 explicit source anchor and, as in Rhino, retains the originals in addition to
 all requested rail items. Without it, the originals are the first item. Use
 
-`Flip` on the rail to reverse its travel direction.
+`Flip` on the rail to reverse its travel direction. Freeform arrays use shared
+[adaptive curve frames](../curve-frames.md) and incoming tangents at exact
+corners. Rhino's query-dependent twist at some sharp spatial corners remains
+an explicitly diagnosed compatibility gap.
 
 `ArraySrf` copies every selected source into a U-by-V grid over an untrimmed
 NURBS surface. `Mode=UV` divides normalized parameters; `Mode=Isocurve` divides

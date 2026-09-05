@@ -99,7 +99,7 @@ spans otherwise, interpolates every analytic sample, and has a one-million-
 control resource ceiling. Its C2 endpoint rule differs from Rhino's legacy C1
 endpoint perturbation by less than `3e-5` in the permanent `helix.json` and
 `spiral.json` NURBS-control oracle fixtures. Swept spirals use equal-arc-length
-rail stations and rotation-minimizing frame transport; their complete cubic
+rail stations and shared [adaptive frame transport](../curve-frames.md); their complete cubic
 control layout agrees with Rhino within `2e-7` across straight, planar curved,
 and spatial curved rails in `swept_spiral.json`.
 

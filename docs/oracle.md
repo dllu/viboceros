@@ -100,6 +100,14 @@ for analytic checks, observed errors, and remaining kernel limits.
 See [one-sided evaluation](curve-sided-evaluation.md) for the exact-limit contract,
 Rhino probe construction, and native-only full-order knot tests.
 
+`curve_frames.json` and `curve_frames_multispan.json` compare 22 sets of
+[rotation-minimizing frames](curve-frames.md), keeping points/tangents separate
+from the relative-rotation accuracy checks. `curve_frames_diagnostics.json`
+isolates seven known Rhino availability, large-coordinate, and corner-query
+differences; it is not a passing reference. `curve_array.json` now records
+unrounded endpoints. `curve_array_corner_diagnostics.json` is a separate,
+untimed actual-command probe exposing Rhino's query-dependent corner twist.
+
 `surface_jets.json` checks 20 [rational surface differential cases](surface-evaluation.md),
 including second partials, parameter-domain changes, continuation, and exact
 quadrant limits. `surface_translated_jets.json` separately diagnoses large-coordinate

@@ -1013,6 +1013,53 @@ def _join_close_record(curve, inspect_native=False):
     return value
 
 
+def _curve_frames(operation, iterations):
+    curve = _join_close_input(operation["curve"])
+    try:
+        if operation.get("domain") is not None:
+            domain = [_finite(t, "curve frame domain") for t in operation["domain"]]
+            if len(domain) != 2 or domain[0] >= domain[1]:
+                raise ValueError("invalid curve frame domain")
+            curve.Domain = Rhino.Geometry.Interval(*domain)
+        if operation.get("reversed", False) and not curve.Reverse():
+            raise ValueError("curve frame reversal failed")
+        if operation.get("translation") is not None:
+            translation = Rhino.Geometry.Transform.Translation(_vector(operation["translation"]))
+            if not curve.Transform(translation):
+                raise ValueError("curve frame translation failed")
+        parameters = [_finite(t, "curve frame parameter") for t in operation["parameters"]]
+        if not parameters or any(a >= b for a, b in zip(parameters, parameters[1:])):
+            raise ValueError("curve frame parameters must be strictly increasing")
+        if any(t < curve.Domain.T0 or t > curve.Domain.T1 for t in parameters):
+            raise ValueError("curve frame parameter is outside its domain")
+
+        def compute():
+            frames = curve.GetPerpendicularFrames(parameters)
+            if frames is not None and len(frames) != len(parameters):
+                raise ValueError("Rhino could not produce the requested curve frames")
+            return frames
+
+        frames, elapsed = _measure(iterations, compute)
+        domain = [float(curve.Domain.T0), float(curve.Domain.T1)]
+        if frames is None:
+            return {"domain": domain, "available": False, "samples": []}, elapsed
+        seed = [_xyz(axis) for axis in [frames[0].XAxis, frames[0].YAxis, frames[0].ZAxis]]
+        samples = []
+        for t, frame in zip(parameters, frames):
+            axes = [_xyz(axis) for axis in [frame.XAxis, frame.YAxis, frame.ZAxis]]
+            rotation = [
+                [sum(axes[k][i] * seed[k][j] for k in range(3)) for j in range(3)]
+                for i in range(3)
+            ]
+            samples.append({
+                "parameter": t, "point": _xyz(frame.Origin),
+                "tangent": axes[2], "rotation": rotation,
+            })
+        return {"domain": domain, "available": True, "samples": samples}, elapsed
+    finally:
+        curve.Dispose()
+
+
 def _curve_native(operation, iterations, tolerance):
     source = _join_close_input(operation["curve"])
     try:
@@ -2338,6 +2385,8 @@ def _brep_mesh_boundaries(operation, iterations, tolerance):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "curve_frames":
+        return _curve_frames(operation, iterations)
     if kind == "brep_mesh_boundaries":
         return _brep_mesh_boundaries(operation, iterations, tolerance)
     if kind == "loft":
@@ -3235,7 +3284,7 @@ def _execute(operation, iterations, tolerance):
                 document.Groups.Delete(group_index)
             for item in objects:
                 document.Objects.Delete(item.Id, True)
-    if kind == "document_curve_array_cycle":
+    if kind in ("document_curve_array_cycle", "document_curve_array_corner_cycle"):
         document = Rhino.RhinoDoc.ActiveDoc
         suffix = str(System.Guid.NewGuid())
         name_prefix = "Viboceros Curve Array " + suffix + " "
@@ -3251,8 +3300,7 @@ def _execute(operation, iterations, tolerance):
             return objects
 
         def fixture_xyz(value):
-            coordinates = [round(float(component), 6) for component in value]
-            return [0.0 if component == 0.0 else component for component in coordinates]
+            return [float(component) for component in value]
 
         def line_record(rhino_object):
             geometry = rhino_object.Geometry
@@ -3302,6 +3350,10 @@ def _execute(operation, iterations, tolerance):
             return groups
 
         def add_path(path_kind):
+            if path_kind == "polyline":
+                return document.Objects.AddPolyline([
+                    _point(p) for p in [[0, 0, 0], [1, 0, 0], [1, 1, 0], [1, 1, 1]]
+                ])
             if path_kind == "line":
                 return document.Objects.AddLine(
                     Rhino.Geometry.Point3d(0.0, 0.0, 0.0),
@@ -3345,9 +3397,7 @@ def _execute(operation, iterations, tolerance):
             _record_progress("document_curve_array_cycle: %s start" % label)
             anchor = _point(source_anchor)
             source_ids = []
-            # Keep the spatial endpoints away from half-micro rounding
-            # boundaries while retaining a longer-than-unit frame witness.
-            source_axis_length = 1.25 if path_kind == "nurbs" else 1.0
+            source_axis_length = 1.0
             for axis, offset in (
                 ("x", Rhino.Geometry.Vector3d(source_axis_length, 0.0, 0.0)),
                 ("y", Rhino.Geometry.Vector3d(0.0, source_axis_length, 0.0)),
@@ -3428,7 +3478,13 @@ def _execute(operation, iterations, tolerance):
             }
             return result
 
+        timing_curve = None
         try:
+            if kind == "document_curve_array_corner_cycle":
+                return run_scenario(
+                    "freeform-polyline", "polyline", [0.0, 0.0, 0.0],
+                    "_-ArrayCrv '_-SelID {path_id} _Orientation _Freeform 4", 4,
+                ), 0
             value = {
                 "base_point": run_scenario(
                     "base-point",
@@ -3498,6 +3554,8 @@ def _execute(operation, iterations, tolerance):
             return value, elapsed
         finally:
             _record_progress("document_curve_array_cycle: cleanup start")
+            if timing_curve is not None:
+                timing_curve.Dispose()
             try:
                 document.Objects.UnselectAll()
             except Exception:

@@ -9,6 +9,30 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_curve_frames_validate_results_and_dispose_sources_on_every_exit(self):
+        vector = lambda x,y,z: SimpleNamespace(X=x,Y=y,Z=z)
+        first = SimpleNamespace(Origin=vector(0,0,0),XAxis=vector(1,0,0),YAxis=vector(0,1,0),ZAxis=vector(0,0,1))
+        last = SimpleNamespace(Origin=vector(1,2,3),XAxis=vector(0,1,0),YAxis=vector(-1,0,0),ZAxis=vector(0,0,1))
+        for failure in [None,"null","count","compute","record","parameters"]:
+            frames = None if failure == "null" else [first] if failure == "count" else [first,last]
+            curve = SimpleNamespace(Domain=SimpleNamespace(T0=0.0,T1=1.0),Dispose=Mock(),
+                GetPerpendicularFrames=Mock(return_value=frames,
+                    side_effect=ValueError("frame failure") if failure == "compute" else None))
+            with patch.object(self.worker,"_join_close_input",return_value=curve), patch.object(
+                self.worker,"_xyz",side_effect=ValueError("record failure") if failure == "record" else lambda p:[p.X,p.Y,p.Z]):
+                operation = {"curve":{},"parameters":[1.0,0.0] if failure == "parameters" else [0.0,1.0]}
+                if failure not in [None,"null"]:
+                    with self.assertRaises(ValueError): self.worker._curve_frames(operation,2)
+                else:
+                    value,_ = self.worker._curve_frames(operation,2)
+                    self.assertEqual(value["available"],failure is None)
+                    if failure is None:
+                        self.assertEqual(value["samples"][1]["rotation"],[[0,-1,0],[1,0,0],[0,0,1]])
+                        self.assertEqual(value["samples"][1]["point"],[1,2,3])
+                    else: self.assertEqual(value["samples"],[])
+                    self.assertEqual(curve.GetPerpendicularFrames.call_count,3)
+            curve.Dispose.assert_called_once_with()
+
     def test_curvature_command_disposes_attributes_and_geometry_and_cleans_only_owned_objects(self):
         for failure in [None, "add", "command", "report", "record", "point", "marker"]:
             objects = {100: SimpleNamespace(Id=100)}

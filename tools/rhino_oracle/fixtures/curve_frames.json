@@ -1,0 +1,1309 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_frames",
+      "id": "frames-line",
+      "curve": {
+        "type": "line",
+        "start": [
+          0,
+          0,
+          0
+        ],
+        "end": [
+          2,
+          1,
+          3
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-circle",
+      "curve": {
+        "type": "circle",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius": 2,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "normal": [
+          0,
+          0,
+          1
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-arc",
+      "curve": {
+        "type": "arc",
+        "points": [
+          [
+            2,
+            0,
+            0
+          ],
+          [
+            0,
+            2,
+            0
+          ],
+          [
+            -2,
+            0,
+            0
+          ]
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-ellipse",
+      "curve": {
+        "type": "ellipse",
+        "center": [
+          0,
+          0,
+          0
+        ],
+        "radius_x": 3,
+        "radius_y": 1,
+        "x_axis": [
+          1,
+          0,
+          0
+        ],
+        "y_axis": [
+          0,
+          1,
+          0
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              -2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-rational",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              4
+            ],
+            "weight": 0.25
+          },
+          {
+            "point": [
+              3,
+              4,
+              -2
+            ],
+            "weight": 2
+          },
+          {
+            "point": [
+              5,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-planar-inflection",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -2,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        0,
+        1
+      ],
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-sparse",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              -2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "parameters": [
+        0,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-interior",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              -2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "parameters": [
+        0.2,
+        0.3,
+        0.5,
+        0.8
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-domain",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              -2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "domain": [
+        -7,
+        13
+      ],
+      "parameters": [
+        -7,
+        -5.75,
+        -4.5,
+        -3.25,
+        -2,
+        -0.75,
+        0.5,
+        1.75,
+        3,
+        4.25,
+        5.5,
+        6.75,
+        8,
+        9.25,
+        10.5,
+        11.75,
+        13
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-reversed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              0,
+              4
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              4,
+              -2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              5,
+              2,
+              3
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "reversed": true,
+      "parameters": [
+        -1,
+        -0.9375,
+        -0.875,
+        -0.8125,
+        -0.75,
+        -0.6875,
+        -0.625,
+        -0.5625,
+        -0.5,
+        -0.4375,
+        -0.375,
+        -0.3125,
+        -0.25,
+        -0.1875,
+        -0.125,
+        -0.0625,
+        0
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-nurbs-corner",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              1,
+              2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              3,
+              2
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          2,
+          2,
+          2
+        ]
+      },
+      "parameters": [
+        0,
+        0.5,
+        1,
+        1.5,
+        2
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-small",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.00002,
+              0,
+              0.00004
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.000030000000000000004,
+              0.00004,
+              -0.00002
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0.00005,
+              0.00002,
+              0.000030000000000000004
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-large",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              200000,
+              0,
+              400000
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              300000,
+              400000,
+              -200000
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              500000,
+              200000,
+              300000
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      },
+      "parameters": [
+        0,
+        0.0625,
+        0.125,
+        0.1875,
+        0.25,
+        0.3125,
+        0.375,
+        0.4375,
+        0.5,
+        0.5625,
+        0.625,
+        0.6875,
+        0.75,
+        0.8125,
+        0.875,
+        0.9375,
+        1
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-corner-polyline-offcorners",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ]
+      },
+      "parameters": [
+        0,
+        0.4,
+        0.9,
+        1.1,
+        1.5,
+        1.9,
+        2.1,
+        2.5,
+        3
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-corner-polyline-sparse",
+      "curve": {
+        "type": "polyline",
+        "vertices": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            1,
+            1,
+            1
+          ]
+        ]
+      },
+      "parameters": [
+        0,
+        3
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-corner-polycurve-offcorners",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "line",
+            "start": [
+              1,
+              0,
+              0
+            ],
+            "end": [
+              1,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "line",
+            "start": [
+              1,
+              1,
+              0
+            ],
+            "end": [
+              1,
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      "parameters": [
+        0,
+        0.4,
+        0.9,
+        1.1,
+        1.5,
+        1.9,
+        2.1,
+        2.5,
+        3
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-corner-polycurve-sparse",
+      "curve": {
+        "type": "polycurve",
+        "segments": [
+          {
+            "type": "line",
+            "start": [
+              0,
+              0,
+              0
+            ],
+            "end": [
+              1,
+              0,
+              0
+            ]
+          },
+          {
+            "type": "line",
+            "start": [
+              1,
+              0,
+              0
+            ],
+            "end": [
+              1,
+              1,
+              0
+            ]
+          },
+          {
+            "type": "line",
+            "start": [
+              1,
+              1,
+              0
+            ],
+            "end": [
+              1,
+              1,
+              1
+            ]
+          }
+        ]
+      },
+      "parameters": [
+        0,
+        3
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-corner-nurbs-offcorners",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              1
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "parameters": [
+        0,
+        0.4,
+        0.9,
+        1.1,
+        1.5,
+        1.9,
+        2.1,
+        2.5,
+        3
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-corner-nurbs-sparse",
+      "curve": {
+        "type": "nurbs",
+        "degree": 1,
+        "control_points": [
+          {
+            "point": [
+              0,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              1,
+              1
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          1,
+          2,
+          3,
+          3
+        ]
+      },
+      "parameters": [
+        0,
+        3
+      ]
+    },
+    {
+      "op": "curve_frames",
+      "id": "frames-spatial-closed",
+      "curve": {
+        "type": "nurbs",
+        "degree": 3,
+        "control_points": [
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              3,
+              1
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              -1
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -3,
+              -1,
+              2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              0,
+              -3,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              2,
+              -2,
+              -2
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              3,
+              0,
+              0
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              1,
+              3,
+              1
+            ],
+            "weight": 1
+          },
+          {
+            "point": [
+              -2,
+              2,
+              -1
+            ],
+            "weight": 1
+          }
+        ],
+        "knots": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      "parameters": [
+        0,
+        0.25,
+        0.5,
+        0.75,
+        1,
+        1.25,
+        1.5,
+        1.75,
+        2,
+        2.25,
+        2.5,
+        2.75,
+        3,
+        3.25,
+        3.5,
+        3.75,
+        4,
+        4.25,
+        4.5,
+        4.75,
+        5,
+        5.25,
+        5.5,
+        5.75,
+        6
+      ]
+    }
+  ]
+}

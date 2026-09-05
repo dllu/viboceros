@@ -5,6 +5,18 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error(
+        "frame parameters must be nonempty, finite, strictly increasing, and inside the curve domain"
+    )]
+    InvalidCurveFrameParameters,
+    #[error("invalid curve frame transport options")]
+    InvalidCurveFrameOptions,
+    #[error("curve frame transport exceeded its evaluation limit {maximum}")]
+    CurveFrameResourceLimit { maximum: usize },
+    #[error("curve frame transport could not meet the requested angular accuracy")]
+    CurveFrameDidNotConverge,
+    #[error("curve frame transport crosses a positional jump or an antiparallel tangent corner")]
+    DiscontinuousCurveFrame,
     #[error("invalid point grid: {context}")]
     InvalidPointGrid { context: &'static str },
     #[error("point grid direction exceeds the input count limit {maximum}")]

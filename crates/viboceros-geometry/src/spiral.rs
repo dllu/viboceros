@@ -244,98 +244,20 @@ fn swept_spiral_frames(
     let tangent_projection = seed.dot(tangent.as_vector())?;
     let tangent_component = tangent.as_vector().scaled(tangent_projection)?;
     let radial = subtract_vectors(seed, tangent_component)?.normalized(tolerance)?;
-    let angular = tangent
-        .as_vector()
-        .cross(radial.as_vector())?
-        .normalized_nonzero()?;
-    let mut frame = SweptSpiralFrame {
-        radial,
-        angular,
-        tangent,
-    };
-    let mut previous_sample = samples[0];
-    let mut frames = Vec::with_capacity(samples.len());
-    frames.push(frame);
-    let interval_count = samples.len().saturating_sub(1);
-    if interval_count == 0 {
-        return Ok(frames);
-    }
-    // The double-reflection method has fourth-order global error. Sparse
-    // spirals receive enough intermediate transport steps to keep the frame
-    // error below the interpolation error; dense spirals need no extra work.
-    let subdivisions = 256_usize.div_ceil(interval_count).clamp(1, 64);
-    for pair in samples.windows(2) {
-        for step in 1..=subdivisions {
-            let next_sample = if step == subdivisions {
-                pair[1]
-            } else {
-                let fraction = step as Real / subdivisions as Real;
-                let parameter = pair[0]
-                    .parameter()
-                    .mul_add(1.0 - fraction, pair[1].parameter() * fraction);
-                rail.evaluate_with_tangent(parameter)?
-            };
-            frame = double_reflect_swept_frame(frame, previous_sample, next_sample)?;
-            previous_sample = next_sample;
-        }
-        frames.push(frame);
-    }
-    Ok(frames)
-}
-
-fn double_reflect_swept_frame(
-    previous: SweptSpiralFrame,
-    previous_sample: CurveSample,
-    next_sample: CurveSample,
-) -> Result<SweptSpiralFrame, GeometryError> {
-    let chord = previous_sample.point().vector_to(next_sample.point())?;
-    let reflected_radial = reflect_vector(previous.radial.as_vector(), chord)?;
-    let reflected_tangent = reflect_vector(previous.tangent.as_vector(), chord)?;
-    let tangent = next_sample.tangent();
-    let tangent_bisector = subtract_vectors(tangent.as_vector(), reflected_tangent)?;
-    let transported_radial = if vector_is_zero(tangent_bisector) {
-        reflected_radial
-    } else {
-        reflect_vector(reflected_radial, tangent_bisector)?
-    };
-    let provisional_radial = transported_radial.normalized_nonzero()?;
-    let angular = tangent
-        .as_vector()
-        .cross(provisional_radial.as_vector())?
-        .normalized_nonzero()?;
-    let radial = angular
-        .as_vector()
-        .cross(tangent.as_vector())?
-        .normalized_nonzero()?;
-    Ok(SweptSpiralFrame {
-        radial,
-        angular,
-        tangent,
-    })
-}
-
-fn reflect_vector(vector: Vector3, reflection_normal: Vector3) -> Result<Vector3, GeometryError> {
-    let scale = reflection_normal
-        .x()
-        .abs()
-        .max(reflection_normal.y().abs())
-        .max(reflection_normal.z().abs());
-    if scale == 0.0 {
-        return Err(GeometryError::Degenerate {
-            context: "swept spiral frame transport",
-        });
-    }
-    let normal = Vector3::try_new(
-        reflection_normal.x() / scale,
-        reflection_normal.y() / scale,
-        reflection_normal.z() / scale,
-    )?;
-    let projection_scale = 2.0 * vector.dot(normal)? / normal.dot(normal)?;
-    subtract_vectors(vector, normal.scaled(projection_scale)?)
-}
-
-fn vector_is_zero(vector: Vector3) -> bool {
-    vector.x() == 0.0 && vector.y() == 0.0 && vector.z() == 0.0
+    let parameters = samples.iter().map(|s| s.parameter()).collect::<Vec<_>>();
+    Ok(rail
+        .rotation_minimizing_frames(
+            &parameters,
+            Some(radial),
+            crate::FrameTransportOptions::default(),
+        )?
+        .into_iter()
+        .map(|f| SweptSpiralFrame {
+            radial: f.x_axis(),
+            angular: f.y_axis(),
+            tangent: f.z_axis(),
+        })
+        .collect())
 }
 
 fn subtract_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryError> {

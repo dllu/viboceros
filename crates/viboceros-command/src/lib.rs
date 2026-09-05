@@ -3,6 +3,8 @@
 mod curve_cut;
 mod curve_edit;
 #[cfg(test)]
+mod curve_frame_tests;
+#[cfg(test)]
 use curve_cut::TRIM_CURVE_USAGE;
 use curve_cut::{
     CurveCutterInput, TrimCurveCommand, selected_curve_cutter_inputs, split_curve_with_cutters,
@@ -18182,7 +18184,6 @@ fn curve_array_transforms(
 struct CurveArrayFrame {
     x: UnitVector3,
     y: UnitVector3,
-    z: UnitVector3,
 }
 
 fn curve_array_frames(
@@ -18223,120 +18224,22 @@ fn freeform_curve_array_frames(
     curve: CurveRef<'_>,
     samples: &[CurveSample],
 ) -> Result<Vec<CurveArrayFrame>, GeometryError> {
-    let mut frame = stable_curve_array_frame(samples[0].tangent())?;
-    let mut previous_sample = samples[0];
-    let mut frames = Vec::with_capacity(samples.len());
-    frames.push(frame);
-    let interval_count = samples.len().saturating_sub(1);
-    if interval_count == 0 {
-        return Ok(frames);
-    }
-    // The method has fourth-order global error. Keep roughly 256 transport
-    // steps for sparse arrays without multiplying already-dense arrays.
-    let subdivisions = 256_usize.div_ceil(interval_count).clamp(1, 64);
-    for pair in samples.windows(2) {
-        for step in 1..=subdivisions {
-            let next_sample = if step == subdivisions {
-                pair[1]
-            } else {
-                let fraction = step as Real / subdivisions as Real;
-                let parameter = pair[0]
-                    .parameter()
-                    .mul_add(1.0 - fraction, pair[1].parameter() * fraction);
-                curve.evaluate_with_tangent(parameter)?
-            };
-            frame = double_reflect_curve_array_frame(frame, previous_sample, next_sample)?;
-            previous_sample = next_sample;
-        }
-        frames.push(frame);
-    }
-    Ok(frames)
-}
-
-fn stable_curve_array_frame(tangent: UnitVector3) -> Result<CurveArrayFrame, GeometryError> {
-    let [x, y, z] = tangent.as_vector().to_array().map(Real::abs);
-    let reference = if x <= y && x <= z {
-        Vector3::try_new(1.0, 0.0, 0.0)?
-    } else if y <= z {
-        Vector3::try_new(0.0, 1.0, 0.0)?
-    } else {
-        Vector3::try_new(0.0, 0.0, 1.0)?
-    };
-    let frame_x = reference.cross(tangent.as_vector())?.normalized_nonzero()?;
-    let frame_y = tangent
-        .as_vector()
-        .cross(frame_x.as_vector())?
-        .normalized_nonzero()?;
-    Ok(CurveArrayFrame {
-        x: frame_x,
-        y: frame_y,
-        z: tangent,
-    })
-}
-
-/// Advances a rotation-minimizing frame with the two plane reflections from
-/// Wang et al. The chord reflection maps the old frame to a left-handed one;
-/// the tangent-bisector reflection restores handedness at the new tangent.
-fn double_reflect_curve_array_frame(
-    previous: CurveArrayFrame,
-    previous_sample: CurveSample,
-    next_sample: CurveSample,
-) -> Result<CurveArrayFrame, GeometryError> {
-    let chord = previous_sample.point().vector_to(next_sample.point())?;
-    let reflected_x = reflect_curve_array_vector(previous.x.as_vector(), chord)?;
-    let reflected_tangent = reflect_curve_array_vector(previous.z.as_vector(), chord)?;
-    let tangent = next_sample.tangent();
-    let tangent_bisector = subtract_vectors(tangent.as_vector(), reflected_tangent)?;
-    let transported_x = if vector_is_zero(tangent_bisector) {
-        // The second reflection is undefined only for degenerate local data.
-        // Sufficiently dense regular-curve samples avoid it, but retaining the
-        // first reflected reference vector gives a deterministic safe limit.
-        reflected_x
-    } else {
-        reflect_curve_array_vector(reflected_x, tangent_bisector)?
-    };
-    let provisional_x = transported_x.normalized_nonzero()?;
-    let frame_y = tangent
-        .as_vector()
-        .cross(provisional_x.as_vector())?
-        .normalized_nonzero()?;
-    let frame_x = frame_y
-        .as_vector()
-        .cross(tangent.as_vector())?
-        .normalized_nonzero()?;
-    Ok(CurveArrayFrame {
-        x: frame_x,
-        y: frame_y,
-        z: tangent,
-    })
-}
-
-fn reflect_curve_array_vector(
-    vector: Vector3,
-    reflection_normal: Vector3,
-) -> Result<Vector3, GeometryError> {
-    let scale = reflection_normal
-        .x()
-        .abs()
-        .max(reflection_normal.y().abs())
-        .max(reflection_normal.z().abs());
-    if scale == 0.0 {
-        return Err(GeometryError::Degenerate {
-            context: "curve-array reflection",
-        });
-    }
-    let normal = Vector3::try_new(
-        reflection_normal.x() / scale,
-        reflection_normal.y() / scale,
-        reflection_normal.z() / scale,
-    )?;
-    let denominator = normal.dot(normal)?;
-    let projection_scale = 2.0 * vector.dot(normal)? / denominator;
-    subtract_vectors(vector, normal.scaled(projection_scale)?)
-}
-
-fn vector_is_zero(vector: Vector3) -> bool {
-    vector.x() == 0.0 && vector.y() == 0.0 && vector.z() == 0.0
+    let parameters = samples.iter().map(|s| s.parameter()).collect::<Vec<_>>();
+    Ok(curve
+        .rotation_minimizing_frames(
+            &parameters,
+            None,
+            viboceros_geometry::FrameTransportOptions {
+                side: viboceros_geometry::ParameterSide::Left,
+                ..Default::default()
+            },
+        )?
+        .into_iter()
+        .map(|f| CurveArrayFrame {
+            x: f.x_axis(),
+            y: f.y_axis(),
+        })
+        .collect())
 }
 
 fn subtract_vectors(left: Vector3, right: Vector3) -> Result<Vector3, GeometryError> {
@@ -18372,7 +18275,6 @@ fn roadlike_curve_array_frame(
     Ok(CurveArrayFrame {
         x: frame_x,
         y: frame_y,
-        z: tangent,
     })
 }
 
@@ -18397,7 +18299,6 @@ fn stairlike_curve_array_frame(
     Ok(CurveArrayFrame {
         x: frame_x,
         y: frame_y,
-        z: up,
     })
 }
 
