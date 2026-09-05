@@ -939,8 +939,136 @@ def _mesh_unweld_value(mesh):
     }
 
 
+def _join_close_input(definition):
+    kind = definition["type"]
+    if kind == "line":
+        return Rhino.Geometry.LineCurve(_point(definition["start"]), _point(definition["end"]))
+    if kind == "polyline":
+        return Rhino.Geometry.PolylineCurve([_point(point) for point in definition["vertices"]])
+    if kind == "arc":
+        return Rhino.Geometry.ArcCurve(Rhino.Geometry.Arc(*[_point(point) for point in definition["points"]]))
+    if kind == "nurbs":
+        return _nurbs_curve_from_definition(definition)
+    if kind == "polycurve":
+        curve = Rhino.Geometry.PolyCurve()
+        try:
+            for definition in definition["segments"]:
+                segment = _join_close_input(definition)
+                try:
+                    if not curve.AppendSegment(segment):
+                        raise ValueError("could not append join/close segment")
+                finally:
+                    segment.Dispose()
+            return curve
+        except Exception:
+            curve.Dispose()
+            raise
+    raise ValueError("unsupported join/close curve type")
+
+
+def _join_close_record(curve):
+    if isinstance(curve, Rhino.Geometry.PolyCurve):
+        curve.RemoveNesting()
+        segments = []
+        for index in range(curve.SegmentCount):
+            segment = curve.SegmentCurve(index).DuplicateCurve()
+            try:
+                segment.Domain = curve.SegmentDomain(index)
+                segments.append(_nurbs_curve_definition(segment))
+            finally:
+                segment.Dispose()
+        kind = "polycurve"
+    else:
+        segments = [_nurbs_curve_definition(curve)]
+        kind = "nurbs"
+        if isinstance(curve, Rhino.Geometry.LineCurve):
+            kind = "line"
+        elif isinstance(curve, Rhino.Geometry.ArcCurve):
+            kind = "arc"
+        elif isinstance(curve, Rhino.Geometry.PolylineCurve):
+            kind = "polyline"
+    return {"type": kind, "closed": bool(curve.IsClosed), "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+            "segments": segments, "length": float(curve.GetLength(1e-12))}
+
+
+def _curve_join_close(operation, iterations, tolerance):
+    curves = [_join_close_input(definition) for definition in operation["curves"]]
+    try:
+        if not all(curve.IsValid for curve in curves):
+            raise ValueError("invalid join/close source curve")
+        if operation["action"] == "join":
+            def compute():
+                results = Rhino.Geometry.Curve.JoinCurves(curves, operation.get("join_tolerance", tolerance["absolute"]), operation.get("preserve_direction", False))
+                if results is None:
+                    raise ValueError("JoinCurves failed")
+                try:
+                    return [_join_close_record(curve) for curve in results]
+                finally:
+                    for curve in results:
+                        curve.Dispose()
+        else:
+            def compute():
+                document = Rhino.RhinoDoc.ActiveDoc
+                settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+                settings.NormalObjects = True
+                before = set(obj.Id for obj in document.Objects.GetObjectList(settings))
+                document.Objects.UnselectAll()
+                ids = [document.Objects.AddCurve(curve) for curve in curves]
+                groups = {}
+                try:
+                    selectors = " ".join("_SelID %s" % object_id for object_id in ids)
+                    if operation["action"] == "join_command":
+                        for index, object_id in enumerate(ids):
+                            group = document.Groups.Add()
+                            groups[group] = "source-%d" % index
+                            document.Groups.AddToGroup(group, object_id)
+                            obj = document.Objects.FindId(object_id)
+                            attributes = obj.Attributes.Duplicate()
+                            attributes.Name = "source-%d" % index
+                            document.Objects.ModifyAttributes(object_id, attributes, True)
+                        group = document.Groups.Add()
+                        groups[group] = "shared"
+                        for object_id in ids:
+                            document.Groups.AddToGroup(group, object_id)
+                        macro = "_-Join %s _Enter" % selectors
+                    else:
+                        macro = "_-CloseCrv _CloseWideGapsWithLine=%s _Tolerance=%.17g %s _Enter" % (
+                            "Yes" if operation.get("close_wide_gaps_with_line", True) else "No",
+                            operation.get("close_tolerance", tolerance["absolute"]), selectors)
+                    succeeded = bool(Rhino.RhinoApp.RunScript(macro, False))
+                    results = []
+                    for obj in document.Objects.GetObjectList(settings):
+                        if obj.Id not in before:
+                            duplicate = obj.Geometry.DuplicateCurve()
+                            try:
+                                value = _join_close_record(duplicate)
+                                if operation["action"] == "join_command":
+                                    value["name"] = obj.Attributes.Name
+                                    value["source_index"] = ids.index(obj.Id) if obj.Id in ids else None
+                                    value["groups"] = sorted(groups[index] for index in (obj.Attributes.GetGroupList() or []) if index in groups)
+                                results.append(value)
+                            finally:
+                                duplicate.Dispose()
+                    if operation["action"] == "join_command":
+                        results.sort(key=lambda value: value["name"])
+                    return {"succeeded": succeeded, "curves": results}
+                finally:
+                    document.Objects.UnselectAll()
+                    for obj in list(document.Objects.GetObjectList(settings)):
+                        if obj.Id not in before:
+                            document.Objects.Delete(obj.Id, True)
+                    for group in groups:
+                        document.Groups.Delete(group)
+        return _measure(iterations, compute)
+    finally:
+        for curve in curves:
+            curve.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "curve_join_close":
+        return _curve_join_close(operation, iterations, tolerance)
     if kind in ("polycurve_geometry", "polycurve_document"):
         return _polycurve_geometry(operation, iterations, tolerance)
     if kind == "trimmed_surface_mass_properties":

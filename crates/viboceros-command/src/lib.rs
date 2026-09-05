@@ -1,5 +1,8 @@
 //! Extensible command registry and the first model-editing commands.
 
+mod curve_edit;
+use curve_edit::{CloseCrvCommand, JoinCommand};
+
 use std::collections::{BTreeMap, BTreeSet};
 
 use thiserror::Error;
@@ -10,28 +13,28 @@ use viboceros_document::{
 use viboceros_geometry::{
     AffineTransform3, BoundingBox3, Brep, BrepBrepIntersectionEvent, BrepFace,
     CatenaryConstruction, CatenaryCurve, CatenaryOutput, Circle3, CircularArc3,
-    ControlPointCurveClosure, CurveBrepIntersectionEvent, CurveCurveIntersectionEvent,
-    CurveExtensionBoundary as GeometryCurveExtensionBoundary, CurveExtensionSide,
-    CurveExtensionStyle as GeometryCurveExtensionStyle, CurveInterpolationOptions,
-    CurveKnotSpacing, CurveRef, CurveSample, CurveSurfaceIntersectionEvent,
-    CurveThroughConstruction, CurveTweenMatchMethod, DEFAULT_CATENARY_POINT_COUNT,
-    DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3, GeometryError,
-    InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT, MAX_CURVE_DIVISION_POINTS,
-    MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE, MAX_CURVE_THROUGH_DEGREE,
-    MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER, MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES,
-    MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES, MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES,
-    MAX_MESH_TORUS_FACES, MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES,
-    MIN_CURVE_TWEEN_SAMPLE_NUMBER, MIN_POLYLINE_CATENARY_POINT_COUNT,
-    MIN_SMOOTH_CATENARY_POINT_COUNT, MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle,
-    MeshConeOptions, MeshCylinderOptions, MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction,
-    MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
-    NurbsCurve, NurbsCurve2, NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3,
-    PolylineClosure, Real, RectangularSurfaceCorner, RectangularSurfaceCornerCut,
-    SurfaceBrepIntersectionEvent, SurfaceExtensionEdge, SurfaceKnotDirection, SurfacePointMorph,
-    SurfaceSurfaceIntersectionEvent, Tolerance, TriangleMesh, UnitVector3, Vector3, WeightedPoint3,
-    brep_brep_intersection_events, curve_brep_intersection_events,
-    curve_surface_intersection_events, join_polylines, sort_and_cull_points,
-    surface_brep_intersection_events, surface_surface_intersection_events,
+    ControlPointCurveClosure, Curve3, CurveBrepIntersectionEvent, CurveClosure,
+    CurveCurveIntersectionEvent, CurveExtensionBoundary as GeometryCurveExtensionBoundary,
+    CurveExtensionSide, CurveExtensionStyle as GeometryCurveExtensionStyle,
+    CurveInterpolationOptions, CurveJoinOptions, CurveKnotSpacing, CurveRef, CurveSample,
+    CurveSurfaceIntersectionEvent, CurveThroughConstruction, CurveTweenMatchMethod,
+    DEFAULT_CATENARY_POINT_COUNT, DEFAULT_SWEPT_SPIRAL_POINTS_PER_TURN, Ellipse3, Frame3,
+    GeometryError, InterpolatedCurveClosure, LineSegment, MAX_CATENARY_POINT_COUNT,
+    MAX_CURVE_DIVISION_POINTS, MAX_CURVE_FIT_DEGREE, MAX_CURVE_REBUILD_DEGREE,
+    MAX_CURVE_THROUGH_DEGREE, MAX_CURVE_TWEEN_COUNT, MAX_CURVE_TWEEN_SAMPLE_NUMBER,
+    MAX_MESH_BOX_FACES, MAX_MESH_CONE_FACES, MAX_MESH_CYLINDER_FACES, MAX_MESH_ELLIPSOID_FACES,
+    MAX_MESH_PLANE_FACES, MAX_MESH_SPHERE_FACES, MAX_MESH_TORUS_FACES,
+    MAX_MESH_TRUNCATED_CONE_FACES, MAX_REGULAR_POLYGON_SIDES, MIN_CURVE_TWEEN_SAMPLE_NUMBER,
+    MIN_POLYLINE_CATENARY_POINT_COUNT, MIN_SMOOTH_CATENARY_POINT_COUNT,
+    MIN_SWEPT_SPIRAL_POINTS_PER_TURN, MeshCapFaceStyle, MeshConeOptions, MeshCylinderOptions,
+    MeshEdgeFilter, MeshEllipsoidOptions, MeshFaceExtraction, MeshSubdivisionSphereOptions,
+    MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions, NurbsCurve, NurbsCurve2,
+    NurbsSurface, Plane, Point2, Point3, PointCloud3, Polyline3, Real, RectangularSurfaceCorner,
+    RectangularSurfaceCornerCut, SurfaceBrepIntersectionEvent, SurfaceExtensionEdge,
+    SurfaceKnotDirection, SurfacePointMorph, SurfaceSurfaceIntersectionEvent, Tolerance,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, brep_brep_intersection_events,
+    curve_brep_intersection_events, curve_surface_intersection_events, join_curves,
+    sort_and_cull_points, surface_brep_intersection_events, surface_surface_intersection_events,
     transformed_curve_brep_intersection_events, try_catenary, try_curve_through_points,
     try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
@@ -8514,16 +8517,7 @@ fn parse_division_arguments(
 }
 
 fn geometry_curve_ref(geometry: &Geometry) -> Option<CurveRef<'_>> {
-    match geometry {
-        Geometry::Line(line) => Some(CurveRef::Line(line)),
-        Geometry::Circle(circle) => Some(CurveRef::Circle(circle)),
-        Geometry::Arc(arc) => Some(CurveRef::Arc(arc)),
-        Geometry::Ellipse(ellipse) => Some(CurveRef::Ellipse(ellipse)),
-        Geometry::Polyline(polyline) => Some(CurveRef::Polyline(polyline)),
-        Geometry::NurbsCurve(curve) => Some(CurveRef::NurbsCurve(curve)),
-        Geometry::PolyCurve(curve) => Some(CurveRef::PolyCurve(curve)),
-        _ => None,
-    }
+    geometry.curve_ref()
 }
 
 fn command_division_points(
@@ -11013,123 +11007,6 @@ fn bezier_curve_segments(curve: &NurbsCurve) -> Result<Vec<NurbsCurve>, CommandE
         segments.push(curve.try_trimmed(start..=end)?);
     }
     Ok(segments)
-}
-
-const CLOSE_CRV_USAGE: &str = "CloseCrv [CloseWideGapsWithLine=Yes|No] [Tolerance=value]";
-
-struct CloseCrvCommand;
-
-impl Command for CloseCrvCommand {
-    fn name(&self) -> &'static str {
-        "CloseCrv"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let options = parse_close_curve_arguments(arguments, document.tolerance().absolute())?;
-        let selected = document
-            .selected_objects()
-            .map(|object| (object.id(), object.geometry().clone()))
-            .collect::<Vec<_>>();
-        if selected.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-
-        let mut endpoint_moved = 0;
-        let mut segment_added = 0;
-        let mut unchanged = 0;
-        let mut replacements = Vec::new();
-        for (id, geometry) in &selected {
-            let polyline = match geometry {
-                Geometry::Line(line) => {
-                    Polyline3::try_new(vec![line.start(), line.end()], document.tolerance())?
-                }
-                Geometry::Polyline(polyline) => polyline.clone(),
-                Geometry::Circle(_) | Geometry::Ellipse(_) => {
-                    unchanged += 1;
-                    continue;
-                }
-                Geometry::NurbsCurve(curve) if curve.is_closed()? => {
-                    unchanged += 1;
-                    continue;
-                }
-                Geometry::PolyCurve(curve) if curve.is_closed()? => {
-                    unchanged += 1;
-                    continue;
-                }
-                _ => return Err(CommandError::UnsupportedCloseCurveGeometry),
-            };
-            let (closed, outcome) = polyline.close(
-                options.tolerance,
-                options.close_wide_gaps_with_line,
-                document.tolerance(),
-            )?;
-            match outcome {
-                PolylineClosure::EndpointMoved => {
-                    endpoint_moved += 1;
-                    replacements.push((*id, Geometry::Polyline(closed)));
-                }
-                PolylineClosure::SegmentAdded => {
-                    segment_added += 1;
-                    replacements.push((*id, Geometry::Polyline(closed)));
-                }
-                PolylineClosure::AlreadyClosed
-                | PolylineClosure::GapTooWide
-                | PolylineClosure::NotClosable => unchanged += 1,
-            }
-        }
-
-        let closed = document.replace_object_geometries(replacements)?;
-        debug_assert_eq!(closed, endpoint_moved + segment_added);
-        Ok(format!(
-            "Closed {closed} of {} selected curve(s): {segment_added} with a line, {endpoint_moved} by moving an endpoint; {unchanged} unchanged",
-            selected.len()
-        ))
-    }
-}
-
-#[derive(Clone, Copy)]
-struct CloseCurveOptions {
-    close_wide_gaps_with_line: bool,
-    tolerance: Real,
-}
-
-fn parse_close_curve_arguments(
-    arguments: &[&str],
-    default_tolerance: Real,
-) -> Result<CloseCurveOptions, CommandError> {
-    let mut options = CloseCurveOptions {
-        close_wide_gaps_with_line: true,
-        tolerance: default_tolerance,
-    };
-    let mut wide_gap_seen = false;
-    let mut tolerance_seen = false;
-    let mut index = 0;
-    while index < arguments.len() {
-        let argument = arguments[index];
-        let (name, value, consumed) = if let Some((name, value)) = argument.split_once('=') {
-            (name, value, 1)
-        } else {
-            let value = arguments
-                .get(index + 1)
-                .ok_or(CommandError::Usage(CLOSE_CRV_USAGE))?;
-            (argument, *value, 2)
-        };
-        if name.eq_ignore_ascii_case("CloseWideGapsWithLine") && !wide_gap_seen {
-            options.close_wide_gaps_with_line =
-                parse_yes_no(value).ok_or(CommandError::Usage(CLOSE_CRV_USAGE))?;
-            wide_gap_seen = true;
-        } else if name.eq_ignore_ascii_case("Tolerance") && !tolerance_seen {
-            options.tolerance = parse_finite_real(value)?;
-            if options.tolerance < 0.0 {
-                return Err(GeometryError::InvalidCurveClosureTolerance.into());
-            }
-            tolerance_seen = true;
-        } else {
-            return Err(CommandError::Usage(CLOSE_CRV_USAGE));
-        }
-        index += consumed;
-    }
-    Ok(options)
 }
 
 fn parse_yes_no(value: &str) -> Option<bool> {
@@ -17716,99 +17593,6 @@ impl Command for UnisolateLockCommand {
     }
 }
 
-struct JoinCommand;
-
-impl Command for JoinCommand {
-    fn name(&self) -> &'static str {
-        "Join"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        require_consumed(arguments, 0, "Join")?;
-        let inputs = selected_linear_curves(document)?;
-        if inputs.len() < 2 {
-            return Err(CommandError::NotEnoughCurvesToJoin);
-        }
-        let polylines = inputs
-            .iter()
-            .map(|input| input.polyline.clone())
-            .collect::<Vec<_>>();
-        let components = join_polylines(&polylines, document.tolerance())?;
-        let replacements = components
-            .iter()
-            .filter(|component| component.source_indices().len() > 1)
-            .map(|component| {
-                let source_indices = component.source_indices().to_vec();
-                let attributes = inputs[source_indices[0]].attributes.clone();
-                (source_indices, component.polyline().clone(), attributes)
-            })
-            .collect::<Vec<_>>();
-        if replacements.is_empty() {
-            return Err(CommandError::NoJoinableCurves);
-        }
-
-        let joined_curve_count = replacements
-            .iter()
-            .map(|(sources, _, _)| sources.len())
-            .sum::<usize>();
-        let unchanged = inputs.len() - joined_curve_count;
-        let unchanged_ids = components
-            .iter()
-            .filter(|component| component.source_indices().len() == 1)
-            .map(|component| inputs[component.source_indices()[0]].id)
-            .collect::<Vec<_>>();
-        for (sources, _, _) in &replacements {
-            for source in sources {
-                document.delete_object(inputs[*source].id)?;
-            }
-        }
-        let mut result_ids = Vec::with_capacity(replacements.len());
-        for (_, polyline, attributes) in replacements {
-            result_ids.push(
-                document.add_geometry_with_attributes(Geometry::Polyline(polyline), attributes)?,
-            );
-        }
-        replace_selection(
-            document,
-            unchanged_ids.into_iter().chain(result_ids.iter().copied()),
-        )?;
-        Ok(format!(
-            "Joined {joined_curve_count} curve(s) into {} polyline(s); {unchanged} curve(s) unchanged",
-            result_ids.len()
-        ))
-    }
-}
-
-#[derive(Clone)]
-struct SelectedLinearCurve {
-    id: ObjectId,
-    polyline: Polyline3,
-    attributes: ObjectAttributes,
-}
-
-fn selected_linear_curves(document: &Document) -> Result<Vec<SelectedLinearCurve>, CommandError> {
-    let mut inputs = Vec::new();
-    for object in document.selected_objects() {
-        let polyline = match object.geometry() {
-            Geometry::Line(line) => {
-                Polyline3::try_new(vec![line.start(), line.end()], document.tolerance())?
-            }
-            Geometry::Polyline(polyline) => polyline.clone(),
-            _ => return Err(CommandError::UnsupportedJoinGeometry),
-        };
-        inputs.push(SelectedLinearCurve {
-            id: object.id(),
-            polyline,
-            attributes: object.attributes().clone(),
-        });
-    }
-    if inputs.is_empty() {
-        Err(CommandError::NoObjectsSelected)
-    } else {
-        Ok(inputs)
-    }
-}
-
 struct ExplodeCommand;
 
 enum ExplodedParts {
@@ -21316,9 +21100,9 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError>
         Geometry::PointCloud(cloud) => ThreeDmGeometry::PointCloud(cloud.clone()),
         Geometry::Line(line) => ThreeDmGeometry::Line(*line),
         Geometry::Circle(circle) => ThreeDmGeometry::NurbsCurve(circle.to_nurbs()?),
-        Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(arc.to_nurbs()?),
+        Geometry::Arc(arc) => ThreeDmGeometry::NurbsCurve(CurveRef::Arc(arc).to_nurbs()?),
         Geometry::Ellipse(ellipse) => ThreeDmGeometry::NurbsCurve(ellipse.to_nurbs()?),
-        Geometry::Polyline(polyline) => ThreeDmGeometry::NurbsCurve(polyline.to_nurbs()?),
+        Geometry::Polyline(polyline) => ThreeDmGeometry::Polyline(polyline.clone()),
         Geometry::NurbsCurve(curve) => ThreeDmGeometry::NurbsCurve(curve.clone()),
         Geometry::PolyCurve(curve) => ThreeDmGeometry::PolyCurve(curve.clone()),
         Geometry::NurbsSurface(surface) => ThreeDmGeometry::NurbsSurface(surface.clone()),
@@ -21327,40 +21111,18 @@ fn geometry_to_3dm(geometry: &Geometry) -> Result<ThreeDmGeometry, CommandError>
     })
 }
 
-fn document_geometry_from_3dm(geometry: ThreeDmGeometry, tolerance: Tolerance) -> Geometry {
+fn document_geometry_from_3dm(geometry: ThreeDmGeometry, _tolerance: Tolerance) -> Geometry {
     match geometry {
         ThreeDmGeometry::Point(point) => Geometry::Point(point),
         ThreeDmGeometry::PointCloud(cloud) => Geometry::PointCloud(cloud),
         ThreeDmGeometry::Line(line) => Geometry::Line(line),
-        ThreeDmGeometry::NurbsCurve(curve) => exported_polyline(&curve, tolerance)
-            .map_or_else(|| Geometry::NurbsCurve(curve), Geometry::Polyline),
+        ThreeDmGeometry::NurbsCurve(curve) => Geometry::NurbsCurve(curve),
+        ThreeDmGeometry::Polyline(curve) => Geometry::Polyline(curve),
         ThreeDmGeometry::PolyCurve(curve) => Geometry::PolyCurve(curve),
         ThreeDmGeometry::NurbsSurface(surface) => Geometry::NurbsSurface(surface),
         ThreeDmGeometry::Brep(brep) => Geometry::Brep(brep),
         ThreeDmGeometry::Mesh(mesh) => Geometry::Mesh(mesh),
     }
-}
-
-fn exported_polyline(curve: &NurbsCurve, tolerance: Tolerance) -> Option<Polyline3> {
-    if curve.degree() != 1
-        || curve
-            .control_points()
-            .iter()
-            .any(|control| control.weight() != 1.0)
-    {
-        return None;
-    }
-    let polyline = Polyline3::try_new(
-        curve
-            .control_points()
-            .iter()
-            .map(|control| control.point())
-            .collect(),
-        tolerance,
-    )
-    .ok()?;
-    let expected = polyline.to_nurbs().ok()?;
-    (expected.knots() == curve.knots()).then_some(polyline)
 }
 
 fn unique_import_layer_name(document: &Document, source_name: &str) -> String {
@@ -21825,10 +21587,10 @@ pub enum CommandError {
     #[error("no qualifying multiple knots were removed from the selected curves or surfaces")]
     NoMultipleKnotsRemoved,
 
-    #[error("Join requires at least two selected lines or polylines")]
+    #[error("Join requires at least two selected curves")]
     NotEnoughCurvesToJoin,
 
-    #[error("Join currently supports selected lines and polylines only")]
+    #[error("Join requires curve geometry")]
     UnsupportedJoinGeometry,
 
     #[error("the selected curves do not have endpoints within the document tolerance")]
@@ -22137,9 +21899,7 @@ pub enum CommandError {
     #[error("the array would create more than {maximum} object copies")]
     TooManyArrayObjects { maximum: usize },
 
-    #[error(
-        "CloseCrv currently supports line and polyline inputs only; open arcs and NURBS curves require polycurve support"
-    )]
+    #[error("CloseCrv requires curve geometry")]
     UnsupportedCloseCurveGeometry,
 
     #[error("none of the selected objects is a supported non-NURBS curve")]
@@ -26113,18 +25873,24 @@ mod tests {
         );
         let object = document.object(id).unwrap();
         assert_eq!(object.attributes().layer_id(), layer_id);
-        let Geometry::Polyline(closed) = object.geometry() else {
-            panic!("expected a closed polyline")
+        let Geometry::PolyCurve(closed) = object.geometry() else {
+            panic!("expected a polycurve retaining the original polyline")
         };
+        assert!(closed.is_closed().unwrap());
+        assert_eq!(closed.segments().len(), 2);
         assert_eq!(
-            closed.vertices(),
-            &[
+            closed.segments()[0]
+                .control_points()
+                .iter()
+                .map(|control| control.point())
+                .collect::<Vec<_>>(),
+            vec![
                 Point3::try_new(0.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(4.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(2.0, 3.0, 0.0).unwrap(),
-                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
             ]
         );
+        assert_eq!(closed.parameters(), &[0.0, 2.0, 2.0 + 13.0_f64.sqrt()]);
         assert!(document.is_selected(id));
         assert!(
             document
@@ -26143,7 +25909,7 @@ mod tests {
         registry.execute(&mut document, "Redo").unwrap();
         assert!(matches!(
             document.object(id).unwrap().geometry(),
-            Geometry::Polyline(polyline) if polyline.is_closed()
+            Geometry::PolyCurve(curve) if curve.is_closed().unwrap()
         ));
 
         registry.execute(&mut document, "Line 10,0 14,0").unwrap();
@@ -26203,7 +25969,7 @@ mod tests {
             Geometry::Polyline(polyline) if !polyline.is_closed()
         ));
 
-        registry.execute(&mut document, "Arc 1,0 0,1 -1,0").unwrap();
+        registry.execute(&mut document, "Point 1,0").unwrap();
         registry.execute(&mut document, "SelAll").unwrap();
         let before = document.objects().cloned().collect::<Vec<_>>();
         assert!(matches!(
@@ -35904,13 +35670,14 @@ mod tests {
 
         assert_eq!(
             registry.execute(&mut document, "Join").unwrap(),
-            "Joined 3 curve(s) into 1 polyline(s); 1 curve(s) unchanged"
+            "Joined 2 curve(s) into 1 curve(s); 2 curve(s) unchanged"
         );
-        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.objects().len(), 3);
         assert!(document.object(ids[3]).is_some());
+        assert!(document.object(ids[1]).is_some());
         let Geometry::Polyline(joined) = document
             .objects()
-            .find(|object| object.id() != ids[3])
+            .find(|object| object.id() != ids[3] && object.id() != ids[1])
             .unwrap()
             .geometry()
         else {
@@ -35922,21 +35689,20 @@ mod tests {
                 Point3::try_new(1.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(2.0, 0.0, 0.0).unwrap(),
                 Point3::try_new(3.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(4.0, 0.0, 0.0).unwrap(),
             ]
         );
-        assert_eq!(document.selected_object_count(), 2);
+        assert_eq!(document.selected_object_count(), 3);
         assert_eq!(document.undo_label(), Some("Join"));
 
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 4);
         assert!(ids.iter().all(|id| document.object(*id).is_some()));
         registry.execute(&mut document, "Redo").unwrap();
-        assert_eq!(document.objects().len(), 2);
+        assert_eq!(document.objects().len(), 3);
     }
 
     #[test]
-    fn join_rejects_branches_and_unsupported_geometry_atomically() {
+    fn join_chooses_straight_continuations_and_rejects_unsupported_geometry_atomically() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
         for command in ["Line -1,0 0,0", "Line 0,0 1,0", "Line 0,0 0,1"] {
@@ -35947,13 +35713,10 @@ mod tests {
             .objects()
             .map(|object| object.id())
             .collect::<Vec<_>>();
-        let history = document.undo_label().map(str::to_owned);
-        assert!(matches!(
-            registry.execute(&mut document, "Join"),
-            Err(CommandError::Geometry(
-                GeometryError::AmbiguousPolylineJoin { endpoint_count: 3 }
-            ))
-        ));
+        registry.execute(&mut document, "Join").unwrap();
+        assert_eq!(document.objects().len(), 2);
+        assert!(document.object(ids[2]).is_some());
+        registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(
             document
                 .objects()
@@ -35961,8 +35724,6 @@ mod tests {
                 .collect::<Vec<_>>(),
             ids
         );
-        assert_eq!(document.undo_label(), history.as_deref());
-
         registry.execute(&mut document, "Point 5,5").unwrap();
         registry.execute(&mut document, "SelAll").unwrap();
         assert!(matches!(
@@ -36259,20 +36020,29 @@ mod tests {
     }
 
     #[test]
-    fn three_dm_polyline_recognition_preserves_noncanonical_nurbs() {
+    fn three_dm_keeps_polyline_and_nurbs_representations_distinct() {
         let points = vec![
             Point3::try_new(0.0, 0.0, 0.0).unwrap(),
             Point3::try_new(1.0, 0.0, 0.0).unwrap(),
             Point3::try_new(2.0, 1.0, 0.0).unwrap(),
         ];
-        let canonical = Polyline3::try_new(points.clone(), Tolerance::DEFAULT)
-            .unwrap()
-            .to_nurbs()
-            .unwrap();
-        assert!(exported_polyline(&canonical, Tolerance::DEFAULT).is_some());
+        let polyline = Polyline3::try_new(points.clone(), Tolerance::DEFAULT).unwrap();
+        assert_eq!(
+            document_geometry_from_3dm(
+                ThreeDmGeometry::Polyline(polyline.clone()),
+                Tolerance::DEFAULT
+            ),
+            Geometry::Polyline(polyline)
+        );
 
         let nonuniform = NurbsCurve::try_new(1, points, vec![0.0, 0.0, 0.25, 1.0, 1.0]).unwrap();
-        assert!(exported_polyline(&nonuniform, Tolerance::DEFAULT).is_none());
+        assert_eq!(
+            document_geometry_from_3dm(
+                ThreeDmGeometry::NurbsCurve(nonuniform.clone()),
+                Tolerance::DEFAULT
+            ),
+            Geometry::NurbsCurve(nonuniform)
+        );
     }
 
     #[test]

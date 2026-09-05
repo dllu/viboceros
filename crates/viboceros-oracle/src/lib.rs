@@ -24,9 +24,8 @@ use viboceros_geometry::{
     MeshSubdivisionSphereOptions, MeshTorusOptions, MeshTruncatedConeOptions, MeshUvSphereOptions,
     NurbsCurve, NurbsCurve2, NurbsSurface, Point3, PointCloud3, PointMorph, Polyline3,
     SurfaceExtensionEdge, SurfaceIso, SurfaceKnotDirection, SurfacePointMorph, Tolerance,
-    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, join_polylines, sort_and_cull_points,
-    try_catenary, try_curve_through_points, try_fit_curve, try_rebuild_curve,
-    try_tween_nurbs_curves,
+    TriangleMesh, UnitVector3, Vector3, WeightedPoint3, sort_and_cull_points, try_catenary,
+    try_curve_through_points, try_fit_curve, try_rebuild_curve, try_tween_nurbs_curves,
 };
 use viboceros_io::{
     ThreeDmColorSource, ThreeDmError, ThreeDmGeometry, ThreeDmGroup, ThreeDmLayer, ThreeDmModel,
@@ -37,7 +36,9 @@ mod mass_properties;
 pub use mass_properties::{MassBoundary, TrimmedMassFixture};
 mod polycurve;
 pub use polycurve::PolyCurveFixture;
+mod curve_join_close;
 mod polycurve_document;
+pub use curve_join_close::CurveJoinCloseFixture;
 
 pub const PROTOCOL_VERSION: u32 = 1;
 const MAX_ITERATIONS: u32 = 1_000_000;
@@ -79,6 +80,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    CurveJoinClose {
+        id: String,
+        #[serde(flatten)]
+        fixture: CurveJoinCloseFixture,
+    },
     PolycurveDocument {
         id: String,
         #[serde(flatten)]
@@ -1280,6 +1286,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::CurveJoinClose { id, .. }
             | Self::PolycurveDocument { id, .. }
             | Self::TrimmedSurfaceMassProperties { id, .. }
             | Self::DocumentObjectStateCycle { id, .. }
@@ -1557,6 +1564,9 @@ fn execute(
         Operation::PolycurveGeometry { fixture, .. } => {
             polycurve::run(fixture, iterations, tolerance)?
         }
+        Operation::CurveJoinClose { fixture, .. } => {
+            curve_join_close::run(fixture, iterations, tolerance)?
+        }
         Operation::PolycurveDocument { fixture, .. } => {
             polycurve_document::run(fixture, iterations, tolerance)?
         }
@@ -1736,8 +1746,20 @@ fn execute(
                     )
                 })
                 .collect::<Result<Vec<_>, _>>()?;
+            let curves = polylines
+                .into_iter()
+                .map(viboceros_geometry::Curve3::Polyline)
+                .collect::<Vec<_>>();
             let (joined, elapsed) = measure(iterations, || {
-                join_polylines(black_box(&polylines), tolerance)
+                viboceros_geometry::join_curves(
+                    black_box(&curves),
+                    viboceros_geometry::CurveJoinOptions {
+                        tolerance: tolerance.absolute(),
+                        preserve_direction: false,
+                        style: viboceros_geometry::CurveJoinStyle::Batch,
+                    },
+                    tolerance,
+                )
             })?;
             (json!(canonical_join_segments(&joined)), elapsed)
         }
@@ -8666,14 +8688,14 @@ fn mesh_unweld_value(mesh: &TriangleMesh) -> Value {
     })
 }
 
-fn canonical_join_segments(
-    joined: &[viboceros_geometry::JoinedPolyline3],
-) -> Vec<Vec<[[f64; 3]; 2]>> {
+fn canonical_join_segments(joined: &[viboceros_geometry::JoinedCurve3]) -> Vec<Vec<[[f64; 3]; 2]>> {
     let mut polylines = joined
         .iter()
         .map(|component| {
-            let mut segments = component
-                .polyline()
+            let viboceros_geometry::Curve3::Polyline(polyline) = component.curve() else {
+                unreachable!("polyline-only batch joins return polylines")
+            };
+            let mut segments = polyline
                 .segments()
                 .map(|segment| [segment.start().to_array(), segment.end().to_array()])
                 .collect::<Vec<_>>();

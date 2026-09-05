@@ -362,6 +362,19 @@ bool write_nurbs_curve(const ON_Curve& source, int dimension,
   return true;
 }
 
+bool append_polyline(const ON_PolylineCurve& curve, BridgeObject& output) {
+  if (!curve.IsValid() || curve.m_pline.Count() != curve.m_t.Count()) {
+    return false;
+  }
+  output.object_type = VIBO_OBJECT_POLYLINE;
+  for (int index = 0; index < curve.m_pline.Count(); ++index) {
+    const ON_3dPoint& point = curve.m_pline[index];
+    output.coordinates.insert(output.coordinates.end(), {point.x, point.y, point.z});
+    output.knots_u.push_back(curve.m_t[index]);
+  }
+  return true;
+}
+
 bool append_polycurve(const ON_PolyCurve& source, BridgeObject& output) {
   // Flatten a private copy: never alter geometry owned by the source model.
   ON_PolyCurve curve(source);
@@ -1036,6 +1049,30 @@ ON_Object* geometry_for(const ViboWriteObject& source, std::string& error) {
       }
       return cloud;
     }
+    case VIBO_OBJECT_POLYLINE: {
+      if (source.coordinate_count < 6 || source.coordinate_count % 3 != 0 ||
+          source.coordinate_count / 3 > static_cast<size_t>(std::numeric_limits<int>::max()) ||
+          source.knot_u_count != source.coordinate_count / 3 ||
+          source.knot_v_count != 0 || source.degree_u != 0 || source.degree_v != 0 ||
+          source.control_point_count_u != 0 || source.control_point_count_v != 0 ||
+          source.geometry_data_count != 0 || source.index_count != 0) {
+        error = "polyline dimensions are inconsistent";
+        return nullptr;
+      }
+      auto curve = std::make_unique<ON_PolylineCurve>();
+      curve->m_pline.Reserve(static_cast<int>(source.knot_u_count));
+      curve->m_t.Reserve(static_cast<int>(source.knot_u_count));
+      for (size_t index = 0; index < source.knot_u_count; ++index) {
+        const double* point = source.coordinates + index * 3;
+        curve->m_pline.Append(ON_3dPoint(point[0], point[1], point[2]));
+        curve->m_t.Append(source.knots_u[index]);
+      }
+      if (!curve->IsValid()) {
+        error = "polyline is not valid in OpenNURBS";
+        return nullptr;
+      }
+      return curve.release();
+    }
     case VIBO_OBJECT_NURBS_CURVE: {
       if (source.degree_u == 0 ||
           source.degree_u >= source.control_point_count_u ||
@@ -1334,6 +1371,8 @@ extern "C" int32_t vibo_3dm_read(const char* path,
         supported = append_mesh(*mesh, object);
       } else if (const ON_PolyCurve* curve = ON_PolyCurve::Cast(geometry)) {
         supported = append_polycurve(*curve, object);
+      } else if (const ON_PolylineCurve* curve = ON_PolylineCurve::Cast(geometry)) {
+        supported = append_polyline(*curve, object);
       } else if (const ON_Curve* curve = ON_Curve::Cast(geometry)) {
         supported = append_nurbs(*curve, object);
       } else if (const ON_Surface* surface = ON_Surface::Cast(geometry)) {

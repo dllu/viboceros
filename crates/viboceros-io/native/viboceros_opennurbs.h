@@ -17,6 +17,7 @@ enum ViboObjectType {
   VIBO_OBJECT_POINT_CLOUD = 6,
   VIBO_OBJECT_BREP = 7,
   VIBO_OBJECT_POLYCURVE = 8,
+  VIBO_OBJECT_POLYLINE = 9,
 };
 
 typedef struct ViboThreeDmModel ViboThreeDmModel;

@@ -53,6 +53,13 @@ rules separately, including the `include_ends=false` case.
 duplicate comparison, and 3DM round-trip segment definitions; the native side also
 checks undo. See [polycurve documentation](polycurves.md) for compatibility boundaries.
 
+`curve_join_close.json` compares 39 mixed joining and closure cases, including
+full NURBS definitions, retained intervals, representation, and length. It tests
+the batch `JoinCurves` API separately from actual `Join`/`CloseCrv` commands.
+Join command records also compare source identity, names, and overlapping groups;
+document results are sorted by their unique source names. The native command
+path executes the real command registry. See [curve editing](curve-editing.md).
+
 To keep Wine/Rhino completely off the active desktop, use the isolated Xvfb
 runner (requires `Xvfb`, `xvfb-run`, and `i3`):
 

@@ -1,0 +1,1699 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 0.01,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "curve_join_close",
+      "id": "join-line-corner",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-lines-collinear",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-lines-gap",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0.004,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-nurbs-line",
+      "action": "join",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            1,
+            0
+          ],
+          "end": [
+            1,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-nurbs-line-gap",
+      "action": "join",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1.004,
+            1,
+            0
+          ],
+          "end": [
+            1,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-nurbs-pair-gap",
+      "action": "join",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1.004,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                2,
+                2,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            7,
+            7,
+            7,
+            9,
+            9,
+            9
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-arc-line-gap",
+      "action": "join",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0.7071067811865476,
+              0.2928932188134524,
+              0
+            ],
+            [
+              1,
+              1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1.004,
+            1,
+            0
+          ],
+          "end": [
+            1,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-line-arc-gap",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -2,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              0.004,
+              0,
+              0
+            ],
+            [
+              0.7111067811865476,
+              0.2928932188134524,
+              0
+            ],
+            [
+              1.004,
+              1,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-reversed",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            1,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-reversed-preserve",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            1,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ],
+      "preserve_direction": true
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-branch",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-arc-wide",
+      "action": "close",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0.7071067811865476,
+              0.2928932188134524,
+              0
+            ],
+            [
+              1,
+              1,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-arc-near",
+      "action": "close",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0.9999980000006666,
+              -0.0019999986666669333,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-quadratic-wide",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-cubic-near",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.002,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            2,
+            5,
+            5,
+            5,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-cubic-wide",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            2,
+            5,
+            5,
+            5,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-cubic-force",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            2,
+            5,
+            5,
+            5,
+            5
+          ]
+        }
+      ],
+      "close_tolerance": 0
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-cubic-skip",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            2,
+            2,
+            2,
+            2,
+            5,
+            5,
+            5,
+            5
+          ]
+        }
+      ],
+      "close_wide_gaps_with_line": false
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-polycurve-near",
+      "action": "close",
+      "curves": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "nurbs",
+              "degree": 2,
+              "control_points": [
+                {
+                  "point": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "weight": 1
+                }
+              ],
+              "knots": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                1,
+                1,
+                0
+              ],
+              "end": [
+                0.002,
+                0,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-polycurve-wide",
+      "action": "close",
+      "curves": [
+        {
+          "type": "polycurve",
+          "segments": [
+            {
+              "type": "nurbs",
+              "degree": 2,
+              "control_points": [
+                {
+                  "point": [
+                    0,
+                    0,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    1,
+                    0,
+                    0
+                  ],
+                  "weight": 1
+                },
+                {
+                  "point": [
+                    1,
+                    1,
+                    0
+                  ],
+                  "weight": 1
+                }
+              ],
+              "knots": [
+                0,
+                0,
+                0,
+                1,
+                1,
+                1
+              ]
+            },
+            {
+              "type": "line",
+              "start": [
+                1,
+                1,
+                0
+              ],
+              "end": [
+                1,
+                3,
+                0
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-line",
+      "action": "close",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-arc-near-skip",
+      "action": "close",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0.9999980000006666,
+              -0.0019999986666669333,
+              0
+            ]
+          ]
+        }
+      ],
+      "close_wide_gaps_with_line": false
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-arc-force",
+      "action": "close",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              1,
+              0,
+              0
+            ],
+            [
+              -1,
+              0,
+              0
+            ],
+            [
+              0.9999980000006666,
+              -0.0019999986666669333,
+              0
+            ]
+          ]
+        }
+      ],
+      "close_tolerance": 0
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-quadratic-near",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.002,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "close-polyline-near-two",
+      "action": "close",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              0.002,
+              0,
+              0
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-start-start",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            -1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            1,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-branch-reordered",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            1,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-three-shuffled",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            1,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-three-shuffled-backwards",
+      "action": "join",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "id": "join-two-arcs-gap",
+      "action": "join",
+      "curves": [
+        {
+          "type": "arc",
+          "points": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              0.7071067811865476,
+              0.2928932188134524,
+              0
+            ],
+            [
+              1,
+              1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "arc",
+          "points": [
+            [
+              1.004,
+              1,
+              0
+            ],
+            [
+              1.7111067811865475,
+              1.2928932188134525,
+              0
+            ],
+            [
+              2.004,
+              2,
+              0
+            ]
+          ]
+        }
+      ],
+      "op": "curve_join_close"
+    },
+    {
+      "id": "close-nurbs-line",
+      "action": "close",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      ],
+      "op": "curve_join_close"
+    },
+    {
+      "id": "join-degree-one-nurbs",
+      "action": "join",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 1,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            3,
+            3,
+            5,
+            5
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            1,
+            0
+          ],
+          "end": [
+            3,
+            1,
+            0
+          ]
+        }
+      ],
+      "op": "curve_join_close"
+    },
+    {
+      "id": "close-polyline-near-three",
+      "action": "close",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              1,
+              1,
+              0
+            ],
+            [
+              0.002,
+              0,
+              0
+            ]
+          ]
+        }
+      ],
+      "op": "curve_join_close"
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-nurbs-line-gap-command",
+      "action": "join_command",
+      "curves": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1.004,
+            1,
+            0
+          ],
+          "end": [
+            1,
+            3,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-reversed-command",
+      "action": "join_command",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            -1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            1,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-three-shuffled-command",
+      "action": "join_command",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            1,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            0,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-three-shuffled-backwards-command",
+      "action": "join_command",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            1,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            1,
+            0,
+            0
+          ],
+          "end": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-first-direction-minority-command",
+      "action": "join_command",
+      "curves": [
+        {
+          "type": "line",
+          "start": [
+            1,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            4,
+            0,
+            0
+          ],
+          "end": [
+            3,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            3,
+            0,
+            0
+          ],
+          "end": [
+            2,
+            0,
+            0
+          ]
+        }
+      ]
+    },
+    {
+      "op": "curve_join_close",
+      "id": "join-polyline-parameters-command",
+      "action": "join_command",
+      "curves": [
+        {
+          "type": "polyline",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              2,
+              0,
+              0
+            ],
+            [
+              2,
+              1,
+              0
+            ]
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            2,
+            1,
+            0
+          ],
+          "end": [
+            5,
+            1,
+            0
+          ]
+        }
+      ]
+    }
+  ]
+}

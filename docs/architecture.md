@@ -31,7 +31,7 @@ undo/redo.
 Native point clouds preserve point order and duplicates, cache finite bounds,
 and use a balanced XY spatial index for snapping and picking.
 
-Implementation is incomplete. Mixed-curve joining and closure, general surface/surface
+Implementation is incomplete. General surface/surface
 intersections, editable STEP B-reps,
 and much of Rhino's command set remain to be implemented. See the
 [command reference](commands/README.md) and [file-format documentation](file-formats.md)
@@ -44,8 +44,10 @@ exact NURBS boundaries and adaptive quadrature, including nonplanar faces and ho
 The [polycurve kernel](polycurves.md) preserves independent exact segments and
 parameter maps. Document geometry operations live in their own module, separate
 from object state and history. Polycurves are integrated with transforms, rendering,
-picking, endpoint snapping, extraction, explode, and 3DM interchange; mixed-curve
-joining remains a separate command/kernel task.
+picking, endpoint snapping, extraction, explode, and 3DM interchange.
+Representation-aware ownership, endpoint editing, and joining live in separate
+geometry modules; `Join` and `CloseCrv` share a dedicated command module.
+See [curve joining and closure](curve-editing.md) for tested policies and limits.
 
 Tests cover numerical operations, topology, document state, commands, import/export,
 and UI interactions. Passing the current suite is evidence for those cases,

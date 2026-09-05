@@ -7,7 +7,7 @@ use std::slice;
 use thiserror::Error;
 use viboceros_geometry::{
     Brep, GeometryError, LineSegment, MeshFace, NurbsCurve, NurbsSurface, Point3, PointCloud3,
-    PolyCurve3, Tolerance, TriangleMesh, WeightedPoint3,
+    PolyCurve3, Polyline3, Tolerance, TriangleMesh, WeightedPoint3,
 };
 
 use crate::three_dm_geometry::{self, GeometryCodecError};
@@ -21,6 +21,7 @@ const OBJECT_NURBS_SURFACE: c_int = 5;
 const OBJECT_POINT_CLOUD: c_int = 6;
 const OBJECT_BREP: c_int = 7;
 const OBJECT_POLYCURVE: c_int = 8;
+const OBJECT_POLYLINE: c_int = 9;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ThreeDmLayer {
@@ -51,6 +52,7 @@ pub enum ThreeDmGeometry {
     Line(LineSegment),
     NurbsCurve(NurbsCurve),
     PolyCurve(PolyCurve3),
+    Polyline(Polyline3),
     NurbsSurface(NurbsSurface),
     Brep(Brep),
     Mesh(TriangleMesh),
@@ -479,6 +481,27 @@ fn decode_object(
                     .collect::<Result<Vec<_>, _>>()?,
             )?)
         }
+        OBJECT_POLYLINE
+            if info.degree_u == 0
+                && info.degree_v == 0
+                && info.control_point_count_u == 0
+                && info.control_point_count_v == 0
+                && coordinates.len() >= 6
+                && coordinates.len() % 3 == 0
+                && knots_u.len() == coordinates.len() / 3
+                && knots_v.is_empty()
+                && indices.is_empty()
+                && geometry_data.is_empty() =>
+        {
+            ThreeDmGeometry::Polyline(Polyline3::try_with_parameters(
+                coordinates
+                    .chunks_exact(3)
+                    .map(point)
+                    .collect::<Result<Vec<_>, _>>()?,
+                knots_u.to_vec(),
+                tolerance,
+            )?)
+        }
         OBJECT_NURBS_CURVE
             if info.degree_u > 0
                 && info.degree_v == 0
@@ -724,6 +747,22 @@ impl ObjectPayload {
                     .flat_map(|point| point.to_array())
                     .collect(),
                 knots_u: Vec::new(),
+                knots_v: Vec::new(),
+                indices: Vec::new(),
+                geometry_data: Vec::new(),
+            },
+            ThreeDmGeometry::Polyline(curve) => Self {
+                object_type: OBJECT_POLYLINE,
+                degree_u: 0,
+                degree_v: 0,
+                control_point_count_u: 0,
+                control_point_count_v: 0,
+                coordinates: curve
+                    .vertices()
+                    .iter()
+                    .flat_map(|point| point.to_array())
+                    .collect(),
+                knots_u: curve.parameters().to_vec(),
                 knots_v: Vec::new(),
                 indices: Vec::new(),
                 geometry_data: Vec::new(),
@@ -1418,6 +1457,33 @@ mod tests {
                 (decoded, original) => assert_eq!(decoded, original),
             }
         }
+        fs::remove_file(path).unwrap();
+    }
+
+    #[test]
+    fn polyline_round_trip_retains_parameters_and_distinguishes_nurbs_geometry() {
+        let path = temporary_path("parameterized-polyline.3dm");
+        let curve = Polyline3::try_with_parameters(
+            vec![
+                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 0.0, 0.0).unwrap(),
+                Point3::try_new(2.0, 4.0, 0.0).unwrap(),
+            ],
+            vec![-7.0, -2.0, 12.0],
+            Tolerance::DEFAULT,
+        )
+        .unwrap();
+        let mut model = sample_model();
+        model.objects = vec![
+            ThreeDmObject::new(ThreeDmGeometry::Polyline(curve.clone()), 0),
+            ThreeDmObject::new(
+                ThreeDmGeometry::NurbsCurve(curve.to_native_nurbs().unwrap()),
+                0,
+            ),
+        ];
+        write_3dm_file(&path, &model).unwrap();
+        let read = read_3dm_file(&path, Tolerance::DEFAULT).unwrap();
+        assert_eq!(read, model);
         fs::remove_file(path).unwrap();
     }
 

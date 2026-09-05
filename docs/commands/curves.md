@@ -118,13 +118,12 @@ maximum difference is below `2e-10`).
 requested segment length; add `MarkEnds` to include open-curve endpoints.
 
 `CrvStart` and `CrvEnd` place attribute-preserving point objects at the natural
-ends of every selected curve. `CloseCrv` currently closes selected polylines:
-nearby ends are made identical, while wider gaps gain a straight segment unless
-`CloseWideGapsWithLine=No` is set. Lines that cannot form a valid three-segment
-loop remain unchanged. Already-closed polycurves are also unchanged. Closing
-open arcs, NURBS curves, and polycurves remains unsupported; the integrated
-[exact polycurve representation](../polycurves.md) provides the required composite
-output type, but endpoint editing and tolerance-aware joining still need implementation.
+ends of every selected curve. `CloseCrv [Tolerance=value] [CloseWideGapsWithLine=Yes|No]`
+closes polylines, NURBS curves, arcs, and polycurves. Eligible nearby flexible
+endpoints move to the start; otherwise an allowed closing line creates a polycurve.
+Straight curves and already-closed objects remain unchanged. `Tolerance=0`
+forces eligible endpoint edits and completes an arc's supporting circle while
+retaining its original parameter interval. See [closure rules and limits](../curve-editing.md).
 
 `CrvSeam point` relocates exactly one selected closed curve's start/end seam to
 the closest curve location; omit the point to pick that location in a viewport,

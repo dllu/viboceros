@@ -468,9 +468,12 @@ fn append_end(start: Real, domain: RangeInclusive<Real>) -> Result<Real, Geometr
         start + span
     };
     check_interval(start, end)?;
-    if ((end - start) - span).abs() > 8.0 * Real::EPSILON * span {
+    // Addition rounds at the destination offset, not at the small source
+    // span. Requiring relative accuracy in the latter rejects valid short
+    // closing segments. Collapsed/overflowed intervals are rejected above.
+    if ((end - start) - span).abs() > Real::EPSILON.sqrt() * span {
         return Err(invalid(
-            "appended parameter span is not representable at this offset",
+            "appended parameter span loses significant precision at this offset",
         ));
     }
     Ok(end)

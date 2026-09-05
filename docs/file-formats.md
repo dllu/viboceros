@@ -4,7 +4,7 @@
 
 Both ASCII and binary STL are supported. 3DM import/export uses McNeel's
 OpenNURBS toolkit and preserves points, point-cloud locations, lines, NURBS
-curves, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable
+curves, parameterized polylines, exact piecewise polycurves, untrimmed NURBS surfaces, mixed triangle/quad meshes, and editable
 rational NURBS B-reps. Mesh faces retain their arity in 3DM round trips. B-rep
 interchange retains shared vertices and edges, exact edge and
 parameter-space trim curves, face surfaces and orientation, outer and inner
@@ -13,9 +13,10 @@ object state are also preserved, including the raw RGB display color, its
 layer/object/material/parent source, and surface wire density. Named group
 definitions and ordered membership survive round trips, including overlapping
 and empty groups.
-Circles, arcs, ellipses, and polylines are exported without approximation as
-rational NURBS curves; canonical degree-one curves return as editable
-polylines. Unsupported object types and specialized B-rep trim forms are
+Circles, arcs, and ellipses are exported without approximation as rational NURBS
+curves. Polylines retain their native object type and every vertex parameter;
+degree-one NURBS remain NURBS instead of being classified by a knot-vector heuristic.
+Unsupported object types and specialized B-rep trim forms are
 counted and reported during import.
 
 Polycurves remain composite objects with independent segment degrees, controls,

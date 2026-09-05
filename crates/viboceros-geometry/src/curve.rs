@@ -79,7 +79,8 @@ impl CurveRef<'_> {
     pub fn is_closed(self) -> Result<bool, GeometryError> {
         Ok(match self {
             Self::Circle(_) | Self::Ellipse(_) => true,
-            Self::Line(_) | Self::Arc(_) => false,
+            Self::Line(_) => false,
+            Self::Arc(arc) => arc.is_closed(),
             Self::Polyline(polyline) => polyline.is_closed(),
             Self::NurbsCurve(curve) => curve.is_closed()?,
             Self::PolyCurve(curve) => curve.is_closed()?,
@@ -373,26 +374,7 @@ impl CurveRef<'_> {
                 require_periodic_parameter(parameter, std::f64::consts::TAU)?;
                 ellipse.point_at_angle(parameter)?
             }
-            Self::Polyline(polyline) => {
-                let end = polyline.segment_count() as Real;
-                if !(0.0..=end).contains(&parameter) {
-                    return Err(GeometryError::ParameterOutOfDomain {
-                        parameter,
-                        domain_start: 0.0,
-                        domain_end: end,
-                    });
-                }
-                if parameter == end {
-                    *polyline.vertices().last().expect("a polyline has vertices")
-                } else {
-                    let index = parameter.floor() as usize;
-                    LineSegment::from_validated(
-                        polyline.vertices()[index],
-                        polyline.vertices()[index + 1],
-                    )
-                    .point_at(parameter - index as Real)?
-                }
-            }
+            Self::Polyline(polyline) => polyline.evaluate(parameter)?,
             Self::NurbsCurve(curve) => curve.evaluate(parameter)?,
             Self::PolyCurve(curve) => curve.evaluate(parameter)?,
         };
@@ -417,7 +399,7 @@ impl CurveRef<'_> {
                 parameter,
             )?,
             Self::Polyline(polyline) => {
-                let index = (parameter.floor() as usize).min(polyline.segment_count() - 1);
+                let (index, _) = polyline.parameter_location(parameter)?;
                 polyline.vertices()[index].vector_to(polyline.vertices()[index + 1])?
             }
             Self::NurbsCurve(curve) => curve.derivative_at(parameter)?,
@@ -1139,8 +1121,9 @@ impl<'a> ArcLengthSampler<'a> {
                 (ellipse.radius_x() * sine).hypot(ellipse.radius_y() * cosine)
             }
             CurveRef::Polyline(polyline) => {
-                let index = (parameter.floor() as usize).min(polyline.segment_count() - 1);
+                let (index, _) = polyline.parameter_location(parameter)?;
                 polyline.vertices()[index].distance_to(polyline.vertices()[index + 1])?
+                    / (polyline.parameters()[index + 1] - polyline.parameters()[index])
             }
             CurveRef::NurbsCurve(curve) => curve.derivative_at(parameter)?.length()?,
             CurveRef::PolyCurve(curve) => curve.evaluate_with_derivative(parameter)?.1.length()?,
@@ -1155,18 +1138,7 @@ impl<'a> ArcLengthSampler<'a> {
             CurveRef::Circle(circle) => circle.point_at_angle(parameter),
             CurveRef::Arc(arc) => arc.point_at(parameter),
             CurveRef::Ellipse(ellipse) => ellipse.point_at_angle(parameter),
-            CurveRef::Polyline(polyline) => {
-                if parameter >= polyline.segment_count() as Real {
-                    return Ok(*polyline.vertices().last().expect("a polyline has vertices"));
-                }
-                let index = (parameter.floor() as usize).min(polyline.segment_count() - 1);
-                let fraction = parameter - index as Real;
-                LineSegment::from_validated(
-                    polyline.vertices()[index],
-                    polyline.vertices()[index + 1],
-                )
-                .point_at(fraction)
-            }
+            CurveRef::Polyline(polyline) => polyline.evaluate(parameter),
             CurveRef::NurbsCurve(curve) => curve.evaluate(parameter),
             CurveRef::PolyCurve(curve) => curve.evaluate(parameter),
         }
@@ -1207,7 +1179,12 @@ fn raw_spans(
             .segments()
             .enumerate()
             .map(|(index, segment)| {
-                Ok((index as Real, (index + 1) as Real, segment.length()?, false))
+                Ok((
+                    polyline.parameters()[index],
+                    polyline.parameters()[index + 1],
+                    segment.length()?,
+                    false,
+                ))
             })
             .collect::<Result<Vec<_>, GeometryError>>()?,
         CurveRef::NurbsCurve(curve) => curve

@@ -221,6 +221,7 @@ impl Circle3 {
 pub struct CircularArc3 {
     circle: Circle3,
     sweep_radians: Real,
+    domain: [Real; 2],
 }
 
 impl CircularArc3 {
@@ -276,10 +277,7 @@ impl CircularArc3 {
                 context: "circular arc",
             });
         }
-        Ok(Self {
-            circle,
-            sweep_radians,
-        })
+        Self::try_from_circle_sweep(circle, sweep_radians)
     }
 
     /// Constructs the osculating arc that starts at `start`, follows
@@ -326,9 +324,21 @@ impl CircularArc3 {
             .cross(tangent.as_vector())?
             .normalized_nonzero()?;
         let circle = Circle3::try_from_frame(center, radius, x_axis, normal, tolerance)?;
+        Self::try_from_circle_sweep(circle, sweep_radians)
+    }
+
+    fn try_from_circle_sweep(circle: Circle3, sweep_radians: Real) -> Result<Self, GeometryError> {
+        let length = circle.radius() * sweep_radians;
+        require_finite([length], "arc parameter interval")?;
+        if length <= 0.0 {
+            return Err(GeometryError::Degenerate {
+                context: "arc parameter interval",
+            });
+        }
         Ok(Self {
             circle,
             sweep_radians,
+            domain: [0.0, length],
         })
     }
 
@@ -345,6 +355,88 @@ impl CircularArc3 {
     #[inline]
     pub const fn sweep_radians(self) -> Real {
         self.sweep_radians
+    }
+
+    /// Native curve interval, independent of the angular geometric parameter.
+    pub fn domain(self) -> std::ops::RangeInclusive<Real> {
+        self.domain[0]..=self.domain[1]
+    }
+
+    /// Completes the supporting circle while retaining the original interval.
+    pub fn closed(self) -> Self {
+        Self {
+            sweep_radians: TAU,
+            ..self
+        }
+    }
+
+    pub fn is_closed(self) -> bool {
+        self.sweep_radians == TAU
+    }
+
+    /// Moves an endpoint while preserving the opposite endpoint and tangent.
+    /// The new supporting circle is constructed analytically, not fitted.
+    pub fn try_with_endpoints(
+        self,
+        start: Option<Point3>,
+        end: Option<Point3>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
+        let mut result = self;
+        if let Some(start) = start
+            && start != result.start()?
+        {
+            result = result
+                .reversed(tolerance)?
+                .try_with_end_point(start, tolerance)?
+                .reversed(tolerance)?;
+        }
+        if let Some(end) = end
+            && end != result.end()?
+        {
+            result = result.try_with_end_point(end, tolerance)?;
+        }
+        Ok(result)
+    }
+
+    fn try_with_end_point(self, end: Point3, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        if self.is_closed() {
+            return Err(GeometryError::Degenerate {
+                context: "closed arc endpoint edit",
+            });
+        }
+        let start = self.start()?;
+        if end == start {
+            return Ok(self.closed());
+        }
+        let chord = start.vector_to(end)?;
+        let length = chord.length()?;
+        let direction = chord.normalized_nonzero()?;
+        let tangent = self.circle.y_axis();
+        let normal = tangent
+            .as_vector()
+            .cross(direction.as_vector())?
+            .normalized_nonzero()?;
+        let inward = normal
+            .as_vector()
+            .cross(tangent.as_vector())?
+            .normalized_nonzero()?;
+        let sine = direction.as_vector().dot(inward.as_vector())?;
+        let radius = (0.5 * length) / sine;
+        let center = start.translated(inward.as_vector().scaled(radius)?)?;
+        let circle = Circle3::try_from_frame(center, radius, inward.opposite(), normal, tolerance)?;
+        let sweep_radians = 2.0 * sine.atan2(direction.as_vector().dot(tangent.as_vector())?);
+        require_finite([sweep_radians], "edited arc sweep")?;
+        if !(0.0 < sweep_radians && sweep_radians < TAU) {
+            return Err(GeometryError::Degenerate {
+                context: "edited arc sweep",
+            });
+        }
+        Ok(Self {
+            circle,
+            sweep_radians,
+            domain: self.domain,
+        })
     }
 
     pub fn normal(self) -> Result<UnitVector3, GeometryError> {
@@ -372,7 +464,11 @@ impl CircularArc3 {
                 domain_end: 1.0,
             });
         }
-        self.circle.point_at_angle(self.sweep_radians * normalized)
+        if normalized == 1.0 {
+            self.end()
+        } else {
+            self.circle.point_at_angle(self.sweep_radians * normalized)
+        }
     }
 
     pub fn length(self) -> Result<Real, GeometryError> {
@@ -391,6 +487,7 @@ impl CircularArc3 {
         Ok(Self {
             circle,
             sweep_radians: self.sweep_radians,
+            domain: [-self.domain[1], -self.domain[0]],
         })
     }
 
@@ -431,12 +528,18 @@ impl CircularArc3 {
             .map(|circle| Self {
                 circle,
                 sweep_radians: self.sweep_radians,
+                domain: self.domain,
             }))
     }
 }
 
 fn circular_nurbs(circle: Circle3, sweep: Real) -> Result<NurbsCurve, GeometryError> {
-    let span_count = (sweep / FRAC_PI_2).ceil() as usize;
+    // Three-point construction can put an exact quadrant a few ulps above
+    // pi/2. Keep the canonical span count across that roundoff boundary.
+    let quadrants = sweep / FRAC_PI_2;
+    let span_count = (quadrants - 8.0 * Real::EPSILON * quadrants)
+        .ceil()
+        .max(1.0) as usize;
     let span_angle = sweep / span_count as Real;
     let half_angle = span_angle * 0.5;
     let middle_weight = half_angle.cos();

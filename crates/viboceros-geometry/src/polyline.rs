@@ -16,16 +16,6 @@ pub struct JoinedPolyline3 {
     source_indices: Vec<usize>,
 }
 
-/// How an attempted polyline closure was resolved.
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum PolylineClosure {
-    AlreadyClosed,
-    EndpointMoved,
-    SegmentAdded,
-    GapTooWide,
-    NotClosable,
-}
-
 impl JoinedPolyline3 {
     #[inline]
     pub const fn polyline(&self) -> &Polyline3 {
@@ -46,12 +36,35 @@ impl JoinedPolyline3 {
 #[derive(Clone, Debug, PartialEq)]
 pub struct Polyline3 {
     vertices: Vec<Point3>,
+    parameters: Vec<Real>,
 }
 
 impl Polyline3 {
     pub fn try_new(vertices: Vec<Point3>, tolerance: Tolerance) -> Result<Self, GeometryError> {
+        let parameters = (0..vertices.len()).map(|index| index as Real).collect();
+        Self::try_with_parameters(vertices, parameters, tolerance)
+    }
+
+    /// Retains a native parameter at every vertex. Newly constructed
+    /// polylines use vertex indices; joined curves use chord lengths.
+    pub fn try_with_parameters(
+        vertices: Vec<Point3>,
+        parameters: Vec<Real>,
+        tolerance: Tolerance,
+    ) -> Result<Self, GeometryError> {
         if vertices.len() < 2 {
             return Err(GeometryError::InsufficientPolylineVertices);
+        }
+        if parameters.len() != vertices.len()
+            || !(parameters.last().copied().unwrap_or(0.0)
+                - parameters.first().copied().unwrap_or(0.0))
+            .is_finite()
+            || parameters.iter().any(|value| !value.is_finite())
+            || parameters
+                .windows(2)
+                .any(|pair| pair[0] >= pair[1] || !(pair[1] - pair[0]).is_finite())
+        {
+            return Err(GeometryError::InvalidPolylineParameters);
         }
         for (segment, points) in vertices.windows(2).enumerate() {
             match LineSegment::try_new(points[0], points[1], tolerance) {
@@ -62,7 +75,10 @@ impl Polyline3 {
                 Err(error) => return Err(error),
             }
         }
-        Ok(Self { vertices })
+        Ok(Self {
+            vertices,
+            parameters,
+        })
     }
 
     /// Constructs a closed regular polygon in the plane described by
@@ -96,6 +112,64 @@ impl Polyline3 {
         &self.vertices
     }
 
+    pub fn parameters(&self) -> &[Real] {
+        &self.parameters
+    }
+
+    pub fn domain(&self) -> std::ops::RangeInclusive<Real> {
+        self.parameters[0]..=*self.parameters.last().expect("a polyline has parameters")
+    }
+
+    pub(crate) fn parameter_location(
+        &self,
+        parameter: Real,
+    ) -> Result<(usize, Real), GeometryError> {
+        let domain = self.domain();
+        if !domain.contains(&parameter) {
+            return Err(GeometryError::ParameterOutOfDomain {
+                parameter,
+                domain_start: *domain.start(),
+                domain_end: *domain.end(),
+            });
+        }
+        let index = self
+            .parameters
+            .partition_point(|value| *value <= parameter)
+            .saturating_sub(1)
+            .min(self.segment_count() - 1);
+        let fraction = (parameter - self.parameters[index])
+            / (self.parameters[index + 1] - self.parameters[index]);
+        Ok((index, fraction))
+    }
+
+    pub fn evaluate(&self, parameter: Real) -> Result<Point3, GeometryError> {
+        let (index, fraction) = self.parameter_location(parameter)?;
+        LineSegment::from_validated(self.vertices[index], self.vertices[index + 1])
+            .point_at(fraction)
+    }
+
+    /// Exact NURBS form without the chord-length reparameterization performed
+    /// by the `ToNURBS` command.
+    pub fn to_native_nurbs(&self) -> Result<NurbsCurve, GeometryError> {
+        let mut knots = Vec::with_capacity(self.parameters.len() + 2);
+        knots.push(self.parameters[0]);
+        knots.extend_from_slice(&self.parameters);
+        knots.push(*self.parameters.last().expect("a polyline has parameters"));
+        NurbsCurve::try_new(1, self.vertices.clone(), knots)
+    }
+
+    pub fn try_chord_length_parameterized(&self) -> Result<Self, GeometryError> {
+        let nurbs = self.to_nurbs()?;
+        let parameters = nurbs.knots()[1..nurbs.knots().len() - 1].to_vec();
+        if parameters.windows(2).any(|pair| pair[0] >= pair[1]) {
+            return Err(GeometryError::InvalidPolylineParameters);
+        }
+        Ok(Self {
+            vertices: self.vertices.clone(),
+            parameters,
+        })
+    }
+
     #[inline]
     pub fn segment_count(&self) -> usize {
         self.vertices.len() - 1
@@ -104,66 +178,6 @@ impl Polyline3 {
     #[inline]
     pub fn is_closed(&self) -> bool {
         self.segment_count() >= 3 && self.vertices.first() == self.vertices.last()
-    }
-
-    /// Closes this polyline using Rhino's `CloseCrv` rules.
-    ///
-    /// An endpoint gap within `closure_tolerance` is removed by replacing the
-    /// final vertex with the first. A zero closure tolerance forces that
-    /// endpoint move for every open polyline. Wider gaps either gain a final
-    /// straight segment or remain open according to
-    /// `close_wide_gaps_with_line`.
-    pub fn close(
-        &self,
-        closure_tolerance: Real,
-        close_wide_gaps_with_line: bool,
-        validation_tolerance: Tolerance,
-    ) -> Result<(Self, PolylineClosure), GeometryError> {
-        if !closure_tolerance.is_finite() || closure_tolerance < 0.0 {
-            return Err(GeometryError::InvalidCurveClosureTolerance);
-        }
-        if self.is_closed() {
-            return Ok((self.clone(), PolylineClosure::AlreadyClosed));
-        }
-
-        let first = self.vertices[0];
-        let last = *self
-            .vertices
-            .last()
-            .expect("a validated polyline has vertices");
-        let gap = first.distance_to(last)?;
-        let move_endpoint = closure_tolerance == 0.0 || gap <= closure_tolerance;
-        if move_endpoint {
-            if self.segment_count() < 3 {
-                return Ok((self.clone(), PolylineClosure::NotClosable));
-            }
-            let mut vertices = self.vertices.clone();
-            *vertices.last_mut().expect("a polyline has vertices") = first;
-            let closed = match Self::try_new(vertices, validation_tolerance) {
-                Ok(closed) => closed,
-                Err(GeometryError::DegeneratePolylineSegment { .. }) => {
-                    return Ok((self.clone(), PolylineClosure::NotClosable));
-                }
-                Err(error) => return Err(error),
-            };
-            return Ok((closed, PolylineClosure::EndpointMoved));
-        }
-        if close_wide_gaps_with_line {
-            if self.segment_count() < 2 {
-                return Ok((self.clone(), PolylineClosure::NotClosable));
-            }
-            let mut vertices = self.vertices.clone();
-            vertices.push(first);
-            let closed = match Self::try_new(vertices, validation_tolerance) {
-                Ok(closed) => closed,
-                Err(GeometryError::DegeneratePolylineSegment { .. }) => {
-                    return Ok((self.clone(), PolylineClosure::NotClosable));
-                }
-                Err(error) => return Err(error),
-            };
-            return Ok((closed, PolylineClosure::SegmentAdded));
-        }
-        Ok((self.clone(), PolylineClosure::GapTooWide))
     }
 
     pub fn segments(&self) -> impl ExactSizeIterator<Item = LineSegment> + '_ {
@@ -220,7 +234,16 @@ impl Polyline3 {
     pub fn reversed(&self) -> Self {
         let mut vertices = self.vertices.clone();
         vertices.reverse();
-        Self { vertices }
+        let parameters = self
+            .parameters
+            .iter()
+            .rev()
+            .map(|parameter| -parameter)
+            .collect();
+        Self {
+            vertices,
+            parameters,
+        }
     }
 
     /// Returns the absolute algebraic area of a closed planar polyline.
@@ -321,7 +344,7 @@ impl Polyline3 {
             .iter()
             .map(|vertex| transform.transform_point(*vertex))
             .collect::<Result<Vec<_>, _>>()?;
-        Self::try_new(vertices, tolerance)
+        Self::try_with_parameters(vertices, self.parameters.clone(), tolerance)
     }
 
     /// Returns Rhino's exact degree-one, chord-length-parameterized NURBS form.
@@ -761,100 +784,6 @@ mod tests {
         .unwrap();
         assert!(closed.is_closed());
         assert_eq!(closed.segment_count(), 3);
-    }
-
-    #[test]
-    fn closes_with_an_endpoint_move_or_straight_segment() {
-        let near_open = Polyline3::try_new(
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(2.0, 0.0, 0.0),
-                point(2.0, 2.0, 0.0),
-                point(0.0, 5.0e-10, 0.0),
-            ],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let (snapped, outcome) = near_open.close(1.0e-9, true, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::EndpointMoved);
-        assert!(snapped.is_closed());
-        assert_eq!(snapped.vertices()[0], *snapped.vertices().last().unwrap());
-        assert_eq!(snapped.segment_count(), near_open.segment_count());
-
-        let wide = Polyline3::try_new(
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(3.0, 0.0, 0.0),
-                point(3.0, 2.0, 0.0),
-            ],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let (closed, outcome) = wide.close(1.0e-9, true, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::SegmentAdded);
-        assert!(closed.is_closed());
-        assert_eq!(closed.segment_count(), wide.segment_count() + 1);
-
-        let (still_closed, outcome) = closed.close(1.0e-9, false, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::AlreadyClosed);
-        assert_eq!(still_closed, closed);
-
-        let (unchanged, outcome) = wide.close(1.0e-9, false, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::GapTooWide);
-        assert_eq!(unchanged, wide);
-    }
-
-    #[test]
-    fn zero_closure_tolerance_forces_endpoint_move_and_invalid_values_fail() {
-        let open = Polyline3::try_new(
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(3.0, 0.0, 0.0),
-                point(3.0, 2.0, 0.0),
-                point(0.0, 2.0, 0.0),
-            ],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let (closed, outcome) = open.close(0.0, false, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::EndpointMoved);
-        assert_eq!(
-            closed.vertices(),
-            &[
-                point(0.0, 0.0, 0.0),
-                point(3.0, 0.0, 0.0),
-                point(3.0, 2.0, 0.0),
-                point(0.0, 0.0, 0.0),
-            ]
-        );
-
-        let two_segments = Polyline3::try_new(
-            vec![
-                point(0.0, 0.0, 0.0),
-                point(3.0, 0.0, 0.0),
-                point(3.0, 2.0, 0.0),
-            ],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let (unchanged, outcome) = two_segments.close(0.0, true, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::NotClosable);
-        assert_eq!(unchanged, two_segments);
-        let line = Polyline3::try_new(
-            vec![point(0.0, 0.0, 0.0), point(3.0, 0.0, 0.0)],
-            Tolerance::DEFAULT,
-        )
-        .unwrap();
-        let (unchanged, outcome) = line.close(1.0, true, Tolerance::DEFAULT).unwrap();
-        assert_eq!(outcome, PolylineClosure::NotClosable);
-        assert_eq!(unchanged, line);
-
-        for invalid in [-1.0, Real::NAN, Real::INFINITY] {
-            assert_eq!(
-                open.close(invalid, true, Tolerance::DEFAULT),
-                Err(GeometryError::InvalidCurveClosureTolerance)
-            );
-        }
     }
 
     #[test]

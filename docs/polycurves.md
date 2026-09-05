@@ -14,7 +14,8 @@ flattened concatenation, and exact conversion to a single piecewise NURBS curve.
 and curve-rebuilding/fitting algorithms. Document objects preserve segments through
 affine transforms and nonlinear morphs. Viewports draw and pick each segment; endpoint
 snaps include interior junctions. 3DM interchange retains the composite object type.
-Mixed-curve `Join` and closure of open curved objects remain to be implemented.
+[Mixed-curve joining and closure](curve-editing.md) can move eligible endpoints
+or append an exact closing line while retaining the original segment intervals.
 
 `Length`, `Divide`, curve selection, `Flip`, and `ToNURBS` accept polycurves.
 `ExtractPt` shares exactly duplicated junction grips; `ExtractControlPolygon` creates

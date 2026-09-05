@@ -1,11 +1,9 @@
 //! Document geometry and representation-preserving operations.
 
-use std::f64::consts::TAU;
-
 use viboceros_geometry::{
-    AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, Ellipse3, GeometryError,
-    LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph, PolyCurve3, Polyline3,
-    Tolerance, TriangleMesh,
+    AffineTransform3, BoundingBox3, Brep, Circle3, CircularArc3, Curve3, CurveRef, Ellipse3,
+    GeometryError, LineSegment, NurbsCurve, NurbsSurface, Point3, PointCloud3, PointMorph,
+    PolyCurve3, Polyline3, Tolerance, TriangleMesh,
 };
 
 #[cfg(test)]
@@ -28,6 +26,19 @@ pub enum Geometry {
 }
 
 impl Geometry {
+    pub fn curve_ref(&self) -> Option<CurveRef<'_>> {
+        match self {
+            Self::Line(curve) => Some(CurveRef::Line(curve)),
+            Self::Circle(curve) => Some(CurveRef::Circle(curve)),
+            Self::Arc(curve) => Some(CurveRef::Arc(curve)),
+            Self::Ellipse(curve) => Some(CurveRef::Ellipse(curve)),
+            Self::Polyline(curve) => Some(CurveRef::Polyline(curve)),
+            Self::NurbsCurve(curve) => Some(CurveRef::NurbsCurve(curve)),
+            Self::PolyCurve(curve) => Some(CurveRef::PolyCurve(curve)),
+            _ => None,
+        }
+    }
+
     pub fn bounds(&self) -> BoundingBox3 {
         match self {
             Self::Point(point) => BoundingBox3::from_points([*point]).unwrap(),
@@ -53,24 +64,13 @@ impl Geometry {
     /// structure need not be Rhino's minimal representation.
     /// Existing NURBS geometry and non-curve objects return `None`.
     pub fn converted_to_nurbs_curve(&self) -> Result<Option<NurbsCurve>, GeometryError> {
-        Ok(match self {
-            Self::Line(line) => Some(line.to_nurbs()?),
-            Self::Circle(circle) => Some(
-                circle
-                    .to_nurbs()?
-                    .try_reparameterized(0.0..=circle.length()?)?,
-            ),
-            Self::Arc(arc) => Some(arc.to_nurbs()?.try_reparameterized(0.0..=arc.length()?)?),
-            Self::Ellipse(ellipse) => Some(ellipse.to_nurbs()?.try_reparameterized(0.0..=TAU)?),
-            Self::Polyline(polyline) => Some(polyline.to_nurbs()?),
-            Self::PolyCurve(curve) => Some(curve.to_nurbs()?),
-            Self::Point(_)
-            | Self::PointCloud(_)
-            | Self::NurbsCurve(_)
-            | Self::NurbsSurface(_)
-            | Self::Brep(_)
-            | Self::Mesh(_) => None,
-        })
+        if matches!(self, Self::NurbsCurve(_)) {
+            return Ok(None);
+        }
+        if let Self::Polyline(curve) = self {
+            return curve.to_nurbs().map(Some);
+        }
+        self.curve_ref().map(CurveRef::to_nurbs).transpose()
     }
 
     /// Returns an exact NURBS representation for every supported curve,
@@ -190,5 +190,19 @@ impl Geometry {
                 .collect(),
             Self::Mesh(mesh) => mesh.vertices().to_vec(),
         })
+    }
+}
+
+impl From<Curve3> for Geometry {
+    fn from(curve: Curve3) -> Self {
+        match curve {
+            Curve3::Line(curve) => Self::Line(curve),
+            Curve3::Circle(curve) => Self::Circle(curve),
+            Curve3::Arc(curve) => Self::Arc(curve),
+            Curve3::Ellipse(curve) => Self::Ellipse(curve),
+            Curve3::Polyline(curve) => Self::Polyline(curve),
+            Curve3::NurbsCurve(curve) => Self::NurbsCurve(curve),
+            Curve3::PolyCurve(curve) => Self::PolyCurve(curve),
+        }
     }
 }

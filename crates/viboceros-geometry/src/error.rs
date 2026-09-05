@@ -5,6 +5,8 @@ use crate::{MAX_SURFACE_WIRE_DENSITY, MAX_SURFACE_WIRES, MIN_SURFACE_WIRE_DENSIT
 /// Failures produced while constructing or evaluating geometry.
 #[derive(Clone, Debug, Error, PartialEq)]
 pub enum GeometryError {
+    #[error("polyline parameters must be finite, strictly increasing, and match its vertices")]
+    InvalidPolylineParameters,
     #[error("{context} contains a non-finite value")]
     NonFinite { context: &'static str },
 
@@ -205,6 +207,15 @@ pub enum GeometryError {
 
     #[error("curve closure tolerance must be finite and non-negative")]
     InvalidCurveClosureTolerance,
+
+    #[error("curve join tolerance must be finite and non-negative")]
+    InvalidCurveJoinTolerance,
+
+    #[error("curve joining exceeds the supported {maximum} {resource}")]
+    CurveJoinLimit {
+        resource: &'static str,
+        maximum: usize,
+    },
 
     #[error("a regular polygon requires from 3 through {maximum} sides, got {actual}")]
     InvalidRegularPolygonSides { actual: usize, maximum: usize },

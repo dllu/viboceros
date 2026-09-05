@@ -63,8 +63,10 @@ center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
 settings can follow the count. `Array 3 2` picks two top-view corners for a
 rectangular array. A third count adds Z levels and requires `ZDistance=...`;
 `Mode=Fill` treats the picked rectangle as the outside array span. `Join`
-connects unambiguous line/polyline endpoint chains within the document
-tolerance. `Explode` turns polylines into line segments and polycurves into exact
+extends selected line, polyline, arc, NURBS, and polycurve chains within the
+document tolerance, retaining the seed's attributes and groups. Its one-pass
+seeded behavior differs from the batch joining API; see [joining policies](../curve-editing.md).
+`Explode` turns polylines into line segments and polycurves into exact
 NURBS segments in their composite parameter intervals, frees point-cloud
 members as points, duplicates polysurface faces as exact trimmed B-reps, and
 splits meshes at disconnected or unwelded edges. Parts are emitted in Rhino's

@@ -130,7 +130,7 @@ fn curve_selection_division_reversal_and_conversion_accept_polycurves() {
 }
 
 #[test]
-fn close_curve_keeps_closed_composites_and_rejects_unsupported_open_edits() {
+fn close_curve_appends_to_open_composites_and_keeps_closed_ones() {
     let curve = composite();
     let mut document = Document::default();
     let source = document
@@ -140,10 +140,15 @@ fn close_curve_keeps_closed_composites_and_rejects_unsupported_open_edits() {
         .select_object(source, SelectionMode::Replace)
         .unwrap();
     let registry = CommandRegistry::with_builtins();
-    assert!(matches!(
-        registry.execute(&mut document, "CloseCrv"),
-        Err(CommandError::UnsupportedCloseCurveGeometry)
-    ));
+    registry.execute(&mut document, "CloseCrv").unwrap();
+    let Geometry::PolyCurve(appended) = document.object(source).unwrap().geometry() else {
+        panic!("expected closed polycurve")
+    };
+    assert!(appended.is_closed().unwrap());
+    assert_eq!(appended.segments().len(), 3);
+    assert_eq!(&appended.segments()[..2], curve.segments());
+    assert_eq!(appended.parameters(), &[-10.0, -3.0, 12.0, 17.0]);
+    registry.execute(&mut document, "Undo").unwrap();
     assert_eq!(
         document.object(source).unwrap().geometry(),
         &Geometry::PolyCurve(curve.clone())
