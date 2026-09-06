@@ -2811,8 +2811,87 @@ def _interface_commands(operation):
         document.Views.ActiveView = original_view
 
 
+def _construction_plane_script(step):
+    kind = step["kind"]
+    def point(value):
+        return "w" + _command_point(value)
+    if kind == "world" and step["view"] in ("Top", "Bottom", "Front", "Back", "Right", "Left"):
+        return "_CPlane _World _" + step["view"]
+    if kind == "origin":
+        return "_CPlane " + point(step["point"])
+    if kind == "three_point" and len(step["points"]) == 3:
+        return "_CPlane _3Point " + " ".join(point(p) for p in step["points"])
+    if kind == "three_point_input" and len(step["points"]) == 3:
+        _point_input_script(step["points"])
+        return "_CPlane _3Point " + " ".join(step["points"])
+    if kind == "origin_input":
+        _point_input_script([step["point"], "0"])
+        return "_CPlane " + step["point"]
+    if kind == "elevation":
+        return "_CPlane _Elevation %.17g" % _finite(step["distance"], "CPlane elevation")
+    if kind == "through":
+        return "_CPlane _Through " + point(step["point"])
+    if kind == "rotate" and len(step["axis"]) == 2:
+        return "_CPlane _Rotate %s %s %.17g" % (point(step["axis"][0]), point(step["axis"][1]), _finite(step["angle"], "CPlane angle"))
+    if kind in ("undo", "redo"):
+        return "_CPlane _" + kind.title()
+    raise ValueError("unsupported CPlane step")
+
+
+@contextmanager
+def _independent_construction_planes():
+    document = Rhino.RhinoDoc.ActiveDoc
+    views = list(document.Views.GetViewList(True, False))
+    original_planes = [view.ActiveViewport.ConstructionPlane() for view in views]
+    aid = Rhino.ApplicationSettings.ModelAidSettings
+    original_aid = aid.GetCurrentState()
+    try:
+        aid.UniversalConstructionPlaneMode = False
+        yield document.Views.ActiveView.ActiveViewport
+    finally:
+        Rhino.RhinoApp.RunScript("!", False)
+        for view, original in zip(views, original_planes):
+            view.ActiveViewport.SetConstructionPlane(original)
+        aid.UpdateFromState(original_aid)
+
+
+def _construction_plane(operation):
+    if not 1 <= len(operation["steps"]) <= 128:
+        raise ValueError("expected 1 to 128 CPlane steps")
+    scripts = [_construction_plane_script(step) for step in operation["steps"]]
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid initial CPlane")
+    def record():
+        current = viewport.ConstructionPlane()
+        return {"origin": _xyz(current.Origin), "axes": [_xyz(current.XAxis), _xyz(current.YAxis), _xyz(current.ZAxis)]}
+    with _independent_construction_planes() as viewport:
+        viewport.SetConstructionPlane(plane)
+        states = [record()]
+        for script in scripts:
+            _record_progress("CPlane command: " + script)
+            if not _run_surface_script(script, True):
+                raise ValueError("CPlane command failed: " + script)
+            states.append(record())
+        return {"states": states}, 0
+
+
+def _construction_plane_input(operation):
+    before, after = operation["before"], operation["after"]
+    if not isinstance(before, list) or not isinstance(after, list) or not before or not after:
+        raise ValueError("nested CPlane probe needs before and after point lists")
+    _point_input_script(before + after)
+    script = "_Polyline " + " ".join(before) + " '" + _construction_plane_script(operation["step"]) + " " + " ".join(after) + " _Enter"
+    with _independent_construction_planes():
+        return _in_construction_plane(dict(operation, points=before + after), script, None)
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "construction_plane_input":
+        return _construction_plane_input(operation)
+    if kind == "construction_plane":
+        return _construction_plane(operation)
     if kind == "interface_commands":
         return _interface_commands(operation)
     if kind == "plane_transform":

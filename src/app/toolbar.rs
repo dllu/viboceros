@@ -7,7 +7,7 @@ impl VibocerosApp {
     pub(super) fn show_toolbar(&mut self, root: &mut egui::Ui) {
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
-                let idle = self.active_command.is_none();
+                let idle = self.active_command.is_none() && self.plane_prompt.is_none();
                 if ui
                     .add_enabled(idle && self.document.can_undo(), egui::Button::new("Undo"))
                     .clicked()
@@ -22,21 +22,28 @@ impl VibocerosApp {
                 }
                 ui.separator();
                 let viewport = &mut self.viewports[self.active_viewport];
+                let mut kind = viewport.kind();
+                let mut preset_picked = false;
                 egui::ComboBox::from_id_salt("view_kind")
                     .width(95.0)
-                    .selected_text(viewport.kind.label())
+                    .selected_text(kind.label())
                     .show_ui(ui, |ui| {
-                        for kind in [
+                        for choice in [
                             ViewKind::Top,
                             ViewKind::Perspective,
                             ViewKind::Front,
                             ViewKind::Right,
                         ] {
-                            ui.selectable_value(&mut viewport.kind, kind, kind.label());
+                            preset_picked |= ui
+                                .selectable_value(&mut kind, choice, choice.label())
+                                .clicked();
                         }
                     })
                     .response
                     .on_hover_text("View preset for the active viewport");
+                if preset_picked {
+                    viewport.set_view_kind(kind);
+                }
                 let mut mode = viewport.display_mode;
                 egui::ComboBox::from_id_salt("display_mode")
                     .width(95.0)

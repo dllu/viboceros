@@ -1,0 +1,1055 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane",
+      "id": "cplane-top-edits",
+      "origin": [
+        5,
+        -7,
+        11
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "world",
+          "view": "Top"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "elevation",
+          "distance": -4.25
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 37
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "three_point",
+          "points": [
+            [
+              3,
+              -4,
+              5
+            ],
+            [
+              4,
+              -2,
+              8
+            ],
+            [
+              -1,
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 4.5
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-bottom-edits",
+      "origin": [
+        5,
+        -7,
+        11
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "world",
+          "view": "Bottom"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "elevation",
+          "distance": -4.25
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 37
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "three_point",
+          "points": [
+            [
+              3,
+              -4,
+              5
+            ],
+            [
+              4,
+              -2,
+              8
+            ],
+            [
+              -1,
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 4.5
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-front-edits",
+      "origin": [
+        5,
+        -7,
+        11
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "world",
+          "view": "Front"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "elevation",
+          "distance": -4.25
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 37
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "three_point",
+          "points": [
+            [
+              3,
+              -4,
+              5
+            ],
+            [
+              4,
+              -2,
+              8
+            ],
+            [
+              -1,
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 4.5
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-back-edits",
+      "origin": [
+        5,
+        -7,
+        11
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "world",
+          "view": "Back"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "elevation",
+          "distance": -4.25
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 37
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "three_point",
+          "points": [
+            [
+              3,
+              -4,
+              5
+            ],
+            [
+              4,
+              -2,
+              8
+            ],
+            [
+              -1,
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 4.5
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-right-edits",
+      "origin": [
+        5,
+        -7,
+        11
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "world",
+          "view": "Right"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "elevation",
+          "distance": -4.25
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 37
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "three_point",
+          "points": [
+            [
+              3,
+              -4,
+              5
+            ],
+            [
+              4,
+              -2,
+              8
+            ],
+            [
+              -1,
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 4.5
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-left-edits",
+      "origin": [
+        5,
+        -7,
+        11
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "world",
+          "view": "Left"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "elevation",
+          "distance": -4.25
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 37
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "three_point",
+          "points": [
+            [
+              3,
+              -4,
+              5
+            ],
+            [
+              4,
+              -2,
+              8
+            ],
+            [
+              -1,
+              4,
+              6
+            ]
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 4.5
+        },
+        {
+          "kind": "through",
+          "point": [
+            2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-oblique-0",
+      "origin": [
+        0,
+        2,
+        -3
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "through",
+          "point": [
+            -2,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              8
+            ]
+          ],
+          "angle": 0
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            3,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-oblique-1",
+      "origin": [
+        10000000,
+        2,
+        -3
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "origin",
+          "point": [
+            10000003,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "through",
+          "point": [
+            9999998,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              10000001,
+              2,
+              3
+            ],
+            [
+              10000004,
+              6,
+              8
+            ]
+          ],
+          "angle": 90
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            10000003,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-oblique-2",
+      "origin": [
+        -20,
+        2,
+        -3
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "origin",
+          "point": [
+            -17,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "through",
+          "point": [
+            -22,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              -19,
+              2,
+              3
+            ],
+            [
+              -16,
+              6,
+              8
+            ]
+          ],
+          "angle": -180
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            -17,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-oblique-3",
+      "origin": [
+        123.5,
+        2,
+        -3
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "steps": [
+        {
+          "kind": "origin",
+          "point": [
+            126.5,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 2.75
+        },
+        {
+          "kind": "through",
+          "point": [
+            121.5,
+            7,
+            11
+          ]
+        },
+        {
+          "kind": "rotate",
+          "axis": [
+            [
+              124.5,
+              2,
+              3
+            ],
+            [
+              127.5,
+              6,
+              8
+            ]
+          ],
+          "angle": 390
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            126.5,
+            -4,
+            5
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    },
+    {
+      "op": "construction_plane",
+      "id": "cplane-noop-history",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "steps": [
+        {
+          "kind": "origin",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "kind": "origin",
+          "point": [
+            1,
+            2,
+            3
+          ]
+        },
+        {
+          "kind": "elevation",
+          "distance": 0
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "redo"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            4,
+            5,
+            6
+          ]
+        },
+        {
+          "kind": "undo"
+        },
+        {
+          "kind": "origin",
+          "point": [
+            7,
+            8,
+            9
+          ]
+        },
+        {
+          "kind": "redo"
+        }
+      ]
+    }
+  ]
+}

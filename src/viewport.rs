@@ -5,10 +5,10 @@ use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
 };
 use nalgebra::{Matrix4 as NaMatrix4, Vector3 as NaVector3};
+use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_drafting::{
     ObjectSnap, OrthogonalTrack, TrackAxis, nearest_object_snap, nearest_object_snap_projected,
-    orthogonal_track,
 };
 use viboceros_geometry::{
     Brep, Circle3, CircularArc3, CurveSegment3, Ellipse3, GeometryError, NurbsCurve, NurbsSurface,
@@ -254,7 +254,8 @@ impl ProjectedPrimitives {
 }
 
 pub struct Viewport {
-    pub kind: ViewKind,
+    kind: ViewKind,
+    pub(crate) plane: ConstructionPlaneState,
     pub display_mode: DisplayMode,
     pixels_per_unit: f32,
     pan: Vec2,
@@ -274,6 +275,7 @@ impl Viewport {
     pub fn new(kind: ViewKind) -> Self {
         Self {
             kind,
+            plane: ConstructionPlaneState::new(Self::default_plane(kind)),
             display_mode: DisplayMode::Wireframe,
             pixels_per_unit: 40.0,
             pan: Vec2::ZERO,
@@ -297,20 +299,61 @@ impl Viewport {
         Vector3::try_from(direction).expect("viewport directions are finite")
     }
 
-    /// Fixed drafting plane; camera orbit and pan do not rotate its axes.
+    pub(crate) const fn kind(&self) -> ViewKind {
+        self.kind
+    }
+
+    /// The preset menu resets the plane explicitly. CPlane edits never change
+    /// camera projection, navigation, or geometry display.
+    pub(crate) fn set_view_kind(&mut self, kind: ViewKind) {
+        self.kind = kind;
+        self.plane.set(Self::default_plane(kind));
+    }
+
     pub(crate) fn construction_plane(&self) -> viboceros_geometry::Frame3 {
-        let (x, y) = match self.kind {
-            ViewKind::Top | ViewKind::Perspective => ([1.0, 0.0, 0.0], [0.0, 1.0, 0.0]),
-            ViewKind::Front => ([1.0, 0.0, 0.0], [0.0, 0.0, 1.0]),
-            ViewKind::Right => ([0.0, 1.0, 0.0], [0.0, 0.0, 1.0]),
+        self.plane.frame()
+    }
+
+    fn default_plane(kind: ViewKind) -> viboceros_geometry::Frame3 {
+        match kind {
+            ViewKind::Top | ViewKind::Perspective => WorldPlane::Top,
+            ViewKind::Front => WorldPlane::Front,
+            ViewKind::Right => WorldPlane::Right,
+        }
+        .frame()
+    }
+
+    fn unproject_drafting_plane(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        anchor: Option<Point3>,
+    ) -> Option<Point3> {
+        let plane = self.construction_plane();
+        let plane = plane.with_origin(anchor.unwrap_or(plane.origin()));
+        let (origin, direction, forward_only) = if self.kind == ViewKind::Perspective {
+            let (right, up, forward) = self.perspective_basis();
+            let camera = -forward * self.perspective_camera_distance;
+            let origin = self.world_origin(rect);
+            let focal = self.perspective_focal_length_pixels(rect);
+            let ray = forward
+                + right * (Real::from(pointer.x - origin.x) / focal)
+                + up * (Real::from(origin.y - pointer.y) / focal);
+            (
+                Point3::try_new(camera.x, camera.y, camera.z).ok()?,
+                Vector3::try_new(ray.x, ray.y, ray.z).ok()?,
+                true,
+            )
+        } else {
+            (
+                self.unproject(pointer, rect, 0.0)?,
+                self.apparent_intersection_normal(),
+                false,
+            )
         };
-        viboceros_geometry::Frame3::try_from_directions(
-            Point3::try_new(0.0, 0.0, 0.0).expect("finite origin"),
-            Vector3::try_from(x).expect("finite plane axis"),
-            Vector3::try_from(y).expect("finite plane axis"),
-            Tolerance::DEFAULT,
-        )
-        .expect("orthogonal construction-plane axes")
+        viboceros_drafting::plane::intersect_view_line(origin, direction, plane, forward_only)
+            .ok()
+            .flatten()
     }
 
     pub fn show(
@@ -618,45 +661,48 @@ impl Viewport {
         document: &Document,
         input: DraftingInput,
     ) -> Option<DraftingCursor> {
-        let elevation = input.anchor.map_or(0.0, |anchor| match self.kind {
-            ViewKind::Top | ViewKind::Perspective => anchor.z(),
-            ViewKind::Front => anchor.y(),
-            ViewKind::Right => anchor.x(),
-        });
-        let raw_point = self.unproject(pointer, rect, elevation)?;
-        let object_snap = input
-            .osnap
-            .then(|| {
-                if self.kind == ViewKind::Top {
+        let raw_point = self.unproject_drafting_plane(pointer, rect, input.anchor);
+        // Object snaps are a camera-space query. They remain available even
+        // when the construction plane is edge-on or behind the camera.
+        let object_snap = if input.osnap {
+            if self.kind == ViewKind::Top {
+                self.unproject(pointer, rect, 0.0).and_then(|query| {
                     nearest_object_snap(
                         document,
-                        raw_point,
+                        query,
                         Real::from(OSNAP_CAPTURE_PIXELS / self.pixels_per_unit),
                     )
-                } else {
-                    nearest_object_snap_projected(
-                        document,
-                        [Real::from(pointer.x), Real::from(pointer.y)],
-                        Real::from(OSNAP_CAPTURE_PIXELS),
-                        |point| {
-                            self.project(point, rect)
-                                .map(|projected| [Real::from(projected.x), Real::from(projected.y)])
-                        },
-                    )
-                }
+                    .ok()
+                    .flatten()
+                })
+            } else {
+                nearest_object_snap_projected(
+                    document,
+                    [Real::from(pointer.x), Real::from(pointer.y)],
+                    Real::from(OSNAP_CAPTURE_PIXELS),
+                    |point| {
+                        self.project(point, rect)
+                            .map(|p| [Real::from(p.x), Real::from(p.y)])
+                    },
+                )
                 .ok()
                 .flatten()
-            })
-            .flatten();
-        let track = if object_snap.is_none()
-            && input.smart_track
-            && matches!(self.kind, ViewKind::Top | ViewKind::Perspective)
-        {
-            input.anchor.and_then(|anchor| {
-                orthogonal_track(
-                    raw_point,
+            }
+        } else {
+            None
+        };
+        let track = if object_snap.is_none() && input.smart_track {
+            raw_point.zip(input.anchor).and_then(|(cursor, anchor)| {
+                viboceros_drafting::plane::orthogonal_track_projected(
+                    cursor,
                     anchor,
-                    Real::from(TRACK_CAPTURE_PIXELS / self.pixels_per_model_unit_at_origin(rect)),
+                    self.construction_plane(),
+                    [Real::from(pointer.x), Real::from(pointer.y)],
+                    Real::from(TRACK_CAPTURE_PIXELS),
+                    |point| {
+                        self.project(point, rect)
+                            .map(|p| [Real::from(p.x), Real::from(p.y)])
+                    },
                 )
                 .ok()
                 .flatten()
@@ -664,12 +710,16 @@ impl Viewport {
         } else {
             None
         };
-        let grid_point = input.grid_snap.then(|| self.snap_to_grid(raw_point));
+        let grid_point = if input.grid_snap {
+            raw_point.and_then(|p| self.snap_to_grid(p))
+        } else {
+            None
+        };
         let point = object_snap
             .map(ObjectSnap::point)
             .or_else(|| track.map(OrthogonalTrack::point))
             .or(grid_point)
-            .unwrap_or(raw_point);
+            .or(raw_point)?;
         Some(DraftingCursor {
             pointer,
             point,
@@ -679,18 +729,8 @@ impl Viewport {
         })
     }
 
-    fn snap_to_grid(&self, point: Point3) -> Point3 {
-        let snap = |coordinate: Real| {
-            let snapped = (coordinate / GRID_SPACING).round() * GRID_SPACING;
-            if snapped == 0.0 { 0.0 } else { snapped }
-        };
-        let coordinates = match self.kind {
-            ViewKind::Top | ViewKind::Perspective => [snap(point.x()), snap(point.y()), point.z()],
-            ViewKind::Front => [snap(point.x()), point.y(), snap(point.z())],
-            ViewKind::Right => [point.x(), snap(point.y()), snap(point.z())],
-        };
-        Point3::try_new(coordinates[0], coordinates[1], coordinates[2])
-            .expect("snapping finite coordinates to a finite grid remains finite")
+    fn snap_to_grid(&self, point: Point3) -> Option<Point3> {
+        viboceros_drafting::plane::snap_to_grid(point, self.construction_plane(), GRID_SPACING).ok()
     }
 
     fn pick_object(&self, pointer: Pos2, rect: Rect, document: &Document) -> Option<ObjectId> {
@@ -1210,14 +1250,8 @@ impl Viewport {
             }
         }
 
-        let horizontal_color = match self.kind {
-            ViewKind::Right => Color32::from_rgb(60, 145, 75),
-            _ => Color32::from_rgb(190, 65, 65),
-        };
-        let vertical_color = match self.kind {
-            ViewKind::Top | ViewKind::Perspective => Color32::from_rgb(60, 145, 75),
-            ViewKind::Front | ViewKind::Right => Color32::from_rgb(65, 105, 195),
-        };
+        let horizontal_color = Color32::from_rgb(190, 65, 65);
+        let vertical_color = Color32::from_rgb(60, 145, 75);
         self.paint_grid_line(
             painter,
             rect,
@@ -1234,24 +1268,24 @@ impl Viewport {
         );
     }
 
-    fn grid_point(&self, horizontal: Real, vertical: Real) -> Point3 {
-        match self.kind {
-            ViewKind::Top | ViewKind::Perspective => Point3::try_new(horizontal, vertical, 0.0),
-            ViewKind::Front => Point3::try_new(horizontal, 0.0, vertical),
-            ViewKind::Right => Point3::try_new(0.0, horizontal, vertical),
-        }
-        .expect("finite grid coordinates form a finite point")
+    fn grid_point(&self, horizontal: Real, vertical: Real) -> Option<Point3> {
+        self.construction_plane()
+            .point_at([horizontal, vertical, 0.0])
+            .ok()
     }
 
     fn paint_grid_line(
         &self,
         painter: &egui::Painter,
         rect: Rect,
-        start: Point3,
-        end: Point3,
+        start: Option<Point3>,
+        end: Option<Point3>,
         stroke: Stroke,
     ) {
-        if let (Some(start), Some(end)) = (self.project(start, rect), self.project(end, rect)) {
+        if let (Some(start), Some(end)) = (
+            start.and_then(|p| self.project(p, rect)),
+            end.and_then(|p| self.project(p, rect)),
+        ) {
             painter.line_segment([start, end], stroke);
         }
     }
@@ -1772,38 +1806,31 @@ impl Viewport {
         }
 
         if let Some(track) = cursor.track
-            && let Some(anchor) = input.anchor.and_then(|point| self.project(point, rect))
+            && let Some(anchor_point) = input.anchor
+            && let Some(anchor) = self.project(anchor_point, rect)
         {
             let stroke = Stroke::new(1.0, TRACK_COLOR);
-            if matches!(track.axis(), TrackAxis::Horizontal | TrackAxis::Both) {
-                painter.extend(egui::Shape::dashed_line(
-                    &[
-                        Pos2::new(rect.left(), anchor.y),
-                        Pos2::new(rect.right(), anchor.y),
-                    ],
-                    stroke,
-                    6.0,
-                    4.0,
-                ));
-            }
-            if matches!(track.axis(), TrackAxis::Vertical | TrackAxis::Both) {
-                painter.extend(egui::Shape::dashed_line(
-                    &[
-                        Pos2::new(anchor.x, rect.top()),
-                        Pos2::new(anchor.x, rect.bottom()),
-                    ],
-                    stroke,
-                    6.0,
-                    4.0,
-                ));
+            let plane = self.construction_plane().with_origin(anchor_point);
+            for (axis, coordinate) in [
+                (TrackAxis::Horizontal, [1.0, 0.0, 0.0]),
+                (TrackAxis::Vertical, [0.0, 1.0, 0.0]),
+            ] {
+                if (track.axis() == axis || track.axis() == TrackAxis::Both)
+                    && let Ok(point) = plane.point_at(coordinate)
+                    && let Some(projected) = self.project(point, rect)
+                    && let Some(segment) = clip_drafting_line(anchor, projected, rect, true)
+                {
+                    painter.extend(egui::Shape::dashed_line(&segment, stroke, 6.0, 4.0));
+                }
             }
         }
 
         if let Some(anchor) = input.anchor.and_then(|point| self.project(point, rect))
             && let Some(target) = self.project(cursor.point, rect)
+            && let Some(segment) = clip_drafting_line(anchor, target, rect, false)
         {
             painter.extend(egui::Shape::dashed_line(
-                &[anchor, target],
+                &segment,
                 Stroke::new(1.25, Color32::from_gray(80)),
                 7.0,
                 4.0,
@@ -1815,12 +1842,14 @@ impl Viewport {
             input.reference.and_then(|point| self.project(point, rect)),
         ) {
             const REFERENCE_COLOR: Color32 = Color32::from_rgb(125, 80, 180);
-            painter.extend(egui::Shape::dashed_line(
-                &[anchor, reference],
-                Stroke::new(1.5, REFERENCE_COLOR),
-                5.0,
-                3.0,
-            ));
+            if let Some(segment) = clip_drafting_line(anchor, reference, rect, false) {
+                painter.extend(egui::Shape::dashed_line(
+                    &segment,
+                    Stroke::new(1.5, REFERENCE_COLOR),
+                    5.0,
+                    3.0,
+                ));
+            }
             painter.circle_stroke(reference, 5.0, Stroke::new(1.25, REFERENCE_COLOR));
             painter.text(
                 reference + Vec2::new(8.0, -8.0),
@@ -1883,6 +1912,52 @@ impl Viewport {
 
 fn circular_arc_samples(arc: CircularArc3) -> usize {
     ((arc.sweep_radians() / std::f64::consts::TAU * CIRCLE_SAMPLES as Real).ceil() as usize).max(2)
+}
+
+/// Clip before dash tessellation: painter clipping alone would still allocate
+/// dashes all the way to a distant anchor. `extend` clips the infinite line.
+fn clip_drafting_line(start: Pos2, end: Pos2, rect: Rect, extend: bool) -> Option<[Pos2; 2]> {
+    if !start.is_finite() || !end.is_finite() || !rect.is_finite() || !rect.is_positive() {
+        return None;
+    }
+    // Subtract in f64: finite f32 screen coordinates can overflow f32 deltas.
+    let origin = [f64::from(start.x), f64::from(start.y)];
+    let direction = [f64::from(end.x) - origin[0], f64::from(end.y) - origin[1]];
+    if direction == [0.0; 2] {
+        return None;
+    }
+    let bounds = [
+        [f64::from(rect.left()), f64::from(rect.right())],
+        [f64::from(rect.top()), f64::from(rect.bottom())],
+    ];
+    let (mut low, mut high) = if extend {
+        (f64::NEG_INFINITY, f64::INFINITY)
+    } else {
+        (0.0, 1.0)
+    };
+    for axis in 0..2 {
+        if direction[axis] == 0.0 {
+            if !(bounds[axis][0]..=bounds[axis][1]).contains(&origin[axis]) {
+                return None;
+            }
+        } else {
+            let a = (bounds[axis][0] - origin[axis]) / direction[axis];
+            let b = (bounds[axis][1] - origin[axis]) / direction[axis];
+            low = low.max(a.min(b));
+            high = high.min(a.max(b));
+            if low > high {
+                return None;
+            }
+        }
+    }
+    Some([low, high].map(|t| {
+        let point: [f32; 2] = std::array::from_fn(|axis| {
+            direction[axis]
+                .mul_add(t, origin[axis])
+                .clamp(bounds[axis][0], bounds[axis][1]) as f32
+        });
+        Pos2::new(point[0], point[1])
+    }))
 }
 
 fn selection_mode(modifiers: egui::Modifiers) -> SelectionMode {
@@ -2076,6 +2151,7 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 
 #[cfg(test)]
 mod tests {
+    mod construction_plane;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
@@ -2307,15 +2383,21 @@ mod tests {
     #[test]
     fn grid_snap_uses_each_views_construction_plane() {
         assert_eq!(
-            Viewport::new(ViewKind::Top).snap_to_grid(point(1.49, -1.51, 7.25)),
+            Viewport::new(ViewKind::Top)
+                .snap_to_grid(point(1.49, -1.51, 7.25))
+                .unwrap(),
             point(1.0, -2.0, 7.25)
         );
         assert_eq!(
-            Viewport::new(ViewKind::Front).snap_to_grid(point(1.49, 7.25, -1.51)),
+            Viewport::new(ViewKind::Front)
+                .snap_to_grid(point(1.49, 7.25, -1.51))
+                .unwrap(),
             point(1.0, 7.25, -2.0)
         );
         assert_eq!(
-            Viewport::new(ViewKind::Right).snap_to_grid(point(7.25, 1.49, -1.51)),
+            Viewport::new(ViewKind::Right)
+                .snap_to_grid(point(7.25, 1.49, -1.51))
+                .unwrap(),
             point(7.25, 1.0, -2.0)
         );
     }

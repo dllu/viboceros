@@ -13,8 +13,8 @@ empty layers; it reports object counts and combines edits into one undo step.
 
 Osnap captures visible Point, End, Mid, Center, and Quad features, including
 indexed members of point clouds and features on locked objects and layers;
-SmartTrack captures horizontal and vertical alignment from the first picked
-point. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
+SmartTrack captures local plane-axis alignment from the first picked
+point in every viewport. Grid Snap rounds construction-plane picks to the unit grid. Right-drag
 pans parallel views and rotates the Perspective view; Shift-right-drag pans the
 Perspective view, middle-drag pans any view, and the mouse wheel zooms. A plain
 right-click acts as Enter. Outside a drafting command, left-drag from left to
@@ -30,6 +30,9 @@ Enter `Help UI` for [interface commands and shortcuts](commands/interface.md).
 Display and snapping commands can run during a point prompt without losing its
 accepted points, construction plane, selection, or undo history. Toolbar toggles
 and shortcuts also preserve partially typed coordinates.
+`CPlane` edits an independent plane in each viewport without changing its camera.
+It also supports nested point prompts and separate plane undo/redo; see
+[construction-plane editing](cplane.md).
 
 At an active point prompt, type `x,y[,z]` or mix typed coordinates with viewport
 picks. `w` selects world coordinates, `r`/`@` supplies a relative displacement,

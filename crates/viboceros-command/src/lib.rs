@@ -1,5 +1,6 @@
 //! Extensible command registry and the first model-editing commands.
 
+pub mod construction_plane;
 mod context;
 mod curve_cut;
 pub mod interface;

@@ -402,9 +402,9 @@ fn interface_dropdowns_target_only_the_active_view_without_losing_a_latched_plan
         assert_eq!(app.command_input, "2,");
     }
     assert_eq!(app.active_viewport, 3);
-    assert_eq!(app.viewports[3].kind, ViewKind::Front);
+    assert_eq!(app.viewports[3].kind(), ViewKind::Front);
     assert_eq!(app.viewports[3].display_mode, DisplayMode::Shaded);
-    assert_eq!(app.viewports[0].kind, ViewKind::Top);
+    assert_eq!(app.viewports[0].kind(), ViewKind::Top);
     assert!(
         app.viewports[..3]
             .iter()
@@ -427,4 +427,60 @@ fn interface_toolbar_undo_and_redo_edit_the_model_when_idle() {
         click(&context, &mut app, position);
         assert_eq!(app.document.objects().len(), count);
     }
+}
+
+#[test]
+fn plane_history_shortcuts_preserve_drafting_and_do_not_steal_text_selection_keys() {
+    let mut app = test_app();
+    let context = egui::Context::default();
+    for command in ["Line", "0", "CPlane World Front", "CPlane Elevation 2"] {
+        enter(&mut app, command);
+    }
+    let before = app.viewports[0].construction_plane();
+    let pending = app.active_command;
+    app.command_input = "r2,".into();
+    frame(
+        &context,
+        &mut app,
+        1000.,
+        vec![
+            key(egui::Key::Home, egui::Modifiers::SHIFT, true, false),
+            key(egui::Key::Home, egui::Modifiers::SHIFT, false, false),
+        ],
+    )
+    .1
+    .drop_without_applying_deltas();
+    assert_ne!(app.viewports[0].construction_plane(), before);
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.command_input, "r2,");
+    frame(
+        &context,
+        &mut app,
+        1000.,
+        vec![
+            key(egui::Key::End, egui::Modifiers::SHIFT, true, false),
+            key(egui::Key::End, egui::Modifiers::SHIFT, false, false),
+        ],
+    )
+    .1
+    .drop_without_applying_deltas();
+    assert_eq!(app.viewports[0].construction_plane(), before);
+    app.command_focus_requested = true;
+    frame(&context, &mut app, 1000., vec![])
+        .1
+        .drop_without_applying_deltas();
+    assert!(context.text_edit_focused());
+    frame(
+        &context,
+        &mut app,
+        1000.,
+        vec![
+            key(egui::Key::Home, egui::Modifiers::SHIFT, true, false),
+            key(egui::Key::Home, egui::Modifiers::SHIFT, false, false),
+        ],
+    )
+    .1
+    .drop_without_applying_deltas();
+    assert_eq!(app.viewports[0].construction_plane(), before);
+    assert_eq!(app.command_input, "r2,");
 }

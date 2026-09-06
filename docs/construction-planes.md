@@ -3,7 +3,7 @@
 [Interface](interface.md) · [Typed points](point-input.md)
 
 `Circle`, `Polygon`, `Rectangle`, `MeshPlane`, `Box`, and `MeshBox` use the
-active viewport's construction plane. Top/Perspective use XY, Front uses XZ
+active viewport's construction plane. Initially Top/Perspective use XY, Front uses XZ
 (normal -Y), and Right uses YZ (normal +X). The first accepted interactive pick
 captures the construction orientation; switching views for later picks does
 not replace it. Typed coordinates still resolve in the viewport receiving
@@ -38,7 +38,7 @@ context is separate from document objects and undo history. Command implementati
 live in `viboceros-command/plane_primitives`; `Frame3` supplies shared coordinate
 mapping without dropping small components at mixed floating-point scales.
 
-This is not full CPlane-command support: custom viewport planes, named planes,
+[CPlane](cplane.md) now edits custom viewport planes. Named planes,
 scalar constraints during point prompts, and adapting all remaining primitives,
 arrays, and `BoundingBox CoordinateSystem=CPlane` are still pending.
 Rotate, Mirror, Scale2D, Shear, and ProjectToCPlane now have their own

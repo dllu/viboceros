@@ -13,6 +13,7 @@ Rhino's complete command set is still a work in progress.
 - [Extraction, measurement, and intersections](editing.md)
 - [Selection, attributes, layers, and groups](document.md)
 - [Display modes and drafting controls](interface.md)
+- [Construction-plane editing](../cplane.md)
 
 See [viewport controls](../interface.md) for picking and interactive input, and
 [file formats](../file-formats.md) for import/export capabilities.

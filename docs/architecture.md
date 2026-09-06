@@ -30,6 +30,11 @@ and copy/group transactions with the other transform commands.
 The application adapter applies those actions without entering the modeling
 command lifecycle; the compact toolbar and keyboard shortcuts share that path.
 The headless oracle exercises the same reducer, independently of egui and wgpu.
+`viboceros-command::construction_plane` owns validated [CPlane edits](cplane.md)
+and viewport-local history. The drafting plane module performs local grid,
+ray-intersection, and projected tracking queries. Each viewport stores its frame
+separately from camera state; the app's nested plane prompt does not replace its
+active modeling prompt.
 
 ## Current foundation
 

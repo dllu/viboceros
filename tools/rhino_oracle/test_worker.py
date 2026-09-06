@@ -9,6 +9,77 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_cplane_script_whitelist_uses_observed_options_and_world_coordinates(self):
+        with patch.object(self.worker, "_command_point", side_effect=lambda p: ",".join(str(x) for x in p)):
+            for step, expected in [
+                ({"kind":"world", "view":"Bottom"}, "_CPlane _World _Bottom"),
+                ({"kind":"origin", "point":[1,2,3]}, "_CPlane w1,2,3"),
+                ({"kind":"through", "point":[1,2,3]}, "_CPlane _Through w1,2,3"),
+                ({"kind":"three_point", "points":[[0,0,0],[1,0,0],[0,1,0]]}, "_CPlane _3Point w0,0,0 w1,0,0 w0,1,0"),
+                ({"kind":"rotate", "axis":[[0,0,0],[0,0,1]], "angle":37}, "_CPlane _Rotate w0,0,0 w0,0,1 37"),
+                ({"kind":"elevation", "distance":-2.5}, "_CPlane _Elevation -2.5"),
+                ({"kind":"undo"}, "_CPlane _Undo"), ({"kind":"redo"}, "_CPlane _Redo"),
+            ]:
+                self.assertEqual(self.worker._construction_plane_script(step), expected)
+        for invalid in [{"kind":"Delete"}, {"kind":"world", "view":"Top _Delete"}, {"kind":"elevation", "distance":float("nan")},
+                        {"kind":"origin_input", "point":"0 _Delete"}, {"kind":"three_point_input", "points":["0", "1,2 _Enter", "3,4"]}]:
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                self.worker._construction_plane_script(invalid)
+
+    def test_cplane_probe_restores_every_view_and_global_settings_after_partial_failures(self):
+        for failure in [None, "initialization", "command", "record"]:
+            with self.subTest(failure=failure):
+                originals = [object() for _ in range(4)]
+                current = originals[:]
+                new_plane = SimpleNamespace(IsValid=True, Origin=[1,2,3], XAxis=[1,0,0], YAxis=[0,1,0], ZAxis=[0,0,1])
+                def set_plane(index, plane):
+                    current[index] = plane
+                    if failure == "initialization" and plane is new_plane:
+                        raise ValueError("initialization failure")
+                views = [SimpleNamespace(ActiveViewport=SimpleNamespace(ConstructionPlane=lambda i=i: current[i], SetConstructionPlane=lambda p,i=i:set_plane(i,p))) for i in range(4)]
+                self.document.Views = SimpleNamespace(ActiveView=views[2], GetViewList=lambda a,b:views)
+                aid = SimpleNamespace(UniversalConstructionPlaneMode=True)
+                aid.GetCurrentState = lambda: aid.UniversalConstructionPlaneMode
+                aid.UpdateFromState = lambda value: setattr(aid, "UniversalConstructionPlaneMode", value)
+                self.worker.Rhino.ApplicationSettings = SimpleNamespace(ModelAidSettings=aid)
+                self.worker.Rhino.Geometry = SimpleNamespace(Plane=lambda *args:new_plane)
+                self.worker.Rhino.RhinoApp.RunScript = Mock()
+                def run(script, verify):
+                    self.assertEqual(script, "_CPlane _World _Top")
+                    self.assertTrue(verify)
+                    current[0] = new_plane
+                    if failure == "command": raise ValueError("command failure")
+                    return True
+                calls = [0]
+                def xyz(value):
+                    calls[0] += 1
+                    if failure == "record" and calls[0] == 5: raise ValueError("record failure")
+                    return value
+                operation = {"origin":[0,0,0], "x_axis":[1,0,0], "y_axis":[0,1,0], "steps":[{"kind":"world", "view":"Top"}]}
+                with patch.object(self.worker, "_point", side_effect=lambda p:p), patch.object(self.worker, "_vector", side_effect=lambda p:p), \
+                     patch.object(self.worker, "_run_surface_script", side_effect=run), patch.object(self.worker, "_xyz", side_effect=xyz), patch.object(self.worker, "_record_progress"):
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure + " failure"): self.worker._construction_plane(operation)
+                    else:
+                        value, elapsed = self.worker._construction_plane(operation)
+                        self.assertEqual(len(value["states"]), 2)
+                        self.assertEqual(elapsed, 0)
+                self.assertEqual(current, originals)
+                self.assertTrue(aid.UniversalConstructionPlaneMode)
+                self.worker.Rhino.RhinoApp.RunScript.assert_called_once_with("!", False)
+
+    def test_nested_cplane_probe_builds_a_transparent_macro_and_uses_owned_geometry_cleanup(self):
+        operation = {"before":["w1,2,3", "w4,5,6"], "after":["r2,3"], "step":{"kind":"world", "view":"Front"}}
+        from contextlib import nullcontext
+        with patch.object(self.worker, "_independent_construction_planes", side_effect=nullcontext), patch.object(self.worker, "_in_construction_plane", return_value=({"points":[]},0)) as run:
+            self.worker._construction_plane_input(operation)
+            forwarded, script, record = run.call_args.args
+            self.assertEqual(forwarded["points"], operation["before"] + operation["after"])
+            self.assertEqual(script, "_Polyline w1,2,3 w4,5,6 '_CPlane _World _Front r2,3 _Enter")
+            self.assertIsNone(record)
+        for changes in [{"before":[]}, {"after":[]}, {"before":"1,2"}, {"after":["r2,3 _Delete"]}]:
+            with self.assertRaises(ValueError): self.worker._construction_plane_input(dict(operation, **changes))
+
     def test_interface_scripts_whitelist_settings_and_target_viewport_before_mode(self):
         for command, expected in [
             ("Snap", "_Snap"), ("'_-sEtSnAp _oFf", "_SetSnap _Off"),

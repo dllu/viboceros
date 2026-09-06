@@ -65,7 +65,7 @@ is checked per dot product, so heavy tilt does not erase an otherwise resolved
 turn direction. These diagnostics are not claimed to
 agree at the ordinary comparison epsilon.
 
-Custom viewport planes, Mirror's axis/three-point options, repeated interactive
+[Custom viewport planes](cplane.md) are editable. Mirror's axis/three-point options, repeated interactive
 copies, rigid Shear, scalar constraints during point prompts, and singular
 projections that collapse validated geometry remain incomplete. Other transforms
 and arrays still have their individually documented World-coordinate policies.

@@ -5,6 +5,8 @@
 These application commands change interface state, not document geometry. They
 remain available while a point command is unfinished and appear in completion
 and `Help`. `Help UI` lists their syntax and shortcuts without cancelling a prompt.
+[CPlane](../cplane.md) additionally edits the active construction plane and has
+its own nested origin, three-point, elevation, through-point, and rotation prompts.
 
 | Command | Behavior |
 | --- | --- |
@@ -41,7 +43,7 @@ Wireframe, Shaded, and Ghosted in the active viewport. These shortcuts work whil
 editing coordinates, ignore key auto-repeat, and leave unrelated shortcuts and
 text-editor undo alone. F3 and F11 are not drafting toggles. The view-preset menu
 changes the active viewport's existing Top/Perspective/Front/Right preset; it is
-not an implementation of Rhino's complete `SetView` or `CPlane` commands.
+not an implementation of Rhino's complete `SetView` command.
 
 ## Scope and validation
 

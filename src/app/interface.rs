@@ -43,6 +43,7 @@ impl VibocerosApp {
                 [] => {
                     let mut names = self.commands.command_names();
                     names.extend(interface::COMMAND_NAMES);
+                    names.push("CPlane");
                     names.sort_unstable();
                     names.dedup();
                     self.push_log(format!("Commands: {}", names.join(", ")));
@@ -51,6 +52,7 @@ impl VibocerosApp {
                 }
                 [topic] if topic.trim_start_matches('_').eq_ignore_ascii_case("UI") => {
                     self.push_log(interface::HELP.into());
+                    self.push_log(viboceros_command::construction_plane::USAGE.into());
                     self.command_input.clear();
                 }
                 _ => self.push_log("Usage: Help [UI]".into()),
@@ -72,6 +74,7 @@ impl VibocerosApp {
     }
 
     pub(super) fn handle_interface_shortcuts(&mut self, ui: &mut egui::Ui) {
+        self.handle_plane_shortcuts(ui);
         // These keys have no text-editing meaning. Text editors retain their
         // own undo history; document undo/redo is not intercepted here.
         let shortcuts = [

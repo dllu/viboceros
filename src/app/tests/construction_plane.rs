@@ -6,6 +6,188 @@ fn enter(app: &mut VibocerosApp, text: &str) {
 }
 
 #[test]
+fn cplane_edits_are_view_local_and_model_undo_does_not_change_them() {
+    let mut app = test_app();
+    for input in [
+        "Point 1,2,3",
+        "SelAll",
+        "CPlane World Front",
+        "CPlane 4,5,6",
+        "CPlane Elevation 2",
+    ] {
+        enter(&mut app, input);
+    }
+    let frame = app.viewports[0].construction_plane();
+    assert_eq!(app.viewports[0].kind(), ViewKind::Top);
+    assert_eq!(frame.origin(), point(4., -8., 5.));
+    assert_eq!(frame.z_axis().as_vector().to_array(), [0., -1., 0.]);
+    assert_eq!(app.document.selected_object_count(), 1);
+    assert_eq!(
+        app.viewports[1].construction_plane().origin(),
+        point(0., 0., 0.)
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 0);
+    assert_eq!(app.viewports[0].construction_plane(), frame);
+    enter(&mut app, "CPlane Undo");
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(4., -6., 5.)
+    );
+    enter(&mut app, "CPlane Redo");
+    assert_eq!(app.viewports[0].construction_plane(), frame);
+    enter(&mut app, "Redo");
+    assert_eq!(app.document.objects().len(), 1);
+}
+
+#[test]
+fn nested_three_point_plane_prompt_retains_model_points_and_returns_to_them() {
+    let mut app = test_app();
+    for input in ["Polyline", "w1,2,3", "w4,5,6"] {
+        enter(&mut app, input);
+    }
+    let pending = app.active_command;
+    let points = app.curve_points.clone();
+    let last = app.last_point;
+    let latched = app.drafting_plane;
+    for input in [
+        "CPlane 3Point",
+        "w10,20,30",
+        "w10,21,30",
+        "Snap",
+        "w10,20,31",
+    ] {
+        enter(&mut app, input);
+    }
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(app.active_command, pending);
+    assert_eq!(app.curve_points, points);
+    assert_eq!(app.last_point, last);
+    assert_eq!(app.drafting_plane, latched);
+    assert_eq!(app.viewports[0].kind(), ViewKind::Top);
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(10., 20., 30.)
+    );
+    enter(&mut app, "2,3");
+    enter(&mut app, "");
+    let Geometry::Polyline(polyline) = app.document.objects().next().unwrap().geometry() else {
+        panic!("polyline")
+    };
+    assert_eq!(
+        polyline.vertices(),
+        &[point(1., 2., 3.), point(4., 5., 6.), point(10., 22., 33.)]
+    );
+    enter(&mut app, "Undo");
+    assert_eq!(app.document.objects().len(), 0);
+    assert!(!app.document.can_undo());
+}
+
+#[test]
+fn invalid_cplane_input_and_cancellation_retain_the_model_prompt_and_plane() {
+    let mut app = test_app();
+    for input in ["Circle", "0", "CPlane 3Point", "0", "w1,0,0"] {
+        enter(&mut app, input);
+    }
+    let frame = app.viewports[0].construction_plane();
+    for bad in ["w2,0,0", "nan,0,0", "not a point"] {
+        enter(&mut app, bad);
+        assert_eq!(app.command_input, bad);
+        assert_eq!(app.plane_prompt.as_ref().unwrap().points.len(), 2);
+        assert_eq!(app.viewports[0].construction_plane(), frame);
+    }
+    app.cancel_plane_prompt();
+    assert!(app.active_command.is_some());
+    assert_eq!(app.last_point, Some(point(0., 0., 0.)));
+    enter(&mut app, "w2,0,0");
+    assert_eq!(app.document.objects().len(), 1);
+    assert_eq!(app.viewports[0].construction_plane(), frame);
+}
+
+#[test]
+fn interactive_plane_origin_height_through_and_rotation_share_the_validated_edit_path() {
+    let mut app = test_app();
+    for input in [
+        "CPlane",
+        "w2,3,4",
+        "CPlane Elevation",
+        "5",
+        "CPlane Through",
+        "w12,13,7",
+        "CPlane Rotate",
+        "w0,0,0",
+        "w0,0,1",
+        "90",
+    ] {
+        enter(&mut app, input);
+    }
+    assert!(app.plane_prompt.is_none(), "{:?}", app.command_log);
+    let frame = app.viewports[0].construction_plane();
+    assert!(frame.origin().distance_to(point(-3., 2., 7.)).unwrap() < 1e-12);
+    assert_eq!(app.document.objects().len(), 0);
+    assert!(!app.document.can_undo());
+    enter(&mut app, "Circle");
+    enter(&mut app, "0");
+    enter(&mut app, "2,0");
+    let Geometry::Circle(circle) = app.document.objects().next().unwrap().geometry() else {
+        panic!("circle")
+    };
+    assert!(circle.center().distance_to(frame.origin()).unwrap() < 1e-12);
+    assert!((circle.radius() - 2.).abs() < 1e-12);
+}
+
+#[test]
+fn complete_cplane_command_replaces_a_plane_prompt_without_cancelling_model_input() {
+    let mut app = test_app();
+    for input in ["Line", "w1,2,3", "CPlane 3Point", "0", "CPlane World Right"] {
+        enter(&mut app, input);
+    }
+    assert!(app.plane_prompt.is_none());
+    assert!(app.active_command.is_some());
+    enter(&mut app, "2,3");
+    let Geometry::Line(line) = app.document.objects().next().unwrap().geometry() else {
+        panic!("line")
+    };
+    assert_eq!(line.start(), point(1., 2., 3.));
+    assert_eq!(line.end(), point(0., 2., 3.));
+}
+
+#[test]
+fn cplane_picked_points_edit_the_starting_viewport_when_reference_picks_use_other_views() {
+    let mut app = test_app();
+    enter(&mut app, "CPlane 3Point");
+    for (index, p) in [
+        (1, point(1., 2., 3.)),
+        (2, point(2., 2., 3.)),
+        (3, point(1., 2., 4.)),
+    ] {
+        app.active_viewport = index;
+        assert!(app.handle_viewport_action(ViewportOutput {
+            picked_point: Some(p),
+            ..Default::default()
+        }));
+    }
+    assert!(app.plane_prompt.is_none());
+    assert_eq!(
+        app.viewports[0].construction_plane().origin(),
+        point(1., 2., 3.)
+    );
+    assert_eq!(
+        app.viewports[0]
+            .construction_plane()
+            .z_axis()
+            .as_vector()
+            .to_array(),
+        [0., -1., 0.]
+    );
+    assert_eq!(
+        app.viewports[3].construction_plane().origin(),
+        point(0., 0., 0.)
+    );
+    assert_eq!(app.document.objects().len(), 0);
+}
+
+#[test]
 fn front_view_circle_uses_the_front_plane() {
     let mut app = test_app();
     app.active_viewport = 2;

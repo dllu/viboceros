@@ -24,6 +24,7 @@ use crate::viewport::{
 
 const MAX_LOG_ENTRIES: usize = 100;
 
+mod construction_plane;
 mod interface;
 mod plane_primitives;
 mod point_input;
@@ -1018,6 +1019,7 @@ pub struct VibocerosApp {
     active_command: Option<InteractiveCommand>,
     last_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
+    plane_prompt: Option<construction_plane::PlanePrompt>,
     curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
 }
@@ -1051,6 +1053,7 @@ impl VibocerosApp {
             active_command: None,
             last_point: None,
             drafting_plane: None,
+            plane_prompt: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
@@ -1058,6 +1061,14 @@ impl VibocerosApp {
 
     fn run_command(&mut self) {
         let input = self.command_input.trim().to_owned();
+        if !input.is_empty()
+            && (self.try_run_plane_command(&input) || self.try_run_interface_command(&input))
+        {
+            return;
+        }
+        if self.try_continue_plane_prompt(&input) {
+            return;
+        }
         if input.is_empty() {
             if self
                 .active_command
@@ -1065,9 +1076,6 @@ impl VibocerosApp {
             {
                 self.finish_interactive_curve();
             }
-            return;
-        }
-        if self.try_run_interface_command(&input) {
             return;
         }
         if self.active_command.is_some() && self.try_continue_point_input(&input) {
@@ -4495,7 +4503,11 @@ impl VibocerosApp {
         if output.enter_pressed {
             self.run_command();
         } else if let Some(point) = output.picked_point {
-            self.accept_drafting_point(point);
+            if self.plane_prompt.is_some() {
+                self.accept_plane_prompt_point(point);
+            } else {
+                self.accept_drafting_point(point);
+            }
         } else if let Some(click) = output.selection_click {
             self.apply_selection_click(click);
         } else if let Some(selection) = output.selection_window {
@@ -4636,9 +4648,12 @@ impl VibocerosApp {
                     });
                 ui.separator();
                 ui.horizontal(|ui| {
-                    let label = self
-                        .active_command
-                        .map_or("Command", InteractiveCommand::name);
+                    let label = if self.plane_prompt.is_some() {
+                        "CPlane"
+                    } else {
+                        self.active_command
+                            .map_or("Command", InteractiveCommand::name)
+                    };
                     ui.label(RichText::new(format!("{label}:")).strong());
                     let command_input_id = ui.make_persistent_id("main_command_input");
                     let tab = ui.memory(|memory| memory.focused() == Some(command_input_id))
@@ -4650,7 +4665,9 @@ impl VibocerosApp {
                             .id(command_input_id)
                             .lock_focus(true)
                             .desired_width(f32::INFINITY)
-                            .hint_text(if self.active_command.is_some() {
+                            .hint_text(if self.plane_prompt.is_some() {
+                                "Define the construction plane; Esc returns to the previous prompt"
+                            } else if self.active_command.is_some() {
                                 if self
                                     .active_command
                                     .is_some_and(InteractiveCommand::collects_curve_points)
@@ -4747,6 +4764,7 @@ fn command_completions(commands: &CommandRegistry, input: &str) -> Vec<&'static 
         .command_names()
         .into_iter()
         .chain(viboceros_command::interface::COMMAND_NAMES)
+        .chain(["CPlane"])
         .filter(|name| name.to_ascii_lowercase().starts_with(&prefix))
         .collect::<Vec<_>>();
     names.sort_unstable();
@@ -4758,7 +4776,9 @@ impl eframe::App for VibocerosApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         self.handle_interface_shortcuts(ui);
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
-            if self.active_command.is_some() {
+            if self.plane_prompt.is_some() {
+                self.cancel_plane_prompt();
+            } else if self.active_command.is_some() {
                 self.cancel_interactive_command(true);
             } else {
                 let count = self.document.clear_selection();
@@ -4773,6 +4793,7 @@ impl eframe::App for VibocerosApp {
             self.run_command();
         }
         if self.active_command.is_none()
+            && self.plane_prompt.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
             && ui.input(|input| input.key_pressed(egui::Key::Delete))
@@ -4784,11 +4805,13 @@ impl eframe::App for VibocerosApp {
         self.show_layers(ui);
         self.show_command_line(ui);
         let drafting = DraftingInput {
-            active: self.active_command.is_some(),
+            active: self.active_command.is_some() || self.plane_prompt.is_some(),
             osnap: self.osnap,
             smart_track: self.smart_track,
             grid_snap: self.grid_snap,
-            anchor: if self
+            anchor: if let Some(prompt) = &self.plane_prompt {
+                prompt.anchor()
+            } else if self
                 .active_command
                 .is_some_and(InteractiveCommand::collects_curve_points)
             {
@@ -4796,13 +4819,22 @@ impl eframe::App for VibocerosApp {
             } else {
                 self.active_command.and_then(InteractiveCommand::anchor)
             },
-            reference: self.active_command.and_then(InteractiveCommand::reference),
+            reference: if self.plane_prompt.is_some() {
+                None
+            } else {
+                self.active_command.and_then(InteractiveCommand::reference)
+            },
         };
         let mut viewport_outputs: [ViewportOutput; 4] =
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
         let document = &self.document;
-        let curve_points = &self.curve_points;
+        let curve_points = self
+            .plane_prompt
+            .as_ref()
+            .map_or(self.curve_points.as_slice(), |prompt| {
+                prompt.points.as_slice()
+            });
         let viewports = &mut self.viewports;
         egui::CentralPanel::default().show(ui, |ui| {
             ui.spacing_mut().item_spacing = egui::Vec2::splat(2.0);
@@ -4931,6 +4963,7 @@ mod tests {
             active_command: None,
             last_point: None,
             drafting_plane: None,
+            plane_prompt: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
@@ -5010,7 +5043,7 @@ mod tests {
     fn default_layout_has_three_parallel_views_and_one_perspective_view() {
         let app = test_app();
         assert_eq!(
-            app.viewports.map(|viewport| viewport.kind),
+            app.viewports.map(|viewport| viewport.kind()),
             [
                 ViewKind::Top,
                 ViewKind::Perspective,

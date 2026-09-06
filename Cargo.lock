@@ -3639,6 +3639,7 @@ dependencies = [
  "monstertruck",
  "thiserror 2.0.20",
  "viboceros-document",
+ "viboceros-drafting",
  "viboceros-geometry",
  "viboceros-io",
 ]

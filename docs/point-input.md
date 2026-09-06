@@ -35,13 +35,14 @@ including after Escape or completion; it does not infer one from a fully
 specified one-line command or imported geometry. A relative entry with no
 remembered point is rejected.
 
-The current fixed planes are XY for Top/Perspective, XZ for Front (normal -Y),
-and YZ for Right (normal +X). Camera navigation does not rotate these planes.
+The initial planes are XY for Top/Perspective, XZ for Front (normal -Y),
+and YZ for Right (normal +X). [CPlane](cplane.md) can translate or reorient each
+viewport's plane independently; camera navigation does not rotate these planes.
 One-line commands such as `Line 0,0,0 4,5,0` still use their documented world
 coordinate arguments. See [construction-plane primitives](construction-planes.md)
 for Circle/Polygon orientation, rectangle projection, and signed box heights.
 
-Not yet implemented: custom construction planes, scalar distance/angle
+Not yet implemented: general scalar distance/angle
 constraints, unit expressions, surveyor/DMS notation, `x,y<elevation`, and
 editing command options inside an active prompt. Nonzero scalar input is
 explicitly rejected rather than interpreted as a point.

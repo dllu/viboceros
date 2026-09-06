@@ -1,5 +1,6 @@
 //! Precision-drafting queries shared by interactive viewports.
 
+pub mod plane;
 mod point_input;
 pub use point_input::{PointInput, PointInputError};
 

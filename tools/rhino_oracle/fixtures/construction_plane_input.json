@@ -1,0 +1,838 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-0-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "world",
+        "view": "Front"
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-0-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "world",
+        "view": "Front"
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-1-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point",
+        "points": [
+          [
+            10,
+            20,
+            30
+          ],
+          [
+            10,
+            21,
+            30
+          ],
+          [
+            10,
+            20,
+            31
+          ]
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-1-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point",
+        "points": [
+          [
+            10,
+            20,
+            30
+          ],
+          [
+            10,
+            21,
+            30
+          ],
+          [
+            10,
+            20,
+            31
+          ]
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-2-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "origin",
+        "point": [
+          7,
+          8,
+          9
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-2-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "origin",
+        "point": [
+          7,
+          8,
+          9
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-3-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "elevation",
+        "distance": 2
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-3-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "elevation",
+        "distance": 2
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-4-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "10,20,30",
+          "1,0",
+          "0,1"
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-4-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "10,20,30",
+          "1,0",
+          "0,1"
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-5-0",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "0",
+          "r1,0",
+          "r0,1"
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-0-5-1",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "0",
+          "r1,0",
+          "r0,1"
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-0-0",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "world",
+        "view": "Front"
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-0-1",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "world",
+        "view": "Front"
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-1-0",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point",
+        "points": [
+          [
+            10,
+            20,
+            30
+          ],
+          [
+            10,
+            21,
+            30
+          ],
+          [
+            10,
+            20,
+            31
+          ]
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-1-1",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point",
+        "points": [
+          [
+            10,
+            20,
+            30
+          ],
+          [
+            10,
+            21,
+            30
+          ],
+          [
+            10,
+            20,
+            31
+          ]
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-2-0",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "origin",
+        "point": [
+          7,
+          8,
+          9
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-2-1",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "origin",
+        "point": [
+          7,
+          8,
+          9
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-3-0",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "elevation",
+        "distance": 2
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-3-1",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "elevation",
+        "distance": 2
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-4-0",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "10,20,30",
+          "1,0",
+          "0,1"
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-4-1",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "10,20,30",
+          "1,0",
+          "0,1"
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-5-0",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "0",
+          "r1,0",
+          "r0,1"
+        ]
+      },
+      "after": [
+        "2,3"
+      ]
+    },
+    {
+      "op": "construction_plane_input",
+      "id": "nested-cplane-1-5-1",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "before": [
+        "w1,2,3",
+        "w4,5,6"
+      ],
+      "step": {
+        "kind": "three_point_input",
+        "points": [
+          "0",
+          "r1,0",
+          "r0,1"
+        ]
+      },
+      "after": [
+        "r2,3"
+      ]
+    }
+  ]
+}
