@@ -27,6 +27,12 @@ for geometry policy, viewport changes, verification, and remaining limitations.
 
 ## Orientation and arrays
 
+`Distribute` moves at least three selected objects/group units along a CPlane
+axis or two-point direction. `Mode=Gap|Center` equalizes edge gaps or bound-center
+spacing; `Spacing=Automatic|distance` pins both endpoints or uses a signed fixed
+step. See [distribution](distribute.md) for group rules, tight bounds, interactive
+input, and retained compatibility differences.
+
 `Orient` maps two reference points to two target points with Rhino's shortest
 3D rotation. `Scale=No` preserves size, `Scale=1D` changes only the reference
 axis, and `Scale=3D` scales uniformly. `Orient3Pt` maps right-handed frames

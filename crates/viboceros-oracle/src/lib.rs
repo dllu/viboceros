@@ -38,6 +38,8 @@ mod mass_properties;
 mod parameter_bounds;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
 mod bounding_box;
+mod distribute;
+mod object_source;
 mod plane_arrays;
 mod trimmed_brep;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
@@ -154,6 +156,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: bounding_box::BoundingBoxFixture,
+    },
+    Distribute {
+        id: String,
+        #[serde(flatten)]
+        fixture: distribute::DistributeFixture,
     },
     ConstructionPlaneInput {
         id: String,
@@ -1486,6 +1493,7 @@ impl Operation {
             | Self::TrimmedBrepBounds { id, .. }
             | Self::PlaneArray { id, .. }
             | Self::BoundingBoxCommand { id, .. }
+            | Self::Distribute { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
             | Self::InterfaceCommands { id, .. }
@@ -1828,6 +1836,7 @@ fn execute(
         }
         Operation::PlaneArray { fixture, .. } => plane_arrays::run(fixture, tolerance)?,
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
+        Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::ConstructionPlaneInput { fixture, .. } => {
             construction_plane::run_input(fixture, tolerance)?
         }

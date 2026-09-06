@@ -42,6 +42,10 @@ uses rational curve hulls for conservative inside/outside/uncertain tests.
 The independent [BoundingBox command](commands/bounding-box.md) uses that query
 in a geometry-local working frame, then stages oriented solids, quad meshes,
 or grouped rectangle outputs before entering document mutation.
+The separate [Distribute command](commands/distribute.md) shares its
+`object_bounds` working-frame query, then stages group-aware in-place
+translations. Its option parser and logical-unit preflight are shared with the
+application's two-point interaction; geometry code does not depend on egui.
 `viboceros-command::interface` owns [display/drafting controls](commands/interface.md).
 The application adapter applies those actions without entering the modeling
 command lifecycle; the compact toolbar and keyboard shortcuts share that path.

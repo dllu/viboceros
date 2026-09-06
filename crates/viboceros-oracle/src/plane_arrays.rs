@@ -274,7 +274,7 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
     ))
 }
 
-fn brep_record(brep: &Brep) -> Result<(Value, Vec<[f64; 3]>), GeometryError> {
+pub(super) fn brep_record(brep: &Brep) -> Result<(Value, Vec<[f64; 3]>), GeometryError> {
     let mut domains = Vec::new();
     let mut points = Vec::new();
     for face in brep.faces() {

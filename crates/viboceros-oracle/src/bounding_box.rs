@@ -1,5 +1,6 @@
 //! Actual BoundingBox output, topology, grouping, and selection observations.
 use super::*;
+use crate::object_source::ObjectSource as Source;
 use viboceros_command::CommandContext;
 #[cfg(test)]
 mod tests;
@@ -27,65 +28,6 @@ pub enum Output {
     Meshes,
     Curves,
     None,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(untagged)]
-pub enum Source {
-    Vertices(VertexSource),
-    Curved(Box<plane_arrays::ArraySource>),
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq)]
-#[serde(tag = "type", rename_all = "snake_case")]
-pub enum VertexSource {
-    Point {
-        point: [f64; 3],
-    },
-    PointCloud {
-        points: Vec<[f64; 3]>,
-    },
-    Mesh {
-        vertices: Vec<[f64; 3]>,
-        faces: Vec<Vec<u32>>,
-    },
-}
-
-impl Source {
-    fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
-        let points = |p: &[[f64; 3]]| {
-            p.iter()
-                .copied()
-                .map(Point3::try_from)
-                .collect::<Result<Vec<_>, _>>()
-        };
-        Ok(match self {
-            Self::Curved(source) => source.geometry(tolerance)?,
-            Self::Vertices(VertexSource::Point { point }) => {
-                Geometry::Point(Point3::try_from(*point)?)
-            }
-            Self::Vertices(VertexSource::PointCloud { points: p }) => {
-                Geometry::PointCloud(PointCloud3::try_new(points(p)?)?)
-            }
-            Self::Vertices(VertexSource::Mesh { vertices, faces }) => {
-                let faces = faces
-                    .iter()
-                    .map(|f| match f.as_slice() {
-                        [a, b, c] => Ok(MeshFace::Triangle([*a, *b, *c])),
-                        [a, b, c, d] => Ok(MeshFace::Quad([*a, *b, *c, *d])),
-                        _ => Err(ProbeError::FixtureInvariant(
-                            "BoundingBox input mesh face must have 3 or 4 corners",
-                        )),
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
-                Geometry::Mesh(TriangleMesh::try_new_faces(
-                    points(vertices)?,
-                    faces,
-                    tolerance,
-                )?)
-            }
-        })
-    }
 }
 
 pub(super) fn run(

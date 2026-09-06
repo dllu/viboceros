@@ -69,6 +69,12 @@ corners/topology, groups, reports, and World/CPlane orientation.
 `bounding_box_diagnostics.json` retains 26 curved-bound, thin-geometry, and
 atomicity differences. See [bounding boxes](commands/bounding-box.md), including
 why raw Rhino script success flags are not used for report-only commands.
+`distribute.json` adds 188 actual distribution commands with signed spacing,
+World/CPlane directions, bound tie ordering, retained source identities, and
+top-group membership rules. Six analytically checked curved-bound placement
+differences remain in `distribute_diagnostics.json`; see
+[Distribute](commands/distribute.md). Its batch preselection guard avoids
+leaving Rhino in an interactive object-selection prompt.
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 

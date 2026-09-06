@@ -152,31 +152,15 @@ fn oriented_bounds<'a>(
     // The working origin belongs to the geometry, not the CPlane. A distant
     // CPlane origin must not collapse small source extents during subtraction.
     let anchor = first.bounds().center()?;
-    let world = CommandContext::default().construction_plane;
-    let orientation = coordinates.with_origin(world.origin());
-    let translation = AffineTransform3::from_translation(anchor.vector_to(world.origin())?);
-    let rotation = AffineTransform3::try_frame_mapping(orientation, world, [1.; 3])?;
-    let query = |geometry: &Geometry| -> Result<BoundingBox3, GeometryError> {
-        // Subtract before rotating: a single affine matrix would first rotate
-        // large world coordinates and then cancel their common origin.
-        let translated = if anchor == world.origin() {
-            std::borrow::Cow::Borrowed(geometry)
-        } else {
-            std::borrow::Cow::Owned(geometry.transformed(translation, tolerance)?)
-        };
-        let local = if orientation == world {
-            translated
-        } else {
-            std::borrow::Cow::Owned(translated.transformed(rotation, tolerance)?)
-        };
-        local.tight_bounds(tolerance)
-    };
-    let bounds = geometries.try_fold(query(first)?, |bounds, geometry| {
-        bounds.union(query(geometry)?)
-    })?;
+    let frame = coordinates.with_origin(anchor);
+    let bounds = crate::object_bounds::local_bounds(
+        std::iter::once(first).chain(geometries),
+        frame,
+        tolerance,
+    )?;
     Ok(OrientedBounds {
         local: bounds,
-        frame: coordinates.with_origin(anchor),
+        frame,
     })
 }
 

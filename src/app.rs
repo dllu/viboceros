@@ -6,7 +6,7 @@ use viboceros_command::{
     DEFAULT_MESH_CYLINDER_FACE_COUNT, DEFAULT_MESH_ELLIPSOID_FACE_COUNT,
     DEFAULT_MESH_PLANE_FACE_COUNT, DEFAULT_MESH_SPHERE_FACE_COUNT,
     DEFAULT_MESH_SPHERE_SUBDIVISIONS, DEFAULT_MESH_TORUS_FACE_COUNT,
-    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, MAX_CURVE_COMMAND_DEGREE,
+    DEFAULT_MESH_TRUNCATED_CONE_FACE_COUNT, DistributionSettings, MAX_CURVE_COMMAND_DEGREE,
     MAX_MESH_SPHERE_QUAD_SUBDIVISIONS, MAX_MESH_SPHERE_TRIANGLE_SUBDIVISIONS,
 };
 use viboceros_document::{Document, DocumentError, suggested_layer_color};
@@ -307,6 +307,10 @@ enum InteractiveCommand {
         item_count: usize,
         start: Option<Point3>,
     },
+    Distribute {
+        settings: DistributionSettings,
+        start: Option<Point3>,
+    },
     Array {
         counts: [usize; 3],
         fill: bool,
@@ -410,6 +414,7 @@ impl InteractiveCommand {
             Self::Move { .. } => "Move",
             Self::Copy { .. } => "Copy",
             Self::ArrayLinear { .. } => "ArrayLinear",
+            Self::Distribute { .. } => "Distribute",
             Self::Array { .. } => "Array",
             Self::ArrayPolar { .. } => "ArrayPolar",
             Self::Scale { kind, .. } => kind.name(),
@@ -704,6 +709,12 @@ impl InteractiveCommand {
             Self::ArrayLinear { start: Some(_), .. } => {
                 "ArrayLinear: pick the spacing point in the viewport (Esc to cancel)"
             }
+            Self::Distribute { start: None, .. } => {
+                "Distribute: pick the first direction point (Esc to cancel)"
+            }
+            Self::Distribute { start: Some(_), .. } => {
+                "Distribute: pick the second direction point (Esc to cancel)"
+            }
             Self::Array { start: None, .. } => {
                 "Array: pick the first cell corner in the viewport (Esc to cancel)"
             }
@@ -879,6 +890,7 @@ impl InteractiveCommand {
             | Self::Move { start: None }
             | Self::Copy { start: None }
             | Self::ArrayLinear { start: None, .. }
+            | Self::Distribute { start: None, .. }
             | Self::Array { start: None, .. }
             | Self::ArrayPolar { .. }
             | Self::Scale { center: None, .. }
@@ -907,6 +919,7 @@ impl InteractiveCommand {
             | Self::Move { start }
             | Self::Copy { start }
             | Self::ArrayLinear { start, .. }
+            | Self::Distribute { start, .. }
             | Self::Array { start, .. }
             | Self::Mirror { start }
             | Self::ExtrudeCurve { base: start, .. }
@@ -2535,6 +2548,22 @@ impl VibocerosApp {
                 z_distance,
                 start: None,
             }
+        } else if normalized == "distribute" {
+            let options = if arguments
+                .first()
+                .is_some_and(|s| s.trim_start_matches('_').eq_ignore_ascii_case("Direction"))
+            {
+                &arguments[1..]
+            } else {
+                arguments.as_slice()
+            };
+            let Ok(settings) = DistributionSettings::parse(options) else {
+                return false;
+            };
+            InteractiveCommand::Distribute {
+                settings,
+                start: None,
+            }
         } else if normalized == "arraylinear" {
             let [item_count] = arguments.as_slice() else {
                 return false;
@@ -2676,6 +2705,7 @@ impl VibocerosApp {
                 | InteractiveCommand::Copy { .. }
                 | InteractiveCommand::Array { .. }
                 | InteractiveCommand::ArrayLinear { .. }
+                | InteractiveCommand::Distribute { .. }
                 | InteractiveCommand::ArrayPolar { .. }
                 | InteractiveCommand::Scale { .. }
                 | InteractiveCommand::Rotate { .. }
@@ -2716,6 +2746,15 @@ impl VibocerosApp {
         {
             self.push_log("Error: no objects are selected".to_owned());
             return true;
+        }
+        if matches!(command, InteractiveCommand::Distribute { .. }) {
+            let count = viboceros_command::distribution_unit_count(&self.document);
+            if count < 3 {
+                self.push_log(format!(
+                    "Error: Distribute requires at least three objects or groups; found {count}"
+                ));
+                return true;
+            }
         }
         self.push_log(command.prompt().to_owned());
         self.active_command = Some(command);
@@ -4110,6 +4149,44 @@ impl VibocerosApp {
                     if fill { "Fill" } else { "UnitCell" }
                 ));
             }
+            InteractiveCommand::Distribute {
+                settings,
+                start: None,
+            } => {
+                let command = InteractiveCommand::Distribute {
+                    settings,
+                    start: Some(point),
+                };
+                self.active_command = Some(command);
+                self.push_log(format!(
+                    "First direction point: {}",
+                    format_model_point(point)
+                ));
+                self.push_log(command.prompt().to_owned());
+            }
+            InteractiveCommand::Distribute {
+                settings,
+                start: Some(start),
+            } => {
+                if !start
+                    .vector_to(point)
+                    .and_then(|v| v.length())
+                    .is_ok_and(|length| length > self.document.tolerance().absolute())
+                {
+                    self.push_log("Error: Distribute direction points must be distinct".to_owned());
+                    return false;
+                }
+                self.active_command = None;
+                self.execute_command(&format!(
+                    "Distribute Direction {} {} Mode={:?} Spacing={}",
+                    format_model_point(start),
+                    format_model_point(point),
+                    settings.mode,
+                    settings
+                        .spacing
+                        .map_or_else(|| "Automatic".to_owned(), |d| d.to_string())
+                ));
+            }
             InteractiveCommand::ArrayLinear {
                 item_count,
                 start: None,
@@ -4944,6 +5021,7 @@ fn point_is_near_axis(
 #[cfg(test)]
 mod tests {
     mod construction_plane;
+    mod distribute;
     mod interface;
     mod plane_arrays;
     mod point_input;

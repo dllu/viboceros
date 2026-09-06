@@ -83,7 +83,7 @@ class BoundingBoxWorkerTests(unittest.TestCase):
                 with patch.object(self.worker,"_point",side_effect=lambda p:p), \
                      patch.object(self.worker,"_vector",side_effect=lambda p:p), \
                      patch.object(self.worker,"_record_progress"), \
-                     patch.object(self.worker,"_bounding_box_source",side_effect=source), \
+                     patch.object(self.worker,"_object_source",side_effect=source), \
                      patch.object(self.worker,"_run_surface_script",side_effect=run), \
                      patch.object(self.worker,"_bounding_box_geometry_record",side_effect=ValueError("record failure") if failure=="record" else lambda g:dict(kind="curve",points=[[0,0,0]])):
                     if failure:
@@ -112,5 +112,5 @@ class BoundingBoxWorkerTests(unittest.TestCase):
             self.worker.Rhino.Geometry = SimpleNamespace(PointCloud=lambda:owned,Mesh=lambda:owned)
             definition = dict(type=kind,points=[[0,0,0]],vertices=[[0,0,0]],faces=[])
             with patch.object(self.worker,"_point",side_effect=lambda p:p), self.assertRaisesRegex(ValueError,"add"):
-                self.worker._bounding_box_source(definition,{})
+                self.worker._object_source(definition,{})
             owned.Dispose.assert_called_once_with()

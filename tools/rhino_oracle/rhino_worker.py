@@ -3128,7 +3128,7 @@ def _trimmed_brep_bounds(operation, iterations, tolerance):
         brep.Dispose()
 
 
-def _bounding_box_source(definition, tolerance):
+def _object_source(definition, tolerance):
     kind = definition["type"]
     if kind == "point":
         return Rhino.Geometry.Point(_point(definition["point"]))
@@ -3200,7 +3200,7 @@ def _bounding_box_command(operation, tolerance):
             viewport.SetConstructionPlane(plane)
             document.Objects.UnselectAll()
             for index, definition in enumerate(operation["sources"]):
-                geometry = _bounding_box_source(definition, tolerance)
+                geometry = _object_source(definition, tolerance)
                 owned.append(geometry)
                 attributes = Rhino.DocObjects.ObjectAttributes()
                 try:
@@ -3275,7 +3275,151 @@ def _bounding_box_command(operation, tolerance):
                 geometry.Dispose()
 
 
+def _distribute_script(operation):
+    mode = operation["mode"]
+    direction = operation["direction"]
+    if mode not in ("Center", "Gap") or direction not in ("XAxis", "YAxis", "ZAxis", "Direction"):
+        raise ValueError("invalid Distribute mode or direction")
+    spacing = operation.get("spacing")
+    spacing_token = "_Automatic" if spacing is None else "%.17g" % _finite(spacing, "distribution spacing")
+    direction_token = "_" + direction
+    if direction == "Direction":
+        if len(operation["references"]) != 2:
+            raise ValueError("expected two distribution direction points")
+        direction_token += " " + " ".join("w" + _command_point(p) for p in operation["references"])
+    return "_-Distribute _Mode=_%s _Spacing %s %s" % (mode, spacing_token, direction_token)
+
+
+def _distribute(operation, tolerance):
+    script = _distribute_script(operation)
+    if operation["direction"] == "Direction":
+        start, end = operation["references"]
+        delta = [_finite(float(b) - float(a), "distribution direction") for a, b in zip(start, end)]
+        # Nested two-argument hypot also works in Rhino's IronPython runtime.
+        distance = _finite(math.hypot(math.hypot(delta[0], delta[1]), delta[2]), "distribution direction length")
+        if distance <= tolerance["absolute"]:
+            raise ValueError("distribution direction points must be distinct")
+    definitions = operation["sources"]
+    if not 1 <= len(definitions) <= 32:
+        raise ValueError("expected 1 to 32 distribution sources")
+    groups = operation.get("groups", [])
+    for group in groups:
+        if not group or len(set(group)) != len(group) or any(type(i) is not int or not 0 <= i < len(definitions) for i in group):
+            raise ValueError("invalid distribution group")
+    selected_indices = operation.get("selected")
+    if selected_indices is None:
+        selected_indices = list(range(len(definitions)))
+    if len(set(selected_indices)) != len(selected_indices) or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected_indices):
+        raise ValueError("invalid distribution selection")
+    if len(selected_indices) < 3:
+        # Too few top-level objects leave Rhino in an interactive selection
+        # prompt. This batch operation requires completed preselection; native
+        # command/UI tests cover the minimum-selection error separately.
+        raise ValueError("distribution probe requires at least three selected objects")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.LockedObjects = settings.HiddenObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid distribution plane")
+    owned, ids = [], []
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(plane)
+            document.Objects.UnselectAll()
+            for i, definition in enumerate(definitions):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = str(i)
+                    attributes.LayerIndex = document.Layers.CurrentLayerIndex
+                    kind = definition["type"]
+                    if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface": key = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep": key = document.Objects.AddBrep(geometry, attributes)
+                    else: key = document.Objects.AddCurve(geometry, attributes)
+                finally:
+                    attributes.Dispose()
+                if key == System.Guid.Empty:
+                    raise ValueError("distribution source insertion failed")
+                ids.append(key)
+            for group in groups:
+                if document.Groups.Add("Viboceros distribute " + str(System.Guid.NewGuid()), [ids[i] for i in group]) < 0:
+                    raise ValueError("distribution grouping failed")
+            for i in selected_indices:
+                document.Objects.Select(ids[i])
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            _record_progress("distribute: " + script)
+            try:
+                succeeded = _run_surface_script(script, True)
+            except ValueError:
+                history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                history = history_after[len(history_before):] if history_after.startswith(history_before) else history_after.rsplit("Command: _-Distribute", 1)[-1]
+                if "At least three groups of objects must be selected" not in history:
+                    raise
+                # Rhino aborts before reading the whitelisted options when
+                # selection has fewer than three object/group units.
+                succeeded = False
+            records = []
+            for obj in objects():
+                if obj.Id in before:
+                    continue
+                index = int(obj.Attributes.Name)
+                kind = definitions[index]["type"]
+                geometry = obj.Geometry
+                domain = None
+                if kind == "point": points = [_xyz(geometry.Location)]
+                elif kind == "point_cloud": points = [_xyz(p) for p in geometry.GetPoints()]
+                elif kind == "mesh": points = [_xyz(p) for p in geometry.Vertices]
+                elif kind == "brep": domain, points = _plane_array_brep_record(geometry)
+                else: domain, points = _plane_array_geometry_record(geometry, kind == "surface")
+                records.append({"source": index, "retained": obj.Id == ids[index],
+                                "selected": bool(obj.IsSelected(False)), "domain": domain, "points": points,
+                                "current_layer": obj.Attributes.LayerIndex == document.Layers.CurrentLayerIndex})
+            records.sort(key=lambda r:r["source"])
+            result_groups = []
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i):
+                    members = document.Groups.GroupMembers(i)
+                    if members: result_groups.append(sorted(int(obj.Attributes.Name) for obj in members))
+            value = {"succeeded": bool(succeeded), "objects": records, "groups": sorted(result_groups)}
+            if operation.get("inspect", False):
+                history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                value["history"] = history_after[len(history_before):] if history_after.startswith(history_before) else history_after[-5000:]
+                value["source_plane_bounds"] = []
+                transform = Rhino.Geometry.Transform.PlaneToPlane(plane, Rhino.Geometry.Plane.WorldXY)
+                for geometry in owned:
+                    local = geometry.Duplicate()
+                    try:
+                        if not local.Transform(transform):
+                            raise ValueError("distribution inspection transform failed")
+                        box = local.GetBoundingBox(True)
+                        value["source_plane_bounds"].append({"min":_xyz(box.Min),"max":_xyz(box.Max)})
+                    finally:
+                        local.Dispose()
+            return value, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i): document.Groups.Delete(i)
+            document.Objects.UnselectAll()
+            for key in selected_before: document.Objects.Select(key)
+            for geometry in reversed(owned): geometry.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
+    if operation["op"] == "distribute":
+        return _distribute(operation, tolerance)
     kind = operation["op"]
     if kind == "bounding_box_command":
         return _bounding_box_command(operation, tolerance)
