@@ -37,6 +37,7 @@ mod interface;
 mod mass_properties;
 mod parameter_bounds;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
+mod bezier_conversion;
 mod bounding_box;
 mod distribute;
 mod group_memberships;
@@ -167,6 +168,11 @@ pub enum Operation {
         id: String,
         #[serde(flatten)]
         fixture: group_memberships::GroupMembershipFixture,
+    },
+    BezierConversion {
+        id: String,
+        #[serde(flatten)]
+        fixture: bezier_conversion::BezierConversionFixture,
     },
     ConstructionPlaneInput {
         id: String,
@@ -1501,6 +1507,7 @@ impl Operation {
             | Self::BoundingBoxCommand { id, .. }
             | Self::Distribute { id, .. }
             | Self::GroupMemberships { id, .. }
+            | Self::BezierConversion { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
             | Self::InterfaceCommands { id, .. }
@@ -1845,6 +1852,7 @@ fn execute(
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
+        Operation::BezierConversion { fixture, .. } => bezier_conversion::run(fixture, tolerance)?,
         Operation::ConstructionPlaneInput { fixture, .. } => {
             construction_plane::run_input(fixture, tolerance)?
         }

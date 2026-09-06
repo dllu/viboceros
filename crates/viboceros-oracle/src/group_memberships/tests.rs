@@ -7,7 +7,7 @@ const FIXTURE: &str =
 fn permanent_group_steps_keep_order_and_exact_reverse_membership_records() {
     let request: ProbeRequest = serde_json::from_str(FIXTURE).unwrap();
     let response = run_request(&request).unwrap();
-    assert_eq!(response.results.len(), 52);
+    assert_eq!(response.results.len(), 56);
     for (operation, result) in request.operations.iter().zip(response.results) {
         let Operation::GroupMemberships { fixture: f, id } = operation else {
             panic!("group fixture")
@@ -175,11 +175,9 @@ fn automatic_name_normalization_preserves_style_and_relative_numbering() {
 }
 
 #[test]
-fn bezier_diagnostic_keeps_exact_curve_pieces_despite_document_policy_differences() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/group_memberships_diagnostics.json"
-    ))
-    .unwrap();
+fn bezier_pieces_keep_exact_loci_with_unit_domains_and_fresh_attributes() {
+    let mut request: ProbeRequest = serde_json::from_str(FIXTURE).unwrap();
+    request.operations.retain(|o| o.id() == "ordered-bezier");
     let Operation::GroupMemberships { fixture: f, .. } = &request.operations[0] else {
         panic!("group fixture")
     };
@@ -196,9 +194,11 @@ fn bezier_diagnostic_keeps_exact_curve_pieces_despite_document_policy_difference
         .filter(|o| o["source"] == 0)
         .collect::<Vec<_>>();
     assert_eq!(outputs.len(), 2);
-    for output in outputs {
-        let a = output["domain"][0].as_f64().unwrap();
-        let b = output["domain"][1].as_f64().unwrap();
+    for (output, (a, b)) in outputs.into_iter().zip(curve.spans()) {
+        assert_eq!(output["domain"], json!([0., 1.]));
+        assert_eq!(output["groups"], json!([]));
+        assert_eq!(output["selected"], json!(false));
+        assert!(output["name"].is_null());
         for (i, p) in output["points"].as_array().unwrap().iter().enumerate() {
             let t = a + (b - a) * i as f64 / 32.;
             let expected = curve.evaluate(t).unwrap().to_array();

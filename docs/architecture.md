@@ -33,8 +33,9 @@ The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
 polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and
 [trimmed-face bounds](trimmed-face-bounds.md), separately from
-document/control-net bounds. The shared `bounds/bezier` module handles local
-homogeneous span extraction, bounded tensor subdivision, and rational hulls;
+document/control-net bounds. The geometry `bezier` module owns local homogeneous
+span extraction shared by [Bézier conversion](commands/beziers.md) and bounds.
+The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve
 compositions. `bounds/parameter_curves` bounds their exact spatial images and

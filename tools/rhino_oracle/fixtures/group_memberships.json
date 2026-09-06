@@ -3919,6 +3919,244 @@
           "name": "ArrayPolar"
         }
       ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "ordered-bezier",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                3,
+                2,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                4,
+                0,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            2,
+            2,
+            2
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            10,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "set",
+          "object": 0,
+          "groups": [
+            2,
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "ConvertToBeziers"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "delete-groups-0",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Delete"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "delete-groups-1",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Delete"
+        }
+      ]
+    },
+    {
+      "op": "group_memberships",
+      "id": "delete-groups-01",
+      "sources": [
+        {
+          "type": "point",
+          "point": [
+            0,
+            0,
+            0
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            1,
+            0,
+            0
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0,
+          1
+        ],
+        [
+          0
+        ],
+        [
+          1
+        ],
+        []
+      ],
+      "steps": [
+        {
+          "kind": "select",
+          "objects": [
+            0,
+            1
+          ]
+        },
+        {
+          "kind": "command",
+          "name": "Delete"
+        }
+      ]
     }
   ]
 }

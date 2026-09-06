@@ -32,6 +32,7 @@ pub enum ObjectCommand {
     UngroupAll,
     Explode,
     ConvertToBeziers,
+    Delete,
     Distribute,
 }
 

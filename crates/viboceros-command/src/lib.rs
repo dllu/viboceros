@@ -1,6 +1,8 @@
 //! Extensible command registry and the first model-editing commands.
 
 mod arrays;
+mod bezier;
+use bezier::ConvertToBeziersCommand;
 mod bounding_box;
 mod distribute;
 mod grouping;
@@ -10385,138 +10387,6 @@ fn parse_convert_to_single_spans_options(
     })
 }
 
-const CONVERT_TO_BEZIERS_USAGE: &str = "ConvertToBeziers [DeleteInput=Yes|No]";
-
-struct BezierObjectInput {
-    id: ObjectId,
-    attributes: ObjectAttributes,
-    group_ids: Vec<GroupId>,
-    pieces: Vec<Geometry>,
-}
-
-struct ConvertToBeziersCommand;
-
-impl Command for ConvertToBeziersCommand {
-    fn name(&self) -> &'static str {
-        "ConvertToBeziers"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let delete_input =
-            parse_delete_input(arguments, CONVERT_TO_BEZIERS_USAGE, &["DeleteInput"])?;
-        let selected_ids = document.selected_object_ids().collect::<Vec<_>>();
-        if selected_ids.is_empty() {
-            return Err(CommandError::NoObjectsSelected);
-        }
-
-        let mut sources = Vec::with_capacity(selected_ids.len());
-        let mut total_piece_count = 0_usize;
-        for id in selected_ids {
-            let object = document
-                .object(id)
-                .expect("selected object identities belong to the document");
-            let piece_count = match object.geometry() {
-                Geometry::NurbsCurve(curve) => curve.spans().count(),
-                Geometry::NurbsSurface(surface) => surface
-                    .spans_u()
-                    .count()
-                    .checked_mul(surface.spans_v().count())
-                    .ok_or_else(|| too_many_span_outputs("ConvertToBeziers"))?,
-                _ => return Err(CommandError::UnsupportedConvertToBeziersGeometry),
-            };
-            total_piece_count = total_piece_count
-                .checked_add(piece_count)
-                .ok_or_else(|| too_many_span_outputs("ConvertToBeziers"))?;
-            if total_piece_count > MAX_SPAN_OUTPUT_OBJECTS {
-                return Err(too_many_span_outputs("ConvertToBeziers"));
-            }
-            let group_ids = document
-                .object(id)
-                .expect("validated source object")
-                .group_ids()
-                .to_vec();
-            sources.push((
-                id,
-                object.geometry().clone(),
-                object.attributes().clone(),
-                group_ids,
-            ));
-        }
-
-        let mut inputs = Vec::with_capacity(sources.len());
-        for (id, geometry, attributes, group_ids) in sources {
-            let pieces = match geometry {
-                Geometry::NurbsCurve(curve) => bezier_curve_segments(&curve)?
-                    .into_iter()
-                    .map(Geometry::NurbsCurve)
-                    .collect(),
-                Geometry::NurbsSurface(surface) => single_span_surface_patches(
-                    &surface,
-                    SingleSpanDirection::Both,
-                    "ConvertToBeziers",
-                )?
-                .into_iter()
-                .map(Geometry::NurbsSurface)
-                .collect(),
-                _ => return Err(CommandError::UnsupportedConvertToBeziersGeometry),
-            };
-            inputs.push(BezierObjectInput {
-                id,
-                attributes,
-                group_ids,
-                pieces,
-            });
-        }
-        debug_assert_eq!(
-            inputs.iter().map(|input| input.pieces.len()).sum::<usize>(),
-            total_piece_count
-        );
-
-        let source_count = inputs.len();
-        let source_ids = inputs.iter().map(|input| input.id).collect::<Vec<_>>();
-        let mut output_ids = Vec::new();
-        output_ids
-            .try_reserve_exact(total_piece_count)
-            .map_err(|_| too_many_span_outputs("ConvertToBeziers"))?;
-
-        for input in inputs {
-            for piece in input.pieces {
-                let id = document.add_geometry_with_attributes(piece, input.attributes.clone())?;
-                output_ids.push(id);
-                document.set_object_group_memberships(id, input.group_ids.iter().copied())?;
-            }
-        }
-
-        if delete_input {
-            for id in source_ids {
-                document.delete_object(id)?;
-            }
-            replace_selection(document, output_ids)?;
-        }
-
-        Ok(format!(
-            "Converted {source_count} NURBS object(s) into {total_piece_count} exact Bezier object(s){}",
-            if delete_input {
-                String::new()
-            } else {
-                "; inputs retained".to_owned()
-            }
-        ))
-    }
-}
-
-fn bezier_curve_segments(curve: &NurbsCurve) -> Result<Vec<NurbsCurve>, CommandError> {
-    let spans = curve.spans().collect::<Vec<_>>();
-    let mut segments = Vec::new();
-    segments
-        .try_reserve_exact(spans.len())
-        .map_err(|_| too_many_span_outputs("ConvertToBeziers"))?;
-    for (start, end) in spans {
-        segments.push(curve.try_trimmed(start..=end)?);
-    }
-    Ok(segments)
-}
-
 fn parse_yes_no(value: &str) -> Option<bool> {
     let value = value.trim_start_matches('_');
     if value.eq_ignore_ascii_case("yes") {
@@ -19723,7 +19593,7 @@ pub enum CommandError {
     #[error("none of the selected surfaces has multiple spans in the requested direction")]
     NoMultiSpanSurfaces,
 
-    #[error("ConvertToBeziers supports selected NURBS curves and untrimmed NURBS surfaces only")]
+    #[error("ConvertToBeziers requires a selected curve or surface")]
     UnsupportedConvertToBeziersGeometry,
 
     #[error("{command} would create more than {maximum} output objects")]
@@ -23693,7 +23563,7 @@ mod tests {
             "Extracted 6 surface(s) from 1 object(s); source faces removed"
         );
         assert!(document.object(source).is_none());
-        assert!(document.group(group).is_none());
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
         assert_eq!(document.selected_object_count(), 6);
         for (object, source_face) in document.selected_objects().zip(box_brep.faces()) {
             let Geometry::Brep(face) = object.geometry() else {
@@ -23731,7 +23601,7 @@ mod tests {
             "Extracted 1 surface(s) from 1 object(s); source faces removed"
         );
         assert!(document.object(source).is_none());
-        assert!(document.group(group).is_none());
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
         assert_eq!(document.selected_object_count(), 1);
         let output = document.selected_objects().next().unwrap();
         assert_eq!(output.attributes().name(), Some("Sheet"));
@@ -32791,7 +32661,7 @@ mod tests {
             "Collapsed 1 mesh edge(s) in 1 mesh(es); deleted 1 empty mesh(es)"
         );
         assert!(document.object(source).is_none());
-        assert!(document.group(group).is_none());
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
         assert_eq!(document.undo_label(), Some("CollapseMeshEdge"));
 
         registry.execute(&mut document, "Undo").unwrap();
@@ -40009,229 +39879,6 @@ mod tests {
     }
 
     #[test]
-    fn convert_to_beziers_decomposes_rational_curves_and_surfaces_exactly() {
-        let registry = CommandRegistry::with_builtins();
-        let mut document = Document::default();
-        let normal = UnitVector3::try_new(0.0, 0.0, 1.0, document.tolerance()).unwrap();
-        let curve = Circle3::try_new(
-            Point3::try_new(0.0, 0.0, 0.0).unwrap(),
-            3.0,
-            normal,
-            document.tolerance(),
-        )
-        .unwrap()
-        .to_nurbs()
-        .unwrap();
-        let surface = rational_multi_span_surface();
-        let curve_attributes =
-            ObjectAttributes::on_layer(document.current_layer_id()).with_name("Circle NURBS");
-        let surface_attributes =
-            ObjectAttributes::on_layer(document.current_layer_id()).with_name("Surface NURBS");
-        let curve_id = document
-            .add_geometry_with_attributes(
-                Geometry::NurbsCurve(curve.clone()),
-                curve_attributes.clone(),
-            )
-            .unwrap();
-        let surface_id = document
-            .add_geometry_with_attributes(
-                Geometry::NurbsSurface(surface.clone()),
-                surface_attributes.clone(),
-            )
-            .unwrap();
-        let group = document
-            .add_group(Some("Bezier sources".to_owned()), [curve_id, surface_id])
-            .unwrap();
-        document
-            .select_objects_direct([curve_id, surface_id], SelectionMode::Replace)
-            .unwrap();
-
-        assert_eq!(
-            registry.execute(&mut document, "ConvertToBeziers").unwrap(),
-            "Converted 2 NURBS object(s) into 8 exact Bezier object(s); inputs retained"
-        );
-        assert_eq!(document.objects().len(), 10);
-        assert_eq!(document.group(group).unwrap().members().len(), 10);
-        assert!(document.is_selected(curve_id));
-        assert!(document.is_selected(surface_id));
-
-        let curve_spans = curve.spans().collect::<Vec<_>>();
-        for (object, (start, end)) in document.objects().skip(2).take(4).zip(curve_spans) {
-            assert!(!document.is_selected(object.id()));
-            assert_eq!(object.attributes(), &curve_attributes);
-            let Geometry::NurbsCurve(segment) = object.geometry() else {
-                panic!("the first Bezier outputs must be curve segments")
-            };
-            assert_eq!(segment.domain(), start..=end);
-            assert_eq!(segment.spans().count(), 1);
-            assert_eq!(segment.control_points().len(), segment.degree() + 1);
-            let parameter = (start + end) * 0.5;
-            assert!(
-                segment
-                    .evaluate(parameter)
-                    .unwrap()
-                    .is_near(curve.evaluate(parameter).unwrap(), Tolerance::DEFAULT)
-            );
-        }
-
-        let expected_domains = [
-            (0.0..=0.7, 10.0..=11.5),
-            (0.0..=0.7, 11.5..=14.0),
-            (0.7..=2.0, 10.0..=11.5),
-            (0.7..=2.0, 11.5..=14.0),
-        ];
-        for (object, (domain_u, domain_v)) in document.objects().skip(6).zip(expected_domains) {
-            assert!(!document.is_selected(object.id()));
-            assert_eq!(object.attributes(), &surface_attributes);
-            let Geometry::NurbsSurface(patch) = object.geometry() else {
-                panic!("the remaining Bezier outputs must be surface patches")
-            };
-            assert_eq!(patch.domain_u(), domain_u);
-            assert_eq!(patch.domain_v(), domain_v);
-            assert_eq!(patch.control_point_count_u(), patch.degree_u() + 1);
-            assert_eq!(patch.control_point_count_v(), patch.degree_v() + 1);
-            let u = (*domain_u.start() + *domain_u.end()) * 0.5;
-            let v = (*domain_v.start() + *domain_v.end()) * 0.5;
-            assert!(
-                patch
-                    .evaluate(u, v)
-                    .unwrap()
-                    .is_near(surface.evaluate(u, v).unwrap(), Tolerance::DEFAULT)
-            );
-        }
-        assert_eq!(document.undo_label(), Some("ConvertToBeziers"));
-
-        registry.execute(&mut document, "Undo").unwrap();
-        assert_eq!(document.objects().len(), 2);
-        assert_eq!(document.group(group).unwrap().members().len(), 2);
-    }
-
-    #[test]
-    fn convert_to_beziers_replaces_even_a_single_span_with_a_fresh_grouped_object() {
-        let registry = CommandRegistry::with_builtins();
-        let mut document = Document::default();
-        let curve = NurbsCurve::try_new_rational(
-            3,
-            vec![
-                WeightedPoint3::try_new(Point3::try_new(0.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
-                WeightedPoint3::try_new(Point3::try_new(1.0, 3.0, 0.0).unwrap(), 0.7).unwrap(),
-                WeightedPoint3::try_new(Point3::try_new(4.0, 2.0, 0.0).unwrap(), 1.4).unwrap(),
-                WeightedPoint3::try_new(Point3::try_new(5.0, 0.0, 0.0).unwrap(), 1.0).unwrap(),
-            ],
-            vec![-3.0, -2.0, -1.0, 0.0, 2.0, 3.0, 4.0, 5.0],
-        )
-        .unwrap();
-        let attributes =
-            ObjectAttributes::on_layer(document.current_layer_id()).with_name("One span");
-        let source = document
-            .add_geometry_with_attributes(Geometry::NurbsCurve(curve.clone()), attributes.clone())
-            .unwrap();
-        let group = document
-            .add_group(Some("Single Bezier".to_owned()), [source])
-            .unwrap();
-        document
-            .select_objects_direct([source], SelectionMode::Replace)
-            .unwrap();
-
-        assert_eq!(
-            registry
-                .execute(&mut document, "ConvertToBeziers DeleteInput=Yes")
-                .unwrap(),
-            "Converted 1 NURBS object(s) into 1 exact Bezier object(s)"
-        );
-        assert_eq!(document.objects().len(), 1);
-        let output = document.objects().next().unwrap();
-        assert_ne!(output.id(), source);
-        assert!(document.is_selected(output.id()));
-        assert_eq!(output.attributes(), &attributes);
-        assert_eq!(output.geometry(), &Geometry::NurbsCurve(curve.clone()));
-        assert_eq!(
-            document.group(group).unwrap().members().collect::<Vec<_>>(),
-            vec![output.id()]
-        );
-        assert_eq!(document.undo_label(), Some("ConvertToBeziers"));
-
-        registry.execute(&mut document, "Undo").unwrap();
-        assert_eq!(document.objects().len(), 1);
-        assert_eq!(document.objects().next().unwrap().id(), source);
-        assert_eq!(
-            document.group(group).unwrap().members().collect::<Vec<_>>(),
-            vec![source]
-        );
-    }
-
-    #[test]
-    fn convert_to_beziers_opens_periodic_curves_and_rejects_bad_inputs_atomically() {
-        let registry = CommandRegistry::with_builtins();
-        let mut document = Document::default();
-        let curve = NurbsCurve::try_control_point_curve_with_closure(
-            3,
-            vec![
-                Point3::try_new(-3.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(-1.0, 3.0, 0.0).unwrap(),
-                Point3::try_new(2.0, 4.0, 0.0).unwrap(),
-                Point3::try_new(5.0, 1.0, 0.0).unwrap(),
-                Point3::try_new(4.0, -3.0, 0.0).unwrap(),
-                Point3::try_new(0.0, -4.0, 0.0).unwrap(),
-            ],
-            ControlPointCurveClosure::Smooth,
-        )
-        .unwrap();
-        assert!(curve.is_periodic());
-        let spans = curve.spans().collect::<Vec<_>>();
-        let source = document
-            .add_geometry(Geometry::NurbsCurve(curve.clone()))
-            .unwrap();
-        document
-            .select_objects_direct([source], SelectionMode::Replace)
-            .unwrap();
-        registry
-            .execute(&mut document, "ConvertToBeziers Yes")
-            .unwrap();
-        assert_eq!(document.objects().len(), spans.len());
-        for (object, (start, end)) in document.objects().zip(spans) {
-            let Geometry::NurbsCurve(segment) = object.geometry() else {
-                panic!("periodic conversion must output NURBS curves")
-            };
-            assert!(!segment.is_periodic());
-            assert_eq!(segment.domain(), start..=end);
-            assert_eq!(segment.spans().count(), 1);
-            let parameter = (start + end) * 0.5;
-            assert!(
-                segment
-                    .evaluate(parameter)
-                    .unwrap()
-                    .is_near(curve.evaluate(parameter).unwrap(), Tolerance::DEFAULT)
-            );
-        }
-
-        registry.execute(&mut document, "Undo").unwrap();
-        let point = document
-            .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
-            .unwrap();
-        document
-            .select_objects_direct([source, point], SelectionMode::Replace)
-            .unwrap();
-        let history = document.undo_label().map(str::to_owned);
-        for invalid in [
-            "ConvertToBeziers DeleteInput=Maybe",
-            "ConvertToBeziers DeleteInput=No extra",
-            "ConvertToBeziers Other=Yes",
-        ] {
-            assert!(
-                registry.execute(&mut document, invalid).is_err(),
-                "{invalid}"
-            );
-        }
-        assert!(matches!(
-            registry.execute(&mut document, "ConvertToBeziers"),
-            Err(CommandError::UnsupportedConvertToBeziersGeometry)
-        ));
-        assert_eq!(document.objects().len(), 2);
-        assert_eq!(document.undo_label(), history.as_deref());
-    }
-
-    #[test]
     fn polysurface_selection_is_distinct_from_surface_selection() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -40708,7 +40355,8 @@ mod tests {
 
         registry.execute(&mut document, "Delete").unwrap();
         assert_eq!(document.objects().len(), 0);
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.groups().len(), 1);
+        assert!(document.groups().all(|group| group.members().len() == 0));
         assert_eq!(document.undo_label(), Some("Delete"));
         registry.execute(&mut document, "Undo").unwrap();
         assert_eq!(document.objects().len(), 2);

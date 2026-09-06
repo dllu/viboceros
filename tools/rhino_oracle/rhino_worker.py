@@ -3426,7 +3426,7 @@ def _group_memberships(operation, tolerance):
         if any(type(i) is not int or not 0 <= i < count for i in values) or (unique and len(set(values)) != len(values)):
             raise ValueError("invalid membership indices")
     scripts = {"Copy": "_Copy w0,0,0 w10,0,0 _Enter", "Ungroup": "_Ungroup", "UngroupAll": "_UngroupAll",
-               "Explode": "_Explode", "ConvertToBeziers": "_ConvertToBeziers _Yes",
+               "Explode": "_Explode", "ConvertToBeziers": "_ConvertToBeziers _Yes", "Delete": "_Delete",
                "Distribute": "_-Distribute _Mode=_Gap _Spacing _Automatic _XAxis",
                "Array": "_-Array _Mode=_UnitCell 2 1 1 10 _Enter",
                "ArrayPolar": "_-ArrayPolar w0,0,0 2 _Rotate=_Yes _ZOffset 0 180 _Enter",
@@ -3581,7 +3581,138 @@ def _group_memberships(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
+def _bezier_conversion(operation, tolerance):
+    definitions = operation["sources"]
+    selected = operation.get("selected", list(range(len(definitions))))
+    delete = operation["delete_input"]
+    if not 1 <= len(definitions) <= 16 or (delete is not None and type(delete) is not bool):
+        raise ValueError("invalid Bezier conversion fixture")
+    if not selected or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected) or len(set(selected)) != len(selected):
+        raise ValueError("invalid Bezier preselection")
+    # At least one known curve/surface avoids an interactive object prompt.
+    if not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
+               (definitions[i]["type"] == "brep" and definitions[i].get("cap_surface") is None) for i in selected):
+        raise ValueError("Bezier conversion requires a curve or surface")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
+    def objects(): return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected_before = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    layer_before = document.Layers.CurrentLayerIndex
+    groups_before = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    owned, ids, layers = [], [], []
+    group_names = {}
+    suffix = str(System.Guid.NewGuid())
+    def record():
+        records = []
+        for obj in objects():
+            if obj.Id in before: continue
+            original = ids.index(obj.Id) if obj.Id in ids else None
+            geometry = obj.Geometry
+            domain, definition = None, None
+            if isinstance(geometry, Rhino.Geometry.Point):
+                kind, points = "point", [_xyz(geometry.Location)]
+            elif isinstance(geometry, Rhino.Geometry.Mesh):
+                kind, points = "mesh", [_xyz(p) for p in geometry.Vertices]
+            elif isinstance(geometry, Rhino.Geometry.PointCloud):
+                kind, points = "point_cloud", [_xyz(p) for p in geometry.GetPoints()]
+            elif isinstance(geometry, Rhino.Geometry.Brep) and original is not None and definitions[original]["type"]=="brep":
+                kind = "brep"
+                domain, points = _plane_array_brep_record(geometry)
+            elif isinstance(geometry, (Rhino.Geometry.Brep, Rhino.Geometry.Surface)):
+                if isinstance(geometry, Rhino.Geometry.Brep):
+                    if geometry.Faces.Count != 1: raise ValueError("Bezier output must be a single surface")
+                    if original is None and not geometry.IsSurface: raise ValueError("Bezier output unexpectedly retains trims")
+                    geometry = geometry.Faces[0].UnderlyingSurface()
+                kind = "surface"
+                domain, points = _plane_array_geometry_record(geometry, True)
+                if original is None: definition = _nurbs_surface_definition(geometry)
+            else:
+                kind = "curve"
+                domain, points = _plane_array_geometry_record(geometry, False)
+                if original is None: definition = _nurbs_curve_definition(geometry)
+            attributes = obj.Attributes
+            name = attributes.Name or None
+            layer = "Source" if attributes.LayerIndex == layers[0] else "Current" if attributes.LayerIndex == layers[1] else "Unexpected"
+            color = attributes.ObjectColor
+            memberships = [group_names.get(i, document.Groups.GroupName(i)) for i in (attributes.GetGroupList() or [])]
+            value = dict(original=original, kind=kind, domain=domain, points=points, definition=definition,
+                         name=name, layer=layer, color=[int(color.R),int(color.G),int(color.B)],
+                         color_source=str(attributes.ColorSource), groups=memberships, selected=bool(obj.IsSelected(False)))
+            key = (original is None, -1 if original is None else original, kind, tuple(round(x, 8) for p in points for x in p))
+            records.append((key, obj.Id, obj.RuntimeSerialNumber, value))
+        # Equivalent outputs have identical fresh attributes; use actual creation
+        # order to break geometric ties, never object-enumerator ordering.
+        records.sort(key=lambda r:(r[0],r[2]))
+        index = dict((record[1],i) for i,record in enumerate(records))
+        table = []
+        for i in range(document.Groups.Count):
+            if i in groups_before or document.Groups.IsDeleted(i): continue
+            table.append(dict(name=group_names.get(i,document.Groups.GroupName(i)), members=sorted(index[obj.Id] for obj in (document.Groups.GroupMembers(i) or []))))
+        table.sort(key=lambda g:g["name"])
+        order = sorted(range(len(records)), key=lambda i:records[i][2])
+        return dict(objects=[r[3] for r in records], groups=table, creation_order=order)
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(Rhino.Geometry.Plane.WorldXY)
+            document.Objects.UnselectAll()
+            for label in ("Source", "Current"):
+                layer = Rhino.DocObjects.Layer()
+                try:
+                    layer.Name = "Viboceros Bezier " + label + " " + suffix
+                    index = document.Layers.Add(layer)
+                    if index < 0: raise ValueError("Bezier layer insertion failed")
+                    layers.append(index)
+                finally: layer.Dispose()
+            if not document.Layers.SetCurrentLayerIndex(layers[1], True): raise ValueError("Bezier current layer failed")
+            for i, definition in enumerate(definitions):
+                geometry = _object_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = "source-%d" % i
+                    attributes.LayerIndex = layers[0]
+                    attributes.ObjectColor = System.Drawing.Color.FromArgb(11+i,22,33)
+                    attributes.ColorSource = Rhino.DocObjects.ObjectColorSource.ColorFromObject
+                    kind = definition["type"]
+                    if kind == "point": key = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud": key = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh": key = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface": key = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep": key = document.Objects.AddBrep(geometry, attributes)
+                    else: key = document.Objects.AddCurve(geometry, attributes)
+                finally: attributes.Dispose()
+                if key == System.Guid.Empty: raise ValueError("Bezier source insertion failed")
+                ids.append(key)
+            for i, members in enumerate([ids, [ids[0]], []]):
+                index = document.Groups.Add("Viboceros Bezier Group %d " % i + suffix, members)
+                if index < 0: raise ValueError("Bezier group insertion failed")
+                group_names[index] = "Group-%d" % i
+            for i in selected:
+                if not document.Objects.Select(ids[i]): raise ValueError("Bezier source preselection failed")
+            if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in selected): raise ValueError("Bezier source preselection incomplete")
+            initial = record()
+            _record_progress("Bezier conversion: command")
+            _run_surface_script("_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No"), True)
+            _record_progress("Bezier conversion: record")
+            return dict(before=initial, after=record()), 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before: document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in groups_before and not document.Groups.IsDeleted(i): document.Groups.Delete(i)
+            document.Layers.SetCurrentLayerIndex(layer_before, True)
+            for i in reversed(layers): document.Layers.Delete(i, True)
+            document.Objects.UnselectAll()
+            for key in selected_before: document.Objects.Select(key)
+            for geometry in reversed(owned): geometry.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
+    if operation["op"] == "bezier_conversion":
+        return _bezier_conversion(operation, tolerance)
     if operation["op"] == "group_memberships":
         return _group_memberships(operation, tolerance)
     if operation["op"] == "distribute":

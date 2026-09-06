@@ -4,6 +4,7 @@
 //! or produce degenerate geometry return [`GeometryError`] rather than letting
 //! invalid values enter the model.
 
+mod bezier;
 mod bounds;
 mod brep;
 mod catenary;
@@ -53,6 +54,7 @@ mod tolerance;
 mod transform;
 mod vector;
 
+pub use bezier::MAX_BEZIER_CONTROL_POINTS;
 pub use bounds::BoundingBox3;
 pub use brep::{
     Brep, BrepEdge, BrepFace, BrepLoop, BrepLoopType, BrepTrim, BrepTrimType, BrepVertex,

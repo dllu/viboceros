@@ -138,7 +138,8 @@ fn removing_definitions_and_deleting_members_restore_order_on_replay() {
             consistent(&document);
         }
         document.commit_transaction().unwrap();
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.groups().len(), 3);
+        assert!(document.groups().all(|g| g.members().len() == 0));
         document.undo().unwrap();
         assert_eq!(state(&document), original);
         document.redo().unwrap();

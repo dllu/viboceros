@@ -99,7 +99,7 @@ fn mixed_join_preserves_seed_attributes_groups_and_atomic_history() {
             .collect::<Vec<_>>(),
         vec![output]
     );
-    assert!(document.group(second_group).is_none());
+    assert_eq!(document.group(second_group).unwrap().members().len(), 0);
     assert!(document.is_selected(output));
     assert_eq!(document.undo_label(), Some("Join"));
     registry.execute(&mut document, "Undo").unwrap();

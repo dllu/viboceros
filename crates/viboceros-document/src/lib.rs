@@ -1673,13 +1673,9 @@ impl Document {
             .iter()
             .position(|object| object.id == id)
             .ok_or(DocumentError::ObjectNotFound(id))?;
-        let memberships = self.objects[index].group_ids.clone();
+        // Object deletion removes memberships, not group definitions. Empty
+        // groups remain addressable and their creation order survives undo.
         self.set_object_group_memberships(id, [])?;
-        for group in memberships {
-            if self.group(group).unwrap().members.is_empty() {
-                self.remove_group(group)?;
-            }
-        }
         let object = self.objects.remove(index);
         self.selection.remove(&id);
         self.selection_order.retain(|selected| *selected != id);
@@ -2716,15 +2712,24 @@ mod tests {
     }
 
     #[test]
-    fn deleting_an_object_prunes_groups_losing_their_last_member() {
+    fn deleting_an_object_retains_empty_group_definitions_through_undo_redo() {
         let mut document = Document::default();
         let object = document
             .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
             .unwrap();
-        document.add_group(None, [object]).unwrap();
+        let group = document.add_group(None, [object]).unwrap();
         document.delete_object(object).unwrap();
         assert_eq!(document.objects().len(), 0);
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.groups().len(), 1);
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
+        document.undo().unwrap();
+        assert_eq!(
+            document.group(group).unwrap().members().collect::<Vec<_>>(),
+            [object]
+        );
+        assert_eq!(document.object(object).unwrap().group_ids(), [group]);
+        document.redo().unwrap();
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
     }
 
     #[test]
@@ -4257,7 +4262,7 @@ mod tests {
     }
 
     #[test]
-    fn undo_restores_a_group_removed_with_its_last_object() {
+    fn undo_restores_memberships_in_a_retained_empty_group() {
         let mut document = Document::default();
         let object = document
             .add_geometry(Geometry::Point(Point3::try_new(0.0, 0.0, 0.0).unwrap()))
@@ -4266,7 +4271,7 @@ mod tests {
             .add_group(Some("Solo".to_owned()), [object])
             .unwrap();
         document.delete_object(object).unwrap();
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
 
         document.undo().unwrap();
         assert_eq!(document.groups().next().unwrap().id(), group);
@@ -4275,7 +4280,7 @@ mod tests {
             Some(object)
         );
         document.redo().unwrap();
-        assert_eq!(document.groups().len(), 0);
+        assert_eq!(document.group(group).unwrap().members().len(), 0);
     }
 
     #[test]

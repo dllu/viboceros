@@ -22,6 +22,10 @@ definitions and leave unselected peers unchanged. These are the
 Ordinary group-aware picking can expand selection before a command starts;
 these commands themselves do not expand it.
 
+Deleting objects likewise removes their memberships, not their group definitions.
+An empty group remains addressable, and undo restores memberships in their original
+order. Explicit group deletion remains a separate operation.
+
 Viboceros also retains explicit document-management extensions: `Group all Name`
 groups every selectable object; `Ungroup Name` deletes a named definition and
 all of its memberships; `Ungroup all` deletes every definition in the document.
@@ -77,7 +81,7 @@ not absolute counters in a reused Rhino document.
 
 ## Verification and limits
 
-The 52 `group_memberships.json` comparisons record every step's ordered memberships,
+The 56 `group_memberships.json` comparisons record every step's ordered memberships,
 reverse member lists (including empty definitions), source identity, names,
 selection, domains, and sampled geometry. Their epsilon is absolute `1e-8`,
 relative `1e-12`; maximum observed coordinate error is `1.34e-15`.
@@ -88,14 +92,12 @@ Decomposition/extraction regressions exercise `ConvertToSingleSpans`,
 `ConvertToBeziers`, curve/isocurve `Split`, `Explode`, `SplitDisjointMesh`,
 `ExtractMeshFaces`, and `ExtractDuplicateMeshFaces`.
 
-One explicitly failing comparison remains in `group_memberships_diagnostics.json`:
-Rhino's curve `ConvertToBeziers DeleteInput=Yes` produces unnamed, ungrouped,
-unselected pieces with `[0,1]` domains. The native command still retains source
-attributes/groups/span domains and selects replacement pieces. Its evaluated
-pieces match the original curve exactly in independent native tests, but its
-document policy needs a separate command-specific correction. Nameless outputs
+The former `ConvertToBeziers` mismatch now passes: fresh pieces are unnamed,
+ungrouped, unselected, and unit-domain. Three additional real `Delete` probes
+verify retention of empty definitions. The old diagnostic was merged into the
+regular fixture; no comparison fields or epsilons were relaxed. Nameless outputs
 are attributed only when a command has one unambiguous source; names remain
-explicit comparison fields, not silently restored metadata.
+explicit comparison fields. See [Bézier conversion](commands/beziers.md).
 
 A private GUI smoke test imported differently ordered memberships and an empty
 group, distributed six points, exercised undo/redo and interactive Copy, and

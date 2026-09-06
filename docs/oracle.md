@@ -76,7 +76,7 @@ differences remain in `distribute_diagnostics.json`; see
 [Distribute](commands/distribute.md). Its batch preselection guard avoids
 leaving Rhino in an interactive object-selection prompt.
 
-`group_memberships.json` contains 52 comparisons of ordered object memberships and the reverse
+`group_memberships.json` contains 56 comparisons of ordered object memberships and the reverse
 group-member table after every fixture step. It exercises membership edits,
 deletion, nested/partial `Ungroup` and `UngroupAll`, copied-group allocation,
 decomposition, and older-group distribution. IDs are compared as retained-source
@@ -85,10 +85,14 @@ Only automatic `Group`-plus-digits names are canonicalized, by numeric order:
 the reused Rhino document reserves those names across cleaned-up operations.
 Explicit names and incorrectly styled copy names remain literal. This does not
 establish absolute deleted-name allocation history; see [groups](groups.md).
-`group_memberships_diagnostics.json` retains one real ConvertToBeziers
-attribute/group/selection/domain mismatch. Its DeleteInput prompt is answered
-explicitly. A separate point-cloud-cycle probe now uses the same preselection
-workflow as the native command; the previous in-command SelID workflow did not.
+The former ConvertToBeziers diagnostic now passes and is part of the regular
+group fixture; ordinary Delete also retains empty definitions. The separate
+`bezier_conversion.json` compares complete output NURBS control nets, source
+identity, domains, sampled geometry, output creation order, current/source layers,
+colors, names, groups, and selection after explicit deletion choices; see
+[Bézier conversion](commands/beziers.md). A separate point-cloud-cycle probe uses
+the same preselection workflow as the native command; the previous in-command
+SelID workflow did not.
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 

@@ -105,18 +105,10 @@ parameter values, attributes, and group membership are preserved. Inputs are
 retained by default; `DeleteInput=Yes` replaces them in one undoable edit, and
 surfaces already single-span in the requested direction are left untouched.
 
-`ConvertToBeziers` decomposes selected NURBS curves and untrimmed NURBS surfaces
-exactly at every nonempty knot span. It preserves rational weights, source
-parameters, attributes, and group membership. Inputs are retained by default;
-`DeleteInput=Yes` replaces them with fresh pieces in one undoable edit. A
-single-span input still produces a fresh Bezier object.
-
-This document policy is not yet Rhino-compatible: a real `ConvertToBeziers`
-curve probe with `DeleteInput=Yes` produces unnamed, ungrouped, unselected pieces
-with `[0,1]` domains in Rhino. The native command still retains source attributes,
-groups, and span domains and selects its replacement pieces. This difference is
-retained in `group_memberships_diagnostics.json`; no comparison fields or epsilon
-are relaxed to hide it. See [group verification](../groups.md).
+[`ConvertToBeziers`](beziers.md) exactly decomposes curves and underlying surfaces
+into fresh, ungrouped, unselected pieces on the current layer. Every output
+domain is `[0,1]` (in both directions for surfaces); trims are discarded.
+`DeleteInput=Yes` deletes eligible sources while retaining empty group definitions.
 
 ## Seams and parameter domains
 

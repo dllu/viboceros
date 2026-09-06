@@ -127,30 +127,11 @@ impl Net {
             let source = (0..=degree)
                 .map(|i| self.controls[self.index(axis, line, i)])
                 .collect::<Vec<_>>();
-            let mut work = source.clone();
-            for end_arguments in 0..=degree {
-                work.copy_from_slice(&source);
-                // Blossom: p-i copies of the left endpoint and i of the right.
-                // Keeping all four coordinates avoids projection at inserted
-                // zero-weight controls and covers unclamped/full-order spans.
-                for level in 1..=degree {
-                    let t = if level <= degree - end_arguments {
-                        a
-                    } else {
-                        b
-                    };
-                    for j in (level..=degree).rev() {
-                        let k = span - degree + j;
-                        let alpha = crate::nurbs::interval_fraction(
-                            t,
-                            knots[k],
-                            knots[k + degree - level + 1],
-                        )?;
-                        work[j] = blend(work[j - 1], work[j], alpha);
-                    }
-                }
-                let index = self.index(axis, line, end_arguments);
-                self.controls[index] = work[degree];
+            let extracted = crate::bezier::extract_homogeneous_span(degree, knots, span, &source)
+                .map_err(|_| GeometryError::BoundingBoxDidNotConverge)?;
+            for (i, value) in extracted.into_iter().enumerate() {
+                let index = self.index(axis, line, i);
+                self.controls[index] = value;
             }
         }
         Ok(())
