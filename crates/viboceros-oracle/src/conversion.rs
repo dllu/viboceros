@@ -1,4 +1,4 @@
-//! Real ConvertToBeziers document behavior, independent of output provenance.
+//! Shared document/attribute records for geometry conversion commands.
 use super::*;
 use crate::object_source::ObjectSource;
 
@@ -6,15 +6,36 @@ use crate::object_source::ObjectSource;
 mod tests;
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct BezierConversionFixture {
+pub struct ConversionFixture {
     pub sources: Vec<ObjectSource>,
     pub selected: Option<Vec<usize>>,
     pub delete_input: Option<bool>,
 }
 
-pub(super) fn run(
-    f: &BezierConversionFixture,
+pub(super) fn run(f: &ConversionFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
+    run_command(
+        f,
+        tolerance,
+        &CommandRegistry::with_builtins(),
+        &format!("ConvertToBeziers{}", delete_option(f.delete_input)),
+        false,
+    )
+}
+
+pub(super) fn delete_option(value: Option<bool>) -> &'static str {
+    match value {
+        Some(true) => " DeleteInput=Yes",
+        Some(false) => " DeleteInput=No",
+        None => "",
+    }
+}
+
+pub(super) fn run_command(
+    f: &ConversionFixture,
     tolerance: Tolerance,
+    registry: &CommandRegistry,
+    command: &str,
+    undo_after: bool,
 ) -> Result<(Value, u64), ProbeError> {
     let invalid = || ProbeError::FixtureInvariant("invalid Bezier conversion fixture");
     if f.sources.is_empty() || f.sources.len() > 16 {
@@ -53,21 +74,17 @@ pub(super) fn run(
         document.select_objects_direct([ids[index]], SelectionMode::Add)?;
     }
     let before = record(&document, &ids, source_layer, current_layer)?;
-    CommandRegistry::with_builtins().execute(
-        &mut document,
-        &format!(
-            "ConvertToBeziers{}",
-            match f.delete_input {
-                Some(true) => " DeleteInput=Yes",
-                Some(false) => " DeleteInput=No",
-                None => "",
-            }
-        ),
-    )?;
-    Ok((
-        json!({"before":before,"after":record(&document,&ids,source_layer,current_layer)?}),
-        0,
-    ))
+    registry.execute(&mut document, command)?;
+    let after = record(&document, &ids, source_layer, current_layer)?;
+    if undo_after {
+        if before == after {
+            return Err(ProbeError::FixtureInvariant(
+                "cannot undo a no-op conversion",
+            ));
+        }
+        registry.execute(&mut document, "Undo")?;
+    }
+    Ok((json!({"before":before,"after":after}), 0))
 }
 
 fn record(
@@ -88,7 +105,7 @@ fn record(
             Geometry::NurbsSurface(surface) => (
                 "surface",
                 if original.is_none() {
-                    nurbs_surface_definition_value(surface)
+                    surface_definition(surface)
                 } else {
                     Value::Null
                 },
@@ -165,4 +182,18 @@ fn record(
         json!({"objects":records.into_iter().map(|(_,_,v)|v).collect::<Vec<_>>(),"creation_order":creation_order,
         "groups":groups.into_iter().map(|(name,members)|json!({"name":name,"members":members})).collect::<Vec<_>>()}),
     )
+}
+
+fn surface_definition(surface: &NurbsSurface) -> Value {
+    let mut value = nurbs_surface_definition_value(surface);
+    // OpenNURBS omits the two superfluous end knots. The Rhino worker pads
+    // these nonexistent slots with their neighbors; use that same codec here,
+    // without changing model knots or dropping any actual Rhino knot value.
+    for key in ["knots_u", "knots_v"] {
+        let knots = value[key].as_array_mut().expect("surface knot array");
+        let last = knots.len() - 1;
+        knots[0] = knots[1].clone();
+        knots[last] = knots[last - 1].clone();
+    }
+    value
 }

@@ -34,7 +34,11 @@ polar layout. Its geometry extents use tolerance-controlled
 [curve](curve-bounds.md), [surface](surface-bounds.md), and
 [trimmed-face bounds](trimmed-face-bounds.md), separately from
 document/control-net bounds. The geometry `bezier` module owns local homogeneous
-span extraction shared by [Bézier conversion](commands/beziers.md) and bounds.
+span extraction shared by [Bézier conversion](commands/beziers.md), directional
+[single-span conversion](commands/single-spans.md), and bounds. Each conversion
+command has its own module and typed [option memory](command-options.md), outside
+document history. Shared oracle recording lives in `conversion`; self-seeded
+stateful probes live in `conversion_session`, separate from geometry algorithms.
 The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve

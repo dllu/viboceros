@@ -99,11 +99,11 @@ domains follow Rhino's chord-length, arc-length, and angular conventions.
 
 ## Span decomposition
 
-`ConvertToSingleSpans` decomposes selected untrimmed NURBS surfaces at their
-exact knot spans in `Direction=U`, `V`, or `Both`. Rational weights, source
-parameter values, attributes, and group membership are preserved. Inputs are
-retained by default; `DeleteInput=Yes` replaces them in one undoable edit, and
-surfaces already single-span in the requested direction are left untouched.
+[`ConvertToSingleSpans`](single-spans.md) decomposes selected surfaces and
+single-face B-reps in `Direction=U`, `V`, or `Both`. Outputs have fresh current-layer
+attributes and no groups; requested axes acquire `[0,1]` domains. Inputs already
+single-span in the requested direction(s) are left entirely unchanged. U/V
+`Toggle` and [remembered options](../command-options.md) are supported.
 
 [`ConvertToBeziers`](beziers.md) exactly decomposes curves and underlying surfaces
 into fresh, ungrouped, unselected pieces on the current layer. Every output

@@ -17,7 +17,7 @@ class BezierWorkerTests(unittest.TestCase):
                         dict(selected=[1]), dict(selected=[0,0]), dict(sources=[dict(type="point")]),
                         dict(sources=[dict(type="brep",cap_surface={})])]:
             with self.subTest(changes=changes), self.assertRaises(ValueError):
-                self.worker._bezier_conversion(dict(valid,**changes), {})
+                self.worker._geometry_conversion(dict(valid,**changes), {})
 
     def test_cleanup_and_preselection_at_every_failure_boundary(self):
         for failure in [None,"plane","layer","current","source","insert","group","select","incomplete","record","command"]:
@@ -30,7 +30,12 @@ class BezierWorkerTests(unittest.TestCase):
     def test_geometrically_identical_outputs_use_creation_order_for_canonical_ties(self):
         self.exercise(None,True,copies=2,reverse_enumerator=True)
 
-    def exercise(self,failure,delete=True,copies=1,reverse_enumerator=False):
+    def test_undo_after_conversion_restores_only_owned_objects_before_cleanup(self):
+        for delete in [False,True]:
+            self.exercise(None,delete,undo_after=True)
+        self.exercise("noop-undo",False,undo_after=True)
+
+    def exercise(self,failure,delete=True,copies=1,reverse_enumerator=False,undo_after=False):
         worker,doc=self.worker,self.document
         selected={"existing"}; objects={}; owned=[]; attributes=[]; layers=[]
         class Curve:
@@ -92,9 +97,18 @@ class BezierWorkerTests(unittest.TestCase):
         def sample(*_):
             if failure=="record": raise ValueError("record failure")
             return [0,1],[[0,0,0],[1,1,0]]
+        saved_source=[]
         def command(script,verify):
+            if script=="_Undo":
+                self.assertTrue(undo_after)
+                for key in list(objects):
+                    if key.startswith("output-"): remove(key,True)
+                if delete is not False: objects["source"]=saved_source[0]
+                return True
             self.assertEqual(script,"_ConvertToBeziers "+("_Enter" if delete is None else "_Yes" if delete else "_No"))
             self.assertTrue(verify)
+            if failure=="noop-undo": return True
+            saved_source.append(objects["source"])
             # Even a partially failed command may have added an object.
             for i in range(copies):
                 key="output-%d" % i
@@ -108,17 +122,18 @@ class BezierWorkerTests(unittest.TestCase):
              patch.object(worker,"_nurbs_curve_definition",return_value={"degree":1}), \
              patch.object(worker,"_run_surface_script",side_effect=command) as run, \
              patch.object(worker,"_record_progress"):
-            operation=dict(sources=[dict(type="nurbs")],delete_input=delete)
+            operation=dict(sources=[dict(type="nurbs")],delete_input=delete,undo_after=undo_after)
             if failure:
-                with self.assertRaises(ValueError): worker._bezier_conversion(operation,{})
+                with self.assertRaises(ValueError): worker._geometry_conversion(operation,{})
             else:
-                value,_=worker._bezier_conversion(operation,{})
+                value,_=worker._geometry_conversion(operation,{})
                 self.assertEqual(value["before"]["objects"][0]["groups"],["Group-0","Group-1"])
                 output=value["after"]["objects"][-1]
                 self.assertEqual((output["original"],output["layer"],output["name"],output["selected"],output["groups"]),(None,"Current",None,False,[]))
                 self.assertEqual(len(value["after"]["groups"]),3)
                 self.assertEqual(value["after"]["creation_order"],list(range(len(value["after"]["objects"]))))
-            if failure not in [None,"command"]: run.assert_not_called()
+            if failure not in [None,"command","noop-undo"]: run.assert_not_called()
+            if failure=="noop-undo": self.assertEqual(run.call_count,1)
         self.assertEqual(set(objects),{"existing"}); self.assertEqual(selected,{"existing"})
         self.assertEqual(layer_entries,{0:"existing"}); self.assertEqual(doc.Layers.CurrentLayerIndex,0)
         self.assertEqual(set(groups)-deleted,{0})

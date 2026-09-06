@@ -24,10 +24,12 @@ Only single-face B-reps are eligible: polysurfaces are ignored, even when a curv
 is also selected. Selected points, point clouds, and meshes are ignored. With no
 eligible selection, the command returns an error without modifying the document.
 
-Viboceros currently defaults to `No`; Rhino remembers its last deletion choice.
-Use explicit options for reproducible scripts. Sticky-option parity is not yet
-implemented. All generated geometry is staged before insertion/deletion in one
-undoable transaction; geometry failures roll back without partial output.
+The command remembers its last accepted deletion choice, independently of
+`ConvertToSingleSpans` and outside document undo. Its native bootstrap is `No`;
+see [option lifetime and session verification](../command-options.md). Use
+explicit options for reproducible scripts. All generated geometry is staged
+before insertion/deletion in one undoable transaction; geometry failures roll
+back without partial output.
 
 ## Geometry and limits
 
@@ -57,8 +59,9 @@ group tables. No attributes are silently normalized to match. New Rhino surface
 outputs must have trivial trimming, checked with
 [`Brep.IsSurface`](https://developer.rhino3d.com/api/rhinocommon/rhino.geometry.brep/issurface).
 The recorded comparisons use absolute `1e-8` and relative `1e-12` epsilon;
-maximum observed numeric error is `2.67e-15`. Default-prompt probes are diagnostic
-only, since they depend on Rhino's session history.
+maximum observed numeric error is `2.67e-15`. Self-seeded session probes separately
+verify omitted options, command independence, and choices surviving undo; they
+do not infer factory defaults from a reused Rhino profile.
 
 Native tests additionally check first/second curve derivatives, tensor partials,
 periodic seams, independent full-order weight gauges, extreme common scales,

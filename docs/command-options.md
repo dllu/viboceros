@@ -1,0 +1,30 @@
+# Remembered command options
+
+`ConvertToBeziers` remembers `DeleteInput`; `ConvertToSingleSpans` independently
+remembers `Direction` and `DeleteInput`, including U/V toggles. Omitting an option
+uses its last accepted choice. Updating only one option leaves the other alone.
+
+Choices belong to typed command instances owned by `CommandRegistry`, not to
+the document or its undo history. Aliases share an instance. Reusing a registry
+across documents retains choices; separate registries are independent. The GUI
+keeps its registry for the application session. The small `remembered` module
+provides synchronized copy-in/copy-out storage without holding a lock during
+geometry work or document mutation; the command API remains `Send + Sync`.
+
+Commands accept choices only after successful execution. Invalid options,
+ineligible selections, and geometry/document failures leave previous choices
+unchanged. An eligible single-span no-op accepts choices without changing
+document history or clearing redo. Undo/redo affects geometry, not these choices.
+
+Native bootstrap choices are `DeleteInput=No` and `Direction=Both`. They are not
+serialized across application restarts. Rhino's factory defaults and restart
+persistence are not established by these tests. This is not a global preference
+implementation for all commands; use explicit options in deterministic scripts.
+
+The eight `conversion_sessions.json` probes run 39 steps in one command session,
+creating fresh owned geometry for each step. Each command's first use explicitly
+seeds every option, so probes cannot depend on Rhino's previous profile state.
+Subsequent steps omit or partially change options, toggle U/V, interleave both
+commands, accept no-ops, and undo real edits. Full conversion records are compared
+after every step. Fixtures and macros are bounded and validated before execution;
+an undo request on a no-op is rejected to avoid undoing unrelated history.

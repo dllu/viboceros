@@ -1,5 +1,35 @@
 use super::*;
 
+#[test]
+fn deletion_choice_is_registry_local_survives_undo_and_ignores_invalid_commands() {
+    let registry = CommandRegistry::with_builtins();
+    let fresh = || {
+        let mut d = Document::default();
+        let id = d.add_geometry(Geometry::NurbsCurve(curve())).unwrap();
+        d.select_objects_direct([id], SelectionMode::Replace)
+            .unwrap();
+        (d, id)
+    };
+    let (mut d, _) = fresh();
+    registry
+        .execute(&mut d, "ConvertToBeziers DeleteInput=Yes")
+        .unwrap();
+    registry.execute(&mut d, "Undo").unwrap();
+    assert!(
+        registry
+            .execute(&mut d, "ConvertToBeziers DeleteInput=No extra")
+            .is_err()
+    );
+    let (mut next, id) = fresh();
+    registry.execute(&mut next, "_ConvertToBeziers").unwrap();
+    assert!(next.object(id).is_none());
+    let (mut independent, id) = fresh();
+    CommandRegistry::with_builtins()
+        .execute(&mut independent, "ConvertToBeziers")
+        .unwrap();
+    assert!(independent.object(id).is_some());
+}
+
 fn curve() -> NurbsCurve {
     NurbsCurve::try_new_rational(
         3,
@@ -222,6 +252,11 @@ fn invalid_options_and_unrepresentable_final_controls_leave_document_unchanged()
         );
         assert_eq!(doc.undo_label(), history.as_deref());
     }
+    // A failed explicit Yes must not overwrite the bootstrap No preference.
+    doc.select_objects_direct([first], SelectionMode::Replace)
+        .unwrap();
+    registry.execute(&mut doc, "ConvertToBeziers").unwrap();
+    assert!(doc.object(first).is_some());
 }
 
 #[test]

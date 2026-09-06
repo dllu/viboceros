@@ -98,6 +98,10 @@ verify retention of empty definitions. The old diagnostic was merged into the
 regular fixture; no comparison fields or epsilons were relaxed. Nameless outputs
 are attributed only when a command has one unambiguous source; names remain
 explicit comparison fields. See [Bézier conversion](commands/beziers.md).
+The separate 78 [single-span conversion](commands/single-spans.md) comparisons
+also verify fresh ungrouped outputs, retained no-op sources, and empty definitions.
+The previous native expectations of inherited attributes/groups and in-place
+source replacement for that command were incorrect and have been removed.
 
 A private GUI smoke test imported differently ordered memberships and an empty
 group, distributed six points, exercised undo/redo and interactive Copy, and

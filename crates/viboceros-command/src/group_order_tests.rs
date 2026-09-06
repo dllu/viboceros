@@ -154,8 +154,6 @@ fn decompositions_and_mesh_extractions_do_not_sort_memberships_by_group_id() {
         .unwrap(),
     );
     for (source, command) in [
-        (multispan_surface(), "ConvertToSingleSpans DeleteInput=No"),
-        (multispan_surface(), "ConvertToSingleSpans DeleteInput=Yes"),
         (curve, "Split Parameter=1"),
         (
             multispan_surface(),

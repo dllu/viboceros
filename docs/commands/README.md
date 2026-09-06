@@ -7,6 +7,7 @@ Rhino's complete command set is still a work in progress.
 - [Curve creation and editing](curves.md)
 - [NURBS structure and parameterization](nurbs.md)
 - [Bézier conversion](beziers.md)
+- [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)
 - [World/CPlane bounding boxes](bounding-box.md)
 - [Polygon meshes](meshes.md)
@@ -20,6 +21,7 @@ Rhino's complete command set is still a work in progress.
 
 See [viewport controls](../interface.md) for picking and interactive input, and
 [file formats](../file-formats.md) for import/export capabilities.
+See [remembered options](../command-options.md) for conversion-option lifetime.
 
 ## Command-line examples
 

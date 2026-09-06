@@ -1,6 +1,28 @@
 use super::*;
 
 #[test]
+fn surface_knot_codec_only_pads_the_two_slots_opennurbs_does_not_store() {
+    let controls = (0..16)
+        .map(|i| Point3::try_new((i % 4) as f64, (i / 4) as f64, 0.).unwrap())
+        .collect();
+    let s = NurbsSurface::try_new(
+        2,
+        2,
+        4,
+        4,
+        controls,
+        vec![-3., -2., -1., 1., 4., 5., 6.],
+        vec![8., 9., 10., 13., 18., 19., 20.],
+    )
+    .unwrap();
+    let value = surface_definition(&s);
+    assert_eq!(value["knots_u"], json!([-2., -2., -1., 1., 4., 5., 5.]));
+    assert_eq!(value["knots_v"], json!([9., 9., 10., 13., 18., 19., 19.]));
+    assert_eq!(s.knots_u(), [-3., -2., -1., 1., 4., 5., 6.]);
+    assert_eq!(s.knots_v(), [8., 9., 10., 13., 18., 19., 20.]);
+}
+
+#[test]
 fn permanent_conversion_records_unit_bezier_nets_and_fresh_document_attributes() {
     let request: ProbeRequest = serde_json::from_str(include_str!(
         "../../../../tools/rhino_oracle/fixtures/bezier_conversion.json"

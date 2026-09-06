@@ -1,5 +1,7 @@
 //! Local projective Bezier extraction; no repeated whole-spline splitting.
-use crate::{GeometryError, NurbsCurve, NurbsSurface, Point3, WeightedPoint3};
+use crate::{
+    GeometryError, NurbsCurve, NurbsSurface, Point3, SurfaceKnotDirection, WeightedPoint3,
+};
 
 #[cfg(test)]
 mod tests;
@@ -160,6 +162,20 @@ fn unit_span_knots(degree: usize, a: f64, b: f64) -> Vec<f64> {
         .collect()
 }
 
+fn extract_weighted_span(
+    p: usize,
+    knots: &[f64],
+    span: usize,
+    controls: &[WeightedPoint3],
+) -> Result<Vec<WeightedPoint3>, GeometryError> {
+    if isolated(p, knots, span) {
+        return Ok(controls.to_vec());
+    }
+    let mut local = LocalControls::new(controls)?;
+    local.values = extract_homogeneous_span(p, knots, span, &local.values)?;
+    local.project()
+}
+
 fn charge_span(
     budget: &mut Budget,
     degree: usize,
@@ -193,13 +209,7 @@ impl NurbsCurve {
             }
             charge_span(&mut budget, p, self.knots(), span, 1)?;
             let controls = &self.control_points()[span - p..=span];
-            let controls = if isolated(p, self.knots(), span) {
-                controls.to_vec()
-            } else {
-                let mut local = LocalControls::new(controls)?;
-                local.values = extract_homogeneous_span(p, self.knots(), span, &local.values)?;
-                local.project()?
-            };
+            let controls = extract_weighted_span(p, self.knots(), span, controls)?;
             outputs.push(Self::try_new_rational(
                 p,
                 controls,
@@ -211,6 +221,83 @@ impl NurbsCurve {
 }
 
 impl NurbsSurface {
+    /// Extracts clamped single-span strips in U or V, or Bezier patches in Both.
+    /// Source domains are retained. The untouched axis keeps its complete knot
+    /// vector and control count, including unclamped/periodic structure. Each
+    /// control line uses its own weight gauge when only one axis is extracted.
+    pub fn try_single_span_patches(
+        &self,
+        direction: SurfaceKnotDirection,
+    ) -> Result<Vec<Self>, GeometryError> {
+        if direction == SurfaceKnotDirection::Both {
+            return self.try_bezier_patches();
+        }
+        let u = direction == SurfaceKnotDirection::U;
+        let (p, knots, count, lines) = if u {
+            (
+                self.degree_u(),
+                self.knots_u(),
+                self.control_point_count_u(),
+                self.control_point_count_v(),
+            )
+        } else {
+            (
+                self.degree_v(),
+                self.knots_v(),
+                self.control_point_count_v(),
+                self.control_point_count_u(),
+            )
+        };
+        let spans = (p..count)
+            .filter(|i| knots[*i] < knots[*i + 1])
+            .collect::<Vec<_>>();
+        let mut budget = Budget::default();
+        budget.output(spans.len().saturating_mul(p + 1).saturating_mul(lines))?;
+        let (width, height) = if u { (p + 1, lines) } else { (lines, p + 1) };
+        let mut output = Vec::with_capacity(spans.len());
+        for span in spans {
+            charge_span(&mut budget, p, knots, span, lines)?;
+            let mut controls = vec![self.control_points()[0]; width * height];
+            for line in 0..lines {
+                let source = (span - p..=span)
+                    .map(|i| {
+                        if u {
+                            self.control_point(i, line).unwrap()
+                        } else {
+                            self.control_point(line, i).unwrap()
+                        }
+                    })
+                    .collect::<Vec<_>>();
+                for (i, control) in extract_weighted_span(p, knots, span, &source)?
+                    .into_iter()
+                    .enumerate()
+                {
+                    controls[if u {
+                        line * width + i
+                    } else {
+                        i * width + line
+                    }] = control;
+                }
+            }
+            let extracted = unit_span_knots(p, knots[span], knots[span + 1]);
+            let (ku, kv) = if u {
+                (extracted, self.knots_v().to_vec())
+            } else {
+                (self.knots_u().to_vec(), extracted)
+            };
+            output.push(Self::try_new_rational(
+                self.degree_u(),
+                self.degree_v(),
+                width,
+                height,
+                controls,
+                ku,
+                kv,
+            )?);
+        }
+        Ok(output)
+    }
+
     /// Exactly extracts all active knot rectangles into clamped tensor-product
     /// Bezier NURBS patches, U-span outer/V-span inner, with source UV domains.
     /// Work and aggregate output controls are bounded independently of trimming.

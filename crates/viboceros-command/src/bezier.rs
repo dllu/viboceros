@@ -6,7 +6,10 @@ use viboceros_geometry::MAX_BEZIER_CONTROL_POINTS;
 mod tests;
 
 const USAGE: &str = "ConvertToBeziers [DeleteInput=Yes|No]";
-pub(super) struct ConvertToBeziersCommand;
+#[derive(Default)]
+pub(super) struct ConvertToBeziersCommand {
+    delete_input: remembered::Remembered<bool>,
+}
 
 impl Command for ConvertToBeziersCommand {
     fn name(&self) -> &'static str {
@@ -14,7 +17,11 @@ impl Command for ConvertToBeziersCommand {
     }
 
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let delete_input = parse_delete_input(arguments, USAGE, &["DeleteInput"])?;
+        let delete_input = if arguments.is_empty() {
+            self.delete_input.get()
+        } else {
+            parse_delete_input(arguments, USAGE, &["DeleteInput"])?
+        };
         if document.selected_object_ids().len() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
@@ -59,6 +66,7 @@ impl Command for ConvertToBeziersCommand {
                 document.delete_object(*id)?;
             }
         }
+        self.delete_input.set(delete_input);
         Ok(format!(
             "Converted {} object(s) into {count} exact Bezier object(s){}",
             sources.len(),

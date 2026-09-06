@@ -37,8 +37,9 @@ mod interface;
 mod mass_properties;
 mod parameter_bounds;
 pub use parameter_bounds::ParameterCurveBoundsFixture;
-mod bezier_conversion;
 mod bounding_box;
+mod conversion;
+mod conversion_session;
 mod distribute;
 mod group_memberships;
 mod object_source;
@@ -172,7 +173,17 @@ pub enum Operation {
     BezierConversion {
         id: String,
         #[serde(flatten)]
-        fixture: bezier_conversion::BezierConversionFixture,
+        fixture: conversion::ConversionFixture,
+    },
+    SingleSpanConversion {
+        id: String,
+        #[serde(flatten)]
+        fixture: conversion_session::SingleSpanFixture,
+    },
+    ConversionSession {
+        id: String,
+        #[serde(flatten)]
+        fixture: conversion_session::ConversionSessionFixture,
     },
     ConstructionPlaneInput {
         id: String,
@@ -1508,6 +1519,8 @@ impl Operation {
             | Self::Distribute { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::BezierConversion { id, .. }
+            | Self::SingleSpanConversion { id, .. }
+            | Self::ConversionSession { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
             | Self::InterfaceCommands { id, .. }
@@ -1852,7 +1865,13 @@ fn execute(
         Operation::BoundingBoxCommand { fixture, .. } => bounding_box::run(fixture, tolerance)?,
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
-        Operation::BezierConversion { fixture, .. } => bezier_conversion::run(fixture, tolerance)?,
+        Operation::BezierConversion { fixture, .. } => conversion::run(fixture, tolerance)?,
+        Operation::SingleSpanConversion { fixture, .. } => {
+            conversion_session::run_single(fixture, tolerance)?
+        }
+        Operation::ConversionSession { fixture, .. } => {
+            conversion_session::run(fixture, tolerance)?
+        }
         Operation::ConstructionPlaneInput { fixture, .. } => {
             construction_plane::run_input(fixture, tolerance)?
         }

@@ -47,7 +47,7 @@ struct ProjectiveSurfaceFrame {
     solve_column_scales: [Real; 3],
 }
 
-/// Parametric direction changed by [`NurbsSurface::try_make_uniform`].
+/// Parametric direction selected by NURBS surface structure edits.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SurfaceKnotDirection {
     U,

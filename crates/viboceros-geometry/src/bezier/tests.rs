@@ -1,6 +1,127 @@
 use super::*;
 use crate::{ControlPointCurveClosure, ParameterSide};
 
+#[test]
+fn directional_strips_keep_the_other_complete_knot_vector_and_rational_partials() {
+    let s = NurbsSurface::try_new_rational(
+        2,
+        2,
+        4,
+        4,
+        controls(&[
+            1., 0.7, 1.4, 0.8, 1.2, 2., 1., 0.5, 1., 1., 0.7, 1.3, 1., 0.8, 2., 1.,
+        ]),
+        vec![-3., -2., -1., 1., 4., 5., 6.],
+        vec![8., 9., 10., 13., 18., 19., 20.],
+    )
+    .unwrap();
+    for direction in [SurfaceKnotDirection::U, SurfaceKnotDirection::V] {
+        let u = direction == SurfaceKnotDirection::U;
+        let strips = s.try_single_span_patches(direction).unwrap();
+        assert_eq!(strips.len(), 2);
+        for strip in strips {
+            assert_eq!(
+                if u { strip.knots_v() } else { strip.knots_u() },
+                if u { s.knots_v() } else { s.knots_u() }
+            );
+            assert_eq!(
+                (strip.control_point_count_u(), strip.control_point_count_v()),
+                if u { (3, 4) } else { (4, 3) }
+            );
+            let du = strip.domain_u();
+            let dv = strip.domain_v();
+            for i in 1..16 {
+                for j in 1..16 {
+                    let a = du.start() + (du.end() - du.start()) * i as f64 / 16.;
+                    let b = dv.start() + (dv.end() - dv.start()) * j as f64 / 16.;
+                    let (p, x, y) = strip.evaluate_with_derivatives(a, b).unwrap();
+                    let (q, xx, yy) = s.evaluate_with_derivatives(a, b).unwrap();
+                    assert!(p.distance_to(q).unwrap() < 2e-12);
+                    for (a, b) in x
+                        .to_array()
+                        .into_iter()
+                        .chain(y.to_array())
+                        .zip(xx.to_array().into_iter().chain(yy.to_array()))
+                    {
+                        assert!((a - b).abs() < 2e-11);
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[test]
+fn directional_extraction_keeps_extreme_independent_control_line_gauges() {
+    let c = (0..6)
+        .map(|i| {
+            WeightedPoint3::try_new(
+                Point3::try_new((i % 3) as f64 * 2., (i / 3) as f64, 0.).unwrap(),
+                if i < 3 { 1e-280 } else { 1e280 },
+            )
+            .unwrap()
+        })
+        .collect();
+    let s = NurbsSurface::try_new_rational(
+        2,
+        1,
+        3,
+        2,
+        c,
+        vec![-2., -1., 0., 1., 2., 3.],
+        vec![10., 10., 18., 18.],
+    )
+    .unwrap();
+    let patches = s.try_single_span_patches(SurfaceKnotDirection::U).unwrap();
+    assert_eq!(patches.len(), 1);
+    for (i, c) in patches[0].control_points().iter().enumerate() {
+        assert_eq!(c.weight(), if i < 3 { 1e-280 } else { 1e280 });
+        assert_eq!(
+            c.point().to_array(),
+            [1. + (i % 3) as f64, (i / 3) as f64, 0.]
+        );
+    }
+}
+
+#[test]
+fn periodic_directional_strips_keep_the_original_locus_and_untouched_axis() {
+    let profile = NurbsCurve::try_control_point_curve_with_closure(
+        3,
+        controls(&[1.; 7]).into_iter().map(|c| c.point()).collect(),
+        ControlPointCurveClosure::Smooth,
+    )
+    .unwrap();
+    let surface = NurbsSurface::try_extruded_curve(
+        &profile,
+        crate::Vector3::try_new(0., 0., 0.).unwrap(),
+        crate::Vector3::try_new(0., 0., 5.).unwrap(),
+    )
+    .unwrap();
+    assert!(surface.is_periodic_u());
+    for (strip, (a, b)) in surface
+        .try_single_span_patches(SurfaceKnotDirection::U)
+        .unwrap()
+        .iter()
+        .zip(surface.spans_u())
+    {
+        assert!(!strip.is_periodic_u());
+        assert_eq!(strip.knots_v(), surface.knots_v());
+        for i in 0..=16 {
+            let u = a + (b - a) * i as f64 / 16.;
+            for v in [0., 2.5, 5.] {
+                assert!(
+                    strip
+                        .evaluate(u, v)
+                        .unwrap()
+                        .distance_to(surface.evaluate(u, v).unwrap())
+                        .unwrap()
+                        < 2e-12
+                );
+            }
+        }
+    }
+}
+
 fn controls(weights: &[f64]) -> Vec<WeightedPoint3> {
     weights
         .iter()

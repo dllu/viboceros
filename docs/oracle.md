@@ -94,6 +94,15 @@ colors, names, groups, and selection after explicit deletion choices; see
 the same preselection workflow as the native command; the previous in-command
 SelID workflow did not.
 
+`single_span_conversion.json` adds 78 actual surface conversions covering
+directional strips, Both patches, no-ops, trims, unclamped/periodic structure,
+mixed sources, and U/V toggles. `conversion_sessions.json` adds eight self-seeded
+sequences (39 steps) checking independent remembered deletion/direction choices,
+partial option changes, no-op acceptance, and undo. They share the full conversion
+recorder and owned-object cleanup. See [single spans](commands/single-spans.md)
+for the explicit omitted-outer-knot codec and [option memory](command-options.md)
+for lifetime and bootstrap limitations. These command probes are untimed.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

@@ -3581,18 +3581,43 @@ def _group_memberships(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
-def _bezier_conversion(operation, tolerance):
+def _conversion_arguments(operation, command, direction):
     definitions = operation["sources"]
     selected = operation.get("selected", list(range(len(definitions))))
     delete = operation["delete_input"]
+    undo_after = operation.get("undo_after", False)
+    if type(undo_after) is not bool: raise ValueError("invalid conversion undo flag")
+    toggles = operation.get("toggles", 0)
+    if type(toggles) is not int or not 0 <= toggles <= 3: raise ValueError("invalid conversion toggle count")
     if not 1 <= len(definitions) <= 16 or (delete is not None and type(delete) is not bool):
         raise ValueError("invalid Bezier conversion fixture")
     if not selected or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected) or len(set(selected)) != len(selected):
         raise ValueError("invalid Bezier preselection")
+    if command not in ("ConvertToBeziers", "ConvertToSingleSpans") or direction not in (None,"U","V","Both"):
+        raise ValueError("invalid conversion command")
+    if command == "ConvertToBeziers" and (direction is not None or toggles):
+        raise ValueError("Bezier conversion has no direction option")
+    if direction == "Both" and toggles: raise ValueError("Toggle requires U or V direction")
+    if command == "ConvertToSingleSpans" and not any(definitions[i]["type"]=="surface" or
+            (definitions[i]["type"]=="brep" and definitions[i].get("cap_surface") is None) for i in selected):
+        raise ValueError("single span conversion requires a surface")
     # At least one known curve/surface avoids an interactive object prompt.
     if not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
                (definitions[i]["type"] == "brep" and definitions[i].get("cap_surface") is None) for i in selected):
         raise ValueError("Bezier conversion requires a curve or surface")
+    if command == "ConvertToBeziers":
+        script="_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No")
+    else:
+        script="_ConvertToSingleSpans"
+        if direction is not None: script+=" _Direction _"+direction
+        if delete is not None: script+=" _DeleteInput="+("Yes" if delete else "No")
+        script+=" _Toggle"*toggles
+        script+=" _Enter"
+    return definitions, selected, undo_after, script
+
+
+def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direction=None):
+    definitions, selected, undo_after, script = _conversion_arguments(operation, command, direction)
     document = Rhino.RhinoDoc.ActiveDoc
     settings = Rhino.DocObjects.ObjectEnumeratorSettings()
     settings.NormalObjects = settings.HiddenObjects = settings.LockedObjects = True
@@ -3694,9 +3719,13 @@ def _bezier_conversion(operation, tolerance):
             if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in selected): raise ValueError("Bezier source preselection incomplete")
             initial = record()
             _record_progress("Bezier conversion: command")
-            _run_surface_script("_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No"), True)
+            _run_surface_script(script, True)
             _record_progress("Bezier conversion: record")
-            return dict(before=initial, after=record()), 0
+            result = dict(before=initial, after=record())
+            if undo_after:
+                if initial == result["after"]: raise ValueError("cannot undo a no-op conversion")
+                _run_surface_script("_Undo", True)
+            return result, 0
         finally:
             Rhino.RhinoApp.RunScript("!", False)
             for obj in objects():
@@ -3710,9 +3739,41 @@ def _bezier_conversion(operation, tolerance):
             for geometry in reversed(owned): geometry.Dispose()
 
 
+def _conversion_session(operation, tolerance):
+    steps = operation["steps"]
+    if not 1 <= len(steps) <= 32: raise ValueError("invalid conversion session size")
+    seeded = set()
+    direction = None
+    for step in steps:
+        name = step["command"]
+        if name not in ("ConvertToBeziers", "ConvertToSingleSpans"): raise ValueError("invalid conversion session command")
+        _conversion_arguments(step, name, step.get("direction"))
+        if name not in seeded:
+            if type(step.get("delete_input")) is not bool: raise ValueError("conversion session must seed deletion choice")
+            if name == "ConvertToSingleSpans" and step.get("direction") not in ("U","V","Both"):
+                raise ValueError("conversion session must seed direction")
+            seeded.add(name)
+        if name == "ConvertToSingleSpans":
+            direction = step.get("direction") or direction
+            if step.get("toggles", 0):
+                if direction == "Both": raise ValueError("Toggle requires U or V direction")
+                if step["toggles"] % 2: direction = "V" if direction == "U" else "U"
+    states = []
+    for step in steps:
+        value, _ = _geometry_conversion(step, tolerance, step["command"], step.get("direction"))
+        states.append(value)
+    return dict(states=states), 0
+
+
 def _execute(operation, iterations, tolerance):
+    if operation["op"] == "conversion_session":
+        return _conversion_session(operation, tolerance)
+    if operation["op"] == "single_span_conversion":
+        if operation.get("toggles", 0) and operation.get("direction") is None:
+            raise ValueError("standalone Toggle probe requires explicit direction")
+        return _geometry_conversion(operation, tolerance, "ConvertToSingleSpans", operation.get("direction"))
     if operation["op"] == "bezier_conversion":
-        return _bezier_conversion(operation, tolerance)
+        return _geometry_conversion(operation, tolerance)
     if operation["op"] == "group_memberships":
         return _group_memberships(operation, tolerance)
     if operation["op"] == "distribute":
