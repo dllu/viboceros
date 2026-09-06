@@ -19,7 +19,9 @@ impl NurbsSurface {
         tolerance: Tolerance,
     ) -> Result<BoundingBox3, GeometryError> {
         let mut budget = Budget::default();
-        Prepared::new(self, &mut budget)?.curve_bounds(curve, &mut budget, tolerance)
+        Ok(Prepared::new(self, &mut budget)?
+            .curve_bounds(curve, &mut budget, tolerance)?
+            .enclosure)
     }
 }
 
@@ -33,20 +35,15 @@ impl BrepFace {
     ) -> Result<BoundingBox3, GeometryError> {
         let mut budget = Budget::default();
         let prepared = Prepared::new(self.surface(), &mut budget)?;
-        let mut bounds = None;
-        for trim in self.loops().iter().flat_map(|l| l.trims()) {
-            bezier::merge(
-                &mut bounds,
-                prepared.curve_bounds(trim.curve(), &mut budget, tolerance)?,
-            )?;
-        }
-        bounds.ok_or(GeometryError::EmptyPointSet)
+        Ok(prepared
+            .boundary_bounds(self, &mut budget, tolerance)?
+            .enclosure)
     }
 }
 
-struct Prepared {
-    patches: Vec<surfaces::Patch>,
-    domains: [[f64; 2]; 2],
+pub(super) struct Prepared {
+    pub(super) patches: Vec<surfaces::Patch>,
+    pub(super) domains: [[f64; 2]; 2],
 }
 
 fn normalize(value: f64, domain: [f64; 2]) -> Result<f64, GeometryError> {
@@ -54,7 +51,7 @@ fn normalize(value: f64, domain: [f64; 2]) -> Result<f64, GeometryError> {
 }
 
 impl Prepared {
-    fn new(surface: &NurbsSurface, budget: &mut Budget) -> Result<Self, GeometryError> {
+    pub(super) fn new(surface: &NurbsSurface, budget: &mut Budget) -> Result<Self, GeometryError> {
         let mut patches = surfaces::patches(surface, budget)?;
         let domains = [surface.domain_u(), surface.domain_v()].map(|d| [*d.start(), *d.end()]);
         for patch in &mut patches {
@@ -71,47 +68,33 @@ impl Prepared {
         Ok(Self { patches, domains })
     }
 
+    pub(super) fn boundary_bounds(
+        &self,
+        face: &BrepFace,
+        budget: &mut Budget,
+        tolerance: Tolerance,
+    ) -> Result<bezier::Estimate, GeometryError> {
+        let mut enclosure = None;
+        let mut attained = None;
+        for trim in face.loops().iter().flat_map(|l| l.trims()) {
+            let bounds = self.curve_bounds(trim.curve(), budget, tolerance)?;
+            bezier::merge(&mut enclosure, bounds.enclosure)?;
+            bezier::merge(&mut attained, bounds.attained)?;
+        }
+        Ok(bezier::Estimate {
+            enclosure: enclosure.ok_or(GeometryError::EmptyPointSet)?,
+            attained: attained.ok_or(GeometryError::EmptyPointSet)?,
+        })
+    }
+
     fn curve_bounds(
         &self,
         curve: &NurbsCurve2,
         budget: &mut Budget,
         tolerance: Tolerance,
-    ) -> Result<BoundingBox3, GeometryError> {
+    ) -> Result<bezier::Estimate, GeometryError> {
         let p = curve.degree();
-        let mut pending = Vec::new();
-        for span in p..curve.control_points().len() {
-            if curve.knots()[span] == curve.knots()[span + 1] {
-                continue;
-            }
-            budget.initial(p + 1)?;
-            let controls = curve.control_points()[span - p..=span]
-                .iter()
-                .map(|c| {
-                    WeightedPoint3::try_new(
-                        Point3::try_new(
-                            normalize(c.point().x(), self.domains[0])?,
-                            normalize(c.point().y(), self.domains[1])?,
-                            0.,
-                        )?,
-                        c.weight(),
-                    )
-                })
-                .collect::<Result<Vec<_>, GeometryError>>()?;
-            // Unit-domain UV coordinates have a stable zero origin. Preserve
-            // a constant coordinate exactly, including a line on/near a knot.
-            // Do not recenter varying coordinates and lose boundary zeros.
-            let origin = std::array::from_fn(|axis| {
-                let x = controls[0].point().to_array()[axis];
-                if controls.iter().all(|c| c.point().to_array()[axis] == x) {
-                    x
-                } else {
-                    0.
-                }
-            });
-            let mut net = Net::new_at_origin([p, 0], &controls, origin)?;
-            net.extract_axis(0, curve.knots(), span, budget)?;
-            pending.push(net);
-        }
+        let mut pending = spans(curve, self.domains, budget)?;
         let mut composed = Vec::new();
         let mut attained = None;
         let mut enclosure = None;
@@ -229,7 +212,9 @@ impl Prepared {
             pending.push(left);
         }
         if !composed.is_empty() {
-            bezier::merge(&mut enclosure, bezier::bounds(composed, budget, tolerance)?)?;
+            let result = bezier::estimate(composed, budget, tolerance)?;
+            bezier::merge(&mut enclosure, result.enclosure)?;
+            bezier::merge(&mut attained, result.attained)?;
         }
         // Include selected-side values at surface-knot boundaries. Samples are
         // evaluated in homogeneous composition, not by rounding UV to a large
@@ -238,8 +223,53 @@ impl Prepared {
             &mut enclosure,
             attained.ok_or(GeometryError::EmptyPointSet)?,
         )?;
-        enclosure.ok_or(GeometryError::EmptyPointSet)
+        Ok(bezier::Estimate {
+            enclosure: enclosure.ok_or(GeometryError::EmptyPointSet)?,
+            attained: attained.ok_or(GeometryError::EmptyPointSet)?,
+        })
     }
+}
+
+/// Extract raw rational trim spans directly into the surface's unit UV domain.
+pub(super) fn spans(
+    curve: &NurbsCurve2,
+    domains: [[f64; 2]; 2],
+    budget: &mut Budget,
+) -> Result<Vec<Net>, GeometryError> {
+    let p = curve.degree();
+    let mut result = Vec::new();
+    for span in p..curve.control_points().len() {
+        if curve.knots()[span] == curve.knots()[span + 1] {
+            continue;
+        }
+        budget.initial(p + 1)?;
+        let controls = curve.control_points()[span - p..=span]
+            .iter()
+            .map(|c| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(
+                        normalize(c.point().x(), domains[0])?,
+                        normalize(c.point().y(), domains[1])?,
+                        0.,
+                    )?,
+                    c.weight(),
+                )
+            })
+            .collect::<Result<Vec<_>, GeometryError>>()?;
+        // Keep boundary zeros and constant knot coordinates exact.
+        let origin = std::array::from_fn(|axis| {
+            let x = controls[0].point().to_array()[axis];
+            if controls.iter().all(|c| c.point().to_array()[axis] == x) {
+                x
+            } else {
+                0.
+            }
+        });
+        let mut net = Net::new_at_origin([p, 0], &controls, origin)?;
+        net.extract_axis(0, curve.knots(), span, budget)?;
+        result.push(net);
+    }
+    Ok(result)
 }
 
 #[cfg(test)]

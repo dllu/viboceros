@@ -106,9 +106,131 @@ pub(super) fn run_face(
     Ok((json!({"faces":faces}), 0))
 }
 
+pub(super) fn run_brep(
+    f: &TrimmedBrepFixture,
+    iterations: u32,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    let brep = trimmed_brep::build(f, tolerance)?;
+    let (bounds, elapsed) = measure(iterations, || brep.tight_bounds(tolerance))?;
+    let samples = brep
+        .faces()
+        .iter()
+        .map(|face| {
+            let mut values = vec![
+                face.surface()
+                    .evaluate(f.interior_uv[0], f.interior_uv[1])?
+                    .to_array(),
+            ];
+            for trim in face.loops().iter().flat_map(|l| l.trims()) {
+                values.extend(samples(face.surface(), trim.curve())?);
+            }
+            Ok(values)
+        })
+        .collect::<Result<Vec<_>, GeometryError>>()?;
+    Ok((
+        json!({"min":bounds.min().to_array(),"max":bounds.max().to_array(),"samples":samples}),
+        elapsed,
+    ))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn complete_brep_fixtures_match_analytic_face_extrema_and_contain_their_samples() {
+        for (source, count) in [
+            (
+                include_str!("../../../tools/rhino_oracle/fixtures/trimmed_brep_bounds.json"),
+                11,
+            ),
+            (
+                include_str!(
+                    "../../../tools/rhino_oracle/fixtures/trimmed_brep_bounds_diagnostics.json"
+                ),
+                5,
+            ),
+        ] {
+            let request: ProbeRequest = serde_json::from_str(source).unwrap();
+            let response = run_request(&request).unwrap();
+            assert_eq!(response.results.len(), count);
+            for (operation, result) in request.operations.iter().zip(response.results) {
+                let Operation::TrimmedBrepBounds { fixture, .. } = operation else {
+                    panic!("trimmed B-rep bounds fixture")
+                };
+                let oblique = result.id.contains("oblique");
+                let rotated = result.id.ends_with("rotated-translated");
+                let rows: [[f64; 3]; 3] = if oblique {
+                    [[1., 0., 3.], [-2., 1., 1.], [0.25, 0.5, -2.]]
+                } else if rotated {
+                    [[1., 0., 0.], [0., 0., -1.], [0., 1., 0.]]
+                } else {
+                    [[1., 0., 0.], [0., 1., 0.], [0., 0., 1.]]
+                };
+                let offset = if oblique {
+                    [2., -3., 4.]
+                } else if rotated {
+                    [8., -4., 16.]
+                } else {
+                    [0.; 3]
+                };
+                let outer = if rotated { 0.5 } else { 0.8 };
+                let inner = if result.id.ends_with("thin-annulus") {
+                    0.799
+                } else if result.id.ends_with("annulus") {
+                    0.35
+                } else {
+                    0.
+                };
+                for (axis, [a, b, c]) in rows.into_iter().enumerate() {
+                    let radial = a.hypot(b);
+                    let mut radii = vec![inner, outer];
+                    if c != 0. {
+                        radii.extend([
+                            (radial / (2. * c)).clamp(inner, outer),
+                            (-radial / (2. * c)).clamp(inner, outer),
+                        ]);
+                    }
+                    let values = radii
+                        .into_iter()
+                        .flat_map(|r| {
+                            [-1., 1.].map(move |sign| offset[axis] + c * r * r + sign * radial * r)
+                        })
+                        .collect::<Vec<_>>();
+                    let expected = [
+                        values.iter().copied().fold(f64::INFINITY, f64::min),
+                        values.iter().copied().fold(f64::NEG_INFINITY, f64::max),
+                    ];
+                    for (key, expected) in ["min", "max"].into_iter().zip(expected) {
+                        assert!(
+                            (result.value[key][axis].as_f64().unwrap() - expected).abs() < 1.1e-9,
+                            "{} {key}[{axis}]",
+                            result.id
+                        );
+                    }
+                }
+                let faces = result.value["samples"].as_array().unwrap();
+                assert_eq!(
+                    faces.len(),
+                    if fixture.cap_surface.is_some() { 2 } else { 1 }
+                );
+                for samples in faces {
+                    assert_eq!(
+                        samples.as_array().unwrap().len(),
+                        1 + 65 * fixture.boundaries.len()
+                    );
+                    for point in samples.as_array().unwrap() {
+                        for axis in 0..3 {
+                            let x = point[axis].as_f64().unwrap();
+                            assert!(x >= result.value["min"][axis].as_f64().unwrap() - 1e-12);
+                            assert!(x <= result.value["max"][axis].as_f64().unwrap() + 1e-12);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     #[test]
     fn parameter_image_fixtures_match_independently_derived_spatial_curves() {
         let mut request: ProbeRequest = serde_json::from_str(include_str!(

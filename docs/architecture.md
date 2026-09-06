@@ -27,14 +27,18 @@ The separate [plane-transforms module](plane-transforms.md) handles reference
 interpretation and affine maps for five transforms, sharing document mutation
 and copy/group transactions with the other transform commands.
 The independent [arrays module](plane-arrays.md) owns rectangular, linear, and
-polar layout. Curve and standalone NURBS-surface extents use tolerance-controlled
-[curve](curve-bounds.md) and [surface bounds](surface-bounds.md), separately from
+polar layout. Its geometry extents use tolerance-controlled
+[curve](curve-bounds.md), [surface](surface-bounds.md), and
+[trimmed-face bounds](trimmed-face-bounds.md), separately from
 document/control-net bounds. The shared `bounds/bezier` module handles local
 homogeneous span extraction, bounded tensor subdivision, and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve
 compositions. `bounds/parameter_curves` bounds their exact spatial images and
 [B-rep trim boundaries](trim-boundary-bounds.md), separately from face interiors.
+`bounds/trimmed_surfaces` adds a stationary-extremum search; `bounds/trim_region`
+uses rational curve hulls for conservative inside/outside/uncertain tests.
+`Geometry::tight_bounds` centralizes dispatch without changing fast display bounds.
 `viboceros-command::interface` owns [display/drafting controls](commands/interface.md).
 The application adapter applies those actions without entering the modeling
 command lifecycle; the compact toolbar and keyboard shortcuts share that path.

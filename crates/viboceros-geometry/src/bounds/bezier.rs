@@ -2,6 +2,7 @@
 //! Intermediate zero weights are valid projective controls, not curve poles.
 use crate::{BoundingBox3, GeometryError, Point3, Tolerance, WeightedPoint3};
 mod compose;
+mod derivatives;
 #[cfg(test)]
 mod tests;
 
@@ -46,6 +47,7 @@ impl Budget {
 }
 
 /// One native knot rectangle (or curve span when degree V is zero).
+#[derive(Clone)]
 pub(super) struct Net {
     pub(super) degrees: [usize; 2],
     pub(super) origin: [f64; 3],
@@ -215,7 +217,7 @@ impl Net {
         BoundingBox3::from_points(points).ok()
     }
 
-    fn split_axis(
+    pub(super) fn split_axis(
         &self,
         hull: Option<BoundingBox3>,
         attained: BoundingBox3,
@@ -307,10 +309,25 @@ fn midpoint_in_place(work: &mut [H]) -> H {
 }
 
 pub(super) fn bounds(
-    mut nodes: Vec<Net>,
+    nodes: Vec<Net>,
     budget: &mut Budget,
     tolerance: Tolerance,
 ) -> Result<BoundingBox3, GeometryError> {
+    Ok(estimate(nodes, budget, tolerance)?.enclosure)
+}
+
+/// Keep the enclosure separate from attained witnesses when one query seeds
+/// another. Reusing an enclosure as a witness would compound their errors.
+pub(super) struct Estimate {
+    pub(super) enclosure: BoundingBox3,
+    pub(super) attained: BoundingBox3,
+}
+
+pub(super) fn estimate(
+    mut nodes: Vec<Net>,
+    budget: &mut Budget,
+    tolerance: Tolerance,
+) -> Result<Estimate, GeometryError> {
     if nodes.len() > MAX_NODES {
         return Err(GeometryError::BoundingBoxDidNotConverge);
     }
@@ -351,7 +368,10 @@ pub(super) fn bounds(
         nodes.push(right);
         nodes.push(left);
     }
-    enclosure.ok_or(GeometryError::EmptyPointSet)
+    Ok(Estimate {
+        enclosure: enclosure.ok_or(GeometryError::EmptyPointSet)?,
+        attained: attained.ok_or(GeometryError::EmptyPointSet)?,
+    })
 }
 
 pub(super) fn merge(

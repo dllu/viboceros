@@ -40,6 +40,18 @@ fn exact_trim_boundary_boxes_include_holes_but_do_not_substitute_for_face_interi
         let brep = round_trim(paraboloid(), radii, false);
         let face = &brep.faces()[0];
         let bounds = face.trim_boundary_bounds(tolerance).unwrap();
+        let full = brep.tight_bounds(tolerance).unwrap();
+        assert!(
+            (full.min().z()
+                - if radii.len() == 1 {
+                    0.
+                } else {
+                    0.35_f64.powi(2)
+                })
+            .abs()
+                < 1e-9
+        );
+        assert!((full.max().z() - 0.64).abs() < 1e-9);
         assert!((bounds.min().x() + 0.8).abs() < 1e-9);
         assert!((bounds.max().x() - 0.8).abs() < 1e-9);
         assert!((bounds.min().y() + 0.8).abs() < 1e-9);

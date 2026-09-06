@@ -385,3 +385,131 @@ fn surface_arrays_use_interior_surface_extrema_and_fail_atomically_at_poles() {
         assert_eq!(document.undo_label(), history.as_deref());
     }
 }
+
+#[test]
+fn trimmed_brep_arrays_use_face_extrema_and_preserve_underlying_surfaces() {
+    let surface = NurbsSurface::try_new(
+        2,
+        2,
+        3,
+        3,
+        (0..3)
+            .flat_map(|v| {
+                (0..3).map(move |u| {
+                    p([
+                        u as f64 / 2.,
+                        v as f64 / 2.,
+                        [0., 2., 0.][u] + [0., 4., 0.][v],
+                    ])
+                })
+            })
+            .collect(),
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let brep = Brep::try_rectangular_surface_face(
+        surface.clone(),
+        0.2..=0.8,
+        0.25..=0.75,
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    for (command, expected) in [
+        ("Array 1 2 1 0 20 0 Mode=Fill", [0., 0., 19.14]),
+        (
+            "ArrayPolar 3 0,0,0 180 Rotate=No ZOffset=2",
+            [-3.07, -2., -2.07],
+        ),
+    ] {
+        let mut document = Document::default();
+        let id = document.add_geometry(Geometry::Brep(brep.clone())).unwrap();
+        document.select_all();
+        CommandRegistry::with_builtins()
+            .execute_in_context(
+                &mut document,
+                command,
+                CommandContext {
+                    construction_plane: WorldPlane::Front.frame(),
+                },
+            )
+            .unwrap();
+        let Geometry::Brep(copy) = document.objects().nth(1).unwrap().geometry() else {
+            panic!("B-rep")
+        };
+        near(
+            copy.faces()[0].surface().evaluate(0., 0.).unwrap(),
+            p(expected),
+        );
+        assert_eq!(copy.faces()[0].surface().domain_u(), surface.domain_u());
+        assert_eq!(copy.faces()[0].surface().domain_v(), surface.domain_v());
+        assert_eq!(copy.faces()[0].loops(), brep.faces()[0].loops());
+        document.undo().unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.is_selected(id));
+        document.redo().unwrap();
+        assert!(document.objects().len() > 1);
+    }
+}
+
+#[test]
+fn ambiguous_tolerance_closed_brep_arrays_leave_geometry_selection_and_history_unchanged() {
+    use viboceros_geometry::{BrepLoop, BrepTrim, NurbsCurve2, Point2};
+    let surface = NurbsSurface::try_bilinear([
+        p([0., 0., 0.]),
+        p([1., 0., 0.]),
+        p([1., 1., 0.]),
+        p([0., 1., 0.]),
+    ])
+    .unwrap();
+    let original = Brep::try_surface_face(surface.clone(), Tolerance::DEFAULT).unwrap();
+    let boundary = &original.faces()[0].loops()[0];
+    let mut trims = boundary.trims().to_vec();
+    let trim = &trims[0];
+    let start = trim.curve().start_point().unwrap();
+    let end = trim.curve().end_point().unwrap();
+    let curve =
+        NurbsCurve2::try_line(Point2::try_new(start.x() + 1e-12, start.y()).unwrap(), end).unwrap();
+    trims[0] = BrepTrim::try_new(
+        trim.vertices(),
+        trim.edge(),
+        trim.is_reversed_3d(),
+        curve,
+        trim.trim_type(),
+        trim.iso(),
+        trim.tolerance(),
+    )
+    .unwrap();
+    let face = BrepFace::try_new(
+        surface,
+        false,
+        vec![BrepLoop::try_new(boundary.loop_type(), trims).unwrap()],
+    )
+    .unwrap();
+    let brep = Brep::try_new(
+        original.vertices().to_vec(),
+        original.edges().to_vec(),
+        vec![face],
+        Tolerance::DEFAULT,
+    )
+    .unwrap();
+    let mut document = Document::default();
+    let id = document.add_geometry(Geometry::Brep(brep)).unwrap();
+    document.select_all();
+    let before = document.clone();
+    let history = document.undo_label().map(str::to_owned);
+    for command in [
+        "Array 2 1 1 10 0 0 Mode=Fill",
+        "ArrayPolar 3 0,0,0 180 Rotate=No",
+    ] {
+        assert!(
+            CommandRegistry::with_builtins()
+                .execute(&mut document, command)
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.object(id).unwrap(), before.object(id).unwrap());
+        assert!(document.is_selected(id));
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+}

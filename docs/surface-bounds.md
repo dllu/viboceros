@@ -2,8 +2,8 @@
 
 [Curve bounds](curve-bounds.md) · [Array layouts](plane-arrays.md) · [Oracle](oracle.md)
 
-Exact [trim-boundary image bounds](trim-boundary-bounds.md) are available
-separately; they do not yet supply trim-aware interior extrema for a whole face.
+Exact [trim-boundary image bounds](trim-boundary-bounds.md) and complete
+[trimmed-face bounds](trimmed-face-bounds.md) are available separately.
 
 `NurbsSurface::tight_bounds(Tolerance)` bounds the complete active untrimmed
 surface, including independent limits at fully multiple knots in either
@@ -21,9 +21,9 @@ error; negative common weight gauges do not change the geometry or bounds.
 `Array Mode=Fill` uses these boxes in construction-plane coordinates for
 standalone NURBS surfaces; `ArrayPolar Rotate=No` uses their world-box center.
 Failure aborts the entire command without copies or an undo record. Existing
-document bounds, the BoundingBox command, and **B-rep bounds are unchanged**.
-Tight bounds of trimmed faces are not implemented by bounding the entire
-underlying surface, and surface-array Rhino compatibility remains incomplete.
+display/control bounds and the BoundingBox command are unchanged. B-rep arrays
+now use their separate trim-aware query. Bounding the entire underlying surface
+is not a substitute, and surface-array Rhino compatibility remains incomplete.
 
 ## Correctness evidence
 

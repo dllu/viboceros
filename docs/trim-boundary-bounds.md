@@ -11,9 +11,9 @@ UV control polygon for its surface image.
 
 These are **boundary bounds, not complete trimmed-face bounds**. A paraboloid
 disk of radius 0.8 has boundary Z = 0.64 but reaches Z = 0 at its interior
-center. A unit test explicitly preserves this distinction. Trim-aware interior
-extrema are still needed before using this query for whole B-reps, BoundingBox,
-or array layouts; those consumers are unchanged in this step.
+center. A unit test explicitly preserves this distinction. The separate
+[trimmed-face query](trimmed-face-bounds.md) adds trim-aware interior extrema
+and supplies complete B-rep bounds for array layouts.
 
 ## Homogeneous composition
 

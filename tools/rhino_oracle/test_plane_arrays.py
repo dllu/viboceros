@@ -39,8 +39,8 @@ class PlaneArrayWorkerTests(unittest.TestCase):
                     self.worker._set_curve_controls(SimpleNamespace(Points=table), [{"point": [1, 2, 3], "weight": weight}])
 
     def test_array_cleanup_preserves_existing_groups_even_when_deleted_slots_are_reused(self):
-        for failure in [None, "initialization", "source", "group", "command", "record"]:
-            with self.subTest(failure=failure):
+        for kind, failure in [(kind, failure) for kind in ["line", "brep"] for failure in [None, "initialization", "source", "group", "command", "record"]]:
+            with self.subTest(kind=kind, failure=failure):
                 original_planes = [object(), object()]
                 current_planes = original_planes[:]
                 plane = SimpleNamespace(IsValid=True)
@@ -71,7 +71,7 @@ class PlaneArrayWorkerTests(unittest.TestCase):
                     objects[key] = SimpleNamespace(Id=key, Geometry=curve, Attributes=attributes, IsSelected=lambda _: key in selected)
                     return key
                 self.document.Objects = SimpleNamespace(GetObjectList=lambda _: list(objects.values()), UnselectAll=selected.clear,
-                    Select=selected.add, Delete=lambda key, _: objects.pop(key), AddCurve=add)
+                    Select=selected.add, Delete=lambda key, _: objects.pop(key), AddCurve=add, AddBrep=add)
                 entries = [None, ["existing"]]
                 class Groups:
                     @property
@@ -99,16 +99,18 @@ class PlaneArrayWorkerTests(unittest.TestCase):
                     if failure == "command": raise ValueError("command failure")
                     return True
                 operation = dict(command="Array", counts=[2, 1, 1], distances=[4, 0, 0], mode="UnitCell",
-                                 origin=[0, 0, 0], x_axis=[1, 0, 0], y_axis=[0, 1, 0], sources=[{"type": "line"}, {"type": "line"}])
+                                 origin=[0, 0, 0], x_axis=[1, 0, 0], y_axis=[0, 1, 0], sources=[{"type": kind}, {"type": kind}])
                 with patch.object(self.worker, "_point", side_effect=lambda p: p), patch.object(self.worker, "_vector", side_effect=lambda p: p), \
                      patch.object(self.worker, "_join_close_input", side_effect=curve_input), patch.object(self.worker, "_record_progress"), \
+                     patch.object(self.worker, "_trimmed_brep_from_definition", side_effect=lambda definition,tolerance:curve_input(definition)), \
+                     patch.object(self.worker, "_plane_array_brep_record", side_effect=ValueError("record failure") if failure == "record" else lambda geometry:([[[0,1],[0,1]]],[[0,2,3]])), \
                      patch.object(self.worker, "_run_surface_script", side_effect=run), \
                      patch.object(self.worker, "_xyz", side_effect=ValueError("record failure") if failure == "record" else lambda p: p):
                     if failure:
                         with self.assertRaisesRegex(ValueError, failure + " failure"):
-                            self.worker._plane_array(operation)
+                            self.worker._plane_array(operation, dict(absolute=1e-9,relative=1e-12,angular=1e-10))
                     else:
-                        value, elapsed = self.worker._plane_array(operation)
+                        value, elapsed = self.worker._plane_array(operation, dict(absolute=1e-9,relative=1e-12,angular=1e-10))
                         self.assertEqual(len(value["objects"]), 4)
                         self.assertEqual(value["groups"], [[0, 1], [0, 1]])
                         self.assertEqual(elapsed, 0)
@@ -119,3 +121,19 @@ class PlaneArrayWorkerTests(unittest.TestCase):
                 self.assertEqual(entries[1], ["existing"])
                 self.assertTrue(all(entry is None for i, entry in enumerate(entries) if i != 1))
                 for curve in curves: curve.Dispose.assert_called_once_with()
+
+    def test_brep_array_records_include_each_native_face_domain_and_every_trim_image(self):
+        from .test_parameter_bounds import Point
+        u = SimpleNamespace(T0=-1,T1=1,ParameterAt=lambda t:2*t-1)
+        v = SimpleNamespace(T0=3,T1=5,ParameterAt=lambda t:2*t+3)
+        d = SimpleNamespace(ParameterAt=lambda t:t)
+        trim = SimpleNamespace(Domain=d,PointAt=lambda t:Point(t,4,0),Dispose=Mock())
+        face = SimpleNamespace(Domain=lambda axis:[u,v][axis],PointAt=lambda u,v:Point(u,v,u*u),Loops=[SimpleNamespace(Trims=[trim])],Dispose=Mock())
+        domain, points = self.worker._plane_array_brep_record(SimpleNamespace(Faces=[face,face]))
+        self.assertEqual(domain,[[[-1,1],[3,5]]]*2)
+        self.assertEqual(len(points),68)
+        self.assertEqual(points[0],[-1,3,1])
+        self.assertEqual(points[25],[0,4,0])
+        self.assertEqual(points[33],[1,4,1])
+        face.Dispose.assert_not_called()
+        trim.Dispose.assert_not_called()

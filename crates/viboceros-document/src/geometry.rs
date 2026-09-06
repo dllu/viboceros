@@ -26,6 +26,21 @@ pub enum Geometry {
 }
 
 impl Geometry {
+    /// Tolerance-controlled geometry bounds, including complete trimmed faces.
+    /// Unlike the inexpensive display/control bounds, this can fail on poles,
+    /// ambiguous trims, or exhausted refinement budgets.
+    pub fn tight_bounds(&self, tolerance: Tolerance) -> Result<BoundingBox3, GeometryError> {
+        if let Some(curve) = self.curve_ref() {
+            curve.tight_bounds(tolerance)
+        } else {
+            match self {
+                Self::NurbsSurface(surface) => surface.tight_bounds(tolerance),
+                Self::Brep(brep) => brep.tight_bounds(tolerance),
+                _ => Ok(self.bounds()),
+            }
+        }
+    }
+
     pub fn curve_ref(&self) -> Option<CurveRef<'_>> {
         match self {
             Self::Line(curve) => Some(CurveRef::Line(curve)),

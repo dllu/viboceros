@@ -129,6 +129,11 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: TrimmedBrepFixture,
     },
+    TrimmedBrepBounds {
+        id: String,
+        #[serde(flatten)]
+        fixture: TrimmedBrepFixture,
+    },
     SurfaceBounds {
         id: String,
         surface: NurbsSurfaceDefinition,
@@ -1472,6 +1477,7 @@ impl Operation {
             | Self::SurfaceBounds { id, .. }
             | Self::SurfaceParameterCurveBounds { id, .. }
             | Self::TrimBoundaryBounds { id, .. }
+            | Self::TrimmedBrepBounds { id, .. }
             | Self::PlaneArray { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
@@ -1777,6 +1783,9 @@ fn execute(
         }
         Operation::TrimBoundaryBounds { fixture, .. } => {
             parameter_bounds::run_face(fixture, tolerance)?
+        }
+        Operation::TrimmedBrepBounds { fixture, .. } => {
+            parameter_bounds::run_brep(fixture, iterations, tolerance)?
         }
         Operation::SurfaceBounds {
             surface,

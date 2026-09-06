@@ -9,6 +9,96 @@ fn point(i: usize, j: usize) -> Point3 {
     )
     .unwrap()
 }
+
+#[test]
+fn conservative_partial_signs_agree_with_independent_rational_surface_derivatives() {
+    let mut nonzero = 0;
+    for p in 1..=5 {
+        for q in 1..=4 {
+            for gauge in [1., -1., 1e-200, 1e200] {
+                let controls = (0..=q)
+                    .flat_map(|v| {
+                        (0..=p).map(move |u| {
+                            WeightedPoint3::try_new(
+                                point(u, v),
+                                gauge * (1. + ((u + 3 * v) % 5) as f64 / 3.),
+                            )
+                            .unwrap()
+                        })
+                    })
+                    .collect::<Vec<_>>();
+                let s = NurbsSurface::try_new_rational(
+                    p,
+                    q,
+                    p + 1,
+                    q + 1,
+                    controls.clone(),
+                    [vec![0.; p + 1], vec![1.; p + 1]].concat(),
+                    [vec![0.; q + 1], vec![1.; q + 1]].concat(),
+                )
+                .unwrap();
+                let mut nodes = vec![(Net::new([p, q], &controls).unwrap(), [[0., 1.]; 2])];
+                for depth in 0..6 {
+                    let mut next = Vec::new();
+                    for (net, domain) in nodes {
+                        let signs = net.derivative_signs(&mut Budget::default()).unwrap();
+                        for a in [0.07, 0.5, 0.93] {
+                            for b in [0.11, 0.5, 0.89] {
+                                let uv: [f64; 2] = std::array::from_fn(|i| {
+                                    domain[i][0] * (1. - [a, b][i]) + domain[i][1] * [a, b][i]
+                                });
+                                let (_, du, dv) =
+                                    s.evaluate_with_derivatives(uv[0], uv[1]).unwrap();
+                                for (axis, pair) in signs.into_iter().enumerate() {
+                                    for direction in 0..2 {
+                                        if pair[direction] != 0 {
+                                            nonzero += 1;
+                                            assert!(
+                                                f64::from(pair[direction])
+                                                    * [du, dv][direction].to_array()[axis]
+                                                    > 0.
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        let axis = depth % 2;
+                        let mid = (domain[axis][0] + domain[axis][1]) / 2.;
+                        let (left, right) = net.split(axis);
+                        let mut a = domain;
+                        let mut b = domain;
+                        a[axis][1] = mid;
+                        b[axis][0] = mid;
+                        next.extend([(left, a), (right, b)]);
+                    }
+                    nodes = next;
+                }
+            }
+        }
+    }
+    assert!(nonzero > 10_000);
+}
+
+#[test]
+fn subnormal_derivative_numerators_do_not_establish_strict_signs() {
+    let controls = (0..2)
+        .flat_map(|v| {
+            (0..2).map(move |u| {
+                WeightedPoint3::try_new(
+                    Point3::try_new(u as f64 * 1e-320, v as f64 * 1e-320, 0.).unwrap(),
+                    1.,
+                )
+                .unwrap()
+            })
+        })
+        .collect::<Vec<_>>();
+    let net = Net::new([1, 1], &controls).unwrap();
+    assert_eq!(
+        net.derivative_signs(&mut Budget::default()).unwrap(),
+        [[0; 2]; 3]
+    );
+}
 fn at(net: &Net, u: f64, v: f64) -> Point3 {
     let eval = |values: &[H], t| {
         let mut work = values.to_vec();

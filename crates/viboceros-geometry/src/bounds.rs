@@ -3,6 +3,8 @@ mod bezier;
 mod curves;
 mod parameter_curves;
 mod surfaces;
+mod trim_region;
+mod trimmed_surfaces;
 
 /// Axis-aligned finite bounding box.
 #[derive(Clone, Copy, Debug, PartialEq)]

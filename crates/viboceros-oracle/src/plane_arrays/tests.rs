@@ -11,6 +11,10 @@ fn permanent_arrays_check_counts_original_selection_domains_and_group_membership
             include_str!("../../../../tools/rhino_oracle/fixtures/surface_array_bounds.json"),
             32,
         ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/trimmed_brep_array_bounds.json"),
+            32,
+        ),
     ] {
         check_arrays(text, count);
     }
@@ -32,7 +36,9 @@ fn check_arrays(text: &str, count: usize) {
         for record in records {
             assert_eq!(record["selected"], record["original"]);
             let index = record["source"].as_u64().unwrap() as usize;
-            let source = fixture.sources[index].geometry().unwrap();
+            let source = fixture.sources[index]
+                .geometry(request.tolerance.geometry().unwrap())
+                .unwrap();
             let (domain, count) = if let Some(curve) = source.curve_ref() {
                 let domain = curve.domain();
                 (json!([*domain.start(), *domain.end()]), 33)
@@ -40,6 +46,9 @@ fn check_arrays(text: &str, count: usize) {
                 let u = s.domain_u();
                 let v = s.domain_v();
                 (json!([[*u.start(), *u.end()], [*v.start(), *v.end()]]), 25)
+            } else if let Geometry::Brep(brep) = source {
+                let (domain, points) = brep_record(&brep).unwrap();
+                (domain, points.len())
             } else {
                 panic!("array source")
             };

@@ -92,3 +92,30 @@ class ParameterBoundsWorkerTests(TestCase):
                     self.assertEqual([len(s) for s in value["faces"][0]["samples"]],[65,65])
             brep.Dispose.assert_called_once_with()
             for edge in edges: edge.Dispose.assert_not_called()
+
+    def test_complete_brep_bounds_include_interior_witnesses_and_dispose_on_failures(self):
+        for failure in [None,"bounds","sample"]:
+            domain = SimpleNamespace(ParameterAt=lambda t:t)
+            trim = SimpleNamespace(Domain=domain,PointAt=lambda t:Point(t,0,0),Dispose=Mock())
+            face = SimpleNamespace(Loops=[SimpleNamespace(Trims=[trim])],
+                                   PointAt=Mock(side_effect=lambda u,v:Point(u,v,u*u+v*v)),Dispose=Mock())
+            box = Box([0,0,0],[1,1,2])
+            if failure == "bounds": box.IsValid=False
+            if failure == "sample": face.PointAt.side_effect=ValueError("sample failure")
+            brep = SimpleNamespace(Faces=[face],GetBoundingBox=Mock(return_value=box),Dispose=Mock())
+            with patch.object(self.worker,"_trimmed_brep_from_definition",return_value=brep):
+                operation = dict(op="trimmed_brep_bounds",interior_uv=[0.5,0.5])
+                if failure:
+                    with self.assertRaises(ValueError): self.worker._execute(operation,2,self.tolerance)
+                else:
+                    value,elapsed = self.worker._execute(operation,2,self.tolerance)
+                    self.assertGreaterEqual(elapsed,0)
+                    self.assertEqual(value["samples"][0][0],[0.5,0.5,0.5])
+                    self.assertEqual(len(value["samples"][0]),66)
+                    self.assertEqual(value["min"],[0,0,0])
+                    self.assertEqual(value["max"],[1,1,2])
+                self.assertEqual(brep.GetBoundingBox.call_count,3)
+                brep.GetBoundingBox.assert_called_with(True)
+            brep.Dispose.assert_called_once_with()
+            face.Dispose.assert_not_called()
+            trim.Dispose.assert_not_called()

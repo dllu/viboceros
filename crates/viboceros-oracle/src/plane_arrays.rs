@@ -29,27 +29,34 @@ pub enum ArrayMode {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(untagged)]
 pub enum ArraySource {
-    Surface(SurfaceSource),
+    SurfaceOrBrep(SurfaceOrBrepSource),
     Curve(CurveInput),
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "type", rename_all = "snake_case")]
-pub enum SurfaceSource {
+pub enum SurfaceOrBrepSource {
     Surface {
         #[serde(flatten)]
         surface: NurbsSurfaceDefinition,
     },
+    Brep {
+        #[serde(flatten)]
+        fixture: Box<TrimmedBrepFixture>,
+    },
 }
 
 impl ArraySource {
-    fn geometry(&self) -> Result<Geometry, GeometryError> {
-        match self {
-            Self::Surface(SurfaceSource::Surface { surface }) => {
-                nurbs_surface_from_definition(surface).map(Geometry::NurbsSurface)
+    fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
+        Ok(match self {
+            Self::SurfaceOrBrep(SurfaceOrBrepSource::Surface { surface }) => {
+                Geometry::NurbsSurface(nurbs_surface_from_definition(surface)?)
             }
-            Self::Curve(curve) => curve.geometry().map(Geometry::from),
-        }
+            Self::SurfaceOrBrep(SurfaceOrBrepSource::Brep { fixture }) => {
+                Geometry::Brep(trimmed_brep::build(fixture, tolerance)?)
+            }
+            Self::Curve(curve) => curve.geometry()?.into(),
+        })
     }
 }
 
@@ -147,7 +154,7 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
     for (index, source) in f.sources.iter().enumerate() {
         let attributes =
             ObjectAttributes::on_layer(document.current_layer_id()).with_name(index.to_string());
-        ids.push(document.add_geometry_with_attributes(source.geometry()?, attributes)?);
+        ids.push(document.add_geometry_with_attributes(source.geometry(tolerance)?, attributes)?);
     }
     let groups = f
         .groups
@@ -215,6 +222,8 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
                 json!([[*u.start(), *u.end()], [*v.start(), *v.end()]]),
                 points,
             )
+        } else if let Geometry::Brep(brep) = object.geometry() {
+            brep_record(brep)?
         } else {
             return Err(error());
         };
@@ -263,4 +272,36 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
         }),
         0,
     ))
+}
+
+fn brep_record(brep: &Brep) -> Result<(Value, Vec<[f64; 3]>), GeometryError> {
+    let mut domains = Vec::new();
+    let mut points = Vec::new();
+    for face in brep.faces() {
+        let s = face.surface();
+        let u = s.domain_u();
+        let v = s.domain_v();
+        domains.push([[*u.start(), *u.end()], [*v.start(), *v.end()]]);
+        for j in 0..=4 {
+            for i in 0..=4 {
+                points.push(
+                    s.evaluate(
+                        u.start() + (u.end() - u.start()) * f64::from(i) / 4.,
+                        v.start() + (v.end() - v.start()) * f64::from(j) / 4.,
+                    )?
+                    .to_array(),
+                );
+            }
+        }
+        for trim in face.loops().iter().flat_map(|l| l.trims()) {
+            let d = trim.curve().domain();
+            for i in 0..=8 {
+                let uv = trim
+                    .curve()
+                    .evaluate(d.start() + (d.end() - d.start()) * f64::from(i) / 8.)?;
+                points.push(s.evaluate(uv.x(), uv.y())?.to_array());
+            }
+        }
+    }
+    Ok((json!(domains), points))
 }

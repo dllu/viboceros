@@ -54,8 +54,9 @@ morph-copy policies. Original groups are never removed. The document's explicit
 All seven curve families use [tight curve bounds](curve-bounds.md) for Fill
 extents and the nonrotating polar anchor. Point, point-cloud, polyline, and mesh
 extents come from their exact vertex sets. Standalone NURBS surfaces use
-[tight untrimmed surface bounds](surface-bounds.md). B-reps still use their
-existing underlying bounds, not tight trimmed-face bounds. Surface layout is
+[tight untrimmed surface bounds](surface-bounds.md). B-reps use
+[complete trimmed-face bounds](trimmed-face-bounds.md), including holes and
+interior extrema. Surface layout is
 not yet guaranteed to match Rhino; the retained comparisons below expose the
 remaining differences.
 
@@ -72,11 +73,16 @@ policies, multi-turn sweeps, group memberships, selection, native domains,
 and 33 unrounded parameter samples per output curve. All 64 agree at absolute
 `1e-8`, relative `1e-12`; maximum observed coordinate error is `1.92e-9`.
 Unit tests separately check failure atomicity, undo/redo, large plane origins,
-and interactive plane changes.
+interactive plane changes, trimmed B-rep extents, and preservation of their
+underlying surfaces and UV loops.
 `surface_array_bounds.json` adds 32 surface/mixed-source cases; 24 pass at the
 same epsilon. Eight retain translation-only discrepancies, including oblique
 Fill errors up to `0.01817`. See [surface-bound evidence](surface-bounds.md)
 for exact coverage and separate Rhino boxes that exclude their own samples.
+`trimmed_brep_array_bounds.json` adds 32 trimmed/multi-face B-rep arrays.
+13 polar cases pass; 19 retain translation-only differences from `2.39e-8`
+through `0.001563`. See [trimmed-face evidence](trimmed-face-bounds.md) for the
+case groups, analytic bounds, and unchanged strict epsilon.
 A private-display release UI check additionally exported 20 line objects in
 10 groups after nested CPlane edits, polar undo/redo, rectangular UnitCell/Fill,
 and picked linear references; all exported endpoints agreed within `1e-10`.

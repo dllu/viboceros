@@ -2930,7 +2930,21 @@ def _plane_array_geometry_record(geometry, is_surface):
     return domain, points
 
 
-def _plane_array(operation):
+def _plane_array_brep_record(brep):
+    domains, points = [], []
+    for face in brep.Faces:
+        u, v = face.Domain(0), face.Domain(1)
+        domains.append([[float(u.T0),float(u.T1)],[float(v.T0),float(v.T1)]])
+        points.extend(_xyz(face.PointAt(u.ParameterAt(i/4.0),v.ParameterAt(j/4.0))) for j in range(5) for i in range(5))
+        for loop in face.Loops:
+            for trim in loop.Trims:
+                for i in range(9):
+                    uv = trim.PointAt(trim.Domain.ParameterAt(i/8.0))
+                    points.append(_xyz(face.PointAt(uv.X,uv.Y)))
+    return domains, points
+
+
+def _plane_array(operation, tolerance):
     script = _plane_array_script(operation)
     if not 1 <= len(operation["sources"]) <= 16:
         raise ValueError("expected 1 to 16 array sources")
@@ -2953,11 +2967,12 @@ def _plane_array(operation):
             document.Objects.UnselectAll()
             for index, definition in enumerate(operation["sources"]):
                 is_surface = definition["type"] == "surface"
-                curve = _nurbs_surface_from_definition(definition) if is_surface else _join_close_input(definition)
+                is_brep = definition["type"] == "brep"
+                curve = _trimmed_brep_from_definition(definition, tolerance) if is_brep else (_nurbs_surface_from_definition(definition) if is_surface else _join_close_input(definition))
                 curves.append(curve)
                 attributes = Rhino.DocObjects.ObjectAttributes()
                 attributes.Name = str(index)
-                object_id = document.Objects.AddSurface(curve, attributes) if is_surface else document.Objects.AddCurve(curve, attributes)
+                object_id = document.Objects.AddBrep(curve, attributes) if is_brep else (document.Objects.AddSurface(curve, attributes) if is_surface else document.Objects.AddCurve(curve, attributes))
                 if object_id == System.Guid.Empty:
                     raise ValueError("failed array source insertion")
                 source_ids.append(object_id)
@@ -2980,7 +2995,8 @@ def _plane_array(operation):
             records = []
             for obj in outputs:
                 curve = obj.Geometry
-                domain, points = _plane_array_geometry_record(curve, operation["sources"][int(obj.Attributes.Name)]["type"] == "surface")
+                source_type = operation["sources"][int(obj.Attributes.Name)]["type"]
+                domain, points = _plane_array_brep_record(curve) if source_type == "brep" else _plane_array_geometry_record(curve, source_type == "surface")
                 records.append({"source": int(obj.Attributes.Name), "original": obj.Id in source_ids,
                                 "selected": bool(obj.IsSelected(False)), "domain": domain, "points": points})
             # Quantize only sort keys, never the reported coordinates.
@@ -3000,7 +3016,7 @@ def _plane_array(operation):
                 value["bounds"] = []
                 for curve, definition in zip(curves, operation["sources"]):
                     for local in [False, True]:
-                        temporary = curve.Duplicate() if definition["type"] == "surface" else curve.DuplicateCurve()
+                        temporary = curve.Duplicate() if definition["type"] in ("surface", "brep") else curve.DuplicateCurve()
                         try:
                             if local:
                                 temporary.Transform(Rhino.Geometry.Transform.PlaneToPlane(plane, Rhino.Geometry.Plane.WorldXY))
@@ -3091,12 +3107,35 @@ def _trim_boundary_bounds(operation, tolerance):
         brep.Dispose()
 
 
+def _trimmed_brep_bounds(operation, iterations, tolerance):
+    brep = _trimmed_brep_from_definition(operation, tolerance)
+    try:
+        bounds, elapsed = _measure(iterations, lambda: brep.GetBoundingBox(True))
+        if not bounds.IsValid:
+            raise ValueError("invalid trimmed B-rep bounds")
+        samples = []
+        for face in brep.Faces:
+            u, v = operation["interior_uv"]
+            values = [_xyz(face.PointAt(u,v))]
+            for loop in face.Loops:
+                for trim in loop.Trims:
+                    for i in range(65):
+                        uv = trim.PointAt(trim.Domain.ParameterAt(i/64.0))
+                        values.append(_xyz(face.PointAt(uv.X,uv.Y)))
+            samples.append(values)
+        return {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max),"samples":samples},elapsed
+    finally:
+        brep.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
     if kind == "surface_parameter_curve_bounds":
         return _surface_parameter_curve_bounds(operation, tolerance)
     if kind == "trim_boundary_bounds":
         return _trim_boundary_bounds(operation, tolerance)
+    if kind == "trimmed_brep_bounds":
+        return _trimmed_brep_bounds(operation, iterations, tolerance)
     if kind in ("curve_bounds", "surface_bounds"):
         geometry = _join_close_input(operation["curve"]) if kind == "curve_bounds" else _nurbs_surface_from_definition(operation["surface"])
         try:
@@ -3122,7 +3161,7 @@ def _execute(operation, iterations, tolerance):
         finally:
             geometry.Dispose()
     if kind == "plane_array":
-        return _plane_array(operation)
+        return _plane_array(operation, tolerance)
     if kind == "construction_plane_input":
         return _construction_plane_input(operation)
     if kind == "construction_plane":

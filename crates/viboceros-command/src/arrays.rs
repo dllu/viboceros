@@ -210,13 +210,7 @@ fn selected_plane_bounds(
         } else {
             std::borrow::Cow::Owned(source.transformed(to_local, document.tolerance())?)
         };
-        Ok(if let Some(curve) = geometry.curve_ref() {
-            curve.tight_bounds(document.tolerance())?
-        } else if let Geometry::NurbsSurface(surface) = geometry.as_ref() {
-            surface.tight_bounds(document.tolerance())?
-        } else {
-            geometry.bounds()
-        })
+        Ok(geometry.tight_bounds(document.tolerance())?)
     };
     let (first, rest) = selected
         .split_first()

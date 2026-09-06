@@ -59,6 +59,11 @@ discrepancy remains in `parameter_curve_bounds_diagnostics.json`.
 `trim_boundary_bounds.json` adds six exact B-rep boundary comparisons.
 These untimed probes retain direct surface-image samples and do not imply
 complete trimmed-face bounds; see [trim-boundary bounds](trim-boundary-bounds.md).
+`trimmed_brep_bounds.json` separately compares 11 complete B-rep boxes, with
+five retained box/trim-evaluation diagnostics in
+`trimmed_brep_bounds_diagnostics.json`; see [trimmed-face bounds](trimmed-face-bounds.md).
+`trimmed_brep_array_bounds.json` exercises 32 actual arrays of single- and
+multi-face trimmed B-reps, recording every face domain and trim-image samples.
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
