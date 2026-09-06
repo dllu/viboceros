@@ -212,6 +212,8 @@ fn selected_plane_bounds(
         };
         Ok(if let Some(curve) = geometry.curve_ref() {
             curve.tight_bounds(document.tolerance())?
+        } else if let Geometry::NurbsSurface(surface) = geometry.as_ref() {
+            surface.tight_bounds(document.tolerance())?
         } else {
             geometry.bounds()
         })

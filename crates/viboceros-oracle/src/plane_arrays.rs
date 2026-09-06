@@ -10,7 +10,7 @@ pub struct PlaneArrayFixture {
     pub origin: [f64; 3],
     pub x_axis: [f64; 3],
     pub y_axis: [f64; 3],
-    pub sources: Vec<CurveInput>,
+    pub sources: Vec<ArraySource>,
     #[serde(default)]
     pub groups: Option<Vec<Vec<usize>>>,
     /// Explicit output count for zero-spacing cells omitted by the command.
@@ -24,6 +24,33 @@ pub struct PlaneArrayFixture {
 pub enum ArrayMode {
     UnitCell,
     Fill,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(untagged)]
+pub enum ArraySource {
+    Surface(SurfaceSource),
+    Curve(CurveInput),
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum SurfaceSource {
+    Surface {
+        #[serde(flatten)]
+        surface: NurbsSurfaceDefinition,
+    },
+}
+
+impl ArraySource {
+    fn geometry(&self) -> Result<Geometry, GeometryError> {
+        match self {
+            Self::Surface(SurfaceSource::Surface { surface }) => {
+                nurbs_surface_from_definition(surface).map(Geometry::NurbsSurface)
+            }
+            Self::Curve(curve) => curve.geometry().map(Geometry::from),
+        }
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
@@ -120,10 +147,7 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
     for (index, source) in f.sources.iter().enumerate() {
         let attributes =
             ObjectAttributes::on_layer(document.current_layer_id()).with_name(index.to_string());
-        ids.push(
-            document
-                .add_geometry_with_attributes(Geometry::from(source.geometry()?), attributes)?,
-        );
+        ids.push(document.add_geometry_with_attributes(source.geometry()?, attributes)?);
     }
     let groups = f
         .groups
@@ -161,16 +185,39 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
             .parse::<usize>()
             .unwrap();
         let original = ids.contains(&object.id());
-        let curve = object.geometry().curve_ref().ok_or_else(error)?;
-        let domain = curve.domain();
-        let (a, b) = (*domain.start(), *domain.end());
-        let points = (0..=32)
-            .map(|i| {
-                curve
-                    .evaluate(a + (b - a) * f64::from(i) / 32.)
+        let (domain, points) = if let Some(curve) = object.geometry().curve_ref() {
+            let domain = curve.domain();
+            let (a, b) = (*domain.start(), *domain.end());
+            (
+                json!([a, b]),
+                (0..=32)
+                    .map(|i| {
+                        curve
+                            .evaluate(a + (b - a) * f64::from(i) / 32.)
+                            .map(|p| p.to_array())
+                    })
+                    .collect::<Result<Vec<_>, _>>()?,
+            )
+        } else if let Geometry::NurbsSurface(s) = object.geometry() {
+            let u = s.domain_u();
+            let v = s.domain_v();
+            let points = (0..=4)
+                .flat_map(|j| (0..=4).map(move |i| (i, j)))
+                .map(|(i, j)| {
+                    s.evaluate(
+                        u.start() + (u.end() - u.start()) * f64::from(i) / 4.,
+                        v.start() + (v.end() - v.start()) * f64::from(j) / 4.,
+                    )
                     .map(|p| p.to_array())
-            })
-            .collect::<Result<Vec<_>, _>>()?;
+                })
+                .collect::<Result<Vec<_>, _>>()?;
+            (
+                json!([[*u.start(), *u.end()], [*v.start(), *v.end()]]),
+                points,
+            )
+        } else {
+            return Err(error());
+        };
         let key = points
             .iter()
             .flatten()
@@ -182,7 +229,7 @@ pub(super) fn run(f: &PlaneArrayFixture, tolerance: Tolerance) -> Result<(Value,
                 "source": source,
                 "original": original,
                 "selected": document.is_selected(object.id()),
-                "domain": [a, b],
+                "domain": domain,
                 "points": points,
             }),
         ));

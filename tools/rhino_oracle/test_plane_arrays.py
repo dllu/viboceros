@@ -99,7 +99,7 @@ class PlaneArrayWorkerTests(unittest.TestCase):
                     if failure == "command": raise ValueError("command failure")
                     return True
                 operation = dict(command="Array", counts=[2, 1, 1], distances=[4, 0, 0], mode="UnitCell",
-                                 origin=[0, 0, 0], x_axis=[1, 0, 0], y_axis=[0, 1, 0], sources=[{}, {}])
+                                 origin=[0, 0, 0], x_axis=[1, 0, 0], y_axis=[0, 1, 0], sources=[{"type": "line"}, {"type": "line"}])
                 with patch.object(self.worker, "_point", side_effect=lambda p: p), patch.object(self.worker, "_vector", side_effect=lambda p: p), \
                      patch.object(self.worker, "_join_close_input", side_effect=curve_input), patch.object(self.worker, "_record_progress"), \
                      patch.object(self.worker, "_run_surface_script", side_effect=run), \

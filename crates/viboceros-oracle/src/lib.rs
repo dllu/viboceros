@@ -117,6 +117,12 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    SurfaceBounds {
+        id: String,
+        surface: NurbsSurfaceDefinition,
+        #[serde(default)]
+        sample_grid: bool,
+    },
     CurveBounds {
         id: String,
         curve: curve_join_close::CurveInput,
@@ -1451,6 +1457,7 @@ impl Operation {
         match self {
             Self::PolycurveGeometry { id, .. }
             | Self::CurveBounds { id, .. }
+            | Self::SurfaceBounds { id, .. }
             | Self::PlaneArray { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
@@ -1751,6 +1758,30 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::SurfaceBounds {
+            surface,
+            sample_grid,
+            ..
+        } => {
+            let surface = nurbs_surface_from_definition(surface)?;
+            let (bounds, elapsed) = measure(iterations, || surface.tight_bounds(tolerance))?;
+            let mut value = json!({"min": bounds.min().to_array(), "max": bounds.max().to_array()});
+            if *sample_grid {
+                let points = (0..=40)
+                    .flat_map(|v| (0..=40).map(move |u| (u, v)))
+                    .map(|(u, v)| {
+                        surface.evaluate(
+                            surface.parameter_at_u(f64::from(u) / 40.)?,
+                            surface.parameter_at_v(f64::from(v) / 40.)?,
+                        )
+                    })
+                    .collect::<Result<Vec<_>, GeometryError>>()?;
+                let samples = viboceros_geometry::BoundingBox3::from_points(points)?;
+                value["sample_bounds"] =
+                    json!({"min":samples.min().to_array(),"max":samples.max().to_array()});
+            }
+            (value, elapsed)
+        }
         Operation::CurveBounds { curve, .. } => {
             let curve = curve.geometry()?;
             let (bounds, elapsed) = measure(iterations, || curve.as_ref().tight_bounds(tolerance))?;

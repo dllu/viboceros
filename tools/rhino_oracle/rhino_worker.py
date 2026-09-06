@@ -197,7 +197,7 @@ def _set_surface_controls(surface, controls, count_u, count_v):
             control = controls[v_index * count_u + u_index]
             point = _point(control["point"])
             weight = _finite(control.get("weight", 1.0), "control-point weight")
-            if not weight > 0.0 or not surface.Points.SetPoint(
+            if weight == 0.0 or not surface.Points.SetPoint(
                 u_index, v_index, point, weight
             ):
                 raise ValueError("invalid NURBS surface control point")
@@ -2915,6 +2915,21 @@ def _plane_array_script(operation):
     raise ValueError("unsupported array command")
 
 
+def _plane_array_geometry_record(geometry, is_surface):
+    if is_surface:
+        if isinstance(geometry, Rhino.Geometry.Brep):
+            if geometry.Faces.Count != 1:
+                raise ValueError("array surface output is not a single face")
+            geometry = geometry.Faces[0].UnderlyingSurface()
+        u, v = geometry.Domain(0), geometry.Domain(1)
+        domain = [[float(u.T0), float(u.T1)], [float(v.T0), float(v.T1)]]
+        points = [_xyz(geometry.PointAt(u.ParameterAt(i / 4.0), v.ParameterAt(j / 4.0))) for j in range(5) for i in range(5)]
+    else:
+        domain = [float(geometry.Domain.T0), float(geometry.Domain.T1)]
+        points = [_xyz(geometry.PointAt(geometry.Domain.ParameterAt(i / 32.0))) for i in range(33)]
+    return domain, points
+
+
 def _plane_array(operation):
     script = _plane_array_script(operation)
     if not 1 <= len(operation["sources"]) <= 16:
@@ -2937,11 +2952,12 @@ def _plane_array(operation):
             viewport.SetConstructionPlane(plane)
             document.Objects.UnselectAll()
             for index, definition in enumerate(operation["sources"]):
-                curve = _join_close_input(definition)
+                is_surface = definition["type"] == "surface"
+                curve = _nurbs_surface_from_definition(definition) if is_surface else _join_close_input(definition)
                 curves.append(curve)
                 attributes = Rhino.DocObjects.ObjectAttributes()
                 attributes.Name = str(index)
-                object_id = document.Objects.AddCurve(curve, attributes)
+                object_id = document.Objects.AddSurface(curve, attributes) if is_surface else document.Objects.AddCurve(curve, attributes)
                 if object_id == System.Guid.Empty:
                     raise ValueError("failed array source insertion")
                 source_ids.append(object_id)
@@ -2964,9 +2980,9 @@ def _plane_array(operation):
             records = []
             for obj in outputs:
                 curve = obj.Geometry
+                domain, points = _plane_array_geometry_record(curve, operation["sources"][int(obj.Attributes.Name)]["type"] == "surface")
                 records.append({"source": int(obj.Attributes.Name), "original": obj.Id in source_ids,
-                                "selected": bool(obj.IsSelected(False)), "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
-                                "points": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)]})
+                                "selected": bool(obj.IsSelected(False)), "domain": domain, "points": points})
             # Quantize only sort keys, never the reported coordinates.
             records.sort(key=lambda r: (r["source"], not r["original"], tuple(round(v, 8) for p in r["points"] for v in p)))
             groups = []
@@ -2982,9 +2998,9 @@ def _plane_array(operation):
                 history_after = Rhino.RhinoApp.CommandHistoryWindowText
                 value["history"] = history_after[len(history_before):] if history_after.startswith(history_before) else history_after[-5000:]
                 value["bounds"] = []
-                for curve in curves:
+                for curve, definition in zip(curves, operation["sources"]):
                     for local in [False, True]:
-                        temporary = curve.DuplicateCurve()
+                        temporary = curve.Duplicate() if definition["type"] == "surface" else curve.DuplicateCurve()
                         try:
                             if local:
                                 temporary.Transform(Rhino.Geometry.Transform.PlaneToPlane(plane, Rhino.Geometry.Plane.WorldXY))
@@ -3010,17 +3026,30 @@ def _plane_array(operation):
 
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
-    if kind == "curve_bounds":
-        curve = _join_close_input(operation["curve"])
+    if kind in ("curve_bounds", "surface_bounds"):
+        geometry = _join_close_input(operation["curve"]) if kind == "curve_bounds" else _nurbs_surface_from_definition(operation["surface"])
         try:
-            if not curve.IsValid:
-                raise ValueError("invalid bounds curve")
-            bounds, elapsed = _measure(iterations, lambda: curve.GetBoundingBox(True))
+            if not geometry.IsValid:
+                raise ValueError("invalid bounds geometry")
+            _record_progress("bounds: accurate box")
+            bounds, elapsed = _measure(iterations, lambda: geometry.GetBoundingBox(True))
             if not bounds.IsValid:
-                raise ValueError("invalid curve bounds")
-            return {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max)}, elapsed
+                raise ValueError("invalid geometry bounds")
+            value = {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max)}
+            if kind == "surface_bounds" and operation.get("sample_grid", False):
+                _record_progress("bounds: sample grid")
+                u, v = geometry.Domain(0), geometry.Domain(1)
+                points = [_xyz(geometry.PointAt(u.ParameterAt(i/40.0),v.ParameterAt(j/40.0))) for j in range(41) for i in range(41)]
+                _record_progress("bounds: sample box")
+                sample_min, sample_max = list(points[0]), list(points[0])
+                for point in points[1:]:
+                    for i in range(3):
+                        sample_min[i] = min(sample_min[i],point[i])
+                        sample_max[i] = max(sample_max[i],point[i])
+                value["sample_bounds"] = {"min":sample_min,"max":sample_max}
+            return value, elapsed
         finally:
-            curve.Dispose()
+            geometry.Dispose()
     if kind == "plane_array":
         return _plane_array(operation)
     if kind == "construction_plane_input":

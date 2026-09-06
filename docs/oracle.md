@@ -47,6 +47,12 @@ remain in `plane_array_diagnostics.json`; see [plane arrays](plane-arrays.md).
 `curve_bounds.json` checks 16 timed tight-curve-box queries. A negative-gauge
 Rhino discrepancy remains in `curve_bounds_diagnostics.json`, separate from
 passing references; see [bounds policy and measurements](curve-bounds.md).
+`surface_bounds.json` adds 25 passing timed surface-box queries.
+`surface_bounds_diagnostics.json` retains four inaccurate Rhino boxes, with
+untimed 41×41 `sample_grid` witnesses recorded separately as `sample_bounds`.
+`surface_array_bounds.json` compares 32 actual surface/mixed-source arrays;
+24 pass and eight retain placement discrepancies at `1e-8`.
+See [surface bounds](surface-bounds.md) for coverage and limitations.
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 

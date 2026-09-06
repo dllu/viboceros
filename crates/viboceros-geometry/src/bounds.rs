@@ -1,5 +1,7 @@
 use crate::{GeometryError, Point3, Real};
+mod bezier;
 mod curves;
+mod surfaces;
 
 /// Axis-aligned finite bounding box.
 #[derive(Clone, Copy, Debug, PartialEq)]

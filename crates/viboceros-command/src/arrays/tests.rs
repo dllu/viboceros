@@ -300,3 +300,88 @@ fn failed_layout_bounds_cannot_partially_copy_the_document() {
         assert!(document.is_selected(id));
     }
 }
+
+#[test]
+fn surface_arrays_use_interior_surface_extrema_and_fail_atomically_at_poles() {
+    let surface = NurbsSurface::try_new(
+        2,
+        2,
+        3,
+        3,
+        (0..3)
+            .flat_map(|v| {
+                (0..3).map(move |u| {
+                    p([
+                        u as f64 / 2.,
+                        v as f64 / 2.,
+                        [0., 2., 0.][u] + [0., 4., 0.][v],
+                    ])
+                })
+            })
+            .collect(),
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 0., 1., 1., 1.],
+    )
+    .unwrap();
+    let context = CommandContext {
+        construction_plane: WorldPlane::Front.frame(),
+    };
+    for (command, expected) in [
+        ("Array 1 2 1 0 20 0 Mode=Fill", [0., 0., 17.]),
+        (
+            "ArrayPolar 3 0,0,0 180 Rotate=No ZOffset=2",
+            [-2., -2., -1.],
+        ),
+    ] {
+        let mut document = Document::default();
+        let id = document
+            .add_geometry(Geometry::NurbsSurface(surface.clone()))
+            .unwrap();
+        document.select_all();
+        CommandRegistry::with_builtins()
+            .execute_in_context(&mut document, command, context)
+            .unwrap();
+        let Geometry::NurbsSurface(copy) = document.objects().nth(1).unwrap().geometry() else {
+            panic!("surface")
+        };
+        near(copy.evaluate(0., 0.).unwrap(), p(expected));
+        assert_eq!(copy.domain_u(), surface.domain_u());
+        assert_eq!(copy.domain_v(), surface.domain_v());
+        document.undo().unwrap();
+        assert_eq!(document.objects().len(), 1);
+        assert!(document.is_selected(id));
+    }
+    let controls = (0..2)
+        .flat_map(|v| {
+            (0..3).map(move |u| {
+                WeightedPoint3::try_new(p([u as f64, v as f64, 0.]), [1., -1., 1.][u]).unwrap()
+            })
+        })
+        .collect();
+    let pole = NurbsSurface::try_new_rational(
+        2,
+        1,
+        3,
+        2,
+        controls,
+        vec![0., 0., 0., 1., 1., 1.],
+        vec![0., 0., 1., 1.],
+    )
+    .unwrap();
+    let mut document = Document::default();
+    document.add_geometry(Geometry::NurbsSurface(pole)).unwrap();
+    document.select_all();
+    let history = document.undo_label().map(str::to_owned);
+    for command in [
+        "Array 2 1 1 10 0 0 Mode=Fill",
+        "ArrayPolar 3 0,0,0 180 Rotate=No",
+    ] {
+        assert!(
+            CommandRegistry::with_builtins()
+                .execute_in_context(&mut document, command, context)
+                .is_err()
+        );
+        assert_eq!(document.objects().len(), 1);
+        assert_eq!(document.undo_label(), history.as_deref());
+    }
+}

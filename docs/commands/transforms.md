@@ -62,7 +62,7 @@ document tolerance, so their comparison epsilon is documented separately.
 `UnitCell` mode uses those values as successive spacing. `Mode=Fill` treats them
 as layout lengths and accounts for the selected geometry's plane-oriented
 extent. See [plane arrays](../plane-arrays.md) for signed/small-length rules,
-zero-spacing cells, tight curve bounds, and surface-bounds limitations.
+zero-spacing cells, tight curve/surface bounds, and remaining B-rep/compatibility limits.
 
 `ArrayLinear` takes Rhino's total item count followed by two reference points;
 their vector is the spacing between successive items. It retains the originals

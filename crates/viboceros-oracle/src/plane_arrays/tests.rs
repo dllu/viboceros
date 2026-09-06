@@ -2,12 +2,24 @@ use super::*;
 
 #[test]
 fn permanent_arrays_check_counts_original_selection_domains_and_group_memberships() {
-    let request: ProbeRequest = serde_json::from_str(include_str!(
-        "../../../../tools/rhino_oracle/fixtures/plane_arrays.json"
-    ))
-    .unwrap();
+    for (text, count) in [
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/plane_arrays.json"),
+            64,
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/surface_array_bounds.json"),
+            32,
+        ),
+    ] {
+        check_arrays(text, count);
+    }
+}
+
+fn check_arrays(text: &str, count: usize) {
+    let request: ProbeRequest = serde_json::from_str(text).unwrap();
     let response = run_request(&request).unwrap();
-    assert_eq!(response.results.len(), 64);
+    assert_eq!(response.results.len(), count);
     for (operation, result) in request.operations.iter().zip(response.results) {
         let Operation::PlaneArray { fixture, .. } = operation else {
             panic!("array fixture")
@@ -21,9 +33,18 @@ fn permanent_arrays_check_counts_original_selection_domains_and_group_membership
             assert_eq!(record["selected"], record["original"]);
             let index = record["source"].as_u64().unwrap() as usize;
             let source = fixture.sources[index].geometry().unwrap();
-            let domain = source.as_ref().domain();
-            assert_eq!(record["domain"], json!([*domain.start(), *domain.end()]));
-            assert_eq!(record["points"].as_array().unwrap().len(), 33);
+            let (domain, count) = if let Some(curve) = source.curve_ref() {
+                let domain = curve.domain();
+                (json!([*domain.start(), *domain.end()]), 33)
+            } else if let Geometry::NurbsSurface(s) = source {
+                let u = s.domain_u();
+                let v = s.domain_v();
+                (json!([[*u.start(), *u.end()], [*v.start(), *v.end()]]), 25)
+            } else {
+                panic!("array source")
+            };
+            assert_eq!(record["domain"], domain);
+            assert_eq!(record["points"].as_array().unwrap().len(), count);
         }
         let input_groups = fixture
             .groups
@@ -76,4 +97,56 @@ fn permanent_bounds_are_finite_and_negative_common_gauges_preserve_the_curve() {
         .find(|r| r.id == "bounds-polynomial")
         .unwrap();
     assert_eq!(negative.results[0].value, positive.value);
+}
+
+#[test]
+fn permanent_surface_bounds_contain_diagnostic_samples_and_preserve_negative_gauges() {
+    for (text, count) in [
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/surface_bounds.json"),
+            25,
+        ),
+        (
+            include_str!("../../../../tools/rhino_oracle/fixtures/surface_bounds_diagnostics.json"),
+            4,
+        ),
+    ] {
+        let request: ProbeRequest = serde_json::from_str(text).unwrap();
+        let response = run_request(&ProbeRequest {
+            iterations: 1,
+            ..request
+        })
+        .unwrap();
+        assert_eq!(response.results.len(), count);
+        for result in response.results {
+            for axis in 0..3 {
+                let min = result.value["min"][axis].as_f64().unwrap();
+                let max = result.value["max"][axis].as_f64().unwrap();
+                assert!(
+                    min.is_finite() && max.is_finite() && min <= max,
+                    "{}",
+                    result.id
+                );
+                if let Some(samples) = result.value.get("sample_bounds") {
+                    assert!(
+                        min <= samples["min"][axis].as_f64().unwrap() + 1e-8,
+                        "{}",
+                        result.id
+                    );
+                    assert!(
+                        max >= samples["max"][axis].as_f64().unwrap() - 1e-8,
+                        "{}",
+                        result.id
+                    );
+                }
+            }
+            if matches!(
+                result.id.as_str(),
+                "surface-bounds-quad" | "surface-bounds-quad-negative-gauge"
+            ) {
+                assert_eq!(result.value["min"], json!([0., 0., 0.]));
+                assert_eq!(result.value["max"], json!([1., 1., 3.]));
+            }
+        }
+    }
 }
