@@ -12,7 +12,7 @@ file formats, or command parsing.
 | `viboceros-document` | Objects, attributes, layers, groups, selection, transactions, and bounded undo/redo. |
 | `viboceros-drafting` | Snapping and tracking calculations. |
 | `viboceros-io` | STL, OpenNURBS 3DM bindings, and initial STEP interchange. |
-| `viboceros-command` | Command registration, argument parsing, and document operations. |
+| `viboceros-command` | Document commands plus a separate, document-independent interface-command parser and state reducer. |
 | `src/` | egui application and wgpu viewport rendering. |
 | `viboceros-oracle`, `tools/rhino_oracle/` | Matching native and public Rhino API probes and a Python comparison client. |
 | `third_party/` | Pinned OpenNURBS source and its license. |
@@ -26,6 +26,10 @@ projection, and native parameter policy for six primitive commands.
 The separate [plane-transforms module](plane-transforms.md) handles reference
 interpretation and affine maps for five transforms, sharing document mutation
 and copy/group transactions with the other transform commands.
+`viboceros-command::interface` owns [display/drafting controls](commands/interface.md).
+The application adapter applies those actions without entering the modeling
+command lifecycle; the compact toolbar and keyboard shortcuts share that path.
+The headless oracle exercises the same reducer, independently of egui and wgpu.
 
 ## Current foundation
 

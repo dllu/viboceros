@@ -9,6 +9,95 @@ from unittest.mock import Mock, patch
 
 
 class RhinoWorkerTests(unittest.TestCase):
+    def test_interface_scripts_whitelist_settings_and_target_viewport_before_mode(self):
+        for command, expected in [
+            ("Snap", "_Snap"), ("'_-sEtSnAp _oFf", "_SetSnap _Off"),
+            ("DisableOsnap Toggle", "_DisableOsnap _Toggle"), ("SmartTrack On", "_SmartTrack _On"),
+            ("DisableOsnap Enable", "_DisableOsnap _Enable"), ("DisableOsnap Disable", "_DisableOsnap _Disable"),
+            ("SetDisplayMode Shaded", "_-SetDisplayMode _Viewport=_Active _Mode=_Shaded"),
+            ("SetDisplayMode _Mode=_Ghosted _Viewport=_All", "_-SetDisplayMode _Viewport=_All _Mode=_Ghosted"),
+            ("SetDisplayMode Viewport Active Mode Wireframe", "_-SetDisplayMode _Viewport=_Active _Mode=_Wireframe"),
+        ]:
+            self.assertEqual(self.worker._interface_script(command), expected)
+        for invalid in [None, "", " ", "x" * 513, "Delete", "Snap _Delete", "SetSnap", "SetSnap Yes",
+                        "SetDisplayMode", "SetDisplayMode Mode", "SetDisplayMode Viewport=All",
+                        "SetDisplayMode Rendered", "SetDisplayMode Shaded Wireframe", "SetDisplayMode Mode=Shaded Extra=All",
+                        "SetDisplayMode Viewport=Top Wireframe", "SetSnap On\n_Delete", "DisableOsnap On", "DisableOsnap Off"]:
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                self.worker._interface_script(invalid)
+
+    def test_interface_probes_restore_full_global_settings_and_views_on_every_exit(self):
+        for failure in [None, "initialization", "command", "record"]:
+            with self.subTest(failure=failure):
+                class Settings:
+                    def __init__(self, **values):
+                        self.values = values
+                    def GetCurrentState(self):
+                        return self.values.copy()
+                    def UpdateFromState(self, state):
+                        self.values = state.copy()
+                    def __getattr__(self, key):
+                        return self.values[key]
+                    def __setattr__(self, key, value):
+                        if key == "values":
+                            object.__setattr__(self, key, value)
+                        else:
+                            self.values[key] = value
+                            if failure == "initialization" and key == "Osnap":
+                                raise ValueError("initialization failure")
+                aid = Settings(GridSnap=False, Osnap=True, OtherSetting="preserved")
+                track = Settings(UseSmartTrack=True, OtherSetting=42)
+                original_aid, original_track = aid.GetCurrentState(), track.GetCurrentState()
+                original_modes = [object() for _ in range(4)]
+                views = [SimpleNamespace(ActiveViewportID=i, ActiveViewport=SimpleNamespace(DisplayMode=mode)) for i, mode in enumerate(original_modes)]
+                self.document.Views = SimpleNamespace(ActiveView=views[1], GetViewList=lambda a,b: views)
+                self.worker.Rhino.ApplicationSettings = SimpleNamespace(ModelAidSettings=aid, SmartTrackSettings=track)
+                self.worker.Rhino.Display = SimpleNamespace(DisplayModeDescription=SimpleNamespace(FindByName=lambda name: SimpleNamespace(EnglishName=name)))
+                self.worker.Rhino.RhinoApp.RunScript = Mock()
+                operation = {"grid_snap":True, "osnap":False, "smart_track":False, "active_viewport":2,
+                             "display_modes":["Wireframe", "Shaded", "Ghosted", "Wireframe"], "commands":["Snap"]}
+                def run(script, verify):
+                    self.assertEqual(script, "_Snap")
+                    self.assertTrue(verify)
+                    aid.GridSnap = not aid.GridSnap
+                    aid.OtherSetting = "changed by command"
+                    track.OtherSetting = "changed by command"
+                    if failure == "command":
+                        raise ValueError("command failure")
+                    return True
+                real_record = self.worker._interface_state
+                calls = [0]
+                def record(*args):
+                    calls[0] += 1
+                    if failure == "record" and calls[0] == 2:
+                        raise ValueError("record failure")
+                    return real_record(*args)
+                with patch.object(self.worker, "_run_surface_script", side_effect=run), patch.object(self.worker, "_interface_state", side_effect=record), patch.object(self.worker, "_record_progress"):
+                    if failure:
+                        with self.assertRaisesRegex(ValueError, failure + " failure"):
+                            self.worker._interface_commands(operation)
+                    else:
+                        value, elapsed = self.worker._interface_commands(operation)
+                        self.assertEqual(elapsed, 0)
+                        self.assertEqual([state["grid_snap"] for state in value["states"]], [True, False])
+                        self.assertEqual([state["active_viewport"] for state in value["states"]], [2, 2])
+                        self.assertEqual(value["states"][0]["display_modes"], operation["display_modes"])
+                self.assertEqual(aid.GetCurrentState(), original_aid)
+                self.assertEqual(track.GetCurrentState(), original_track)
+                self.assertEqual([view.ActiveViewport.DisplayMode for view in views], original_modes)
+                self.assertIs(self.document.Views.ActiveView, views[1])
+                self.worker.Rhino.RhinoApp.RunScript.assert_called_once_with("!", False)
+
+    def test_interface_fixture_validation_precedes_application_access(self):
+        operation = {"grid_snap":True, "osnap":False, "smart_track":False, "active_viewport":2,
+                     "display_modes":["Wireframe", "Shaded", "Ghosted", "Wireframe"], "commands":["Snap"]}
+        # The mock deliberately has no ApplicationSettings or Display APIs.
+        for changes in [dict(commands=[]), dict(commands=["Snap"] * 129), dict(commands=["Delete"]),
+                        dict(grid_snap="On"), dict(osnap=1), dict(active_viewport=True), dict(active_viewport=4),
+                        dict(display_modes=["Wireframe"]), dict(display_modes=["Rendered"] * 4)]:
+            with self.subTest(changes=changes), self.assertRaises(ValueError):
+                self.worker._interface_commands(dict(operation, **changes))
+
     def test_plane_transform_scripts_validate_arguments_and_finish_repeat_copy_prompts(self):
         operation = {"command": "Rotate", "references": [[1,2,3]], "value": 37, "copy": True}
         with patch.object(self.worker, "_command_point", return_value="1,2,3"):

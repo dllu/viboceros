@@ -2,6 +2,7 @@
 
 mod context;
 mod curve_cut;
+pub mod interface;
 mod plane_primitives;
 mod plane_transforms;
 use plane_transforms::{

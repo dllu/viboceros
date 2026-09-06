@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+pub use viboceros_command::interface::DisplayMode;
 
 use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
@@ -85,7 +86,7 @@ pub enum ViewKind {
 }
 
 impl ViewKind {
-    const fn label(self) -> &'static str {
+    pub(crate) const fn label(self) -> &'static str {
         match self {
             Self::Top => "Top",
             Self::Perspective => "Perspective",
@@ -96,23 +97,6 @@ impl ViewKind {
 
     const fn is_parallel(self) -> bool {
         !matches!(self, Self::Perspective)
-    }
-}
-
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
-pub enum DisplayMode {
-    Wireframe,
-    Shaded,
-    Ghosted,
-}
-
-impl DisplayMode {
-    fn label(self) -> &'static str {
-        match self {
-            Self::Wireframe => "Wireframe",
-            Self::Shaded => "Shaded",
-            Self::Ghosted => "Ghosted",
-        }
     }
 }
 

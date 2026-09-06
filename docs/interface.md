@@ -4,6 +4,10 @@
 
 The application opens with Top, Perspective, Front, and Right viewports.
 Each supports wireframe, shaded, and ghosted display, with independent navigation.
+The compact toolbar contains Undo/Redo, active-viewport view/display selectors,
+Grid Snap, Osnap, and SmartTrack. Modeling commands remain in the command line;
+the toolbar wraps at narrow window widths. Undo/Redo buttons are disabled while
+a modeling prompt is unfinished.
 The layer pane creates, renames, recolors, shows, locks, activates, and deletes
 empty layers; it reports object counts and combines edits into one undo step.
 
@@ -22,6 +26,10 @@ Esc to clear the selection; press Delete to remove selected objects.
 Commands are case-insensitive. Typing while another non-text UI element or a
 viewport is active moves the text to the command line automatically. Matching
 command names appear below the input; press Tab or click a match to complete it.
+Enter `Help UI` for [interface commands and shortcuts](commands/interface.md).
+Display and snapping commands can run during a point prompt without losing its
+accepted points, construction plane, selection, or undo history. Toolbar toggles
+and shortcuts also preserve partially typed coordinates.
 
 At an active point prompt, type `x,y[,z]` or mix typed coordinates with viewport
 picks. `w` selects world coordinates, `r`/`@` supplies a relative displacement,

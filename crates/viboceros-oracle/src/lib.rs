@@ -32,6 +32,7 @@ use viboceros_io::{
     ThreeDmObject, read_3dm_file, write_3dm_file,
 };
 
+mod interface;
 mod mass_properties;
 mod trimmed_brep;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
@@ -114,6 +115,11 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    InterfaceCommands {
+        id: String,
+        #[serde(flatten)]
+        fixture: interface::InterfaceFixture,
+    },
     PlaneTransform {
         id: String,
         #[serde(flatten)]
@@ -1423,6 +1429,7 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::InterfaceCommands { id, .. }
             | Self::PointInput { id, .. }
             | Self::PlanePrimitive { id, .. }
             | Self::PlaneTransform { id, .. }
@@ -1719,6 +1726,7 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::InterfaceCommands { fixture, .. } => interface::run(fixture)?,
         Operation::PointInput { fixture, .. } => point_input::run(fixture, tolerance)?,
         Operation::PlanePrimitive { fixture, .. } => plane_primitives::run(fixture, tolerance)?,
         Operation::PlaneTransform { fixture, .. } => plane_transforms::run(fixture, tolerance)?,

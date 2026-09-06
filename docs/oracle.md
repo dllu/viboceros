@@ -30,6 +30,11 @@ independent point witnesses per operation, including copied/original identity
 and selection. Four parallel-reference Shear cases remain explicit diagnostics
 in `plane_transform_diagnostics.json`; see [plane transforms](plane-transforms.md).
 
+`interface_commands.json` checks 208 untimed display/snapping transitions across
+eight initial states against Rhino's actual commands. The native probe shares
+the GUI's parser and state reducer. The worker restores application settings
+and all viewport modes; see [interface controls](commands/interface.md).
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

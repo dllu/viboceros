@@ -2713,8 +2713,108 @@ def _in_construction_plane(operation, script, record):
             document.Objects.Select(object_id)
 
 
+def _interface_script(command):
+    """Whitelist interface-only input; never forward an unrestricted macro."""
+    if not isinstance(command, string_types) or not 1 <= len(command) <= 512:
+        raise ValueError("invalid interface command")
+    tokens = command.split()
+    if not tokens:
+        raise ValueError("empty interface command")
+    name = tokens.pop(0).lstrip("'_- ").lower()
+    switches = {"setsnap": "SetSnap", "smarttrack": "SmartTrack"}
+    if name == "snap" and not tokens:
+        return "_Snap"
+    if name in switches and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("on", "off", "toggle"):
+        return "_%s _%s" % (switches[name], tokens[0].lstrip("_").title())
+    if name == "disableosnap" and len(tokens) == 1 and tokens[0].lstrip("_").lower() in ("enable", "disable", "toggle"):
+        return "_DisableOsnap _%s" % tokens[0].lstrip("_").title()
+    if name != "setdisplaymode":
+        raise ValueError("unsupported interface command or options")
+    options = {}
+    while tokens:
+        token = tokens.pop(0)
+        if "=" in token:
+            key, value = token.split("=", 1)
+        elif token.lstrip("_").lower() in ("viewport", "mode"):
+            if not tokens:
+                raise ValueError("missing interface option value")
+            key, value = token, tokens.pop(0)
+        else:
+            key, value = "mode", token
+        key, value = key.lstrip("_").lower(), value.lstrip("_").lower()
+        if key in options or key not in ("viewport", "mode"):
+            raise ValueError("duplicate or unknown interface option")
+        options[key] = value
+    mode, viewport = options.get("mode"), options.get("viewport", "active")
+    if mode not in ("wireframe", "shaded", "ghosted") or viewport not in ("active", "all"):
+        raise ValueError("unsupported interface mode or viewport")
+    # Mode finishes the command, so target the viewport before supplying it.
+    return "_-SetDisplayMode _Viewport=_%s _Mode=_%s" % (viewport.title(), mode.title())
+
+
+def _interface_state(views, aid, track):
+    active = Rhino.RhinoDoc.ActiveDoc.Views.ActiveView
+    return {"grid_snap": bool(aid.GridSnap), "osnap": bool(aid.Osnap),
+            "smart_track": bool(track.UseSmartTrack),
+            "active_viewport": next(i for i, view in enumerate(views) if view.ActiveViewportID == active.ActiveViewportID),
+            "display_modes": [view.ActiveViewport.DisplayMode.EnglishName for view in views]}
+
+
+def _interface_commands(operation):
+    commands = operation["commands"]
+    if not isinstance(commands, list) or not 1 <= len(commands) <= 128:
+        raise ValueError("expected 1 to 128 interface commands")
+    scripts = [_interface_script(command) for command in commands]
+    if any(not isinstance(operation[key], bool) for key in ("grid_snap", "osnap", "smart_track")):
+        raise ValueError("interface flags must be booleans")
+    index = operation["active_viewport"]
+    if isinstance(index, bool) or not isinstance(index, int) or not 0 <= index < 4:
+        raise ValueError("invalid active viewport index")
+    names = operation["display_modes"]
+    if not isinstance(names, list) or len(names) != 4 or any(name not in ("Wireframe", "Shaded", "Ghosted") for name in names):
+        raise ValueError("expected four supported display modes")
+    modes = [Rhino.Display.DisplayModeDescription.FindByName(name) for name in names]
+    if any(mode is None for mode in modes):
+        raise ValueError("display mode unavailable")
+    document = Rhino.RhinoDoc.ActiveDoc
+    views = list(document.Views.GetViewList(True, False))
+    if len(views) != 4:
+        raise ValueError("interface probes require four model views")
+    aid = Rhino.ApplicationSettings.ModelAidSettings
+    track = Rhino.ApplicationSettings.SmartTrackSettings
+    original_aid = aid.GetCurrentState()
+    original_track = track.GetCurrentState()
+    original_modes = [view.ActiveViewport.DisplayMode for view in views]
+    original_view = document.Views.ActiveView
+    try:
+        aid.GridSnap = operation["grid_snap"]
+        aid.Osnap = operation["osnap"]
+        track.UseSmartTrack = operation["smart_track"]
+        for view, mode in zip(views, modes):
+            view.ActiveViewport.DisplayMode = mode
+        document.Views.ActiveView = views[index]
+        states = [_interface_state(views, aid, track)]
+        for script in scripts:
+            _record_progress("interface command: " + script)
+            if not _run_surface_script(script, True):
+                raise ValueError("interface command failed: " + script)
+            states.append(_interface_state(views, aid, track))
+        return {"states": states}, 0
+    finally:
+        # Settings are application-global even in a private Xvfb. Restore the
+        # full snapshots, not just the three switches under test.
+        Rhino.RhinoApp.RunScript("!", False)
+        aid.UpdateFromState(original_aid)
+        track.UpdateFromState(original_track)
+        for view, mode in zip(views, original_modes):
+            view.ActiveViewport.DisplayMode = mode
+        document.Views.ActiveView = original_view
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "interface_commands":
+        return _interface_commands(operation)
     if kind == "plane_transform":
         return _plane_transform(operation)
     if kind == "plane_primitive":

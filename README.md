@@ -20,7 +20,7 @@ cargo run --release
 
 Linux supports Wayland and X11; wgpu uses Vulkan when available. Enter commands
 such as `Line 0,0,0 10,5,0`, or enter `Line` to pick points in a viewport.
-Enter `Help` to list commands.
+Enter `Help` to list commands, or `Help UI` for display and drafting controls.
 
 ## Development
 
