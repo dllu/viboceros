@@ -11,7 +11,8 @@ geometry uses its exact vertex bounds.
 Array Fill uses this query in construction-plane coordinates; nonrotating
 ArrayPolar uses its world-space center. Failure leaves geometry, selection,
 and undo history unchanged. The inexpensive display/control `bounds()` methods
-and the BoundingBox command remain separate and unchanged.
+remain separate and unchanged; the [BoundingBox command](commands/bounding-box.md)
+now uses these tight queries.
 
 ## Interior search
 

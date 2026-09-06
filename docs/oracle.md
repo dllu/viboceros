@@ -64,6 +64,11 @@ five retained box/trim-evaluation diagnostics in
 `trimmed_brep_bounds_diagnostics.json`; see [trimmed-face bounds](trimmed-face-bounds.md).
 `trimmed_brep_array_bounds.json` exercises 32 actual arrays of single- and
 multi-face trimmed B-reps, recording every face domain and trim-image samples.
+`bounding_box.json` checks 57 actual BoundingBox commands, including output
+corners/topology, groups, reports, and World/CPlane orientation.
+`bounding_box_diagnostics.json` retains 26 curved-bound, thin-geometry, and
+atomicity differences. See [bounding boxes](commands/bounding-box.md), including
+why raw Rhino script success flags are not used for report-only commands.
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 

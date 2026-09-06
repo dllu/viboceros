@@ -6,8 +6,8 @@
 return a tolerance-controlled box for the complete active curve. Analytic
 curves use analytic extrema; lines/polylines use vertices; polycurves combine
 all native segments. NURBS control-point bounds remain a separate, cheaper API.
-Existing general document bounds and the BoundingBox command are not globally
-replaced by this new query.
+General display/control bounds remain separate. The
+[BoundingBox command](commands/bounding-box.md) now uses the tight query.
 
 ## Rational subdivision
 

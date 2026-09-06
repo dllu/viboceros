@@ -47,7 +47,7 @@ pub enum SurfaceOrBrepSource {
 }
 
 impl ArraySource {
-    fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
+    pub(super) fn geometry(&self, tolerance: Tolerance) -> Result<Geometry, ProbeError> {
         Ok(match self {
             Self::SurfaceOrBrep(SurfaceOrBrepSource::Surface { surface }) => {
                 Geometry::NurbsSurface(nurbs_surface_from_definition(surface)?)

@@ -3128,8 +3128,157 @@ def _trimmed_brep_bounds(operation, iterations, tolerance):
         brep.Dispose()
 
 
+def _bounding_box_source(definition, tolerance):
+    kind = definition["type"]
+    if kind == "point":
+        return Rhino.Geometry.Point(_point(definition["point"]))
+    if kind == "point_cloud":
+        cloud = Rhino.Geometry.PointCloud()
+        try:
+            for point in definition["points"]:
+                cloud.Add(_point(point))
+            return cloud
+        except Exception:
+            cloud.Dispose()
+            raise
+    if kind == "mesh":
+        return _polygon_mesh(definition["vertices"], definition["faces"])
+    if kind == "surface":
+        return _nurbs_surface_from_definition(definition)
+    if kind == "brep":
+        return _trimmed_brep_from_definition(definition, tolerance)
+    return _join_close_input(definition)
+
+
+def _bounding_box_geometry_record(geometry):
+    if isinstance(geometry, Rhino.Geometry.Brep):
+        record = {"kind":"brep","points":[_xyz(v.Location) for v in geometry.Vertices],
+                  "faces":geometry.Faces.Count,"closed":bool(geometry.IsSolid)}
+    elif isinstance(geometry, Rhino.Geometry.Mesh):
+        record = {"kind":"mesh","points":[_xyz(v) for v in geometry.Vertices],
+                  "face_sizes":sorted(3 if f.IsTriangle else 4 for f in geometry.Faces),"closed":bool(geometry.IsClosed)}
+    elif isinstance(geometry, Rhino.Geometry.Curve):
+        success, polyline = geometry.TryGetPolyline()
+        if not success:
+            raise ValueError("bounding curve is not a polyline")
+        record = {"kind":"curve","points":[list(p) for p in sorted(set(tuple(_xyz(p)) for p in polyline))],
+                  "closed":bool(geometry.IsClosed),"degree":int(geometry.Degree)}
+    elif isinstance(geometry, Rhino.Geometry.Point):
+        record = {"kind":"point","points":[_xyz(geometry.Location)]}
+    else:
+        raise ValueError("unsupported BoundingBox output")
+    record["points"].sort(key=lambda p:tuple(round(x,8) for x in p))
+    return record
+
+
+def _bounding_box_command(operation, tolerance):
+    coordinates, output = operation["coordinate_system"], operation["output"]
+    cumulative = operation["cumulative"]
+    if (coordinates not in ("World", "CPlane")
+            or output not in ("Solids", "Meshes", "Curves", "None")
+            or not isinstance(cumulative, bool)):
+        raise ValueError("invalid BoundingBox options")
+    if not 1 <= len(operation["sources"]) <= 16:
+        raise ValueError("expected 1 to 16 BoundingBox sources")
+    script = "_-BoundingBox _CoordinateSystem=_%s _Cumulative=_%s _Output=_%s _Enter" % (
+        coordinates, "Yes" if cumulative else "No", output)
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = settings.LockedObjects = settings.HiddenObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    original_groups = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    plane = Rhino.Geometry.Plane(
+        _point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid BoundingBox plane")
+    owned, source_ids = [], []
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(plane)
+            document.Objects.UnselectAll()
+            for index, definition in enumerate(operation["sources"]):
+                geometry = _bounding_box_source(definition, tolerance)
+                owned.append(geometry)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                try:
+                    attributes.Name = "bbox-source-%d" % index
+                    kind = definition["type"]
+                    if kind == "point":
+                        object_id = document.Objects.AddPoint(geometry.Location, attributes)
+                    elif kind == "point_cloud":
+                        object_id = document.Objects.AddPointCloud(geometry, attributes)
+                    elif kind == "mesh":
+                        object_id = document.Objects.AddMesh(geometry, attributes)
+                    elif kind == "surface":
+                        object_id = document.Objects.AddSurface(geometry, attributes)
+                    elif kind == "brep":
+                        object_id = document.Objects.AddBrep(geometry, attributes)
+                    else:
+                        object_id = document.Objects.AddCurve(geometry, attributes)
+                finally:
+                    attributes.Dispose()
+                if object_id == System.Guid.Empty:
+                    raise ValueError("BoundingBox source insertion failed")
+                source_ids.append(object_id)
+                document.Objects.Select(object_id)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            _record_progress("bounding box: " + script)
+            script_result = bool(_run_surface_script(script, True))
+            history_after = Rhino.RhinoApp.CommandHistoryWindowText
+            history = (history_after[len(history_before):] if history_after.startswith(history_before)
+                       else history_after.rsplit("Command: _-BoundingBox", 1)[-1])
+            # Rhino returns False for a valid 3D Output=None report, but True
+            # for a planar one. Record observable reports/failure, not that flag.
+            reported_boxes = history.count("dimensions =")
+            succeeded = reported_boxes > 0 and "BoundingBox failed" not in history
+            if not reported_boxes and "BoundingBox failed" not in history:
+                raise ValueError("BoundingBox produced neither a report nor a failure: " + history)
+            records = []
+            for obj in objects():
+                if obj.Id in before or obj.Id in source_ids:
+                    continue
+                record = _bounding_box_geometry_record(obj.Geometry)
+                record.update(selected=bool(obj.IsSelected(False)),
+                              current_layer=obj.Attributes.LayerIndex == document.Layers.CurrentLayerIndex,
+                              name=obj.Attributes.Name or None)
+                records.append(record)
+            records.sort(key=lambda r:(r["kind"],tuple(round(x,8) for p in r["points"] for x in p)))
+            group_sizes = []
+            for i in range(document.Groups.Count):
+                if i not in original_groups and not document.Groups.IsDeleted(i):
+                    members = document.Groups.GroupMembers(i)
+                    if members:
+                        group_sizes.append(len(members))
+            remaining = {obj.Id:obj for obj in objects()}
+            value = {"succeeded":succeeded,"reported_boxes":reported_boxes,"objects":records,"group_sizes":sorted(group_sizes),
+                     "sources_retained":[i for i,key in enumerate(source_ids) if key in remaining],
+                     "selected_sources":[i for i,key in enumerate(source_ids) if key in remaining and remaining[key].IsSelected(False)]}
+            if operation.get("inspect", False):
+                value["history"] = history
+                value["script_result"] = script_result
+            return value, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+            for i in range(document.Groups.Count):
+                if i not in original_groups and not document.Groups.IsDeleted(i):
+                    document.Groups.Delete(i)
+            document.Objects.UnselectAll()
+            for key in selected:
+                document.Objects.Select(key)
+            for geometry in reversed(owned):
+                geometry.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "bounding_box_command":
+        return _bounding_box_command(operation, tolerance)
     if kind == "surface_parameter_curve_bounds":
         return _surface_parameter_curve_bounds(operation, tolerance)
     if kind == "trim_boundary_bounds":

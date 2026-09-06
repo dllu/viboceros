@@ -21,7 +21,8 @@ error; negative common weight gauges do not change the geometry or bounds.
 `Array Mode=Fill` uses these boxes in construction-plane coordinates for
 standalone NURBS surfaces; `ArrayPolar Rotate=No` uses their world-box center.
 Failure aborts the entire command without copies or an undo record. Existing
-display/control bounds and the BoundingBox command are unchanged. B-rep arrays
+display/control bounds are unchanged. The
+[BoundingBox command](commands/bounding-box.md) now uses the tight query. B-rep arrays
 now use their separate trim-aware query. Bounding the entire underlying surface
 is not a substitute, and surface-array Rhino compatibility remains incomplete.
 

@@ -1,0 +1,3255 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "bounding_box_command",
+      "id": "solid-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "solid-Meshes",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Meshes",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "solid-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "solid-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "plane-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "plane-Meshes",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Meshes",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "plane-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "plane-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "line-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "line-Meshes",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Meshes",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "line-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "line-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "point-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "point-Meshes",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Meshes",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "point-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "point-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "thin-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3.00000000001
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "thin-Meshes",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Meshes",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3.00000000001
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "thin-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3.00000000001
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "thin-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3.00000000001
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-rational-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-rational-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-signed-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-signed-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-surface-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-surface-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-rational-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-rational-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-signed-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-signed-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-surface-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-surface-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-rational-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-rational-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-signed-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-signed-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-surface-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-surface-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "surface",
+          "degree_u": 2,
+          "degree_v": 2,
+          "control_point_count_u": 3,
+          "control_point_count_v": 3,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                0.5,
+                6
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                0.5,
+                4
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0,
+                1,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                0.5,
+                1,
+                2
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                1,
+                0
+              ],
+              "weight": 1
+            }
+          ],
+          "knots_u": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ],
+          "knots_v": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-rational-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-rational-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": 3
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-signed-Solids",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-signed-Curves",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                0
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                10,
+                0
+              ],
+              "weight": -1
+            },
+            {
+              "point": [
+                2,
+                0,
+                0
+              ],
+              "weight": 2
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "individual-Solids",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -10,
+              -20,
+              -30
+            ],
+            [
+              -7,
+              -16,
+              -24
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "individual-Meshes",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Meshes",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -10,
+              -20,
+              -30
+            ],
+            [
+              -7,
+              -16,
+              -24
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "individual-Curves",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "Curves",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -10,
+              -20,
+              -30
+            ],
+            [
+              -7,
+              -16,
+              -24
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "individual-None",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "World",
+      "cumulative": false,
+      "output": "None",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              9
+            ]
+          ]
+        },
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              -10,
+              -20,
+              -30
+            ],
+            [
+              -7,
+              -16,
+              -24
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mesh-source-World",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        2
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3
+            ],
+            [
+              2,
+              7,
+              9
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "mesh-source-CPlane",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        2
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              3
+            ],
+            [
+              2,
+              7,
+              9
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "top-lines",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "bottom-lines",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "front-lines",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "back-lines",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "right-lines",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "left-lines",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-lines",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-plane-World",
+      "origin": [
+        3,
+        4,
+        5
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        2
+      ],
+      "coordinate_system": "World",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              3,
+              4,
+              5
+            ],
+            [
+              4,
+              5,
+              5
+            ],
+            [
+              2,
+              5,
+              7
+            ],
+            [
+              3,
+              6,
+              7
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "op": "bounding_box_command",
+      "id": "oblique-plane-CPlane",
+      "origin": [
+        3,
+        4,
+        5
+      ],
+      "x_axis": [
+        1,
+        1,
+        0
+      ],
+      "y_axis": [
+        -1,
+        1,
+        2
+      ],
+      "coordinate_system": "CPlane",
+      "cumulative": true,
+      "output": "Solids",
+      "sources": [
+        {
+          "type": "point_cloud",
+          "points": [
+            [
+              3,
+              4,
+              5
+            ],
+            [
+              4,
+              5,
+              5
+            ],
+            [
+              2,
+              5,
+              7
+            ],
+            [
+              3,
+              6,
+              7
+            ]
+          ]
+        }
+      ]
+    }
+  ]
+}

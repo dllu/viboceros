@@ -31,13 +31,12 @@ bilinear faces, and exact rational parameter-space trims.
 Entering `Box` without arguments starts a three-point interactive workflow;
 see [construction planes](../construction-planes.md) for projection and height rules.
 
-`BoundingBox` creates one cumulative World-coordinate enclosure of the selected
-objects by default; `Cumulative=No` creates one per object. `Output=` supports
-exact B-rep solids, shared-vertex triangle meshes, six grouped rectangle curves,
-or report-only `None`. World-plane selections produce a rectangle or mesh plane.
-`CoordinateSystem=CPlane` is accepted and currently shares the World XY basis;
-analytic bounds are tight, while NURBS bounds use their control geometry and
-can be non-conservative for negative-weight projective inputs.
+`BoundingBox` creates tight World/CPlane enclosures of selected objects, using
+analytic/rational extrema and retained trimmed-face interiors. Outputs include
+B-rep solids, quad meshes, grouped rectangle curves, and report-only results;
+planar enclosures produce rectangles. See [bounding boxes](bounding-box.md) for
+individual/cumulative syntax, coordinate reports, failure policy, and retained
+Rhino differences.
 
 ## Edge surfaces
 

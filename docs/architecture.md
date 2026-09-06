@@ -39,6 +39,9 @@ compositions. `bounds/parameter_curves` bounds their exact spatial images and
 `bounds/trimmed_surfaces` adds a stationary-extremum search; `bounds/trim_region`
 uses rational curve hulls for conservative inside/outside/uncertain tests.
 `Geometry::tight_bounds` centralizes dispatch without changing fast display bounds.
+The independent [BoundingBox command](commands/bounding-box.md) uses that query
+in a geometry-local working frame, then stages oriented solids, quad meshes,
+or grouped rectangle outputs before entering document mutation.
 `viboceros-command::interface` owns [display/drafting controls](commands/interface.md).
 The application adapter applies those actions without entering the modeling
 command lifecycle; the compact toolbar and keyboard shortcuts share that path.
