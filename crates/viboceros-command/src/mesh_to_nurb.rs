@@ -1,4 +1,4 @@
-//! Mesh face conversion with Rhino's preselection and component policies.
+//! Mesh face conversion with Rhino's selection, option, and component policies.
 use super::*;
 
 #[cfg(test)]
@@ -32,16 +32,78 @@ impl Command for MeshToNurbCommand {
         "MeshToNURB"
     }
 
+    fn object_selection_prompt(
+        &self,
+        arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        let options = parse(arguments, self.options.get())?;
+        Ok(Some(ObjectSelectionPrompt {
+            command: self.name(),
+            filter: ObjectSelectionFilter::Mesh,
+            options: vec![
+                BooleanSelectionOption {
+                    name: "TrimTriangularFaces",
+                    value: options.trim_triangular_faces,
+                },
+                BooleanSelectionOption {
+                    name: "UseNgons",
+                    value: options.use_ngons,
+                },
+            ],
+        }))
+    }
+
+    fn accept_object_selection_options(&self, arguments: &[&str]) -> Result<(), CommandError> {
+        self.options.set(parse(arguments, self.options.get())?);
+        Ok(())
+    }
+
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        _context: CommandContext,
+    ) -> Result<String, CommandError> {
+        self.accept_object_selection_options(arguments)?;
+        let result = self.convert(document, arguments, true)?;
+        document.clear_selection();
+        Ok(result)
+    }
+
     fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
+        self.convert(document, arguments, false)
+    }
+}
+
+impl MeshToNurbCommand {
+    fn convert(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        postselected: bool,
+    ) -> Result<String, CommandError> {
         let options = parse(arguments, self.options.get())?;
         if document.selected_object_count() == 0 {
             return Err(CommandError::NoObjectsSelected);
         }
         let mut total_face_count = 0usize;
         let mut outputs = Vec::new();
-        // Command output follows document order, not selection action order.
+        // Preselection follows document order; prompted picks follow action
+        // order. Build a rank map instead of repeated linear ID lookups.
+        let mut sources = document
+            .objects()
+            .filter(|o| document.is_selected(o.id()))
+            .collect::<Vec<_>>();
+        if postselected {
+            let rank = document
+                .selected_object_ids()
+                .enumerate()
+                .map(|(i, id)| (id, i))
+                .collect::<BTreeMap<_, _>>();
+            sources.sort_unstable_by_key(|o| rank[&o.id()]);
+        }
         // Borrow source meshes; component extraction already owns its pieces.
-        for object in document.objects().filter(|o| document.is_selected(o.id())) {
+        for object in sources {
             let Geometry::Mesh(mesh) = object.geometry() else {
                 continue;
             };

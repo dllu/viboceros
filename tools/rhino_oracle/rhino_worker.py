@@ -3593,15 +3593,22 @@ def _conversion_arguments(operation, command, direction):
     if trim is not None and (type(trim) is not bool or command not in ("ToNURBS", "MeshToNURB")):
         raise ValueError("invalid mesh conversion option")
     ngons = operation.get("use_ngons")
+    postselect = operation.get("postselect", False)
+    cancel = operation.get("cancel", False)
+    if type(postselect) is not bool or type(cancel) is not bool or ((postselect or cancel) and command != "MeshToNURB") or (cancel and (not postselect or undo_after)):
+        raise ValueError("invalid conversion selection/cancellation path")
+    initial_selection = operation.get("initial_selection", [])
+    if not isinstance(initial_selection, list) or any(type(i) is not int or not 0 <= i < len(definitions) or definitions[i]["type"] == "mesh" for i in initial_selection) or len(set(initial_selection)) != len(initial_selection) or (initial_selection and not postselect):
+        raise ValueError("invalid initial non-mesh selection")
     if ngons is not None and (type(ngons) is not bool or command != "MeshToNURB"):
         raise ValueError("invalid n-gon conversion option")
     if command == "MeshToNURB" and delete is not None:
         raise ValueError("MeshToNURB has no deletion choice")
     if not 1 <= len(definitions) <= 16 or (delete is not None and type(delete) is not bool):
         raise ValueError("invalid conversion fixture")
-    if not selected or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected) or len(set(selected)) != len(selected):
+    if (not selected and not cancel) or any(type(i) is not int or not 0 <= i < len(definitions) for i in selected) or len(set(selected)) != len(selected):
         raise ValueError("invalid conversion preselection")
-    if trim is not None and not any(definitions[i]["type"] == "mesh" for i in selected):
+    if trim is not None and not any(definitions[i]["type"] == "mesh" for i in selected) and not (cancel and any(d["type"] == "mesh" for d in definitions)):
         raise ValueError("mesh options require a selected mesh")
     if command not in ("ConvertToBeziers", "ConvertToSingleSpans", "ToNURBS", "MeshToNURB") or direction not in (None,"U","V","Both"):
         raise ValueError("invalid conversion command")
@@ -3612,11 +3619,11 @@ def _conversion_arguments(operation, command, direction):
             (definitions[i]["type"]=="brep" and definitions[i].get("cap_surface") is None) for i in selected):
         raise ValueError("single span conversion requires a surface")
     # At least one known curve/surface avoids an interactive object prompt.
-    if not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
+    if not cancel and not any(definitions[i]["type"] in ("nurbs", "surface", "line", "polyline", "arc", "circle", "ellipse", "polycurve") or
                (definitions[i]["type"] == "brep" and definitions[i].get("cap_surface") is None) or
                (command in ("ToNURBS", "MeshToNURB") and definitions[i]["type"] in ("mesh", "brep")) for i in selected):
         raise ValueError("conversion requires an eligible object")
-    if command == "MeshToNURB" and not any(definitions[i]["type"] == "mesh" for i in selected):
+    if command == "MeshToNURB" and not any(definitions[i]["type"] == "mesh" for i in selected) and not (cancel and any(d["type"] == "mesh" for d in definitions)):
         raise ValueError("MeshToNURB requires a mesh")
     if command == "ConvertToBeziers":
         script="_ConvertToBeziers " + ("_Enter" if delete is None else "_Yes" if delete else "_No")
@@ -3756,17 +3763,23 @@ def _geometry_conversion(operation, tolerance, command="ConvertToBeziers", direc
                 index = document.Groups.Add("Viboceros Bezier Group %d " % i + suffix, members)
                 if index < 0: raise ValueError("Bezier group insertion failed")
                 group_names[index] = "Group-%d" % i
-            if command == "MeshToNURB" and (operation.get("trim_triangular_faces") is not None or operation.get("use_ngons") is not None):
+            postselect = operation.get("postselect", False)
+            if command == "MeshToNURB" and not postselect and (operation.get("trim_triangular_faces") is not None or operation.get("use_ngons") is not None):
                 # Rhino hides options for preselected inputs. Seed only its
                 # choices using a separate owned mesh, then measure the actual
                 # preselection path without normalizing source selection.
                 i = next(i for i in selected if definitions[i]["type"] == "mesh")
                 _seed_mesh_conversion_options(document, objects, owned[i], script)
-            for i in selected:
-                if not document.Objects.Select(ids[i]): raise ValueError("Bezier source preselection failed")
-            if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in selected): raise ValueError("Bezier source preselection incomplete")
+            preselected = operation.get("initial_selection", []) if postselect else selected
+            for i in preselected:
+                if not document.Objects.Select(ids[i]): raise ValueError("conversion source preselection failed")
+            if not all(document.Objects.FindId(ids[i]).IsSelected(False) for i in preselected): raise ValueError("conversion source preselection incomplete")
             initial = record()
-            if command == "MeshToNURB": script = "_MeshToNURB"
+            if command == "MeshToNURB":
+                if postselect:
+                    script += " " + " ".join("_SelID %s" % ids[i] for i in selected if definitions[i]["type"] == "mesh")
+                    script += " !" if operation.get("cancel", False) else " _Enter"
+                else: script = "_MeshToNURB"
             _record_progress(command + ": command")
             _run_surface_script(script, True)
             _record_progress(command + ": record")

@@ -19,13 +19,15 @@ use viboceros_geometry::{
 
 use crate::sidebar::{DocumentSidebar, SidebarAction};
 use crate::viewport::{
-    DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportOutput,
+    DisplayMode, DraftingInput, SelectionClick, SelectionWindow, ViewKind, Viewport, ViewportInput,
+    ViewportOutput,
 };
 
 const MAX_LOG_ENTRIES: usize = 100;
 
 mod construction_plane;
 mod interface;
+mod object_selection;
 mod plane_primitives;
 mod point_input;
 mod toolbar;
@@ -1033,6 +1035,7 @@ pub struct VibocerosApp {
     last_point: Option<Point3>,
     drafting_plane: Option<Frame3>,
     plane_prompt: Option<construction_plane::PlanePrompt>,
+    object_prompt: Option<viboceros_command::ObjectSelectionPrompt>,
     curve_points: Vec<Point3>,
     sidebar: DocumentSidebar,
 }
@@ -1067,6 +1070,7 @@ impl VibocerosApp {
             last_point: None,
             drafting_plane: None,
             plane_prompt: None,
+            object_prompt: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }
@@ -1082,6 +1086,9 @@ impl VibocerosApp {
         if self.try_continue_plane_prompt(&input) {
             return;
         }
+        if self.try_continue_object_prompt(&input) {
+            return;
+        }
         if input.is_empty() {
             if self
                 .active_command
@@ -1095,7 +1102,7 @@ impl VibocerosApp {
             return;
         }
         self.command_input.clear();
-        if self.try_start_interactive_command(&input) {
+        if self.try_start_object_prompt(&input) || self.try_start_interactive_command(&input) {
             return;
         }
         self.execute_command(&input);
@@ -2762,6 +2769,7 @@ impl VibocerosApp {
     }
 
     fn cancel_interactive_command(&mut self, announce: bool) {
+        self.cancel_object_prompt(announce);
         let command = self.active_command.take();
         self.drafting_plane = None;
         if command.is_some() {
@@ -4552,6 +4560,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_click(&mut self, click: SelectionClick) {
+        if self.object_prompt.is_some() {
+            self.select_prompt_objects(click.object_id, click.mode);
+            return;
+        }
         match click.object_id {
             Some(id) => match self.document.select_object(id, click.mode) {
                 Ok(count) => self.push_log(format!("Selected {count} object(s)")),
@@ -4568,6 +4580,10 @@ impl VibocerosApp {
     }
 
     fn apply_selection_window(&mut self, selection: SelectionWindow) {
+        if self.object_prompt.is_some() {
+            self.select_prompt_objects(selection.object_ids, selection.mode);
+            return;
+        }
         let selected_kind = if selection.crossing {
             "crossing"
         } else {
@@ -4735,6 +4751,8 @@ impl VibocerosApp {
                 ui.horizontal(|ui| {
                     let label = if self.plane_prompt.is_some() {
                         "CPlane"
+                    } else if let Some(prompt) = &self.object_prompt {
+                        prompt.command
                     } else {
                         self.active_command
                             .map_or("Command", InteractiveCommand::name)
@@ -4752,6 +4770,8 @@ impl VibocerosApp {
                             .desired_width(f32::INFINITY)
                             .hint_text(if self.plane_prompt.is_some() {
                                 "Define the construction plane; Esc returns to the previous prompt"
+                            } else if self.object_prompt.is_some() {
+                                "Select meshes or type options; Enter finishes, Esc cancels"
                             } else if self.active_command.is_some() {
                                 if self
                                     .active_command
@@ -4863,7 +4883,7 @@ impl eframe::App for VibocerosApp {
         if ui.input(|input| input.key_pressed(egui::Key::Escape)) {
             if self.plane_prompt.is_some() {
                 self.cancel_plane_prompt();
-            } else if self.active_command.is_some() {
+            } else if self.active_command.is_some() || self.object_prompt.is_some() {
                 self.cancel_interactive_command(true);
             } else {
                 let count = self.document.clear_selection();
@@ -4878,6 +4898,7 @@ impl eframe::App for VibocerosApp {
             self.run_command();
         }
         if self.active_command.is_none()
+            && self.object_prompt.is_none()
             && self.plane_prompt.is_none()
             && self.document.selected_object_count() > 0
             && !ui.ctx().egui_wants_keyboard_input()
@@ -4913,6 +4934,10 @@ impl eframe::App for VibocerosApp {
         let mut viewport_outputs: [ViewportOutput; 4] =
             std::array::from_fn(|_| ViewportOutput::default());
         let active_viewport = self.active_viewport;
+        let object_filter = self
+            .object_prompt
+            .as_ref()
+            .map_or(viboceros_command::ObjectSelectionFilter::Any, |p| p.filter);
         let document = &self.document;
         let curve_points = self
             .plane_prompt
@@ -4939,7 +4964,10 @@ impl eframe::App for VibocerosApp {
                                 viewport_outputs[index] = viewports[index].show(
                                     ui,
                                     document,
-                                    drafting,
+                                    ViewportInput {
+                                        drafting,
+                                        object_filter,
+                                    },
                                     curve_points,
                                     index,
                                     index == active_viewport,
@@ -5023,6 +5051,7 @@ mod tests {
     mod construction_plane;
     mod distribute;
     mod interface;
+    mod object_selection;
     mod plane_arrays;
     mod point_input;
     use super::*;
@@ -5051,6 +5080,7 @@ mod tests {
             last_point: None,
             drafting_plane: None,
             plane_prompt: None,
+            object_prompt: None,
             curve_points: Vec::new(),
             sidebar: DocumentSidebar::default(),
         }

@@ -3,6 +3,8 @@
 mod arrays;
 mod bezier;
 mod mesh_to_nurb;
+mod object_selection;
+pub use object_selection::{BooleanSelectionOption, ObjectSelectionFilter, ObjectSelectionPrompt};
 mod remembered;
 mod single_spans;
 mod to_nurbs;
@@ -110,8 +112,31 @@ pub const MAX_CURVE_COMMAND_DEGREE: usize = 11;
 pub trait Command: Send + Sync {
     fn name(&self) -> &'static str;
 
+    fn object_selection_prompt(
+        &self,
+        _arguments: &[&str],
+    ) -> Result<Option<ObjectSelectionPrompt>, CommandError> {
+        Ok(None)
+    }
+
     fn aliases(&self) -> &'static [&'static str] {
         &[]
+    }
+
+    /// Accepts choices entered at an object prompt, independently of model edits.
+    fn accept_object_selection_options(&self, _arguments: &[&str]) -> Result<(), CommandError> {
+        Ok(())
+    }
+
+    /// Runs after command-first selection. Commands may have different cleanup
+    /// policies than when invoked on objects selected before command startup.
+    fn run_postselected(
+        &self,
+        document: &mut Document,
+        arguments: &[&str],
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
+        self.run_in_context(document, arguments, context)
     }
 
     /// Whether successful mutations should be grouped into one undo step.
@@ -767,6 +792,25 @@ impl CommandRegistry {
         input: &str,
         context: CommandContext,
     ) -> Result<String, CommandError> {
+        self.execute_invocation(document, input, context, false)
+    }
+
+    pub fn execute_postselected(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+    ) -> Result<String, CommandError> {
+        self.execute_invocation(document, input, context, true)
+    }
+
+    fn execute_invocation(
+        &self,
+        document: &mut Document,
+        input: &str,
+        context: CommandContext,
+        postselected: bool,
+    ) -> Result<String, CommandError> {
         let mut tokens = input.split_whitespace();
         let name = tokens.next().ok_or(CommandError::EmptyInput)?;
         let name = normalize_command_name(name);
@@ -782,12 +826,19 @@ impl CommandRegistry {
             .ok_or_else(|| CommandError::UnknownCommand(name.clone()))?;
         let arguments: Vec<_> = tokens.collect();
         let command = &self.commands[index];
+        let run = |document: &mut Document| {
+            if postselected {
+                command.run_postselected(document, &arguments, context)
+            } else {
+                command.run_in_context(document, &arguments, context)
+            }
+        };
         if !command.records_history() {
-            return command.run_in_context(document, &arguments, context);
+            return run(document);
         }
 
         document.begin_transaction(command.name())?;
-        match command.run_in_context(document, &arguments, context) {
+        match run(document) {
             Ok(message) => {
                 document.commit_transaction()?;
                 Ok(message)

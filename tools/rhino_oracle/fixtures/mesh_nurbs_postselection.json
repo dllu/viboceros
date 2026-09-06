@@ -1,0 +1,3633 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-triangle-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-triangle-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-triangle-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-triangle-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-disjoint-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-disjoint-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-disjoint-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-disjoint-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-adjacent-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-adjacent-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-adjacent-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-adjacent-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              1
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-quad-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-quad-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-quad-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-quad-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-tetra-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-tetra-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-tetra-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-tetra-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              4,
+              0
+            ],
+            [
+              0,
+              0,
+              4
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              2,
+              1
+            ],
+            [
+              0,
+              1,
+              3
+            ],
+            [
+              1,
+              2,
+              3
+            ],
+            [
+              2,
+              0,
+              3
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-vertex_touch-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -4,
+              0,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              3,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-vertex_touch-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -4,
+              0,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              3,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-vertex_touch-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -4,
+              0,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              3,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-vertex_touch-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              -4,
+              0,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              0,
+              3,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unwelded_edge-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unwelded_edge-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unwelded_edge-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unwelded_edge-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unused_reordered-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              99,
+              99,
+              99
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              -99,
+              -99,
+              -99
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              5,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unused_reordered-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              99,
+              99,
+              99
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              -99,
+              -99,
+              -99
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              5,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unused_reordered-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              99,
+              99,
+              99
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              -99,
+              -99,
+              -99
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              5,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-unused_reordered-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              99,
+              99,
+              99
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              -99,
+              -99,
+              -99
+            ],
+            [
+              0,
+              0,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              5,
+              2,
+              1
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-interleaved-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              14,
+              3,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              7
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-interleaved-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              14,
+              3,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              7
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-interleaved-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              14,
+              3,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              7
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-interleaved-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              14,
+              3,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              4,
+              5,
+              6
+            ],
+            [
+              0,
+              2,
+              3
+            ],
+            [
+              4,
+              6,
+              7
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-nonmanifold-trim-true-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ],
+            [
+              0,
+              0,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-nonmanifold-trim-true-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ],
+            [
+              0,
+              0,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-nonmanifold-trim-false-ngons-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ],
+            [
+              0,
+              0,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-nonmanifold-trim-false-ngons-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              0,
+              -3,
+              0
+            ],
+            [
+              0,
+              0,
+              3
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              1,
+              0,
+              3
+            ],
+            [
+              0,
+              1,
+              4
+            ]
+          ]
+        }
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": false,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-mixed-point-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-mixed-point-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-mixed-line-true",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            20,
+            0,
+            0
+          ],
+          "end": [
+            21,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-mixed-line-false",
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            20,
+            0,
+            0
+          ],
+          "end": [
+            21,
+            2,
+            0
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        0,
+        1
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-reversed-source-selection-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        2,
+        1,
+        0
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-reversed-source-selection-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        2,
+        1,
+        0
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-partial-selection-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        2,
+        0
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-partial-selection-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ],
+            [
+              10,
+              0,
+              0
+            ],
+            [
+              14,
+              0,
+              0
+            ],
+            [
+              10,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ],
+            [
+              3,
+              4,
+              5
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        2,
+        0
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-identical-meshes-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "trim_triangular_faces": true,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-mesh-identical-meshes-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "trim_triangular_faces": false,
+      "use_ngons": true,
+      "postselect": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-true-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "postselect": true,
+      "trim_triangular_faces": true,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-true-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1
+      ],
+      "postselect": true,
+      "trim_triangular_faces": true,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-true-1-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "postselect": true,
+      "trim_triangular_faces": true,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-false-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "postselect": true,
+      "trim_triangular_faces": false,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-false-1",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1
+      ],
+      "postselect": true,
+      "trim_triangular_faces": false,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-false-1-0",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              4,
+              3,
+              2
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2,
+              3
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        1,
+        0
+      ],
+      "postselect": true,
+      "trim_triangular_faces": false,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-initial-point-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "initial_selection": [
+        1
+      ],
+      "postselect": true,
+      "cancel": false,
+      "trim_triangular_faces": false,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-initial-point-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        },
+        {
+          "type": "point",
+          "point": [
+            20,
+            2,
+            0
+          ]
+        }
+      ],
+      "selected": [
+        0
+      ],
+      "initial_selection": [
+        1
+      ],
+      "postselect": true,
+      "cancel": true,
+      "trim_triangular_faces": false,
+      "use_ngons": true
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-cancel-no-picks-true",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [],
+      "postselect": true,
+      "cancel": true,
+      "trim_triangular_faces": true,
+      "use_ngons": false
+    },
+    {
+      "op": "mesh_nurbs_conversion",
+      "id": "post-cancel-no-picks-false",
+      "sources": [
+        {
+          "type": "mesh",
+          "vertices": [
+            [
+              0,
+              0,
+              0
+            ],
+            [
+              4,
+              0,
+              0
+            ],
+            [
+              0,
+              3,
+              0
+            ]
+          ],
+          "faces": [
+            [
+              0,
+              1,
+              2
+            ]
+          ]
+        }
+      ],
+      "selected": [],
+      "postselect": true,
+      "cancel": true,
+      "trim_triangular_faces": false,
+      "use_ngons": false
+    }
+  ]
+}

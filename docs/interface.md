@@ -23,11 +23,16 @@ selection. Click geometry to replace the selection, Shift-click/drag to add,
 and Ctrl-click/drag or Command-click/drag to remove. Click empty space or press
 Esc to clear the selection; press Delete to remove selected objects.
 
+`MeshToNURB` also supports [command-first object picking](object-selection.md).
+During that prompt, clicks and selection windows add only selectable meshes;
+Ctrl/Command removes picks, Enter finishes, and Escape cancels. `SelAll` is filtered
+to meshes and `SelNone` clears picks. Accepted options survive cancellation.
+
 Commands are case-insensitive. Typing while another non-text UI element or a
 viewport is active moves the text to the command line automatically. Matching
 command names appear below the input; press Tab or click a match to complete it.
 Enter `Help UI` for [interface commands and shortcuts](commands/interface.md).
-Display and snapping commands can run during a point prompt without losing its
+Display and snapping commands can run during a point or object prompt without losing its
 accepted points, construction plane, selection, or undo history. Toolbar toggles
 and shortcuts also preserve partially typed coordinates.
 `CPlane` edits an independent plane in each viewport without changing its camera.

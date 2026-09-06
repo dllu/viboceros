@@ -16,11 +16,18 @@ keeps its registry for the application session. The small `remembered` module
 provides synchronized copy-in/copy-out storage without holding a lock during
 geometry work or document mutation; the command API remains `Send + Sync`.
 
-Commands accept choices only after successful execution. Invalid options,
+Preselected commands accept choices only after successful execution. Invalid options,
 ineligible selections, and geometry/document failures leave previous choices
 unchanged. An eligible single-span no-op accepts choices without changing
 document history or clearing redo. A `ToNURBS` no-op leaves choices unchanged.
 Undo/redo affects geometry, not these choices.
+
+`MeshToNURB`'s [object prompt](object-selection.md) accepts options as they are
+entered, independently of the eventual model transaction. Escape retains those
+choices, including cancellation before picking anything. A failed conversion
+also retains already accepted choices. Invalid option input changes neither the
+pending options nor remembered values. Cancelling clears picks without editing
+geometry, adding undo history, or discarding redo.
 
 Native bootstrap choices are deletion No, Direction Both, and triangle trimming Yes. They are not
 serialized across application restarts. Rhino's factory defaults and restart
@@ -43,3 +50,6 @@ options explicitly. The Rhino worker uses a separate owned mesh to enter the
 option prompt, then measures the preselected command without normalizing its
 selection. Triangle-trimming memory and its independence from `ToNURBS` are
 verified; actual n-gon option effects remain unverified.
+Three `mesh_nurbs_postselection_sessions.json` probes add 18 steps testing
+cancelled choices before/after picking, mixed pre/postselection, undo, and
+independence from `ToNURBS`. They exercise Rhino's actual selection prompt.

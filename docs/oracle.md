@@ -117,7 +117,15 @@ distinct from the older `mesh_to_nurb.json` geometry-API probes. Three
 Requested Rhino options are first seeded on a separate owned temporary mesh
 because preselection hides the command's option prompt. Results include full
 B-rep topology and surface nets, source/output metadata, selection, group tables,
-and creation order; no result selection is normalized. See
+and creation order; no result selection is normalized.
+`mesh_nurbs_postselection.json` adds 60 prompted-selection cases; three
+`mesh_nurbs_postselection_sessions.json` sequences add 18 steps. `postselect`
+uses the actual option/picking prompt with ordered `SelID` inputs; `cancel`
+escapes it, including an empty picked list. Optional `initial_selection` contains
+only non-mesh sources, so it cannot accidentally trigger preselected conversion.
+Cancellation cannot request undo. Full source/output records capture cleared
+selection, pick-dependent creation order, and choices retained after cancellation.
+See
 [MeshToNURB](commands/mesh-to-nurb.md) for coverage and selection-path limits.
 
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:

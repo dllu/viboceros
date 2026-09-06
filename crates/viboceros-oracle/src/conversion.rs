@@ -10,6 +10,12 @@ pub struct ConversionFixture {
     pub sources: Vec<ObjectSource>,
     pub selected: Option<Vec<usize>>,
     pub delete_input: Option<bool>,
+    #[serde(default)]
+    pub postselect: bool,
+    #[serde(default)]
+    pub cancel: bool,
+    #[serde(default)]
+    pub initial_selection: Vec<usize>,
 }
 
 pub(super) fn run(f: &ConversionFixture, tolerance: Tolerance) -> Result<(Value, u64), ProbeError> {
@@ -41,11 +47,19 @@ pub(super) fn run_command(
     if f.sources.is_empty() || f.sources.len() > 16 {
         return Err(invalid());
     }
+    if ((f.postselect || f.cancel) && command.split_whitespace().next() != Some("MeshToNURB"))
+        || (f.cancel && (!f.postselect || undo_after))
+        || (!f.initial_selection.is_empty() && !f.postselect)
+        || f.initial_selection.iter().any(|i| *i >= f.sources.len())
+        || f.initial_selection.iter().collect::<BTreeSet<_>>().len() != f.initial_selection.len()
+    {
+        return Err(invalid());
+    }
     let selected = f
         .selected
         .clone()
         .unwrap_or_else(|| (0..f.sources.len()).collect());
-    if selected.is_empty()
+    if (selected.is_empty() && !f.cancel)
         || selected.iter().any(|i| *i >= f.sources.len())
         || selected.iter().collect::<BTreeSet<_>>().len() != selected.len()
     {
@@ -66,12 +80,35 @@ pub(super) fn run_command(
             )?,
         );
     }
+    if f.postselect {
+        let is_mesh = |index: usize| {
+            matches!(
+                document.object(ids[index]).unwrap().geometry(),
+                Geometry::Mesh(_)
+            )
+        };
+        if !(selected.iter().copied().any(is_mesh) || f.cancel && (0..ids.len()).any(is_mesh)) {
+            return Err(invalid());
+        }
+    }
     for (i, members) in [ids.clone(), vec![ids[0]], vec![]].into_iter().enumerate() {
         let group = document.add_empty_group(Some(format!("Group-{i}")))?;
         document.add_group_members(group, members)?;
     }
-    for index in selected {
-        document.select_objects_direct([ids[index]], SelectionMode::Add)?;
+    for index in if f.postselect {
+        &f.initial_selection
+    } else {
+        &selected
+    } {
+        if f.postselect
+            && matches!(
+                document.object(ids[*index]).unwrap().geometry(),
+                Geometry::Mesh(_)
+            )
+        {
+            return Err(invalid());
+        }
+        document.select_objects_direct([ids[*index]], SelectionMode::Add)?;
     }
     let inspect_sources = matches!(
         command.split_whitespace().next(),
@@ -84,7 +121,32 @@ pub(super) fn run_command(
         current_layer,
         inspect_sources,
     )?;
-    registry.execute(&mut document, command)?;
+    if f.postselect {
+        let prompt = registry
+            .object_selection_prompt(command)?
+            .ok_or_else(invalid)?;
+        registry.accept_object_selection_options(&prompt)?;
+        document.clear_selection();
+        for index in selected {
+            if prompt
+                .filter
+                .accepts(document.object(ids[index]).unwrap().geometry())
+            {
+                document.select_objects_direct([ids[index]], SelectionMode::Add)?;
+            }
+        }
+        if f.cancel {
+            document.clear_selection();
+        } else {
+            registry.execute_postselected(
+                &mut document,
+                command,
+                viboceros_command::CommandContext::default(),
+            )?;
+        }
+    } else {
+        registry.execute(&mut document, command)?;
+    }
     let after = record(
         &document,
         &ids,

@@ -48,6 +48,12 @@ selection action order are independent of chronological object order.
 memory. Geometry connectivity and component extraction live in `mesh/components`;
 disjoint splitting and mesh explosion share a single reusable vertex-remap
 scratch array, avoiding per-component initialization of a source-sized array.
+The command-owned `object_selection` module supplies typed filters and boolean
+options to the separate [app object-prompt adapter](object-selection.md).
+Viewport hit-testing applies the filter before hit priority; clicks/windows use
+the same selection adapter. Prompt choices live outside model history, while
+finishing uses the registry's normal transaction lifecycle with explicit
+postselection dispatch. This state is separate from point drafting and nested CPlane input.
 The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve

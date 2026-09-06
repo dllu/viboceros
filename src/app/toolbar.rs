@@ -7,7 +7,9 @@ impl VibocerosApp {
     pub(super) fn show_toolbar(&mut self, root: &mut egui::Ui) {
         egui::Panel::top("toolbar").show(root, |ui| {
             ui.horizontal_wrapped(|ui| {
-                let idle = self.active_command.is_none() && self.plane_prompt.is_none();
+                let idle = self.active_command.is_none()
+                    && self.plane_prompt.is_none()
+                    && self.object_prompt.is_none();
                 if ui
                     .add_enabled(idle && self.document.can_undo(), egui::Button::new("Undo"))
                     .clicked()

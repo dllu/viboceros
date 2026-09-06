@@ -1,0 +1,647 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "tolerance": {
+    "absolute": 1e-9,
+    "relative": 1e-12,
+    "angular": 1e-10
+  },
+  "operations": [
+    {
+      "op": "conversion_session",
+      "id": "post-cancel-after-picks",
+      "steps": [
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null,
+          "trim_triangular_faces": true,
+          "use_ngons": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null,
+          "postselect": true,
+          "cancel": true,
+          "trim_triangular_faces": false
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null,
+          "postselect": true,
+          "cancel": true,
+          "trim_triangular_faces": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null
+        }
+      ]
+    },
+    {
+      "op": "conversion_session",
+      "id": "post-cancel-before-picks",
+      "steps": [
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null,
+          "trim_triangular_faces": true,
+          "use_ngons": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null,
+          "postselect": true,
+          "cancel": true,
+          "trim_triangular_faces": false,
+          "selected": []
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null,
+          "postselect": true,
+          "cancel": true,
+          "trim_triangular_faces": true,
+          "selected": []
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": null
+        }
+      ]
+    },
+    {
+      "op": "conversion_session",
+      "id": "post-picks-preselection-undo-memory",
+      "steps": [
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "trim_triangular_faces": false,
+          "use_ngons": false,
+          "undo_after": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ]
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "trim_triangular_faces": true
+        },
+        {
+          "command": "ToNURBS",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "delete_input": false,
+          "trim_triangular_faces": false
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true,
+          "cancel": true,
+          "selected": [],
+          "trim_triangular_faces": false
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ],
+          "postselect": true
+        },
+        {
+          "command": "MeshToNURB",
+          "sources": [
+            {
+              "type": "mesh",
+              "vertices": [
+                [
+                  0,
+                  0,
+                  0
+                ],
+                [
+                  4,
+                  0,
+                  0
+                ],
+                [
+                  0,
+                  3,
+                  0
+                ]
+              ],
+              "faces": [
+                [
+                  0,
+                  1,
+                  2
+                ]
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

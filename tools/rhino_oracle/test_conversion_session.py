@@ -8,6 +8,34 @@ from . import test_worker
 class ConversionSessionTests(unittest.TestCase):
     def setUp(self): test_worker.RhinoWorkerTests.setUp(self)
 
+    def test_mesh_postselection_and_cancel_preflight_before_document_access(self):
+        valid=dict(sources=[dict(type="mesh"),dict(type="point")],selected=[0],
+                   postselect=True,trim_triangular_faces=False,use_ngons=True)
+        for changes in [dict(postselect=1),dict(cancel=1),dict(postselect=False,cancel=True),
+                        dict(cancel=True,undo_after=True),dict(initial_selection=[0]),
+                        dict(initial_selection=[1,1]),dict(initial_selection=[2]),
+                        dict(initial_selection=[True]),dict(initial_selection="1"),
+                        dict(postselect=False,initial_selection=[1]),dict(selected=[]),
+                        dict(selected=[1]),dict(sources=[dict(type="point")],selected=[],cancel=True)]:
+            with self.subTest(changes=changes),self.assertRaises(ValueError):
+                self.worker._geometry_conversion(dict(valid,**changes),{},"MeshToNURB")
+        for command in ["ToNURBS","ConvertToBeziers","ConvertToSingleSpans"]:
+            with self.subTest(command=command),self.assertRaises(ValueError):
+                self.worker._geometry_conversion(valid,{},command)
+        for changes in [dict(initial_selection=[1]),dict(cancel=True),dict(cancel=True,selected=[])]:
+            args=self.worker._conversion_arguments(dict(valid,**changes),"MeshToNURB",None)
+            self.assertEqual(args[3],"_MeshToNURB _TrimTriangularFaces=No _UseNgons=Yes")
+
+    def test_cancellation_can_seed_options_before_any_mesh_is_picked(self):
+        first=dict(command="MeshToNURB",sources=[dict(type="mesh")],postselect=True,
+                   cancel=True,selected=[],trim_triangular_faces=False,use_ngons=True)
+        second=dict(command="MeshToNURB",sources=first["sources"])
+        with patch.object(self.worker,"_geometry_conversion",return_value=({},0)) as run:
+            self.worker._conversion_session(dict(steps=[first,second]),{})
+            self.assertEqual(run.call_count,2)
+            self.assertEqual(run.call_args_list[0].args,(first,{},"MeshToNURB",None))
+            self.assertEqual(run.call_args_list[1].args,(second,{},"MeshToNURB",None))
+
     def test_mesh_conversion_option_seed_owns_only_its_inserted_objects(self):
         for failure in [None,"insert","command"]:
             with self.subTest(failure=failure):

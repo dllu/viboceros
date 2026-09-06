@@ -5,6 +5,7 @@ use eframe::egui::{
     self, Align2, Color32, CursorIcon, FontId, PointerButton, Pos2, Rect, Sense, Stroke, Vec2,
 };
 use nalgebra::{Matrix4 as NaMatrix4, Vector3 as NaVector3};
+use viboceros_command::ObjectSelectionFilter;
 use viboceros_command::construction_plane::{ConstructionPlaneState, WorldPlane};
 use viboceros_document::{ColorRgb, Document, Geometry, ObjectAttributes, ObjectId, SelectionMode};
 use viboceros_drafting::{
@@ -108,6 +109,12 @@ pub struct DraftingInput {
     pub grid_snap: bool,
     pub anchor: Option<Point3>,
     pub reference: Option<Point3>,
+}
+
+#[derive(Clone, Copy, Debug, Default)]
+pub struct ViewportInput {
+    pub drafting: DraftingInput,
+    pub object_filter: ObjectSelectionFilter,
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
@@ -360,11 +367,12 @@ impl Viewport {
         &mut self,
         ui: &mut egui::Ui,
         document: &Document,
-        drafting: DraftingInput,
+        input: ViewportInput,
         preview_polyline: &[Point3],
         viewport_index: usize,
         active: bool,
     ) -> ViewportOutput {
+        let drafting = input.drafting;
         let desired_size = ui.available_size().max(Vec2::splat(1.0));
         let (response, painter) = ui.allocate_painter(desired_size, Sense::click_and_drag());
         let rect = response.rect;
@@ -390,22 +398,27 @@ impl Viewport {
             self.selection_drag_start = ui.input(|input| input.pointer.press_origin());
         }
         let selection_pointer = response.interact_pointer_pos();
-        let selection_window = if !drafting.active
-            && response.drag_stopped_by(PointerButton::Primary)
-        {
-            self.selection_drag_start.take().and_then(|start| {
-                let end = selection_pointer?;
-                let crossing = is_crossing_selection(start, end);
-                let selection_rect = Rect::from_two_pos(start, end);
-                Some(SelectionWindow {
-                    object_ids: self.objects_in_selection(rect, selection_rect, crossing, document),
-                    mode: selection_mode(modifiers),
-                    crossing,
+        let selection_window =
+            if !drafting.active && response.drag_stopped_by(PointerButton::Primary) {
+                self.selection_drag_start.take().and_then(|start| {
+                    let end = selection_pointer?;
+                    let crossing = is_crossing_selection(start, end);
+                    let selection_rect = Rect::from_two_pos(start, end);
+                    Some(SelectionWindow {
+                        object_ids: self.objects_in_selection_matching(
+                            rect,
+                            selection_rect,
+                            crossing,
+                            document,
+                            input.object_filter,
+                        ),
+                        mode: selection_mode(modifiers),
+                        crossing,
+                    })
                 })
-            })
-        } else {
-            None
-        };
+            } else {
+                None
+            };
 
         let drafting_cursor = if drafting.active {
             response
@@ -419,9 +432,9 @@ impl Viewport {
         }
         let selection_click = if !drafting.active && response.clicked_by(PointerButton::Primary) {
             Some(SelectionClick {
-                object_id: response
-                    .interact_pointer_pos()
-                    .and_then(|pointer| self.pick_object(pointer, rect, document)),
+                object_id: response.interact_pointer_pos().and_then(|pointer| {
+                    self.pick_object_matching(pointer, rect, document, input.object_filter)
+                }),
                 mode: selection_mode(modifiers),
             })
         } else {
@@ -733,10 +746,21 @@ impl Viewport {
         viboceros_drafting::plane::snap_to_grid(point, self.construction_plane(), GRID_SPACING).ok()
     }
 
+    #[cfg(test)]
     fn pick_object(&self, pointer: Pos2, rect: Rect, document: &Document) -> Option<ObjectId> {
+        self.pick_object_matching(pointer, rect, document, ObjectSelectionFilter::Any)
+    }
+
+    fn pick_object_matching(
+        &self,
+        pointer: Pos2,
+        rect: Rect,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+    ) -> Option<ObjectId> {
         let mut nearest: Option<(u8, f32, ObjectId)> = None;
         for object in document.objects() {
-            if !document.is_object_selectable(object.id()) {
+            if !document.is_object_selectable(object.id()) || !filter.accepts(object.geometry()) {
                 continue;
             }
             let (priority, distance) = match object.geometry() {
@@ -837,6 +861,7 @@ impl Viewport {
         nearest.map(|(_, _, id)| id)
     }
 
+    #[cfg(test)]
     fn objects_in_selection(
         &self,
         viewport_rect: Rect,
@@ -844,9 +869,27 @@ impl Viewport {
         crossing: bool,
         document: &Document,
     ) -> Vec<ObjectId> {
+        self.objects_in_selection_matching(
+            viewport_rect,
+            selection,
+            crossing,
+            document,
+            ObjectSelectionFilter::Any,
+        )
+    }
+
+    fn objects_in_selection_matching(
+        &self,
+        viewport_rect: Rect,
+        selection: Rect,
+        crossing: bool,
+        document: &Document,
+        filter: ObjectSelectionFilter,
+    ) -> Vec<ObjectId> {
         document
             .objects()
             .filter(|object| document.is_object_selectable(object.id()))
+            .filter(|object| filter.accepts(object.geometry()))
             .filter_map(|object| {
                 let primitives = self.projected_primitives(
                     object.geometry(),
@@ -2152,6 +2195,7 @@ fn point_position_key(point: Point3) -> [u64; 3] {
 #[cfg(test)]
 mod tests {
     mod construction_plane;
+    mod object_selection;
     use super::*;
     use viboceros_document::{ColorRgb, Geometry};
     use viboceros_geometry::{
@@ -2203,7 +2247,7 @@ mod tests {
                     ..egui::RawInput::default()
                 },
                 |ui| {
-                    output = viewport.show(ui, document, DraftingInput::default(), &[], 0, true);
+                    output = viewport.show(ui, document, ViewportInput::default(), &[], 0, true);
                 },
             )
             .drop_without_applying_deltas();
