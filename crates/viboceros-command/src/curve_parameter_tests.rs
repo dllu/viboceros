@@ -57,10 +57,22 @@ fn flip_scale_conversion_and_export_preserve_circle_and_ellipse_domains() {
             panic!("circle/ellipse interchange is rational")
         };
         assert_eq!(exported.domain(), -13.0..=7.0);
+        let history = document.undo_label().map(str::to_owned);
         registry
             .execute(&mut document, "ToNURBS DeleteInput=Yes")
             .unwrap();
         assert_eq!(document.objects().count(), 1);
+        if matches!(input, Geometry::Ellipse(_)) {
+            // Rhino already stores ellipses as NURBS. The compact native form
+            // is an accepted no-op, including its history and parameter map.
+            assert_eq!(document.object(source).unwrap().geometry(), &scaled);
+            assert_eq!(
+                scaled.nurbs_curve_representation().unwrap().unwrap(),
+                exported
+            );
+            assert_eq!(document.undo_label(), history.as_deref());
+            continue;
+        }
         let Geometry::NurbsCurve(converted) = document.objects().next().unwrap().geometry() else {
             panic!("conversion did not produce NURBS")
         };

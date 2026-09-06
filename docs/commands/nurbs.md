@@ -91,11 +91,11 @@ remain valid.
 
 ## Exact conversion
 
-`ToNURBS` exactly converts selected lines, circles, arcs, ellipses, and
-polylines. It retains inputs and creates unselected copies in the same groups
-by default; use `DeleteInputObjects=Yes` to preserve object identities and
-replace the inputs in place. Line, polyline, circle, arc, and ellipse parameter
-domains follow Rhino's chord-length, arc-length, and angular conventions.
+[`ToNURBS`](to-nurbs.md) exactly converts curves and triangle/quad meshes. Copies
+retain source attributes and groups; replacement retains source identity and
+renews chronological object order. Native curve intervals and polyline vertex
+parameters are preserved. Existing NURBS geometry and ellipses are no-ops.
+Deletion and triangle-trimming options are remembered only after real conversions.
 
 ## Span decomposition
 

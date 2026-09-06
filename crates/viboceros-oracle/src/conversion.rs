@@ -37,7 +37,7 @@ pub(super) fn run_command(
     command: &str,
     undo_after: bool,
 ) -> Result<(Value, u64), ProbeError> {
-    let invalid = || ProbeError::FixtureInvariant("invalid Bezier conversion fixture");
+    let invalid = || ProbeError::FixtureInvariant("invalid conversion fixture");
     if f.sources.is_empty() || f.sources.len() > 16 {
         return Err(invalid());
     }
@@ -73,9 +73,22 @@ pub(super) fn run_command(
     for index in selected {
         document.select_objects_direct([ids[index]], SelectionMode::Add)?;
     }
-    let before = record(&document, &ids, source_layer, current_layer)?;
+    let inspect_sources = command.split_whitespace().next() == Some("ToNURBS");
+    let before = record(
+        &document,
+        &ids,
+        source_layer,
+        current_layer,
+        inspect_sources,
+    )?;
     registry.execute(&mut document, command)?;
-    let after = record(&document, &ids, source_layer, current_layer)?;
+    let after = record(
+        &document,
+        &ids,
+        source_layer,
+        current_layer,
+        inspect_sources,
+    )?;
     if undo_after {
         if before == after {
             return Err(ProbeError::FixtureInvariant(
@@ -92,6 +105,7 @@ fn record(
     ids: &[ObjectId],
     source_layer: LayerId,
     current_layer: LayerId,
+    inspect_sources: bool,
 ) -> Result<Value, ProbeError> {
     let mut records = Vec::new();
     for object in document.objects() {
@@ -101,10 +115,17 @@ fn record(
             Geometry::Point(_) => ("point", Value::Null),
             Geometry::PointCloud(_) => ("point_cloud", Value::Null),
             Geometry::Mesh(_) => ("mesh", Value::Null),
+            Geometry::Brep(brep) if inspect_sources => (
+                "brep",
+                json!({
+                    "topology": mesh_to_nurb_brep_value(brep)?,
+                    "surfaces": brep.faces().iter().map(|f| surface_definition(f.surface())).collect::<Vec<_>>()
+                }),
+            ),
             Geometry::Brep(_) if original.is_some() => ("brep", Value::Null),
             Geometry::NurbsSurface(surface) => (
                 "surface",
-                if original.is_none() {
+                if original.is_none() || inspect_sources {
                     surface_definition(surface)
                 } else {
                     Value::Null
@@ -112,11 +133,11 @@ fn record(
             ),
             _ => (
                 "curve",
-                if original.is_none() {
-                    nurbs_curve_definition_value(
+                if original.is_none() || inspect_sources {
+                    curve_definition(
                         &geometry
                             .curve_ref()
-                            .ok_or(ProbeError::FixtureInvariant("unexpected Bezier output"))?
+                            .ok_or(ProbeError::FixtureInvariant("unexpected conversion output"))?
                             .to_nurbs()?,
                     )
                 } else {
@@ -145,8 +166,18 @@ fn record(
             .iter()
             .map(|id| document.group(*id).unwrap().name().unwrap())
             .collect::<Vec<_>>();
-        let value = json!({"original":original,"kind":kind,"domain":domain,"points":points,"definition":definition,
+        let mut value = json!({"original":original,"kind":kind,"domain":domain,"points":points,"definition":definition,
             "name":attrs.name(),"layer":layer,"color":[color.red,color.green,color.blue],"color_source":color_source,"groups":groups,"selected":document.is_selected(object.id())});
+        if inspect_sources {
+            value["representation"] = json!(match geometry {
+                Geometry::Line(_) => "LineCurve",
+                Geometry::Arc(_) | Geometry::Circle(_) => "ArcCurve",
+                Geometry::Polyline(_) => "PolylineCurve",
+                Geometry::PolyCurve(_) => "PolyCurve",
+                Geometry::NurbsCurve(_) | Geometry::Ellipse(_) => "NurbsCurve",
+                _ => kind,
+            });
+        }
         let key = (
             original.is_none(),
             original.unwrap_or(0),
@@ -195,5 +226,15 @@ fn surface_definition(surface: &NurbsSurface) -> Value {
         knots[0] = knots[1].clone();
         knots[last] = knots[last - 1].clone();
     }
+    value
+}
+
+fn curve_definition(curve: &NurbsCurve) -> Value {
+    let mut value = nurbs_curve_definition_value(curve);
+    // Same omitted-outer-knot convention as the surface codec above.
+    let knots = value["knots"].as_array_mut().expect("curve knot array");
+    let last = knots.len() - 1;
+    knots[0] = knots[1].clone();
+    knots[last] = knots[last - 1].clone();
     value
 }

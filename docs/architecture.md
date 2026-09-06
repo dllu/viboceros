@@ -39,6 +39,11 @@ span extraction shared by [Bézier conversion](commands/beziers.md), directional
 command has its own module and typed [option memory](command-options.md), outside
 document history. Shared oracle recording lives in `conversion`; self-seeded
 stateful probes live in `conversion_session`, separate from geometry algorithms.
+The separate [ToNURBS module](commands/to-nurbs.md) reuses exact curve representation
+and mesh-to-B-rep construction. Its replacement order is handled by the document's
+`object_order` module, with linear-time permutation replay and lightweight history
+containing only moved IDs and original indices. Geometry, memberships, and
+selection action order are independent of chronological object order.
 The `bounds/bezier` module handles bounded tensor subdivision and rational hulls;
 curve/surface adapters select the complete native active spans.
 `bounds/bezier/compose` constructs homogeneous rational surface/UV-curve

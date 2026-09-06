@@ -163,8 +163,8 @@ impl Polyline3 {
         .point_at(fraction)
     }
 
-    /// Exact NURBS form without the chord-length reparameterization performed
-    /// by the `ToNURBS` command.
+    /// Exact NURBS form preserving every native vertex parameter, as used by
+    /// the `ToNURBS` command. `to_nurbs` is the separate chord-length utility.
     pub fn to_native_nurbs(&self) -> Result<NurbsCurve, GeometryError> {
         let mut knots = Vec::with_capacity(self.parameters.len() + 2);
         knots.push(self.parameters[0]);

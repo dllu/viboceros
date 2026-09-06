@@ -2,13 +2,18 @@
 use super::*;
 
 #[cfg(test)]
+mod nurbs_tests;
+#[cfg(test)]
 mod tests;
 use crate::conversion::{ConversionFixture, delete_option, run_command};
+use crate::curve_join_close::CurveInput;
+use crate::object_source::{ObjectSource, VertexSource};
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
 pub enum ConversionCommand {
     ConvertToBeziers,
     ConvertToSingleSpans,
+    ToNURBS,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq)]
@@ -19,19 +24,45 @@ pub enum Direction {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
-pub struct SingleSpanFixture {
+pub struct ConversionOptions {
     #[serde(flatten)]
     pub geometry: ConversionFixture,
     pub direction: Option<Direction>,
     #[serde(default)]
     pub toggles: u8,
+    pub trim_triangular_faces: Option<bool>,
+}
+
+impl ConversionOptions {
+    fn selected_sources(&self) -> impl Iterator<Item = &ObjectSource> {
+        self.geometry
+            .sources
+            .iter()
+            .enumerate()
+            .filter(|(i, _)| {
+                self.geometry
+                    .selected
+                    .as_ref()
+                    .is_none_or(|s| s.contains(i))
+            })
+            .map(|(_, s)| s)
+    }
+}
+
+fn converts_to_nurbs(source: &ObjectSource) -> bool {
+    match source {
+        ObjectSource::Vertices(VertexSource::Mesh { .. }) => true,
+        ObjectSource::Curved(c) => matches!(c.as_ref(), plane_arrays::ArraySource::Curve(c)
+            if !matches!(c, CurveInput::Nurbs { .. } | CurveInput::Ellipse { .. })),
+        _ => false,
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 pub struct Step {
     pub command: ConversionCommand,
     #[serde(flatten)]
-    pub conversion: SingleSpanFixture,
+    pub conversion: ConversionOptions,
     #[serde(default)]
     pub undo_after: bool,
 }
@@ -42,7 +73,7 @@ pub struct ConversionSessionFixture {
 }
 
 fn execute(
-    f: &SingleSpanFixture,
+    f: &ConversionOptions,
     command: ConversionCommand,
     undo: bool,
     tolerance: Tolerance,
@@ -53,17 +84,26 @@ fn execute(
             "invalid conversion toggle count/direction",
         ));
     }
-    if command == ConversionCommand::ConvertToBeziers && (f.direction.is_some() || f.toggles > 0) {
+    if command != ConversionCommand::ConvertToSingleSpans
+        && (f.direction.is_some() || f.toggles > 0)
+    {
         return Err(ProbeError::FixtureInvariant(
-            "Bezier conversion has no direction option",
+            "direction options require ConvertToSingleSpans",
         ));
     }
     let direction = f
         .direction
         .map(|d| format!(" Direction={d:?}"))
         .unwrap_or_default();
+    if f.trim_triangular_faces.is_some() && command != ConversionCommand::ToNURBS {
+        return Err(ProbeError::FixtureInvariant("mesh options require ToNURBS"));
+    }
+    let mesh = f
+        .trim_triangular_faces
+        .map(|t| format!(" TrimTriangularFaces={}", if t { "Yes" } else { "No" }))
+        .unwrap_or_default();
     let script = format!(
-        "{command:?}{direction}{}{}",
+        "{command:?}{direction}{mesh}{}{}",
         delete_option(f.geometry.delete_input),
         " Toggle".repeat(usize::from(f.toggles))
     );
@@ -71,7 +111,7 @@ fn execute(
 }
 
 pub(super) fn run_single(
-    f: &SingleSpanFixture,
+    f: &ConversionOptions,
     tolerance: Tolerance,
 ) -> Result<(Value, u64), ProbeError> {
     if f.toggles > 0 && f.direction.is_none() {
@@ -91,6 +131,22 @@ pub(super) fn run_single(
     ))
 }
 
+pub(super) fn run_nurbs(
+    f: &ConversionOptions,
+    tolerance: Tolerance,
+) -> Result<(Value, u64), ProbeError> {
+    Ok((
+        execute(
+            f,
+            ConversionCommand::ToNURBS,
+            false,
+            tolerance,
+            &CommandRegistry::with_builtins(),
+        )?,
+        0,
+    ))
+}
+
 pub(super) fn run(
     f: &ConversionSessionFixture,
     tolerance: Tolerance,
@@ -102,13 +158,27 @@ pub(super) fn run(
     }
     let mut seeded = BTreeSet::new();
     let mut direction = None;
+    let mut mesh_seeded = false;
     for step in &f.steps {
         if seeded.insert(step.command)
             && (step.conversion.geometry.delete_input.is_none()
                 || (step.command == ConversionCommand::ConvertToSingleSpans
-                    && step.conversion.direction.is_none()))
+                    && step.conversion.direction.is_none())
+                || (step.command == ConversionCommand::ToNURBS
+                    && !step.conversion.selected_sources().any(converts_to_nurbs)))
         {
             return Err(invalid());
+        }
+        if step.command == ConversionCommand::ToNURBS
+            && step
+                .conversion
+                .selected_sources()
+                .any(|s| matches!(s, ObjectSource::Vertices(VertexSource::Mesh { .. })))
+        {
+            if !mesh_seeded && step.conversion.trim_triangular_faces.is_none() {
+                return Err(invalid());
+            }
+            mesh_seeded = true;
         }
         if step.command == ConversionCommand::ConvertToSingleSpans {
             direction = step.conversion.direction.or(direction);

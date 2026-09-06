@@ -7,6 +7,28 @@ from . import test_worker
 class ConversionSessionTests(unittest.TestCase):
     def setUp(self): test_worker.RhinoWorkerTests.setUp(self)
 
+    def test_nurbs_scripts_include_bounded_mesh_options_and_validate_geometry(self):
+        for delete in [None,False,True]:
+            for trim in [None,False,True]:
+                op=dict(sources=[dict(type="mesh")],delete_input=delete,trim_triangular_faces=trim)
+                expected="_ToNURBS"+(" _DeleteInputObjects="+("Yes" if delete else "No") if delete is not None else "")
+                if trim is not None: expected+=" _MeshOptions _TrimTriangularFaces="+("Yes" if trim else "No")+" _Enter"
+                self.assertEqual(self.worker._conversion_arguments(op,"ToNURBS",None)[3],expected+" _Enter")
+        for command,sources,trim in [("ToNURBS",[dict(type="line")],True),("ToNURBS",[dict(type="mesh")],1),("ConvertToBeziers",[dict(type="nurbs")],True)]:
+            with self.assertRaises(ValueError): self.worker._conversion_arguments(dict(sources=sources,delete_input=False,trim_triangular_faces=trim),command,None)
+
+    def test_nurbs_sessions_require_real_option_seed_and_explicit_first_mesh_choice(self):
+        line=dict(command="ToNURBS",sources=[dict(type="line")],delete_input=False)
+        mesh=dict(command="ToNURBS",sources=[dict(type="mesh")],delete_input=None)
+        for steps in [[dict(line,sources=[dict(type="nurbs")])],[dict(line,sources=[dict(type="ellipse")])],[line,mesh]]:
+            with patch.object(self.worker,"_geometry_conversion") as run,self.assertRaises(ValueError):
+                self.worker._conversion_session(dict(steps=steps),{})
+            run.assert_not_called()
+        steps=[line,dict(mesh,trim_triangular_faces=True),mesh]
+        with patch.object(self.worker,"_geometry_conversion",return_value=({},0)) as run:
+            self.worker._conversion_session(dict(steps=steps),{})
+            self.assertEqual(run.call_count,3)
+
     def test_script_builder_matches_observed_toggle_and_direction_prompts(self):
         for direction in [None,"U","V","Both"]:
             for delete in [None,False,True]:

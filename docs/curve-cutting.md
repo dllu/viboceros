@@ -28,8 +28,7 @@ map with their independent outer/local intervals. Noncircular leaves are already
 parameter equivalent, so unnecessary round-trip affine rounding is avoided.
 
 Document `nurbs_curve_representation` preserves native polyline parameters.
-Explicit `ToNURBS` retains its separate chord-length conversion policy. This
-distinction also fixes extrusion: Rhino `ExtrudeCrv` preserves the profile's native
+Explicit [`ToNURBS`](commands/to-nurbs.md) preserves them too. Rhino `ExtrudeCrv` preserves the profile's native
 parameters, including a user-assigned interval. The extrusion probe disables
 Rhino crease splitting to compare the single underlying surface, matching the
 current Viboceros output policy; crease-splitting options remain incomplete.

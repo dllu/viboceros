@@ -73,24 +73,21 @@ impl Geometry {
 
     /// Returns exact NURBS geometry for a supported non-NURBS curve.
     ///
-    /// Polylines receive chord-length parameters. Other families retain their
-    /// native intervals (by default, length for lines/circular curves and
-    /// radians for ellipses). Polycurve control structure need not be minimal.
+    /// All families retain their native intervals (by default, length for
+    /// lines/circular curves and
+    /// radians for ellipses). Polyline vertex parameters are preserved; conics
+    /// acquire exact rational parameterizations. Polycurve control structure need not be minimal.
     /// Existing NURBS geometry and non-curve objects return `None`.
     pub fn converted_to_nurbs_curve(&self) -> Result<Option<NurbsCurve>, GeometryError> {
         if matches!(self, Self::NurbsCurve(_)) {
             return Ok(None);
-        }
-        if let Self::Polyline(curve) = self {
-            return curve.to_nurbs().map(Some);
         }
         self.curve_ref().map(CurveRef::to_nurbs).transpose()
     }
 
     /// Returns an exact NURBS representation for every supported curve,
     /// retaining its native interval and cloning existing NURBS geometry.
-    /// Unlike explicit `ToNURBS`, this does not give polylines new
-    /// chord-length parameters: algorithmic consumers need the original map.
+    /// Like explicit `ToNURBS`, this retains a polyline's existing parameter map.
     pub fn nurbs_curve_representation(&self) -> Result<Option<NurbsCurve>, GeometryError> {
         self.curve_ref().map(CurveRef::to_nurbs).transpose()
     }

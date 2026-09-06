@@ -6,8 +6,7 @@
 NURBS helpers share a tolerance-driven native-parameter spline fitter in
 `morph/curve_fit`. `morph_line` and `morph_polyline` explicitly take the document
 tolerance, including when called on polycurve leaves. Native vertex parameters
-are preserved; explicit polyline-to-NURBS conversion's chord-length map is not
-used for fitting.
+are preserved; the separate chord-length utility is not used for fitting.
 
 Rational curves of degree at most three first check the original mapped control
 net and a bounded [rational composition candidate](curve-rational-fitting.md).

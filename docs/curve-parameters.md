@@ -37,8 +37,8 @@ sampling conventions.
 exact locus but changes angular to rational parameterization: equal numeric
 parameters generally do not identify equal interior points. Ellipse evaluation
 already uses its rational parameterization and agrees with its NURBS form.
-The `ToNURBS` command's chord-length reparameterization of polylines remains an
-explicit command policy, separate from native NURBS conversion.
+The [`ToNURBS` command](commands/to-nurbs.md) preserves polyline vertex parameters.
+The previous native chord-length reparameterization policy was incorrect.
 `nurbs_parameter` and `parameter_from_nurbs` provide the checked correspondence
 between the two parameterizations, including independent polycurve leaf domains.
 See [native curve cutting](curve-cutting.md) for numerical policy and oracle evidence.

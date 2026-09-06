@@ -5,6 +5,7 @@ mod geometry;
 mod groups;
 mod history;
 mod object_layer;
+mod object_order;
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -1983,6 +1984,7 @@ impl Document {
 
     fn affected_object_ids(&self, edit: &Edit) -> BTreeSet<ObjectId> {
         match edit {
+            Edit::ObjectsMovedToEnd { moved, .. } => moved.iter().map(|(_, id)| *id).collect(),
             Edit::GroupInserted { id, .. } => self
                 .group(*id)
                 .map(|group| group.members.clone())

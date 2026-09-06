@@ -46,6 +46,10 @@ pub(super) enum Edit {
         /// Keep large before/after snapshots out of every small history edit.
         states: Box<[Object; 2]>,
     },
+    ObjectsMovedToEnd {
+        moved: Vec<(usize, ObjectId)>,
+        object_count: usize,
+    },
     LayerInserted {
         index: usize,
         id: LayerId,
@@ -102,6 +106,12 @@ impl Edit {
             Self::ObjectChanged { id, states } => {
                 replace_object(document, *id, &states[1], &states[0])?;
             }
+            Self::ObjectsMovedToEnd {
+                moved,
+                object_count,
+            } => {
+                super::object_order::apply(&mut document.objects, moved, *object_count, false)?;
+            }
             Self::LayerInserted { index, id, stored } => {
                 ensure_empty(stored, "inserted layer was already stored")?;
                 *stored = Some(remove_layer(document, *index, *id)?);
@@ -157,6 +167,12 @@ impl Edit {
             }
             Self::ObjectChanged { id, states } => {
                 replace_object(document, *id, &states[0], &states[1])?;
+            }
+            Self::ObjectsMovedToEnd {
+                moved,
+                object_count,
+            } => {
+                super::object_order::apply(&mut document.objects, moved, *object_count, true)?;
             }
             Self::LayerInserted { index, stored, .. } => {
                 let layer = stored.take().ok_or(DocumentError::HistoryInvariant(

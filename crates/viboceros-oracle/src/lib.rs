@@ -175,10 +175,15 @@ pub enum Operation {
         #[serde(flatten)]
         fixture: conversion::ConversionFixture,
     },
+    NurbsConversion {
+        id: String,
+        #[serde(flatten)]
+        fixture: conversion_session::ConversionOptions,
+    },
     SingleSpanConversion {
         id: String,
         #[serde(flatten)]
-        fixture: conversion_session::SingleSpanFixture,
+        fixture: conversion_session::ConversionOptions,
     },
     ConversionSession {
         id: String,
@@ -1519,6 +1524,7 @@ impl Operation {
             | Self::Distribute { id, .. }
             | Self::GroupMemberships { id, .. }
             | Self::BezierConversion { id, .. }
+            | Self::NurbsConversion { id, .. }
             | Self::SingleSpanConversion { id, .. }
             | Self::ConversionSession { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
@@ -1866,6 +1872,9 @@ fn execute(
         Operation::Distribute { fixture, .. } => distribute::run(fixture, tolerance)?,
         Operation::GroupMemberships { fixture, .. } => group_memberships::run(fixture, tolerance)?,
         Operation::BezierConversion { fixture, .. } => conversion::run(fixture, tolerance)?,
+        Operation::NurbsConversion { fixture, .. } => {
+            conversion_session::run_nurbs(fixture, tolerance)?
+        }
         Operation::SingleSpanConversion { fixture, .. } => {
             conversion_session::run_single(fixture, tolerance)?
         }

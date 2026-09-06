@@ -35,11 +35,19 @@ class BezierWorkerTests(unittest.TestCase):
             self.exercise(None,delete,undo_after=True)
         self.exercise("noop-undo",False,undo_after=True)
 
-    def exercise(self,failure,delete=True,copies=1,reverse_enumerator=False,undo_after=False):
+    def test_nurbs_replacement_and_copy_cleanup_at_every_failure_boundary(self):
+        for delete in [False,True]:
+            for failure in [None,"plane","layer","current","source","insert","group","select","incomplete","record","command"]:
+                with self.subTest(delete=delete,failure=failure): self.exercise(failure,delete,conversion="ToNURBS")
+            self.exercise(None,delete,undo_after=True,conversion="ToNURBS")
+        self.exercise("noop-undo",False,undo_after=True,conversion="ToNURBS")
+
+    def exercise(self,failure,delete=True,copies=1,reverse_enumerator=False,undo_after=False,conversion="ConvertToBeziers"):
         worker,doc=self.worker,self.document
         selected={"existing"}; objects={}; owned=[]; attributes=[]; layers=[]
         class Curve:
-            def __init__(self): self.Dispose=Mock()
+            def __init__(self,representation="LineCurve"): self.Dispose=Mock();self.representation=representation
+            def GetType(self): return SimpleNamespace(Name=self.representation)
         class NotCurve: pass
         class Attributes:
             def __init__(self):
@@ -49,7 +57,7 @@ class BezierWorkerTests(unittest.TestCase):
             def GetGroupList(self): return self.members[:]
         class Layer:
             def __init__(self): self.Name=""; self.Dispose=Mock(); layers.append(self)
-        worker.Rhino.Geometry=SimpleNamespace(Point=NotCurve,Mesh=NotCurve,PointCloud=NotCurve,Brep=NotCurve,Surface=NotCurve,Plane=SimpleNamespace(WorldXY="world"))
+        worker.Rhino.Geometry=SimpleNamespace(Curve=Curve,Point=NotCurve,Mesh=NotCurve,PointCloud=NotCurve,Brep=NotCurve,Surface=NotCurve,Plane=SimpleNamespace(WorldXY="world"))
         worker.Rhino.DocObjects=SimpleNamespace(ObjectEnumeratorSettings=SimpleNamespace,Layer=Layer,ObjectAttributes=Attributes,ObjectColorSource=SimpleNamespace(ColorFromObject="ColorFromObject"))
         worker.System.Guid=SimpleNamespace(NewGuid=lambda:"unique",Empty="empty")
         worker.System.Drawing=SimpleNamespace(Color=SimpleNamespace(FromArgb=lambda r,g,b:SimpleNamespace(R=r,G=g,B=b)))
@@ -105,15 +113,20 @@ class BezierWorkerTests(unittest.TestCase):
                     if key.startswith("output-"): remove(key,True)
                 if delete is not False: objects["source"]=saved_source[0]
                 return True
-            self.assertEqual(script,"_ConvertToBeziers "+("_Enter" if delete is None else "_Yes" if delete else "_No"))
+            expected="_ToNURBS"+(" _DeleteInputObjects="+("Yes" if delete else "No") if delete is not None else "")+" _Enter" if conversion=="ToNURBS" else "_ConvertToBeziers "+("_Enter" if delete is None else "_Yes" if delete else "_No")
+            self.assertEqual(script,expected)
             self.assertTrue(verify)
             if failure=="noop-undo": return True
             saved_source.append(objects["source"])
+            if conversion=="ToNURBS" and delete is not False:
+                objects["source"]=obj("source",Curve("NurbsCurve"),objects["source"].Attributes,2)
+                if failure=="command": raise ValueError("replacement failure")
+                return True
             # Even a partially failed command may have added an object.
             for i in range(copies):
                 key="output-%d" % i
-                objects[key]=obj(key,Curve(),Attributes(),2+i)
-                objects[key].Attributes.LayerIndex=2
+                objects[key]=obj(key,Curve("NurbsCurve"),objects["source"].Attributes if conversion=="ToNURBS" else Attributes(),2+i)
+                if conversion!="ToNURBS": objects[key].Attributes.LayerIndex=2
             if delete is not False: remove("source",True)
             if failure=="command": raise ValueError("command failure")
         with patch.object(worker,"_independent_construction_planes",return_value=nullcontext(viewport)), \
@@ -122,14 +135,15 @@ class BezierWorkerTests(unittest.TestCase):
              patch.object(worker,"_nurbs_curve_definition",return_value={"degree":1}), \
              patch.object(worker,"_run_surface_script",side_effect=command) as run, \
              patch.object(worker,"_record_progress"):
-            operation=dict(sources=[dict(type="nurbs")],delete_input=delete,undo_after=undo_after)
+            operation=dict(sources=[dict(type="line" if conversion=="ToNURBS" else "nurbs")],delete_input=delete,undo_after=undo_after)
             if failure:
-                with self.assertRaises(ValueError): worker._geometry_conversion(operation,{})
+                with self.assertRaises(ValueError): worker._geometry_conversion(operation,{},conversion)
             else:
-                value,_=worker._geometry_conversion(operation,{})
+                value,_=worker._geometry_conversion(operation,{},conversion)
                 self.assertEqual(value["before"]["objects"][0]["groups"],["Group-0","Group-1"])
                 output=value["after"]["objects"][-1]
-                self.assertEqual((output["original"],output["layer"],output["name"],output["selected"],output["groups"]),(None,"Current",None,False,[]))
+                expected=(0 if delete is not False else None,"Source","source-0",delete is not False,["Group-0","Group-1"]) if conversion=="ToNURBS" else (None,"Current",None,False,[])
+                self.assertEqual((output["original"],output["layer"],output["name"],output["selected"],output["groups"]),expected)
                 self.assertEqual(len(value["after"]["groups"]),3)
                 self.assertEqual(value["after"]["creation_order"],list(range(len(value["after"]["objects"]))))
             if failure not in [None,"command","noop-undo"]: run.assert_not_called()

@@ -101,7 +101,7 @@ fn failed_curve_surface_and_brep_fits_leave_in_place_and_copy_document_edits_ato
 }
 
 #[test]
-fn rational_representation_keeps_polyline_parameters_unlike_explicit_conversion() {
+fn rational_representation_and_explicit_conversion_keep_polyline_parameters() {
     let source = Polyline3::try_with_parameters(
         vec![point(0.0, 0.0), point(2.0, 0.0), point(2.0, 3.0)],
         vec![-7.0, 3.0, 13.0],
@@ -123,7 +123,7 @@ fn rational_representation_keeps_polyline_parameters_unlike_explicit_conversion(
         );
     }
     let converted = geometry.converted_to_nurbs_curve().unwrap().unwrap();
-    assert_eq!(converted.knots(), &[0.0, 0.0, 2.0, 5.0, 5.0]);
+    assert_eq!(converted, native);
 }
 
 fn composite() -> PolyCurve3 {

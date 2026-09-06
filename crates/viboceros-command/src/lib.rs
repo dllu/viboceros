@@ -4,8 +4,10 @@ mod arrays;
 mod bezier;
 mod remembered;
 mod single_spans;
+mod to_nurbs;
 use bezier::ConvertToBeziersCommand;
 use single_spans::ConvertToSingleSpansCommand;
+use to_nurbs::ToNurbsCommand;
 mod bounding_box;
 mod distribute;
 mod grouping;
@@ -704,7 +706,7 @@ impl CommandRegistry {
             .register(ProjectToConstructionPlaneCommand)
             .expect("unique built-in command");
         registry
-            .register(ToNurbsCommand)
+            .register(ToNurbsCommand::default())
             .expect("unique built-in command");
         registry
             .register(ClearCommand)
@@ -17572,53 +17574,6 @@ impl Command for RotateThreeDimensionalCommand {
     }
 }
 
-const TO_NURBS_USAGE: &str = "ToNURBS [DeleteInputObjects=Yes|No]";
-
-struct ToNurbsCommand;
-
-impl Command for ToNurbsCommand {
-    fn name(&self) -> &'static str {
-        "ToNURBS"
-    }
-
-    fn run(&self, document: &mut Document, arguments: &[&str]) -> Result<String, CommandError> {
-        let selected = selected_ids(document)?;
-        let delete_input = parse_delete_input(
-            arguments,
-            TO_NURBS_USAGE,
-            &["DeleteInputObjects", "DeleteInput"],
-        )?;
-        let conversions = selected
-            .into_iter()
-            .filter_map(|id| {
-                document
-                    .object(id)
-                    .expect("selected objects exist")
-                    .geometry()
-                    .converted_to_nurbs_curve()
-                    .transpose()
-                    .map(|result| result.map(|curve| (id, Geometry::NurbsCurve(curve))))
-            })
-            .collect::<Result<Vec<_>, GeometryError>>()?;
-        if conversions.is_empty() {
-            return Err(CommandError::NoConvertibleNurbsCurves);
-        }
-
-        let converted = conversions.len();
-        let copied = if delete_input {
-            document.replace_object_geometries(conversions)?;
-            0
-        } else {
-            document
-                .copy_object_geometries_into_source_groups(conversions)?
-                .len()
-        };
-        Ok(format!(
-            "Converted {converted} curve object(s) to exact NURBS geometry, creating {copied} copy object(s)"
-        ))
-    }
-}
-
 const EXTRUDE_CURVE_USAGE: &str = "ExtrudeCrv distance | base target [BothSides=Yes|No] [DeleteInput=Yes|No] [Output=Surface] [Solid=Yes|No]";
 
 struct ExtrudeCurveCommand;
@@ -19555,8 +19510,11 @@ pub enum CommandError {
     #[error("CloseCrv requires curve geometry")]
     UnsupportedCloseCurveGeometry,
 
-    #[error("none of the selected objects is a supported non-NURBS curve")]
-    NoConvertibleNurbsCurves,
+    #[error("ToNURBS requires a curve, surface, B-rep, or mesh")]
+    UnsupportedToNurbsGeometry,
+
+    #[error("ToNURBS would create more than {maximum} NURBS control points")]
+    TooManyNurbsConversionControls { maximum: usize },
 
     #[error("none of the selected objects is an extrudable curve")]
     NoExtrudableCurves,
@@ -42889,203 +42847,6 @@ mod tests {
     }
 
     #[test]
-    fn to_nurbs_matches_rhino_curve_domains_groups_selection_and_delete_input() {
-        let registry = CommandRegistry::with_builtins();
-        let mut document = Document::default();
-        let tolerance = document.tolerance();
-        let z_axis = UnitVector3::try_new(0.0, 0.0, 1.0, tolerance).unwrap();
-        let line = LineSegment::try_new(
-            Point3::try_new(-1.0, 0.0, 2.0).unwrap(),
-            Point3::try_new(5.0, 2.0, 4.0).unwrap(),
-            tolerance,
-        )
-        .unwrap();
-        let circle = Circle3::try_new(
-            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
-            2.0,
-            z_axis,
-            tolerance,
-        )
-        .unwrap();
-        let arc = CircularArc3::try_from_three_points(
-            Point3::try_new(3.0, 0.0, 0.0).unwrap(),
-            Point3::try_new(0.0, 3.0, 0.0).unwrap(),
-            Point3::try_new(-3.0, 0.0, 0.0).unwrap(),
-            tolerance,
-        )
-        .unwrap();
-        let x_axis = UnitVector3::try_new(1.0, 0.0, 0.0, tolerance).unwrap();
-        let y_axis = UnitVector3::try_new(0.0, 1.0, 0.0, tolerance).unwrap();
-        let ellipse = Ellipse3::try_new(
-            Point3::try_new(1.0, 2.0, 3.0).unwrap(),
-            4.0,
-            1.5,
-            x_axis,
-            y_axis,
-            tolerance,
-        )
-        .unwrap();
-        let polyline = Polyline3::try_new(
-            vec![
-                Point3::try_new(0.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(2.0, 0.0, 1.0).unwrap(),
-                Point3::try_new(2.0, 3.0, 2.0).unwrap(),
-            ],
-            tolerance,
-        )
-        .unwrap();
-        let existing_nurbs = NurbsCurve::try_new(
-            1,
-            vec![
-                Point3::try_new(10.0, 0.0, 0.0).unwrap(),
-                Point3::try_new(12.0, 0.0, 0.0).unwrap(),
-            ],
-            vec![0.0, 0.0, 2.0, 2.0],
-        )
-        .unwrap();
-        let geometries = [
-            ("line", Geometry::Line(line)),
-            ("circle", Geometry::Circle(circle)),
-            ("arc", Geometry::Arc(arc)),
-            ("ellipse", Geometry::Ellipse(ellipse)),
-            ("polyline", Geometry::Polyline(polyline.clone())),
-            ("existing", Geometry::NurbsCurve(existing_nurbs.clone())),
-            (
-                "point",
-                Geometry::Point(Point3::try_new(20.0, 0.0, 0.0).unwrap()),
-            ),
-        ];
-        let layer = document.current_layer_id();
-        let source_ids = geometries
-            .into_iter()
-            .map(|(name, geometry)| {
-                document
-                    .add_geometry_with_attributes(
-                        geometry,
-                        ObjectAttributes::on_layer(layer).with_name(name),
-                    )
-                    .unwrap()
-            })
-            .collect::<Vec<_>>();
-        let group = document
-            .add_group(
-                Some("NURBS fixtures".to_owned()),
-                source_ids.iter().copied(),
-            )
-            .unwrap();
-        document
-            .select_objects_direct(source_ids.iter().copied(), SelectionMode::Replace)
-            .unwrap();
-
-        registry.execute(&mut document, "ToNURBS").unwrap();
-        assert_eq!(document.objects().len(), 12);
-        assert_eq!(document.groups().len(), 1);
-        assert_eq!(document.group(group).unwrap().members().len(), 12);
-        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
-        let copies = document
-            .objects()
-            .filter(|object| !source_ids.contains(&object.id()))
-            .collect::<Vec<_>>();
-        assert_eq!(copies.len(), 5);
-        assert!(copies.iter().all(|copy| !document.is_selected(copy.id())));
-        for (source, copy) in source_ids.iter().zip(&copies) {
-            assert_eq!(
-                document.object(*source).unwrap().attributes(),
-                copy.attributes()
-            );
-        }
-
-        let curves = copies
-            .iter()
-            .map(|object| match object.geometry() {
-                Geometry::NurbsCurve(curve) => curve,
-                _ => panic!("ToNURBS must create NURBS curves"),
-            })
-            .collect::<Vec<_>>();
-        let line_length = line.length().unwrap();
-        assert_eq!(curves[0].knots(), &[0.0, 0.0, line_length, line_length]);
-        let circumference = circle.length().unwrap();
-        assert_eq!(curves[1].domain(), 0.0..=circumference);
-        assert_eq!(
-            curves[1].knots(),
-            &[
-                0.0,
-                0.0,
-                0.0,
-                circumference * 0.25,
-                circumference * 0.25,
-                circumference * 0.5,
-                circumference * 0.5,
-                circumference * 0.75,
-                circumference * 0.75,
-                circumference,
-                circumference,
-                circumference,
-            ]
-        );
-        assert_eq!(curves[2].domain(), 0.0..=arc.length().unwrap());
-        assert_eq!(curves[3].domain(), 0.0..=std::f64::consts::TAU);
-        let first_segment = polyline.segments().next().unwrap().length().unwrap();
-        let polyline_length = polyline.length().unwrap();
-        assert_eq!(
-            curves[4].knots(),
-            &[0.0, 0.0, first_segment, polyline_length, polyline_length]
-        );
-        assert_eq!(document.undo_label(), Some("ToNURBS"));
-
-        registry.execute(&mut document, "Undo").unwrap();
-        assert_eq!(document.objects().len(), 7);
-        assert_eq!(document.group(group).unwrap().members().len(), 7);
-        registry
-            .execute(&mut document, "ToNURBS DeleteInputObjects=Yes")
-            .unwrap();
-        assert_eq!(document.objects().len(), 7);
-        assert_eq!(document.groups().len(), 1);
-        assert_eq!(document.group(group).unwrap().members().len(), 7);
-        assert!(source_ids.iter().all(|id| document.is_selected(*id)));
-        for id in &source_ids[..5] {
-            assert!(matches!(
-                document.object(*id).unwrap().geometry(),
-                Geometry::NurbsCurve(_)
-            ));
-        }
-        assert_eq!(
-            document.object(source_ids[5]).unwrap().geometry(),
-            &Geometry::NurbsCurve(existing_nurbs)
-        );
-        assert!(matches!(
-            document.object(source_ids[6]).unwrap().geometry(),
-            Geometry::Point(_)
-        ));
-
-        registry.execute(&mut document, "Undo").unwrap();
-        let history = document.undo_label().map(str::to_owned);
-        for command in [
-            "ToNURBS DeleteInputObjects=Maybe",
-            "ToNURBS Other=Yes",
-            "ToNURBS Yes No",
-        ] {
-            assert!(
-                registry.execute(&mut document, command).is_err(),
-                "{command}"
-            );
-        }
-        assert_eq!(document.objects().len(), 7);
-        assert_eq!(document.group(group).unwrap().members().len(), 7);
-        assert_eq!(document.undo_label(), history.as_deref());
-
-        document
-            .select_objects_direct([source_ids[5], source_ids[6]], SelectionMode::Replace)
-            .unwrap();
-        assert!(matches!(
-            registry.execute(&mut document, "ToNURBS"),
-            Err(CommandError::NoConvertibleNurbsCurves)
-        ));
-        assert_eq!(document.objects().len(), 7);
-        assert_eq!(document.undo_label(), history.as_deref());
-    }
-
-    #[test]
     fn extrude_curve_matches_rhino_domains_attributes_groups_and_delete_input() {
         let registry = CommandRegistry::with_builtins();
         let mut document = Document::default();
@@ -43195,8 +42956,8 @@ mod tests {
             surfaces[0].evaluate(4.0, 5.0).unwrap(),
             Point3::try_new(4.0, 0.0, 5.0).unwrap()
         );
-        // Rhino ExtrudeCrv retains the native polyline parameterization, unlike
-        // explicit ToNURBS. See curve_native_extrusion.json.
+        // Rhino ExtrudeCrv and ToNURBS retain native polyline parameters.
+        // See curve_native_extrusion.json and nurbs_conversion.json.
         assert_eq!(surfaces[1].knots_u(), &[0.0, 0.0, 1.0, 2.0, 2.0]);
         assert_eq!(surfaces[2].domain_u(), 0.0..=circle.length().unwrap());
         assert!(surfaces[2].is_rational());

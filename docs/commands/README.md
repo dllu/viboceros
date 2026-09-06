@@ -6,6 +6,7 @@ Rhino's complete command set is still a work in progress.
 
 - [Curve creation and editing](curves.md)
 - [NURBS structure and parameterization](nurbs.md)
+- [Object conversion to NURBS](to-nurbs.md)
 - [Bézier conversion](beziers.md)
 - [Single-span surface conversion](single-spans.md)
 - [Surfaces and solids](surfaces.md)

@@ -3,6 +3,8 @@
 `ConvertToBeziers` remembers `DeleteInput`; `ConvertToSingleSpans` independently
 remembers `Direction` and `DeleteInput`, including U/V toggles. Omitting an option
 uses its last accepted choice. Updating only one option leaves the other alone.
+[`ToNURBS`](commands/to-nurbs.md) separately remembers `DeleteInputObjects` and
+`TrimTriangularFaces` after real conversions.
 
 Choices belong to typed command instances owned by `CommandRegistry`, not to
 the document or its undo history. Aliases share an instance. Reusing a registry
@@ -14,9 +16,10 @@ geometry work or document mutation; the command API remains `Send + Sync`.
 Commands accept choices only after successful execution. Invalid options,
 ineligible selections, and geometry/document failures leave previous choices
 unchanged. An eligible single-span no-op accepts choices without changing
-document history or clearing redo. Undo/redo affects geometry, not these choices.
+document history or clearing redo. A `ToNURBS` no-op leaves choices unchanged.
+Undo/redo affects geometry, not these choices.
 
-Native bootstrap choices are `DeleteInput=No` and `Direction=Both`. They are not
+Native bootstrap choices are deletion No, Direction Both, and triangle trimming Yes. They are not
 serialized across application restarts. Rhino's factory defaults and restart
 persistence are not established by these tests. This is not a global preference
 implementation for all commands; use explicit options in deterministic scripts.
@@ -28,3 +31,7 @@ Subsequent steps omit or partially change options, toggle U/V, interleave both
 commands, accept no-ops, and undo real edits. Full conversion records are compared
 after every step. Fixtures and macros are bounded and validated before execution;
 an undo request on a no-op is rejected to avoid undoing unrelated history.
+Six additional `nurbs_conversion_sessions.json` probes add 39 steps involving
+`ToNURBS`, including interleaving all three commands. Its initial deletion choice
+must be seeded by an actually convertible object; the first mesh must explicitly
+seed triangle trimming. No-ops cannot make an unknown prior profile deterministic.

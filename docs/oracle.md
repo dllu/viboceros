@@ -103,6 +103,14 @@ recorder and owned-object cleanup. See [single spans](commands/single-spans.md)
 for the explicit omitted-outer-knot codec and [option memory](command-options.md)
 for lifetime and bootstrap limitations. These command probes are untimed.
 
+`nurbs_conversion.json` compares 78 actual `ToNURBS` conversions, including meshes
+and already-NURBS no-ops. It additionally records curve representation kind and
+full source curve/surface definitions so identity-preserving replacement cannot look like a
+no-op. B-reps include topology and full underlying surface nets. Six
+`nurbs_conversion_sessions.json` sequences add 39 steps; unlike single-span
+conversion, `ToNURBS` no-ops do not accept new choices. See
+[ToNURBS](commands/to-nurbs.md) for parameters, chronological renewal, and limits.
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh
