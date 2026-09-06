@@ -4090,14 +4090,22 @@ impl VibocerosApp {
                 z_distance,
                 start: Some(start),
             } => {
+                let [x_distance, y_distance, _] =
+                    match plane.with_origin(start).coordinates_of(point) {
+                        Ok(coordinates) => coordinates,
+                        Err(error) => {
+                            self.push_log(format!("Error: {error}"));
+                            return false;
+                        }
+                    };
                 self.active_command = None;
                 self.execute_command(&format!(
                     "Array {} {} {} {} {} {} Mode={}",
                     counts[0],
                     counts[1],
                     counts[2],
-                    point.x() - start.x(),
-                    point.y() - start.y(),
+                    x_distance,
+                    y_distance,
                     z_distance,
                     if fill { "Fill" } else { "UnitCell" }
                 ));
@@ -4937,6 +4945,7 @@ fn point_is_near_axis(
 mod tests {
     mod construction_plane;
     mod interface;
+    mod plane_arrays;
     mod point_input;
     use super::*;
     use std::collections::BTreeSet;

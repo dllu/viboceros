@@ -1,0 +1,48 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "curve_bounds",
+      "id": "bounds-gauge--1",
+      "curve": {
+        "type": "nurbs",
+        "degree": 2,
+        "control_points": [
+          {
+            "point": [
+              1,
+              2,
+              3
+            ],
+            "weight": -1
+          },
+          {
+            "point": [
+              8,
+              16,
+              9
+            ],
+            "weight": -1
+          },
+          {
+            "point": [
+              10,
+              4,
+              5
+            ],
+            "weight": -1
+          }
+        ],
+        "knots": [
+          0,
+          0,
+          0,
+          1,
+          1,
+          1
+        ]
+      }
+    }
+  ]
+}

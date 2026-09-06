@@ -1,0 +1,138 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_array",
+      "id": "top-lines-Array-Fill-numeric-height",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "inspect_bounds": false,
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill"
+    },
+    {
+      "op": "plane_array",
+      "id": "top-nurbs-Array-Fill-numeric-height",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "inspect_bounds": false,
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill"
+    }
+  ]
+}

@@ -185,7 +185,7 @@ def _set_curve_controls(curve, controls):
     for index, control in enumerate(controls):
         point = _point(control["point"])
         weight = _finite(control.get("weight", 1.0), "control-point weight")
-        if not weight > 0.0 or not curve.Points.SetPoint(index, point, weight):
+        if weight == 0.0 or not curve.Points.SetPoint(index, point, weight):
             raise ValueError("invalid NURBS curve control point")
 
 
@@ -2886,8 +2886,143 @@ def _construction_plane_input(operation):
         return _in_construction_plane(dict(operation, points=before + after), script, None)
 
 
+def _plane_array_script(operation):
+    name = operation["command"]
+    if name == "Array":
+        counts, distances, mode = operation["counts"], operation["distances"], operation["mode"]
+        if len(counts) != 3 or any(type(n) is not int or not 1 <= n <= 64 for n in counts) or not 2 <= counts[0] * counts[1] * counts[2] <= 256:
+            raise ValueError("invalid rectangular array counts")
+        if len(distances) != 3 or mode not in ("UnitCell", "Fill"):
+            raise ValueError("invalid rectangular array options")
+        distances = [_finite(v, "array distance") for v in distances]
+        preview = ""
+        if mode == "Fill" and operation.get("explicit_lengths", False):
+            preview = " " + " ".join("_%sLength %.17g" % (axis, d) for axis, n, d in zip("XYZ", counts, distances) if n > 1)
+        return "_-Array _Mode=_%s %s %s%s _Enter" % (mode, " ".join(str(n) for n in counts), " ".join("%.17g" % d for n, d in zip(counts, distances) if n > 1), preview)
+    count = operation["item_count"]
+    if type(count) is not int or not 2 <= count <= 256:
+        raise ValueError("invalid array item count")
+    if name == "ArrayLinear":
+        if len(operation["references"]) != 2:
+            raise ValueError("expected two linear array references")
+        return "_ArrayLinear %d %s" % (count, " ".join("w" + _command_point(p) for p in operation["references"]))
+    if name == "ArrayPolar":
+        angle = _finite(operation["angle"], "array angle")
+        offset = _finite(operation["z_offset"], "array offset")
+        if angle == 0 or not isinstance(operation["rotate"], bool):
+            raise ValueError("invalid polar array options")
+        return "_-ArrayPolar w%s %d _Rotate=_%s _ZOffset %.17g %.17g _Enter" % (_command_point(operation["center"]), count, "Yes" if operation["rotate"] else "No", offset, angle)
+    raise ValueError("unsupported array command")
+
+
+def _plane_array(operation):
+    script = _plane_array_script(operation)
+    if not 1 <= len(operation["sources"]) <= 16:
+        raise ValueError("expected 1 to 16 array sources")
+    document = Rhino.RhinoDoc.ActiveDoc
+    settings = Rhino.DocObjects.ObjectEnumeratorSettings()
+    settings.NormalObjects = True
+    def objects():
+        return list(document.Objects.GetObjectList(settings))
+    before = set(obj.Id for obj in objects())
+    selected = [obj.Id for obj in objects() if obj.IsSelected(False)]
+    original_groups = set(i for i in range(document.Groups.Count) if not document.Groups.IsDeleted(i))
+    source_ids = []
+    curves = []
+    plane = Rhino.Geometry.Plane(_point(operation["origin"]), _vector(operation["x_axis"]), _vector(operation["y_axis"]))
+    if not plane.IsValid:
+        raise ValueError("invalid array plane")
+    with _independent_construction_planes() as viewport:
+        try:
+            viewport.SetConstructionPlane(plane)
+            document.Objects.UnselectAll()
+            for index, definition in enumerate(operation["sources"]):
+                curve = _join_close_input(definition)
+                curves.append(curve)
+                attributes = Rhino.DocObjects.ObjectAttributes()
+                attributes.Name = str(index)
+                object_id = document.Objects.AddCurve(curve, attributes)
+                if object_id == System.Guid.Empty:
+                    raise ValueError("failed array source insertion")
+                source_ids.append(object_id)
+                document.Objects.Select(object_id)
+            for members in operation.get("groups", [list(range(len(source_ids)))]):
+                if not members or any(type(i) is not int or not 0 <= i < len(source_ids) for i in members) or len(set(members)) != len(members):
+                    raise ValueError("invalid array source group")
+                if document.Groups.Add("Viboceros plane array " + str(System.Guid.NewGuid()), [source_ids[i] for i in members]) < 0:
+                    raise ValueError("failed array source grouping")
+            _record_progress("plane array: " + script)
+            history_before = Rhino.RhinoApp.CommandHistoryWindowText
+            if not _run_surface_script(script, True):
+                raise ValueError("plane array command failed")
+            outputs = [obj for obj in objects() if obj.Id not in before]
+            counts = operation.get("counts")
+            count = counts[0] * counts[1] * counts[2] if operation["command"] == "Array" else operation["item_count"]
+            expected_count = operation.get("expected_object_count", count * len(source_ids))
+            if not operation.get("inspect_bounds", False) and len(outputs) != expected_count:
+                raise ValueError("array command produced %d objects, expected %d" % (len(outputs), expected_count))
+            records = []
+            for obj in outputs:
+                curve = obj.Geometry
+                records.append({"source": int(obj.Attributes.Name), "original": obj.Id in source_ids,
+                                "selected": bool(obj.IsSelected(False)), "domain": [float(curve.Domain.T0), float(curve.Domain.T1)],
+                                "points": [_xyz(curve.PointAt(curve.Domain.ParameterAt(i / 32.0))) for i in range(33)]})
+            # Quantize only sort keys, never the reported coordinates.
+            records.sort(key=lambda r: (r["source"], not r["original"], tuple(round(v, 8) for p in r["points"] for v in p)))
+            groups = []
+            for index in range(document.Groups.Count):
+                if index not in original_groups and not document.Groups.IsDeleted(index):
+                    members = document.Groups.GroupMembers(index)
+                    # Rhino leaves unused empty table entries for single-object
+                    # arrays. Compare live memberships, not empty table slots.
+                    if members:
+                        groups.append(sorted(int(obj.Attributes.Name) for obj in members))
+            value = {"objects": records, "groups": sorted(groups)}
+            if operation.get("inspect_bounds", False):
+                history_after = Rhino.RhinoApp.CommandHistoryWindowText
+                value["history"] = history_after[len(history_before):] if history_after.startswith(history_before) else history_after[-5000:]
+                value["bounds"] = []
+                for curve in curves:
+                    for local in [False, True]:
+                        temporary = curve.DuplicateCurve()
+                        try:
+                            if local:
+                                temporary.Transform(Rhino.Geometry.Transform.PlaneToPlane(plane, Rhino.Geometry.Plane.WorldXY))
+                            boxes = [temporary.GetBoundingBox(accurate) for accurate in [False, True]]
+                            value["bounds"].append({"local":local,"fast":[_xyz(boxes[0].Min),_xyz(boxes[0].Max)],"tight":[_xyz(boxes[1].Min),_xyz(boxes[1].Max)]})
+                        finally:
+                            temporary.Dispose()
+            return value, 0
+        finally:
+            Rhino.RhinoApp.RunScript("!", False)
+            for obj in objects():
+                if obj.Id not in before:
+                    document.Objects.Delete(obj.Id, True)
+            for index in range(document.Groups.Count):
+                if index not in original_groups and not document.Groups.IsDeleted(index):
+                    document.Groups.Delete(index)
+            document.Objects.UnselectAll()
+            for object_id in selected:
+                document.Objects.Select(object_id)
+            for curve in curves:
+                curve.Dispose()
+
+
 def _execute(operation, iterations, tolerance):
     kind = operation["op"]
+    if kind == "curve_bounds":
+        curve = _join_close_input(operation["curve"])
+        try:
+            if not curve.IsValid:
+                raise ValueError("invalid bounds curve")
+            bounds, elapsed = _measure(iterations, lambda: curve.GetBoundingBox(True))
+            if not bounds.IsValid:
+                raise ValueError("invalid curve bounds")
+            return {"min":_xyz(bounds.Min),"max":_xyz(bounds.Max)}, elapsed
+        finally:
+            curve.Dispose()
+    if kind == "plane_array":
+        return _plane_array(operation)
     if kind == "construction_plane_input":
         return _construction_plane_input(operation)
     if kind == "construction_plane":

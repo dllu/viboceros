@@ -68,4 +68,5 @@ agree at the ordinary comparison epsilon.
 [Custom viewport planes](cplane.md) are editable. Mirror's axis/three-point options, repeated interactive
 copies, rigid Shear, scalar constraints during point prompts, and singular
 projections that collapse validated geometry remain incomplete. Other transforms
-and arrays still have their individually documented World-coordinate policies.
+retain their individually documented coordinate policies; rectangular and polar
+arrays now have a separate [construction-plane policy](plane-arrays.md).

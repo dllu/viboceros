@@ -59,10 +59,11 @@ sharing duplicated junction controls without elevating segment degrees.
 ## Arrays, joining, exploding, and measurement
 
 `ArrayPolar 6` picks a
-center for a 360-degree top-view array; an optional angle and `Rotate`/`ZOffset`
-settings can follow the count. `Array 3 2` picks two top-view corners for a
-rectangular array. A third count adds Z levels and requires `ZDistance=...`;
-`Mode=Fill` treats the picked rectangle as the outside array span. `Join`
+center for a 360-degree array about the construction-plane normal; an optional
+angle and `Rotate`/`ZOffset` settings can follow the count. `Array 3 2` picks two
+corners measured in the first pick's construction plane. A third count adds
+plane-normal levels and requires `ZDistance=...`; `Mode=Fill` uses layout
+lengths. See [plane arrays](../plane-arrays.md) for signed lengths and limits. `Join`
 extends selected line, polyline, arc, NURBS, and polycurve chains within the
 document tolerance, retaining the seed's attributes and groups. Its one-pass
 seeded behavior differs from the batch joining API; see [joining policies](../curve-editing.md).

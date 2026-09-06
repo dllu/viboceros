@@ -58,16 +58,17 @@ comparisons. The earlier fixed-cubic line fitting has been replaced. Rhino's
 tested fitted curves differ from its direct point map by more than the requested
 document tolerance, so their comparison epsilon is documented separately.
 
-`Array` takes X/Y/Z counts followed by signed world-axis distances. Its default
+`Array` takes X/Y/Z counts followed by signed construction-plane-axis distances. Its default
 `UnitCell` mode uses those values as successive spacing. `Mode=Fill` treats them
-as outside dimensions and accounts for the selected geometry's bounding-box
-extent, matching Rhino's fit-within-span behavior. Counts of one create no
-copies on that axis.
+as layout lengths and accounts for the selected geometry's plane-oriented
+extent. See [plane arrays](../plane-arrays.md) for signed/small-length rules,
+zero-spacing cells, tight curve bounds, and surface-bounds limitations.
 
 `ArrayLinear` takes Rhino's total item count followed by two reference points;
 their vector is the spacing between successive items. It retains the originals
-as the selection, preserves object attributes, and recreates every selected
-group topology independently for each copy as one bounded, atomic undo step.
+as the selection and preserves object attributes in one bounded, atomic undo
+step. Array, ArrayLinear, and ArrayPolar omit copied groups for a single source
+object; multiple-source arrays recreate selected memberships per copy.
 
 `ArrayCrv` places the selected sources at equal arc-length positions on a line,
 analytic curve, polyline, or NURBS rail. Name a unique rail with the single-token
@@ -93,8 +94,8 @@ defaults to world Z, and `SurfaceName=` can be omitted when the target is the
 last selected object. Surface normals determine orientation, while originals,
 attributes, selection, and one copied group topology per cell are preserved.
 
-`ArrayPolar` uses the same total-item and preservation rules around a top-view
-center. Exactly 360 degrees omits a duplicate endpoint; other positive,
+`ArrayPolar` uses the same total-item and preservation rules around the active
+plane's normal through its center. Exactly ±360 degrees omits a duplicate endpoint; other positive,
 negative, and multi-turn sweeps include both endpoints. `Rotate=No` keeps object
-orientation by orbiting the combined selection-bounds center, while `ZOffset`
-adds a cumulative height per item.
+orientation by orbiting the combined world tight-bounds center, while `ZOffset`
+adds a cumulative height per item along the plane normal.

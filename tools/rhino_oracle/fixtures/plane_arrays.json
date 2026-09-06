@@ -1,0 +1,4756 @@
+{
+  "protocol_version": 1,
+  "iterations": 1,
+  "operations": [
+    {
+      "op": "plane_array",
+      "id": "fill-equal-x",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        5,
+        40,
+        50
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true,
+      "expected_object_count": 20
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-equal-xy",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        5,
+        4,
+        50
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true,
+      "expected_object_count": 14
+    },
+    {
+      "op": "plane_array",
+      "id": "cell-zero",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        0,
+        0,
+        0
+      ],
+      "mode": "UnitCell",
+      "explicit_lengths": true,
+      "expected_object_count": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "cell-zero-x",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        0,
+        40,
+        50
+      ],
+      "mode": "UnitCell",
+      "explicit_lengths": true,
+      "expected_object_count": 20
+    },
+    {
+      "op": "plane_array",
+      "id": "top-lines-Array-UnitCell",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "UnitCell"
+    },
+    {
+      "op": "plane_array",
+      "id": "top-lines-Array-Fill",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "top-lines-ArrayPolar-false",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": 210,
+      "rotate": false,
+      "z_offset": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "top-lines-ArrayPolar-true",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -3
+    },
+    {
+      "op": "plane_array",
+      "id": "top-nurbs-Array-UnitCell",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "UnitCell"
+    },
+    {
+      "op": "plane_array",
+      "id": "top-nurbs-Array-Fill",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "top-nurbs-ArrayPolar-false",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": 210,
+      "rotate": false,
+      "z_offset": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "top-nurbs-ArrayPolar-true",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -3
+    },
+    {
+      "op": "plane_array",
+      "id": "front-lines-Array-UnitCell",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "UnitCell"
+    },
+    {
+      "op": "plane_array",
+      "id": "front-lines-Array-Fill",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "front-lines-ArrayPolar-false",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": 210,
+      "rotate": false,
+      "z_offset": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "front-lines-ArrayPolar-true",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -3
+    },
+    {
+      "op": "plane_array",
+      "id": "front-nurbs-Array-UnitCell",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "UnitCell"
+    },
+    {
+      "op": "plane_array",
+      "id": "front-nurbs-Array-Fill",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "front-nurbs-ArrayPolar-false",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": 210,
+      "rotate": false,
+      "z_offset": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "front-nurbs-ArrayPolar-true",
+      "origin": [
+        10,
+        20,
+        30
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -3
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-lines-Array-UnitCell",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "UnitCell"
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-lines-Array-Fill",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-lines-ArrayPolar-false",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": 210,
+      "rotate": false,
+      "z_offset": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-lines-ArrayPolar-true",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -3
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-nurbs-Array-UnitCell",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "UnitCell"
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-nurbs-Array-Fill",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-nurbs-ArrayPolar-false",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": 210,
+      "rotate": false,
+      "z_offset": 2
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-nurbs-ArrayPolar-true",
+      "origin": [
+        3,
+        -4,
+        5
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 4,
+      "center": [
+        -3,
+        2,
+        5
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -3
+    },
+    {
+      "op": "plane_array",
+      "id": "bottom-groups-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "bottom-nurbs-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "bottom-groups-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "bottom-nurbs-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "bottom-groups-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": -360,
+      "rotate": false,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "bottom-nurbs-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        -1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": -360,
+      "rotate": true,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "back-groups-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "back-nurbs-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "back-groups-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "back-nurbs-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "back-groups-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": 360,
+      "rotate": false,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "back-nurbs-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        -1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": 360,
+      "rotate": true,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "right-groups-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "right-nurbs-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "right-groups-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "right-nurbs-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "right-groups-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": -147,
+      "rotate": false,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "right-nurbs-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": -147,
+      "rotate": true,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "left-groups-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "left-nurbs-Array",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        -27,
+        31,
+        19
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "left-groups-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "left-nurbs-ArrayLinear",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayLinear",
+      "item_count": 4,
+      "references": [
+        [
+          5,
+          2,
+          -3
+        ],
+        [
+          -2,
+          7,
+          11
+        ]
+      ]
+    },
+    {
+      "op": "plane_array",
+      "id": "left-groups-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ],
+        [
+          1
+        ],
+        [
+          0,
+          1
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": 720,
+      "rotate": false,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "left-nurbs-ArrayPolar",
+      "origin": [
+        37,
+        -29,
+        11
+      ],
+      "x_axis": [
+        0,
+        -1,
+        0
+      ],
+      "y_axis": [
+        0,
+        0,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                1,
+                2,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                8,
+                16,
+                9
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                10,
+                4,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "groups": [
+        [
+          0
+        ]
+      ],
+      "command": "ArrayPolar",
+      "item_count": 5,
+      "center": [
+        -7,
+        11,
+        -13
+      ],
+      "angle": 720,
+      "rotate": true,
+      "z_offset": -1.75
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-small-x",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        1,
+        1
+      ],
+      "distances": [
+        2,
+        0,
+        0
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-small-y",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        1,
+        3,
+        1
+      ],
+      "distances": [
+        0,
+        2,
+        0
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-small-z",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        1,
+        1,
+        3
+      ],
+      "distances": [
+        0,
+        0,
+        2
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-small-xyz",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        2,
+        2,
+        2
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-equal",
+      "expected_object_count": 2,
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        5,
+        4,
+        5
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "fill-negative",
+      "origin": [
+        0,
+        0,
+        0
+      ],
+      "x_axis": [
+        1,
+        0,
+        0
+      ],
+      "y_axis": [
+        0,
+        1,
+        0
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        3,
+        2,
+        2
+      ],
+      "distances": [
+        -40,
+        -50,
+        -60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-rational-0-Array",
+      "origin": [
+        1000000,
+        -2000000,
+        3000000
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                10,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -5,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                -4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-rational-0-ArrayPolar",
+      "origin": [
+        1000000,
+        -2000000,
+        3000000
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                10,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -5,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                -4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 6,
+      "center": [
+        3,
+        -5,
+        7
+      ],
+      "angle": -270,
+      "rotate": false,
+      "z_offset": 3
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-rational-1-Array",
+      "origin": [
+        1000000,
+        -2000000,
+        3000000
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 9,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                3,
+                -7.7276448755598715,
+                -0.7306324612073786
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                4,
+                7.936678638491531,
+                -0.5829897193660044
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                5,
+                4.121184852417566,
+                1.784761989929676
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                6,
+                -9.809362300664915,
+                -2.644117471086699
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                7,
+                0.3362304722113669,
+                2.9961839017305043
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                8,
+                9.656577765492774,
+                -2.773415324742365
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                9,
+                -4.724219863984661,
+                2.0185511649550403
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-rational-1-ArrayPolar",
+      "origin": [
+        1000000,
+        -2000000,
+        3000000
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "nurbs",
+          "degree": 9,
+          "control_points": [
+            {
+              "point": [
+                0,
+                0,
+                3
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                1,
+                9.738476308781951,
+                -2.7122164260511834
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                2,
+                -4.425204432948525,
+                1.904078627827904
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                3,
+                -7.7276448755598715,
+                -0.7306324612073786
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                4,
+                7.936678638491531,
+                -0.5829897193660044
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                5,
+                4.121184852417566,
+                1.784761989929676
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                6,
+                -9.809362300664915,
+                -2.644117471086699
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                7,
+                0.3362304722113669,
+                2.9961839017305043
+              ],
+              "weight": -0.07
+            },
+            {
+              "point": [
+                8,
+                9.656577765492774,
+                -2.773415324742365
+              ],
+              "weight": 2
+            },
+            {
+              "point": [
+                9,
+                -4.724219863984661,
+                2.0185511649550403
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 6,
+      "center": [
+        3,
+        -5,
+        7
+      ],
+      "angle": -270,
+      "rotate": false,
+      "z_offset": 3
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-rational-2-Array",
+      "origin": [
+        1000000,
+        -2000000,
+        3000000
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                10,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -5,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                -4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "command": "Array",
+      "counts": [
+        2,
+        3,
+        2
+      ],
+      "distances": [
+        40,
+        -50,
+        60
+      ],
+      "mode": "Fill",
+      "explicit_lengths": true
+    },
+    {
+      "op": "plane_array",
+      "id": "oblique-rational-2-ArrayPolar",
+      "origin": [
+        1000000,
+        -2000000,
+        3000000
+      ],
+      "x_axis": [
+        1,
+        2,
+        3
+      ],
+      "y_axis": [
+        -4,
+        8,
+        1
+      ],
+      "sources": [
+        {
+          "type": "line",
+          "start": [
+            2,
+            0,
+            0
+          ],
+          "end": [
+            4,
+            1,
+            3
+          ]
+        },
+        {
+          "type": "line",
+          "start": [
+            -1,
+            2,
+            1
+          ],
+          "end": [
+            0,
+            -2,
+            5
+          ]
+        },
+        {
+          "type": "nurbs",
+          "degree": 2,
+          "control_points": [
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                10,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                10,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                -5,
+                3,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                -5,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                2,
+                -4,
+                5
+              ],
+              "weight": 1
+            },
+            {
+              "point": [
+                9,
+                -4,
+                5
+              ],
+              "weight": 0.7071067811865476
+            },
+            {
+              "point": [
+                9,
+                3,
+                5
+              ],
+              "weight": 1
+            }
+          ],
+          "knots": [
+            0,
+            0,
+            0,
+            1,
+            1,
+            2,
+            2,
+            3,
+            3,
+            4,
+            4,
+            4
+          ]
+        }
+      ],
+      "command": "ArrayPolar",
+      "item_count": 6,
+      "center": [
+        3,
+        -5,
+        7
+      ],
+      "angle": -270,
+      "rotate": false,
+      "z_offset": 3
+    }
+  ]
+}

@@ -171,14 +171,15 @@ impl Frame3 {
 
     /// Evaluates finite local coordinates without forming huge world-space axes.
     pub fn point_at(self, coordinates: [f64; 3]) -> Result<Point3, GeometryError> {
+        self.origin.translated(self.vector_at(coordinates)?)
+    }
+
+    /// Maps a local displacement into world space, independent of the origin.
+    pub fn vector_at(self, coordinates: [f64; 3]) -> Result<Vector3, GeometryError> {
         let coordinates = Vector3::try_from(coordinates)?;
         let axes = self.axes().map(|axis| axis.as_vector().to_array());
         let component = |i| coordinates.dot(Vector3::try_new(axes[0][i], axes[1][i], axes[2][i])?);
-        self.origin.translated(Vector3::try_new(
-            component(0)?,
-            component(1)?,
-            component(2)?,
-        )?)
+        Vector3::try_new(component(0)?, component(1)?, component(2)?)
     }
 }
 
@@ -204,6 +205,14 @@ mod tests {
             coordinates
         );
         let shifted = world.with_origin(point(1e12, -2e12, 3e12));
+        assert_eq!(
+            world.vector_at(coordinates).unwrap().to_array(),
+            coordinates
+        );
+        assert_eq!(
+            shifted.vector_at(coordinates).unwrap(),
+            world.vector_at(coordinates).unwrap()
+        );
         assert_eq!(
             shifted
                 .coordinates_of(shifted.point_at([3.0, 4.0, 5.0]).unwrap())

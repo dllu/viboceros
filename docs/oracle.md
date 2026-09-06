@@ -40,6 +40,14 @@ and all viewport modes; see [interface controls](commands/interface.md).
 Polyline prompts, including local and relative coordinate continuation.
 See [construction-plane editing](cplane.md) for accuracy and remaining options.
 
+`plane_arrays.json` checks 64 actual rectangular/linear/polar array commands,
+including CPlane axes, tight curve extents, signed Fill lengths, zero-spacing
+cells, selection, and groups. Initial scripted 3D Fill-height discrepancies
+remain in `plane_array_diagnostics.json`; see [plane arrays](plane-arrays.md).
+`curve_bounds.json` checks 16 timed tight-curve-box queries. A negative-gauge
+Rhino discrepancy remains in `curve_bounds_diagnostics.json`, separate from
+passing references; see [bounds policy and measurements](curve-bounds.md).
+
 With Rhino installed through the configured Wine/FEX launcher, run the core fixture:
 
 ```sh

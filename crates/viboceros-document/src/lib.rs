@@ -47,6 +47,13 @@ id_type!(ObjectId);
 id_type!(LayerId);
 id_type!(GroupId);
 
+/// Whether independent copies retain the source set's group memberships.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum CopyGroupPolicy {
+    Preserve,
+    Omit,
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum SelectionMode {
     Replace,
@@ -1304,6 +1311,18 @@ impl Document {
         ids: impl IntoIterator<Item = ObjectId>,
         transforms: &[AffineTransform3],
     ) -> Result<Vec<ObjectId>, DocumentError> {
+        self.copy_objects_with_transforms_and_groups(ids, transforms, CopyGroupPolicy::Preserve)
+    }
+
+    /// Copies an entire source set with an explicit group-membership policy.
+    /// Geometry and attributes are always preserved; `Omit` does not allocate
+    /// empty group records. Original groups are never changed.
+    pub fn copy_objects_with_transforms_and_groups(
+        &mut self,
+        ids: impl IntoIterator<Item = ObjectId>,
+        transforms: &[AffineTransform3],
+        group_policy: CopyGroupPolicy,
+    ) -> Result<Vec<ObjectId>, DocumentError> {
         if transforms.is_empty() {
             return Ok(Vec::new());
         }
@@ -1350,7 +1369,7 @@ impl Document {
             }
         }
 
-        self.copy_staged_object_sets(&sources, transforms.len(), staged)
+        self.copy_staged_object_sets(&sources, transforms.len(), staged, group_policy)
     }
 
     /// Atomically copies one source set through a non-affine point morph.
@@ -1385,7 +1404,7 @@ impl Document {
         if sources.is_empty() {
             return Ok(Vec::new());
         }
-        self.copy_staged_object_sets(&sources, 1, staged)
+        self.copy_staged_object_sets(&sources, 1, staged, CopyGroupPolicy::Preserve)
     }
 
     /// Atomically copies replacement geometry while preserving source
@@ -1504,6 +1523,7 @@ impl Document {
         sources: &[usize],
         instance_count: usize,
         staged: Vec<(usize, Geometry)>,
+        group_policy: CopyGroupPolicy,
     ) -> Result<Vec<ObjectId>, DocumentError> {
         let copy_count = sources
             .len()
@@ -1520,6 +1540,7 @@ impl Document {
         let copied_group_templates = self
             .groups
             .iter()
+            .filter(|_| group_policy == CopyGroupPolicy::Preserve)
             .filter_map(|group| {
                 let members: Vec<_> = group
                     .members

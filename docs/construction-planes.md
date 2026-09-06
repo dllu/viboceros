@@ -40,7 +40,8 @@ mapping without dropping small components at mixed floating-point scales.
 
 [CPlane](cplane.md) now edits custom viewport planes. Named planes,
 scalar constraints during point prompts, and adapting all remaining primitives,
-arrays, and `BoundingBox CoordinateSystem=CPlane` are still pending.
+`ArrayCrv`/`ArraySrf`, and `BoundingBox CoordinateSystem=CPlane` are still pending.
+Rectangular and polar arrays now follow the [plane-array policy](plane-arrays.md).
 Rotate, Mirror, Scale2D, Shear, and ProjectToCPlane now have their own
 [construction-plane transform policy](plane-transforms.md).
 

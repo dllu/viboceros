@@ -35,6 +35,7 @@ use viboceros_io::{
 mod construction_plane;
 mod interface;
 mod mass_properties;
+mod plane_arrays;
 mod trimmed_brep;
 pub use trimmed_brep::{TrimBoundary, TrimmedBrepFixture};
 mod polycurve;
@@ -116,6 +117,15 @@ impl ToleranceSpec {
 #[derive(Clone, Debug, Deserialize, PartialEq)]
 #[serde(tag = "op", rename_all = "snake_case")]
 pub enum Operation {
+    CurveBounds {
+        id: String,
+        curve: curve_join_close::CurveInput,
+    },
+    PlaneArray {
+        id: String,
+        #[serde(flatten)]
+        fixture: plane_arrays::PlaneArrayFixture,
+    },
     ConstructionPlaneInput {
         id: String,
         #[serde(flatten)]
@@ -1440,6 +1450,8 @@ impl Operation {
     pub fn id(&self) -> &str {
         match self {
             Self::PolycurveGeometry { id, .. }
+            | Self::CurveBounds { id, .. }
+            | Self::PlaneArray { id, .. }
             | Self::ConstructionPlaneInput { id, .. }
             | Self::ConstructionPlane { id, .. }
             | Self::InterfaceCommands { id, .. }
@@ -1739,6 +1751,15 @@ fn execute(
     tolerance: Tolerance,
 ) -> Result<OperationResult, ProbeError> {
     let (value, elapsed_ns) = match operation {
+        Operation::CurveBounds { curve, .. } => {
+            let curve = curve.geometry()?;
+            let (bounds, elapsed) = measure(iterations, || curve.as_ref().tight_bounds(tolerance))?;
+            (
+                json!({"min":bounds.min().to_array(),"max":bounds.max().to_array()}),
+                elapsed,
+            )
+        }
+        Operation::PlaneArray { fixture, .. } => plane_arrays::run(fixture, tolerance)?,
         Operation::ConstructionPlaneInput { fixture, .. } => {
             construction_plane::run_input(fixture, tolerance)?
         }
